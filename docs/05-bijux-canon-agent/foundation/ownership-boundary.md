@@ -4,48 +4,116 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-agent-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-22
 ---
 
 # Ownership Boundary
 
-`bijux-canon-agent` owns orchestration above reasoning and below runtime authority. Use it when workflow behavior could be mistaken for either deeper reasoning semantics or final run governance.
+Agent authority is workflow-progression authority. It decides which bounded
+role may act next and why execution stops, while preserving—not redefining—the
+evidence and reasoning records consumed by those roles.
 
-## Boundary Map
+```mermaid
+flowchart TD
+    change{"Which decision changes?"}
+    representation["source representation"]
+    retrieval["vector execution"]
+    meaning["claim support"]
+    workflow["role order, convergence, termination"]
+    acceptance["flow authority and replay"]
+
+    change --> representation --> ingest["ingest"]
+    change --> retrieval --> index["index"]
+    change --> meaning --> reason["reason"]
+    change --> workflow --> agent["agent"]
+    change --> acceptance --> runtime["runtime"]
+```
+
+## Decision table
+
+| Change | Owner | Reason |
+| --- | --- | --- |
+| parse another document format into a stable record | ingest | changes source admission |
+| select an ANN backend under a budget | index | changes governed retrieval execution |
+| reject a derived claim with no exact support | reason | changes reasoning verification |
+| introduce critique after summarization | agent | changes role sequence and trace |
+| stop after an oscillating verdict window | agent | changes convergence and termination |
+| reject a complete pipeline because tenant entropy policy was exceeded | runtime | changes final flow authority |
+
+## Reason-to-agent handoff
+
+Reasoning artifacts can enter role inputs, but their claim kinds, statuses,
+supports, and findings remain reason-owned facts. Agent may schedule critique
+or verification, retain role output, and record a veto. It must not turn an
+unsupported claim into a supported one through orchestration metadata.
+
+## Agent-to-runtime handoff
+
+Agent publishes a pipeline result and versioned trace containing definition,
+configuration, role calls, transitions, convergence, termination, telemetry,
+and final decision evidence. Runtime decides whether that governed output is
+acceptable in the larger flow. Runtime must not infer missing role history or
+upgrade an incomplete trace.
+
+## Role and controller boundary
+
+Individual role packages perform local work. The pipeline controller owns
+lifecycle transitions and stop conditions. Roles cannot override the phase,
+resume after kernel failure, or finalize the workflow implicitly. This
+separation is defended by architecture invariants, not convention.
+
+## Decision custody through a workflow
 
 ```mermaid
 flowchart LR
-    workflow["workflow coordination problem"]
-    agent["agent ownership"]
-    trace["trace-bearing orchestration output"]
-    neighbors["reasoning below and runtime authority above belong elsewhere"]
+    definition["pipeline definition"]
+    controller["controller authorizes transition"]
+    role["role returns output or error"]
+    merge["shard/merge lineage"]
+    gates["judge + validate + veto"]
+    stop["convergence or termination"]
+    trace["PipelineResult + RunTrace"]
+    runtime["runtime acceptance"]
 
-    workflow --> agent --> trace
-    agent --> neighbors
+    definition --> controller --> role --> merge --> gates --> stop --> trace
+    trace -. "governed handoff" .-> runtime
 ```
 
-This page should make agent read like a workflow boundary, not a place where
-any hard late-stage behavior gets parked. The package matters when coordination
-stays distinct from both claim policy and acceptance policy.
+The controller may act only through the pipeline definition and lifecycle. A
+role may produce content, findings or failure but cannot authorize its next
+state. Runtime receives the complete agent outcome and may accept or refuse it;
+it does not fill missing calls or transitions.
 
-## Use This Boundary Test
+## Minimum agent handoff
 
-- keep the work here when it changes role coordination, workflow order, trace output, or step orchestration
-- move the work down to `bijux-canon-reason` when it changes claim meaning or verification policy
-- move the work up to `bijux-canon-runtime` when it changes acceptance, persistence, or governed replay authority
+| Field | Custody purpose |
+| --- | --- |
+| input/context and configuration fingerprints | identifies the workload and behavior-bearing configuration |
+| pipeline definition and role implementation versions | identifies eligible roles, transitions and terminal states |
+| ordered transitions and call identities | demonstrates that every role invocation was authorized |
+| outputs, typed errors, retries and fallback decisions | retains success and failure rather than only final content |
+| shard/merge lineage, revisions and warnings | proves that no input disappeared behind aggregation |
+| judgment, validation, critique and veto records | preserves decision gates and targeted artifacts |
+| convergence observations and termination reason | explains why orchestration stopped |
+| epistemic disposition, telemetry and trace-completeness findings | separates execution success from evidence quality |
+| final result and versioned trace identity | permits independent reconstruction and cross-artifact comparison |
 
-## Borderline Example
+Runtime needs this complete packet to arbitrate a flow. Final prose, a success
+flag, or an isolated provider response is not an agent handoff.
 
-A new role handoff rule belongs here. A new rule for whether a whole run should be rejected belongs in runtime.
+## Boundary breach examples
 
-## First Proof Check
+| Breach | Correct owner and response |
+| --- | --- |
+| a role marks an unsupported claim as validated | reason owns claim status; agent records/refuses the invalid role output |
+| a provider asks to skip critique or jump to completion | agent controller refuses the unauthorized transition |
+| merge drops a failed shard | agent retains the shard and produces partial/failed disposition |
+| runtime summary says success while agent trace records veto | runtime comparison refuses the inconsistent handoff; agent trace is not rewritten |
+| valid workflow output is disallowed for a tenant | runtime owns the rejection and retains the intact agent packet |
 
-- `packages/bijux-canon-agent/src` for the owned implementation boundary
-- `packages/bijux-canon-agent/tests` for proof that the boundary survives change
-- neighboring handbook roots in reason and runtime when the work still looks plausible elsewhere
+## Ownership test
 
-## Design Pressure
-
-The pressure on agent is to keep orchestration visible without absorbing either
-reasoning semantics or final run judgment. If traces stop being enough to
-explain the workflow, the boundary has started to drift.
+Ask who must make the decision for the record to be valid. Claim verification
+points to reason. Selecting and ordering roles, sharding, merging, convergence,
+veto recording, and trace completion point to agent. Accepting the resulting
+flow under tenant policy points to runtime.

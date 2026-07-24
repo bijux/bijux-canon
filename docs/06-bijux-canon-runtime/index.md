@@ -4,86 +4,224 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-runtime-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-22
 ---
 
 # Runtime Handbook
 
-`bijux-canon-runtime` is the execution authority layer in `bijux-canon`. It decides when lower-package work becomes an acceptable, replayable, durable run instead of a merely successful execution trace.
+`bijux-canon-runtime` is the authority that resolves a `FlowManifest`, checks
+dataset and dependency state, plans ordered execution, enforces budgets and
+verification gates, records causally ordered events, and decides whether a run
+may be persisted or accepted for replay.
 
-The main failure this handbook prevents is treating runtime as a miscellaneous bucket for late-stage plumbing. Runtime exists to own acceptance, replay, persistence, and governed execution authority. If those decisions leak downward, no one can say why one run counts and another does not.
-
-## What The Reader Should See First
-
-Runtime is where a run becomes governable. Lower packages can prepare,
-retrieve, reason, and orchestrate correctly, but runtime decides whether the
-combined execution satisfies policy, whether its artifacts can be persisted,
-and whether another reviewer can replay or compare it later.
+A completed lower-layer call is not automatically a valid runtime step. The
+runtime distinguishes execution failure from verification failure, records
+authority and human interventions, and binds replay to the original flow,
+dataset, policy, environment, plan, artifact, and entropy identities.
 
 ```mermaid
 flowchart LR
-    trace["agent trace"]
-    policy["runtime policy"]
-    authority["authority check"]
-    store["artifact store"]
-    analysis["replay and drift analysis"]
-    verdict["run verdict"]
+    manifest["FlowManifest"]
+    resolve["resolve datasets + contracts"]
+    plan["immutable ExecutionPlan"]
+    execute["budgeted step execution"]
+    verify["verification arbitration"]
+    persist["trace + artifacts + run record"]
+    replay["replay verdict + diff"]
 
-    trace --> policy --> authority --> verdict
-    authority --> store --> analysis --> verdict
-    trace --> store
+    manifest --> resolve --> plan --> execute --> verify --> persist --> replay
+    verify -. rejection .-> replay
 ```
 
-Runtime is the first layer allowed to say whether the whole run counts. The
-handbook should therefore emphasize authority, persistence, and replay over
-late-stage plumbing. If a reader cannot tell why one run is acceptable and
-another is only observable or replayable, the runtime story is still weak.
+## Manifest Authority
 
-## What This Package Owns
+| Manifest field | Runtime decision |
+| --- | --- |
+| flow, tenant, state, agents, dependencies | who owns the run and which order is valid |
+| dataset descriptor and deprecation policy | whether the exact data identity is admissible |
+| retrieval contracts and verification gates | which lower-layer evidence and checks are mandatory |
+| determinism level and nondeterminism intent | which variability is declared rather than accidental |
+| entropy budget and allowed variance | how much uncertainty the run may consume |
+| replay envelope, mode, and acceptability | which future execution can count as a replay |
 
-- run acceptance and replay policy above the lower package family
-- runtime persistence boundaries and durable runtime-facing artifacts
-- execution authority that governs agent coordination rather than replacing it
+`FlowManifest` is structural; semantic validity is enforced during resolution,
+planning, authority checks, execution, verification, and replay. Constructing
+the dataclass alone does not prove that a flow is executable.
 
-## What This Package Does Not Own
+## Run Modes
 
-- ingest, index, reasoning, or agent-specific semantics inside their own packages
-- repository-wide maintainer automation that belongs in the maintenance handbook
-- package-local convenience behavior that never affects governed runs
+- `plan` resolves and plans without executing steps
+- `dry-run` exercises runtime preparation without live side effects
+- `live` executes under declared policy and records the run
+- `observe` captures evidence without granting normal execution authority
+- `unsafe` is an explicit reduced-guarantee mode, not an alias for live
 
-## Boundary Test
+Plan and dry-run deliberately avoid lower-package intelligence, and observe
+evaluates a supplied run. Success in those modes does not establish that the
+live agent, retrieval, vector-contract, and reasoning adapters are callable.
 
-If the issue is whether a run should be accepted, persisted, replayed, or
-rejected under explicit policy, it belongs here. If the issue is how a lower
-package produced its local result, runtime should consume that result rather
-than re-own the behavior.
+## Inspect The Bundled Execution Plan
 
-## First Proof Check
+Resolve the repository-owned example before granting runtime any execution
+authority:
 
-- `packages/bijux-canon-runtime/src/bijux_canon_runtime/application/execute_flow.py` for governed execution entrypoints
-- `packages/bijux-canon-runtime/src/bijux_canon_runtime/observability` for durable replay and trace surfaces
-- `packages/bijux-canon-runtime/src/bijux_canon_runtime/core/authority.py` for explicit runtime authority rules
-- `packages/bijux-canon-runtime/src/bijux_canon_runtime/model/execution` for replay envelopes, traces, verdicts, and run modes
-- `packages/bijux-canon-runtime/tests` for acceptance, replay, and persistence evidence
+```bash
+uv run bijux-canon-runtime plan \
+  packages/bijux-canon-runtime/examples/boring/flow.json \
+  --json
+```
 
-## Start Here
+The command is useful because every important planning claim has a visible
+field:
 
-- open [Foundation](https://bijux.io/bijux-canon/06-bijux-canon-runtime/foundation/) when the question is why this package exists or where its ownership stops
-- open [Architecture](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/) when you need module boundaries, dependency flow, or execution shape
-- open [Interfaces](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/) when the question is about commands, APIs, schemas, imports, or artifacts that callers may treat as stable
-- open [Operations](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/) when you need local workflow, diagnostics, release, or recovery guidance
-- open [Quality](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/) when the question is whether the package has proved its promises strongly enough
+| Planning claim | Output to inspect |
+| --- | --- |
+| the intended tenant and flow were admitted | `tenant_id`, `flow_id`, and `flow_state` |
+| the intended data was bound | dataset ID, version, hash, state, and storage URI |
+| dependency order is stable | ordered `steps` and each step's declared dependencies |
+| variability is declared | determinism level, entropy budget, nondeterminism intent, and allowed variance |
+| replay expectations were fixed before execution | replay mode, acceptability, and replay envelope |
+| the resolved contract is addressable | environment fingerprint, resolution metadata, and `plan_hash` |
 
-## Pages In This Package
+Plan mode returns neither a run ID nor a trace because nothing executed. Store
+the manifest and plan output together when they are used to authorize later
+work; a `plan_hash` without the declaration it summarizes is not a sufficient
+review record. The [entrypoint guide](interfaces/entrypoints-and-examples.md)
+shows how executable modes add policy, storage, inspection, and replay.
 
-- [Foundation](https://bijux.io/bijux-canon/06-bijux-canon-runtime/foundation/)
-- [Architecture](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/)
-- [Interfaces](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/)
-- [Operations](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/)
-- [Quality](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/)
+## Live Composition Status
 
-## Leave This Handbook When
+```mermaid
+flowchart TD
+    executor["runtime step executor"] --> loader["integration loader"]
+    loader --> adapter["domain-aware adapter required"]
+    adapter --> package["canonical package contract"]
+    adapter --> record["runtime record"]
+    package --> adapter
+```
 
-- the disputed behavior is really local to ingest, index, reason, or agent
-- the next step is a concrete interface, policy model, replay surface, or test
-- the issue belongs to repository-health automation rather than execution authority
+The current loaders ask package roots for four callables:
+
+| Step boundary | Callable expected by runtime | Current status |
+| --- | --- | --- |
+| agent | `bijux_canon_agent.run` | absent; agent exposes a pipeline-and-trace contract |
+| retrieval | `bijux_canon_ingest.retrieve` | absent at the root; the application retrieval signature and output model differ |
+| vector enforcement | `bijux_canon_index.enforce_contract` | absent; index owns a richer request, capability, provenance, and refusal contract |
+| reasoning | `bijux_canon_reason.reason` returning runtime `ReasoningBundle` | absent; reason owns different claim, support, trace, and verification models |
+
+Compatibility import roots mirror canonical behavior and do not repair these
+seams. This means the package can plan flows, produce dry-run records, observe
+supplied results, and exercise runtime-local policy and storage behavior, while
+a canonical live flow that reaches these loaders is not currently an
+established end-to-end path.
+
+The durable proof is an installed-package integration test, not an import
+check. It must execute the loaders and demonstrate that source, evidence,
+contract, claim, trace, artifact, and failure identities survive conversion
+into runtime-owned records. Until then, live CLI examples describe the runtime
+interface and required policy posture rather than a turnkey composition of all
+canonical packages.
+
+## Follow One Governed Run
+
+```mermaid
+stateDiagram-v2
+    [*] --> Resolved: manifest + policy
+    Resolved --> Planned: contracts and identities valid
+    Planned --> Completed: executable mode
+    Planned --> [*]: plan mode
+    Completed --> Finalized: trace and semantics valid
+    Finalized --> Accepted: policy accepts
+    Finalized --> Rejected: policy refuses
+    Finalized --> NonCertifiable: evidence is insufficient
+    Accepted --> Replayed: retained envelope compared
+```
+
+Plan mode stops after resolution and returns no run identifier or trace. Other
+modes require an execution store and the resources appropriate to their
+authority. A finalized trace can describe a rejected or non-certifiable run;
+finalization means the record is closed, not that policy accepted it.
+
+## Read A Runtime Result
+
+| Record | Question it answers | Failure if absent or inconsistent |
+| --- | --- | --- |
+| manifest and resolved plan | what was authorized, ordered, and fingerprinted? | the run has no stable execution contract |
+| dataset descriptor | which exact data state was admissible? | dataset drift cannot be distinguished from replay drift |
+| authority and verification policy | who permitted effects and how findings were arbitrated? | completion can be mistaken for acceptance |
+| event trace and checkpoints | what happened, in which causal order? | resume and failure analysis become speculative |
+| artifacts, evidence, claims, and tool calls | what the run consumed and produced | outputs lose lineage |
+| entropy use and replay envelope | which variance was declared and retained? | determinism claims exceed captured evidence |
+| replay verdict and diff | whether a later run satisfies the original policy | similar final content can be mislabeled equivalent |
+
+## Do Not Collapse Runtime States
+
+Execution, finalization, acceptance, and replay are separate decisions:
+
+| State | What may be claimed | What may not be claimed |
+| --- | --- | --- |
+| executed | declared steps returned outcomes | verification passed or the run is complete |
+| finalized | the trace and required records were closed | policy accepted the run |
+| accepted | arbitration admitted the finalized record under its policy | the result is universally correct |
+| non-certifiable | retained evidence cannot support the requested guarantee | the run necessarily failed to produce useful observations |
+| replay acceptable | the comparison satisfied the original replay policy | the two executions were bitwise identical unless exactness was required and established |
+| replay unacceptable | a disallowed difference or identity mismatch was found | every output from the later execution is false |
+
+This vocabulary prevents a common integrity failure: promoting “the command
+finished” into “the run is valid.” Persist the status, arbitration evidence,
+certifiability, and replay verdict independently so downstream systems cannot
+infer a stronger state from a weaker one.
+
+## Runtime Trust Boundary
+
+Runtime governs lower-package results; it does not recreate them. Ingest owns
+source preparation, index owns vector execution, reason owns claim/evidence
+semantics, and agent owns role lifecycle. Runtime binds their governed outputs
+to authority, policy, persistence, and replay.
+
+The DuckDB execution store retains causal run state and supports inspection,
+resume, and replay. It is a single-writer local store, not a transaction manager
+for external tools. A database commit cannot undo a provider call or filesystem
+write; live integrations need idempotency or compensation beyond the store.
+
+Its schema retains run and dataset identity, steps, event payloads,
+checkpoints, artifact and evidence metadata, entropy use, tool invocations,
+claim identifiers, a verification-policy fingerprint, and the run-level
+arbitration decision. Artifact content and evidence content are not stored in
+those metadata rows. Per-engine verification results and replay analysis also
+do not have dedicated tables. Operators must retain external content by hash
+and must not infer payload availability or full verification detail from the
+presence of a run row.
+
+## Evidence And Limits
+
+| Claim | Evidence to inspect | Limit |
+| --- | --- | --- |
+| a run was accepted | finalized trace, verification results, arbitration decision, certifiability | acceptance is only under the declared policy |
+| resume preserved authority | tenant, manifest, plan, dataset, policy, checkpoint, store identity | changed authority requires a new run |
+| replay is exact | original envelope, retained inputs, event and artifact identity, zero disallowed diff | cannot control state never captured |
+| bounded replay is acceptable | original allowed variance and evaluated semantic diff | tolerance cannot be invented after divergence |
+| storage is complete | schema contract, finalized records, external artifact availability | metadata does not guarantee payload retention |
+| live composition works | installed loader execution plus cross-package identity and failure assertions | dependency resolution, plan mode, or dry-run success |
+
+The [entrypoint examples](interfaces/entrypoints-and-examples.md) begin with
+plan mode, then show persisted execution, inspection, replay, and diff. The v1
+HTTP application currently implements health and readiness; run and replay
+requests return `501 Not Implemented`.
+
+## Continue By Question
+
+| Question | Next page |
+| --- | --- |
+| why is runtime the final execution authority? | [Foundation](foundation/index.md) |
+| how do planning, execution, verification, storage, and replay connect? | [Architecture](architecture/index.md) |
+| which Python, CLI, HTTP, configuration, and artifact contracts are callable? | [Interfaces](interfaces/index.md) |
+| how do I operate, inspect, resume, replay, secure, or recover a run? | [Operations](operations/index.md) |
+| which invariants defend authority, persistence, entropy, and replay? | [Quality](quality/index.md) |
+
+## Replay Is A Verdict
+
+Replay analysis can accept, reject, or qualify a comparison based on policy,
+dataset evolution, environment, entropy, event order, verification results,
+and stored-envelope identity. A replay mismatch remains a mismatch even when
+the new run produces superficially similar content.

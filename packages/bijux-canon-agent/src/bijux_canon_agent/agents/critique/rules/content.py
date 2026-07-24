@@ -49,8 +49,10 @@ def check_no_hallucination(
                 agent.Criteria.NO_HALLUCINATION,
                 False,
                 [
-                    f"Potential hallucination: '{sentence}' has low overlap "
-                    f"with source ({overlap:.2f})"
+                    (
+                        f"Potential hallucination: '{sentence}' has low overlap "
+                        f"with source ({overlap:.2f})"
+                    )
                 ],
                 confidence=0.7,
             )
@@ -118,8 +120,10 @@ def check_relevance(
             agent.Criteria.RELEVANCE,
             False,
             [
-                f"Low keyword coverage ({coverage_ratio:.2f}): Only "
-                f"{keyword_coverage}/{len(task_goal_keywords)} keywords present"
+                (
+                    f"Low keyword coverage ({coverage_ratio:.2f}): Only "
+                    f"{keyword_coverage}/{len(task_goal_keywords)} keywords present"
+                )
             ],
             confidence=0.8,
         )

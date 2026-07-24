@@ -1,61 +1,103 @@
 ---
 title: Testing and Validation
 audience: mixed
-type: explanation
+type: how-to
 status: canonical
 owner: bijux-canon-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # Testing and Validation
 
-Validation in `bijux-canon` is layered: packages protect their own behavior,
-while the repository protects the seams between packages, schemas, docs, and
-release conventions.
-
-## Validation Ladder
+Validation in `bijux-canon` starts with the smallest executable claim and
+widens only when a change crosses a contract boundary. This keeps failures
+attributable: a domain invariant is proved by its owning package, while frozen
+schemas, documentation navigation, package inventory, and publication
+metadata are proved at repository scope.
 
 ```mermaid
 flowchart LR
-    local["package-local proof"]
-    shared["shared root validation"]
-    alignment["docs and proof still agree"]
-    trust["repository trust holds"]
-
-    local --> shared --> alignment --> trust
+    claim["changed claim"] --> owner{"who owns it?"}
+    owner -->|one function or type| unit["unit or invariant test"]
+    owner -->|one package workflow| integration["package integration / e2e"]
+    owner -->|public API| api["schema validation and drift"]
+    owner -->|package seam| contract["cross-package contract"]
+    owner -->|reader surface| docs["strict documentation build"]
+    api --> release["repository release checks"]
+    contract --> release
+    docs --> release
 ```
 
-This page should make validation order explicit. Trust starts where behavior is
-owned and only widens to the repository when shared seams are genuinely in
-play.
+## Proof by claim
 
-## Validation Order
+| Claim changed | Primary evidence | Broader evidence when required |
+| --- | --- | --- |
+| pure transformation, state transition, or invariant | focused unit/property test in the owning package | package test suite |
+| pipeline, backend, replay, or persistence behavior | package integration or end-to-end test | dependent package contract test |
+| request or response shape | checked-in OpenAPI schema and API tests | schema drift and freeze checks |
+| command behavior | focused CLI test | package installation and entry-point checks |
+| public documentation content or navigation | strict MkDocs build and documentation contract tests | publication URL checks |
+| package inventory or dependency metadata | repository workspace tests | build and publication metadata checks |
+| compatibility behavior | compatibility package contract tests | canonical-owner tests when behavior also changed |
 
-1. run package-local proof first when the behavior is owned by one package
-2. run shared root checks when the change reaches schemas, docs, workflows, or
-   release governance
-3. confirm that the documentation claim and the executable proof still match
+Passing a broad repository lane does not replace a missing local assertion. If
+the claim is “a finalized trace cannot be mutated,” the durable proof is a
+runtime test that attempts the mutation and observes rejection. A successful
+documentation build proves that the page renders and links resolve; it does
+not prove the runtime invariant described by the page.
 
-## Shared Validation Surfaces
+## Package-local validation
 
-- package-local unit, integration, e2e, and invariant suites
-- schema drift and packaging checks in `bijux-canon-dev`
-- repository CI workflows under `.github/workflows/`
+Each canonical package keeps its tests beside its implementation and exposes a
+package profile under `makes/packages/`. The package test trees distinguish
+unit, contract, integration, API/CLI, replay, and end-to-end evidence according
+to the package's behavior. The quality chapter in each package handbook maps
+its public guarantees to those suites:
 
-## Most Important Failure
+- [ingest test strategy](../../02-bijux-canon-ingest/quality/test-strategy.md)
+- [index test strategy](../../03-bijux-canon-index/quality/test-strategy.md)
+- [reason test strategy](../../04-bijux-canon-reason/quality/test-strategy.md)
+- [agent test strategy](../../05-bijux-canon-agent/quality/test-strategy.md)
+- [runtime test strategy](../../06-bijux-canon-runtime/quality/test-strategy.md)
 
-The highest-cost validation mistake is letting a shared prose promise survive
-without a test, workflow, or schema check that can notice drift. At that point
-the repository is asking readers to trust style instead of proof.
+Run package-local checks when behavior is contained by one package. Escalate
+to a consumer only when the producer's externally visible contract changed.
 
-## First Proof Checks
+## Repository validation
 
-- the owning package tests when the change is still local
-- `.github/workflows/` and maintainer tooling when the rule crosses packages
-- `apis/` when the claim is about tracked contract alignment
+Repository-owned tests in `bijux-canon-dev` protect seams that no product
+package owns alone:
 
-## Design Pressure
+- workspace layout and package-profile alignment
+- checked-in API schemas, schema hashes, and live-schema drift
+- root configuration and coverage contracts
+- documentation metadata, navigation, links, and publication URLs
+- release history, package metadata, and publication artifacts
+- compatibility-to-canonical package mappings
 
-Validation turns theatrical when broad checks run without a clear owned claim
-underneath them. The ladder works only when local proof stays ahead of global
-assurance.
+Root make targets dispatch into declared package profiles. The package catalog
+rejects missing package directories, missing profiles, and undeclared package
+directories before dispatch, preventing the test matrix from silently omitting
+a package.
+
+## Interpreting failures
+
+| Failure | Investigate first |
+| --- | --- |
+| invariant or property assertion | owning domain type and transformation |
+| replay fingerprint mismatch | source artifact, plan/configuration, entropy record, then serializer |
+| OpenAPI drift | live application model and checked-in schema |
+| package inventory mismatch | root workspace metadata and `makes/packages.mk` |
+| documentation link/navigation failure | authored Markdown path and MkDocs navigation |
+| compatibility regression | shim boundary first, canonical implementation only if canonical behavior also fails |
+
+Validation artifacts belong under the repository `artifacts/` tree. Keeping
+logs, generated schemas, rendered sites, and test reports there prevents proof
+runs from changing source trees or appearing as publishable content.
+
+## Evidence discipline
+
+A trustworthy change records four facts: the claim that changed, its owning
+boundary, the focused check that proves it, and any broader check intentionally
+required by the affected seam. Expensive unrelated lanes add elapsed time but
+do not make an unowned claim more credible.

@@ -5,9 +5,9 @@
 
 from __future__ import annotations
 
+import math
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
-import math
 from typing import Generic, TypeVar
 
 T = TypeVar("T")

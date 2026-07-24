@@ -1,58 +1,64 @@
 ---
-title: Legacy Name Map
+title: Preserved Name Map
 audience: mixed
-type: explanation
+type: reference
 status: canonical
 owner: bijux-canon-compat-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
-# Legacy Name Map
+# Preserved Name Map
 
-The legacy-name map is the shortest route from an old public name to its
-canonical replacement. It exists to remove ambiguity, not to make the old names
-feel equally current.
+Use this map when an existing dependency, import, module path, or executable
+uses a non-canonical identity.
 
-## Mapping Model
+## Distribution And Root Import
 
-```mermaid
-flowchart LR
-    legacy["legacy public name"]
-    compat["compatibility package"]
-    canon["canonical package"]
-    handbook["canonical handbook"]
+| Encountered identity | Kind | Canonical distribution | Canonical import |
+| --- | --- | --- | --- |
+| `bijux-canon` | shorter runtime distribution | `bijux-canon-runtime` | `bijux_canon_runtime` |
+| `bijux_canon` | shorter runtime import | `bijux-canon-runtime` | `bijux_canon_runtime` |
+| `agentic-flows` | earlier runtime distribution | `bijux-canon-runtime` | `bijux_canon_runtime` |
+| `agentic_flows` | earlier runtime import | `bijux-canon-runtime` | `bijux_canon_runtime` |
+| `bijux-agent` / `bijux_agent` | agent distribution / import | `bijux-canon-agent` | `bijux_canon_agent` |
+| `bijux-rag` / `bijux_rag` | ingest distribution / import | `bijux-canon-ingest` | `bijux_canon_ingest` |
+| `bijux-rar` / `bijux_rar` | reason distribution / import | `bijux-canon-reason` | `bijux_canon_reason` |
+| `bijux-vex` / `bijux_vex` | index distribution / import | `bijux-canon-index` | `bijux_canon_index` |
 
-    legacy --> compat --> canon --> handbook
-```
+## Executables
 
-This page should answer the mapping question immediately. Once the reader knows
-the old name, the canonical package and current handbook route should be
-visible without any additional interpretation.
+| Existing executable | Canonical replacement |
+| --- | --- |
+| `bijux-canon` | `bijux-canon-runtime` |
+| `agentic-flows` | `bijux-canon-runtime` |
+| `bijux-agent` | `bijux-canon-agent` |
+| `bijux-rag` | `bijux-canon-ingest` |
+| `bijux-rar` | `bijux-canon-reason` |
+| `bijux-vex` | no direct executable; migrate to `bijux-canon-index` Python or HTTP contracts |
 
-## Current Map
+## Nested Imports
 
-- `bijux-canon` -> `bijux-canon-runtime`
-- `agentic-flows` -> `bijux-canon-runtime`
-- `bijux-agent` -> `bijux-canon-agent`
-- `bijux-rag` -> `bijux-canon-ingest`
-- `bijux-rar` -> `bijux-canon-reason`
-- `bijux-vex` -> `bijux-canon-index`
+The bridges install import finders that translate non-local nested paths. For
+example, `bijux_rag.core.types` resolves to the canonical
+`bijux_canon_ingest.core.types` module object, and `bijux_vex.core.runtime`
+resolves through the index module tree. The bridge retains local ownership only
+for its alias machinery and `__main__` surface.
 
-## What To Check Next
+Identity tests cover representative root, CLI, and nested paths for each
+bridge. Migrate all imported submodules explicitly even when the compatibility
+finder makes them continue to work; arbitrary private paths are not a broader
+compatibility guarantee.
 
-- the compatibility package `README.md` for the checked-in canonical target
-- the canonical package handbook for current behavior
-- migration pages when the question turns from mapping into retirement timing
+## Where Current Behavior Lives
 
-## First Proof Check
+| Owner | Handbook |
+| --- | --- |
+| `bijux-canon-runtime` | [Runtime](../../06-bijux-canon-runtime/index.md) |
+| `bijux-canon-agent` | [Agent](../../05-bijux-canon-agent/index.md) |
+| `bijux-canon-ingest` | [Ingest](../../02-bijux-canon-ingest/index.md) |
+| `bijux-canon-reason` | [Reason](../../04-bijux-canon-reason/index.md) |
+| `bijux-canon-index` | [Index](../../03-bijux-canon-index/index.md) |
 
-- `packages/compat-*`
-- compatibility package `README.md` files
-- canonical handbooks under `docs/02-bijux-canon-ingest/` through
-  `docs/06-bijux-canon-runtime/`
-
-## Design Pressure
-
-If the map leaves room to wonder whether the legacy name is still a peer to the
-canonical package, it has failed. The whole point is to collapse ambiguity, not
-to preserve nostalgia.
+Continue with [package behavior](package-behavior.md) for bridge mechanics or
+[migration guidance](../migration/migration-guidance.md) for a complete
+dependency, import, command, configuration, and artifact inventory.

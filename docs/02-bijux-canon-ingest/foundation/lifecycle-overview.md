@@ -4,42 +4,74 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-ingest-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # Lifecycle Overview
 
-The ingest lifecycle starts with raw source material and ends when prepared output is stable enough for search to trust. It should not continue into retrieval interpretation or claim production.
-
-## Lifecycle Flow
+Ingest has two connected lifecycles: document preparation and local retrieval.
+Both retain the identities and configuration needed to explain their outputs.
 
 ```mermaid
 flowchart LR
-    raw["raw source material"]
-    entry["ingest entrypoints"]
-    prep["normalization and chunking"]
-    handoff["prepared output and artifacts"]
+    admit["admit source"]
+    validate["validate fields + config"]
+    clean["filter + normalize"]
+    chunk["chunk + identify"]
+    enrich["embed + observe + deduplicate"]
+    write["write prepared records"]
+    index["build paired local index"]
+    query["retrieve / ask / evaluate"]
+    retain["retain artifacts + diagnostics"]
 
-    raw --> entry --> prep --> handoff
+    admit --> validate --> clean --> chunk --> enrich --> write
+    write --> index --> query --> retain
 ```
 
-This page should make ingest feel like a bounded preparation story. The
-lifecycle matters because it shows where messy source handling stops and where
-the next package can start from stable prepared material.
+## Preparation lifecycle
 
-## Lifecycle Shape
+1. **Admit source.** A reader translates file or row input into a typed raw
+   document or an explicit expected failure.
+2. **Resolve configuration.** Chunk size, overlap, tail behavior, filters,
+   cleaner, embedding specification, observations, and output settings become
+   the effective run contract.
+3. **Normalize.** Filtering preserves or rejects the raw record; cleaning
+   produces a new immutable document.
+4. **Segment.** Chunking creates ordered normalized-string spans and derives
+   chunk identity from document ID, offsets, and text.
+5. **Enrich.** The selected embedder adds vectors. The document pipeline can
+   materialize observations and apply stable structural deduplication.
+6. **Publish.** Prepared values are serialized to the selected CSV or JSONL
+   boundary with diagnostics and configuration evidence.
 
-- input enters through package interfaces and configuration surfaces
-- processing normalizes and chunks the material into predictable internal forms
-- retrieval-side assembly shapes the output into handoff records and artifacts
+## Local retrieval lifecycle
 
-## Handoff Point
+1. Build a BM25 or NumPy cosine index from the prepared chunk set.
+2. Persist index metadata and chunk records as one logical artifact.
+3. Load the paired artifact and rank candidates under its metric and embedding
+   configuration.
+4. Produce an extractive answer whose citation IDs resolve to the retrieved
+   chunks, or execute the declared evaluation cases.
+5. Retain the query, artifact identity, ordered results, citations, metrics,
+   and diagnostic evidence needed for review.
 
-The lifecycle stops at prepared output. `bijux-canon-index` owns what happens when that output becomes searchable behavior.
+## Alternative entrypoints
 
-## Design Pressure
+The command line dispatches ordinary document-pipeline arguments separately
+from `index`, `retrieve`, `ask`, and `eval`. HTTP v1 exposes health, chunk,
+index build, retrieve, and ask through a process-scoped application. Python
+callers may compose lower-level records, streams, results, safeguards, and
+adapters directly.
 
-If the ingest lifecycle starts explaining retrieval behavior or downstream
-interpretation, the package is carrying work that belongs somewhere else. The
-handoff has to stay explicit enough that search can trust it without inheriting
-source cleanup logic.
+These entrypoints share concepts, not hidden global state. The default HTTP
+index store is process-local. File-based CLI retrieval persists its paired
+local artifacts. A new process therefore has different lifecycle semantics
+unless the application supplies an explicit store.
+
+## Completion criteria
+
+Preparation is complete when every emitted record is valid, identified, and
+serializable under the effective configuration. Local retrieval is complete
+when the index and chunk set agree and every returned citation resolves.
+Neither completion establishes source authority, semantic model quality, or
+downstream claim truth.

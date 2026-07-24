@@ -4,67 +4,87 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-index-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-22
 ---
 
 # Quality
 
-Open this section when you need to decide whether retrieval behavior is proven strongly enough for callers and downstream packages to trust replay, provenance, and search results.
+Index quality is layered: algorithm correctness, backend conformance,
+provenance completeness, replay behavior, and interface compatibility are
+separate claims. Plausible neighbors prove none of them on their own.
 
-## Trust Model
+## Evidence chain
 
 ```mermaid
 flowchart LR
-    strategy["test strategy"]
-    invariants["retrieval invariants"]
-    validation["change validation"]
-    limits["limitations and risk"]
-    trust["trust decision"]
+    core["types, ABI, immutable plans"]
+    domain["scoring, budgets, artifacts"]
+    adapter["backend conformance"]
+    provenance["lineage + replay"]
+    boundary["CLI + HTTP compatibility"]
+    adversarial["drift, corruption, misuse"]
 
-    strategy --> invariants --> validation --> limits --> trust
+    core --> domain --> adapter --> provenance --> boundary --> adversarial
 ```
 
-The quality story for index has to explain why retrieval results are more than
-plausible output. Reviewers need to see how replay, provenance, and search
-behavior are constrained, what proof backs them, and where the remaining trust
-limits still sit.
+## Claims and proof
 
-## Read These First
+| Trust claim | Required evidence | Important limit |
+| --- | --- | --- |
+| exact execution is stable | scoring, tie-order, plan-identity, deterministic conformance, golden replay | numerical platform differences still require recorded comparison |
+| an adapter honors the common contract | adapter unit tests plus CRUD, transaction, isolation, and query conformance | conformance does not require identical cross-backend ranking |
+| ANN loss is bounded and visible | exact baseline diff, witness, budget, parameter, and replay tests | a seed controls only randomness honored by the runner |
+| provenance explains a result | full explanation join and provenance stability gate | provenance does not establish semantic relevance |
+| artifacts are portable | canonical-version, migration, fingerprint, and portability tests | external database or ANN binaries are not bundled automatically |
+| runs have honest lifecycle | incomplete/failed/complete and corruption tests | individual atomic file writes are not distributed transactions |
+| public interfaces remain compatible | v0.1 snapshots, OpenAPI freeze, CLI flows, error and idempotency tests | implemented modules can remain intentionally outside v1 |
+| resource policy is enforced | budget and partial-result scenarios | current latency/memory measures are estimates and counters, not OS limits |
 
-- open [Test Strategy](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/test-strategy/) first when you need the broad proof shape behind retrieval behavior
-- open [Invariants](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/invariants/) when the question is what must not drift across search and replay behavior
-- open [Change Validation](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/change-validation/) when you need the minimum proof for a safe index change
+## Adversarial posture
 
-## Trust Risk
+The suite explicitly exercises corrupt artifacts, dishonest capability
+declarations, cross-run leakage, transaction misuse, authorization denial,
+stale metadata, missing ANN support, parameter drift, and replay against
+changed inputs. These cases defend the trust boundary more directly than
+additional happy-path searches.
 
-The main quality risk here is green tests that still allow replay or provenance meaning to drift unnoticed.
+Benchmark results are regression evidence only when dataset, backend,
+parameters, dependency versions, and hardware are retained. Lower latency with
+changed recall or approximation evidence is a different result, not a simple
+improvement.
 
-## First Proof Check
+## Match proof to execution posture
 
-- `tests` and package-local validation surfaces for executable evidence
-- invariants, limitations, and risk pages for the trust boundaries that still matter after green checks
-- release notes and caller-facing docs when the change alters what readers may safely assume
+Do not evaluate every vector run with the same assurance argument:
 
-## Pages In This Section
+| Execution posture | Evidence required | Refuse the claim when |
+| --- | --- | --- |
+| strict exact | exact-capable backend, stable metric/tie order, immutable artifact, zero disallowed replay diff | fallback, approximation, truncation, or parameter drift occurred |
+| bounded approximation | exact baseline, declared loss/resource budgets, runner witness, observed recall/error and cost | the bound was inferred after execution or the witness is missing |
+| exploratory | declared exploratory intent, complete provenance, warnings and retained candidates | output is promoted to an exact or reproducible result |
+| plugin-backed | capability declaration, registration identity, conformance suite and backend-specific negative cases | discovery success is the only compatibility evidence |
+| cross-backend comparison | identical input/request identity, normalized score meaning, both artifacts and explicit tolerance | ranked lists are compared without metric or capability equivalence |
+| replay | original artifact and policy, current environment/capabilities, semantic diff, verdict and reason | a matching seed or overlapping neighbors is the only comparison |
 
-- [Test Strategy](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/test-strategy/)
-- [Invariants](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/invariants/)
-- [Review Checklist](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/review-checklist/)
-- [Documentation Standards](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/documentation-standards/)
-- [Definition of Done](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/definition-of-done/)
-- [Dependency Governance](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/dependency-governance/)
-- [Change Validation](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/change-validation/)
-- [Known Limitations](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/known-limitations/)
-- [Risk Register](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/risk-register/)
+The strongest valid statement is bounded by the weakest retained part of the
+execution envelope. For example, exact scoring with unknown corpus identity is
+not an exact retrieval claim, and complete provenance with an unmeasured ANN
+witness is not evidence that approximation stayed within budget.
 
-## Leave This Section When
+## Evidence routes
 
-- leave for [Foundation](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/) when the doubt is really about package ownership rather than proof
-- leave for [Interfaces](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/) when the question is what the contract is rather than whether it is defended
-- leave for [Operations](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/) when the package already seems trustworthy and the real issue is how to run it repeatably
+| Need | Guide |
+| --- | --- |
+| Understand ownership across the suite | [Test strategy](test-strategy.md) |
+| Review execution and replay laws | [Invariants](invariants.md) |
+| Select proof for a concrete change | [Change validation](change-validation.md) |
+| Apply consistent review questions | [Review checklist](review-checklist.md) |
+| Decide whether a change is releasable | [Definition of done](definition-of-done.md) |
+| Govern optional backends and providers | [Dependency governance](dependency-governance.md) |
+| Understand approximation, budget, persistence, and security limits | [Known limitations](known-limitations.md) |
+| Inspect unresolved technical and operational risk | [Risk register](risk-register.md) |
+| Interpret retrieval verdicts without hiding approximation or drift | [Interpreting retrieval evidence](evidence-interpretation.md) |
 
-## Design Pressure
-
-If replay and provenance trust are treated as side effects of passing tests,
-the package will look stronger than it is. This section has to keep proof,
-drift boundaries, and known limits visibly connected.
+A regression belongs first at the layer that made the false claim. Add
+conformance proof when another backend could repeat it, and golden replay proof
+when artifact or fingerprint identity changes.

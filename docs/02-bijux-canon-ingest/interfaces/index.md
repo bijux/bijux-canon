@@ -4,81 +4,113 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-ingest-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-22
 ---
 
 # Interfaces
 
-Open this section when the question is contractual: which ingest commands, schemas, records, artifacts, and imports are safe for another tool or package to rely on.
+Ingest exposes one preparation and retrieval model through Python, command-line,
+HTTP, and file contracts. These surfaces share concepts but are not aliases:
+each has its own lifecycle, serialization, and failure boundary.
 
-## Contract Surface
+## Surface map
 
-Ingest exposes more than one kind of interface. Operators reach it through CLI
-and HTTP surfaces, package callers rely on imports and serialized records, and
-downstream packages consume artifacts that must remain stable enough to review.
-This section should name those promises before a reader has to inspect code.
+| Surface | Intended use | Durable contract | Lifecycle |
+| --- | --- | --- | --- |
+| Python imports | library composition and custom pipelines | exported records, results, functions, and protocols | caller-owned |
+| `bijux-canon-ingest` CLI | file preparation and local retrieval workflows | exit status, stdout/stderr, files, and command arguments | process-scoped |
+| HTTP v1 | service integration for chunk, index, retrieve, and ask | versioned routes and request/response schemas | server-scoped |
+| CSV and JSONL | input and inspectable prepared records | documented field names and encodings | file-scoped |
+| MessagePack index | local retrieval persistence | package format plus matching chunk records | directory-scoped |
+| `bijux-rag` | compatibility for the former distribution/import surface | forwarding behavior documented by compatibility policy | migration-scoped |
+
+## Contract path
 
 ```mermaid
-flowchart LR
-    caller["caller or operator"]
-    cli["CLI surface"]
-    api["API surface"]
-    config["configuration"]
-    data["prepared records"]
-    artifacts["artifact contracts"]
-    schema["tracked schema"]
-    downstream["index handoff"]
-
-    caller --> cli --> data
-    caller --> api --> data
-    caller --> config --> data
-    data --> artifacts --> downstream
-    data --> schema
+sequenceDiagram
+    participant Caller
+    participant Edge as CLI / HTTP / Python
+    participant Core as Typed workflow
+    participant Store as Files / index store
+    Caller->>Edge: source + validated options
+    Edge->>Core: typed records and configuration
+    Core->>Store: prepared records or index state
+    Core-->>Edge: Result or typed response
+    Edge-->>Caller: data, citation IDs, or explicit failure
 ```
 
-The key contract idea is that ingest promises prepared material, not just
-commands. CLI, API, and configuration are only different entry doors into the
-same contract surface: deterministic records that another package can consume
-without guessing how they were shaped.
+## Identity and serialization
 
-## Read These First
+Document and chunk identifiers are part of reproducibility: they connect
+prepared text, ranked results, and citations. Chunk offsets address normalized
+text. Callers that require original byte offsets must retain their own source
+mapping rather than reinterpret these values.
 
-- open [Data Contracts](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/data-contracts/) first when the dispute is about record shape, chunk structure, or prepared payload layout
-- open [CLI Surface](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/cli-surface/) when the issue begins with an operator or scripted entrypoint
-- open [Compatibility Commitments](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/compatibility-commitments/) when a surface change may break downstream assumptions
+`ChunkModel` is the edge representation used by interface adapters, while the
+retrieval `Chunk` carries the retrieval workflow's data. Conversion is an
+explicit projection; code must not assume every internal field or embedding
+survives every serialized representation.
 
-## Contract Risk
+## Preserve custody across surfaces
 
-The main contract risk here is letting downstream packages rely on visible ingest behavior that was never named as a real contract.
+The same document can cross several interfaces without every representation
+being interchangeable. Preserve these identities before changing surfaces:
 
-## First Proof Check
+| Decision | Python representation | Serialized or service representation | Refuse the handoff when |
+| --- | --- | --- | --- |
+| source acceptance | `RawDoc` identity and submitted fields | CSV row or HTTP document payload | the source identifier is absent, unstable, or reused for different content |
+| normalization | `CleanDoc` plus effective `CleanConfig` | prepared record plus retained configuration | only normalized text remains and the applied rules cannot be recovered |
+| segmentation | chunk parent, offsets, text, and geometry | JSONL `ChunkModel` or HTTP chunk response | offsets are reinterpreted as original-byte positions or the parent is missing |
+| local indexing | ordered chunks, backend choice, and index identity | MessagePack index directory with matching chunk records | index state and records were copied, versioned, or restored separately |
+| retrieval | query, index identity, candidate IDs, scores, and citations | CLI JSON, HTTP response, or typed retrieval result | an empty result conceals a load, capability, or validation failure |
 
-- `packages/bijux-canon-ingest/src/bijux_canon_ingest/interfaces` for CLI, HTTP, serialization, and error bridges
-- `packages/bijux-canon-ingest/src/bijux_canon_ingest/config` for caller-visible ingest, parsing, and cleaning settings
-- `apis/bijux-canon-ingest/v1/schema.yaml` for tracked schema evidence
-- `packages/bijux-canon-ingest/tests` and examples for proof that exposed ingest behavior is intentional
+Choose one representation as the system of record for each boundary. A caller
+may project that record into another surface, but it must retain the owning
+identity and configuration beside the projection. Round-tripping through a
+smaller response model cannot restore an omitted embedding, source mapping, or
+failure disposition.
 
+## Choose by custody requirement
 
-## Pages In This Section
+Choose an interface by who must retain the preparation record after the call,
+not only by which transport is convenient:
 
-- [CLI Surface](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/cli-surface/)
-- [API Surface](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/api-surface/)
-- [Configuration Surface](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/configuration-surface/)
-- [Data Contracts](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/data-contracts/)
-- [Artifact Contracts](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/artifact-contracts/)
-- [Entrypoints and Examples](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/entrypoints-and-examples/)
-- [Operator Workflows](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/operator-workflows/)
-- [Public Imports](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/public-imports/)
-- [Compatibility Commitments](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/compatibility-commitments/)
+| Requirement | Prefer | Caller must retain |
+| --- | --- | --- |
+| compose deterministic transforms inside an application | Python root and named application modules | typed input, effective configuration, results and typed failures |
+| publish a reviewable prepared corpus | configured CLI pipeline | original source identity, configuration file content, closed JSONL output and failure summary |
+| build a small local retrieval artifact | retrieval CLI or application service | backend choice, index directory, matching chunk records and corpus fingerprint |
+| provide bounded request/response integration | HTTP v1 | request payload, response or structured error, service version and index-lifecycle assumptions |
+| preserve an existing `bijux-rag` consumer | compatibility import or command | exact canonical version and evidence that caller-visible behavior remains equivalent |
 
-## Leave This Section When
+The interfaces are deliberately not feature-equivalent. Python exposes the
+widest composition surface; the preparation CLI owns file-oriented bulk work;
+HTTP exposes five bounded operations with process-local default storage; and
+CSV, JSONL, and MessagePack are artifact contracts rather than execution
+engines. Moving between them is an adapter decision that must preserve the
+preparation receipt described in the handbook.
 
-- leave for [Foundation](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/) when the contract dispute is really a package-boundary dispute
-- leave for [Architecture](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/) when a surface question reveals structural drift underneath it
-- leave for [Operations](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/) or [Quality](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/) when the boundary is clear and the question becomes execution or proof
+## Failure contracts
 
-## Design Pressure
+- Python workflows use typed results and exceptions according to the documented
+  API boundary; callers should not parse exception strings as protocol fields.
+- CLI automation relies on documented exit status and output destinations.
+- HTTP clients rely on v1 status codes and error payloads, not server logs.
+- Optional dependency failures identify the unavailable capability. Installing
+  an optional provider must be an explicit application decision.
+- Index files and their chunk records form one logical artifact and must be
+  copied, versioned, and recovered together.
 
-If callers can only learn what the package promises by reading implementation
-detail, the contract page is too weak. The stable record shapes and artifacts
-have to be visible here before they are convenient anywhere else.
+## Choose the relevant contract
+
+| Need | Guide |
+| --- | --- |
+| Script or operate commands | [CLI surface](cli-surface.md) |
+| Integrate with the HTTP application | [API surface](api-surface.md) |
+| Select environment and file settings | [Configuration surface](configuration-surface.md) |
+| Consume records and chunk identities | [Data contracts](data-contracts.md) |
+| Persist or transfer outputs | [Artifact contracts](artifact-contracts.md) |
+| Compose the library directly | [Public imports](public-imports.md) |
+| Follow complete caller journeys | [Operator workflows](operator-workflows.md) |
+| Assess a breaking change | [Compatibility commitments](compatibility-commitments.md) |
+| Start from runnable code | [Entrypoints and examples](entrypoints-and-examples.md) |

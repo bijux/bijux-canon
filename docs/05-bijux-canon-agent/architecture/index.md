@@ -4,81 +4,133 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-agent-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-22
 ---
 
 # Architecture
 
-Open this section when the question is structural: where orchestration lives, how roles and steps coordinate, and how the package keeps workflows traceable instead of magical.
+The agent architecture separates workflow definition, lifecycle control,
+bounded role execution, convergence, result finalization, and trace validation.
+That separation makes the actor and reason for every transition recoverable
+after execution.
 
-## Structural Shape
-
-Agent architecture is organized around traceable workflow control. Pipeline
-definitions describe the work, role modules perform bounded decisions, the
-execution kernel orders calls, convergence logic decides whether work is done,
-and trace modules make the sequence inspectable by runtime and reviewers.
+## Control structure
 
 ```mermaid
 flowchart LR
-    contracts["contracts"]
-    pipeline["pipeline control"]
-    roles["agent roles"]
-    kernel["execution kernel"]
-    convergence["stop conditions"]
-    traces["trace records"]
-    validation["trace validation"]
-    observability["logs and metrics"]
-    runtime["runtime package"]
+    contracts["agent and runtime contracts"]
+    definition["pipeline definition"]
+    controller["lifecycle controller"]
+    roles["bounded role agents"]
+    merge["shard merge + final validation"]
+    convergence["convergence + termination"]
+    results["result finalization"]
+    trace["versioned trace + validation"]
 
-    contracts --> pipeline --> roles --> kernel --> convergence --> traces --> runtime
-    pipeline --> validation
-    kernel --> observability
+    contracts --> definition --> controller --> roles --> merge --> convergence --> results
+    controller --> trace
+    roles --> trace
+    convergence --> trace
+    results --> trace
 ```
 
-Agent architecture should make one thing obvious: orchestration is a product
-surface with its own structure, not glue hidden between reasoning and runtime.
-Contracts describe the workflow shape, role modules perform bounded work, the
-kernel orders execution, and traces make the full sequence available to the
-next authority layer.
+## Canonical lifecycle
 
-## Read These First
+```mermaid
+stateDiagram-v2
+    [*] --> INIT
+    INIT --> PLAN
+    PLAN --> EXECUTE
+    EXECUTE --> JUDGE
+    JUDGE --> VERIFY
+    VERIFY --> FINALIZE
+    FINALIZE --> DONE
+    INIT --> ABORTED
+    PLAN --> ABORTED
+    EXECUTE --> ABORTED
+    JUDGE --> ABORTED
+    VERIFY --> ABORTED
+    FINALIZE --> ABORTED
+```
 
-- open [Module Map](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/module-map/) first when you need the owning code area for a workflow concern
-- open [Execution Model](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/execution-model/) when you need the real path from workflow input to trace-backed output
-- open [Integration Seams](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/integration-seams/) when a change could pull reasoning or runtime authority into orchestration
+The controller validates these transitions. It does not infer lifecycle order
+from completion timing. Large inputs may be sharded, but shard outputs are
+merged and validated before publication; a failed shard produces the same
+structured failure contract as other governed failures.
 
-## Structural Risk
+## Module authority
 
-The main architectural risk here is letting workflow control become so distributed that a reader can no longer tell which module made a role or sequencing decision.
+| Area | Authority |
+| --- | --- |
+| `contracts` | immutable role, plan, retrieval, and runtime boundary models |
+| `pipeline/definition.py` and `pipeline/agent_registry.py` | declared workflow shape and eligible roles |
+| `pipeline/control` and `pipeline/execution` | lifecycle, stop conditions, iteration, sharding, and telemetry |
+| `agents` | bounded implementations for reader, summarizer, critique, validator, planner, judge, verifier, and stage runner |
+| `pipeline/convergence` and `pipeline/termination.py` | stability evidence, oscillation, stop reasons, and terminal classification |
+| `pipeline/results` | merge, failure, completeness, decision, and final projection |
+| `traces` and `pipeline/trace_validation` | schema evolution, replayability, ordering, completeness, and epistemic validation |
+| `llm` | provider registry and adapter boundary outside deterministic orchestration |
+| `observability` | structured logs, counters, timings, and callbacks |
 
-## First Proof Check
+## Identity and replay
 
-- `packages/bijux-canon-agent/src/bijux_canon_agent/pipeline` for workflow definition, orchestration, control, and convergence
-- `packages/bijux-canon-agent/src/bijux_canon_agent/agents` for role implementations and their bounded responsibilities
-- `packages/bijux-canon-agent/src/bijux_canon_agent/traces` for trace serialization and replayability
-- `packages/bijux-canon-agent/tests` for determinism and traceability evidence
+Equivalent context keys exclude observational `timestamp` and `nonce`, while
+configuration, pipeline definition, prompts, model identity, convergence, and
+input hashes remain evidence-bearing. A successful result is projected back
+from its trace so decision, confidence, epistemic verdict, and stop reason have
+one source.
 
+Replay validates and reconstructs stored outcomes. It cannot recreate an
+external provider's past environment, and the current CLI parity check covers
+only a documented subset of the full trace contract.
 
-## Pages In This Section
+## Control plane and evidence plane
 
-- [Module Map](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/module-map/)
-- [Dependency Direction](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/dependency-direction/)
-- [Execution Model](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/execution-model/)
-- [State and Persistence](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/state-and-persistence/)
-- [Integration Seams](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/integration-seams/)
-- [Error Model](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/error-model/)
-- [Extensibility Model](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/extensibility-model/)
-- [Code Navigation](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/code-navigation/)
-- [Architecture Risks](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/architecture-risks/)
+Agent execution has two coupled paths. The control plane decides what may run;
+the evidence plane records enough context to review that decision afterward.
 
-## Leave This Section When
+```mermaid
+flowchart TB
+    subgraph control["control plane"]
+        definition["pipeline definition"] --> lifecycle["lifecycle controller"]
+        lifecycle --> calls["bounded role calls"]
+        calls --> convergence["convergence / veto / termination"]
+        convergence --> finalization["result finalization"]
+    end
+    subgraph evidence["evidence plane"]
+        identity["input + configuration identity"] --> records["ordered call and transition records"]
+        records --> decision["decision + stop reason"]
+        decision --> trace["validated RunTrace"]
+    end
+    definition --> identity
+    lifecycle --> records
+    calls --> records
+    convergence --> decision
+    finalization --> trace
+```
 
-- leave for [Interfaces](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/) when the structural question is already a public contract question
-- leave for [Operations](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/) when the issue is running, diagnosing, or releasing the package rather than explaining its shape
-- leave for [Quality](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/) when the structure is clear and the real question is whether the package has proved it strongly enough
+| Control decision | Evidence that must accompany it |
+| --- | --- |
+| admit a role | definition identity, role eligibility and configuration fingerprint |
+| advance lifecycle | prior state, next state, causal index and triggering outcome |
+| accept a role call | provider/model identity, input reference, disposition, usage and error state |
+| merge shards | membership, per-shard disposition, merge rule and validation result |
+| declare convergence or veto | criterion, compared states, source role and recorded decision |
+| finalize | terminal reason, incomplete work, epistemic verdict, trace completeness and result identity |
 
-## Design Pressure
+A result projection is trustworthy only while these paths agree. A completed
+provider call without an authorized transition is not a valid pipeline event;
+a terminal trace without every attempted call is not complete; and a final
+artifact cannot repair either omission.
 
-If workflow control is distributed so widely that no reader can locate the
-sequencing decision, the package stops being inspectable. The architecture
-page has to keep role execution, convergence, and trace responsibility clear.
+## Navigate the design
+
+| Need | Guide |
+| --- | --- |
+| Locate a workflow or role owner | [Module map](module-map.md) and [Code navigation](code-navigation.md) |
+| Follow preparation through finalization | [Execution model](execution-model.md) |
+| Understand allowed dependency direction | [Dependency direction](dependency-direction.md) |
+| Distinguish cache, result, trace, and log state | [State and persistence](state-and-persistence.md) |
+| Add a role, provider, or workflow seam | [Integration seams](integration-seams.md) and [Extensibility model](extensibility-model.md) |
+| Trace veto, abort, failure, and resource exhaustion | [Error model](error-model.md) |
+| Review structural failure modes | [Architecture risks](architecture-risks.md) |

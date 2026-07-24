@@ -4,24 +4,101 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-runtime-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # Dependency Direction
 
-Dependency direction matters because `bijux-canon-runtime` should make acceptance, persistence, replay, and governed execution easier to explain, not harder. Imported convenience must not reverse the ownership logic of the package.
+`bijux-canon-runtime` is the outer execution authority for a canon flow. Its
+dependencies point from durable contracts toward orchestration, execution,
+persistence, and delivery. That direction keeps a `FlowManifest` intelligible
+without a database, command parser, HTTP process, or concrete executor.
 
-## What To Check
+```mermaid
+flowchart TB
+    interfaces[CLI and HTTP adapters]
+    application[application orchestration]
+    execution[runtime execution strategies]
+    verification[verification orchestration]
+    observability[observability and DuckDB adapters]
+    contracts[contracts and ontology]
+    model[immutable domain model]
+    core[authority, identifiers, errors, rules]
 
-- dependencies should point toward supporting acceptance, persistence, replay, and governed execution, not toward re-owning neighbor behavior
-- upstream and downstream seams should stay legible across lower-package output to governed run artifact
-- if the direction only makes sense after a long verbal explanation, the structure is already drifting
+    interfaces --> application
+    application --> execution
+    application --> verification
+    application --> observability
+    application --> contracts
+    execution --> contracts
+    execution --> model
+    verification --> model
+    observability --> model
+    contracts --> model
+    model --> core
+```
 
-## First Proof Check
+## The inward boundary
 
-- `src/bijux_canon_runtime/application/execute_flow.py`, `model/`, and `observability/` for the structural ownership boundary
-- `tests` for acceptance, replay, and persistence evidence for executable confirmation that the structure still holds
+`core`, `ontology`, `contracts`, and `model` describe authority, identity,
+manifests, plans, datasets, artifacts, policies, traces, and verification
+records. They must remain usable as values and rules. They do not load files,
+open DuckDB, parse command lines, call agents, or choose a runtime mode from
+ambient configuration.
 
-## Bottom Line
+This boundary is what makes planning reviewable. A plan can be resolved and
+hashed before execution resources exist, and plan mode can return without
+allocating a run identifier or mutable trace.
 
-If `bijux-canon-runtime` needs hidden structure to defend acceptance, persistence, replay, and governed execution, the architecture is already too opaque.
+## Orchestration and execution
+
+`application` owns complete use cases: resolve, prepare, execute, persist,
+resume, and replay. It may coordinate the inner contracts with runtime and
+storage capabilities, but it does not hide those capabilities behind global
+state. A non-plan execution therefore receives a write store, policy, and
+execution resources explicitly.
+
+`runtime.execution` implements step ordering and mode-specific behavior. Its
+executors consume resolved plans and authority-bearing contexts. They may emit
+artifacts, evidence, reasoning, tool events, and verification inputs; they may
+not redefine the plan contract or append directly to an already finalized
+trace.
+
+Verification is a sibling execution concern, not a property of an executor.
+`verification` evaluates declared rules and arbitration policy over recorded
+inputs. It must not call an agent to manufacture missing evidence or mutate the
+artifact whose integrity it is deciding.
+
+## Adapters at the edge
+
+`observability.capture`, `observability.storage`, and
+`observability.analysis` adapt runtime values to clocks, traces, DuckDB, and
+comparison reports. The domain model does not import those adapters. Read and
+write storage capabilities are separate so inspection cannot acquire mutation
+authority accidentally.
+
+`interfaces.cli` and `api.v1` translate caller input into application calls.
+They may select configured adapters and render results, but they do not own
+execution semantics. Compatibility distributions forward the canonical import
+and command surfaces; they do not introduce a second implementation.
+
+## Cross-package direction
+
+Ingest, index, reason, and agent produce governed inputs consumed by runtime.
+Runtime composes those contracts and records their use. It does not absorb
+their normalization, retrieval, claim-construction, or role-lifecycle rules.
+Conversely, those packages do not depend on runtime persistence or replay in
+order to define their own outputs.
+
+The durable direction is:
+
+```text
+ingest / index / reason / agent contracts
+                    -> runtime manifest and plan
+                    -> governed execution
+                    -> retained trace and replay verdict
+```
+
+See the [module map](module-map.md) for concrete ownership and the
+[execution model](execution-model.md) for the lifecycle built on this
+dependency structure.

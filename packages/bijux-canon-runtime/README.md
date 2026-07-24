@@ -47,55 +47,221 @@ If you need to understand plan versus run modes, replay acceptance, trace
 capture, execution-store behavior, or non-determinism policy enforcement, start
 here.
 
-## What This Package Takes And Produces
+## Authority Model
 
-- takes: validated flow manifests or resolved execution plans plus explicit execution policy
-- produces: flow run results, replayable traces, persisted run records, and contract failures when execution violates policy
-- guarantees: runtime mode selection stays explicit, replay semantics are checked, and persisted outputs remain tied to one governed run id
-- does not do: define agent behavior, own ingest or retrieval policy, or infer missing determinism from ambient state
+```mermaid
+flowchart LR
+    manifest["FlowManifest"] --> resolver["contract + dataset resolution"]
+    resolver --> plan["ExecutionPlan"]
+    plan --> execution["budgeted execution"]
+    execution --> arbitration["verification arbitration"]
+    arbitration --> store["DuckDB run + artifact store"]
+    store --> replay["replay envelope + verdict"]
+```
+
+The manifest declares flow and tenant identity, state, determinism level,
+replay acceptability, entropy budget, replay envelope, dataset descriptor,
+agents, dependencies, retrieval contracts, verification gates, allowed
+variance, nondeterminism intent, and replay mode. It is immutable structural
+input; resolution and execution enforce semantic validity.
+
+Runtime authority is narrower than arbitrary orchestration power. Authority
+tokens constrain who may execute or override a decision. Verification rules
+run at declared phases, and arbitration determines whether findings block,
+qualify, or permit continuation. Human intervention is recorded as replayable
+state rather than an invisible exception.
+
+## Run Modes
+
+| Mode | Execution | Persistence and authority posture |
+| --- | --- | --- |
+| `plan` | resolves and constructs the immutable plan | no step execution |
+| `dry-run` | exercises preparation and checks | no normal live side effects |
+| `live` | runs declared steps | full policy, trace, verification, and persistence path |
+| `observe` | observes execution evidence | does not silently acquire live authority |
+| `unsafe` | permits explicitly reduced guarantees | remains labelled unsafe in the run record |
+
+Plan and dry-run do not invoke lower-package intelligence. Observe evaluates a
+supplied run. Those modes can prove planning, synthetic execution records, or
+verification behavior without proving that live package adapters are
+callable. Live and unsafe execution cross the adapter boundary when their
+steps require agent, retrieval, vector-contract, or reasoning work.
+
+## Executable Integration Boundary
+
+```mermaid
+flowchart LR
+    manifest["FlowManifest"] --> plan["resolved plan"]
+    plan --> runtime["runtime step executors"]
+    runtime --> adapters["explicit adapters"]
+    adapters --> agent["agent pipeline + trace"]
+    adapters --> ingest["ingest retrieval records"]
+    adapters --> index["index contract verdict"]
+    adapters --> reason["reason claims + support"]
+    adapters --> records["runtime artifacts + evidence + bundle"]
+```
+
+The step executors currently resolve four package-root callables. None is
+provided by the installed canonical package roots:
+
+| Runtime request | Current package truth | Consequence |
+| --- | --- | --- |
+| `bijux_canon_agent.run(...)` | the root exports only `API_VERSION` | no live agent handoff |
+| `bijux_canon_ingest.retrieve(query, top_k, scope, vector_contract_id)` | retrieval is a path-based application API with a different typed contract | no lossless retrieval handoff |
+| `bijux_canon_index.enforce_contract(contract_id, evidence)` | the root exports version metadata only | no live vector-contract verdict |
+| `bijux_canon_reason.reason(...) -> ReasoningBundle` | the root exports reason-owned models and validators, not this callable or runtime type | no live reasoning handoff |
+
+The `bijux-agent`, `bijux-rag`, `bijux-vex`, and `bijux-rar` compatibility roots
+delegate to their canonical packages; they do not supply extra adapter
+behavior. Consequently, aligned package versions and successful imports are
+dependency evidence, not end-to-end execution evidence.
+
+Each adapter must be explicit about model conversion and custody: agent traces
+to runtime artifacts, prepared retrieval records to runtime evidence, index
+decisions to contract verdicts, and reason claims and support to runtime
+bundles. The acceptance bar is an installed-package test that executes every
+applicable loader and verifies identity, failure, and provenance preservation
+through the resulting runtime records.
+
+## CLI Workflow
+
+```bash
+bijux-canon-runtime run flow.json \
+  --policy policy.json \
+  --db-path artifacts/bijux-canon-runtime/runs.duckdb \
+  --strict-determinism --json
+
+bijux-canon-runtime replay flow.json \
+  --policy policy.json \
+  --run-id <run-id> \
+  --tenant-id <tenant-id> \
+  --db-path artifacts/bijux-canon-runtime/runs.duckdb \
+  --strict-determinism --json
+
+bijux-canon-runtime inspect run <run-id> \
+  --tenant-id <tenant-id> \
+  --db-path artifacts/bijux-canon-runtime/runs.duckdb --json
+```
+
+The CLI also implements `plan`, `dry-run`, `unsafe-run`, run diff, failure
+explanation, and database validation commands. Those commands are currently
+suppressed from the top-level help display; their presence must not be confused
+with the three prominently advertised commands.
+
+The live `run` syntax above documents the CLI contract. With the canonical
+package family as shipped, a flow that reaches one of the four integrations
+stops at its missing or incompatible callable. Use `plan` to inspect resolution
+without step execution and `dry-run` for the package's intelligence-free
+synthetic trace path; neither is a substitute for a successful live adapter
+test.
+
+## HTTP Contract
+
+The experimental v1 application implements health and DuckDB readiness probes.
+Run and replay requests are schema-validated and require authority headers, but
+both endpoints currently return `501 Not Implemented`; no successful
+`FlowRunResponse` is produced over HTTP today. The tracked future-facing
+contract is pinned under
+[`apis/bijux-canon-runtime/v1/`](../../apis/bijux-canon-runtime/v1/).
+
+## Evaluate A Runtime Claim
+
+| Claim | Evidence to inspect | What is not enough |
+| --- | --- | --- |
+| execution was authorized | authority token, manifest, resolved plan, mode, policy fingerprint | a completed lower-package call |
+| the run is accepted | finalized trace, verification results, arbitration, certifiability | trace finalization alone |
+| resume preserved identity | tenant, manifest, plan, dataset, policy, checkpoint, store | reusing a run ID |
+| replay is exact | original envelope, retained inputs, event/artifact identity, verdict | similar final output |
+| bounded replay is acceptable | original variance declaration and evaluated semantic diff | tolerance chosen after divergence |
+
+Runtime records and judges declared execution. It cannot make an external tool
+transactional, recover state that was never captured, or infer determinism
+from a seed alone.
 
 ## Minimal Example
 
 ```python
-from bijux_canon_runtime import execute_flow
+from bijux_canon_runtime import RunMode, execute_flow
+from bijux_canon_runtime.application.execute_flow import ExecutionConfig
 
-result = execute_flow(manifest=my_manifest)
+result = execute_flow(
+    manifest=my_manifest,
+    config=ExecutionConfig(
+        mode=RunMode.PLAN,
+        determinism_level=my_manifest.determinism_level,
+    ),
+)
 print(result.resolved_flow.manifest.flow_id)
-print(result.trace is not None)
-print(result.run_id)
+assert result.trace is None
+assert result.run_id is None
 ```
 
-Expected shape:
+The default `execute_flow(manifest)` selects live, strict execution; it is not a
+preview. Executable modes need a write store and the verification, authority,
+and nondeterminism resources required by their policy.
 
-- `result.resolved_flow` is always present
-- `result.trace` is present for non-plan execution
-- `result.run_id` is set once the runtime registers a persisted run
+The dependency-light package root exposes exactly `FlowManifest`, `RunMode`,
+and `execute_flow`; the latter two are resolved lazily. Broader runtime models,
+stores, policies, and service adapters remain in their owning modules. This
+small root is an integration contract, not evidence that runtime hides the
+lower-package boundaries it governs.
 
-## Package continuity
+Treat result status as a lattice of distinct facts: step execution, trace
+finalization, verification arbitration, certifiability, acceptance, and replay
+verdict. A consumer that stores only “success” loses the distinction needed to
+audit or safely replay the run.
 
-- compatibility packages: [`bijux-canon`](https://pypi.org/project/bijux-canon/), [`agentic-flows`](https://pypi.org/project/agentic-flows/)
-- preserved import roots: `bijux_canon`, `agentic_flows`
-- preserved commands: `bijux-canon`, `agentic-flows`
-- alias expectation: the preserved names above should resolve to the same
-  runtime API and command behavior as `bijux-canon-runtime`
-- family-root alias handbook: [bijux-canon alias handbook](https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-canon/)
-- canonical migration guide: [Migration guidance](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
-- retired repository target: [https://github.com/bijux/agentic-flows](https://github.com/bijux/agentic-flows) (see [Repository consolidation notes](https://bijux.io/bijux-canon/08-compat-packages/migration/repository-consolidation/))
+## Package Continuity
 
-## What this package owns
+[`bijux-canon`](https://pypi.org/project/bijux-canon/) and
+[`agentic-flows`](https://pypi.org/project/agentic-flows/) are exact-version
+compatibility distributions for this package. They preserve the
+`bijux_canon` / `agentic_flows` import roots and the `bijux-canon` /
+`agentic-flows` commands while delegating to runtime's modules and CLI. Neither
+is an umbrella install for the complete package family or a separate runtime
+implementation.
 
-- flow execution authority
-- replay and acceptability semantics
-- trace capture, runtime persistence, and execution-store behavior
-- package-local CLI and API boundaries
+Use `bijux_canon_runtime` and `bijux-canon-runtime` in new integrations. See
+the [compatibility catalog](https://bijux.io/bijux-canon/08-compat-packages/catalog/)
+for verified mappings and the
+[migration guide](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
+for consumer changes. The former
+[`bijux/agentic-flows`](https://github.com/bijux/agentic-flows) repository is
+historical; current implementation authority is this repository.
 
-## What this package does not own
+## Package Boundary
 
-- agent composition policy
-- ingest or index domain ownership
-- repository tooling and release support
+Runtime owns flow planning, execution authority, verification arbitration,
+trace finalization, execution persistence, resume, and replay verdicts. It
+consumes ingest, index, reason, and agent artifacts without redefining their
+domain semantics. The execution store records external effects; it cannot roll
+them back, so live executors require idempotency or compensation at their own
+boundary.
 
-## Source map
+## Persistence And Replay Evidence
+
+- execution traces use stable event identity and causal ordering
+- artifacts carry tenant, type, scope, producer, parent, and content-hash
+  identity; the artifact model does not contain the content payload
+- the DuckDB execution store persists run and dataset identity, steps, events
+  and their JSON payloads, checkpoints, artifact metadata, evidence metadata,
+  entropy, tool invocations, and claim identifiers
+- the run row retains the verification-policy fingerprint and arbitration
+  decision, while verification and intervention detail may appear in events;
+  there are no dedicated per-engine verification-result or replay-analysis
+  tables in the current schema
+- replay compares stored and current policy, dataset, environment, plan,
+  entropy, and artifact identities before issuing a verdict
+- crash recovery and partial failure retain recorded state rather than
+  presenting an incomplete run as complete
+
+The default artifact store is in memory and stores artifact metadata only.
+DuckDB also stores artifact and evidence hashes rather than their content
+payloads. A deployment that needs later content inspection or exact replay
+must retain those payloads in an external content store and bind that custody
+to the recorded hashes; database presence alone is not payload availability.
+
+## Source Map
 
 - [`src/bijux_canon_runtime/model`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-runtime/src/bijux_canon_runtime/model) for durable runtime models
 - [`src/bijux_canon_runtime/runtime`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-runtime/src/bijux_canon_runtime/runtime) for execution engines and lifecycle logic
@@ -117,9 +283,4 @@ Expected shape:
 ## Primary entrypoint
 
 - console script: `bijux-canon-runtime`
-
-## Release Readiness
-
-- release line prepared for publish: `0.3.9`
-- release date: `2026-07-04`
-- package changelog: [`CHANGELOG.md`](CHANGELOG.md)
+- package history: [`CHANGELOG.md`](CHANGELOG.md)

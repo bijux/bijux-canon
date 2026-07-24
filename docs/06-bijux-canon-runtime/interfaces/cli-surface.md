@@ -1,28 +1,142 @@
 ---
 title: CLI Surface
 audience: mixed
-type: explanation
+type: reference
 status: canonical
 owner: bijux-canon-runtime-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # CLI Surface
 
-The CLI surface for `bijux-canon-runtime` is the command boundary operators and scripts will treat as stable first. If the command semantics for runtime authority surfaces are real, the docs should say so plainly.
+The `bijux-canon-runtime` CLI resolves JSON flow manifests, persists executable
+modes in DuckDB, and exposes read-side inspection and comparison commands.
+`run`, `replay`, and `inspect` appear in top-level help; additional implemented
+commands are callable even though their help entries are suppressed.
 
-## What To Check
+## Command map
 
-- name the canonical command entrypoint: `bijux-canon-runtime`
-- separate supported flags and behaviors from local convenience behavior
-- treat scripted usage as contract pressure, not as anecdotal usage only
+| Command | Purpose | Required authority |
+| --- | --- | --- |
+| `plan MANIFEST` | Resolve and print an execution plan without allocating a run. | manifest only |
+| `dry-run MANIFEST` | Execute the dry-run strategy and persist its trace. | DuckDB path |
+| `run MANIFEST` | Execute live, verify each step, finalize, and persist. | policy and DuckDB path |
+| `replay MANIFEST` | Execute again, validate against a stored run, and report semantic differences. | policy, stored run/tenant, and DuckDB path |
+| `inspect run RUN_ID` | Read a stored trace. | tenant and DuckDB path |
+| `diff run RUN_A RUN_B` | Compare two stored traces. | tenant and DuckDB path |
+| `explain failure RUN_ID` | Return the last recognized failure event. | tenant and DuckDB path |
+| `validate db` | Open the DuckDB store and apply/read its schema. | DuckDB path |
 
-## First Proof Check
+`unsafe-run` is present in the parser but is not currently executable through
+the CLI: unsafe execution requires a verification policy, while the subcommand
+does not accept `--policy`. Use the Python `ExecutionConfig` surface only when
+unsafe authority is explicitly required and governed.
 
-- `src` and boundary-facing modules for the owning implementation surface
-- `apis/bijux-canon-runtime/v1/schema.yaml` or tracked examples for the documented contract surface
-- `tests` for executable confirmation that the contract still holds
+## Plan
 
-## Bottom Line
+```bash
+bijux-canon-runtime plan \
+  packages/bijux-canon-runtime/examples/boring/flow.json \
+  --json
+```
 
-If callers depend on `bijux-canon-runtime` for runtime authority surfaces, the contract needs to be named as clearly as the implementation.
+`--db-path` is optional and unnecessary for planning. Plan mode resolves and
+validates the manifest, prints the plan, and returns no trace or run ID. JSON
+output is the serialized execution plan; plain output reports flow, step
+count, and dataset.
+
+## Dry run
+
+```bash
+bijux-canon-runtime dry-run \
+  packages/bijux-canon-runtime/examples/boring/flow.json \
+  --db-path artifacts/bijux-canon-runtime/runs.duckdb \
+  --json
+```
+
+Dry run requires a writable execution store but not a verification policy. It
+allocates a run, uses the dry-run executor, finalizes a trace, and persists the
+trace records. JSON output is the trace object. `--strict-determinism` is
+accepted, but the environment setting `BIJUX_CANON_RUNTIME_STRICT=1` forbids
+dry-run entirely.
+
+## Live run
+
+```bash
+bijux-canon-runtime run \
+  packages/bijux-canon-runtime/examples/boring/flow.json \
+  --policy packages/bijux-canon-runtime/examples/boring/policy.json \
+  --db-path artifacts/bijux-canon-runtime/runs.duckdb \
+  --strict-determinism \
+  --json
+```
+
+The manifest determines the effective determinism level. The policy determines
+verification rules, failure behavior, arbitration, evidence requirements, and
+cost limits. Live execution requires exactly one verification result per step
+unless a terminating verification failure is recorded.
+
+Plain output reports run ID and aggregate counts. JSON output contains the
+trace, dataset identity, determinism profile, entropy use, replay confidence,
+artifacts, retrieval requests and evidence, reasoning claims, and verification
+summaries, but it currently omits the run ID. Use plain output when the caller
+must capture the identifier, then use `inspect run --json` for the persisted
+trace.
+
+Configuration contract violations exit `2`; classified execution failures
+exit `1`. Manifest or policy parsing errors that occur before guarded execution
+may surface directly.
+
+## Replay
+
+```bash
+bijux-canon-runtime replay \
+  packages/bijux-canon-runtime/examples/boring/flow.json \
+  --policy packages/bijux-canon-runtime/examples/boring/policy.json \
+  --run-id "$RUN_ID" \
+  --tenant-id tenant-a \
+  --db-path artifacts/bijux-canon-runtime/runs.duckdb \
+  --strict-determinism \
+  --json
+```
+
+Replay loads the stored trace, dataset descriptor, and replay envelope; resolves
+the supplied manifest; then performs a new live execution into the same store.
+It validates replay constraints and compares the new trace semantically with
+the stored trace. The new execution receives its own run ID.
+
+JSON output normalizes timestamps and contains `diff`, the replay trace, and
+the new run ID. A non-empty diff prints its first reason code to stderr and
+exits `2`. Plain output reports either `Replay clean` or the first reason code.
+
+## Read-side commands
+
+```bash
+bijux-canon-runtime inspect run "$RUN_ID" \
+  --tenant-id tenant-a \
+  --db-path artifacts/bijux-canon-runtime/runs.duckdb \
+  --json
+
+bijux-canon-runtime diff run "$RUN_A" "$RUN_B" \
+  --tenant-id tenant-a \
+  --db-path artifacts/bijux-canon-runtime/runs.duckdb \
+  --json
+
+bijux-canon-runtime explain failure "$RUN_ID" \
+  --tenant-id tenant-a \
+  --db-path artifacts/bijux-canon-runtime/runs.duckdb \
+  --json
+
+bijux-canon-runtime validate db \
+  --db-path artifacts/bijux-canon-runtime/runs.duckdb \
+  --json
+```
+
+`diff run` reports differences but does not fail the process when differences
+exist. `explain failure` returns only the last event among the recognized step,
+retrieval, reasoning, verification, tool, and interruption failure kinds.
+`validate db` proves that the store can be opened and its schema initialized;
+it is not a row-by-row integrity or semantic audit.
+
+DuckDB access is single-writer. Do not run concurrent mutating commands against
+the same database path.

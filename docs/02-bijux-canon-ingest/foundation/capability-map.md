@@ -4,42 +4,99 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-ingest-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-22
 ---
 
 # Capability Map
 
-The capability map for `bijux-canon-ingest` should let a reviewer connect a package promise to the code that carries it. If a capability cannot be tied to a stable module area, it is not owned clearly enough yet.
-
-## Capability Flow
+`bijux-canon-ingest` combines deterministic document preparation with a compact
+local retrieval path and reusable execution safeguards. The capabilities share
+typed records, explicit results, and configuration, but they retain distinct
+ownership and evidence.
 
 ```mermaid
 flowchart LR
-    source["source handling needs"]
-    modules["processing, retrieval, interfaces, and safeguards"]
-    outputs["prepared records and ingest diagnostics"]
+    source["source rows and text"]
+    prepare["filter, clean, chunk"]
+    enrich["embed, observe, deduplicate"]
+    persist["CSV / JSONL / local index"]
+    retrieve["rank, answer, evaluate"]
+    evidence["IDs, offsets, citations, diagnostics"]
 
-    source --> modules --> outputs
+    source --> prepare --> enrich --> persist --> retrieve --> evidence
 ```
 
-This page should make ingest capability look like a traceable chain from messy
-source handling to explicit handoff output. If the reviewer cannot point from
-promise to module to output, the package seam is weaker than it sounds.
+## Preparation capabilities
 
-## Capability To Code
+| Capability | Primary implementation | Produced evidence | Boundary |
+| --- | --- | --- | --- |
+| Typed source admission | `core/types.py`, readers, strict interface models | `RawDoc` or explicit read failure | does not establish source accuracy or licensing |
+| Deterministic cleaning | `processing/`, configured cleaners and rules | immutable `CleanDoc` and observations | offsets after cleaning address normalized text |
+| Policy-driven filtering | predicates and safe rule evaluation | retained/rejected records and reports | caller policy, not source governance |
+| Overlapping chunking | chunkers, tail policies, span validation | stable chunk index, offsets, text, and SHA-256 identity | identity changes when source, span, or text changes |
+| Embedding | hash baseline and optional sentence-transformers adapter | vector plus optional `EmbeddingSpec` | hash vectors are not semantic evidence |
+| Structural deduplication | document pipeline dedup stage | deterministic first occurrence by structural key | does not detect paraphrases or semantic duplicates |
+| Streaming composition | `streaming/`, `fp/`, and result folds | ordered lazy values or typed errors | observations that need the full corpus materialize it |
 
-- `processing/` owns cleaning, normalization, and chunking before retrieval begins
-- `retrieval/` owns ingest-side record shaping and handoff-ready assembly
-- `interfaces/` and `safeguards/` own the package surfaces that make ingest behavior repeatable and defensible
+## Retrieval and execution capabilities
 
-## Visible Outputs
+| Capability | Primary implementation | Produced evidence | Boundary |
+| --- | --- | --- | --- |
+| Local lexical index | `retrieval/` BM25 implementation | persisted index identity, ordered scores and chunks | package-local reference path |
+| Local dense index | NumPy cosine implementation | index metadata, embedding identity, ranked chunks | scores are specific to metric and model |
+| Extractive answering | retrieval answer workflow | answer text and resolvable chunk citations | does not establish truth or corpus completeness |
+| Offline evaluation | evaluation command and checked-in corpus | deterministic metrics and case results | measures the declared corpus, not general quality |
+| Retry and circuit breaking | `safeguards/` | bounded attempts, breaker state, typed failure | activated only when the caller composes it |
+| Resource and cache policy | resource, memoization, and effect primitives | lifetime, cache, and failure records | host owns distributed transactions and retention |
+| CLI and HTTP adapters | `interfaces/` | stable files, responses, exit/status semantics | HTTP default index state is process-local |
 
-- normalized source material
-- chunk collections and retrieval-ready records
-- ingest diagnostics that explain how preparation behaved
+## Read capability status precisely
 
-## Design Pressure
+The package contains several kinds of capability. They carry different
+operational claims:
 
-Capabilities stop being trustworthy when they exist mostly in prose and only
-loosely in module boundaries. Ingest has to keep preparation promises tied to
-named code areas and visible outputs.
+| Status | Examples | What a caller must supply or verify |
+| --- | --- | --- |
+| package-owned deterministic | typed admission, cleaning, filtering, chunking, structural deduplication, hash embedding | source/configuration identity and the selected pipeline contract |
+| package-owned local effect | CSV/JSONL writing, MessagePack index persistence, BM25 and NumPy retrieval | approved paths, artifact custody, resource bounds and compatible stored format |
+| adapter-dependent | sentence-transformer embedding, caller readers, storage/effect implementations | installed implementation, model/service identity, failure policy and environment evidence |
+| composition-dependent | retries, circuit breakers, caches, observations and streaming folds | explicit caller composition; presence in the package does not activate the behavior |
+| host-governed | authentication, tenant isolation, network policy, durable payload retention and distributed coordination | controls outside the package boundary |
+
+“Supported” therefore means the selected implementation and its preconditions
+were exercised. Importability alone does not prove that a model is available,
+an output path is authorized, a cache is safely partitioned, or an HTTP index
+will survive process restart.
+
+## Distinguish preparation outcomes
+
+| Outcome | Required evidence | Safe downstream interpretation |
+| --- | --- | --- |
+| admitted source | stable source identity and validated `RawDoc` | eligible for preparation, not yet normalized |
+| prepared document | parent identity, effective cleaners/rules, `CleanDoc` identity and observations | normalized text is available under the recorded configuration |
+| prepared chunk set | document identity, geometry, ordered chunks, normalized offsets and hashes | downstream retrieval may consume exactly this material |
+| rejected source | source identity, failed rule/stage and typed error | no prepared artifact exists for that source |
+| partial corpus | complete admitted/rejected inventory and explicit partial status | only named successful records are usable; corpus completeness is not implied |
+| ranked candidate set | index/configuration/query identity, ordered scores and chunks | local retrieval result, not claim support or truth |
+| extractive answer | exact cited chunks and answer projection | traceable quotation from normalized material, not source correctness |
+
+The outcome label should survive serialization and handoff. A consumer must not
+infer “prepared corpus” from the presence of one chunk or convert a rejected
+record into an empty successful document.
+
+## Capability selection
+
+- Use the document-oriented pipeline when structural deduplication and
+  materialized observations are required.
+- Use the lazy pipeline when streaming composition is the principal need and
+  its narrower post-processing contract is acceptable.
+- Use the local retrieval commands for bounded, inspectable applications and
+  reference evaluation.
+- Use `bijux-canon-index` when retrieval requires backend capability
+  negotiation, governed execution, or replayable vector provenance.
+- Supply explicit safeguards around external readers, models, stores, and
+  effects; the core pipeline does not add hidden retry or cache semantics.
+
+The [invariants](../quality/invariants.md) define the laws behind these
+capabilities, and the [known limitations](../quality/known-limitations.md)
+state where their guarantees end.

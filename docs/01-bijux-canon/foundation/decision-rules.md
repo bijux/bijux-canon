@@ -4,69 +4,102 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # Decision Rules
 
-The root should make ownership decisions faster, not more political.
-
-Use these rules when a change proposal could plausibly land in more than one
-surface and the repository needs one honest owner.
-
-## Decision Flow
+Route a change by the invariant it alters, not by the file or command where the
+change was first observed. Canonical packages own product meaning; the root
+owns composition and shared repository contracts; maintenance owns the tooling
+that verifies those contracts; compatibility packages preserve older public
+names by delegation.
 
 ```mermaid
-flowchart LR
-    change["change proposal"]
-    package["one package can explain it honestly"]
-    shared["shared rule or shared surface"]
-    owner["root, maintenance, or compatibility owner"]
-
-    change --> package
-    package -->|yes| owner_pkg["keep it in the owning package"]
-    package -->|no| shared --> owner
+flowchart TD
+    C[Proposed change] --> Q{Which invariant changes?}
+    Q --> P[One product domain]
+    Q --> S[Shared repository contract]
+    Q --> M[Verification or publication machinery]
+    Q --> L[Legacy import or command continuity]
+    P --> O[Owning canonical package]
+    S --> R[Repository root]
+    M --> D[Maintenance system]
+    L --> A[Compatibility package]
+    O --> X{Does a shared representation also change?}
+    X -- yes --> R
+    X -- no --> E[Keep the change package-local]
 ```
 
-This page should reduce argument time. A reader should be able to route a
-change proposal toward one honest owner instead of negotiating around
-convenience or habit.
+## Product ownership
 
-## Yes Or No Tests
+| Changed invariant | Owner | Durable evidence |
+| --- | --- | --- |
+| normalized documents, chunks, embeddings, or local cited retrieval | `bijux-canon-ingest` | prepared records, codecs, local index artifacts, ingest tests |
+| vector execution, backend capability, ranking, approximation, or retrieval replay | `bijux-canon-index` | execution plans, artifacts, witnesses, run records, conformance tests |
+| plans, evidence support, claims, reasoning traces, verification, or frozen replay | `bijux-canon-reason` | reasoning bundle, exact spans, reports, manifest, replay comparison |
+| roles, lifecycle, provider calls, convergence, or orchestration trace | `bijux-canon-agent` | pipeline definition, ordered trace, terminal result, provider metadata |
+| flow admission, modes, effects, arbitration, persistence, recovery, or workflow replay | `bijux-canon-runtime` | manifest, policy, events, DuckDB state, verdict, replay diff |
 
-Ask these questions in order:
+A shared test or root command does not transfer product ownership. For example,
+an OpenAPI drift gate can detect an ingest response change, but ingest still
+owns the response meaning.
 
-1. Can one package handbook explain the behavior honestly on its own?
-2. Does the rule protect more than one canonical package at once?
-3. Is the question about shared documentation shape, schema storage, workflow
-   coordination, or release framing rather than product behavior?
-4. Is the issue really about repository-health tooling instead of a product
-   contract?
-5. Does the issue exist only because a legacy public name still needs support?
+## Repository-root ownership
 
-If the answer to the first question is yes, start in that package. If the first
-answer is no and one of questions two through five is yes, keep the work at the
-root, in maintenance, or in compatibility as appropriate.
+The root owns facts that must be consistent across more than one distribution
+or public surface:
 
-## Borderline Example
+- package inventory, canonical-to-compatibility mapping, and workspace
+  dependency resolution;
+- handbook navigation and the published documentation site;
+- checked-in API source placement, pins, and hashes across packages;
+- root command dispatch and common artifact routing;
+- the repository-wide tag and release matrix; and
+- shared compatibility and migration routes.
 
-A schema pin that protects ingest, index, and runtime together belongs at the
-root. A change to ingest-local payload shaping does not, even if shared checks
-also need updates.
+Root ownership coordinates package contracts; it must not introduce a new
+interpretation of their data or failures.
 
-## Escalate To Root When
+## Maintenance ownership
 
-- more than one canonical package contract needs the same shared rule
-- a workflow or schema check is protecting repository-wide truth
-- the docs structure itself is part of the problem being solved
+Maintenance owns executable checks and publication machinery: reusable Make
+contracts, `bijux-canon-dev` helpers, workflow job shape, security and quality
+gates, build staging, SBOM generation, and documentation deployment. A
+maintenance check can accept or refuse repository state under its rule. It
+cannot redefine product behavior to make the check pass.
 
-## Send Work Back Down When
+## Compatibility ownership
 
-- a root page starts explaining package-local implementation detail
-- maintainer automation begins to encode product behavior
-- compatibility logic starts being treated as the preferred package surface
+Compatibility packages own continuity for an established distribution,
+import, or command name. They may adapt a call into the canonical surface and
+preserve documented aliases. New domain behavior, artifact meaning, and policy
+begin in the canonical package.
 
-## Design Pressure
+## Borderline decisions
 
-If the decision process starts rewarding the most visible surface instead of
-the clearest owner, the repository becomes easier to edit and harder to trust.
+Use the record that must change for behavior to become correct:
+
+| Observation | Correct route |
+| --- | --- |
+| a root API check detects wrong chunk offsets | fix ingest, then refresh governed API representations if needed |
+| two packages require the same schema-location rule | define the location at root and verify it through maintenance tooling |
+| a release workflow publishes the wrong wheel | fix build or publication machinery unless the wheel metadata itself is wrong |
+| an old command lacks a new canonical option | add canonical behavior first, then project it through the compatibility adapter |
+| runtime receives an incomplete agent trace | fix agent trace production; runtime should refuse or mark it non-certifiable |
+
+When two owners are involved, keep the responsibilities separate in code and
+evidence. A cross-boundary change can require coordinated edits without
+creating a shared catch-all implementation.
+
+## Refuse the routing when
+
+- ownership is justified only by where a convenient helper already lives;
+- the root begins interpreting package-local data;
+- maintenance code becomes a runtime dependency;
+- a compatibility package gains independent domain semantics;
+- a broad test is used instead of naming the changed invariant; or
+- no retained artifact or executable check can demonstrate the chosen owner.
+
+Correct routing makes failure ownership visible before implementation begins
+and keeps each resulting contract independently reviewable.

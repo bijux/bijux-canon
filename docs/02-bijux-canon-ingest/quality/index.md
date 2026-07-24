@@ -4,67 +4,84 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-ingest-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-22
 ---
 
 # Quality
 
-Open this section when you need to decide whether prepared ingest output is trustworthy enough for downstream packages to build on without inheriting hidden drift.
+Trust in ingest begins with stable value laws and ends with a retrieval output
+whose identity, configuration, and citations can be inspected. Green interface
+tests cannot compensate for drift in normalization, chunk identity, ordering,
+or embedding semantics.
 
-## Trust Model
+## Evidence chain
 
 ```mermaid
 flowchart LR
-    strategy["test strategy"]
-    invariants["ingest invariants"]
-    validation["change validation"]
-    limits["limitations and risk"]
-    trust["trust decision"]
+    values["value and result laws"]
+    stages["stage invariants"]
+    composition["pipeline and stream properties"]
+    boundaries["CLI, HTTP, persistence"]
+    evaluation["offline retrieval evidence"]
+    limits["known limits and residual risk"]
 
-    strategy --> invariants --> validation --> limits --> trust
+    values --> stages --> composition --> boundaries --> evaluation --> limits
 ```
 
-Quality pages should tell a reviewer why prepared ingest output deserves to be
-trusted by later packages. Tests matter, but only when they are connected to
-the invariants that keep source preparation stable and to the limits that still
-need to be read honestly.
+## Claims and proof
 
-## Read These First
+| Trust claim | Focused evidence | Residual limit |
+| --- | --- | --- |
+| records reject invalid shape | core, result, and public-model unit tests | validity does not establish source truth |
+| cleaning and chunking are deterministic | processing tests plus identity/span invariants | caller-supplied stages join the determinism boundary |
+| lazy execution preserves order and termination | streaming, scheduling, backpressure, and property tests | materialized observations can scale with corpus size |
+| deduplication is stable | rule and pipeline tests over structural keys | semantic duplicates remain distinct |
+| resilience is bounded and visible | retry, breaker, resource, cache, and effect tests | policies work only where explicitly composed |
+| public surfaces preserve domain meaning | strict-model, serialization, CLI, HTTP, and schema tests | deployment state and security remain application concerns |
+| local retrieval behaves as declared | persisted-index and deterministic evaluation tests | hash embeddings do not prove semantic quality |
+| answers retain usable citations | truthfulness gate and answer-path tests | citation presence does not prove source authority |
 
-- open [Test Strategy](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/test-strategy/) first when you need the broad proof shape behind ingest behavior
-- open [Invariants](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/invariants/) when the question is what must not drift across source preparation and chunking
-- open [Change Validation](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/change-validation/) when you need the minimum proof for a safe ingest change
+## High-risk changes
 
-## Trust Risk
+Changes to normalization, spans, chunk identity, ordering, deduplication,
+embedding dimensions, persisted index format, citation linkage, or error
+translation require evidence at the owning layer and at every public boundary
+they cross. External-model changes also require model-specific evaluation; the
+deterministic hash profile is not a proxy.
 
-The main quality risk here is letting unstable prepared input look healthy because later packages still pass on top of it.
+## Accept a preparation result
 
-## First Proof Check
+Review a prepared corpus in custody order. Later evidence cannot repair an
+earlier missing identity:
 
-- `tests` and package-local validation surfaces for executable evidence
-- invariants, limitations, and risk pages for the trust boundaries that still matter after green checks
-- release notes and caller-facing docs when the change alters what readers may safely assume
+| Review record | Accept when | Refuse or qualify when |
+| --- | --- | --- |
+| source inventory | every intended input has a stable identity and disposition | inputs are silently omitted or identifiers are reused |
+| effective configuration | normalized cleaning, safeguard, and chunk settings are retained | only a mutable configuration path or defaults are known |
+| transformation record | outputs and typed failures account for the inventory | a successful-record count hides rejected, retried, or truncated inputs |
+| chunk set | each chunk names its prepared parent and valid normalized-text offsets | ordering, overlap, tail handling, or parent custody is ambiguous |
+| persisted artifact | records, index state, format, and digest belong to one versioned unit | files can be mixed across runs or overwritten without detection |
+| retrieval observation | query, backend, index, candidates, scores, and citations remain linked | answer text survives without ranked records and citation identities |
 
-## Pages In This Section
+This review establishes repeatable preparation under the recorded rules. It
+does not establish source truth, corpus completeness, semantic embedding
+quality, or downstream claim validity. Record those as separate claims at
+their owning boundaries.
 
-- [Test Strategy](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/test-strategy/)
-- [Invariants](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/invariants/)
-- [Review Checklist](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/review-checklist/)
-- [Documentation Standards](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/documentation-standards/)
-- [Definition of Done](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/definition-of-done/)
-- [Dependency Governance](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/dependency-governance/)
-- [Change Validation](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/change-validation/)
-- [Known Limitations](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/known-limitations/)
-- [Risk Register](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/risk-register/)
+## Evidence routes
 
-## Leave This Section When
+| Need | Guide |
+| --- | --- |
+| Understand the suite by ownership layer | [Test strategy](test-strategy.md) |
+| Review non-negotiable value and pipeline laws | [Invariants](invariants.md) |
+| Select evidence for a proposed change | [Change validation](change-validation.md) |
+| Review a change consistently | [Review checklist](review-checklist.md) |
+| Decide whether work is complete | [Definition of done](definition-of-done.md) |
+| Evaluate optional and core dependencies | [Dependency governance](dependency-governance.md) |
+| Understand claims the package cannot make | [Known limitations](known-limitations.md) |
+| Inspect unresolved failure modes | [Risk register](risk-register.md) |
+| Interpret preparation artifacts without overstating their guarantee | [Interpreting preparation evidence](evidence-interpretation.md) |
 
-- leave for [Foundation](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/) when the doubt is really about package ownership rather than proof
-- leave for [Interfaces](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/) when the question is what the contract is rather than whether it is defended
-- leave for [Operations](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/) when the package already seems trustworthy and the real issue is how to run it repeatably
-
-## Design Pressure
-
-If quality here is reduced to green checks alone, unstable prepared input can
-still leak forward. This section has to tie proofs, invariants, and residual
-limits into one trust story.
+The appropriate proof is proportional and local: begin with the invariant that
+owns the behavior, add the crossed boundary, and use corpus evaluation only for
+retrieval-quality claims.

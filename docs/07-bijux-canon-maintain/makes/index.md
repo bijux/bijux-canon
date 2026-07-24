@@ -1,92 +1,150 @@
 ---
-title: makes
+title: Make System
 audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-dev-docs
-last_reviewed: 2026-07-04
+last_reviewed: 2026-07-22
 ---
 
-# makes
+# Make System
 
-The `makes/` tree is the shared command interface for repository operations. It
-turns recurring work into named, checked-in entrypoints instead of leaving
-maintainers to reconstruct procedure from workflow YAML or shell history.
+The repository Make system is the supported command graph for local validation,
+documentation, API governance, package dispatch, builds, SBOMs, and release
+preparation. It exposes memorable root targets while keeping package-specific
+arguments in explicit profiles.
 
-A good make surface is traceable. A maintainer should be able to start from a
-root command, find the owning fragment quickly, and see whether the rule is
-repository scope, package scope, CI scope, or release scope.
+Run `make help` for the live command catalog. The generated help text is derived
+from target annotations, so it is more authoritative than a copied command
+list.
 
-## Command Model
+## Include And Dispatch Graph
 
 ```mermaid
-flowchart LR
-    root["root make target"]
-    fragments["make fragments"]
-    package["package or ci dispatch"]
-    helpers["helper code and scripts"]
-    result["operational result"]
+flowchart TD
+    entry["Makefile"]
+    root["makes/root.mk"]
+    env["makes/env.mk"]
+    catalog["makes/packages.mk"]
+    shared["makes/bijux-py/"]
+    profiles["makes/packages/*.mk"]
+    helper["bijux-canon-dev or package command"]
+    artifacts["artifacts/"]
 
-    root --> fragments --> package --> helpers --> result
+    entry --> root
+    root --> env
+    root --> catalog
+    root --> shared
+    catalog --> profiles
+    profiles --> helper
+    shared --> helper
+    helper --> artifacts
 ```
 
-The `makes/` tree is useful only when a maintainer can follow a command from
-the root entrypoint into the fragment that owns it and then into the helper or
-package surface that actually does the work. This page should make that route
-easy to picture before anyone starts chasing includes.
+`makes/bijux-py/` contains reusable Python-repository machinery consumed by the
+root. Repository-specific inventory and aliases remain in `makes/packages.mk`;
+per-package differences remain in `makes/packages/<slug>.mk`; schema freeze,
+documentation shell, standards, and publication composition have their own
+named fragments.
 
-## What A Good Make Surface Looks Like
+## Root Command Families
 
-- root targets are memorable and stable
-- routing into package or CI fragments is visible instead of hidden behind shell tricks
-- environment and artifact behavior are predictable enough to reproduce locally
-- command names describe owned behavior rather than delivery history or local habits
+| Intent | Target | Scope |
+| --- | --- | --- |
+| discover commands | `make help` | render annotated targets from included modules |
+| verify lock consistency | `make lock-check` | compare `uv.lock` with workspace metadata |
+| verify one documentation change | `make docs-check` | prepare generated references, run strict MkDocs build, enforce docs hygiene |
+| verify API contracts | `make api` | dispatch API lint, drift, pin/hash, and live checks across primary package profiles |
+| run ordinary package tests | `make test` | dispatch primary package test targets |
+| run every test surface | `make test-all` | include slow, evaluation, and real-local selections |
+| verify the repository | `make check` | lock plus lint, tests, quality, security, docs, API, builds, and SBOMs |
+| build publication artifacts | `make build` | dispatch buildable primary package profiles |
+| produce supply-chain artifacts | `make sbom` | dispatch SBOM-capable package profiles |
 
-## Section Pages
+`make test-all` is intentionally broader and more expensive than ordinary
+verification. Use it only when the changed contract reaches those test
+surfaces; it is not the default evidence for a Markdown-only change.
 
-- [Make System Overview](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/make-system-overview/)
-- [Root Entrypoints](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/root-entrypoints/)
-- [Environment Model](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/environment-model/)
-- [Repository Layout](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/repository-layout/)
-- [Package Dispatch](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/package-dispatch/)
-- [CI Targets](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/ci-targets/)
-- [Package Contracts](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/package-contracts/)
-- [Release Surfaces](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/release-surfaces/)
-- [Authoring Rules](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/authoring-rules/)
+## Read Dispatch As A Contract
 
-## Start With
+Root targets select package records by capability and invoke each package
+through its checked-in profile. The dispatch path is part of the result:
 
-- Open [Make System Overview](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/make-system-overview/) for the layered shape of the command tree.
-- Open [Root Entrypoints](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/root-entrypoints/) when the question begins at `Makefile`.
-- Open [Package Dispatch](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/package-dispatch/) when a shared target routes into one package or
-  many.
-- Open [CI Targets](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/ci-targets/) or [Release Surfaces](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/release-surfaces/) when the concern is automation-facing.
+```mermaid
+sequenceDiagram
+    participant Caller
+    participant Root as root target
+    participant Catalog as package catalog
+    participant Profile as package profile
+    participant Helper as owned helper or package command
 
-## Proof Path
+    Caller->>Root: make <intent>
+    Root->>Catalog: select packages with capability
+    Catalog-->>Root: ordered package records
+    Root->>Profile: invoke target with explicit profile
+    Profile->>Helper: run package-specific contract
+    Helper-->>Caller: status + output under artifacts/
+```
 
-- `Makefile` is the top-level entrypoint.
-- `makes/root.mk`, `makes/env.mk`, and `makes/packages.mk` assemble the shared
-  tree.
-- `makes/bijux-py/` and `makes/packages/` show the reusable and package-bound
-  parts of the command surface.
+This explains three common surprises:
 
-## Review Sequence
+- package directories do not need standalone Makefiles; dispatch supplies the
+  absolute profile with `make -f ... -C packages/<slug> <target>`;
+- a package absent from a capability group is not silently skipped—it was not
+  selected, so the catalog or profile is the first authority to inspect; and
+- a root success means every selected package target succeeded, not that an
+  unselected capability or a separate publication destination was evaluated.
 
-When a command behaves unexpectedly, inspect it in this order:
+Use `make list` to inspect the primary set, `make list-all` for every canonical
+slug, and `make help` for the live root command surface before assuming a copied
+command still reflects the repository graph.
 
-1. `Makefile` or the root target the maintainer actually invoked
-2. the fragment that defines or dispatches the target
-3. the helper package, package target, or workflow-facing command it delegates to
-4. the artifact directory or CI job that proves the result
+## Package Inventory Is Data
 
-## Boundary
+`makes/packages.mk` declares primary and compatibility records with capability
+labels such as `check`, `buildable`, `sbom`, `test`, and `api`. Root dispatch
+selects packages from those labels. Compatibility aliases map preserved names
+to canonical owners without pretending the aliases are primary product
+packages.
 
-The make layer documents command routing and shared operational rules. It should
-not become a second product handbook. If understanding a target requires a deep
-product explanation, the product package docs still own that explanation.
+This design makes exclusions reviewable. A package missing from an API or SBOM
+dispatch set should be explained by its declared profile, not by an invisible
+shell condition.
 
-## Design Pressure
+## Follow A Target
 
-If command ownership is hidden behind too many includes or naming shortcuts,
-the shared interface stops being reviewable. This section has to keep entry
-targets, fragments, and delegated work visibly aligned.
+To explain a command, trace four layers:
+
+1. find the target annotation with `make help`;
+2. locate its definition or shared template in `makes/`;
+3. resolve the selected package profile and helper invocation;
+4. inspect the exit status and output under `artifacts/`.
+
+For example, a package API target can resolve through a shared API template to
+an `openapi_drift` module call declared in the package profile. The root command
+establishes orchestration; the helper establishes the drift decision; the
+owning package establishes HTTP behavior.
+
+## Stable Operational Rules
+
+- Root targets describe intent and delegate package behavior.
+- Generated output belongs under `artifacts/` unless a target explicitly
+  updates a governed source such as an API pin or documentation reference.
+- Package-specific flags live in package profiles, not duplicated root recipes.
+- CI invokes the same supported Make surfaces where practical.
+- Destructive targets name their scope; repository cleanup must not rely on an
+  unresolved broad path.
+- A new target must appear in `make help` with a concrete description.
+
+## Continue By Concern
+
+| Concern | Page |
+| --- | --- |
+| root targets and their contract | [Root entrypoints](root-entrypoints.md) |
+| environment and artifact locations | [Environment model](environment-model.md) |
+| physical include structure | [Repository layout](repository-layout.md) |
+| package selection and profiles | [Package dispatch](package-dispatch.md) |
+| workflow-facing targets | [CI targets](ci-targets.md) |
+| expectations for package profiles | [Package contracts](package-contracts.md) |
+| build and publication composition | [Release surfaces](release-surfaces.md) |
+| conventions for new targets | [Authoring rules](authoring-rules.md) |

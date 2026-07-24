@@ -74,7 +74,7 @@ plugins:
         bijux-canon/repository-scope.md: 01-bijux-canon/foundation/repository-scope.md
         bijux-canon/workspace-layout.md: 01-bijux-canon/foundation/workspace-layout.md
         bijux-canon/package-map.md: 01-bijux-canon/foundation/package-map.md
-        bijux-canon/documentation-system.md: 01-bijux-canon/foundation/documentation-system.md
+        bijux-canon/documentation-system.md: 01-bijux-canon/foundation/evidence-map.md
         bijux-canon/api-and-schema-governance.md: 01-bijux-canon/operations/api-and-schema-governance.md
         bijux-canon/local-development.md: 01-bijux-canon/operations/local-development.md
         bijux-canon/testing-and-validation.md: 01-bijux-canon/operations/testing-and-validation.md
@@ -134,6 +134,34 @@ extra:
     docs_package: bijux-canon-dev
     nav_mode: default
     theme_key: bijux:theme
+    hub_links:
+      - key: bijux
+        label: Bijux
+        url: https://bijux.io/
+      - key: bijux-core
+        label: Core
+        url: https://bijux.io/bijux-core/
+      - key: bijux-canon
+        label: Canon
+        url: https://bijux.io/bijux-canon/
+      - key: bijux-atlas
+        label: Atlas
+        url: https://bijux.io/bijux-atlas/
+      - key: bijux-proteomics
+        label: Proteomics
+        url: https://bijux.io/bijux-proteomics/
+      - key: bijux-pollenomics
+        label: Pollenomics
+        url: https://bijux.io/bijux-pollenomics/
+      - key: bijux-phylogenetics
+        label: Phylogenetics
+        url: https://bijux.io/bijux-phylogenetics/
+      - key: bijux-gnss
+        label: GNSS
+        url: https://bijux.io/bijux-gnss/
+      - key: bijux-masterclass
+        label: Masterclass
+        url: https://bijux.io/bijux-masterclass/
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/bijux

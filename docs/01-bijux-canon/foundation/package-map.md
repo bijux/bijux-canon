@@ -4,87 +4,138 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # Package Map
 
-The package map is the clearest explanation of the product idea in this
-repository. Each canonical package owns one part of a larger system, and the
-handoff between them is the design.
+The repository contains five canonical product packages, one internal
+maintainer package, and six published compatibility distributions. The package
+name tells a caller which contract it is choosing; the directory location alone
+does not establish whether a package is public, canonical, or released.
 
-This page should make the repository feel intentional. It is not a list of
-folders. It is the contract that keeps preparation, retrieval, reasoning,
-orchestration, and runtime authority from collapsing into one vague layer.
+## Package Families
 
 ```mermaid
-flowchart LR
-    raw["raw source"]
-    prepared["prepared material"]
-    retrieved["retrieval result"]
-    claims["reasoning artifact"]
-    trace["agent trace"]
-    verdict["runtime verdict"]
-    maintain["maintenance handbook"]
-    compat["compatibility handbook"]
+flowchart TD
+    workspace["bijux-canon workspace"]
+    product["canonical product packages"]
+    support["internal maintainer package"]
+    continuity["compatibility distributions"]
 
-    raw -->|bijux-canon-ingest| prepared
-    prepared -->|bijux-canon-index| retrieved
-    retrieved -->|bijux-canon-reason| claims
-    claims -->|bijux-canon-agent| trace
-    trace -->|bijux-canon-runtime| verdict
-    maintain --> verdict
-    compat --> prepared
-    compat --> retrieved
-    compat --> claims
-    compat --> trace
-    compat --> verdict
+    workspace --> product
+    workspace --> support
+    workspace --> continuity
+
+    product --> ingest["ingest"]
+    product --> index["index"]
+    product --> reason["reason"]
+    product --> agent["agent"]
+    product --> runtime["runtime"]
+    support --> dev["bijux-canon-dev"]
+    continuity --> aliases["6 direct aliases"]
 ```
 
-Read the package family as a pressure-tested handoff chain. Every package
-narrows the meaning of the next step. Ingest makes input stable enough to use.
-Index makes retrieval explainable. Reason makes evidence interpretable. Agent
-makes workflow order inspectable. Runtime decides whether the whole run counts.
-The maintainer and compatibility handbooks matter only because they protect or
-route that chain without becoming substitute product owners.
+The root `pyproject.toml` records these sets explicitly. Public release tooling
+uses `public_release_packages`; repository checks include
+`internal_support_packages`; compatibility inventory is not inferred from a
+name prefix.
 
-## Responsibility Chain
+## Canonical Product Packages
 
-| Package | Core role | What it hands forward |
+| Distribution | Public Python package | Command | Owns | Characteristic evidence |
+| --- | --- | --- | --- | --- |
+| `bijux-canon-ingest` | `bijux_canon_ingest` | `bijux-canon-ingest` | normalization, chunking, deterministic preparation, ingest-local retrieval utilities | input identity, clean documents, chunks, processing results |
+| `bijux-canon-index` | `bijux_canon_index` | none | vector execution, backend capability checks, result provenance, execution comparison | `ExecutionRequest`, `ExecutionArtifact`, ranked result records |
+| `bijux-canon-reason` | `bijux_canon_reason` | `bijux-canon-reason` | problem specifications, evidence-addressed claims, checks, reasoning replay | manifests, traces, claim graphs, verification reports |
+| `bijux-canon-agent` | `bijux_canon_agent` | `bijux-canon-agent` | role orchestration, lifecycle transitions, convergence, trace recording | pipeline definition, ordered events, terminal `RunTrace` |
+| `bijux-canon-runtime` | `bijux_canon_runtime` | `bijux-canon-runtime` | manifest admission, execution mode, policy, persistence, resume, whole-run replay | verdicts, run records, finalized traces, replay and diff results |
+
+Index contains a Typer command application for its compatibility surface, but
+the canonical distribution intentionally does not publish a console script.
+New integrations should use its typed Python or HTTP contracts. Existing
+`bijux-vex` command automation remains available through the compatibility
+distribution.
+
+## Installed Dependency Topology
+
+The package graph is intentionally asymmetric. Ingest, index, reason, and
+agent are independently installable product boundaries; none declares another
+canonical product package as a runtime dependency. Runtime composes all four.
+
+```mermaid
+flowchart BT
+    ingest["bijux-canon-ingest"]
+    index["bijux-canon-index"]
+    reason["bijux-canon-reason"]
+    agent["bijux-canon-agent"]
+    runtime["bijux-canon-runtime"]
+    cli["bijux-cli"]
+    store["DuckDB"]
+
+    runtime --> ingest
+    runtime --> index
+    runtime --> reason
+    runtime --> agent
+    runtime --> cli
+    runtime --> store
+```
+
+This topology has concrete consequences:
+
+- installing ingest, index, reason, or agent does not install the other three;
+- installing runtime resolves the four canonical product dependencies within
+  the compatible release range;
+- importing a lower package must not require runtime to be installed;
+- product-to-product handoffs use explicit records and adapters, not an
+  undeclared dependency hidden behind local workspace availability; and
+- the root development environment contains every package, so a successful
+  repository import is not proof that a wheel declares the dependency it uses.
+
+Use built-wheel metadata and an isolated installation when the dependency
+boundary itself is under review.
+
+## Repository Support
+
+`bijux-canon-dev` is an internal support package. It owns repository inventory,
+documentation configuration and badge checks, API drift and freeze checks,
+dependency and security gates, SBOM requirement generation, version resolution,
+and publication guards. It is part of workspace validation but is excluded from
+the public release package list.
+
+An application should never need `bijux-canon-dev` to execute product behavior.
+If a product package depends on it at runtime, the ownership boundary has been
+crossed in the wrong direction.
+
+## Compatibility Distributions
+
+| Preserved distribution | Canonical dependency | Preserved command |
 | --- | --- | --- |
-| `bijux-canon-ingest` | deterministic preparation of input material | normalized, retrieval-ready material |
-| `bijux-canon-index` | retrieval execution and provenance-rich result handling | replayable evidence retrieval state |
-| `bijux-canon-reason` | evidence-aware reasoning, claims, and verification | inspectable conclusions tied to evidence |
-| `bijux-canon-agent` | role-based orchestration and trace-backed workflow control | coordinated multi-step work with explicit traces |
-| `bijux-canon-runtime` | governed execution, replay, persistence, and final acceptability | accepted or replayable run outcomes |
+| `bijux-canon` | `bijux-canon-runtime` | `bijux-canon` |
+| `agentic-flows` | `bijux-canon-runtime` | `agentic-flows` |
+| `bijux-agent` | `bijux-canon-agent` | `bijux-agent` |
+| `bijux-rag` | `bijux-canon-ingest` | `bijux-rag` |
+| `bijux-rar` | `bijux-canon-reason` | `bijux-rar` |
+| `bijux-vex` | `bijux-canon-index` | `bijux-vex` |
 
-## Why The Boundaries Matter
+These packages are direct continuity bridges. They depend on their canonical
+owner, re-export canonical modules, and exercise identity or command parity in
+their tests. They do not contain an independent implementation. New code should
+name the canonical distribution; existing code can migrate one import,
+submodule, or command boundary at a time.
 
-| Boundary | What improves when it stays explicit | What gets worse when it blurs |
-| --- | --- | --- |
-| ingest to index | retrieval can be reviewed against stable prepared input | retrieval bugs get misdiagnosed as document-cleaning problems |
-| index to reason | claims can cite evidence without re-owning search | reasoning code starts compensating for hidden retrieval behavior |
-| reason to agent | workflows can coordinate verified artifacts instead of raw impressions | orchestration becomes an unreviewable reasoning policy |
-| agent to runtime | run acceptance can evaluate a complete trace | runtime becomes a miscellaneous bucket for workflow shortcuts |
+## Composition Rules
 
-## Common Misreads
+- Depend on the lowest package that owns the required decision.
+- Pass typed artifacts across package boundaries instead of importing private
+  implementation modules from a neighbor.
+- Keep acceptance and persistence policy in runtime, even when a lower package
+  provides the data being judged.
+- Treat compatibility names as aliases at the edge, not as internal
+  architecture.
+- Use root metadata for package membership and release eligibility; use package
+  code and tests for behavior.
 
-- ingest is not the long-term owner of retrieval execution
-- index is not the owner of reasoning semantics
-- reason is not the owner of orchestration or final runtime authority
-- agent is not the owner of package-local scientific truth
-- runtime is not the place to absorb behavior merely because it sits last in the chain
-
-## First Proof Checks
-
-- `packages/` for the canonical boundaries themselves
-- `apis/` for the checked-in contracts that expose package behavior
-- package handbook roots for the owned promises behind each name
-- `Makefile`, `makes/`, and `.github/workflows/` only when the question is
-  about shared enforcement rather than package behavior
-
-## Leave This Page When
-
-- one package clearly owns the behavior under review
-- the next step is a package-local contract, workflow, or test surface
-- the question is really about shared enforcement rather than package ownership
+The [ownership model](ownership-model.md) covers disputed boundaries. The
+[compatibility catalog](../../08-compat-packages/catalog/index.md) records the
+exact legacy-to-canonical mappings.

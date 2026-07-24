@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling>=1.30.1,<1.31", "hatch-vcs>=0.5.0,<1.0"]
+requires = ["hatchling>=1.30.1,<1.32", "hatch-vcs>=0.5.0,<1.0"]
 build-backend = "hatchling.build"
 
 [project]
@@ -148,6 +148,10 @@ extend-exclude = [
   "src/**/_build_version.py",
   "src/**/_version.py",
 ]
+
+[tool.ruff.lint]
+ignore = ["E203", "E501"]
+select = ["B", "C4", "E", "F", "I", "ISC", "PIE", "RET", "SIM", "UP"]
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]

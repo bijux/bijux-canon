@@ -4,70 +4,103 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-runtime-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-22
 ---
 
 # Operations
 
-Open this section when you need to run runtime work repeatably: install it, reproduce governed runs, diagnose acceptance or replay drift, release it, or recover from failure without inventing authority rules on the spot.
+The safest runtime workflow begins in plan mode, uses an explicit tenant,
+policy, and database path for execution, inspects the finalized trace before
+acceptance, and treats replay as a policy verdict rather than a text
+comparison.
 
-## Operating Loop
+## Operating lifecycle
 
 ```mermaid
 flowchart LR
-    setup["setup"]
-    run["run governed flow"]
-    inspect["inspect verdict and record"]
-    recover["recover replay or persistence"]
-    release["release package"]
-    proof["tests and artifacts"]
+    validate["validate manifest + policy"]
+    plan["plan without allocation"]
+    execute["dry, live, or observe"]
+    inspect["inspect tenant + run"]
+    accept["review verification + certifiability"]
+    retain["retain DB, schema, payloads"]
+    replay["replay + semantic diff"]
 
-    setup --> run --> inspect --> recover --> release
-    run --> proof
-    inspect --> proof
+    validate --> plan --> execute --> inspect --> accept --> retain --> replay
+    execute -. interrupted .-> inspect
+    replay -. unacceptable .-> plan
 ```
 
-Runtime operations should make governed execution repeatable under pressure. A
-maintainer needs a visible path from setup to run, from run to verdict
-inspection, and from drift back to recovery, with enough checked-in proof to
-show that authority was applied on purpose.
+## Choose a mode by demonstrated authority
 
-## Read These First
+| Mode or surface | What it demonstrates | Current boundary |
+| --- | --- | --- |
+| `plan` | manifest, dataset, dependency, policy and environment resolve to an immutable plan | allocates no run ID, trace or lower-package execution |
+| `dry-run` | runtime preparation and simulated execution records can be inspected | does not establish provider effects or callable canonical adapters |
+| `observe` | supplied observations can be captured and evaluated without normal execution authority | cannot recover events the host did not provide |
+| `live` | runtime attempts authorized effects and durable recording | canonical lower-package root callables are currently missing; an explicit host adapter is required |
+| `unsafe` | reduced-guarantee execution is explicitly requested | CLI cannot currently supply its required verification policy; use the governed Python surface |
+| HTTP health/readiness | service process responds and the configured DuckDB store can be opened | run and replay routes validate contracts then return `501 Not Implemented` |
 
-- open [Installation and Setup](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/installation-and-setup/) first when you need a clean package starting point
-- open [Observability and Diagnostics](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/observability-and-diagnostics/) when governed run behavior no longer matches expectation
-- open [Failure Recovery](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/failure-recovery/) when acceptance, persistence, or replay has already gone wrong
+Start with the strongest demonstrated surface that answers the operational
+question. Do not use dry-run success as a live readiness result, storage
+readiness as executor readiness, or a versioned HTTP schema as evidence of
+remote run availability.
 
-## Operational Risk
+## Operational rules
 
-The main operational risk here is letting run authority depend on implicit environment state or undocumented recovery steps.
+- Give every automation path an explicit DuckDB path and tenant identity.
+- Do not run concurrent writers against the same DuckDB file.
+- Treat plan mode as contract inspection, dry run as simulated evidence, and
+  live mode as authoritative only after verification and finalization.
+- Select runs by both tenant and run ID; an identifier alone is not sufficient
+  authority.
+- Retain the database, migrations, active schema hash, and external artifact
+  payloads as one governed set.
+- Apply replay acceptability only after structural differences are known.
+  Tolerance cannot be invented after divergence.
 
-## First Proof Check
+## Acceptance evidence
 
-- `pyproject.toml`, `README.md`, and package-local entrypoints for checked-in operating truth
-- `tests` and runnable workflows for evidence that the package can be operated repeatably
-- release notes and version metadata when the work changes caller expectations
+| Evidence | Operational question |
+| --- | --- |
+| resolved plan | Did the intended manifest, dependencies, dataset, and environment resolve to this plan hash? |
+| finalized trace | Is causal event order closed, immutable, and semantically valid? |
+| verification results | What did each engine observe and which rules were violated? |
+| arbitration | Which policy fingerprint and rule produced the final decision? |
+| entropy record | Which nondeterministic sources and budget consumption were declared? |
+| artifact and evidence records | Can identity, hash, parentage, tenant, and payload location be resolved? |
+| replay verdict and diff | Is the new run acceptable, acceptable with warnings, unacceptable, or non-certifiable? |
 
-## Pages In This Section
+## Recovery routing
 
-- [Installation and Setup](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/installation-and-setup/)
-- [Local Development](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/local-development/)
-- [Common Workflows](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/common-workflows/)
-- [Observability and Diagnostics](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/observability-and-diagnostics/)
-- [Performance and Scaling](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/performance-and-scaling/)
-- [Failure Recovery](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/failure-recovery/)
-- [Release and Versioning](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/release-and-versioning/)
-- [Security and Safety](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/security-and-safety/)
-- [Deployment Boundaries](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/deployment-boundaries/)
+| Symptom | Inspect first | Safe response |
+| --- | --- | --- |
+| Run exists but is not finalized | last checkpoint, causal event index, stored artifacts, tools, entropy, and claims | resume only under the same tenant, manifest, plan, dataset, policy, and store authority |
+| External side effect may have occurred before checkpoint | integration idempotency key or compensation record | reconcile the external system before retrying |
+| Finalized run was rejected | verification results, arbitration, and certifiability | correct the failed evidence or policy input; do not relabel completion as acceptance |
+| Strict replay differs | plan, tenant, environment, dataset, policy, envelope, events, artifacts, and entropy | retain the mismatch and refuse equivalence |
+| Bounded replay differs | structural blockers followed by declared variance categories | accept only differences the original envelope permitted |
+| DuckDB opens but evidence is incomplete | finalized flag, typed projections, schema hash, migrations, payload store | restore the governed retention set; readability is insufficient |
+| Readiness is green but execution fails | dataset, tools, providers, policy, and writable store authority | treat readiness as a storage-open probe only |
 
-## Leave This Section When
+## Deployment boundary
 
-- leave for [Interfaces](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/) when the live problem is contract shape rather than package operation
-- leave for [Architecture](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/) when a workflow problem exposes structural drift underneath it
-- leave for [Quality](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/) when the package runs but the real question is whether the evidence is strong enough
+DuckDB is a durable single-writer local store, not multi-host infrastructure.
+The package is not a sandbox, queue, cluster scheduler, identity provider,
+secret manager, backup system, or tenant-isolation boundary. Hosts must enforce
+process and network isolation, access control, encryption, capacity, retention,
+credentials, and idempotency for external effects.
 
-## Design Pressure
+## Operate by need
 
-If runtime recovery depends on improvised authority judgments, the operating
-model is still too loose. This section has to make governed execution and
-replay recovery repeatable from checked-in practice.
+| Need | Guide |
+| --- | --- |
+| Install runtime and DuckDB support | [Installation and setup](installation-and-setup.md) |
+| Develop against isolated stores and fixtures | [Local development](local-development.md) |
+| Plan, execute, inspect, and replay a flow | [Common workflows](common-workflows.md) |
+| Diagnose authority, verification, entropy, and drift | [Observability and diagnostics](observability-and-diagnostics.md) |
+| Plan store, trace, and executor capacity | [Performance and scaling](performance-and-scaling.md) |
+| Resume or recover governed state | [Failure recovery](failure-recovery.md) |
+| Define deployment controls | [Security and safety](security-and-safety.md) and [Deployment boundaries](deployment-boundaries.md) |
+| Release a schema- or authority-sensitive change | [Release and versioning](release-and-versioning.md) |

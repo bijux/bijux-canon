@@ -1,28 +1,113 @@
 ---
 title: CLI Surface
 audience: mixed
-type: explanation
+type: reference
 status: canonical
 owner: bijux-canon-ingest-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # CLI Surface
 
-The CLI surface for `bijux-canon-ingest` is the command boundary operators and scripts will treat as stable first. If the command semantics for prepared ingest behavior are real, the docs should say so plainly.
+`bijux-canon-ingest` has two command shapes. If the first argument is `index`,
+`retrieve`, `ask`, or `eval`, the retrieval parser owns the invocation.
+Otherwise the command is interpreted as the configured document pipeline.
 
-## What To Check
+```mermaid
+flowchart LR
+    CLI[bijux-canon-ingest] --> Dispatch{first argument}
+    Dispatch -->|index, retrieve, ask, eval| Retrieval[retrieval commands]
+    Dispatch -->|anything else| Pipeline[document pipeline]
+    Pipeline --> Chunks[chunk JSONL]
+    Retrieval --> Index[index artifact or query output]
+```
 
-- name the canonical command entrypoint: `bijux-canon-ingest`
-- separate supported flags and behaviors from local convenience behavior
-- treat scripted usage as contract pressure, not as anecdotal usage only
+## Command Map
 
-## First Proof Check
+| Form | Required inputs | Primary output |
+| --- | --- | --- |
+| `INPUT.csv --config CONFIG` | CSV and pipeline JSON | validation/process outcome; optional chunk JSONL |
+| `index build` | CSV and output path | MessagePack index and fingerprint summary |
+| `retrieve` | index and query | ranked candidate JSON |
+| `ask` | index and query | extractive answer with citations in JSON or YAML |
+| `eval` | index and suite directory | recall-at-k metrics and regression status |
 
-- `src` and boundary-facing modules for the owning implementation surface
-- `apis/bijux-canon-ingest/v1/schema.yaml` or tracked examples for the documented contract surface
-- `tests` for executable confirmation that the contract still holds
+## Configured Document Pipeline
 
-## Bottom Line
+```bash
+bijux-canon-ingest documents.csv \
+  --config pipeline.json \
+  --set chunk.chunk_size=384 \
+  --out artifacts/ingest/chunks.jsonl
+```
 
-If callers depend on `bijux-canon-ingest` for prepared ingest behavior, the contract needs to be named as clearly as the implementation.
+`--set` is repeatable and accepts dotted `key=value` overrides. The command
+loads all admissible documents, builds the configured step sequence, and writes
+only successful chunks when `--out` is present. The JSONL file does not contain
+error rows or a run manifest; retain the command outcome and effective
+configuration separately.
+
+## Build an Index
+
+```bash
+bijux-canon-ingest index build \
+  --input documents.csv \
+  --out artifacts/ingest/corpus.index \
+  --backend bm25 \
+  --chunk-size 384 \
+  --overlap 48 \
+  --tail-policy emit_short
+```
+
+`--backend` accepts `bm25` or `numpy-cosine`. Dense indexes accept `hash16` or
+the optional `sbert` embedder; `--sbert-model` selects the external model.
+The command prints JSON containing the output path, fingerprint, and backend.
+
+## Retrieve and Answer
+
+```bash
+bijux-canon-ingest retrieve \
+  --index artifacts/ingest/corpus.index \
+  --query "retention period" \
+  --top-k 5 \
+  --filter category=governance \
+  --out artifacts/ingest/candidates.json
+
+bijux-canon-ingest ask \
+  --index artifacts/ingest/corpus.index \
+  --query "How long are signed records retained?" \
+  --top-k 5 \
+  --format json \
+  --out artifacts/ingest/answer.json
+```
+
+`--filter key=value` is repeatable. `ask` reranks by default; use
+`--no-rerank` to preserve the initial candidate order. YAML output requires the
+optional PyYAML dependency.
+
+## Evaluate
+
+```bash
+bijux-canon-ingest eval \
+  --index artifacts/ingest/corpus.index \
+  --suite evaluation/retention \
+  --k 10 \
+  --baseline evaluation/retention/baseline.json \
+  --tolerance 0.01
+```
+
+The suite directory must contain `queries.jsonl`. Each usable row supplies a
+query and relevant document IDs. The command returns status `1` when recall
+falls below the baseline beyond tolerance and `2` when the suite is missing.
+
+## Automation Contract
+
+Pipeline argument or parse failures use status `2`; governed pipeline failures
+use status `1`; success uses status `0`. Retrieval commands emit machine-readable
+JSON for their principal results, but unexpected file, dependency, or payload
+errors can still terminate through the command runtime. Scripts should capture
+stderr, require the expected output file, and validate its schema before
+publication.
+
+See [Artifact Contracts](artifact-contracts.md) before treating JSONL or an index
+as a durable handoff.

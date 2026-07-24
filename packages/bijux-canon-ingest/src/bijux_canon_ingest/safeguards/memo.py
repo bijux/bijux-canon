@@ -5,14 +5,14 @@
 
 from __future__ import annotations
 
-from collections import OrderedDict
-from collections.abc import Callable, Hashable
-from dataclasses import dataclass
 import functools
 import hashlib
 import os
-from pathlib import Path
 import threading
+from collections import OrderedDict
+from collections.abc import Callable, Hashable
+from dataclasses import dataclass
+from pathlib import Path
 from typing import Any, ParamSpec, TypeVar, cast
 
 from bijux_canon_ingest.core.types import ChunkWithoutEmbedding

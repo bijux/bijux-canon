@@ -4,87 +4,176 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-ingest-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-22
 ---
 
 # Ingest Handbook
 
-`bijux-canon-ingest` owns deterministic document preparation, chunking, and retrieval-ready shaping. It is the package that turns raw source material into stable inputs the rest of the system can trust.
+`bijux-canon-ingest` turns source documents into deterministic records, chunks,
+local retrieval indexes, ranked candidates, and extractive answers with
+citations. It supports both small in-process transformations and file-backed
+pipelines without making HTTP, CLI, or orchestration dependencies mandatory at
+package import time.
 
-The main failure this handbook prevents is treating ingest like a convenient place for every upstream cleanup, retrieval tweak, or workflow shortcut. Ingest should only grow when the change makes prepared source material more predictable, not when another package wants to offload its own complexity.
-
-## What The Reader Should See First
-
-Ingest is the preparation gate. It takes source material that may be noisy,
-partial, duplicated, or inconsistently shaped and produces material that later
-packages can treat as intentional input. The value is not that ingest does
-everything near documents. The value is that it stops uncertainty from leaking
-into retrieval, reasoning, and runtime review.
+Ingest owns uncertainty in source shape. Invalid chunk geometry, malformed CSV
+rows, unsafe filtering rules, retry exhaustion, and circuit-breaker decisions
+remain explicit results rather than becoming silent changes to downstream
+evidence.
 
 ```mermaid
 flowchart LR
-    source["source material"]
-    config["ingest configuration"]
-    processing["processing pipeline"]
-    retrieval["retrieval-ready records"]
-    tests["tests and invariants"]
-    interfaces["caller surfaces"]
-    downstream["downstream packages"]
+    csv["CSV or RawDoc stream"]
+    rules["safe rules + CleanConfig"]
+    clean["CleanDoc"]
+    chunks["ChunkWithoutEmbedding"]
+    index["BM25 or NumPy cosine index"]
+    result["candidates or cited answer"]
 
-    source --> config --> processing --> retrieval --> downstream
-    processing --> tests
-    retrieval --> interfaces
+    csv --> rules --> clean --> chunks --> index --> result
+    rules -. typed ErrInfo .-> result
 ```
 
-Readers should come away with one clear picture: ingest is where messy source
-material stops being tolerated as-is. The package earns its place by making
-preparation reproducible enough that every later package can assume the input
-was shaped on purpose rather than by accident.
+## Available Surfaces
 
-## What This Package Owns
+| Surface | Concrete operations | Stable evidence |
+| --- | --- | --- |
+| Python root | `RawDoc`, `CleanDoc`, `RagEnv`, `clean_doc`, `chunk_doc`, streaming combinators, `Result`, retry and breaker helpers | `__all__`, API-freeze tests, typed marker |
+| command | CSV pipeline; `index build`; `retrieve`; `ask`; `eval` | parser tests and end-to-end fixtures |
+| HTTP v1 | health, chunk, index build, retrieve, ask | `apis/bijux-canon-ingest/v1/schema.yaml` |
+| storage | CSV document input, JSONL chunk output, persisted BM25 or NumPy-cosine index | adapter and round-trip tests |
 
-- document cleaning, normalization, and chunking before retrieval
-- ingest-side records and artifacts that downstream packages accept as prepared input
-- deterministic preparation workflows that remove source ambiguity before indexing
+The package-local index and extractive-answer features support an ingest-owned
+workflow. `bijux-canon-index` remains the owner of declared vector execution,
+backend capability negotiation, provenance-rich execution artifacts, and
+replay comparison across vector backends.
 
-## What This Package Does Not Own
+## Start With One Document
 
-- vector execution, retrieval replay, and backend index behavior
-- claim formation, reasoning policy, or multi-step orchestration semantics
-- runtime acceptance, persistence, and governed replay authority
+The dependency-light Python root exposes the smallest complete preparation
+path. It accepts a typed source, applies canonical cleaning, validates chunk
+geometry, and returns chunks with parent identity and offsets:
 
-## Boundary Test
+```python
+from bijux_canon_ingest import RagEnv, RawDoc, chunk_doc, clean_doc
 
-If the question is still about making source material predictable before any
-vector store or reasoning step touches it, it belongs here. If the question
-starts with retrieval quality, claim behavior, agent coordination, or run
-acceptance, it belongs somewhere else.
+source = RawDoc(
+    doc_id="policy-17",
+    title="Retention policy",
+    abstract="  Keep signed run records for seven years.  ",
+    categories="governance",
+)
+prepared = clean_doc(source)
+chunks = chunk_doc(prepared, RagEnv(chunk_size=48, overlap=8))
 
-## First Proof Check
+for chunk in chunks:
+    print(chunk.doc_id, chunk.start, chunk.end, chunk.text)
+```
 
-- `packages/bijux-canon-ingest/src/bijux_canon_ingest/processing` for deterministic preparation logic
-- `packages/bijux-canon-ingest/src/bijux_canon_ingest/retrieval` for retrieval-ready records and assembly owned before index handoff
-- `packages/bijux-canon-ingest/src/bijux_canon_ingest/interfaces` for CLI, HTTP, serialization, and caller-facing boundaries
-- `packages/bijux-canon-ingest/tests` for the proof that prepared output stays stable under change
+For this input, the single chunk retains `policy-17`, offsets `0..40`, and the
+normalized text `keep signed run records for seven years.`. That result proves
+the behavior of this local transformation under the supplied configuration.
+It does not prove source accuracy, durable persistence, embedding identity, or
+runtime consumption.
 
-## Start Here
+When the source is a corpus rather than one object, use the
+[configured CLI pipeline](interfaces/entrypoints-and-examples.md#cli-prepare-a-configured-corpus)
+and retain the JSONL output together with the exact configuration and source
+identity. The transition from an in-memory chunk to a reviewable corpus is an
+artifact-custody decision, not merely a change of entrypoint.
 
-- open [Foundation](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/) when the question is why this package exists or where its ownership stops
-- open [Architecture](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/) when you need module boundaries, dependency flow, or execution shape
-- open [Interfaces](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/) when the question is about commands, APIs, schemas, imports, or artifacts that callers may treat as stable
-- open [Operations](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/) when you need local workflow, diagnostics, release, or recovery guidance
-- open [Quality](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/) when the question is whether the package has proved its promises strongly enough
+## Follow One Prepared Document
 
-## Pages In This Package
+| Boundary | Retained evidence | Review question |
+| --- | --- | --- |
+| parse | source identifier, input fields, adapter result | were the intended bytes accepted without silent coercion? |
+| clean | `CleanConfig`, normalized text, safeguard outcome | which rules changed the source and which content was refused? |
+| chunk | chunk geometry, parent identity, offsets, chunk records | can every chunk be traced to its exact prepared parent? |
+| persist | JSONL records or local index manifest | can a later process load the same prepared material? |
+| retrieve | query, index identity, ranked candidates, citations | which ingest-local records produced this extractive answer? |
 
-- [Foundation](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/)
-- [Architecture](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/)
-- [Interfaces](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/)
-- [Operations](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/)
-- [Quality](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/)
+The first reviewable result is not the answer text. It is the chain from source
+identity through configuration and chunk offsets to ranked records. The
+[entrypoint examples](interfaces/entrypoints-and-examples.md) show the Python,
+CSV, local-index, and HTTP forms of that chain.
 
-## Leave This Handbook When
+## Boundary With Index
 
-- the question is now about retrieval execution rather than preparation
-- the next stop is a concrete caller contract, workflow, or test surface
-- the behavior is really owned by reasoning, orchestration, or runtime
+Ingest owns preparation and its dependency-light BM25 or NumPy-cosine local
+workflow. Index owns declared vector execution across backend capabilities,
+budgets, provenance-rich execution artifacts, and replay comparison. Move the
+question to index when backend selection, approximation, vector execution, or
+cross-backend comparison becomes the disputed decision.
+
+```text
+source bytes -> ingest records and chunks -> index execution request
+```
+
+Reason, agent, and runtime may consume ingest artifacts. They must not repair
+missing source identity, invent chunk provenance, or reinterpret a preparation
+failure as empty evidence.
+
+### Runtime Handoff Is Not Yet An Exported Adapter
+
+The implemented ingest retrieval boundary is path-based:
+`bijux_canon_ingest.application.retrieve` opens a persisted index and returns
+typed candidates. Runtime currently requests a different package-root callable
+using query, scope, and vector-contract identity. No canonical root adapter
+currently reconciles those contracts.
+
+This gap does not weaken the package-local ingest workflows; it limits the
+claim that runtime can execute them as a lower-layer step. A trustworthy
+adapter must bind the preparation receipt and index identity to runtime's
+evidence record instead of reducing the handoff to text and score.
+
+## The Preparation Receipt
+
+Prepared text is admissible downstream only when the preparation decision can
+be reconstructed. Retain a receipt beside the prepared records with these
+identities:
+
+| Identity | What it answers | What is insufficient |
+| --- | --- | --- |
+| source | which input object or byte set entered preparation? | a display name without a digest or stable source identifier |
+| configuration | which cleaning rules, safeguards, and overrides ran? | the name of a configuration file whose contents can change |
+| transformation | which normalization and filtering outcomes occurred? | only the final text |
+| segmentation | which chunk geometry, offsets, and tail policy were applied? | chunk text without its prepared parent |
+| output | which record set or persisted artifact was emitted? | a path that may be overwritten |
+| failures | which inputs were rejected, retried, truncated, or omitted? | a successful-record count alone |
+
+This receipt is the custody transfer to index. Index may attach embeddings,
+backend parameters, rankings, and execution provenance to the prepared
+identities. It must not replace them. A digest match demonstrates identity of
+the retained material; it does not demonstrate that the original source was
+accurate or complete.
+
+## Evidence And Limits
+
+| Claim | Evidence to inspect | Limit |
+| --- | --- | --- |
+| cleaning is deterministic | input identity, normalized configuration, output record, repeated serialization | does not prove source truth |
+| a chunk is traceable | parent identity, offsets, text, stable record shape | depends on retaining the prepared parent |
+| local retrieval is reproducible | index type and identity, corpus records, query, ranking output | applies to the ingest-local backend, not every vector backend |
+| runtime consumed ingest retrieval | installed-package adapter test, retained preparation receipt, mapped evidence identities | package co-installation alone does not establish this handoff |
+| an extractive answer is cited | candidate records and cited spans | does not establish that the corpus is complete |
+| bulk processing handled failure honestly | policy, typed `ErrInfo`, stage context, error counts | collected errors still require caller disposition |
+
+## Continue By Question
+
+| Question | Next page |
+| --- | --- |
+| what belongs inside the preparation boundary? | [Foundation](foundation/index.md) |
+| how do processing, application, and adapters depend on one another? | [Architecture](architecture/index.md) |
+| which Python, CLI, HTTP, and storage contracts are callable? | [Interfaces](interfaces/index.md) |
+| how do I install, run, diagnose, or recover a pipeline? | [Operations](operations/index.md) |
+| what evidence protects deterministic preparation? | [Quality](quality/index.md) |
+
+## Failure Boundaries
+
+- parsing and configuration failures identify the invalid input or override
+- transformation failures use typed `ErrInfo` values and retain stage context
+- bulk processing can fail fast, collect errors, cap errors, or stop at an
+  explicit error-rate threshold
+- retries, circuit breakers, resource guards, and caches are separate policies;
+  enabling one does not silently imply another
+- optional YAML, Typer, NumPy, sentence-transformer, and HTTP integrations are
+  loaded at their owning boundary rather than on a dependency-light root import

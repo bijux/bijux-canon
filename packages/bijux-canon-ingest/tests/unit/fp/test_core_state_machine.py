@@ -5,6 +5,10 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
+import pytest
+from hypothesis import given
+from hypothesis import strategies as st
+
 from bijux_canon_ingest.fp.core import (
     Done,
     ErrorCode,
@@ -20,9 +24,6 @@ from bijux_canon_ingest.fp.core import (
     succeed_event,
     transition,
 )
-from hypothesis import given
-from hypothesis import strategies as st
-import pytest
 
 UTC = UTC
 aware_dt = st.datetimes(timezones=st.just(UTC))

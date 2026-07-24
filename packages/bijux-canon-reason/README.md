@@ -47,35 +47,163 @@ planned and executed, how evidence is used, or where verification lives, start
 here. If you need runtime governance, storage, or vector execution internals,
 you are outside this package's boundary.
 
-## What This Package Takes And Produces
+## Reasoning Record
 
-- takes: evidence bundles, reasoning plans, verification gates, and package-local tool inputs
-- produces: structured claims, reasoning step outputs, verification outcomes, and inspectable reasoning artifacts
-- guarantees: reasoning behavior stays explicit enough to test and challenge, with verification attached to the reasoning surface itself
-- does not do: persist runtime-wide state, own replay authority, or replace ingest and retrieval package boundaries
+```mermaid
+flowchart LR
+    problem["ProblemSpec"] --> plan["Plan"]
+    plan --> steps["StepOutput + ToolCall"]
+    steps --> claims["Claim + SupportRef"]
+    claims --> trace["Trace"]
+    trace --> report["VerificationReport"]
+    report --> replay["fingerprint replay"]
+```
 
-## Legacy continuity
+The package root exports the stable model and validation vocabulary:
+`ProblemSpec`, `Plan`, `PlanNode`, `Claim`, `EvidenceRef`, `SupportRef`,
+`ToolRequest`, `ToolResult`, `Trace`, `VerificationCheck`, and
+`VerificationReport`, together with canonical serialization, fingerprinting,
+stable-ID, and validation helpers.
 
-- compatibility package: [`bijux-rar`](https://pypi.org/project/bijux-rar/)
-- legacy import root: `bijux_rar`
-- legacy command: `bijux-rar`
-- canonical migration guide: [Migration guidance](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
-- retired repository target: [https://github.com/bijux/bijux-rar](https://github.com/bijux/bijux-rar) (see [Repository consolidation notes](https://bijux.io/bijux-canon/08-compat-packages/migration/repository-consolidation/))
+Support is content-addressed. A `SupportRef` records whether it refers to a
+claim, evidence item, or tool call; its source identity; an exact non-empty
+span; and the SHA-256 digest of the cited snippet. Claims separately record
+their observed, assumed, or derived type and proposed, validated, or rejected
+status.
 
-## What this package owns
+## CLI Workflow
 
-- reasoning plans, claims, and evidence-aware reasoning models
-- execution of reasoning steps and local tool dispatch
-- verification and provenance checks that belong to reasoning itself
-- package-local CLI and API boundaries
+```bash
+bijux-canon-reason run \
+  --spec problem.json \
+  --preset default \
+  --seed 0 \
+  --artifacts-dir artifacts/bijux-canon-reason \
+  --fail-on-verify \
+  --json
 
-## What this package does not own
+bijux-canon-reason verify \
+  --trace artifacts/bijux-canon-reason/runs/<run-id>/trace.jsonl \
+  --plan artifacts/bijux-canon-reason/runs/<run-id>/plan.json \
+  --fail-on-verify --json
 
-- runtime persistence, replay authority, or execution governance
-- ingest and index engines
-- repository tooling and release automation
+bijux-canon-reason replay \
+  --trace artifacts/bijux-canon-reason/runs/<run-id>/trace.jsonl \
+  --fail-on-diff --json
+```
 
-## Source map
+`run` writes `spec.json`, `plan.json`, `trace.jsonl`, `verify.json`,
+`fingerprint.txt`, `run_meta.json`, and `manifest.json` beneath a stable run
+identifier. The manifest and invariant checksum bind the inputs, plan, trace,
+runtime descriptor, schema version, and producer version.
+
+The `eval` command exists, but its suite selector is currently a fixed stub. It
+must not be treated as evidence of a mature configurable evaluation catalog.
+
+## HTTP Contract
+
+The v1 API supports health, item CRUD, run creation, run lookup, manifest and
+trace retrieval, verification, and replay. Its source, pinned representation,
+and digest live under
+[`apis/bijux-canon-reason/v1/`](../../apis/bijux-canon-reason/v1/).
+
+## Evaluate A Reasoning Claim
+
+| Question | Evidence to inspect | What is not enough |
+| --- | --- | --- |
+| Where did the claim originate? | claim kind, introducing event, plan node, stable identity | final prose alone |
+| Which bytes support it? | evidence identity, exact span, snippet digest, `SupportRef` | a source title or confidence score |
+| Was it validated or rejected? | verification checks, findings, claim status, policy disposition | trace completion alone |
+| Is the run complete? | manifest, file digests, invariant checksum, producer and schema versions | presence of a run directory |
+| Did replay match? | original and replay fingerprints plus diff summary | similar-looking output |
+
+Verification proves that registered checks passed over retained evidence. It
+does not prove corpus completeness, scientific truth, or correctness of an
+unstated inference.
+
+## Preserve Claim Custody
+
+A consumer needs more than the claim text. Carry the content-addressed claim
+identity, kind and status, exact support references, verification findings,
+plan node, trace identity, and run manifest together. This separates three
+questions that are often conflated: what the source said, what inference was
+made from it, and which checks accepted or rejected that inference.
+
+Agent may schedule work that produces or consumes these records, but its trace
+does not supersede reasoning verification. Runtime may accept a completed
+workflow, but acceptance does not promote a proposed or rejected claim to
+validated status.
+
+## Package Continuity
+
+[`bijux-rar`](https://pypi.org/project/bijux-rar/) is an exact-version
+compatibility distribution for this package. It preserves the `bijux_rar`
+import root and delegates to canonical reasoning modules. The
+`bijux-canon-reason` distribution currently registers both the
+`bijux-canon-reason` and `bijux-rar` commands against the same canonical
+application; command continuity does not make the old Python root canonical.
+
+Use `bijux_canon_reason` and `bijux-canon-reason` in new integrations. Follow
+the [migration guide](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
+to validate plans, claims, traces, provenance, and stored-artifact readers. The
+former [`bijux/bijux-rar`](https://github.com/bijux/bijux-rar) repository is
+historical; current implementation authority is this repository.
+
+## Package Boundary
+
+Reason owns content-addressed planning, local tool execution, evidence-linked
+claims, reasoning traces, and reasoning-level verification. It consumes
+prepared and retrieved evidence without taking ownership of source
+normalization or vector ranking. Agent may coordinate several reasoning calls;
+runtime decides whether the resulting whole run is acceptable and durable.
+
+Downstream consumers should preserve the run manifest and exact support
+references. Rebuilding a citation from display text loses the byte-level
+contract that verification and replay depend on.
+
+## Runtime Reasoning Adapter Status
+
+The live runtime integration currently asks the `bijux_canon_reason` package
+root for a callable with this contract:
+
+```python
+reason(agent_outputs=artifacts, evidence=retrieved_evidence, seed=seed)
+```
+
+That callable is not exported. The package-native contract instead produces
+reason-owned plans, claims, support references, traces, and verification
+reports. The runtime executor requires its adapter to return the runtime-owned
+`ReasoningBundle` type exactly. Installing both packages therefore proves
+dependency availability, not an executable reasoning handoff.
+
+A durable adapter belongs in runtime or in a separately owned integration
+boundary. Putting a runtime-shaped wrapper in this package would reverse the
+existing dependency direction: runtime already depends on reason. More
+importantly, an adapter must map claim identity, exact evidence support,
+verification status, reasoning steps, producer identity, and trace or manifest
+custody. Returning only generated statements would erase the evidence contract
+this package exists to protect.
+
+Treat live composition as established only when an installed-package test
+resolves the callable, executes a representative handoff, returns the required
+runtime type, and demonstrates that claim and evidence identities remain
+linked across the boundary. Package CLI, HTTP, and Python workflows remain
+independently usable without that runtime adapter.
+
+## Verification And Failure Semantics
+
+- trace and plan validation reject invalid topology and inconsistent event
+  structure before successful verification
+- evidence paths are constrained and provenance references are checked rather
+  than trusted as arbitrary filesystem input
+- `--fail-on-verify` promotes verification findings to exit status `2` while
+  retaining the machine-readable report
+- replay compares original and reproduced trace fingerprints and returns a diff
+  summary on mismatch
+- disk, wall-time, CPU, corpus-size, and retrieval limits are explicit runtime
+  controls, not undocumented environment behavior
+
+## Source Map
 
 - [`src/bijux_canon_reason/planning`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-reason/src/bijux_canon_reason/planning) for planning behavior
 - [`src/bijux_canon_reason/reasoning`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-reason/src/bijux_canon_reason/reasoning) for claim and reasoning semantics
@@ -97,9 +225,4 @@ you are outside this package's boundary.
 ## Primary entrypoint
 
 - console script: `bijux-canon-reason`
-
-## Release Readiness
-
-- release line prepared for publish: `0.3.9`
-- release date: `2026-07-04`
-- package changelog: [`CHANGELOG.md`](CHANGELOG.md)
+- package history: [`CHANGELOG.md`](CHANGELOG.md)

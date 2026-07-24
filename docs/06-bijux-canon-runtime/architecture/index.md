@@ -4,80 +4,119 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-runtime-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-22
 ---
 
 # Architecture
 
-Open this section when the question is structural: where run authority lives, how acceptance and persistence flow through the package, and how runtime stays narrower than “whatever happens last.”
+Runtime separates immutable authority contracts, execution strategy, trace
+capture, verification arbitration, and durable storage. This prevents execution
+order or database state from silently becoming policy.
 
-## Structural Shape
-
-Runtime architecture is the authority layer above lower-package work. Contracts
-describe what a run may contain, execution modules resolve and run steps,
-policy modules decide how nondeterminism and budgets are handled, observability
-captures durable evidence, and verification turns traces into acceptability
-decisions.
+## Governed execution structure
 
 ```mermaid
 flowchart LR
-    contracts["contracts"]
-    model["execution model"]
-    execution["runtime execution"]
-    policy["authority policy"]
-    observability["capture and storage"]
-    verification["verification rules"]
-    verdict["governed run verdict"]
+    manifest["manifest + policy"]
+    planner["resolver + immutable plan"]
+    context["authority context + budgets"]
+    strategy["plan / dry / live / observe / unsafe"]
+    executors["step, retrieval, reasoning, agent"]
+    verify["verification + arbitration"]
+    recorder["causal trace + entropy"]
+    store["DuckDB + artifact store"]
+    replay["replay guard + semantic diff"]
 
-    contracts --> model --> execution --> policy --> verification --> verdict
-    execution --> observability --> verification
-    policy --> observability
+    manifest --> planner --> context --> strategy --> executors --> verify
+    context --> recorder
+    executors --> recorder
+    verify --> recorder --> store --> replay
 ```
 
-Runtime architecture should explain how authority is applied, not just how code
-is arranged. Contracts define what a run can contain, execution resolves the
-lower-package work, policy records the governing decisions, observability keeps
-the evidence durable, and verification turns that record into a verdict.
+Only the runtime authority can append governed events. The execution strategy
+does work through bounded executors; the recorder assigns causal order; the
+verifier evaluates results and policy; finalization freezes the trace before
+the store records it as complete authority.
 
-## Read These First
+## Mode semantics
 
-- open [Module Map](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/module-map/) first when you need the owning code area for a runtime authority concern
-- open [Execution Model](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/execution-model/) when you need the real path from lower-package output to governed run artifact
-- open [Integration Seams](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/integration-seams/) when a change could blur lower-package semantics with final authority
+| Mode | Behavior | Evidence boundary |
+| --- | --- | --- |
+| `plan` | resolve and fingerprint without executing | no run ID or trace |
+| `dry-run` | use simulated execution while exercising event and persistence contracts | not evidence that live effects would succeed |
+| `live` | execute with full verification coverage | authoritative only after finalization and arbitration |
+| `observe` | retain externally observed work under observer policy | cannot reconstruct events the host omitted |
+| `unsafe` | execute under explicit reduced guarantees | warning is retained; result is not equivalent to governed live work |
 
-## Structural Risk
+## Module authority
 
-The main architectural risk here is broadening runtime until execution order replaces explicit authority design.
+| Area | Authority |
+| --- | --- |
+| `contracts` and `model/flows` | flow, step, dataset, artifact, and compatibility contracts |
+| `application/planner.py` and flow preparation | resolution, plan identity, environment, and execution preparation |
+| `runtime/context.py`, `runtime/budget.py`, and `core/authority.py` | authority-bearing context and resource policy |
+| `runtime/execution` | lifecycle plus step, retrieval, reasoning, agent, dry, live, and observer execution |
+| `verification` and `model/verification` | engine findings, contradiction handling, arbitration, and final decisions |
+| `observability/capture` and `classification` | causal events, environment, time, determinism, entropy, and fingerprints |
+| `observability/storage` | migration-owned, single-writer DuckDB state and typed reconstruction |
+| `application/replay_*` and `observability/analysis` | retained-run loading, replay guards, drift, correlation, and semantic diff |
 
-## First Proof Check
+## Persistence model
 
-- `packages/bijux-canon-runtime/src/bijux_canon_runtime/contracts` for flow, step, dataset, and artifact contracts
-- `packages/bijux-canon-runtime/src/bijux_canon_runtime/runtime/execution` for step, retrieval, reasoning, and agent execution adapters
-- `packages/bijux-canon-runtime/src/bijux_canon_runtime/core/authority.py` for explicit runtime authority rules
-- `packages/bijux-canon-runtime/src/bijux_canon_runtime/observability` for capture, storage, replay, and drift analysis
-- `packages/bijux-canon-runtime/tests` for acceptance, replay, and persistence evidence
+The store commits record groups at multiple lifecycle boundaries. An
+interruption may therefore leave a valid unfinished run with checkpoints and a
+subset of later records. That state is resumable evidence, not a completed
+run. Artifact metadata can live in DuckDB while payload bytes remain in the
+artifact store; both are required for complete retention.
 
+The stored projection is replay-oriented rather than a generic serialization
+of every in-process object. Use migration-aware typed readers, preserve the
+schema contract hash, and never infer semantic completeness from readable
+tables alone.
 
-## Pages In This Section
+## Authority gates
 
-- [Module Map](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/module-map/)
-- [Dependency Direction](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/dependency-direction/)
-- [Execution Model](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/execution-model/)
-- [State and Persistence](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/state-and-persistence/)
-- [Integration Seams](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/integration-seams/)
-- [Error Model](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/error-model/)
-- [Extensibility Model](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/extensibility-model/)
-- [Code Navigation](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/code-navigation/)
-- [Architecture Risks](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/architecture-risks/)
+Runtime does not grant one blanket permission to a flow. Authority is checked
+at the boundary where each stronger effect becomes possible:
 
-## Leave This Section When
+```mermaid
+flowchart LR
+    declare["manifest declared"] --> resolve{"identities and contracts resolve?"}
+    resolve -->|no| refused["classified refusal"]
+    resolve -->|yes| plan["immutable plan"]
+    plan --> authorize{"mode and authority permit effects?"}
+    authorize -->|plan| planned["plan result; no run allocated"]
+    authorize -->|no| refused
+    authorize -->|yes| execute["budgeted execution + causal events"]
+    execute --> finalize{"trace complete and valid?"}
+    finalize -->|no| incomplete["unfinished or failed run retained"]
+    finalize -->|yes| arbitrate{"verification policy accepts?"}
+    arbitrate --> accepted["accepted record"]
+    arbitrate --> rejected["rejected / non-certifiable record"]
+```
 
-- leave for [Interfaces](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/) when the structural question is already a public contract question
-- leave for [Operations](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/) when the issue is running, diagnosing, or releasing the package rather than explaining its shape
-- leave for [Quality](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/) when the structure is clear and the real question is whether the package has proved it strongly enough
+| Gate | Evidence examined | Stronger claim unlocked |
+| --- | --- | --- |
+| resolution | manifest state, tenant, dataset, dependencies, contracts and environment | the declaration can become a stable plan |
+| execution authority | mode, authority token, policy, executor bindings and budgets | declared effects may begin |
+| trace finalization | causal order, required events, artifacts, evidence, claims and entropy | the execution record is closed for arbitration |
+| verification arbitration | engine findings, blocking policy and certifiability | the finalized run may be accepted under this policy |
+| persistence | finalized projection plus resolvable artifact payload custody | the accepted or rejected record can be inspected later |
+| replay | original envelope, retained inputs, current identities and semantic diff | the later observation may receive a replay verdict |
 
-## Design Pressure
+Failure at a later gate does not erase evidence from an earlier one. A rejected
+run can have a valid plan and finalized trace; an interrupted run can retain
+valid checkpoints; and a readable stored record can remain non-certifiable.
+This monotonic evidence model is what makes recovery and refusal auditable.
 
-If runtime is described only as the place where everything ends, it will
-gradually absorb behavior that should stay elsewhere. The architecture page has
-to keep execution, policy, observability, and verification visibly distinct.
+## Navigate the design
+
+| Need | Guide |
+| --- | --- |
+| Locate authority in code | [Module map](module-map.md) and [Code navigation](code-navigation.md) |
+| Follow preparation, execution, finalization, and replay | [Execution model](execution-model.md) |
+| Understand allowed dependencies | [Dependency direction](dependency-direction.md) |
+| Distinguish checkpoints, traces, DuckDB, and artifact payloads | [State and persistence](state-and-persistence.md) |
+| Integrate a lower-layer executor or storage boundary | [Integration seams](integration-seams.md) and [Extensibility model](extensibility-model.md) |
+| Trace authority, verification, and storage failures | [Error model](error-model.md) |
+| Review structural risks | [Architecture risks](architecture-risks.md) |

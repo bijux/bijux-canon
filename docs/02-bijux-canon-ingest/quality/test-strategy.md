@@ -4,25 +4,100 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-ingest-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # Test Strategy
 
-The test strategy for `bijux-canon-ingest` should show how executable evidence is supposed to defend prepared ingest behavior. A pile of checks is not yet a strategy unless it says what each layer proves.
+The ingest test suite follows the data from value construction through
+streaming execution and public boundaries. Each layer answers a different
+question; no single end-to-end example substitutes for the domain laws below
+it.
 
-## What To Check
+## Evidence Layers
 
-- separate fast local checks from broader contract or regression checks
-- tie each test layer back to a real package promise
-- treat green checks that miss the main risk as false reassurance
+```mermaid
+flowchart LR
+    laws["value and effect laws"]
+    transform["cleaning, chunking, dedup"]
+    stream["ordering and backpressure"]
+    application["pipeline composition"]
+    boundary["CLI, HTTP, persistence"]
+    quality["offline retrieval quality"]
 
-## First Proof Check
+    laws --> transform --> stream --> application --> boundary
+    transform --> quality
+    boundary --> quality
+```
 
-- `tests` and package-local validation surfaces for executable evidence
-- caller-facing docs, limits, and risks for the trust story readers actually receive
-- release notes and change records when the work alters what others may safely assume
+Failures should be diagnosed at the leftmost layer that owns the invariant.
+The offline quality layer is deliberately separate: semantic usefulness cannot
+be inferred from type, serialization, or orchestration correctness.
 
-## Bottom Line
+| Test family | Principal claim |
+| --- | --- |
+| `tests/unit/domain/` | effect plans, retries, scheduling, backpressure, idempotency, and session behavior preserve their laws |
+| `tests/unit/fp/` and `tests/unit/result/` | composition, validation, state, result folds, and streams obey value/error semantics |
+| `tests/unit/processing/` and `tests/unit/core/` | cleaning, spans, tail policies, embedding, rules, and structural dedup produce stable results |
+| `tests/unit/streaming/` | fan-in, fan-out, contiguity, sampling, and lazy dedup retain ordering and termination behavior |
+| `tests/unit/application/` | configured pipelines connect readers, stages, observations, indexing, and services correctly |
+| `tests/unit/retrieval/` | embedder selection, text analysis, and reference index APIs respect their declared contracts |
+| `tests/unit/safeguards/` | retry bounds, breaker modes, memoization, reports, and resource closure remain explicit |
+| `tests/e2e/` | CLI flows, saved indexes, deterministic evaluation, and retrieval/answer paths work across boundaries |
+| `tests/invariants/` | documentation, source labels, repository shape, and generated-file hygiene remain intact |
 
-If `bijux-canon-ingest` cannot explain why `prepared ingest behavior` should be trusted after a change, the quality work is still incomplete.
+## High-risk change matrix
+
+| Change | Focused evidence |
+| --- | --- |
+| chunk identity or offsets | core type, chunking, processing, and serialization tests |
+| normalization or filtering | processing-stage and rules tests, then application pipeline tests |
+| lazy iteration or concurrency | streaming plus async scheduling/backpressure/property tests |
+| embedding implementation | embedder-factory and retrieval tests; deterministic evaluation for the CI profile |
+| deduplication key or order | core rules/dedup and streaming tests |
+| retry, breaker, cache, or resource lifetime | corresponding safeguard tests plus the affected application boundary |
+| CLI or HTTP model | focused interface tests, checked-in schema drift, and CLI smoke test |
+| retrieval-quality baseline | offline evaluation corpus and truthfulness gate; never unit tests alone |
+
+## Property and law tests
+
+The package uses generated inputs where correctness is algebraic or
+schedule-sensitive. These tests cover such properties as bounded retry,
+associative composition, stable ordering, idempotent execution, and async plan
+equivalence across input ranges that would be weakly represented by a few
+fixtures.
+
+Property tests do not prove an external embedder's semantic quality. The
+offline evaluation suite addresses reference retrieval behavior separately,
+using a deterministic CI profile and checked-in corpus.
+
+## Boundary evidence
+
+Public interface testing has three distinct responsibilities:
+
+1. strict models reject malformed or extra data and serialize stable envelopes;
+2. CLI and HTTP adapters map domain success and error results without changing
+   their meaning;
+3. end-to-end runs prove that configuration, document input, index persistence,
+   retrieval, and answer generation connect correctly.
+
+Tests use the hash embedder for deterministic proof unless the test is
+explicitly about an optional model integration. A green hash-based test says
+nothing about semantic fitness; quality claims must come from the evaluation
+corpus and the production model's own recorded evidence.
+
+## Regression standard
+
+A defect fix should add the narrowest failing test at the owning layer before
+adding broader coverage. Broader checks are justified when the defect crossed
+a public interface, persistence format, or package boundary. This keeps a
+future failure close to its cause and preserves the distinction between
+transformation correctness and retrieval quality.
+
+## Claims Outside The Test Boundary
+
+The suite does not certify the accuracy of arbitrary third-party embedding
+models, the fitness of a corpus for a scientific question, the security of a
+deployment, or reproducibility when model and adapter identity are omitted.
+Those claims require production configuration, retained provenance, corpus
+governance, and environment-specific evidence in addition to package tests.

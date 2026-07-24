@@ -1,28 +1,80 @@
 ---
 title: Change Validation
 audience: mixed
-type: explanation
+type: how-to
 status: canonical
 owner: bijux-canon-agent-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # Change Validation
 
-Change validation for `bijux-canon-agent` should match the seam that actually moved. Strong validation means choosing evidence that tests the real risk around workflow and trace behavior, not just adding more checks mechanically.
+Validate agent changes against causal reconstruction. A polished terminal
+answer can conceal a skipped role, erased veto, unstable convergence decision,
+provider fallback, or incomplete trace. The proof must expose those paths.
 
-## What To Check
+```mermaid
+flowchart TD
+    C[Changed orchestration behavior] --> Q{Which authority moved?}
+    Q --> L[Lifecycle or role]
+    Q --> P[Provider or retry]
+    Q --> T[Trace or result]
+    Q --> S[Convergence or stop]
+    L --> A[Allowed, forbidden, veto, and abort tests]
+    P --> F[Metadata, redaction, timeout, and fallback tests]
+    T --> R[Round-trip, completeness, and parity tests]
+    S --> W[Window, oscillation, exhaustion, and reason tests]
+```
 
-- match proof depth to the surface that changed: boundary, contract, artifact, or behavior
-- update the surrounding docs when validation reveals a changed assumption
-- treat low-signal validation as unfinished work when the change touches a high-trust surface
+## Risk-to-evidence matrix
 
-## First Proof Check
+| Risk | Required focused evidence |
+| --- | --- |
+| a role advances control itself | forbidden-transition and controller-ownership tests |
+| handoff loses substantive state | typed round-trip with input, output, issues, and lineage |
+| veto is overwritten | merge, verification, finalization, and trace assertions |
+| convergence is mistaken for correctness | stable-wrong and correct-nonconvergent fixtures |
+| retry changes provider invisibly | ordered attempts, model metadata, error, budget, and fallback record |
+| secrets enter evidence | trace, log, snapshot, error, and structured-output redaction tests |
+| trace omits a failure | role error, controller decision, stop reason, and terminal entry assertions |
+| result diverges from trace | reconstruction parity across pass, veto, abort, and dry-run paths |
+| replay status ignores model parameters | temperature, model, configuration, and contract mismatch tests |
+| HTTP and CLI meanings diverge | shared outcome-field assertions and interface-specific failure tests |
 
-- `tests` and package-local validation surfaces for executable evidence
-- caller-facing docs, limits, and risks for the trust story readers actually receive
-- release notes and change records when the work alters what others may safely assume
+## Select the narrowest useful command
 
-## Bottom Line
+```bash
+packages/bijux-canon-agent/.venv/bin/python -m pytest \
+  packages/bijux-canon-agent/tests/<area>/<test-file>.py -q
 
-If `bijux-canon-agent` cannot explain why `workflow and trace behavior` should be trusted after a change, the quality work is still incomplete.
+make test PACKAGE=bijux-canon-agent
+```
+
+Add only affected boundary lanes:
+
+```bash
+make api PACKAGE=bijux-canon-agent
+make lint PACKAGE=bijux-canon-agent
+make quality PACKAGE=bijux-canon-agent
+make build PACKAGE=bijux-canon-agent
+make docs-check
+```
+
+## Prove failure paths without live secrets
+
+Use deterministic providers, fakes, or recorded controlled responses for
+lifecycle and trace evidence. Explicitly test timeout, rate limit, malformed
+payload, cancellation, retry exhaustion, and fallback. Live-provider checks
+may supplement adapter evidence but cannot replace deterministic failure tests
+or prove replayability.
+
+For trace changes, compare canonical snapshots with observational fields
+excluded only where documented. Verify schema upgrade and malformed historical
+input behavior before claiming compatibility.
+
+Update configuration, artifact, limitation, and release documentation whenever
+a role, transition, provider requirement, outcome field, trace version, or stop
+condition changes.
+
+Validation is sufficient when the final outcome can be reconstructed from the
+retained trace and every alternate terminal path remains explicit.

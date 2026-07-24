@@ -4,64 +4,129 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # Change Principles
 
-Root-level change should leave `bijux-canon` easier to explain, not merely
-more featureful.
-
-The root exists to coordinate package truth. When a root change makes package
-ownership harder to see, the repository gains short-term convenience at the
-cost of long-term review accuracy.
-
-## Change Model
+Bijux Canon evolves as a family of independently owned packages joined by
+explicit contracts. A change is complete when behavior, representation,
+evidence, and release identity still describe the same system—not merely when
+one implementation path passes.
 
 ```mermaid
 flowchart LR
-    proposal["shared change proposal"]
-    owner["confirm the owning package or root surface"]
-    proof["move explanation, proof, and enforcement together"]
-    outcome["clearer repository behavior"]
-
-    proposal --> owner --> proof --> outcome
+    need[User or operator need] --> owner[Owning package]
+    owner --> contract[Typed and HTTP contracts]
+    contract --> evidence[Tests, traces, schemas, and artifacts]
+    evidence --> release[Versioned distributions]
+    release --> docs[Reader guidance]
+    docs -. discrepancy .-> owner
 ```
 
-This page should make root-level change feel disciplined rather than broad. A
-good change clarifies one shared rule and leaves package ownership easier to
-see than before.
+## Preserve One Owner per Decision
 
-## Tie-Break Order
+Each consequential decision has one canonical owner:
 
-When two plausible changes compete, prefer the option that:
+| Decision | Owner |
+| --- | --- |
+| source normalization and chunking | `bijux-canon-ingest` |
+| retrieval execution and result provenance | `bijux-canon-index` |
+| evidence-addressed claims and reasoning verification | `bijux-canon-reason` |
+| role orchestration, convergence, and agent trace | `bijux-canon-agent` |
+| run admission, policy, persistence, resume, and replay | `bijux-canon-runtime` |
+| repository validation and publication guards | `bijux-canon-dev` |
 
-- keeps behavior in the owning package instead of broadening the root
-- moves explanation, schema, tests, and automation together when they describe
-  the same shared rule
-- makes the repository easier for a new reviewer to route correctly after one
-  quick read
-- keeps automation explicit about which package or shared rule it is protecting
-- treats compatibility bridges as temporary migration pressure, not preferred
-  design
+The repository root coordinates these owners but does not reimplement their
+behavior. A shared helper is appropriate only when it protects a genuinely
+cross-package rule, such as schema pinning or release-set validation.
 
-## Reject This Shortcut
+## Move Contracts and Evidence Together
 
-A root helper that quietly starts encoding ingest chunking rules or reason-level
-claim policy is a regression even if it simplifies one local task. The helper
-would hide product behavior behind repository glue and make later review less
-honest.
+A public change can cross several representations. Keep them synchronized in
+the same release decision:
 
-## First Proof Checks
+- Python models, imports, exceptions, and callable semantics;
+- CLI commands, exit behavior, and machine-readable output;
+- HTTP schemas and implemented routes;
+- durable artifacts, fingerprints, and replay fields;
+- focused tests and compatibility assertions;
+- public explanation and migration guidance.
 
-- `packages/` to confirm the behavior is not already owned by one package
-- `Makefile`, `makes/`, and `.github/workflows/` to confirm a shared rule is
-  actually enforced
-- `apis/` when the change claims to protect more than one package contract
-- neighboring package docs when the boundary feels arguable
+Changing only a schema does not change the implementation. Changing only the
+implementation leaves callers without a stable contract. Changing only prose
+creates a promise the repository cannot prove.
 
-## Design Pressure
+## Strengthen Evidence as Risk Increases
 
-The pressure on root change is always toward convenience. If a shared helper or
-policy starts absorbing package-local behavior, the repository gains motion and
-loses honesty at the same time.
+Use the narrowest evidence that proves the affected boundary, then add broader
+checks when the change crosses packages or publication surfaces.
+
+```mermaid
+flowchart TD
+    local[Package-local behavior] --> unit[Focused package tests]
+    public[Public Python or CLI contract] --> contract[Contract and compatibility tests]
+    http[HTTP representation] --> schema[Schema drift and live route checks]
+    persisted[Persistence or replay] --> artifact[Artifact, migration, and replay checks]
+    release[Workspace or publication] --> suite[Release-set and artifact verification]
+```
+
+An optimization must retain the evidence needed to explain it. Faster
+retrieval without provenance, shorter reasoning without support links, or
+smaller traces without replay identity changes the guarantee rather than its
+cost.
+
+## Compatibility Is an Edge Contract
+
+The six compatibility distributions preserve existing package, import, and
+command names while delegating to canonical owners. They must remain aliases,
+not alternative implementation homes. New functionality enters through the
+canonical package; compatibility surfaces inherit it through direct
+dependency, re-export, and command forwarding.
+
+Compatibility can be retired only through an explicit release policy with
+consumer evidence and migration guidance. Silent removal and indefinite
+divergence are both contract failures.
+
+## Make Irreversible Boundaries Explicit
+
+Some operations create durable authority:
+
+- a runtime run is allocated and begins appending causal history;
+- a trace is finalized and becomes immutable;
+- an artifact or schema is content-addressed;
+- a package version or container image is published;
+- a compatibility name resolves to a released canonical dependency.
+
+Changes around these boundaries need recovery and rollback semantics before
+deployment. An external side effect cannot be undone by rolling back a DuckDB
+record, and a published version cannot be replaced in place.
+
+## Honest Limits
+
+The package family does not claim that a healthy process proves a valid run,
+that a readable artifact proves acceptance, or that replay proves scientific
+truth. Health, integrity, verification, arbitration, and replay answer
+different questions. Public guidance keeps those claims separate.
+
+When an implementation surface is intentionally incomplete—such as a
+contract-only HTTP route—the supported boundary remains visible instead of
+being described as available.
+
+## Review Invariants
+
+Before accepting a change, confirm that:
+
+- the decision still lives in its canonical owner;
+- every changed public representation agrees;
+- identifiers, hashes, ordering, and tenant authority remain stable where
+  promised;
+- failure, recovery, and replay behavior remain observable;
+- compatibility aliases still resolve directly to canonical behavior;
+- validation demonstrates the affected contract without bypassing a guard;
+- the published explanation states both capability and limit.
+
+The [Ownership Model](ownership-model.md) resolves boundary questions, the
+[Package Map](package-map.md) lists public and support distributions, and
+[Operations](../operations/index.md) connects these principles to validation
+and release workflows.

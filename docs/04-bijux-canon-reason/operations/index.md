@@ -4,70 +4,93 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-reason-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-22
 ---
 
 # Operations
 
-Open this section when you need to run reasoning work repeatably: install it, reproduce claim behavior, diagnose provenance or verification drift, release it, or recover from failure with evidence instead of guesswork.
+Operate a reasoning run as a chain of evidence, not as a command that happened
+to exit. Acceptance requires the intended specification and plan, a trace with
+resolvable support, an inspected verification report, and a run whose digests
+still match its retained files.
 
-## Operating Loop
+## Review lifecycle
 
 ```mermaid
 flowchart LR
-    setup["setup"]
-    run["run reasoning step"]
-    inspect["inspect claims and checks"]
-    recover["recover from drift"]
-    release["release package"]
-    proof["tests and artifacts"]
+    spec["validate ProblemSpec"]
+    run["create content-addressed run"]
+    trace["inspect evidence and claim events"]
+    verify["review every finding"]
+    integrity["check manifest and fingerprints"]
+    replay["replay with frozen results"]
+    accept["accept, reject, or retain insufficient evidence"]
 
-    setup --> run --> inspect --> recover --> release
-    run --> proof
-    inspect --> proof
+    spec --> run --> trace --> verify --> integrity --> replay --> accept
+    verify -. finding .-> trace
+    integrity -. mismatch .-> run
 ```
 
-Reason operations should make interpretive behavior reproducible enough to
-audit. A maintainer needs a clear path to run the package, inspect the emitted
-claims and checks, and recover from provenance or verification drift without
-guessing which layer changed.
+## Acceptance evidence
 
-## Read These First
+| Evidence | Acceptance question |
+| --- | --- |
+| `spec.json` | Is this the intended problem, constraint set, and output type? |
+| `plan.json` | Is the dependency graph complete and content identity stable? |
+| `trace.jsonl` | Can each call, result, evidence item, claim, and action be followed in order? |
+| `verify.json` | Which checks passed, warned, or failed, and under which invariant IDs? |
+| `fingerprint.txt` | Do the exact serialized trace bytes still match? |
+| `run_meta.json` | Which preset, seed, runtime, tools, schema, and producer created the run? |
+| `manifest.json` | Do all declared core, evidence, and provenance files match their digests? |
+| replay diff | Does the frozen execution reproduce the retained trace under the recorded contract? |
 
-- open [Installation and Setup](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/installation-and-setup/) first when you need a clean package starting point
-- open [Observability and Diagnostics](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/observability-and-diagnostics/) when claims, checks, or artifacts no longer match expectation
-- open [Failure Recovery](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/failure-recovery/) when reasoning behavior has already failed or drifted
+## Keep operational verdicts separate
 
-## Operational Risk
+One run can have different answers to each of these questions:
 
-The main operational risk here is making reasoning behavior look inspectable while the actual reproduction path depends on undocumented setup or recovery steps.
+| Verdict | Governing evidence | Operational meaning |
+| --- | --- | --- |
+| execution completion | plan nodes and terminal trace events | the declared work reached a terminal outcome |
+| claim disposition | typed claim status and its support relationships | the claim is proposed, validated, rejected, or retained as insufficient |
+| verification result | registered findings, severities and policy choice | structural and grounding checks passed, warned, or failed |
+| bundle integrity | manifest, fingerprints, invariant checksum and safe paths | the retained files still form the content-addressed run |
+| replay comparison | frozen inputs, replay trace, diff, verdict and reason | the later execution matches or diverges under the recorded contract |
+| process status | command exit code and selected strictness flags | automation received the documented process-level signal |
 
-## First Proof Check
+Do not derive one verdict from another. A command may exit successfully while
+retaining verification findings; a valid bundle may contain an insufficient
+claim; and replay can diverge even when both executions terminate normally.
+Acceptance policy must name which verdicts it requires and retain all of them.
 
-- `pyproject.toml`, `README.md`, and package-local entrypoints for checked-in operating truth
-- `tests` and runnable workflows for evidence that the package can be operated repeatably
-- release notes and version metadata when the work changes caller expectations
+## Failure routing
 
-## Pages In This Section
+| Symptom | Inspect first | Safe response |
+| --- | --- | --- |
+| Verification findings with exit `0` | `verify.json` and whether strict failure policy was requested | do not accept the run based on exit status alone |
+| Support hash or span failure | exact retained evidence bytes and registered interval | restore the original evidence or reject the claim; never update only the digest |
+| Manifest mismatch | changed, missing, and unexpectedly relocated files | quarantine the bundle and recover from a trusted copy |
+| Replay checksum failure | original plan, evidence order, runtime descriptor, and pinned retrieval provenance | refuse equivalence before re-execution |
+| Replay trace differs | structural diff and recorded tool returns | identify the changed contract or implementation; similar prose is insufficient |
+| Retrieval evidence is weak or absent | corpus, chunks, BM25 provenance, and `insufficient_evidence` events | improve the declared evidence path or preserve the controlled refusal |
+| Resource guard stops a run | disk, wall-time, CPU, or corpus limit | treat partial output as incomplete and rerun under an explicit safe budget |
 
-- [Installation and Setup](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/installation-and-setup/)
-- [Local Development](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/local-development/)
-- [Common Workflows](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/common-workflows/)
-- [Observability and Diagnostics](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/observability-and-diagnostics/)
-- [Performance and Scaling](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/performance-and-scaling/)
-- [Failure Recovery](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/failure-recovery/)
-- [Release and Versioning](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/release-and-versioning/)
-- [Security and Safety](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/security-and-safety/)
-- [Deployment Boundaries](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/deployment-boundaries/)
+## Deployment boundary
 
-## Leave This Section When
+The API offers an optional exact token, request-size guards, and an in-process
+rate counter. These are not distributed authentication, tenant isolation,
+malware screening, sandboxing, or secret management. Process resource budgets
+are guardrails, not a scheduler or hard real-time boundary. Apply production
+controls in the hosting system and authenticate exported manifests externally.
 
-- leave for [Interfaces](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/) when the live problem is contract shape rather than package operation
-- leave for [Architecture](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/) when a workflow problem exposes structural drift underneath it
-- leave for [Quality](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/) when the package runs but the real question is whether the evidence is strong enough
+## Operate by need
 
-## Design Pressure
-
-If a reasoning drift incident can only be understood by memory or ad hoc
-inspection, the operating story is still too weak. This section has to make
-claim reproduction and recovery observable from checked-in practice.
+| Need | Guide |
+| --- | --- |
+| Install the command and API extras | [Installation and setup](installation-and-setup.md) |
+| Develop with isolated artifacts | [Local development](local-development.md) |
+| Create, verify, replay, and evaluate runs | [Common workflows](common-workflows.md) |
+| Diagnose claims, checks, provenance, and replay | [Observability and diagnostics](observability-and-diagnostics.md) |
+| Plan corpus and resource bounds | [Performance and scaling](performance-and-scaling.md) |
+| Recover a corrupt or divergent run | [Failure recovery](failure-recovery.md) |
+| Define hosting controls | [Security and safety](security-and-safety.md) and [Deployment boundaries](deployment-boundaries.md) |
+| Release an artifact- or schema-sensitive change | [Release and versioning](release-and-versioning.md) |

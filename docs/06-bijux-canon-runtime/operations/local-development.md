@@ -1,28 +1,141 @@
 ---
 title: Local Development
 audience: mixed
-type: explanation
+type: how-to
 status: canonical
 owner: bijux-canon-runtime-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # Local Development
 
-Local development for `bijux-canon-runtime` should keep code, docs, and proof close enough together that changes to governed run behavior stay easy to explain before they spread outward.
+Develop runtime changes against the complete authority chain. A useful local
+loop proves what the manifest declared, what resolution admitted, which mode
+authorized execution, which effects and events occurred, how verification was
+arbitrated, what became durable, and what replay may compare.
 
-## What To Check
+```mermaid
+flowchart LR
+    C[Change runtime authority] --> F[Run focused contract fixture]
+    F --> E[Inspect events and decisions]
+    E --> S[Inspect persisted state]
+    S --> R{Replay or recovery changed?}
+    R -- no --> P[Run package gate]
+    R -- yes --> D[Run mismatch and crash evidence]
+    D --> P
+```
 
-- work from the package boundary rather than from incidental monorepo context
-- change docs and tests in the same series when local behavior changes
-- treat a hard-to-reproduce edit loop as an operational defect, not a personal preference
+## Bootstrap from the repository root
 
-## First Proof Check
+```bash
+make install
+make -f "$PWD/makes/packages/bijux-canon-runtime.mk" \
+  -C packages/bijux-canon-runtime help
+```
 
-- `pyproject.toml`, `README.md`, and boundary-facing entrypoints for checked-in operating truth
-- `tests` and runnable workflows for executable confirmation that the runbook still works
-- release notes and version metadata when the work changes caller expectations
+Use root dispatch for normal package gates:
 
-## Bottom Line
+```bash
+make test PACKAGE=bijux-canon-runtime
+make lint PACKAGE=bijux-canon-runtime
+make quality PACKAGE=bijux-canon-runtime
+```
 
-If `bijux-canon-runtime` cannot be operated repeatably under change, the operational documentation is still incomplete.
+The package profile installs canonical workspace dependencies into
+`artifacts/bijux-canon-runtime/venv`;
+`packages/bijux-canon-runtime/.venv` is a convenience link to that canonical
+environment. Generated evidence remains under `artifacts/`. The package
+directory has no standalone Makefile; direct commands require the absolute
+repository profile path because Make applies `-C` before resolving `-f`.
+
+## Start with the nearest authority invariant
+
+```bash
+packages/bijux-canon-runtime/.venv/bin/python -m pytest \
+  packages/bijux-canon-runtime/tests/<area>/<test-file>.py -q
+```
+
+| Changed behavior | Evidence to inspect |
+| --- | --- |
+| manifest or resolver | structural validation, semantic refusal, identity, dependency order, and plan |
+| run mode | permitted work, effects, warnings, events, persistence, and certifiability |
+| lower-package adapter | retained producer identity, typed failure, and absence of semantic reinterpretation |
+| executor or effect | authorization, idempotency, receipt, retry, interruption, and unknown outcome |
+| verification or arbitration | immutable check result, policy fingerprint, decision, and non-certifiable path |
+| DuckDB store | migration, tenant isolation, event order, checkpoint, lock, finalization, and recovery |
+| replay | dataset, plan, policy, entropy, envelope, acceptability, diff, and drift classification |
+| CLI | exit behavior, JSON rendering, store mutation, and explanation |
+| HTTP | health/readiness plus explicit `501` behavior for unimplemented run and replay handlers |
+
+Exercise accepted, rejected, and non-certifiable outcomes. A successful live
+run alone cannot prove that authority refusal or evidence insufficiency remains
+honest.
+
+## Reconcile the Authority Chain
+
+Each layer owns a different decision. A fixture is credible only when those
+decisions can be followed without inferring missing authority.
+
+| Layer | Owned record | Failure to reject |
+| --- | --- | --- |
+| manifest and resolver | identities, dependencies, determinism posture, replay envelope, and resolved plan | structurally valid but semantically inadmissible flow |
+| execution mode | permission to plan, simulate, observe, execute, or enter unsafe behavior | effects outside the selected mode |
+| step and effect boundary | authorization, idempotency key, receipt, and terminal effect state | unauthorized or ambiguously completed effect |
+| verifier | immutable check results over retained reasoning, evidence, and artifacts | malformed or unsupported verification input |
+| policy arbitration | policy fingerprint, decision, and certifiability | a check result that policy does not permit |
+| persistence | tenant, run, event order, checkpoints, finalization, and replay envelope | partial, cross-tenant, or non-finalized state |
+| replay comparison | structural, semantic, entropy, policy, dataset, and temporal differences | drift outside declared acceptability |
+
+## Use isolated stores and controlled effects
+
+Give each focused test or manual run its own DuckDB path beneath `artifacts/`.
+Do not share a file between concurrent writers. For external-effect changes,
+use a controlled adapter that can expose the crash window between remote effect
+and local event persistence.
+
+Recovery tests must not infer that a missing completion event means an external
+effect did not happen. Preserve effect receipts, idempotency keys, and an
+explicit unknown state where certainty is unavailable.
+
+## Validate public boundaries deliberately
+
+```bash
+make api PACKAGE=bijux-canon-runtime
+make build PACKAGE=bijux-canon-runtime
+make docs-check
+```
+
+The HTTP contract includes run and replay envelopes, but those handlers
+currently return `501 Not Implemented`. API validation must preserve that
+truth; schema presence is not implementation evidence.
+
+Use the build lane for root imports, workspace dependencies, package data,
+schema hashes, entry points, or distribution metadata. Use focused regression
+tests when dataset evolution, policy compatibility, temporal drift, crash
+recovery, or cross-process replay changes.
+
+## Read the Package Evidence
+
+| Surface | Repository evidence |
+| --- | --- |
+| focused and package tests | `artifacts/bijux-canon-runtime/test/` |
+| API schema, drift, and contract checks | `artifacts/bijux-canon-runtime/api/` |
+| wheel and source archive checks | `artifacts/bijux-canon-runtime/build/` |
+| software bill of materials | `artifacts/bijux-canon-runtime/sbom/` |
+| manual authority fixtures | isolated DuckDB stores and referenced payloads under `artifacts/` |
+
+The API report proves the published HTTP boundary, including its explicit
+unimplemented responses. The DuckDB fixture proves persisted CLI or library
+execution. Neither substitutes for the other.
+
+## Preserve the governed review unit
+
+Retain manifest, policy, dataset descriptor, resolved plan, mode, events,
+entropy record, lower-package evidence, verification results, arbitration,
+trace, checkpoints, store identity, replay envelope, and diff. The DuckDB file
+alone may not contain every referenced payload, so preserve external artifact
+custody as part of the fixture.
+
+See [change validation](../quality/change-validation.md) and
+[state and persistence](../architecture/state-and-persistence.md) for the
+required failure and recovery evidence.

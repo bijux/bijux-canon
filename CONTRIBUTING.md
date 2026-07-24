@@ -47,8 +47,17 @@ Typical validation flows:
 - root docs and governance changes: `make docs-check`
 - root workflow or config changes: `make help`, `make list-all`, and any
   relevant package or root targets
-- package-scoped changes: `make -C packages/<package> <target>`
-- repository package dispatch changes: `make <target> PACKAGE=<package>`
+- package-scoped changes: `make <target> PACKAGE=<package>`
+- repository package dispatch changes: `make check-make-layout` plus a focused
+  dispatched target such as `make test PACKAGE=<package>`
+
+Package directories do not contain standalone Makefiles. To inspect a package
+profile directly, provide it explicitly:
+
+```bash
+make -f "$PWD/makes/packages/bijux-canon-ingest.mk" \
+  -C packages/bijux-canon-ingest help
+```
 
 If you touch checked-in API contracts, schemas, or publish flows, verify the
 resulting artifacts rather than assuming the repository state stayed

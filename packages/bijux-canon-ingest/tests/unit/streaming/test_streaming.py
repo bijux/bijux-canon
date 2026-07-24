@@ -5,6 +5,8 @@ from __future__ import annotations
 
 from itertools import islice
 
+import pytest
+
 from bijux_canon_ingest import (
     Chunk,
     ChunkWithoutEmbedding,
@@ -14,6 +16,7 @@ from bijux_canon_ingest import (
     RawDoc,
     TraceLens,
     _trace_iter,
+    as_source,
     build_ingest_deps,
     compose_transforms,
     fence_k,
@@ -21,6 +24,7 @@ from bijux_canon_ingest import (
     gen_bounded_chunks,
     gen_overlapping_chunks,
     make_chunk_stream_fn,
+    make_merge,
     make_peek,
     make_sampler_stable,
     multicast,
@@ -28,7 +32,6 @@ from bijux_canon_ingest import (
     structural_dedup_lazy,
     throttle,
 )
-import pytest
 
 
 def test_dedup_iterator_preserves_order() -> None:
@@ -41,6 +44,22 @@ def test_dedup_iterator_preserves_order() -> None:
 
     out = list(structural_dedup_lazy([a, b, a2, c, a]))
     assert out == [a, b, c]
+
+
+def test_merge_combines_sorted_sources_without_key() -> None:
+    merged = make_merge(as_source([1, 3]), as_source([2, 4]))
+
+    assert list(merged()) == [1, 2, 3, 4]
+
+
+def test_merge_combines_sorted_sources_with_key() -> None:
+    merged = make_merge(
+        as_source([("a", 1), ("c", 3)]),
+        as_source([("b", 2), ("d", 4)]),
+        key=lambda item: item[1],
+    )
+
+    assert list(merged()) == [("a", 1), ("b", 2), ("c", 3), ("d", 4)]
 
 
 def _reconstruct_overlap(

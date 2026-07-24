@@ -4,67 +4,85 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-agent-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-22
 ---
 
 # Quality
 
-Open this section when you need to decide whether workflow and trace behavior is proven strongly enough for operators and callers to trust deterministic orchestration.
+Agent quality is the coherence of the orchestration record, not the fluency of
+its final artifact. Contracts, lifecycle, convergence, termination, trace, and
+public adapters each need focused proof before a run can be called auditable.
 
-## Trust Model
+## Evidence chain
 
 ```mermaid
 flowchart LR
-    strategy["test strategy"]
-    invariants["workflow invariants"]
-    validation["change validation"]
-    limits["limitations and risk"]
-    trust["trust decision"]
+    contracts["strict role contracts"]
+    lifecycle["owned transitions"]
+    roles["bounded role behavior"]
+    outcome["merge + convergence + termination"]
+    trace["schema + ordering + replayability"]
+    boundary["CLI / HTTP / artifacts"]
+    limits["model and hosting limits"]
 
-    strategy --> invariants --> validation --> limits --> trust
+    contracts --> lifecycle --> roles --> outcome --> trace --> boundary --> limits
 ```
 
-Agent quality has to defend more than successful runs. It has to show why
-workflow ordering, traces, and deterministic coordination are still trustworthy
-under change, and where the package is still honest about risk or limit
-surfaces.
+## Claims and proof
 
-## Read These First
+| Trust claim | Required evidence | Important limit |
+| --- | --- | --- |
+| role calls have stable contracts | strict input/output/error and metadata tests | schema validity does not establish correctness |
+| lifecycle authority is centralized | transition, kernel-order, architecture, and passive-role invariants | custom graphs need equivalent declared evidence |
+| role behavior remains bounded | focused role tests and no-lifecycle-override checks | provider behavior remains external |
+| sharded work has honest outcome | shard merge, failure assembly, final validation, telemetry tests | one success must not conceal failed inputs |
+| convergence is reproducible | strategy, snapshot, window hash, oscillation, termination tests | stable agreement can still be wrong |
+| traces are reviewable | mandatory fields, ordering, completeness, schema version, serialization tests | missing host/provider events cannot be reconstructed |
+| replay designation is honest | frozen time, deterministic hash, zero-temperature, negative replay tests | replay does not recreate historical model serving |
+| public surfaces agree | CLI/HTTP parity, OpenAPI, artifact, and golden example tests | HTTP v1 intentionally has a narrower fixed pipeline |
 
-- open [Test Strategy](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/test-strategy/) first when you need the broad proof shape behind workflow behavior
-- open [Invariants](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/invariants/) when the question is what must not drift across coordination and traces
-- open [Change Validation](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/change-validation/) when you need the minimum proof for a safe agent change
+## Snapshot and live-test discipline
 
-## Trust Risk
+Snapshots protect architecture contracts, version defaults, kernel behavior,
+trace schema, and representative artifacts. Review their semantic changes;
+regenerating expected output without explaining a field, transition, or
+default change erases compatibility evidence.
 
-The main quality risk here is workflow success that still leaves traces or review evidence too weak to defend the behavior.
+Live provider tests answer only whether an adapter can contact the provider
+and record its response metadata. They are opt-in evidence and do not replace
+deterministic orchestration tests or representative model evaluation.
 
-## First Proof Check
+## Separate the assurance domains
 
-- `tests` and package-local validation surfaces for executable evidence
-- invariants, limitations, and risk pages for the trust boundaries that still matter after green checks
-- release notes and caller-facing docs when the change alters what readers may safely assume
+An auditable agent workflow combines evidence from three domains that cannot
+substitute for one another:
 
-## Pages In This Section
+| Assurance domain | What it can establish | Evidence to retain | What remains outside it |
+| --- | --- | --- | --- |
+| orchestration | authorized role order, lifecycle, merge, veto, convergence, termination and trace completeness | deterministic contract tests, transition records, snapshots and `RunTrace` | semantic quality of model output |
+| model/provider | representative task behavior and observed remote-call metadata | declared evaluation set, provider/model identity, prompt/configuration, outputs, failures and usage | repeatability of an external service beyond captured observations |
+| host/publication | file closure, storage identity, access, retention and interface delivery | file hashes, atomic publication record, permissions, CLI/HTTP result and recovery test | correctness of the pipeline decision itself |
 
-- [Test Strategy](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/test-strategy/)
-- [Invariants](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/invariants/)
-- [Review Checklist](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/review-checklist/)
-- [Documentation Standards](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/documentation-standards/)
-- [Definition of Done](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/definition-of-done/)
-- [Dependency Governance](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/dependency-governance/)
-- [Change Validation](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/change-validation/)
-- [Known Limitations](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/known-limitations/)
-- [Risk Register](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/risk-register/)
+A release claim must name which domain it covers. For example, lifecycle
+snapshots can support orchestration compatibility but not summarization
+quality; a live provider success can support connectivity but not replay; and
+an atomically stored trace can support custody but not trace completeness
+unless the agent validator accepted it first.
 
-## Leave This Section When
+## Evidence routes
 
-- leave for [Foundation](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/) when the doubt is really about package ownership rather than proof
-- leave for [Interfaces](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/) when the question is what the contract is rather than whether it is defended
-- leave for [Operations](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/) when the package already seems trustworthy and the real issue is how to run it repeatably
+| Need | Guide |
+| --- | --- |
+| Understand contracts, lifecycle, trace, and boundary test layers | [Test strategy](test-strategy.md) |
+| Review lifecycle, contract, trace, and convergence laws | [Invariants](invariants.md) |
+| Select proof for a concrete change | [Change validation](change-validation.md) |
+| Apply consistent review questions | [Review checklist](review-checklist.md) |
+| Decide whether orchestration evidence is complete | [Definition of done](definition-of-done.md) |
+| Govern model providers and optional integrations | [Dependency governance](dependency-governance.md) |
+| Understand model, convergence, replay, credential, and hosting limits | [Known limitations](known-limitations.md) |
+| Inspect unresolved workflow and operational risk | [Risk register](risk-register.md) |
+| Interpret workflow results together with lifecycle and trace evidence | [Interpreting agent evidence](evidence-interpretation.md) |
 
-## Design Pressure
-
-If a workflow only looks deterministic because the trace is not reviewed hard
-enough, this section is too weak. Quality here has to keep execution evidence,
-trace invariants, and residual risk in one frame.
+Reproduce defects at the narrowest contract, role, lifecycle, convergence,
+trace, or interface owner. Add pipeline-level proof when terminal status or
+artifact completeness changes, and parity proof when adapters could diverge.

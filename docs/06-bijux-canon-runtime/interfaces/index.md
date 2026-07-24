@@ -4,69 +4,123 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-runtime-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-22
 ---
 
 # Interfaces
 
-Open this section when the question is contractual: which runtime commands, acceptance artifacts, schemas, and imports define what a governed run exposes to callers or operators.
+Runtime interfaces carry authority. A caller must preserve tenant, manifest,
+plan, dataset, policy, environment, trace, artifact, entropy, and replay
+identity rather than reducing a governed run to its final payload.
 
-## Contract Model
+## Surface map
+
+| Surface | Availability | Authority contract |
+| --- | --- | --- |
+| Python | complete execution surface | manifests, plans, execution configuration, stores, policies, results, replay |
+| CLI | plan, dry run, live run, replay, inspect, diff, failure explanation, database validation | JSON/plain output, exit classes, DuckDB path, tenant and run identity |
+| HTTP health/readiness | implemented | liveness and ability to open configured DuckDB storage |
+| HTTP flow run/replay | schema only | validates payload and headers, then returns `501 Not Implemented` |
+| DuckDB store | local typed persistence | runs, datasets, steps, events, checkpoints, artifacts, evidence, claims, tools, entropy, finalization |
+| artifact store | payload persistence | immutable identity, hash, parentage, producer, tenant, and scope |
+| versioned schemas | compatibility boundary | HTTP payloads, database migrations, and schema hashes |
+
+## Flow contract path
 
 ```mermaid
-flowchart LR
-    caller["caller or operator"]
-    surfaces["commands and APIs"]
-    policy["authority contracts"]
-    records["run artifacts and records"]
-    imports["public imports"]
-    consumers["reviewers or automation"]
-
-    caller --> surfaces --> policy --> records --> consumers
-    imports --> policy
+sequenceDiagram
+    participant Caller
+    participant Runtime
+    participant Executors
+    participant Verifier
+    participant Store
+    Caller->>Runtime: manifest + policy + mode + store
+    Runtime->>Runtime: resolve plan and authority
+    Runtime->>Executors: ordered governed steps
+    Executors-->>Runtime: events, artifacts, evidence, claims
+    Runtime->>Verifier: results + gates + budgets
+    Verifier-->>Runtime: findings + arbitration
+    Runtime->>Store: finalized trace and projections
+    Runtime-->>Caller: FlowRunResult or classified failure
 ```
 
-Runtime interfaces are the visible edge of authority. The page should make
-clear which commands, schemas, and durable records callers may depend on once a
-governed run exists, and which details are still internal implementation.
+## Current interface constraints
 
-## Read These First
+- Plan mode returns no run ID or trace because it allocates no execution.
+- Live JSON output currently omits the run ID; plain output exposes it, after
+  which `inspect run --json` can retrieve the retained trace.
+- `diff run` reports differences without failing the process. Automation must
+  evaluate the payload.
+- `validate db` proves schema initialization and readability, not row-level
+  integrity or semantic replayability.
+- `unsafe-run` is parsed but cannot currently supply its required verification
+  policy through the CLI. Use the governed Python surface when that explicit
+  reduced-guarantee mode is necessary.
+- Several callable CLI commands are suppressed from top-level help.
+- HTTP authority headers are syntax-checked only; run and replay have no remote
+  execution backend despite their versioned schemas.
 
-- open [Artifact Contracts](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/artifact-contracts/) first when the dispute is about durable run records or replay surfaces
-- open [API Surface](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/api-surface/) when the question begins with a caller-visible runtime API or schema
-- open [Compatibility Commitments](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/compatibility-commitments/) when a runtime surface change could redefine governed run expectations
+## Use the least-authoritative surface
 
-## Contract Risk
+Runtime separates inspection from execution so callers do not need to grant
+effect authority merely to understand a flow or retained run:
 
-The main contract risk here is exposing runtime authority through visible surfaces that are never described precisely enough to review under change.
+| Need | Surface | Authority consumed | Result boundary |
+| --- | --- | --- | --- |
+| prove the service process is reachable | HTTP health | none | liveness only |
+| prove configured DuckDB can be opened | HTTP readiness or CLI database validation | storage access, not flow execution | schema/openability, not semantic run integrity |
+| inspect dependency order and replay declarations | CLI or Python plan | manifest resolution only | plan and `plan_hash`; no run ID or trace |
+| inspect retained history | CLI `inspect`, failure explanation, or typed readers | tenant-scoped read access | stored projection; payload availability must be checked separately |
+| compare retained runs | CLI diff or analysis modules | read access to both records | reported differences; process exit does not decide acceptability |
+| execute or resume effects | governed Python or CLI run surface | flow authority, policy, stores, budgets and executor bindings | finalized, arbitrated run or classified failure |
+| request remote run or replay | HTTP v1 schema | no executable authority today | `501 Not Implemented` after request validation |
 
-## First Proof Check
+Start with plan or read-side inspection whenever the question does not require
+new effects. Moving to live execution is a new authority decision: the caller
+must provide working adapters, storage, verification policy, and effect
+controls. A successful health check, readable database, or valid manifest does
+not confer any of those capabilities.
 
-- `src/bijux_canon_runtime/interfaces` plus runtime artifacts for the owned boundary surfaces
-- tracked schemas and examples for contract visibility
-- `tests` for acceptance, replay, and compatibility evidence
+## Assemble the authority packet
 
+Before an executable call, retain the inputs that authorize work; after the
+call, require the records that prove how that authority was used:
 
-## Pages In This Section
+| Authority concern | Required before execution | Required before accepting the result |
+| --- | --- | --- |
+| ownership | flow, tenant, manifest state and authority context | identical flow/tenant identity on trace, store rows and artifacts |
+| data | dataset ID, version, digest, state, location and deprecation policy | observed dataset identity and any admitted evolution decision |
+| plan | resolved dependencies, ordered work, environment fingerprint and `plan_hash` | every executed or skipped operation accounted for against that plan |
+| variability | determinism level, nondeterminism intent, entropy budget and allowed variance | measured entropy use, warnings and budget disposition |
+| verification | declared gates, rule configuration and arbitration policy | immutable findings, separate arbitration decision and certifiability |
+| effects | mode, executor bindings, credentials/capabilities and idempotency posture | causal events, effect receipts, failures and recovery disposition |
+| persistence | execution-store and artifact-store identities | finalized run record plus resolvable payload hashes and lineage |
+| replay | original envelope and acceptability policy | semantic diff, verdict, reason and compared identities |
 
-- [CLI Surface](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/cli-surface/)
-- [API Surface](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/api-surface/)
-- [Configuration Surface](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/configuration-surface/)
-- [Data Contracts](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/data-contracts/)
-- [Artifact Contracts](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/artifact-contracts/)
-- [Entrypoints and Examples](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/entrypoints-and-examples/)
-- [Operator Workflows](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/operator-workflows/)
-- [Public Imports](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/public-imports/)
-- [Compatibility Commitments](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/compatibility-commitments/)
+If a live lower-package callable cannot be resolved, the authority packet is
+incomplete and execution must fail at that integration boundary. A plan, an
+installed dependency, or a compatibility alias cannot stand in for an
+executor binding. Likewise, DuckDB metadata cannot stand in for artifact or
+evidence payloads that the artifact store no longer resolves.
 
-## Leave This Section When
+## Compatibility boundaries
 
-- leave for [Foundation](https://bijux.io/bijux-canon/06-bijux-canon-runtime/foundation/) when the contract dispute is really a package-boundary dispute
-- leave for [Architecture](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/) when a surface question reveals structural drift underneath it
-- leave for [Operations](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/) or [Quality](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/) when the boundary is clear and the question becomes execution or proof
+Manifest meaning, determinism levels, authority headers, verification rules,
+arbitration, trace finalization, event order, entropy accounting, replay
+acceptability, storage normalization, migrations, and schema hashes all affect
+caller-visible authority. A storage migration can be breaking even when the
+Python dataclasses do not change.
 
-## Design Pressure
+## Contract index
 
-If authority is exposed through records and schemas that are never named as
-contracts, the package invites unsafe assumptions. This section has to make the
-governed-run surface explicit before callers build on it.
+| Need | Guide |
+| --- | --- |
+| Operate execution and read-side commands | [CLI surface](cli-surface.md) |
+| Integrate health, readiness, or future flow routes | [API surface](api-surface.md) |
+| Configure stores, strictness, policy, and budgets | [Configuration surface](configuration-surface.md) |
+| Construct manifests, plans, traces, artifacts, and verification records | [Data contracts](data-contracts.md) |
+| Accept persisted runs and payloads | [Artifact contracts](artifact-contracts.md) |
+| Compose public runtime modules | [Public imports](public-imports.md) |
+| Follow plan, live, inspect, and replay journeys | [Operator workflows](operator-workflows.md) |
+| Evaluate authority-compatible evolution | [Compatibility commitments](compatibility-commitments.md) |
+| Start from executable examples | [Entrypoints and examples](entrypoints-and-examples.md) |

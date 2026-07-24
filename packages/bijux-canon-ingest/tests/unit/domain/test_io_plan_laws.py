@@ -3,6 +3,9 @@
 
 from __future__ import annotations
 
+import hypothesis.strategies as st
+from hypothesis import given, settings
+
 from bijux_canon_ingest.domain.effects.io_plan import (
     IOPlan,
     io_bind,
@@ -11,8 +14,6 @@ from bijux_canon_ingest.domain.effects.io_plan import (
     perform,
 )
 from bijux_canon_ingest.result.types import Err, ErrInfo, Ok, Result
-from hypothesis import given, settings
-import hypothesis.strategies as st
 
 settings.register_profile("ci", max_examples=200, derandomize=True, deadline=None)
 settings.load_profile("ci")

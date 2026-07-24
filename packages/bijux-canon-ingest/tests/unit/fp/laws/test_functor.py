@@ -5,6 +5,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from hypothesis import given
+from hypothesis import strategies as st
+
 from bijux_canon_ingest.fp.core import Err, Ok
 from bijux_canon_ingest.fp.functor import (
     NONE,
@@ -15,8 +18,6 @@ from bijux_canon_ingest.fp.functor import (
     option_map,
     result_map,
 )
-from hypothesis import given
-from hypothesis import strategies as st
 
 
 @dataclass(frozen=True)

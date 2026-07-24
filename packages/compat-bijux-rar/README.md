@@ -38,51 +38,115 @@
 [![bijux-canon-index docs](https://img.shields.io/badge/docs-index-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/03-bijux-canon-index/)
 <!-- bijux-canon-badges:generated:end -->
 
-Alias distribution for `bijux-canon-reason`.
+`bijux-rar` preserves an earlier distribution and Python import root for
+[`bijux-canon-reason`](../bijux-canon-reason/README.md). It keeps existing
+reasoning consumers operational while problem plans, structured claims,
+evidence references, verification, traces, and provenance remain owned by the
+canonical package.
 
-Install this package if you need the legacy package name and CLI command while
-running the same reasoning behavior as `bijux-canon-reason`.
+The bridge contains no independent inference or verification engine.
 
 ## Install
 
 ```bash
 python3.11 -m pip install bijux-rar
 bijux-rar --help
+python3.11 -m bijux_rar --help
 ```
 
-## What It Does
+The built wheel pins `bijux-canon-reason` to the exact bridge release. The
+canonical distribution itself also publishes `bijux-rar` alongside
+`bijux-canon-reason`, both targeting the same application. The old command can
+therefore remain available after the dependency name changes; Python imports
+still require deliberate migration to `bijux_canon_reason`.
 
-- re-exports the public Python API from `bijux-canon-reason`
-- resolves legacy submodules such as `bijux_rar.interfaces.cli` to the same
-  canonical modules used by `bijux_canon_reason`
-- dispatches the same CLI entrypoint through the legacy `bijux-rar` command
-- keeps the legacy distribution installable while steering new work to
-  `bijux-canon-reason`
-- avoids becoming a second home for reasoning logic or release ownership
+## Identity Map
 
-## Compatibility Contract
+| Consumer surface | Preserved identity | Canonical identity |
+| --- | --- | --- |
+| distribution | `bijux-rar` | `bijux-canon-reason` |
+| Python package | `bijux_rar` | `bijux_canon_reason` |
+| preferred command | `bijux-rar` | `bijux-canon-reason` |
+| module execution | `python -m bijux_rar` | `python -m bijux_canon_reason` |
+| CLI module | `bijux_rar.interfaces.cli` | `bijux_canon_reason.interfaces.cli` |
+| representative claim type | `bijux_rar.core.Claim` | `bijux_canon_reason.core.Claim` |
 
-If this works:
+```mermaid
+flowchart LR
+    consumer["existing reason consumer"]
+    bridge["bijux-rar bridge"]
+    imports["bijux_rar imports"]
+    oldcmd["bijux-rar command"]
+    newcmd["bijux-canon-reason command"]
+    reason["bijux-canon-reason"]
+
+    consumer --> bridge -->|"exact release pin"| reason
+    imports -->|"canonical module objects"| reason
+    oldcmd --> reason
+    newcmd --> reason
+```
+
+## Reasoning Semantics
+
+The compatibility facade exposes the canonical package's declared root
+exports and maps nested aliases to canonical module objects. A `Claim`
+imported through either root is consequently the same class, avoiding parallel
+types in validators, registries, and serializers.
+
+The bridge command and module entrypoint call the canonical reason application
+without translating plans, evidence, failures, output, or exit status. The
+canonical package remains the sole authority for acceptance and refusal
+semantics.
+
+## Verify A Consumer
+
+Verify both type and behavior boundaries:
 
 ```python
-from bijux_canon_reason import validate_plan
+from bijux_rar import Claim as CompatibilityClaim
+from bijux_canon_reason import Claim as CanonicalClaim
+
+assert CompatibilityClaim is CanonicalClaim
 ```
 
-the alias package is expected to support the same import through:
-
-```python
-from bijux_rar import validate_plan
+```bash
+bijux-rar --help
+bijux-canon-reason --help
+python3.11 -m bijux_rar --help
 ```
 
-The alias package also keeps `bijux_rar.interfaces.cli` pointed at the
-canonical reasoning CLI module, while preserving the executable name
-`bijux-rar`.
+Run representative accepted and refused cases and compare claim structure,
+evidence references, validation findings, provenance, trace output, and exit
+status. Command availability alone does not prove evidence semantics or
+historical artifact readability.
+
+## Migrate Evidence-Bearing Consumers
+
+New code should depend on `bijux-canon-reason`, import
+`bijux_canon_reason`, and prefer `bijux-canon-reason`. For existing consumers:
+
+1. replace dependency declarations and lock-file entries;
+2. replace root and nested imports;
+3. replace the old command where canonical naming is required, recognizing
+   that the canonical distribution still exposes `bijux-rar`;
+4. inspect plans, plugins, configuration, serialized dotted paths, claim and
+   trace readers, and schema assumptions;
+5. validate representative accepted and refused cases with retained evidence;
+   and
+6. remove the bridge distribution after no deployed consumer imports
+   `bijux_rar` or independently requests `bijux-rar`.
+
+Alias resolution does not freeze private modules or every historical evidence
+representation as public API.
 
 ## Read Next
 
-- canonical package: [bijux-canon-reason](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-reason)
-- canonical handbook: [bijux-canon-reason handbook](https://bijux.io/bijux-canon/04-bijux-canon-reason/)
-- legacy handbook: [bijux-rar alias handbook](https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-rar/)
-- migration guide: [Migration guidance](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
-- retired repository: [bijux/bijux-rar](https://github.com/bijux/bijux-rar)
-- changelog: [Package changelog](https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-rar/CHANGELOG.md)
+- [Reason handbook](https://bijux.io/bijux-canon/04-bijux-canon-reason/)
+  for claim and verification semantics
+- [Compatibility contract](https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-rar/)
+  for the dual-command boundary
+- [Migration guidance](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
+  for consumer inventory and acceptance
+- [Retired repository](https://github.com/bijux/bijux-rar) for historical
+  context
+- [Package changelog](https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-rar/CHANGELOG.md) for release history

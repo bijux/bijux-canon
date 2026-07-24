@@ -3,8 +3,8 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 import subprocess
+from pathlib import Path
 
 
 def test_no_generated_files_are_tracked() -> None:

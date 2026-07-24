@@ -1,58 +1,97 @@
 ---
 title: Import Surfaces
 audience: mixed
-type: explanation
+type: reference
 status: canonical
 owner: bijux-canon-compat-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # Import Surfaces
 
-Compatibility imports exist so older code can keep resolving package names while
-migration is underway. They are continuity aids, not first-class imports for
-new code.
+Compatibility imports resolve established Python roots and representative
+nested paths to the canonical implementation. They preserve object identity:
+a class imported through a bridge is the same class object exposed by the
+canonical module, rather than a subclass or wrapper.
 
-## Import Bridge
+## Import Map
+
+| Preserved root | Canonical root | Representative verified nested path | Verified identity |
+| --- | --- | --- | --- |
+| `bijux_canon` | `bijux_canon_runtime` | `bijux_canon.model.flows.manifest` | `FlowManifest` |
+| `agentic_flows` | `bijux_canon_runtime` | `agentic_flows.model.flows.manifest` | `FlowManifest` |
+| `bijux_agent` | `bijux_canon_agent` | `bijux_agent.contracts.execution_plan` | `ExecutionPlan` |
+| `bijux_rag` | `bijux_canon_ingest` | `bijux_rag.core.types` | `RawDoc` |
+| `bijux_rar` | `bijux_canon_reason` | `bijux_rar.core` | `Claim` |
+| `bijux_vex` | `bijux_canon_index` | `bijux_vex.core.runtime.execution_plan` | `ExecutionPlan` |
+
+The representative paths are executable contract evidence, not permission to
+depend on every internal canonical module. Supported use remains bounded by
+the canonical package's public facade.
+
+## How A Nested Import Resolves
 
 ```mermaid
-flowchart LR
-    legacy["legacy import root"]
-    compat["compatibility import surface"]
-    canon["canonical import target"]
-    migration["new code moves to canonical imports"]
+sequenceDiagram
+    participant C as consumer
+    participant B as compatibility root
+    participant F as alias finder
+    participant K as canonical module
 
-    legacy --> compat --> canon
-    compat --> migration
+    C->>B: import preserved root
+    B->>K: import canonical root
+    B->>F: register root mapping
+    C->>F: import preserved nested path
+    F->>K: resolve canonical nested path
+    K-->>C: return canonical module object
 ```
 
-This page should make the import story obvious: old code keeps resolving while
-new code moves to the canonical root. The preserved import is a migration tool,
-not a design endorsement.
+The bridge root publishes the canonical `__all__`, forwards missing attribute
+lookups, and includes canonical names in `dir()`. Its meta-path finder maps a
+non-local nested suffix to the same suffix beneath the canonical root and
+registers the canonical module object under the preserved path.
 
-## Current Import Map
+Only `__main__` and `runtime_alias` remain local to each bridge. They provide
+module execution and alias machinery; they are not product API.
 
-- `bijux_canon` -> `bijux_canon_runtime`
-- `agentic_flows` -> `bijux_canon_runtime`
-- `bijux_agent` -> `bijux_canon_agent`
-- `bijux_rag` -> `bijux_canon_ingest`
-- `bijux_rar` -> `bijux_canon_reason`
-- `bijux_vex` -> `bijux_canon_index`
+## Root And Nested Migration
 
-## Review Rule
+A root-only edit can leave compatibility dependencies hidden in nested imports:
 
-A preserved import is justified only while supported code still depends on it.
-New code should use canonical imports even if the compatibility import still
-resolves.
+```python
+# preserved
+from bijux_rag.core.types import RawDoc
 
-## First Proof Check
+# canonical
+from bijux_canon_ingest.core.types import RawDoc
+```
 
-- `packages/compat-*`
-- compatibility package `README.md` routing
-- repository-wide search for remaining legacy imports
+When the required symbol is part of the public facade, prefer the shallower
+canonical import:
 
-## Design Pressure
+```python
+from bijux_canon_ingest import RawDoc
+```
 
-If compatibility imports read like a supported long-term API surface, the
-migration pressure disappears. The bridge has to stay useful without sounding
-comfortable.
+Inventory dynamic imports, plugin configuration, serialized dotted paths, and
+type-checker configuration in addition to ordinary `import` statements.
+Successful runtime resolution does not prove that static analysis, generated
+documentation, pickled references, or external plugin loaders accept the new
+name.
+
+## Compatibility Boundary
+
+The bridges verify that:
+
+- root `__all__` follows the canonical package;
+- selected root exports compare equal;
+- CLI modules resolve to the canonical module object; and
+- representative nested types retain identity.
+
+They do not freeze arbitrary private module paths. New code should import from
+the canonical public facade, and migration tests should exercise the specific
+nested paths a consumer actually used.
+
+Continue with [package behavior](package-behavior.md) for the bridge mechanism
+or [dependency continuity](../migration/dependency-continuity.md) for the
+same-version installation contract.

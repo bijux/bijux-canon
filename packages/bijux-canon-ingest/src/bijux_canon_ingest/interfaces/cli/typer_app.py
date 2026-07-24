@@ -6,8 +6,8 @@
 from __future__ import annotations
 
 import importlib
-from pathlib import Path
 from collections.abc import Callable
+from pathlib import Path
 from typing import TYPE_CHECKING, Any, Protocol, TypeVar, cast
 
 from bijux_canon_ingest.interfaces.cli.entrypoint import main

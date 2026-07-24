@@ -4,45 +4,79 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-index-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # Repository Fit
 
-`bijux-canon-index` is a separate package because retrieval behavior creates its own contract pressure. Keeping that pressure visible at the package boundary prevents search semantics from becoming invisible infrastructure.
+`bijux-canon-index` is independently installable because governed vector
+execution is a durable boundary. It owns the decision that connects caller
+intent to a capable backend, an ordered result, and the provenance required to
+explain or compare that execution.
 
-## Fit Model
+## Position In The Package Family
 
 ```mermaid
 flowchart LR
-    seam["retrieval contract seam"]
-    package["bijux-canon-index package boundary"]
-    proof["metadata, apis, tests, and handbook"]
+    ingest["bijux-canon-ingest<br/>prepared identity and vectors"]
+    request["intent, mode, contract, budget"]
+    index["bijux-canon-index<br/>governed execution"]
+    result["ranked result and artifact"]
+    reason["bijux-canon-reason<br/>support interpretation"]
+    runtime["bijux-canon-runtime<br/>whole-run authority"]
 
-    seam --> package --> proof
+    ingest --> request --> index --> result --> reason
+    runtime -. "schedules and retains" .-> index
 ```
 
-This page should explain why retrieval is not just another backend detail in
-the monorepo. The fit is real only when the package makes search semantics more
-explicit, more publishable, and easier to defend.
+Index does not normalize source text or decide that a neighbor supports a
+claim. It establishes which operation actually ran and under which declared
+contract. Runtime may schedule and retain that operation without replacing
+index's capability and replay semantics.
 
-## Why This Is A Package
+## Independent Package Contract
 
-- `packages/bijux-canon-index/src/bijux_canon_index` makes retrieval ownership visible in code
-- `packages/bijux-canon-index/apis` shows where caller expectations harden into tracked surfaces
-- `packages/bijux-canon-index/tests` proves replay and provenance claims against real behavior
+| Surface | What independence provides |
+| --- | --- |
+| distribution | retrieval execution can be installed without the composed runtime |
+| Python modules | execution requests, plans, artifacts, failures, and adapters have one implementation owner |
+| narrow root facade | package identity stays stable without promoting internal modules accidentally |
+| versioned HTTP contract | callers can execute and inspect index behavior across a process boundary |
+| backend/plugin contracts | optional implementations conform to owned capability and evidence rules |
+| persisted run evidence | artifacts, fingerprints, ledgers, and comparisons remain addressable |
+| package tests | algorithms, stores, isolation, provenance, and replay evolve under conformance gates |
 
-## First Proof Check
+The canonical distribution publishes no console script. `bijux-vex` preserves
+an earlier command through a compatibility package, but that continuity is not
+the canonical architecture for new integrations.
 
-- `packages/bijux-canon-index/pyproject.toml` for publishable package identity
-- `packages/bijux-canon-index/README.md` for package-level reader framing
-- `packages/bijux-canon-index/tests` for executable proof that the seam still matters
+## Dependency Direction
 
-## Fit Warning
+```mermaid
+flowchart TD
+    core["execution contracts and identity"]
+    domain["scoring, artifacts, drift, provenance"]
+    application["capability resolution and orchestration"]
+    adapters["stores, ANN runners, plugins"]
+    interfaces["Python and HTTP"]
 
-If the package only exists as a technical convenience for backend adapters, the retrieval seam is no longer being documented honestly.
+    core --> domain --> application
+    adapters --> application
+    interfaces --> application
+```
 
-## Design Pressure
+Adapters implement capabilities inward; they do not redefine exactness,
+refusal, artifact identity, or replay policy. Product packages should exchange
+typed handoffs rather than import each other's application internals.
 
-If index is defended only as a technical layer for adapters, the repository has
-already stopped documenting retrieval as a real contract surface.
+## When This Boundary Would Be Wrong
+
+The package would be only an adapter bucket if execution intent disappeared,
+all backends defined their own result semantics, or artifacts could not explain
+what ran. It would be overreaching if source preparation, claim verification,
+or whole-run admission moved here. Both conditions require restoring the
+contract boundary rather than adding another convenience layer.
+
+Continue with [ownership boundary](ownership-boundary.md) for neighboring
+responsibilities and [repository architecture](../../01-bijux-canon/foundation/package-map.md)
+for the complete package family.

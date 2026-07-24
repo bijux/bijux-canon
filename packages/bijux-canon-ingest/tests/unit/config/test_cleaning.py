@@ -3,6 +3,8 @@
 
 from __future__ import annotations
 
+import pytest
+
 from bijux_canon_ingest.config.cleaning import (
     CleanConfig,
     clean_abstract,
@@ -11,7 +13,6 @@ from bijux_canon_ingest.config.cleaning import (
     replace_newlines,
 )
 from bijux_canon_ingest.core.types import RawDoc
-import pytest
 
 
 def test_text_rules_normalize_whitespace_and_newlines() -> None:

@@ -4,24 +4,104 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-agent-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # Integration Seams
 
-Integration seams matter because `bijux-canon-agent` touches neighboring packages without becoming them. The handoff into and out of agent orchestration work should be explicit enough to survive review under change.
+Agent integrations cross content, control, provider, artifact, and runtime
+boundaries. These seams must remain separate: a model adapter supplies role
+content, while typed orchestration owns lifecycle authority. A convenient
+provider or CLI wrapper must not become hidden approval policy.
 
-## What To Check
+## Orchestration Handoff
 
-- name the seam where work enters from reason and runtime
-- name the seam where `bijux-canon-agent` hands responsibility outward again
-- treat seam ambiguity as a design problem, not as a documentation gap only
+```mermaid
+flowchart LR
+    input["AgentInput and source identity"] --> controller["typed pipeline control"]
+    config["resolved policy and hashes"] --> controller
+    provider["model adapter and metadata"] --> roles["passive roles"]
+    controller --> roles
+    roles --> observations["validated role outputs"]
+    observations --> controller
+    controller --> trace["ordered RunTrace"]
+    trace --> result["derived PipelineResult"]
+    result --> runtime["runtime admission"]
+```
 
-## First Proof Check
+The feedback edge carries observations, not authority. Roles cannot select
+their own transitions, erase vetoes, or declare terminal success outside typed
+control.
 
-- `src/bijux_canon_agent` and tracked workflow surfaces for the structural ownership boundary
-- `tests` for determinism and traceability evidence for executable confirmation that the structure still holds
+## Seam Contracts
 
-## Bottom Line
+| Seam | Required input | Agent produces | Refusal boundary |
+| --- | --- | --- | --- |
+| task input | immutable task goal, payload, context, source identity, execution mode | normalized `AgentInput` and attempt identity | changed bytes or meaning under reused identity |
+| configuration | YAML plus explicit overrides | resolved limits, retry, feedback, logging and model configuration with hashes | untracked override or invalid policy |
+| provider | declared model adapter, credentials, timeout and metadata | schema-validated role output and actual model metadata | authentication, rate limit, timeout, provider or schema failure |
+| controller | valid input, resolved policy, passive role observations | lifecycle transitions, convergence, veto, stop and termination states | forbidden transition or incompatible terminal state |
+| trace/result | complete ordered trace and derived public fields | `run_trace.json` and `final_result.json` | missing mandatory field, schema failure, or parity mismatch |
+| runtime | full agent evidence and authority-neutral result | no implicit run acceptance | runtime policy rejects or cannot establish complete custody |
 
-If `bijux-canon-agent` needs hidden structure to defend role coordination, workflow order, and traces, the architecture is already too opaque.
+## Input And Configuration Identity
+
+In-process callers construct `AgentInput` values. The CLI resolves a file or
+directory and applies the configured task goal to selected inputs. If source
+bytes, task meaning, or material context changes, issue a new identity; do not
+reuse cached, comparable, or replayable labels from the earlier attempt.
+
+Configuration precedence is constructor parameters, pipeline parameters,
+top-level values, then defaults. Archive the resolved configuration and its
+hash. Retaining source YAML alone loses command-line and constructor overrides.
+The recorded provider, model, temperature, and token limit must describe the
+actual call, not only the intended configuration.
+
+## Provider Admission
+
+```mermaid
+flowchart TD
+    adapter["provider adapter"] --> identity{"model metadata complete?"}
+    identity -->|no| reject["reject call evidence"]
+    identity -->|yes| effect{"network and retry policy declared?"}
+    effect -->|no| reject
+    effect -->|yes| output{"output validates?"}
+    output -->|no| reject
+    output -->|yes| record["record role observation"]
+```
+
+Provider adapters expose authentication, network, timeout, rate-limit, version,
+and retry failure domains. A retry policy must distinguish transient reads from
+effects that cannot safely repeat.
+
+The CLI currently requires OpenAI, Anthropic, HuggingFace, and DeepSeek keys
+before command dispatch, including offline-oriented commands. This bootstrap
+constraint does not mean a workflow executes all four providers.
+
+## CLI, HTTP, And Replay
+
+A successful non-dry CLI run writes `result/final_result.json` and
+`trace/run_trace.json`. They are separate writes without a manifest or
+transactional completion marker. Directory execution may process multiple
+files while the primary artifact reflects the first successful entry. Batch
+consumers must retain every per-file outcome and reconcile the full input set.
+
+The HTTP application exposes a fixed deterministic offline
+`simple`/`extractive` pipeline. Its narrow configuration schema does not grant
+arbitrary role, provider, backend, or model selection. It is a distinct
+integration posture from the provider-backed CLI.
+
+Replay upgrades and validates the stored trace, reconstructs the public result,
+and compares the adjacent result when available. It does not call providers.
+Non-zero temperature and incomplete replay identity restrict replayability.
+
+## Runtime Admission
+
+Runtime needs input and task identity, resolved configuration, pipeline hash,
+model metadata, complete trace, per-input outcomes, convergence and termination
+state, and final result. It may accept, reject, and persist the wider run; it
+must not rewrite agent history, turn interruption into completion, or convert a
+verification veto into success.
+
+See [configuration](../interfaces/configuration-surface.md) for precedence and
+[artifact contracts](../interfaces/artifact-contracts.md) for evidence fields.

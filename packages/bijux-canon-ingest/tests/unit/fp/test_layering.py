@@ -3,13 +3,14 @@
 
 from __future__ import annotations
 
+import hypothesis.strategies as st
+from hypothesis import given, settings
+
 from bijux_canon_ingest.fp.effects.layering import (
     transpose_option_result,
     transpose_result_option,
 )
 from bijux_canon_ingest.result.types import Err, NoneVal, Ok, Option, Result, Some
-from hypothesis import given, settings
-import hypothesis.strategies as st
 
 settings.register_profile("ci", max_examples=300, derandomize=True, deadline=None)
 settings.load_profile("ci")

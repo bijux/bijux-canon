@@ -4,67 +4,98 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-runtime-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-22
 ---
 
 # Quality
 
-Open this section when you need to decide whether governed run behavior is proven strongly enough for acceptance, persistence, and replay to be trusted as authority rather than habit.
+Runtime quality is demonstrated by correct refusal as much as successful
+execution. Invalid manifests, undeclared entropy, incomplete verification,
+mutable traces, corrupt stores, changed policy, and unacceptable replay must
+remain distinguishable outcomes.
 
-## Trust Model
+## Evidence chain
 
 ```mermaid
 flowchart LR
-    strategy["test strategy"]
-    invariants["authority invariants"]
-    validation["change validation"]
-    limits["limitations and risk"]
-    trust["trust decision"]
+    contracts["authority contracts"]
+    planning["resolution + plan identity"]
+    execution["mode + causal execution"]
+    verification["rules + arbitration"]
+    persistence["checkpoints + DuckDB"]
+    replay["envelope + semantic diff"]
+    recovery["crash + hostile-state refusal"]
 
-    strategy --> invariants --> validation --> limits --> trust
+    contracts --> planning --> execution --> verification --> persistence --> replay --> recovery
 ```
 
-Runtime quality is the proof path behind authority. The section should make it
-clear how accepted and replayable runs are tested, which invariants protect the
-authority model, and where the package still names limits instead of hiding
-them behind a green build.
+## Claims and proof
 
-## Read These First
+| Trust claim | Required evidence | Important limit |
+| --- | --- | --- |
+| manifests resolve to stable authority | contract/model tests, dependency resolution, golden plan | dataclass construction alone is not semantic validation |
+| each mode preserves its declared guarantees | preparation, strategy, strictness, and matching e2e tests | dry run cannot predict live external effects |
+| causal traces cannot escape mutable | event-index, authority, finalization, immutability, snapshot tests | observed mode cannot capture omitted host events |
+| nondeterminism is declared and bounded | intent, entropy budget/use, strict guard, canary, replay tests | seeds cannot control unrecorded external variance |
+| verification affects acceptance honestly | rule, contradiction, content, arbitration, failure tests | passing registered rules is not factual truth |
+| stored runs are resumable and typed | migrations, persistence, round trip, partial failure, crash recovery | DuckDB does not coordinate external side effects |
+| replay applies original authority | envelope, exact equivalence, policy, dataset, environment, fuzz tests | state never retained cannot be compared or recovered |
+| hostile state is refused | adversarial store, corrupt artifact, mismatch, and compatibility tests | host still owns backup, isolation, and authentication |
 
-- open [Test Strategy](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/test-strategy/) first when you need the broad proof shape behind runtime authority
-- open [Invariants](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/invariants/) when the question is what must not drift across acceptance and replay behavior
-- open [Change Validation](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/change-validation/) when you need the minimum proof for a safe runtime change
+## Replay evidence
 
-## Trust Risk
+A replay test asserts both verdict and reason. Envelope hashes detect input
+drift; exact-equivalence tests compare governed outputs; trace diff identifies
+the earliest changed step; dataset, environment, and policy tests require
+refusal when pinned authority changes; cross-process tests prove replay does
+not depend on memory; fuzz tests demand stable classification.
 
-The main quality risk here is accepting or replaying runs under rules that are weaker in practice than the docs imply.
+Completing without exception is not replay proof. It can conceal a downgrade
+from exact equality to tolerated divergence or non-certifiability.
 
-## First Proof Check
+## Recovery evidence
 
-- `tests` and package-local validation surfaces for executable evidence
-- invariants, limitations, and risk pages for the trust boundaries that still matter after green checks
-- release notes and caller-facing docs when the change alters what readers may safely assume
+Crash and partial-failure tests reopen incremental state, reconstruct event and
+entropy indices, and continue after the last checkpoint. Hostile-store tests
+require refusal when write protocols are violated. Long-horizon cases ensure
+artifact, evidence, claim, tool, and entropy correlations remain intact across
+many steps. External integrations still require their own idempotency or
+compensation contract.
 
-## Pages In This Section
+## Require evidence to accumulate
 
-- [Test Strategy](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/test-strategy/)
-- [Invariants](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/invariants/)
-- [Review Checklist](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/review-checklist/)
-- [Documentation Standards](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/documentation-standards/)
-- [Definition of Done](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/definition-of-done/)
-- [Dependency Governance](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/dependency-governance/)
-- [Change Validation](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/change-validation/)
-- [Known Limitations](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/known-limitations/)
-- [Risk Register](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/risk-register/)
+Later runtime states add proof; they do not replace the evidence required by
+earlier states:
 
-## Leave This Section When
+| Runtime state | Evidence newly required | Regression that prevents a false promotion |
+| --- | --- | --- |
+| resolved | valid manifest, dataset/dependency decision, policy and environment identity | semantic-invalid and dependency-conflict refusal |
+| planned | immutable ordered work, effective mode, budgets and `plan_hash` | golden-plan and changed-input identity tests |
+| executed | operation outcomes, causal events, effects, entropy use and typed failures | partial-failure, event-order, budget and idempotency tests |
+| finalized | closed immutable trace, required projections and completion semantics | incomplete-trace, mutation and finalization-invariant tests |
+| accepted or rejected | verification findings, arbitration policy, verdict and certifiability | contradiction, rule-failure and policy-mismatch tests |
+| retained | typed DuckDB state plus resolvable artifact/evidence payload identities | migration, hostile-store, round-trip and missing-payload tests |
+| replayed | original envelope, current identities, semantic diff, verdict and reason | changed dataset/policy/environment, fuzz and cross-process tests |
 
-- leave for [Foundation](https://bijux.io/bijux-canon/06-bijux-canon-runtime/foundation/) when the doubt is really about package ownership rather than proof
-- leave for [Interfaces](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/) when the question is what the contract is rather than whether it is defended
-- leave for [Operations](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/) when the package already seems trustworthy and the real issue is how to run it repeatably
+A row that exists in storage does not prove the run reached the state named by
+that row. Tests must reconstruct the required predecessor evidence and refuse
+or qualify records that skip it. This is especially important after recovery,
+migration, manual intervention, or partial external effects.
 
-## Design Pressure
+## Evidence routes
 
-If authority can drift while tests still look healthy, the package becomes
-dangerously shallow. This section has to show how trust in verdicts, replay,
-and persistence is actually defended.
+| Need | Guide |
+| --- | --- |
+| Understand authority-oriented test layers | [Test strategy](test-strategy.md) |
+| Review manifest, mode, trace, entropy, and persistence laws | [Invariants](invariants.md) |
+| Select proof for a concrete change | [Change validation](change-validation.md) |
+| Apply consistent authority review | [Review checklist](review-checklist.md) |
+| Decide whether a governed change is complete | [Definition of done](definition-of-done.md) |
+| Govern DuckDB and lower-layer integrations | [Dependency governance](dependency-governance.md) |
+| Understand execution, replay, verification, persistence, and hosting limits | [Known limitations](known-limitations.md) |
+| Inspect unresolved authority and operational risk | [Risk register](risk-register.md) |
+| Interpret execution, acceptance, persistence, and replay independently | [Interpreting runtime evidence](evidence-interpretation.md) |
+
+Add regressions where refusal belongs: contract, planner, executor, verifier,
+trace, or store. Add end-to-end proof when invalid authority could look like a
+credible result, and replay proof whenever retained identity changes.

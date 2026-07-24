@@ -4,87 +4,181 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-agent-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-22
 ---
 
 # Agent Handbook
 
-`bijux-canon-agent` owns deterministic agent orchestration, workflow coordination, and trace-producing execution surfaces. It turns reasoning-capable steps into inspectable multi-step behavior without pretending that orchestration itself is runtime authority.
+`bijux-canon-agent` runs an auditable document workflow through explicit agent
+roles, lifecycle transitions, convergence decisions, validation gates, and a
+mandatory trace. The canonical roles include file reading, summarization,
+critique, validation, stage execution, planning, judging, verification, and
+orchestration; a pipeline chooses and orders them rather than treating every
+role as an always-on swarm.
 
-The main failure this handbook prevents is letting orchestration blur into either reasoning semantics below or runtime governance above. When those lines drift, readers can no longer tell whether a surprising behavior came from a decision, a workflow, or a run policy.
-
-## What The Reader Should See First
-
-Agent is the workflow coordination layer. It decides how role-specific steps
-are ordered, how intermediate outputs are checked, and which trace proves what
-happened. It should make multi-step behavior visible without becoming the owner
-of retrieval truth, reasoning meaning, or final runtime acceptance.
+The orchestration result distinguishes success, partial or terminal failure,
+termination reason, convergence decision, per-agent call records, telemetry,
+and trace completeness. Runtime policy can later accept or reject that result,
+but it does not reconstruct missing agent history.
 
 ```mermaid
 flowchart LR
-    inputs["reasoning artifacts"]
-    plan["execution plan"]
-    roles["agent roles"]
-    kernel["execution kernel"]
-    trace["workflow trace"]
-    validation["trace validation"]
-    telemetry["result artifacts"]
-    runtime["runtime package"]
+    input["file, directory, or API text"]
+    definition["PipelineDefinition"]
+    controller["lifecycle controller"]
+    agents["ordered role execution"]
+    convergence["convergence + termination"]
+    result["PipelineResult"]
+    trace["versioned RunTrace"]
 
-    inputs --> plan --> roles --> kernel --> trace --> runtime
-    roles --> validation
-    kernel --> telemetry
+    input --> definition --> controller --> agents --> convergence --> result
+    controller --> trace
+    agents --> trace
+    convergence --> trace
 ```
 
-Agent should make multi-step work easier to inspect, not harder. The handbook
-is doing its job when a reader can tell how roles are sequenced, what trace is
-supposed to survive the run, and which part of the behavior belongs to
-orchestration rather than to reasoning or runtime policy.
+## Observable Contract
 
-## What This Package Owns
+| Surface | Accepted input | Durable output |
+| --- | --- | --- |
+| CLI `run` | file or directory, YAML configuration, optional dry-run and prior trace | structured result files, final artifact, logs, trace data |
+| CLI `replay` | trace JSON path | reconstructed and validated trace information |
+| HTTP `POST /v1/run` | bounded text, task goal, context identity, optional role/config overrides | result or structured error plus trace metadata |
+| Python | pipeline definition, execution plan, typed role inputs | `PipelineResult`, failure artifact, telemetry, `RunTrace` |
 
-- coordination of agent roles, steps, and deterministic workflow progression
-- trace-producing orchestration surfaces that explain what the agent did and in what order
-- agent-facing contracts that sit above reasoning and below runtime governance
+The HTTP v1 contract intentionally supports the `extractive` strategy and
+`simple` backend. Additional provider adapters in the source tree do not expand
+that versioned API contract automatically.
 
-## What This Package Does Not Own
+## Start With A Validated Role Request
 
-- retrieval and reasoning semantics in the lower package family
-- acceptance, persistence, and replay authority for governed runs
-- repository-wide maintainer automation and release governance
+The package root is intentionally small. Build a request from the contract and
+enum modules that own its meaning:
 
-## Boundary Test
+```python
+from bijux_canon_agent.contracts.runtime_models import AgentInput
+from bijux_canon_agent.enums import AgentType, ExecutionMode
 
-If the change decides how roles coordinate, which step runs next, or what
-trace a workflow must emit, it belongs here. If the change decides what a
-claim means or whether a whole run counts, it belongs elsewhere.
+request = AgentInput(
+    task_goal="Summarize the retention obligation with no unsupported claims.",
+    payload={"text": "Keep signed run records for seven years."},
+    context_id="retention-policy-17",
+    agent_type=AgentType.PLANNER,
+    execution_mode=ExecutionMode.SYNC,
+)
 
-## First Proof Check
+print(request.model_dump(mode="json"))
+```
 
-- `packages/bijux-canon-agent/src/bijux_canon_agent` for the orchestration implementation boundary
-- `packages/bijux-canon-agent/src/bijux_canon_agent/pipeline` for workflow planning, execution, convergence, and finalization
-- `packages/bijux-canon-agent/src/bijux_canon_agent/traces` for trace serialization and replayability
-- `packages/bijux-canon-agent/tests` for proof that coordination remains deterministic and inspectable
-- `apis/bijux-canon-agent/v1/schema.yaml` for the tracked caller-facing schema
+This validates required text, the context identity, role vocabulary, execution
+mode, and immutable request shape. It performs no role selection, provider
+call, lifecycle transition, convergence evaluation, or trace write. Those
+actions begin only when a pipeline or interface boundary accepts the request.
 
-## Start Here
+Use the distinction to debug deliberately:
 
-- open [Foundation](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/) when the question is why this package exists or where its ownership stops
-- open [Architecture](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/) when you need module boundaries, dependency flow, or execution shape
-- open [Interfaces](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/) when the question is about commands, APIs, schemas, imports, or artifacts that callers may treat as stable
-- open [Operations](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/) when you need local workflow, diagnostics, release, or recovery guidance
-- open [Quality](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/) when the question is whether the package has proved its promises strongly enough
+| Observation | Owning boundary |
+| --- | --- |
+| request construction fails | contract validation |
+| role cannot be selected or ordered | pipeline definition and lifecycle controller |
+| provider call fails | role adapter and per-call record |
+| output is rejected or work does not converge | validation, critique, veto, and convergence records |
+| workflow completes but cannot be accepted as a governed run | runtime policy, not agent execution |
 
-## Pages In This Package
+For an executable path without remote-provider selection, use the
+[offline v1 HTTP pipeline](interfaces/entrypoints-and-examples.md#http-run-the-offline-v1-pipeline).
+Its `extractive` and `simple` contract is intentionally narrower than the
+provider adapters present in the source tree.
 
-- [Foundation](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/)
-- [Architecture](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/)
-- [Interfaces](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/)
-- [Operations](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/)
-- [Quality](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/)
+## Follow One Workflow Decision
 
-## Leave This Handbook When
+| Decision | Owning record | Evidence expected in the trace |
+| --- | --- | --- |
+| which roles may participate | `PipelineDefinition` and validated configuration | role identity, configuration fingerprint, and declared order |
+| which role runs next | lifecycle controller and execution plan | transition, preceding outcome, and causal index |
+| whether a provider call succeeded | per-agent call record | provider/model identity, input reference, status, usage, and error |
+| whether work converged | convergence evaluator | criterion, prior state, candidate state, and decision |
+| why execution stopped | pipeline finalization | terminal reason, completed and failed work, vetoes, and trace status |
+| what the caller receives | `PipelineResult` or failure artifact | final artifact identity, partial results, telemetry, and trace reference |
 
-- the question is now about reasoning semantics rather than workflow coordination
-- the next step is a concrete interface, trace model, or orchestration test
-- the issue is actually about runtime acceptance or repository-level automation
+The final artifact is not the audit trail. Review the ordered calls,
+transitions, vetoes, and convergence decision before treating the artifact as
+the result of the declared pipeline.
+
+## Orchestration Trust Boundary
+
+Agent owns role lifecycle and workflow progression. Reason owns the semantics
+of evidence-backed claims supplied to a role; runtime owns final acceptance,
+persistence, and replay policy above the pipeline. Agent preserves those
+inputs and outputs in its trace rather than silently taking over either
+decision.
+
+Provider adapters are also outside the deterministic core. A trace can record
+which provider and model were invoked, with which policy and observed result.
+It cannot make a remote model deterministic or prove the provider honored an
+unstated guarantee.
+
+### Runtime handoff status
+
+Runtime's live executor looks for `bijux_canon_agent.run` with a runtime-shaped
+invocation and list-of-artifacts response. The canonical package root exposes
+only `API_VERSION`, while agent's package-native workflow uses validated
+pipeline definitions and returns a `PipelineResult` backed by a `RunTrace`.
+Package installation and release alignment do not bridge those contracts.
+
+A runtime-owned adapter must make pipeline selection, evidence conversion,
+failure handling, canonical content serialization, artifact ancestry, and
+trace linkage explicit. Evidence for that handoff is an installed-package
+execution test that validates both the runtime artifact records and their
+connection to the agent trace. A root-level callable or import check alone
+would not prove the workflow remained auditable.
+
+## Separate Output, Trace, And Acceptance
+
+Three records answer three different questions:
+
+| Record | Question answered | Owner |
+| --- | --- | --- |
+| role or pipeline output | what content did this execution produce? | role implementation and pipeline |
+| `RunTrace` | which authorized roles, transitions, calls, vetoes, and convergence decisions produced it? | agent |
+| governed run record | was the traced workflow acceptable to persist or replay under run policy? | runtime |
+
+None is a substitute for another. Output without a complete trace is not an
+auditable agent result. A valid trace does not prove that its content is true,
+and runtime acceptance does not rewrite provider behavior or reasoning claim
+status. Cross-package consumers should bind the three identities rather than
+copying only the final artifact.
+
+## Evidence And Limits
+
+| Claim | Evidence to inspect | Limit |
+| --- | --- | --- |
+| the pipeline followed its definition | configuration fingerprint, ordered transitions, role records | does not prove role output quality |
+| execution converged | declared criterion, evaluation records, terminal decision | convergence may still settle on an incorrect artifact |
+| a veto affected the outcome | veto record, source role, target, finalization decision | absence from a summary is not absence from the trace |
+| replay reconstructed history | versioned trace, schema validation, causal ordering | reconstruction does not re-execute provider behavior |
+| telemetry is complete | call and lifecycle coverage plus trace-complete status | cannot include events the host or provider never exposed |
+| runtime consumed an agent result | installed adapter execution, artifact projection, trace and parent identities | aligned package versions or successful imports |
+
+The [entrypoint examples](interfaces/entrypoints-and-examples.md) show the
+Python, CLI, replay, and bounded HTTP contracts. The v1 HTTP surface supports
+the documented offline strategy; source-level provider adapters do not expand
+that schema automatically.
+
+## Continue By Question
+
+| Question | Next page |
+| --- | --- |
+| which responsibilities belong to an agent workflow? | [Foundation](foundation/index.md) |
+| how do contracts, pipeline control, roles, adapters, and traces connect? | [Architecture](architecture/index.md) |
+| which Python, CLI, HTTP, configuration, and artifact contracts are callable? | [Interfaces](interfaces/index.md) |
+| how do I run, observe, diagnose, replay, or recover a pipeline? | [Operations](operations/index.md) |
+| which invariants defend ordering, convergence, failure, and trace completeness? | [Quality](quality/index.md) |
+
+## Current Operational Constraint
+
+The console entrypoint validates `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`,
+`HUGGINGFACE_API_KEY`, and `DEEPSEEK_API_KEY` before parsing the selected
+command. Consequently, `--help`, dry-run, and replay currently require all four
+credentials in the environment. This is an implementation constraint, not a
+security recommendation or a claim that every workflow calls every provider.

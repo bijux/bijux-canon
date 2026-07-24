@@ -4,56 +4,107 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-docs
-last_reviewed: 2026-07-04
+last_reviewed: 2026-07-21
 ---
 
 # Release and Versioning
 
-Release behavior in `bijux-canon` is partly shared and partly package-local.
-The repository owns the conventions that make the package family legible; the
-packages own their published behavior.
+Bijux Canon publishes a family of independently installable distributions from
+one Git history. Versions come from repository tags, while package metadata and
+release verification remain package-specific. This preserves a coherent
+release line without pretending every package has the same public surface.
 
-## Release Model
+## Version Source
+
+The root and package builds use Hatch VCS. A tag matching `v<version>` supplies
+the release version; an untagged checkout receives an SCM-derived development
+version. Commitizen uses the same `v$version` tag format and treats the project
+as a pre-1.0 release line.
 
 ```mermaid
 flowchart LR
-    shared["shared versioning and release conventions"]
-    workflows["release workflows and helpers"]
-    packages["package-local published behavior"]
-    review["shared versus package-local review split"]
-
-    shared --> workflows --> packages --> review
+    history["Git history"] --> tag["v&lt;version&gt; tag"]
+    tag --> resolver["Hatch VCS version resolution"]
+    resolver --> canonical["canonical package artifacts"]
+    resolver --> compat["compatibility package artifacts"]
+    canonical --> verify["version guard and artifact checks"]
+    compat --> verify
+    verify --> registries["package registry and GitHub release"]
 ```
 
-This page should make the split visible between family-wide release governance
-and package-specific publication facts. Readers should know when to stay at the
-root and when to hand the question back to one package.
+Builds from a dirty or untagged checkout are useful for local verification but
+are not interchangeable with a clean tagged release. The publication guard
+rejects prerelease and local-version identifiers unless the release invocation
+explicitly allows them.
 
-## Shared Release Rules
+## Published Set
 
-- root commit rules live in `pyproject.toml`
-- package versions are written to package-local `_version.py` files by Hatch VCS
-- release support helpers live in `bijux-canon-dev`
-- split release workflows publish package artifacts and release metadata
-- the current synchronized public canon release line is `v0.3.9`
+The repository classifies distributions in `pyproject.toml`:
 
-## Compatibility Triggers
+- five canonical runtime packages: ingest, index, reason, agent, and runtime;
+- six compatibility packages preserving the `bijux-canon`, `agentic-flows`,
+  `bijux-agent`, `bijux-rag`, `bijux-rar`, and `bijux-vex` surfaces;
+- `bijux-canon-dev`, an internal support package used by repository tooling.
 
-Treat a release change as shared governance when it changes:
+Compatibility distributions share the release line but retain their own wheel
+metadata and import or command contract. Their purpose is continuity, not a
+second implementation.
 
-- commit semantics that affect version discovery or release notes
-- shared release workflows or publication routing
-- metadata or tagging rules that apply across more than one package
-- compatibility expectations around package naming or public release surfaces
+## Release Evidence
 
-## First Proof Checks
+The common publication path resolves the version, applies publication policy,
+builds wheel and source artifacts, and validates them with Twine before upload.
+Package profiles may add stronger checks. For example, the index package emits
+release metadata and SHA-256 sums, while the runtime package verifies that its
+changelog contains the required sections for the resolved base version.
 
-- `pyproject.toml` for commit and versioning conventions
-- `.github/workflows/release-*.yml` for publication behavior
-- the affected package handbook when the question narrows to one package release surface
+```mermaid
+flowchart TD
+    version["resolve version"] --> guard["enforce publication policy"]
+    guard --> build["build wheel and sdist"]
+    build --> metadata["produce package-specific evidence"]
+    metadata --> twine["validate artifact metadata"]
+    twine --> install["verify installation when configured"]
+    install --> publish["publish selected artifacts"]
+```
 
-## Design Pressure
+Useful local commands are deliberately non-uploading until publication is
+explicitly requested:
 
-Release logic gets muddy when shared governance and package-local publication
-behavior are discussed as one thing. The boundary has to stay sharp enough that
-release review does not turn into general repository folklore.
+```bash
+# Build the repository's primary package artifacts.
+make build
+
+# Build and validate one package through its package Makefile.
+make -C packages/bijux-canon-runtime release-dry
+
+# Confirm documentation still represents the release surface.
+make docs-check
+```
+
+Run `make help` and the owning package's `make help` for the exact targets
+supported by the current checkout. Package profiles differ, so a command valid
+for one distribution is not automatically a family-wide guarantee.
+
+## Compatibility Review
+
+A release needs explicit compatibility review when it changes any of these:
+
+- import paths or names exported by a canonical package;
+- console-script names, module entry points, flags, or exit behavior;
+- serialized artifacts, database schemas, or replay records;
+- configuration keys, environment variables, or default paths;
+- the mapping from a compatibility distribution to its canonical owner.
+
+For such changes, read the owning package's compatibility page and the relevant
+section of the [compatibility handbook](../../08-compat-packages/index.md).
+Version equality alone does not prove behavioral compatibility.
+
+## Release Boundaries
+
+Root configuration owns version discovery, the package catalog, and common
+publication policy. Package metadata owns dependencies, entry points, build
+contents, and package-specific verification. GitHub workflows own registry and
+release orchestration. Keeping these layers distinct makes it possible to
+answer three separate questions: what version is being built, what a package
+contains, and where verified artifacts are published.

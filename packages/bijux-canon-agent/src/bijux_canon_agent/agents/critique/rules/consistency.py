@@ -40,8 +40,10 @@ def check_no_repetition(
                 agent.Criteria.NO_REPETITION,
                 False,
                 [
-                    f"Excessive repetition of {n}-gram '{ngram}' "
-                    f"({count} times, max {agent.max_repetition})"
+                    (
+                        f"Excessive repetition of {n}-gram '{ngram}' "
+                        f"({count} times, max {agent.max_repetition})"
+                    )
                 ],
             )
 
@@ -61,8 +63,10 @@ def check_no_repetition(
                         agent.Criteria.NO_REPETITION,
                         False,
                         [
-                            "Semantic repetition detected between sentences: "
-                            f"'{sentences[i]}' and '{sentences[j]}'"
+                            (
+                                "Semantic repetition detected between sentences: "
+                                f"'{sentences[i]}' and '{sentences[j]}'"
+                            )
                         ],
                     )
     return agent._create_result(agent.Criteria.NO_REPETITION, True, [])

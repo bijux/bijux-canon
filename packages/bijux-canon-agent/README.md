@@ -48,12 +48,78 @@ is produced, or where agent-facing CLI and HTTP behavior lives, start here. If
 you need replay governance, runtime persistence, or cross-package execution
 authority, you are probably looking for `bijux-canon-runtime` instead.
 
-## What This Package Takes And Produces
+## Pipeline Contract
 
-- takes: declared agent workflows, role-specific inputs, local orchestration settings, and package-local boundary requests
-- produces: deterministic agent traces, role outputs, operator-facing artifacts, and explicit workflow failures when orchestration contracts are broken
-- guarantees: role orchestration stays inspectable and trace-backed instead of collapsing into one opaque tool invocation
-- does not do: decide runtime replay acceptance, own ingest or index package behavior, or treat provider integrations as cross-package authority
+```mermaid
+flowchart LR
+    input["document input"] --> plan["execution plan"]
+    plan --> kernel["agent execution kernel"]
+    kernel --> roles["reader / summarizer / critique / validator / stage runner"]
+    roles --> convergence["convergence + termination"]
+    convergence --> outcome["PipelineResult"]
+    kernel --> trace["RunTrace"]
+    roles --> trace
+    convergence --> trace
+```
+
+The pipeline owns ordering and lifecycle, not the private reasoning inside a
+role. `AgentExecutionKernel` controls call order and lifecycle callbacks;
+`PipelineController` controls transitions; convergence strategies decide
+whether another pass is justified; finalization joins status, output, failure,
+telemetry, and trace completeness into one result.
+
+Agent states (`pending`, `running`, `success`, `failed`, `aborted`) are distinct
+from pipeline states (`init`, `running`, `judging`, `verified`, `done`,
+`aborted`). Failure modes distinguish timeout, transient, validation, and fatal
+conditions. A veto is not rewritten as an approval simply because some earlier
+roles succeeded.
+
+## CLI Workflow
+
+```bash
+bijux-canon-agent run documents/ \
+  --config examples/reference-config.yml \
+  --out artifacts/bijux-canon-agent
+
+bijux-canon-agent run report.txt \
+  --config examples/reference-config.yml \
+  --out artifacts/bijux-canon-agent \
+  --dry-run
+
+bijux-canon-agent replay <trace.json>
+```
+
+The current entrypoint loads the environment and requires
+`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `HUGGINGFACE_API_KEY`, and
+`DEEPSEEK_API_KEY` **before** it parses the command. This means help, dry-run,
+and replay also require those four variables today. That behavior is a known
+operational constraint; it does not mean each run contacts all four providers.
+
+## HTTP Contract
+
+`POST /v1/run` accepts text, a task goal, a context identifier, and a bounded
+configuration object. The current handler validates that object but executes a
+fixed offline pipeline: `simple` backend, `extractive` strategy, and the five
+default roles. Configuration values do not currently alter execution. A
+successful response carries the pipeline result; `trace_metadata` is part of
+the response model but is not currently populated by the handler.
+
+`GET /v1/health` provides process health. The checked-in contract is
+[`apis/bijux-canon-agent/v1/schema.yaml`](../../apis/bijux-canon-agent/v1/schema.yaml).
+
+## Evaluate A Pipeline Outcome
+
+| Question | Evidence to inspect | What is not enough |
+| --- | --- | --- |
+| Which roles were authorized? | pipeline definition, resolved configuration, role order | installed provider adapters |
+| What ran and in which order? | lifecycle transitions and per-agent call records | final artifact alone |
+| Why did execution stop? | termination reason, convergence decision, vetoes, failures | a `success` field without trace context |
+| Is the trace complete? | schema version, run fingerprint, mandatory entries, completeness validation | a log file |
+| Can the result be governed downstream? | `PipelineResult`, trace identity, failure artifact, telemetry | provider response text detached from its run |
+
+Deterministic orchestration means the controller's declared ordering and
+decisions are inspectable. It does not make a remote model deterministic or
+prove that convergence produced a correct artifact.
 
 ## Dependency Surface
 
@@ -61,28 +127,84 @@ Treat the base package as the canonical orchestration surface. CLI, HTTP,
 provider, and template integrations are package-owned extensions that must stay
 subordinate to the trace and workflow contract, not the other way around.
 
-## Package continuity
+The package root deliberately exports only `API_VERSION`. It is not a facade
+for pipeline classes, provider clients, or role implementations. Integrate
+through the documented application, pipeline, interface, and trace modules so
+that dependency ownership remains visible; use the versioned HTTP schema when
+the service boundary is the intended contract.
 
-- compatibility package: [`bijux-agent`](https://pypi.org/project/bijux-agent/)
-- previous import root: `bijux_agent`
-- previous command: `bijux-agent`
-- canonical migration guide: [Migration guidance](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
-- retired repository target: [https://github.com/bijux/bijux-agent](https://github.com/bijux/bijux-agent) (see [Repository consolidation notes](https://bijux.io/bijux-canon/08-compat-packages/migration/repository-consolidation/))
+“Deterministic” applies to declared controller ordering and inspectable
+lifecycle decisions. Provider output may remain nondeterministic, and a
+reconstructed trace is not a re-execution of the provider. Documentation and
+automation should state which of those guarantees they rely on.
 
-## What this package owns
+## Package Continuity
 
-- agent role implementations and the helpers that are specific to those roles
-- deterministic orchestration of the local agent pipeline
-- trace-backed result artifacts that explain what happened during a run
-- package-local CLI and HTTP boundaries for invoking agent workflows
+[`bijux-agent`](https://pypi.org/project/bijux-agent/) is an exact-version
+compatibility distribution for this package. It preserves the `bijux_agent`
+import root and `bijux-agent` command while resolving public exports, nested
+modules, and command execution through `bijux-canon-agent`.
 
-## What this package does not own
+Use `bijux_canon_agent` and `bijux-canon-agent` in new integrations. Follow the
+[migration guide](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
+to inventory dependency files, nested imports, pipeline configuration, and
+entrypoints. The former
+[`bijux/bijux-agent`](https://github.com/bijux/bijux-agent) repository is
+historical; current implementation authority is this repository.
 
-- runtime-wide persistence, replay acceptance, or execution governance
-- ingest and index engines that belong to other package boundaries
-- repository tooling, release automation, or root-level quality workflows
+## Package Boundary
 
-## Source map
+Agent owns role implementations, lifecycle transitions, execution ordering,
+convergence, veto handling, failure artifacts, and trace production. Reason
+owns evidence and claim semantics used inside reasoning-capable roles. Runtime
+owns acceptance, durable run persistence, and governed replay above the
+pipeline.
+
+Provider adapters remain edge integrations. Their presence does not authorize
+a provider, broaden the v1 HTTP contract, or transfer provider nondeterminism
+into the deterministic orchestration core.
+
+## Runtime Agent Adapter Status
+
+The live runtime integration currently asks the `bijux_canon_agent` package
+root for a `run` callable accepting an agent identifier, deterministic seed,
+input fingerprint, declared output types, and retrieved evidence. It expects a
+list of dictionaries containing `artifact_id`, `artifact_type`, and `content`,
+with optional parent-artifact identifiers.
+
+The package root deliberately exports only `API_VERSION`; it does not export
+`run`. The package-native execution surface accepts a validated pipeline
+definition, configuration, and workflow inputs, and preserves the outcome as a
+`PipelineResult` with a `RunTrace`. Installing agent beside runtime therefore
+does not make this live adapter callable.
+
+The durable adapter belongs at the runtime integration boundary. It must
+define how a runtime agent invocation selects a pipeline, how runtime evidence
+becomes traceable workflow input, and how pipeline results, failure artifacts,
+trace identity, content serialization, and parent relationships become
+runtime artifacts. A broad package-root shortcut that returns untyped content
+would bypass those decisions; runtime currently derives content hashes from
+`str(content)`, so canonical serialization must also be explicit.
+
+Live composition requires an installed-package test that resolves the adapter,
+executes it with representative evidence, validates the runtime artifact
+projection, and binds every projected artifact to its agent trace. The agent
+CLI, HTTP, and Python pipeline remain package-local supported surfaces in the
+meantime.
+
+## Trace And Failure Guarantees
+
+- traces carry schema version, run fingerprint, ordered entries, and field
+  classifications used by replay and validation
+- trace validators support the governed schema versions explicitly rather than
+  accepting arbitrary historical shapes
+- completion checks reject outcomes that omit mandatory trace evidence
+- failure artifacts preserve category, class, message, stage, and relevant
+  execution context
+- API errors carry code, message, and HTTP status instead of overloading a
+  nominally successful result payload
+
+## Source Map
 
 - [`src/bijux_canon_agent/agents`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-agent/src/bijux_canon_agent/agents) for role-local behavior
 - [`src/bijux_canon_agent/pipeline`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-agent/src/bijux_canon_agent/pipeline) for execution flow
@@ -104,9 +226,4 @@ subordinate to the trace and workflow contract, not the other way around.
 ## Primary entrypoint
 
 - console script: `bijux-canon-agent`
-
-## Release Readiness
-
-- release line prepared for publish: `0.3.9`
-- release date: `2026-07-04`
-- package changelog: [`CHANGELOG.md`](CHANGELOG.md)
+- package history: [`CHANGELOG.md`](CHANGELOG.md)

@@ -4,48 +4,80 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-agent-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # Scope and Non-Goals
 
-The scope of `bijux-canon-agent` is coordination that stays inspectable. It is not a general layer for all late-stage behavior in the system.
-
-## Scope Map
+`bijux-canon-agent` owns governed coordination among bounded roles. It defines
+workflow shape, transition authority, shard handling, convergence, termination,
+result assembly, and trace evidence while keeping model providers and final
+run acceptance outside its authority.
 
 ```mermaid
 flowchart LR
-    workflow["workflow inputs"]
-    scope["agent scope"]
-    trace["trace-producing coordination"]
-    refuse["reasoning semantics, run authority, and maintainer automation stay out of scope"]
+    input["task goal + context"]
+    definition["roles + transitions + stop policy"]
+    execution["bounded calls + shard merge"]
+    decision["validation + convergence + termination"]
+    trace["PipelineResult + RunTrace"]
+    runtime["flow acceptance"]
 
-    workflow --> scope --> trace
-    scope --> refuse
+    input --> definition --> execution --> decision --> trace --> runtime
 ```
 
-This page should make orchestration feel constrained on purpose. Agent owns how
-work is coordinated and exposed, but it should stop before redefining the lower
-package meaning or the final runtime verdict.
+## In scope
 
-## In Scope
+- strict agent input, output, error, call, execution-plan, and runtime
+  contracts;
+- canonical pipeline definitions, role registries, lifecycle phases,
+  transitions, stop conditions, and interruption handling;
+- bounded file-reader, summarizer, critique, validator, stage-runner, planner,
+  judge, and verifier roles;
+- input preparation, context identity, cache keys, sharding, stage execution,
+  result merge, final validation, revisions, warnings, and action plans;
+- convergence strategies, snapshots, oscillation detection, decision windows,
+  termination classification, and epistemic disposition;
+- versioned traces, replayability metadata, ordering/completeness validation,
+  result reconstruction, structured logging, counters, and telemetry;
+- Python composition, CLI file/batch execution and replay, and the fixed
+  offline HTTP v1 pipeline.
 
-- deterministic workflow progression across agent roles and steps
-- trace-producing orchestration surfaces that explain what happened
-- agent-facing contracts that callers and neighboring packages can inspect
+## Non-goals
 
-## Non-Goals
+| Not owned here | Owning boundary |
+| --- | --- |
+| Source normalization and chunk identity | `bijux-canon-ingest` |
+| Vector backend selection and retrieval replay | `bijux-canon-index` |
+| Claim support, evidence meaning, and reasoning verification | `bijux-canon-reason` |
+| Final tenant authority, persistent governed-flow acceptance, and flow replay | `bijux-canon-runtime` |
+| Guaranteeing model correctness, calibration, or provider determinism | model/provider evaluation and contract |
+| Process isolation, distributed scheduling, secrets, network, or tenant policy | hosting system |
+| Repository release and maintenance automation | maintenance tooling and handbook |
 
-- retrieval or reasoning semantics inside lower packages
-- final authority over persistence, replay acceptance, or governed runs
-- repository-wide maintainer automation and release mechanics
+## Distinct outcome dimensions
 
-## Scope Check
+Role verdict, convergence, termination, and execution success answer different
+questions. A veto can occur in a technically successful role call. Convergence
+can stop on stable but incorrect output. Resource exhaustion can terminate
+without convergence. A valid trace preserves these distinctions rather than
+compressing them into one success flag.
 
-If the change makes workflows harder to reconstruct from traces, the package is getting more magical instead of more useful.
+## Provider boundary
 
-## Design Pressure
+Provider adapters supply model behavior under recorded metadata. Zero
+temperature is required for the package's replayable designation, but it
+cannot freeze provider weights, infrastructure, or hidden policies. Live tests
+demonstrate connectivity and metadata capture, not historical reproducibility
+or answer correctness.
 
-If agent becomes a catch-all for anything late in the chain, traces stop being
-enough to reconstruct what happened. The non-goals preserve orchestration as a
-reviewable layer instead of a vague convenience layer.
+## Scope test
+
+A change belongs here when it changes who acts, in which valid order, under
+which stop and convergence rules, or what trace is required to reconstruct the
+workflow. If it changes the meaning of a claim or the final authority over the
+whole run, it belongs below or above agent.
+
+See the [capability map](capability-map.md) and
+[known limitations](../quality/known-limitations.md) for the implemented and
+external boundaries.

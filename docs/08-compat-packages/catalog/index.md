@@ -1,80 +1,91 @@
 ---
-title: Catalog
+title: Compatibility Catalog
 audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-compat-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
-# Catalog
+# Compatibility Catalog
 
-The catalog is the concrete half of the compatibility handbook. It tells you
-which compatibility names still ship, what they preserve, and which canonical
-package now owns the real behavior.
+Use the catalog to resolve a preserved distribution, Python root, or command
+to its canonical owner. Every entry records the surfaces still delegated by the
+bridge, the behavior that remains canonical, and the migration work required
+to leave the preserved identity.
 
-These pages should be quick to scan and hard to misread. A reader should be
-able to land on an old name, find the current target immediately, and tell
-whether the compatibility layer is still thin enough to justify itself.
+## Resolve a Name
 
-## Catalog Model
+| Preserved identity | Canonical destination | Important migration boundary | Package record |
+| --- | --- | --- | --- |
+| `bijux-canon` | `bijux-canon-runtime` | runtime imports, commands, manifests, and run stores | [bijux-canon](bijux-canon.md) |
+| `agentic-flows` | `bijux-canon-runtime` | flow manifests, replay automation, imports, and commands | [agentic-flows](agentic-flows.md) |
+| `bijux-agent` | `bijux-canon-agent` | orchestration imports, provider configuration, commands, and traces | [bijux-agent](bijux-agent.md) |
+| `bijux-rag` | `bijux-canon-ingest` | preparation imports, commands, caches, and artifact readers | [bijux-rag](bijux-rag.md) |
+| `bijux-rar` | `bijux-canon-reason` | reasoning imports, commands, run bundles, and verification | [bijux-rar](bijux-rar.md) |
+| `bijux-vex` | `bijux-canon-index` | vector contracts, module execution, provenance, and command redesign | [bijux-vex](bijux-vex.md) |
+
+The [legacy name map](legacy-name-map.md) gives the compact distribution,
+module, command, and retired-repository mapping. Use the package records when
+the consumer depends on nested imports, stored artifacts, or command-specific
+behavior.
+
+## Inspect by Surface
+
+```mermaid
+flowchart TD
+    identity["preserved identity in a consumer"] --> kind{"where is it used?"}
+    kind -->|"dependency or import"| imports["Import surfaces"]
+    kind -->|"console or python -m"| commands["Command surfaces"]
+    kind -->|"runtime behavior"| behavior["Package behavior"]
+    imports --> package["Package-specific record"]
+    commands --> package
+    behavior --> package
+    package --> target["Canonical owner and migration"]
+```
+
+| Question | Record |
+| --- | --- |
+| Which root and nested modules are delegated? | [Import surfaces](import-surfaces.md) |
+| Which console scripts and module routes remain? | [Command surfaces](command-surfaces.md) |
+| Which behavior is preserved, and who owns defects? | [Package behavior](package-behavior.md) |
+| What is the exact old-to-current mapping? | [Legacy name map](legacy-name-map.md) |
+
+## Evidence Behind a Catalog Entry
+
+A current package entry is backed by four independent facts:
+
+1. the root workspace inventory declares the compatibility package and its
+   directory;
+2. built metadata injects an exact dependency on the canonical distribution;
+3. bridge tests exercise root exports, representative nested imports, local
+   alias modules, and command delegation; and
+4. publication contracts verify package contents, project URLs, the preserved
+   script, and canonical ownership language.
 
 ```mermaid
 flowchart LR
-    legacy["legacy package or surface"]
-    catalog["catalog page"]
-    target["canonical target"]
-    proof["checked preserved behavior"]
-    pressure["retire when the bridge is no longer needed"]
-
-    legacy --> catalog --> target
-    catalog --> proof
-    pressure --> catalog
+    workspace["workspace inventory"] --> record["catalog record"]
+    wheel["built metadata"] --> record
+    tests["identity and command tests"] --> record
+    publish["publication contract"] --> record
+    record --> consumer["supported preserved surface"]
 ```
 
-The catalog only works when it answers the first practical question fast:
-what does this old name still point to now? After that, the page has to make
-the remaining bridge visible enough that readers can judge whether the
-compatibility surface is still honest or just lingering.
+Package-index existence is checked separately from repository declarations. A
+catalog entry proves what this source tree is designed and tested to publish;
+it does not prove that every release version is available from every channel.
 
-## Catalog Pages
+## Boundary of the Bridge
 
-- [bijux-canon](https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-canon/)
-- [agentic-flows](https://bijux.io/bijux-canon/08-compat-packages/catalog/agentic-flows/)
-- [bijux-agent](https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-agent/)
-- [bijux-rag](https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-rag/)
-- [bijux-rar](https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-rar/)
-- [bijux-vex](https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-vex/)
-- [Legacy Name Map](https://bijux.io/bijux-canon/08-compat-packages/catalog/legacy-name-map/)
-- [Package Behavior](https://bijux.io/bijux-canon/08-compat-packages/catalog/package-behavior/)
-- [Import Surfaces](https://bijux.io/bijux-canon/08-compat-packages/catalog/import-surfaces/)
-- [Command Surfaces](https://bijux.io/bijux-canon/08-compat-packages/catalog/command-surfaces/)
+A compatibility package may contain forwarding and packaging infrastructure.
+It may not introduce product algorithms, schemas, configuration defaults,
+storage formats, failure interpretation, or a compatibility-only feature. Fix
+product behavior in the canonical package and verify that the bridge observes
+the corrected behavior without translation.
 
-## Start With
-
-- Open an individual package page when you already know the legacy package
-  name.
-- Open [Legacy Name Map](https://bijux.io/bijux-canon/08-compat-packages/catalog/legacy-name-map/)
-  for the full bridge table.
-- Open [Import Surfaces](https://bijux.io/bijux-canon/08-compat-packages/catalog/import-surfaces/)
-  or [Command Surfaces](https://bijux.io/bijux-canon/08-compat-packages/catalog/command-surfaces/)
-  when the compatibility risk is one public surface rather than one package.
-
-## Checked Surfaces
-
-- preserved compatibility distribution names on PyPI
-- preserved Python import roots
-- preserved CLI names where they still exist
-- compatibility package metadata and README routing
-
-## Boundary
-
-The catalog identifies what still exists. It does not justify keeping those
-surfaces forever. Retirement and continuity decisions belong in the migration
-section.
-
-## Design Pressure
-
-If a catalog page hides the canonical target, the preserved behavior, or the
-remaining migration cost, the compatibility layer starts looking permanent.
-This section has to stay closer to a ledger than a landing page.
+When a consumer no longer appears to need a preserved identity, continue with
+[migration validation](../migration/validation-strategy.md) and
+[retirement conditions](../migration/retirement-conditions.md). Repository
+search is only the start of that decision; deployed dependencies, commands,
+images, plugins, and artifact readers must also be accounted for.

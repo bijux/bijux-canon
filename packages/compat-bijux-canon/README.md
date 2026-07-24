@@ -38,52 +38,131 @@
 [![bijux-canon-index docs](https://img.shields.io/badge/docs-index-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/03-bijux-canon-index/)
 <!-- bijux-canon-badges:generated:end -->
 
-Alias distribution for `bijux-canon-runtime`.
+`bijux-canon` is the short-name compatibility distribution for
+[`bijux-canon-runtime`](../bijux-canon-runtime/README.md). It keeps established
+dependency declarations, `bijux_canon` imports, and the `bijux-canon` command
+working while all runtime behavior remains owned by the canonical package.
 
-Install this package if you need the shorter family-root package name and CLI
-command while running the same runtime behavior as `bijux-canon-runtime`.
+This is a runtime bridge, not an umbrella installation for the full Bijux
+Canon family. Ingest, index, reason, and agent remain separately installable
+packages with independent public contracts.
 
 ## Install
 
 ```bash
 python3.11 -m pip install bijux-canon
 bijux-canon --help
+python3.11 -m bijux_canon --help
 ```
 
-## What It Does
+The bridge and canonical runtime are released together. The built
+`bijux-canon` wheel requires `bijux-canon-runtime` at the exact same version,
+preventing an alias release from silently forwarding into a different runtime
+contract.
 
-- re-exports the public Python API from `bijux-canon-runtime`
-- resolves compatibility submodules such as `bijux_canon.interfaces.cli.entrypoint`
-  to the same canonical modules used by `bijux_canon_runtime`
-- dispatches the same CLI entrypoint through the shorter `bijux-canon`
-  command
-- keeps the shorter family-root distribution installable while steering new
-  work to `bijux-canon-runtime`
-- avoids becoming a second home for runtime logic or release ownership
+## Identity Map
 
-## Compatibility Contract
+| Consumer surface | Compatibility identity | Canonical identity |
+| --- | --- | --- |
+| distribution | `bijux-canon` | `bijux-canon-runtime` |
+| Python package | `bijux_canon` | `bijux_canon_runtime` |
+| console command | `bijux-canon` | `bijux-canon-runtime` |
+| module execution | `python -m bijux_canon` | `python -m bijux_canon_runtime` |
+| CLI module | `bijux_canon.interfaces.cli.entrypoint` | `bijux_canon_runtime.interfaces.cli.entrypoint` |
+| representative model | `bijux_canon.model.flows.manifest.FlowManifest` | `bijux_canon_runtime.model.flows.manifest.FlowManifest` |
 
-If this works:
+```mermaid
+flowchart LR
+    consumer["existing consumer"]
+    dependency["bijux-canon distribution"]
+    facade["bijux_canon import facade"]
+    command["bijux-canon command"]
+    runtime["bijux-canon-runtime"]
+
+    consumer --> dependency
+    dependency -->|"exact release pin"| runtime
+    consumer --> facade -->|"public exports and module aliases"| runtime
+    consumer --> command -->|"canonical CLI entrypoint"| runtime
+```
+
+## Runtime Semantics
+
+The package root exposes the canonical runtime's declared `__all__` and
+forwards attribute access without eagerly importing execution or persistence
+internals. Non-local `bijux_canon.*` imports are resolved against the matching
+`bijux_canon_runtime.*` path. A nested class imported through either name is
+therefore the same Python object, which protects `isinstance` checks,
+registries, and serializers from duplicate class identities.
+
+The compatibility command and `python -m bijux_canon` call the canonical CLI.
+They do not translate arguments, configuration, exit codes, or artifacts.
+Runtime admission, execution, persistence, resume, and replay consequently
+have one implementation and one documentation authority.
+
+## Composition Boundary
+
+The bridge preserves runtime behavior exactly; it does not install the full
+package family and does not contribute adapters between runtime and agent,
+ingest, index, or reason. The canonical runtime currently looks for four
+package-root callables—`run`, `retrieve`, `enforce_contract`, and `reason`—that
+the corresponding canonical roots do not provide in the required form. The
+preserved `bijux_canon` name neither repairs nor conceals that condition.
+
+Import identity, `FlowManifest` identity, CLI delegation, plan mode, and
+dry-run parity prove their named contracts. They do not prove that a live flow
+can invoke the lower packages. That stronger claim requires a separate
+installed-package test that executes the adapters and checks evidence,
+contract, claim, trace, artifact, and failure identity across the handoffs.
+
+## Verify A Consumer
+
+Exercise the surfaces that the application actually depends on:
 
 ```python
-from bijux_canon_runtime import execute_flow
+from bijux_canon import FlowManifest as CompatibilityManifest
+from bijux_canon_runtime import FlowManifest as CanonicalManifest
+
+assert CompatibilityManifest is CanonicalManifest
 ```
 
-the alias package is expected to support the same import through:
-
-```python
-from bijux_canon import execute_flow
+```bash
+bijux-canon --help
+bijux-canon --version
+python3.11 -m bijux_canon --help
 ```
 
-The alias package also keeps `bijux_canon.interfaces.cli.entrypoint` pointed at
-the canonical runtime CLI module, while preserving the executable name
-`bijux-canon`.
+For a real workflow, compare exit status, structured output, artifact layout,
+and replay behavior under the compatibility and canonical commands. Matching
+imports alone do not validate a deployment's providers, secrets, storage, or
+historical run data. When the workflow is live, also verify each canonical
+lower-package adapter; equivalent failures through both names prove bridge
+parity, not successful system composition.
+
+## Migrate To The Canonical Name
+
+New applications should depend on `bijux-canon-runtime`, import
+`bijux_canon_runtime`, and invoke `bijux-canon-runtime`. Existing applications
+can migrate one boundary at a time:
+
+1. Replace the distribution requirement and lock-file entry.
+2. Replace root and nested Python imports.
+3. Replace shell commands, container entrypoints, and automation.
+4. Search configuration and serialized metadata for dotted `bijux_canon.*`
+   paths.
+5. Run representative workflows and compare their artifacts and replay
+   results.
+6. Remove the bridge only after deployed consumers no longer load its
+   distribution, module, or command identities.
+
+The bridge intentionally does not promise every private runtime module as a
+permanent API. Depend on documented canonical exports wherever possible.
 
 ## Read Next
 
-- canonical package: [bijux-canon-runtime](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-runtime)
-- canonical handbook: [bijux-canon-runtime handbook](https://bijux.io/bijux-canon/06-bijux-canon-runtime/)
-- compatibility handbook: [bijux-canon alias handbook](https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-canon/)
-- migration guide: [Migration guidance](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
-- runtime package README: [bijux-canon-runtime README](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-runtime/README.md)
-- changelog: [Package changelog](https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-canon/CHANGELOG.md)
+- [Runtime handbook](https://bijux.io/bijux-canon/06-bijux-canon-runtime/)
+  for execution, artifacts, resume, and replay semantics
+- [Compatibility contract](https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-canon/)
+  for the complete preserved-identity boundary
+- [Migration guidance](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
+  for consumer inventory and validation
+- [Package changelog](https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-canon/CHANGELOG.md) for release history

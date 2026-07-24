@@ -48,35 +48,151 @@ capability profiles, replay semantics, or provenance-aware result comparison,
 start here. If you need document preparation, runtime governance, or repository
 tooling, you are outside this package's boundary.
 
-## What This Package Takes And Produces
+## Execution Contract
 
-- takes: declared vector execution requests, backend capability profiles, and embedding or store adapter inputs
-- produces: provenance-aware retrieval results, backend execution artifacts, replay comparison surfaces, and explicit capability failures
-- guarantees: vector execution remains attached to one declared contract instead of one implicit backend assumption
-- does not do: normalize source documents, own runtime persistence, or hide backend divergence behind one undifferentiated API
+Every execution combines four declarations:
 
-## Legacy continuity
+| Declaration | Supported values | Effect |
+| --- | --- | --- |
+| execution intent | `exact_validation`, `reproducible_research`, `exploratory_search`, `production_retrieval` | records why a particular loss and replay posture is acceptable |
+| execution mode | `strict`, `bounded`, `exploratory` | controls refusal, tolerance, and diagnostic behavior |
+| execution contract | `deterministic`, `non_deterministic` | distinguishes exact replay claims from bounded approximation |
+| execution budget | latency, memory, error, candidate, and ANN limits | constrains resource use and approximation before execution |
 
-- compatibility package: [`bijux-vex`](https://pypi.org/project/bijux-vex/)
-- legacy import root: `bijux_vex`
-- legacy command: `bijux-vex`
-- canonical migration guide: [Migration guidance](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
-- retired repository target: [https://github.com/bijux/bijux-vex](https://github.com/bijux/bijux-vex) (see [Repository consolidation notes](https://bijux.io/bijux-canon/08-compat-packages/migration/repository-consolidation/))
+An `ExecutionRequest` becomes an `ExecutionPlan`, an `ExecutionSession`, an
+`ExecutionResult`, and—when materialized—an `ExecutionArtifact`. Provenance
+records backend and parameter identity so `explain`, `replay`, and `compare`
+operate on evidence rather than inference.
 
-## What this package owns
+```mermaid
+flowchart LR
+    request["request + intent"] --> plan["validated plan"]
+    plan --> registry["backend registry"]
+    registry --> engine["vector execution engine"]
+    engine --> result["result + cost"]
+    result --> artifact["artifact + provenance"]
+    artifact --> replay["explain / replay / compare"]
+```
 
-- vector execution semantics and backend orchestration
-- provenance-aware result artifacts and replay-oriented comparison
-- plugin-backed vector store, embedding, and runner integration
-- package-local HTTP behavior and related schemas
+## Primary entrypoint
 
-## What this package does not own
+The repository contains a complete Typer application under
+`bijux_canon_index.interfaces.cli.app`. The current package metadata does **not**
+register a `bijux-canon-index` console script, so source and wheel users must
+not assume that executable exists. The application can be invoked explicitly:
 
-- document ingestion and normalization
-- runtime-wide authority, persistence, or replay policy
-- repository maintenance automation
+```bash
+python -m bijux_canon_index.interfaces.cli.app capabilities
+python -m bijux_canon_index.interfaces.cli.app execute \
+  --vector '[0.2, 0.8]' \
+  --execution-contract deterministic \
+  --execution-intent exact_validation \
+  --execution-mode strict
+```
 
-## Source map
+The missing console-script registration is a packaging limitation, not a
+documentation alias. HTTP and in-process users are unaffected.
+
+| Integration need | Supported surface | Authority to pin |
+| --- | --- | --- |
+| typed composition | application, domain, contract, and interface modules | imported symbol and distribution version |
+| shell automation | `python -m bijux_canon_index.interfaces.cli.app` | module command and its rendered output contract |
+| service integration | v1 HTTP API | checked-in OpenAPI schema and schema hash |
+| historical automation | `bijux-vex` compatibility package | bridge version plus its exact canonical dependency |
+
+The root import deliberately exposes only `__version__`. Examples that import
+an imagined root-level engine or request facade do not describe a supported
+API, even if equivalent types exist deeper in the package.
+
+## Runtime Contract-Enforcement Status
+
+Runtime's retrieval path attempts to call
+`bijux_canon_index.enforce_contract(vector_contract_id, evidence)` and expects a
+boolean decision. The canonical index root intentionally exposes only
+`__version__`, and no `enforce_contract` function with that contract currently
+exists in the index source tree.
+
+Index's implemented authority is richer than that boolean seam:
+`ExecutionRequest`, capability resolution, execution mode, budget, backend
+identity, result provenance, and `ExecutionArtifact` jointly describe why an
+operation ran or was refused. A future runtime adapter must map runtime's
+contract identifier and normalized evidence into those declared types and
+retain the resulting execution evidence. A permissive boolean shim would hide
+the very policy and provenance this package exists to expose.
+
+Use the application modules, explicit module command, or HTTP API for current
+index execution. Do not cite installation as proof that runtime is enforcing
+index contracts until an installed-package adapter test covers this seam.
+
+## HTTP Contract
+
+The checked-in v1 schema exposes backend capabilities, corpus creation,
+ingestion, vector execution, explanation, replay, artifact materialization,
+artifact listing, and run listing. See
+[`apis/bijux-canon-index/v1/schema.yaml`](../../apis/bijux-canon-index/v1/schema.yaml)
+and its pinned JSON and schema hash.
+
+## Evaluate An Execution Result
+
+| Question | Evidence to inspect | Misleading shortcut |
+| --- | --- | --- |
+| Was the requested contract supported? | intent, mode, capability profile, backend identity | assuming every registered backend supports exact execution |
+| Which data and parameters produced the ranking? | artifact, index/vector-store identity, metric, normalized parameters | keeping only document identifiers and scores |
+| Did approximation remain within policy? | randomness profile, ANN parameters, witness data, budget observations | calling every seeded run deterministic |
+| Can the outcome be replayed? | original artifact, request, fingerprints, current backend state, replay verdict | comparing final neighbor lists without identities |
+| Why was work refused? | typed reason, invariant code, remediation, correlation ID | retrying the same unsupported contract silently |
+
+An `ExecutionArtifact` is evidence of a vector operation under one declared
+contract. It does not prove corpus completeness, semantic relevance, or the
+truth of downstream claims.
+
+Keep the prepared-input identity and execution artifact together. The former
+shows which ingest-owned material entered the operation; the latter shows how
+index interpreted and ranked that material. Either artifact alone leaves a
+custody gap that replay cannot repair.
+
+## Package Continuity
+
+[`bijux-vex`](https://pypi.org/project/bijux-vex/) is an exact-version
+compatibility distribution for this package. It preserves the `bijux_vex`
+import root and `bijux-vex` command while delegating execution to canonical
+index modules. `bijux-canon-index` intentionally publishes no console script,
+so there is no `bijux-canon-index` command to use as a direct replacement.
+
+Use `bijux_canon_index` in new Python integrations or adopt the versioned HTTP
+contract. Follow the
+[migration guide](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
+to replace command automation deliberately and compare ranked results, typed
+failures, and execution evidence. The former
+[`bijux/bijux-vex`](https://github.com/bijux/bijux-vex) repository is
+historical; current implementation authority is this repository.
+
+## Package Boundary
+
+Index owns embedding and vector-store execution once input has a stable
+prepared identity. It owns capability negotiation, exact and bounded modes,
+budgets, result provenance, artifacts, and retrieval replay. Ingest owns source
+normalization; reason owns what retrieved evidence means; runtime owns whether
+the full run may be accepted and persisted.
+
+A plugin extends a registered execution seam. Registration does not make its
+capability declaration accurate or its remote service trustworthy; conformance
+and deployment controls remain necessary.
+
+## Failure And Replay Semantics
+
+- strict execution refuses unsupported capability, invalid-vector, and budget
+  combinations before presenting a result as valid
+- deterministic and non-deterministic runs have different support levels and
+  different replay claims
+- approximate runs can record witness mode, target recall, candidate limits,
+  ANN parameters, low-signal policy, and an explicit non-replayable declaration
+- replay can refuse changed indexes or parameters instead of silently comparing
+  unlike executions
+- corrupt artifacts, unavailable backends, backend divergence, and unsupported
+  replay remain distinct failures
+
+## Source Map
 
 - [`src/bijux_canon_index/core`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-index/src/bijux_canon_index/core) for stable primitives and errors
 - [`src/bijux_canon_index/domain`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-index/src/bijux_canon_index/domain) for execution and provenance semantics
@@ -95,12 +211,18 @@ tooling, you are outside this package's boundary.
 - [Error model](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/error-model/)
 - [Changelog](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-index/CHANGELOG.md)
 
-## Primary entrypoint
+## Distribution Surfaces
 
-- console script: `bijux-canon-index`
+| Surface | Availability | Canonical access |
+| --- | --- | --- |
+| Python | available | import application and domain modules from `bijux_canon_index` |
+| HTTP | available | serve the application against the pinned v1 OpenAPI contract |
+| module CLI | available | `python -m bijux_canon_index.interfaces.cli.app` |
+| console script | not registered | use the module CLI; do not assume `bijux-canon-index` exists |
 
-## Release Readiness
+This distinction matters for automation: package installation proves that the
+Python distribution is available, but it does not prove that a shell command
+was registered. Consumers should select one of the available surfaces
+explicitly and pin the corresponding contract.
 
-- release line prepared for publish: `0.3.9`
-- release date: `2026-07-04`
-- package changelog: [`CHANGELOG.md`](CHANGELOG.md)
+Package history is recorded in [`CHANGELOG.md`](CHANGELOG.md).

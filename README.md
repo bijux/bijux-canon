@@ -1,5 +1,16 @@
 # bijux-canon
 
+`bijux-canon` is a contract-first Python system for turning source material
+into evidence-bearing, inspectable runs. Five canonical packages separate
+preparation, retrieval, reasoning, orchestration, and runtime authority so a
+reviewer can identify who made each decision and which artifact supports it.
+
+The project is built for work that must survive review after execution. It
+keeps API schemas in the repository, records provenance at retrieval and
+reasoning boundaries, emits agent traces, and gives runtime policy the final
+authority over persistence and replay. Determinism does not make a model
+correct; it makes the execution conditions and resulting evidence inspectable.
+
 <!-- bijux-canon-badges:generated:start -->
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-3776AB?logo=python&logoColor=white)](https://pypi.org/project/bijux-canon-runtime/)
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-0F766E)](https://github.com/bijux/bijux-canon/blob/main/LICENSE)
@@ -43,50 +54,214 @@
 [![bijux-canon-index docs](https://img.shields.io/badge/docs-index-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/03-bijux-canon-index/)
 <!-- bijux-canon-badges:generated:end -->
 
-`bijux-canon` is a contract-first Python package family for governed ingest,
-retrieval, reasoning, agent execution, and runtime replay.
+## Trust Model
 
-It exists for teams that need more than "it worked once on my machine." The
-goal is not just to run AI and retrieval workflows, but to run them with clear
-boundaries, stable contracts, checked-in schemas, replayable behavior, and a
-repository layout that stays understandable as the system grows.
+`bijux-canon` narrows claims to the evidence a run actually retains:
 
-## What It Takes And Produces
+| Claim | Evidence required | What that evidence does not prove |
+| --- | --- | --- |
+| source preparation is repeatable | normalized records, chunk configuration, input identity, and typed failures | that the source itself is correct |
+| retrieval is reproducible | execution request, backend capabilities, index identity, ranked results, and provenance | that the most relevant evidence exists in the corpus |
+| a claim is supported | exact evidence spans, content digests, claim status, verification report, and reasoning trace | factual truth beyond the registered checks |
+| agent work is auditable | ordered role calls, convergence decision, terminal status, and complete trace | that a provider behaved deterministically |
+| a run is replayable | manifest, dataset and plan identities, policy, entropy record, finalized trace, and replay envelope | equivalence outside the declared replay boundary |
 
-- takes: governed documents, retrieval corpora, execution manifests, and policy contracts
-- produces: ingest artifacts, vector execution outputs, reasoning bundles, agent traces, and replayable runtime records
-- guarantees: explicit package ownership, checked-in API schemas, deterministic or bounded execution modes, and reviewable release surfaces
-- does not do: promise model correctness, hide cross-package coupling behind one import, or treat one successful run as sufficient evidence
+Missing evidence produces a narrower claim or an explicit refusal. It is not
+reconstructed from a plausible final answer.
 
-This repository publishes `11` packages. Each release tag builds one staged
-bundle per package, uploads distributions to PyPI, publishes release bundles to
-their exact GHCR package pages under the `bijux` account, and attaches the same
-staged assets to the GitHub Release.
-
-Current synchronized release line: `v0.3.9` dated `2026-07-04`.
+This repository defines `11` publishable package records. PyPI, GHCR, and
+GitHub Release are independent publication workflows. Each resolves the
+checked-in release matrix and invokes the same reusable artifact-building
+contract for its own run; destination success must be verified separately.
 
 The six compatibility distributions in this repository are real alias
 packages, not migration-only placeholders. Five preserve retired public names,
 and one preserves the shorter family-root `bijux-canon` runtime name. All six
 re-export canonical package surfaces directly.
 
-## Why `bijux-canon` Exists
+## What Works As Shipped
 
-Many AI and RAG stacks are easy to start and hard to trust. They often mix
-ingest, indexing, reasoning, orchestration, and runtime policy in one blurred
-layer. That makes systems harder to review, migrate, test, replay, and operate.
+The repository contains substantial package-local implementations, but the
+working boundary is not the same for every surface. Use this table before
+choosing an example or making an integration claim:
 
-`bijux-canon` fills that gap by treating these concerns as separate but aligned
-layers:
+| Capability | Supported entry | Evidence produced | Important limit |
+| --- | --- | --- | --- |
+| deterministic document preparation and local retrieval | ingest Python, CLI, and HTTP v1 | prepared records, chunk identity, persisted local indexes, ranked candidates, citations | not the governed vector-execution contract owned by index |
+| exact or bounded vector execution | index Python, module-invoked CLI, and HTTP v1 | request, capability resolution, execution artifact, provenance, cost, replay comparison | no installed `bijux-canon-index` console script and no runtime contract-enforcement adapter |
+| evidence-backed claim construction and verification | reason Python, CLI, and HTTP v1 | claims, support edges, checks, manifests, traces, replay records | verification is scoped to registered evidence and rules; runtime has no reason adapter |
+| traced role orchestration | agent Python, CLI, replay, and fixed offline HTTP v1 | ordered calls, lifecycle transitions, convergence and termination records, `RunTrace` | provider determinism is not implied; runtime has no agent adapter |
+| manifest resolution, planning, runtime-local policy, storage, inspection, and replay analysis | runtime Python and CLI; HTTP health/readiness | immutable plans, causal traces, stored run projections, arbitration and replay verdicts | HTTP run/replay return `501`; canonical live package adapters are not complete |
 
-- `ingest` prepares and shapes information
-- `index` executes retrieval contracts
-- `reason` manages reasoning-side state and run artifacts
-- `agent` orchestrates deterministic agent workflows
-- `runtime` enforces execution and replay policy above the rest
+The strongest immediately reproducible whole-repository demonstration is
+runtime plan mode because it resolves checked-in authority, data, dependency,
+entropy, and replay declarations without crossing an unavailable live adapter.
+The strongest product demonstrations remain package-local: exercise the
+owning package, retain its evidence record, and state the boundary that was not
+tested. This is more informative than treating co-installation as integration.
 
-The result is a stack that is easier to govern, easier to inspect, and easier
-to evolve without losing the plot.
+## One System, Five Authorities
+
+```mermaid
+flowchart LR
+    source["documents and datasets"]
+    ingest["ingest<br/>clean, chunk, prepare"]
+    index["index<br/>execute and explain retrieval"]
+    reason["reason<br/>form and verify claims"]
+    agent["agent<br/>coordinate traced work"]
+    runtime["runtime<br/>authorize, persist, replay"]
+    record["governed run record"]
+
+    source -. ownership handoff .-> ingest
+    ingest -. ownership handoff .-> index
+    index -. ownership handoff .-> reason
+    reason -. ownership handoff .-> agent
+    agent -. ownership handoff .-> runtime
+    runtime --> record
+```
+
+| Authority | Accepts | Produces | Refuses to own |
+| --- | --- | --- | --- |
+| `bijux-canon-ingest` | source documents and preparation configuration | cleaned records, chunks, local indexes, retrieval-ready material | vector-backend execution policy |
+| `bijux-canon-index` | declared vector operations, capabilities, and backend inputs | execution artifacts, provenance-rich results, explanations, replay comparisons | document normalization or claim meaning |
+| `bijux-canon-reason` | problems, evidence, retrieval results, and verification rules | claims, checks, manifests, traces, and replayable reasoning runs | workflow choreography or whole-run authority |
+| `bijux-canon-agent` | prompts, files, run configuration, and role-specific work | ordered pipeline outcomes and mandatory trace metadata | runtime acceptance and persistence policy |
+| `bijux-canon-runtime` | flow manifests, datasets, policies, and lower-layer artifacts | accepted or rejected run records, stored artifacts, replay and diff results | reimplementing lower-package semantics |
+
+The boundaries matter most when something fails. Preparation errors remain
+ingest errors; unsupported backend capabilities remain index errors;
+insufficient evidence remains a reasoning result; orchestration failures remain
+traceable agent outcomes; policy violations remain runtime verdicts. No layer
+has to disguise another layer's failure as success.
+
+### Current Composition Boundary
+
+The diagram is an ownership model, not evidence that the installed packages
+currently form a turnkey live pipeline. Runtime resolves four integration
+callables lazily at execution time, while the corresponding canonical package
+roots do not currently publish those callables:
+
+| Runtime integration request | Current canonical root | Consequence |
+| --- | --- | --- |
+| `bijux_canon_ingest.retrieve` | not exported; the package-local retrieval function also requires an `index_path` rather than runtime's scope and vector-contract arguments | an explicit retrieval adapter is required |
+| `bijux_canon_index.enforce_contract` | not exported | runtime cannot use the canonical index root as its vector-contract enforcer |
+| `bijux_canon_reason.reason` | not exported | runtime cannot use the canonical reason root as its reasoning runner |
+| `bijux_canon_agent.run` | not exported; the root intentionally exposes only `API_VERSION` | runtime cannot use the canonical agent root as its agent runner |
+
+The legacy-module fallbacks are aliases to the same canonical roots, so they do
+not supply a missing callable. Package-local Python, CLI, and implemented HTTP
+surfaces remain independently usable, and runtime plan mode does not invoke
+these adapters. Do not claim supported end-to-end live composition until the
+adapter contracts are explicit and an installed-package integration test
+exercises them.
+
+## Contract Surfaces
+
+The public contract is larger than Python imports:
+
+- Python distributions and typed root imports provide in-process use.
+- Canonical console commands provide automation-friendly entry points for
+  ingest, reason, agent, and runtime. Index is an in-process execution library;
+  its preserved `bijux-vex` compatibility distribution supplies the historical
+  command name.
+- Versioned OpenAPI documents under `apis/<package>/v1/` pin HTTP behavior for
+  all five canonical packages.
+- Package tests cover local semantics; API, invariant, integration, end-to-end,
+  and regression suites protect their selected boundaries. The runtime's
+  package-root adapter seam is not currently covered by a live canonical-package
+  integration test.
+- Compatibility distributions preserve six existing names while canonical
+  ownership remains with the five `bijux-canon-*` packages.
+
+Start with the owning package instead of installing the entire family by
+habit. The packages are independently publishable and intentionally do not
+present one catch-all import surface.
+
+### Interface Shape Is Package-Specific
+
+The five authorities share contract principles, not an identical interface
+shape:
+
+| Package | Package-root contract | Operational entry points |
+| --- | --- | --- |
+| ingest | broad, explicitly enumerated preparation primitives and lazily resolved application exports | canonical CLI and versioned HTTP API |
+| index | package version only at the root; execution contracts live in named application, core, domain, and infrastructure modules | Python and versioned HTTP API; no renamed canonical console script |
+| reason | typed claims, evidence references, plans, traces, checks, validators, and stable hashing helpers | canonical CLI, preserved `bijux-rar` command, and versioned HTTP API |
+| agent | deliberately minimal root exposing `API_VERSION` lazily | canonical CLI, workflow modules, and versioned HTTP API |
+| runtime | `FlowManifest`, `RunMode`, and `execute_flow` | canonical CLI and versioned HTTP API |
+
+Do not infer an import from a sibling package or from a diagram. Confirm the
+owning package's exported names, documented module boundary, command help, or
+HTTP schema. A uniform lifecycle does not justify a fabricated uniform facade.
+
+## Install By Responsibility
+
+Install the package that owns the decision your application needs to make:
+
+```bash
+python -m pip install bijux-canon-ingest
+python -m pip install bijux-canon-index
+python -m pip install bijux-canon-reason
+python -m pip install bijux-canon-agent
+python -m pip install bijux-canon-runtime
+```
+
+These are independent distributions, not installation tiers. An ingest-only
+application does not need runtime; a retrieval integration can depend on index
+without importing agent orchestration. Use `bijux-canon-runtime` when the
+application must apply whole-run policy, persist governed records, or compare
+replay results.
+
+After installation, inspect the owning public surface before wiring a workflow:
+
+```bash
+bijux-canon-ingest --help
+bijux-canon-reason --help
+bijux-canon-agent --help
+bijux-canon-runtime --help
+```
+
+For index integrations, begin with the
+[index handbook](https://bijux.io/bijux-canon/03-bijux-canon-index/) and its
+typed execution contracts. Existing `bijux-vex` automation remains available
+through the compatibility package, but new integrations should target
+`bijux-canon-index` directly.
+
+## Inspect A Governed Plan
+
+The repository includes a manifest that can be resolved without executing a
+provider, retrieval adapter, reasoning adapter, or agent workflow. This is the
+safest concrete starting point for understanding runtime authority:
+
+```bash
+uv sync --frozen
+uv run bijux-canon-runtime plan \
+  packages/bijux-canon-runtime/examples/boring/flow.json \
+  --json
+```
+
+The resulting plan records the flow and tenant, frozen dataset identity,
+ordered steps, determinism level, entropy budget, replay envelope,
+environment fingerprint, and `plan_hash`. It does not allocate a run ID,
+persist a trace, or establish that the four live package adapters are
+callable. That distinction is useful: planning proves that declared authority
+can be normalized into an immutable execution contract without confusing that
+contract with execution.
+
+Read the output in this order:
+
+1. confirm `flow_id`, `tenant_id`, and the dataset hash identify the intended
+   authority boundary;
+2. inspect every resolved step and dependency before trusting execution order;
+3. verify the determinism and entropy declarations match the intended replay
+   claim; and
+4. retain `plan_hash` as the identity against which later execution or replay
+   evidence must be compared.
+
+The example manifest is deliberately uneventful. It demonstrates admission
+and planning, not model quality or end-to-end live composition. Continue with
+the [runtime entrypoint guide](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/entrypoints-and-examples/)
+before granting execution authority.
 
 ## Read The Repository By Ownership
 
@@ -118,19 +293,46 @@ The repository also ships `bijux-canon` as a shorter compatibility
 distribution for `bijux-canon-runtime`. It is a real alias package, not a
 retired standalone repository.
 
-## What Makes It Different
+## Engineering Commitments
 
-- Contracts are first-class. API schemas are checked in under `apis/` instead of
-  being an afterthought.
-- Determinism matters. The system is built around bounded execution, traceable
-  behavior, and replay where it matters.
-- Layers stay legible. Each package owns a specific slice of responsibility
-  instead of collapsing into one "do everything" library.
-- Compatibility is explicit. Older and shorter public names are preserved
-  through real alias packages instead of being hidden, silently broken, or left
-  behind as decorative migration stubs.
-- The repository is designed as one system. Docs, schemas, validation, release
-  flow, and automation are meant to stay aligned.
+- **Contracts are checked in.** The OpenAPI source, pinned representation, and
+  schema hash for each canonical HTTP API are versioned under `apis/`.
+- **Replay has preconditions.** A replay claim depends on declared contracts,
+  captured inputs, stable identifiers, and the package's documented
+  determinism boundary.
+- **Failures retain ownership.** Packages expose typed failures and validation
+  outcomes rather than silently coercing invalid work into plausible output.
+- **Compatibility is observable.** Legacy distributions, imports, and commands
+  are implemented as explicit alias packages with canonical targets.
+- **Release custody is explicit.** Each destination records its source SHA,
+  package matrix, named staged artifact, permissions, and publication result.
+
+## Release Custody
+
+```mermaid
+flowchart LR
+    source["source SHA + release matrix"]
+    builder["reusable artifact builder"]
+    pypi["PyPI workflow"]
+    ghcr["GHCR workflow"]
+    github["GitHub Release workflow"]
+    pd["package-pypi-dist"]
+    rd["package-release"]
+
+    source --> pypi --> builder --> pd
+    source --> ghcr --> builder --> rd
+    source --> github --> builder --> rd
+```
+
+There is no repository-local workflow that atomically publishes all three
+destinations. Each destination builds from its workflow run, consumes the
+named artifact produced in that run, and reports its own result. A PyPI success
+does not establish GHCR or GitHub Release success, and registry acceptance does
+not by itself prove downstream installation or SBOM validity.
+
+The [release workflow handbook](https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/release-workflows/)
+documents inputs, artifact names, authentication, permissions, and refusal
+behavior for each destination.
 
 ## Package Map
 
@@ -154,80 +356,49 @@ Repository-owned developer tooling also lives here in
 [`packages/bijux-canon-dev`](packages/bijux-canon-dev), but it is for
 maintaining the workspace rather than for end-user installation.
 
-## Choose Your Entry Point
+## Choose By The Decision You Need To Review
 
-- Start with `bijux-canon-runtime` if you care about governed execution, policy,
-  replay, and system-level control.
-- Start with `bijux-canon-agent` if you need agent orchestration and
-  deterministic workflow execution.
-- Start with `bijux-canon-ingest` if your main problem is preparing, chunking,
-  and shaping source material for downstream use.
-- Start with `bijux-canon-reason` if you need a reasoning-side runtime with
-  explicit run artifacts and state boundaries.
-- Start with `bijux-canon-index` if retrieval and vector execution are the main
-  concern.
+| Decision under review | Canonical package | First evidence to inspect |
+| --- | --- | --- |
+| how bytes became normalized records and chunks | `bijux-canon-ingest` | prepared records, configuration, and input identity |
+| why a backend accepted, refused, or ranked a vector request | `bijux-canon-index` | `ExecutionRequest`, capabilities, and `ExecutionArtifact` provenance |
+| how evidence became a claim | `bijux-canon-reason` | support references, content hashes, trace, and verification report |
+| why a role ran and how the workflow terminated | `bijux-canon-agent` | `PipelineDefinition`, `PipelineResult`, and versioned `RunTrace` |
+| whether the complete run may be retained or replayed | `bijux-canon-runtime` | `FlowManifest`, policy, finalized trace, and replay verdict |
 
-## Documentation Paths
+The [published handbook](https://bijux.io/bijux-canon/) follows the same
+ownership map. Use the [compatibility handbook](docs/08-compat-packages/index.md)
+only for preserved distribution, import, submodule, or command names; current
+behavior belongs to the canonical package.
 
-- Repository handbook: [Repository handbook](https://bijux.io/bijux-canon/)
-- Repository handbook source: [`docs/index.md`](docs/index.md)
-- Repository overview section: [`docs/01-bijux-canon`](docs/01-bijux-canon)
-- Compatibility handbook: [`docs/08-compat-packages`](docs/08-compat-packages)
-- Maintenance handbook: [`docs/07-bijux-canon-maintain`](docs/07-bijux-canon-maintain)
+## Verify A Claim
 
-If you want the fastest high-level orientation, start with the repository
-handbook and then jump to the package docs that match the layer you care about.
+The repository keeps four proof surfaces separate:
 
-## Proof Surfaces
+- `packages/<package>/src` implements package behavior;
+- `packages/<package>/tests` exercises local and cross-boundary invariants;
+- `apis/<package>/v1` records the versioned HTTP schema, pinned representation,
+  and hash; and
+- run artifacts record what happened in one execution.
 
-- `packages/` owns the publishable package boundaries
-- `apis/` holds checked-in contract artifacts
-- `docs/` routes readers to the owning handbook and proof surface
-- `Makefile`, `makes/`, and `.github/workflows/` own shared automation and release behavior
+None substitutes for the others. A checked-in schema does not prove its server
+is implemented, a passing unit test does not make a scientific claim true, and
+a completed run does not establish replay without its identities and policy.
 
-## Where `bijux-canon` Fits
+## Work With The Repository
 
-`bijux-canon` is not trying to be the most magical framework in the room. It is
-trying to be one of the clearest.
+All transient local outputs belong under `artifacts/`. The root verification
+environment belongs under `artifacts/root/check-venv/`, and a locally rendered
+documentation site belongs under `artifacts/root/docs/site/`. These paths are
+disposable execution products; checked-in schemas, handbooks, and release
+metadata remain in their governed repository locations.
 
-Its place in the community is the gap between:
-
-- quick demos that are easy to start but hard to trust later
-- heavyweight enterprise systems that bury the actual execution model under too
-  much machinery
-
-`bijux-canon` is for people who want explicit boundaries, honest contracts,
-clear artifacts, and a codebase that still makes sense after the first demo.
-
-## Start Here
-
-- Want the whole picture: read [`docs/index.md`](docs/index.md)
-- Want package-level entry points: browse [`packages/`](packages)
-- Want checked-in API contracts: browse [`apis/`](apis)
-- Want workspace automation: run `make help`
-- Want to build the handbook locally: run `make docs-check` or `make docs-serve`
-- Want contributor guidance: read [`CONTRIBUTING.md`](CONTRIBUTING.md)
-
-## Local Artifact Contract
-
-- transient local outputs belong under `artifacts/`, not as ad hoc root-level
-  cache or build directories
-- the shared root environment lives at `artifacts/root/check-venv/`
-- the MkDocs site builds to `artifacts/root/docs/site/`
-
-## Repository Design
-
-The root keeps only the assets that truly need repository ownership:
-
-- `apis/` for checked-in contract artifacts
-- `configs/` for shared tool configuration
-- `docs/` for the root handbook
-- `makes/` for automation and orchestration
-- `.github/workflows/` for CI and release flow
-- `packages/` for the publishable distributions
-
-That split is intentional. It keeps package code local, shared governance
-visible, and repository policy discoverable for both human readers and tooling.
+- Read the [documentation map](docs/index.md) for package and evidence routing.
+- Browse [packages](packages) for canonical and compatibility distributions.
+- Browse [API contracts](apis) for checked-in HTTP schemas.
+- Run `make help` for the supported local command surface.
+- Run `make docs-check` for the strict documentation build.
+- Read [CONTRIBUTING.md](CONTRIBUTING.md) before proposing a change.
 
 ## License
 

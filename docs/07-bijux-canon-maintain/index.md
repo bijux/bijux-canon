@@ -4,87 +4,174 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-dev-docs
-last_reviewed: 2026-07-04
+last_reviewed: 2026-07-22
 ---
 
 # Maintenance Handbook
 
-The maintenance handbook covers repository-health surfaces that sit above any
-single product package. It exists so schema drift checks, shared command
-surfaces, publication workflows, and maintainer-only helpers can be reviewed
-from checked-in truth instead of CI archaeology.
-
-These pages are narrow by design. They document repository operation, not
-product semantics. If a change alters ingest, index, reasoning, agent, or
-runtime behavior for users, the owning package handbook still owns the real
-explanation.
+Repository maintenance is implemented as a three-layer control system:
+`bijux-canon-dev` owns repository-specific checks, `makes/` exposes repeatable
+local commands and package dispatch, and GitHub workflows apply those commands
+to pull requests, documentation deployment, and tagged publication.
 
 ## Maintenance System
 
-Maintenance work should be easy to audit because each automation surface has a
-checked-in owner. The helper package provides repository-health logic, `makes/`
-turns that logic into repeatable local commands, and GitHub workflows run the
-same contract in CI and release paths.
+```mermaid
+flowchart LR
+    source["source + schemas + metadata"]
+    dev["bijux-canon-dev checks"]
+    make["root and package targets"]
+    verify["verify / policy workflows"]
+    release["PyPI / GHCR / GitHub release"]
+    evidence["artifacts + logs + SBOMs"]
+
+    source --> dev --> make --> verify --> release
+    dev --> evidence
+    make --> evidence
+    verify --> evidence
+    release --> evidence
+```
+
+## Command Families
+
+| Intent | Local command | Primary evidence |
+| --- | --- | --- |
+| full verification with lock consistency | `make check` | lock, package-specific test, lint, quality, security, docs, API, build, and SBOM output |
+| full repository surfaces without the lock precondition | `make all` | package-specific test, lint, quality, security, docs, API, build, and SBOM output |
+| exhaustive tests | `make test-all` | slow, evaluation, and real-local test results where configured |
+| API governance | `make api` | schema lint, generated-schema drift, pins, hashes, and live contract tests |
+| documentation | `make docs-check` | strict MkDocs build and hygiene result |
+| supply chain | `make security` and `make sbom` | Bandit, dependency audit, CycloneDX documents, validation summary |
+| release preparation | package build and publication guards | wheel, sdist, Twine result, resolved version, publication eligibility |
+
+Generated logs, reports, SBOMs, build products, and test output belong under
+`artifacts/`. Checked-in API pins and documentation remain in their governed
+repository locations because they are versioned contract sources, not local run
+products.
+
+## Distinguish Maintenance States
+
+A maintenance command moves through several states that must not be collapsed
+into one green or red label:
+
+| State | Evidence available | Claim allowed |
+| --- | --- | --- |
+| selected | target and package inventory resolved | the intended check was addressed by the command graph |
+| started | tool identity, arguments, and governed inputs recorded | the check attempted to evaluate those inputs |
+| completed | every required subprocess returned and expected outputs exist | the check ran to completion |
+| accepted | policy evaluated the outputs and returned its defined success status | the governed input satisfied that check under the recorded policy |
+| retained | logs, reports, hashes, or build products are addressable under `artifacts/` or workflow storage | the decision can be reviewed after execution |
+| enforced | a required workflow consumed the same check and source identity | repository policy required the decision for that event |
+
+For example, an SBOM command may start and still emit no usable CycloneDX
+document; a build may complete while the publication guard refuses its
+metadata; a local docs check may pass without proving that the deployment job
+has permission to publish. Report the strongest state supported by the
+retained evidence rather than translating every zero exit status into
+repository-wide acceptance.
+
+## Choose A Check By The Claim
+
+| Claim to establish | Narrow evidence | Broader evidence when needed |
+| --- | --- | --- |
+| one package still satisfies its local contract | package Make target and retained report | root package matrix for shared dependency changes |
+| an HTTP schema is synchronized | schema lint, generated diff, pin and hash validation | live contract tests for implemented routes |
+| documentation remains publishable | strict MkDocs build, link and publication contracts | docs deployment job for hosting behavior |
+| a dependency change is admissible | lock resolution, policy check, focused package tests | security audit and affected package matrix |
+| a package can be released | build, metadata, wheel/sdist validation, publication guard | tagged PyPI, GHCR, and GitHub release workflows |
+| a compatibility bridge remains equivalent | alias imports, module identity, command parity | canonical package tests under the tagged version |
+| canonical packages execute as one live flow | installed runtime adapter test with cross-package identity and failure assertions | release-candidate matrix using built distributions |
+
+Use the narrowest check that exercises the changed contract. Root aggregation
+is necessary when shared metadata, dependencies, API governance, or release
+membership changed; repeating every expensive lane is not stronger evidence
+for a documentation-only edit.
+
+### Current composition gap
+
+The present suite validates runtime behavior with seam-specific test callables,
+but it does not resolve and execute the runtime's four live loaders against the
+installed canonical package roots. Those roots do not currently expose the
+runtime-shaped `run`, `retrieve`, `enforce_contract`, and `reason` callables.
+Package tests, exact version resolution, compatibility parity, and successful
+builds can all be true while the canonical live flow remains unavailable.
+
+The missing assurance lane should install the built release candidates,
+execute representative agent, retrieval, vector-enforcement, and reasoning
+handoffs, and assert custody of source, evidence, contract, claim, trace,
+artifact, and failure identities. Runtime owns those adapters and assertions;
+the root maintenance layer owns making the result visible and required for any
+claim of end-to-end composition.
+
+## Start With The Changed Surface
+
+| Changed surface | First command | Escalate when |
+| --- | --- | --- |
+| reader-facing Markdown or MkDocs navigation | `make docs-check` | a helper, theme contract, generated reference, or deployment behavior also changed |
+| one `bijux-canon-dev` helper | its focused test module | the helper is shared by several Make or workflow paths |
+| one package's implementation | that package's narrow target or test selection | its public schema, dependency boundary, or downstream handoff changed |
+| root package inventory or lock data | `make lock-check` plus inventory contract tests | public release membership or resolution changed |
+| one OpenAPI contract | owning package API targets | source, pin, hash, or live implementation disagree |
+| workflow trigger, permission, or dependency | workflow contract tests | the invoked command or release output also changed |
+
+Escalation follows affected contracts, not command size. A strict docs build and
+the documentation publication tests are stronger evidence for a handbook-only
+change than an unrelated model evaluation or real-service lane.
+
+## Read A Failed Check
 
 ```mermaid
 flowchart LR
-    maintainer["maintainer question"]
-    dev["bijux-canon-dev"]
-    makes["makes"]
-    workflows["GitHub workflows"]
-    evidence["logs, artifacts, schemas"]
-    product["product handbooks"]
+    input[governed input]
+    helper[bijux-canon-dev rule]
+    target[Make target]
+    workflow[workflow job]
+    artifact[retained output]
+    verdict[exit status and diagnosis]
 
-    maintainer --> dev --> makes --> workflows --> evidence
-    dev --> evidence
-    workflows --> product
+    input --> helper --> target --> workflow
+    helper --> artifact
+    target --> artifact
+    workflow --> artifact
+    artifact --> verdict
 ```
 
-Maintenance docs should read like a control surface, not like a second product
-manual. A reader should be able to tell which helper code owns a rule, how
-that rule becomes a repeatable command, and which workflow reruns the same
-contract in CI or release.
+Start at the first layer that made the disputed decision. A helper failure is
+not repaired by changing workflow presentation. A missing Make dependency is
+not a product-package defect. A workflow permission or trigger error is not
+evidence that the underlying check passed or failed.
 
-## Maintenance Review Path
+Retained output belongs under `artifacts/`. A command line without its governed
+input, exit status, and diagnostic output is not sufficient evidence of a
+maintenance decision.
 
-Use the maintainer docs in this order when the repository itself is under
-review:
+## Build A Maintenance Evidence Record
 
-1. confirm which helper package or policy surface owns the rule
-2. confirm which `make` target exposes that rule locally
-3. confirm which GitHub workflow reruns the same rule in CI, docs deploy, or release
-4. inspect the generated evidence or artifacts only after the owning rule is clear
+For a consequential check or release decision, retain enough context to answer
+the full chain:
 
-## Handbook Sections
+| Evidence | Question answered |
+| --- | --- |
+| source commit and dirty-state status | which repository state was evaluated? |
+| tool and dependency identity | which implementation interpreted that state? |
+| exact command and governed inputs | what decision was requested? |
+| structured report, log, or artifact | what observations supported the verdict? |
+| exit status and policy result | what did the check decide? |
+| workflow run or publication identity | where was the decision enforced or released? |
 
-- [bijux-canon-dev](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/) for repository-health helper code,
-  schema governance, release support, quality gates, and supply-chain tooling
-- [makes](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/) for the shared `make` interface,
-  package dispatch, CI target families, and release-facing command surfaces
-- [gh-workflows](https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/) for GitHub Actions entrypoints,
-  reusable workflow contracts, release publication, and docs deployment
+A green badge is a navigation aid, not this evidence record. Likewise, a local
+success cannot be represented as a CI success, and a build artifact cannot be
+represented as published until the destination accepted that exact artifact.
+The maintenance system earns trust by keeping these identities connected.
 
-## Start With
+## Repository-Specific Checks
 
-- Open [bijux-canon-dev](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/) when the question is which helper code or test
-  owns a repository-health rule.
-- Open [makes](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/) when the concern begins at `Makefile`, shared targets, or package
-  dispatch.
-- Open [gh-workflows](https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/) when the concern begins in GitHub Actions triggers, job
-  graphs, or publication orchestration.
-
-## Proof Path
-
-- `packages/bijux-canon-dev/` is the maintainer helper package.
-- `makes/` is the checked-in command surface.
-- `.github/workflows/` is the checked-in workflow contract.
-- `artifacts/` is the default destination for local check output and generated run products.
-
-## What This Handbook Must Not Become
-
-- a second explanation of ingest, index, reason, agent, or runtime behavior
-- a changelog for transient incidents or one-off CI failures
-- a pile of workflow names without a clear ownership path back to checked-in code
+`bijux-canon-dev` freezes and compares OpenAPI contracts, synchronizes badge
+blocks, validates MkDocs structure, reports index plugin conformance, enforces
+runtime dependency allowlists, gates package publication, resolves release
+versions, prepares SBOM requirements, and applies the dependency-audit policy.
+These helpers are internal support code and are not part of the public product
+package set.
 
 ## Boundary
 
@@ -93,8 +180,21 @@ as a shortcut for product behavior. When a maintainer surface only wraps a
 product package contract, this handbook should stop at the integration point
 and send the reader back to the owning package.
 
-## Leave This Handbook When
+## Workflow Boundaries
 
-- the question is really about one package's user-facing behavior
-- the next step is a product interface, workflow, or test rather than a shared command
-- the issue belongs to compatibility alias routing rather than repository-health machinery
+`verify.yml` is the main verification entrypoint. Separate workflows govern
+repository policy, PR approval, docs deployment, and PyPI, GHCR, and GitHub
+release publication. A successful docs deployment does not imply package tests
+passed; a successful package build does not imply publication guards passed;
+and a reusable workflow does not broaden the permissions of its caller. A
+successful release matrix also proves package coherence and publication
+eligibility, not live cross-package execution, unless the installed adapter
+lane is present and passes.
+
+## Continue By Surface
+
+| Surface | Handbook |
+| --- | --- |
+| repository-health commands, schema rules, release guards, SBOM and audit helpers | [bijux-canon-dev](bijux-canon-dev/index.md) |
+| root targets, package dispatch, environment ownership, CI and release commands | [Make system](makes/index.md) |
+| triggers, reusable jobs, permissions, documentation deployment, and publication | [GitHub workflows](gh-workflows/index.md) |

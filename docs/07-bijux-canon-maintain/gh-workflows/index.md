@@ -1,90 +1,104 @@
 ---
-title: gh-workflows
+title: GitHub Workflows
 audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-dev-docs
-last_reviewed: 2026-07-04
+last_reviewed: 2026-07-21
 ---
 
-# gh-workflows
+# GitHub Workflows
 
-The workflow handbook covers the GitHub Actions surfaces that verify, publish,
-and deploy this repository. These files are part of the checked-in operational
-contract, even when some of them are standards-managed and generated.
+GitHub Actions supplies event routing, permissions, concurrency, reusable job
+composition, and hosted artifacts. The workflow layer does not redefine package
+behavior: it invokes checked-in repository commands or pinned reusable
+workflows and retains their verdicts.
 
-The useful question here is not how Actions works in general. The useful
-question is which workflow owns a trigger, which reusable file carries shared
-execution logic, and where that behavior connects back to checked-in make or
-helper code.
-
-## Workflow Model
+## Verification Graph
 
 ```mermaid
-flowchart LR
-    trigger["GitHub trigger"]
-    workflow["top-level workflow"]
-    reusable["reusable workflow"]
-    commands["make and helper code"]
-    result["verification or release result"]
+flowchart TD
+    event["push, pull request, merge group, or dispatch"]
+    verify["verify.yml"]
+    policy["policy prerequisites"]
+    repository["repository contracts"]
+    matrix["6-package matrix"]
+    ci["ci.yml"]
+    upstream["pinned reusable Python CI"]
+    ready["verification-ready"]
 
-    trigger --> workflow --> reusable --> commands --> result
+    event --> verify --> policy --> repository --> matrix --> ci --> upstream
+    policy --> ready
+    repository --> ready
+    matrix --> ready
 ```
 
-The workflow handbook should explain ownership, not just list YAML files. A
-reader needs to see how a trigger lands in a top-level workflow, where shared
-job logic is reused, and which checked-in command surface actually performs the
-real work.
+`verify.yml` runs on relevant changes to `main`, pull requests to `main`, merge
+groups, and manual dispatch. Its repository job checks shared Make drift,
+configuration layout, Make layout, and generated help. The package job fans out
+over runtime, agent, ingest, reason, index, and the internal dev package through
+local `ci.yml`; that workflow delegates execution to an exact commit of the
+shared Python-package workflow. `verification-ready` requires both repository
+and matrix success.
 
-## Workflow Reading Rule
+## Workflow Inventory
 
-Read workflows from outside in:
+| Workflow | Trigger or caller | Permission boundary | Result |
+| --- | --- | --- | --- |
+| `verify.yml` | selected pushes and pull requests, merge groups, manual dispatch | read repository, actions, and pull requests | repository and package verification verdict |
+| `ci.yml` | reusable `workflow_call` from verification | read repository | one package's pinned shared CI execution |
+| `bijux-std.yml` | pull requests, selected pushes, manual dispatch | read repository | standards drift verdict |
+| `github-policy.yml` | pushes, tags, pull requests, merge groups | read repository, actions, pull requests | generated-file, checksum, action-pin, and policy verdicts |
+| `pr-approval-policy.yml` | pull-request target and review events | read repository and pull requests | owner review or `owner-self-signoff` enforcement |
+| `automerge-pr.yml` | pull-request events | write pull requests; read repository and actions | guarded auto-merge enablement |
+| `deploy-docs.yml` | manual dispatch or reusable call | Pages and identity-token write; repository read | built Pages artifact and deployment |
+| `release-artifacts.yml` | reusable call | repository read | staged package release artifacts |
+| `release-pypi.yml` | manual dispatch or reusable call | repository and actions read; publication authentication is job-scoped | PyPI publication verdict |
+| `release-ghcr.yml` | manual dispatch or reusable call | package write; repository and actions read | GHCR package publication |
+| `release-github.yml` | manual dispatch or reusable call | repository-content write; actions read | GitHub Release and attached assets |
 
-1. start with the trigger and the top-level workflow file
-2. identify whether the job body is local or delegated to a reusable workflow
-3. identify the `make` target or helper package the workflow actually runs
-4. judge the resulting artifact, publication event, or CI verdict only after the ownership chain is clear
+The release workflows do not run merely because a tag exists in this
+repository. They require a manual or reusable caller and resolve an explicit
+release configuration before building or publishing. A release claim should
+therefore identify the workflow run and selected tag, not infer publication
+from tag presence alone.
 
-## Workflow Pages
+## Documentation Deployment
 
-- [verify](https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/verify/)
-- [reusable-workflows](https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/reusable-workflows/)
-- [deploy-docs](https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/deploy-docs/)
-- [release-workflows](https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/release-workflows/)
+`deploy-docs.yml` resolves install, build, and verification commands from
+repository configuration and available Make targets. For this repository the
+preferred build path reaches `docs-check`; the workflow packages the resulting
+site for GitHub Pages and deploys it in a separate job. A successful local
+MkDocs build proves site construction, while the deploy job proves Pages
+permissions and hosting behavior.
 
-## Start With
+## Managed And Repository-Owned Files
 
-- Open [verify](https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/verify/) for day-to-day repository verification.
-- Open [deploy-docs](https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/deploy-docs/) for handbook publication.
-- Open [release-workflows](https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/release-workflows/) for tag-driven release publication.
-- Open [reusable-workflows](https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/reusable-workflows/) when the question is about the shared
-  job contracts called by top-level workflows.
+Most policy, CI, documentation deployment, and release workflows are synchronized
+consumer copies whose headers name their upstream source. Repository-specific
+behavior belongs in supported configuration, Make profiles, or the upstream
+standard rather than an untracked local fork. `bijux-std.yml` verifies that
+relationship, and `github-policy.yml` checks generated files and the shared
+checksum manifest.
 
-## Checked-In Truth
+## Read A Workflow Run
 
-- `.github/workflows/verify.yml`
-- `.github/workflows/deploy-docs.yml`
-- `.github/workflows/release-artifacts.yml`
-- `.github/workflows/release-github.yml`
-- `.github/workflows/release-pypi.yml`
-- `.github/workflows/release-ghcr.yml`
-- `.github/workflows/ci.yml`
+1. identify the event and top-level workflow;
+2. inspect path filters, inputs, concurrency, and permissions;
+3. follow local and remote `uses:` edges to the job that executes;
+4. find the Make target or helper that owns the decision;
+5. inspect the retained artifact, publication, or terminal verdict;
+6. distinguish skipped, refused, failed, and successful jobs.
 
-## What Strong Workflow Docs Must Show
+A green reusable job does not grant permissions beyond its caller. A skipped
+package matrix is not a passing package matrix. A successful build is not a
+publication unless the channel-specific publish job also succeeded.
 
-- why the workflow exists
-- which event or release state triggers it
-- whether job logic is local or reused
-- which checked-in command surface performs the real work
-- where to look for the resulting artifacts, releases, or deploy outputs
+## Continue By Workflow Family
 
-## Boundary
-
-Workflow documentation should explain triggers, callers, and job ownership. It
-should not absorb the deeper product behavior that workflows happen to invoke.
-
-## Design Pressure
-
-If a workflow can only be understood by reading raw job YAML without knowing
-where execution is delegated, the page is still too shallow. This section has
-to keep triggers, reuse, and command ownership visibly connected.
+- [Verify](verify.md) covers repository and package verification.
+- [Reusable workflows](reusable-workflows.md) covers local and pinned shared
+  calls.
+- [Deploy docs](deploy-docs.md) covers Pages build and deployment.
+- [Release workflows](release-workflows.md) covers staged artifacts and the
+  PyPI, GHCR, and GitHub channels.

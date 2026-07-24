@@ -4,98 +4,176 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-docs
-last_reviewed: 2026-07-04
+last_reviewed: 2026-07-21
 ---
 
 # Repository Handbook
 
-Open the repository handbook when the question belongs to the part of
-`bijux-canon` that no single package owns alone: why the split exists, which
-rules belong at the root, and how package handoffs stay explicit across the
-repository.
-
-The main repository mistake this handbook is meant to prevent is root creep.
-The root should coordinate package truth, not become a second product layer
-that quietly re-explains or overrides package ownership.
+The repository root coordinates one tagged release line across five canonical
+product packages, six compatibility distributions, one internal maintainer
+package, five versioned HTTP contracts, shared documentation, and common CI and
+publication workflows. Product behavior remains inside the package that owns
+it; the root owns the machinery that proves the pieces still agree.
 
 <div class="bijux-callout"><strong>The root is a coordination layer, not a shadow owner.</strong>
 Product behavior belongs in the publishable packages under `packages/`. The
 root owns only what is genuinely shared: workspace layout, schema governance,
 documentation rules, validation posture, and release coordination.</div>
 
-## Reader Contract
+## Repository Contract
 
-Use this handbook to answer three questions before a reviewer touches code:
+| Root surface | Authority | Does not establish |
+| --- | --- | --- |
+| `pyproject.toml` and `uv.lock` | workspace membership, release package set, dependency resolution | package behavior |
+| `apis/` | versioned HTTP schema source, pins, and hashes | implementation conformance by itself |
+| `Makefile` and `makes/` | repeatable local command graph and package dispatch | CI success without execution |
+| `.github/workflows/` | verification, policy, docs, and publication orchestration | local package semantics |
+| `docs/` and `mkdocs.yml` | public information architecture and routing | executable proof |
+| `packages/bijux-canon-dev` | repository-health checks and release guards | end-user runtime behavior |
 
-- is the concern genuinely repository-wide, or does one package own it
-- which shared file, schema, workflow, or rule backs the claim
-- where should the reader go next when the root no longer has authority
+```mermaid
+flowchart LR
+    source["tagged source"]
+    canonical["5 canonical packages"]
+    compat["6 compatibility packages"]
+    schemas["5 API contracts"]
+    checks["local + CI verification"]
+    releases["PyPI + GHCR + GitHub release"]
+
+    source --> canonical --> checks --> releases
+    source --> compat --> checks
+    source --> schemas --> checks
+```
+
+## Package Sets
+
+- **canonical product:** runtime, agent, ingest, reason, and index
+- **compatibility:** `bijux-canon`, `agentic-flows`, `bijux-agent`, `bijux-rag`,
+  `bijux-rar`, and `bijux-vex`
+- **internal support:** `bijux-canon-dev`, which is tested with the primary set
+  but excluded from the public release package list
+
+The root release configuration is the source of truth for these sets. A
+directory under `packages/` is not automatically public, canonical, or eligible
+for publication.
+
+## Read From The Decision Outward
+
+Start at the layer that made the decision, then move outward only when the
+question crosses a repository boundary:
 
 ```mermaid
 flowchart TD
-    question["reader question"]
-    root{"cross-package concern?"}
+    question["decision under review"]
+    product{"product behavior?"}
     package["owning package handbook"]
-    maintain{"maintainer machinery?"}
-    compat{"legacy name?"}
-    foundation["foundation pages"]
-    operations["operations pages"]
-    devdocs["maintenance handbook"]
-    compatdocs["compatibility handbook"]
-    proof["root proof surfaces"]
+    shared{"cross-package contract?"}
+    root["repository handbook"]
+    automation{"validation or publication?"}
+    maintain["maintenance handbook"]
+    continuity{"preserved name?"}
+    compat["compatibility handbook"]
 
-    question --> root
-    root -- no --> package
-    root -- yes --> maintain
-    maintain -- yes --> devdocs
-    maintain -- no --> compat
-    compat -- yes --> compatdocs
-    compat -- no --> foundation
-    compat -- no --> operations
-    foundation --> proof
-    operations --> proof
+    question --> product
+    product -->|yes| package
+    product -->|no| shared
+    shared -->|yes| root
+    shared -->|no| automation
+    automation -->|yes| maintain
+    automation -->|no| continuity
+    continuity -->|yes| compat
 ```
 
-The repository handbook is strongest when it routes quickly and then stops. It
-should make the shared root logic legible, show where package authority begins,
-and point to the concrete files that back the claim instead of trying to
-re-explain package behavior from above.
+This routing prevents root-level configuration from being mistaken for product
+semantics. For example, `pyproject.toml` can prove that a distribution is in the
+release set; only the owning package can prove what an execution request means.
 
-## What Readers Can Safely Assume Here
+## Trace A Shared Contract
 
-- root pages may define shared rules, but they do not redefine product behavior
-- a claim about package semantics should become stronger when you leave this section
-- every repository-level statement should be traceable to checked-in proof
+A public contract can cross the root without transferring product ownership.
+An HTTP change, for example, begins with the package that owns behavior and
+then moves through repository-governed representations and checks:
 
-## Shared Proof Surfaces
+```mermaid
+flowchart LR
+    behavior[package behavior]
+    schema[OpenAPI source]
+    pin[pinned schema + hash]
+    tests[package and live contract tests]
+    docs[caller documentation]
+    release[tagged package artifacts]
 
-| Claim family | Check here first |
-| --- | --- |
-| package set, workspace boundaries, and shared metadata | `pyproject.toml`, `packages/` |
-| docs routing and public handbook structure | `mkdocs.yml`, `docs/` |
-| shared automation and local command entrypoints | `Makefile`, `makes/` |
-| CI, release, and deploy behavior | `.github/workflows/` |
-| API storage and schema review | `apis/` |
+    behavior --> schema --> pin --> tests --> docs --> release
+```
 
-## Start Here
+The schema records the caller contract; the implementation and live contract
+tests establish availability. The pin and hash expose drift. Documentation
+explains the supported operation. Tagged artifacts determine what users can
+actually install. A green result at one point does not erase a mismatch at
+another.
 
-- open [Foundation](https://bijux.io/bijux-canon/01-bijux-canon/foundation/) for repository shape, split logic, ownership boundaries, and shared terminology
-- open [Operations](https://bijux.io/bijux-canon/01-bijux-canon/operations/) for contributor workflow, validation posture, release flow, and review rules
-- open the [Maintenance Handbook](https://bijux.io/bijux-canon/07-bijux-canon-maintain/) when the concern is helper code, Make routing, workflow fan-out, or repository-health automation
-- open the [Compatibility Handbook](https://bijux.io/bijux-canon/08-compat-packages/) only when an older or shorter compatibility name, preserved import root, or migration question is still active
-- leave this handbook as soon as the behavior is clearly local to one canonical package
+## Audit The Runtime Integration Seam
 
-## What This Handbook Owns
+Release membership proves that runtime installs the four lower canonical
+packages; it does not prove that runtime can call them. The executable seam is
+owned by
+`packages/bijux-canon-runtime/src/bijux_canon_runtime/runtime/execution/integration_loaders.py`.
+It requests package-root callables named `retrieve`, `enforce_contract`,
+`reason`, and `run`.
 
-- why the repository is split into canonical packages instead of one combined surface
-- root-owned workflow, validation, release, artifact, and documentation rules
-- the seams where one package hands authority to another package or to a shared root rule
+The current ingest, index, reason, and agent roots do not expose that complete
+set, and the runtime suite does not execute those loaders against all four real
+canonical roots. The legacy fallbacks resolve to compatibility aliases of the
+same roots rather than independent adapters. Repository and release checks can
+therefore pass while installed live composition remains unproven.
 
-## What This Handbook Does Not Own
+For an integration claim, require all of the following evidence:
 
-- ingest, index, reason, agent, or runtime behavior inside the product handbooks
-- helper implementation detail that belongs in the maintainer handbook
-- compatibility-alias migration policy that belongs in the compatibility handbook
+1. an explicit typed adapter owned by the relevant boundary;
+2. an installed environment containing the exact canonical package versions;
+3. a test that resolves every runtime loader without monkeypatching package
+   roots;
+4. one governed live flow that records retrieval, reasoning, agent, and runtime
+   identities; and
+5. a negative case for missing, malformed, and semantically incompatible
+   adapter output.
+
+Until that evidence exists, use the left-to-right system diagram as an
+ownership map and treat package-local execution and runtime plan mode as the
+demonstrated surfaces.
+
+## Resolve Cross-Surface Disagreement
+
+Repository evidence is deliberately redundant enough to expose drift. When
+two surfaces disagree, resolve the question at the authority that owns it:
+
+| Disagreement | Governing authority | Required follow-through |
+| --- | --- | --- |
+| package metadata versus workspace inventory | root release configuration | correct membership or metadata, then rerun inventory and publication guards |
+| OpenAPI source versus live route | owning product package | reconcile behavior and schema, then refresh the pin, hash, and contract evidence |
+| package README versus exported names | owning package facade and supported modules | correct the reader contract or implementation and protect it with focused tests |
+| compatibility bridge versus canonical behavior | canonical package | fix the canonical owner; the bridge must delegate without translation |
+| local check versus workflow result | the helper and command actually invoked | compare inputs, environment, exit status, and retained artifact before changing orchestration |
+| built artifact versus tagged source | release custody chain | refuse publication until source SHA, package matrix, and artifact identity agree |
+
+The strongest supported statement is the intersection of the governing
+sources, not the most optimistic one. Root automation can detect a mismatch,
+but it cannot redefine product semantics to make the mismatch disappear.
+
+## Root Evidence By Question
+
+| Question | Authoritative root surface | Continue in |
+| --- | --- | --- |
+| Which packages participate in the workspace and release? | `pyproject.toml`, workspace metadata, release package guards | [package map](foundation/package-map.md) |
+| Which HTTP representation is governed? | `apis/<package>/v1/schema.yaml`, pin, and hash | owning package interface handbook |
+| Which local command composes validation? | `Makefile` and `makes/` | [maintainer Make handbook](../07-bijux-canon-maintain/makes/index.md) |
+| Which event triggers CI or publication? | `.github/workflows/` | [workflow handbook](../07-bijux-canon-maintain/gh-workflows/index.md) |
+| Which record supports a cross-package claim? | owned models, schemas, tests, and retained artifacts | [evidence map](foundation/evidence-map.md) |
+| What does an older package name execute? | compatibility package metadata and alias tests | [compatibility catalog](../08-compat-packages/catalog/index.md) |
+
+Product semantics remain in ingest, index, reason, agent, or runtime. Helper
+implementation remains in the maintenance handbook. The root establishes how
+those surfaces agree; it does not become a second source for their behavior.
 
 ## Shared Package Map
 
@@ -122,8 +200,20 @@ to move with it.
 - `Makefile`, `makes/`, and `.github/workflows/` carry root-level operations
 - `packages/` carries the canonical product boundaries the root must not blur
 
-## Leave This Handbook When
+## Cross-Package Change Rule
 
-- the behavior is already local to one package's interfaces, workflows, or tests
-- the question is really about maintainer automation internals
-- the real work is compatibility alias routing rather than a root-owned rule
+A change that alters a public request or response must update its owning schema,
+pinned representation, hash, implementation tests, and package docs together.
+A change that alters release membership must update root metadata and release
+guards. A change that alters only one package's domain semantics remains in
+that package even when shared verification runs afterward.
+
+## Continue By Intent
+
+| Intent | Next page |
+| --- | --- |
+| understand why the repository is split this way | [Foundation](foundation/index.md) |
+| inspect package ownership, workspace layout, and documentation structure | [Foundation](foundation/index.md) |
+| contribute, validate, release, or recover | [Operations](operations/index.md) |
+| inspect automation implementation and CI fan-out | [Maintenance Handbook](../07-bijux-canon-maintain/index.md) |
+| migrate a preserved distribution or import name | [Compatibility Packages](../08-compat-packages/index.md) |
