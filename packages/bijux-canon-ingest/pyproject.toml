@@ -149,6 +149,10 @@ extend-exclude = [
   "src/**/_version.py",
 ]
 
+[tool.ruff.lint]
+ignore = ["E203", "E501"]
+select = ["B", "C4", "E", "F", "I", "ISC", "PIE", "RET", "SIM", "UP"]
+
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
 

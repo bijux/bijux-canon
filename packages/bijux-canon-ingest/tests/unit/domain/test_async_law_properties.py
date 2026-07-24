@@ -5,6 +5,10 @@ from __future__ import annotations
 
 import asyncio
 
+import pytest
+from hypothesis import given, settings
+from hypothesis import strategies as st
+
 from bijux_canon_ingest.domain.effects.asyncio import (
     AsyncGen,
     AsyncPlan,
@@ -15,9 +19,6 @@ from bijux_canon_ingest.domain.effects.asyncio import (
     async_with_resilience,
 )
 from bijux_canon_ingest.result.types import Err, ErrInfo, Ok, Result
-from hypothesis import given, settings
-from hypothesis import strategies as st
-import pytest
 
 
 class FakeEmbedder:

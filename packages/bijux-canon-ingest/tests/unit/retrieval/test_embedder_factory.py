@@ -3,6 +3,8 @@
 
 from __future__ import annotations
 
+import pytest
+
 from bijux_canon_ingest.retrieval.embedder_factory import (
     build_embedder,
     embedder_for_model,
@@ -11,7 +13,6 @@ from bijux_canon_ingest.retrieval.embedders import (
     HashEmbedder,
     SentenceTransformersEmbedder,
 )
-import pytest
 
 
 def test_build_embedder_selects_hash_backend() -> None:

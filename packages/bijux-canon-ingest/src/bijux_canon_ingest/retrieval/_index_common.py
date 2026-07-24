@@ -5,12 +5,12 @@
 
 from __future__ import annotations
 
-from hashlib import sha256
 import json
+from hashlib import sha256
+from typing import cast
 
 import numpy as np
 from numpy.typing import NDArray
-from typing import cast
 
 SCHEMA_VERSION = 1
 

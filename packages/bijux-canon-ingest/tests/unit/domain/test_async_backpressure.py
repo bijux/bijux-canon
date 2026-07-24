@@ -5,6 +5,9 @@ from __future__ import annotations
 
 import asyncio
 
+from hypothesis import given, settings
+from hypothesis import strategies as st
+
 from bijux_canon_ingest.domain.effects.asyncio import (
     AsyncGen,
     BackpressurePolicy,
@@ -13,8 +16,6 @@ from bijux_canon_ingest.domain.effects.asyncio import (
     async_pure,
 )
 from bijux_canon_ingest.result.types import Err, ErrInfo, Ok, Result
-from hypothesis import given, settings
-from hypothesis import strategies as st
 
 
 def async_gen_from_ok_list(xs: list[int]) -> AsyncGen[int]:

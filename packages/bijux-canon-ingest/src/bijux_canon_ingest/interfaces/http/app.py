@@ -29,8 +29,8 @@ from bijux_canon_ingest.interfaces.http.models import (
     RetrieveResponse,
 )
 from bijux_canon_ingest.interfaces.http.runtime import (
-    InMemoryIndexStore,
     IngestHttpApplication,
+    InMemoryIndexStore,
     index_backend_from_name,
 )
 from bijux_canon_ingest.processing.stages import (

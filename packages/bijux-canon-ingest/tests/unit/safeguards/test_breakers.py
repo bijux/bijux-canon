@@ -3,6 +3,9 @@
 
 from __future__ import annotations
 
+from hypothesis import given
+from hypothesis import strategies as st
+
 from bijux_canon_ingest.result import Err, Ok, map_result_iter
 from bijux_canon_ingest.safeguards.breakers import (
     BreakInfo,
@@ -10,8 +13,6 @@ from bijux_canon_ingest.safeguards.breakers import (
     short_circuit_on_err_emit,
     short_circuit_on_err_truncate,
 )
-from hypothesis import given
-from hypothesis import strategies as st
 
 
 @st.composite

@@ -3,6 +3,10 @@
 
 from __future__ import annotations
 
+import pytest
+from hypothesis import given
+from hypothesis import strategies as st
+
 from bijux_canon_ingest.fp.monoid import (
     LIST_STR,
     METRICS,
@@ -11,9 +15,6 @@ from bijux_canon_ingest.fp.monoid import (
     Sum,
     tree_reduce,
 )
-from hypothesis import given
-from hypothesis import strategies as st
-import pytest
 
 
 @given(a=st.integers(), b=st.integers(), c=st.integers())

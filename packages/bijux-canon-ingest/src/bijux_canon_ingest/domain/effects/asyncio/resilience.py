@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import asyncio
+import warnings
 from collections.abc import Awaitable, Callable
 from contextlib import AbstractAsyncContextManager
 from dataclasses import dataclass
@@ -13,7 +14,6 @@ from random import Random
 from time import monotonic
 from types import TracebackType
 from typing import Protocol, TypeAlias, TypeVar
-import warnings
 
 from bijux_canon_ingest.result.types import Err, ErrInfo, Ok, Result, make_errinfo
 

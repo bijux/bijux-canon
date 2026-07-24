@@ -23,15 +23,16 @@ Required suite assets:
 
 from __future__ import annotations
 
+import json
 from collections.abc import Iterable
 from dataclasses import is_dataclass
-import json
 from pathlib import Path
 from typing import Any
 
+import pytest
+
 from bijux_canon_ingest.core.types import RawDoc
 from bijux_canon_ingest.result import Err, Ok
-import pytest
 
 pytestmark = [pytest.mark.e2e]
 

@@ -5,9 +5,10 @@
 
 from __future__ import annotations
 
-from bijux_canon_ingest import ffilter, flatmap, fmap, identity, pipe
-from hypothesis import given
 import hypothesis.strategies as st
+from hypothesis import given
+
+from bijux_canon_ingest import ffilter, flatmap, fmap, identity, pipe
 
 
 @given(xs=st.lists(st.integers()))

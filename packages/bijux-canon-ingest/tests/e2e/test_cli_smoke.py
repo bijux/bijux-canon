@@ -6,10 +6,11 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from bijux_canon_ingest.interfaces.cli.entrypoint import main as cli_main
+import pytest
 from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
-import pytest
+
+from bijux_canon_ingest.interfaces.cli.entrypoint import main as cli_main
 
 doc_strategy = st.builds(
     lambda doc_id, title, abstract, categories: {

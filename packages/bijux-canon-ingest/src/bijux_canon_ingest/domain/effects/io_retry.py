@@ -11,9 +11,9 @@ This is distinct from `bijux_canon_ingest.safeguards.retries`:
 
 from __future__ import annotations
 
+import time
 from collections.abc import Callable
 from dataclasses import dataclass
-import time
 from typing import TypeVar
 
 from bijux_canon_ingest.result.types import Err, ErrInfo, Ok, Result

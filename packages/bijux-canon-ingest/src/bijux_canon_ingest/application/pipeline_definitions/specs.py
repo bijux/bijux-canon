@@ -9,10 +9,10 @@ deterministically using allow-listed registries.
 
 from __future__ import annotations
 
-from collections.abc import Callable, Iterable, Iterator, Mapping
-from dataclasses import dataclass
 import hashlib
 import json
+from collections.abc import Callable, Iterable, Iterator, Mapping
+from dataclasses import dataclass
 from typing import Any, Literal, TypeAlias, TypeVar, cast
 
 from bijux_canon_ingest.result.types import Err, ErrInfo, Ok, Result, is_err, is_ok

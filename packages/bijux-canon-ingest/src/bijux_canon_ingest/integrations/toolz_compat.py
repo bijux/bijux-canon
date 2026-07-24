@@ -10,8 +10,8 @@ fall back to simple stdlib equivalents.
 
 from __future__ import annotations
 
-from collections.abc import Callable, Iterable, Iterator
 import importlib
+from collections.abc import Callable, Iterable, Iterator
 from itertools import islice
 from typing import Any, TypeVar, cast
 
