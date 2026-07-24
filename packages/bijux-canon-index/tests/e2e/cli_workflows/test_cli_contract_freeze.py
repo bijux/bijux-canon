@@ -51,6 +51,7 @@ CLI_HELP = """
 
 def _normalize_cli_help(text: str) -> str:
     text = re.sub(r"\x1b\[[0-9;]*m", "", text)
+    text = text.replace("<str>", "TEXT").replace("<path>", "PATH")
     normalized_lines: list[str] = []
     for line in text.splitlines():
         stripped = line.strip()
