@@ -43,6 +43,7 @@ def test_root_tox_declares_shared_env_families() -> None:
     assert "openapi-drift-core" not in envlist
     assert _tox_config()["tox"]["isolated_build"] == "true"
     assert "tox-gh-actions>=3.1" in _tox_config()["tox"]["requires"]
+    assert _tox_config()["tox"]["toxworkdir"] == "{tox_root}/artifacts/root/tox"
 
 
 def test_root_tox_supports_pip_26_bootstrap_contract() -> None:
