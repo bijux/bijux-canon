@@ -2,7 +2,7 @@
 name = "bijux-canon-index-sentence-transformers-plugin"
 version = "0.0.0"
 description = "Example sentence-transformers embedding plugin for bijux-canon-index"
-requires-python = ">=3.11"
+requires-python = ">=3.11,<4"
 dependencies = [
   "bijux-canon-index",
   "numpy>=1.26,<3.0",

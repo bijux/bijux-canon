@@ -7,7 +7,7 @@ name = "bijux-canon-ingest"
 dynamic = ["version"]
 description = "Deterministic document ingestion, chunking, and retrieval preparation for the bijux-canon package family from Bijux."
 readme = "README.md"
-requires-python = ">=3.11,<4.0"
+requires-python = ">=3.11,<4"
 license = { text = "Apache-2.0" }
 authors = [{ name = "Bijan Mousavi", email = "bijan@bijux.io" }]
 maintainers = [{ name = "Bijan Mousavi", email = "bijan@bijux.io" }]

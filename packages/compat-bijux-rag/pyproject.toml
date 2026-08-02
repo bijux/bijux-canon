@@ -7,7 +7,7 @@ name = "bijux-rag"
 dynamic = ["version", "dependencies"]
 description = "Compatibility alias package for bijux-canon-ingest. Preserves installs, imports, and the legacy bijux-rag PyPI package name and CLI command at the same synchronized version."
 readme = "README.md"
-requires-python = ">=3.11,<4.0"
+requires-python = ">=3.11,<4"
 license = { text = "Apache-2.0" }
 authors = [{ name = "Bijan Mousavi", email = "bijan@bijux.io" }]
 maintainers = [{ name = "Bijan Mousavi", email = "bijan@bijux.io" }]

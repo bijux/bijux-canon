@@ -2,7 +2,7 @@
 name = "bijux-canon-index-template-plugin"
 version = "0.0.0"
 description = "Template plugin for bijux-canon-index"
-requires-python = ">=3.10"
+requires-python = ">=3.11,<4"
 dependencies = ["bijux-canon-index"]
 
 [project.entry-points."bijux_canon_index.vectorstores"]
