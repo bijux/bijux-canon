@@ -55,6 +55,7 @@ tag_format = "v$version"
 update_changelog_on_bump = false
 
 [tool.bijux_canon]
+repository = "bijux-canon"
 public_release_packages = [
   "bijux-canon-runtime",
   "compat-bijux-canon",
@@ -68,6 +69,27 @@ public_release_packages = [
   "compat-bijux-rar",
   "compat-bijux-vex",
 ]
+badge_packages = [
+  "bijux-canon-runtime",
+  "compat-bijux-canon",
+  "bijux-canon-agent",
+  "bijux-canon-ingest",
+  "bijux-canon-reason",
+  "bijux-canon-index",
+  "compat-agentic-flows",
+  "compat-bijux-agent",
+  "compat-bijux-rag",
+  "compat-bijux-rar",
+  "compat-bijux-vex",
+]
+docs_badge_packages = [
+  "bijux-canon-runtime",
+  "bijux-canon-agent",
+  "bijux-canon-ingest",
+  "bijux-canon-reason",
+  "bijux-canon-index",
+]
+badge_include_current_docs = false
 internal_support_packages = [
   "bijux-canon-dev",
 ]
