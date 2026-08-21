@@ -35,6 +35,13 @@ from bijux_canon_index.application.index_inspection import (
     IndexSegmentInspection,
     inspect_index_generation,
 )
+from bijux_canon_index.application.index_service import (
+    IndexQueryChannel,
+    IndexQueryHit,
+    IndexQueryReport,
+    IndexQueryRequest,
+    IndexService,
+)
 
 __all__ = [
     "AdmittedIndexChunk",
@@ -58,7 +65,12 @@ __all__ = [
     "IndexIntegrityInspection",
     "IndexLineageInspection",
     "IndexMutationReceipt",
+    "IndexQueryChannel",
+    "IndexQueryHit",
+    "IndexQueryReport",
+    "IndexQueryRequest",
     "IndexSegmentInspection",
+    "IndexService",
     "apply_index_delta",
     "audit_index_generation",
     "inspect_index_generation",

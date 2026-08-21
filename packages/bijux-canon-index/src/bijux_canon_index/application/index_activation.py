@@ -201,9 +201,14 @@ class IndexGenerationRegistry:
     def open_active(self) -> IndexGeneration:
         """Open the generation named by one verified pointer snapshot."""
 
-        generation_id = self.active_generation_id()
-        assert generation_id is not None
-        path = self.generations / _generation_directory_name(generation_id)
+        return self.open()
+
+    def open(self, generation_id: str | None = None) -> IndexGeneration:
+        """Open one admitted generation, defaulting to the active pointer."""
+
+        selected_generation_id = generation_id or self.active_generation_id()
+        assert selected_generation_id is not None
+        path = self.generations / _generation_directory_name(selected_generation_id)
         audit_index_generation(path, compatibility=self._compatibility)
         return IndexGeneration.open(path)
 
