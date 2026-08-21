@@ -20,4 +20,6 @@ def test_root_package_declares_lazy_exports_in_dir() -> None:
     assert "discover_sources" in exported_names
     assert "parse_html" in exported_names
     assert "parse_jats" in exported_names
+    assert "parse_markdown" in exported_names
     assert "parse_pdf" in exported_names
+    assert "parse_text" in exported_names

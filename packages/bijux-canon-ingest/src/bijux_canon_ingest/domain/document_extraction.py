@@ -46,6 +46,26 @@ HtmlBlockRole = Literal[
     "table",
 ]
 _HTML_BLOCK_ROLES = frozenset(get_args(HtmlBlockRole))
+TextBlockRole = Literal[
+    "title",
+    "front-matter",
+    "heading",
+    "section-heading",
+    "paragraph",
+    "list-item",
+    "table-row",
+    "code-block",
+    "block-quote",
+    "link",
+    "syntax-example",
+    "reference",
+    "comment",
+]
+TextEncoding = Literal["utf-8", "utf-8-sig"]
+NewlineStyle = Literal["none", "lf", "crlf", "cr", "mixed"]
+_TEXT_BLOCK_ROLES = frozenset(get_args(TextBlockRole))
+_TEXT_ENCODINGS = frozenset(get_args(TextEncoding))
+_NEWLINE_STYLES = frozenset(get_args(NewlineStyle))
 
 
 def _canonical_json(value: object) -> bytes:
@@ -523,6 +543,138 @@ class ParsedHtmlDocument:
         return {"manifest_sha256": _identity(payload), **payload}
 
 
+@dataclass(frozen=True, slots=True)
+class ParsedTextBlock:
+    """One exact line-oriented block with normalized character lineage."""
+
+    index: int
+    role: TextBlockRole
+    text: str
+    locator: SourceLocator
+    section_path: tuple[str, ...] = ()
+
+    def __post_init__(self) -> None:
+        if self.index < 0:
+            raise ValueError("ParsedTextBlock.index must not be negative")
+        if self.role not in _TEXT_BLOCK_ROLES:
+            raise ValueError("unsupported text block role")
+        if not self.text:
+            raise ValueError("ParsedTextBlock.text must not be empty")
+
+    @property
+    def text_sha256(self) -> str:
+        """Return the exact normalized-source block digest."""
+
+        return _text_sha256(self.text)
+
+    def manifest(self) -> dict[str, object]:
+        """Return the exact line and character span representation."""
+
+        return {
+            "index": self.index,
+            "locator": self.locator.manifest(),
+            "role": self.role,
+            "section_path": list(self.section_path),
+            "text": self.text,
+            "text_sha256": self.text_sha256,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class ParsedTextDocument:
+    """A deterministic Markdown or plain-text extraction bound to source bytes."""
+
+    format_id: Literal["markdown", "text"]
+    source_content_sha256: str
+    parser_name: str
+    parser_version: str
+    encoding: TextEncoding
+    newline_style: NewlineStyle
+    normalized_text: str
+    blocks: tuple[ParsedTextBlock, ...]
+
+    def __post_init__(self) -> None:
+        if self.format_id not in {"markdown", "text"}:
+            raise ValueError("ParsedTextDocument format must be markdown or text")
+        if not self.parser_name or not self.parser_version:
+            raise ValueError("ParsedTextDocument parser identity must be complete")
+        if len(self.source_content_sha256) != 64 or any(
+            character not in "0123456789abcdef"
+            for character in self.source_content_sha256
+        ):
+            raise ValueError("ParsedTextDocument source hash must be lowercase SHA-256")
+        if self.encoding not in _TEXT_ENCODINGS:
+            raise ValueError("unsupported text encoding")
+        if self.newline_style not in _NEWLINE_STYLES:
+            raise ValueError("unsupported newline style")
+        if not self.normalized_text:
+            raise ValueError("ParsedTextDocument normalized text must not be empty")
+        if not self.blocks or tuple(block.index for block in self.blocks) != tuple(
+            range(len(self.blocks))
+        ):
+            raise ValueError(
+                "ParsedTextDocument blocks must use contiguous source order"
+            )
+
+    @property
+    def normalized_text_sha256(self) -> str:
+        """Return the normalized full-text identity used by every locator."""
+
+        return _text_sha256(self.normalized_text)
+
+    def resolve_text(self, locator: SourceLocator) -> str:
+        """Resolve and integrity-check an exact normalized character span."""
+
+        if locator.scheme != f"{self.format_id}-line-span":
+            raise DocumentParseError(
+                "invalid_locator", "locator scheme does not match text format"
+            )
+        source_sha256 = locator.get("normalized_text_sha256")
+        line_start = locator.get("line_start")
+        line_end = locator.get("line_end")
+        char_start = locator.get("char_start")
+        char_end = locator.get("char_end")
+        if (
+            source_sha256 != self.normalized_text_sha256
+            or isinstance(line_start, bool)
+            or not isinstance(line_start, int)
+            or isinstance(line_end, bool)
+            or not isinstance(line_end, int)
+            or isinstance(char_start, bool)
+            or not isinstance(char_start, int)
+            or isinstance(char_end, bool)
+            or not isinstance(char_end, int)
+            or char_start < 0
+            or char_end < char_start
+            or char_end > len(self.normalized_text)
+        ):
+            raise DocumentParseError(
+                "invalid_locator", "text locator character span is invalid or stale"
+            )
+        resolved_line_start = self.normalized_text.count("\n", 0, char_start) + 1
+        resolved_line_end = self.normalized_text.count("\n", 0, char_end) + 1
+        if line_start != resolved_line_start or line_end != resolved_line_end:
+            raise DocumentParseError(
+                "invalid_locator", "text locator line and character spans disagree"
+            )
+        return self.normalized_text[char_start:char_end]
+
+    def manifest(self) -> dict[str, object]:
+        """Return a canonical line-oriented extraction manifest and identity."""
+
+        payload: dict[str, object] = {
+            "blocks": [block.manifest() for block in self.blocks],
+            "encoding": self.encoding,
+            "format_id": self.format_id,
+            "newline_style": self.newline_style,
+            "normalized_text_sha256": self.normalized_text_sha256,
+            "parser": {"name": self.parser_name, "version": self.parser_version},
+            "schema_version": "bijux.canon.ingest.parsed_text_document.v1",
+            "source_content_sha256": self.source_content_sha256,
+        }
+        return {"manifest_sha256": _identity(payload), **payload}
+
+
 class DocumentParseError(ValueError):
     """A typed refusal at the semantic document parsing boundary."""
 
@@ -549,8 +701,13 @@ __all__ = [
     "HtmlBlockRole",
     "HtmlDocumentMetadata",
     "HtmlLink",
+    "NewlineStyle",
+    "ParsedTextBlock",
+    "ParsedTextDocument",
     "PdfDocumentMetadata",
     "PdfPage",
     "PdfPageExtraction",
     "SourceLocator",
+    "TextBlockRole",
+    "TextEncoding",
 ]

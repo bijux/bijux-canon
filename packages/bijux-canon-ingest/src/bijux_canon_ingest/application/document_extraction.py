@@ -10,6 +10,7 @@ from bijux_canon_ingest.domain.document_extraction import (
     ParsedDocument,
     ParsedHtmlDocument,
     ParsedPdfDocument,
+    ParsedTextDocument,
 )
 from bijux_canon_ingest.domain.source_admission import AdmissionResult
 from bijux_canon_ingest.infra.adapters.file_admission import read_current_source
@@ -17,6 +18,10 @@ from bijux_canon_ingest.infra.admission.limits import AdmissionFailure
 from bijux_canon_ingest.infra.parsers.html import parse_html_content
 from bijux_canon_ingest.infra.parsers.jats import parse_jats_content
 from bijux_canon_ingest.infra.parsers.pdf import parse_pdf_content
+from bijux_canon_ingest.infra.parsers.text import (
+    parse_markdown_content,
+    parse_text_content,
+)
 
 
 def parse_jats(admission: AdmissionResult) -> ParsedDocument:
@@ -92,4 +97,50 @@ def parse_html(admission: AdmissionResult) -> ParsedHtmlDocument:
     )
 
 
-__all__ = ["parse_html", "parse_jats", "parse_pdf"]
+def parse_markdown(admission: AdmissionResult) -> ParsedTextDocument:
+    """Parse one immutable source admitted specifically as Markdown."""
+
+    if not admission.admitted:
+        raise DocumentParseError(
+            "source_not_admitted", "source must pass admission before Markdown parsing"
+        )
+    if admission.format_id != "markdown":
+        raise DocumentParseError(
+            "format_mismatch", "admitted source format is not Markdown"
+        )
+    try:
+        content = read_current_source(admission.source, admission.budgets)
+    except AdmissionFailure as error:
+        if error.code == "source_changed":
+            raise DocumentParseError("source_changed", error.detail) from error
+        raise DocumentParseError("unsafe_markup", error.detail) from error
+    return parse_markdown_content(
+        content,
+        source_content_sha256=admission.source.content_sha256,
+    )
+
+
+def parse_text(admission: AdmissionResult) -> ParsedTextDocument:
+    """Parse one immutable source admitted specifically as plain text."""
+
+    if not admission.admitted:
+        raise DocumentParseError(
+            "source_not_admitted", "source must pass admission before text parsing"
+        )
+    if admission.format_id != "text":
+        raise DocumentParseError(
+            "format_mismatch", "admitted source format is not plain text"
+        )
+    try:
+        content = read_current_source(admission.source, admission.budgets)
+    except AdmissionFailure as error:
+        if error.code == "source_changed":
+            raise DocumentParseError("source_changed", error.detail) from error
+        raise DocumentParseError("unsafe_markup", error.detail) from error
+    return parse_text_content(
+        content,
+        source_content_sha256=admission.source.content_sha256,
+    )
+
+
+__all__ = ["parse_html", "parse_jats", "parse_markdown", "parse_pdf", "parse_text"]

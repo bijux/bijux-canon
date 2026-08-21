@@ -40,7 +40,9 @@ _LAZY_EXPORTS: dict[str, LazyExport] = {
     "discover_sources": (".source_discovery", "discover_sources"),
     "parse_html": (".document_extraction", "parse_html"),
     "parse_jats": (".document_extraction", "parse_jats"),
+    "parse_markdown": (".document_extraction", "parse_markdown"),
     "parse_pdf": (".document_extraction", "parse_pdf"),
+    "parse_text": (".document_extraction", "parse_text"),
     "ingest_docs_to_chunks": (".indexing", "ingest_docs_to_chunks"),
     "iter_chunks_from_cleaned": (".pipeline", "iter_chunks_from_cleaned"),
     "iter_ingest_pipeline": (".pipeline", "iter_ingest_pipeline"),
@@ -92,7 +94,9 @@ __all__ = [
     "discover_sources",
     "parse_html",
     "parse_jats",
+    "parse_markdown",
     "parse_pdf",
+    "parse_text",
 ]
 
 
