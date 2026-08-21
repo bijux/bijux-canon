@@ -33,6 +33,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 async def main() -> None:
     """Main entry point for Bijux Canon Agent."""
+    args = parse_args()
+    if args.command == "replay":
+        handle_replay(Path(args.trace_path))
+        return
+
     load_environment()
     try:
         validate_keys()
@@ -40,10 +45,6 @@ async def main() -> None:
         print(f"API key validation failed: {exc}", file=sys.stderr)
         sys.exit(1)
 
-    args = parse_args()
-    if args.command == "replay":
-        handle_replay(Path(args.trace_path))
-        return
     bootstrap_logger = create_bootstrap_logger()
     config = load_config(args.config, bootstrap_logger)
     task_goal = config.get("task_goal", DEFAULT_TASK_GOAL)
