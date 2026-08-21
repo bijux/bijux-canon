@@ -22,6 +22,9 @@ from bijux_canon_index.domain.requests import scoring
 from bijux_canon_index.domain.requests.execution_diff import _rank_instability
 from bijux_canon_index.interfaces.schemas.requests import IngestRequest
 from bijux_canon_index.tooling.benchmarks.dataset import (
+    DEFAULT_DIMENSION,
+    DEFAULT_QUERY_COUNT,
+    DEFAULT_SEED,
     dataset_folder,
     generate_dataset,
     load_dataset,
@@ -304,4 +307,10 @@ def benchmark_index(
     return result, table, regressed
 
 
-__all__ = ["benchmark_index", "tune_ann"]
+__all__ = [
+    "DEFAULT_DIMENSION",
+    "DEFAULT_QUERY_COUNT",
+    "DEFAULT_SEED",
+    "benchmark_index",
+    "tune_ann",
+]

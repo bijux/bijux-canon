@@ -10,7 +10,13 @@ import sys
 
 import typer
 
-from bijux_canon_index.application.performance_service import benchmark_index, tune_ann
+from bijux_canon_index.application.performance_service import (
+    DEFAULT_DIMENSION,
+    DEFAULT_QUERY_COUNT,
+    DEFAULT_SEED,
+    benchmark_index,
+    tune_ann,
+)
 from bijux_canon_index.core.errors import BijuxError
 from bijux_canon_index.interfaces.cli.configuration import build_config as _build_config
 from bijux_canon_index.interfaces.cli.options import (
@@ -24,11 +30,6 @@ from bijux_canon_index.interfaces.errors import (
     to_cli_exit,
 )
 from bijux_canon_index.interfaces.errors.reporting import record_failure
-from bijux_canon_index.tooling.benchmarks.dataset import (
-    DEFAULT_DIMENSION,
-    DEFAULT_QUERY_COUNT,
-    DEFAULT_SEED,
-)
 
 
 def register_performance_commands(app: typer.Typer, nd_app: typer.Typer) -> None:
