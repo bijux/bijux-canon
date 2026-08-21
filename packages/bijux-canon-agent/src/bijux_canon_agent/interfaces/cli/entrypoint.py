@@ -9,6 +9,7 @@ import json
 from pathlib import Path
 import sys
 
+from bijux_canon_agent.application.execution_service import create_agent_pipeline
 from bijux_canon_agent.config.env import load_environment, validate_keys
 from bijux_canon_agent.interfaces.cli.helpers import (
     handle_replay,
@@ -22,7 +23,6 @@ from bijux_canon_agent.interfaces.cli.runtime_setup import (
     create_logger_manager,
     resolve_input_files,
 )
-from bijux_canon_agent.pipeline.canonical import AuditableDocPipeline
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -77,10 +77,10 @@ async def main() -> None:
 
     results_dir_path = Path(args.results_dir)
     results_dir_path.mkdir(parents=True, exist_ok=True)
-    pipeline = AuditableDocPipeline(
+    pipeline = create_agent_pipeline(
         config=config,
         logger_manager=logger_manager,
-        results_dir=str(results_dir_path),
+        results_dir=results_dir_path,
     )
 
     input_path = Path(args.input_path)
