@@ -4,6 +4,16 @@
 
 from __future__ import annotations
 
+from bijux_canon_reason.research.evidence_relations import (
+    EvidenceRelationAttachment,
+    EvidenceRelationAttachmentService,
+    EvidenceRelationKind,
+    EvidenceRelationTrace,
+    GraphEvidenceRelation,
+    RejectedEvidenceRelation,
+    RelationClassificationMode,
+    RelationRejectionReason,
+)
 from bijux_canon_reason.research.gap_retrieval import (
     EvidenceChange,
     GapRetrievalError,
@@ -39,12 +49,17 @@ from bijux_canon_reason.research.question_decomposition import (
 
 __all__ = [
     "EvidenceChange",
+    "EvidenceRelationAttachment",
+    "EvidenceRelationAttachmentService",
+    "EvidenceRelationKind",
+    "EvidenceRelationTrace",
     "GapRetrievalError",
     "GapRetrievalErrorCode",
     "GapRetrievalPolicy",
     "GapRetrievalRecord",
     "GapRetrievalRun",
     "GapRetrievalService",
+    "GraphEvidenceRelation",
     "QuestionDecomposer",
     "QuestionDecompositionDecision",
     "QuestionDecompositionError",
@@ -54,6 +69,9 @@ __all__ = [
     "ResearchQuestion",
     "ResearchQuestionIntent",
     "ResearchSubquestion",
+    "RejectedEvidenceRelation",
+    "RelationClassificationMode",
+    "RelationRejectionReason",
     "RetrievalBatchStatus",
     "RetrievalEvidenceBatch",
     "RetrievalEvidencePort",
