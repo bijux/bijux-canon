@@ -159,6 +159,14 @@ def _vector_sha256(vector: Any) -> str:
     return _sha256_bytes(canonical.tobytes(order="C"))
 
 
+def normalized_vector_sha256(
+    vector: Sequence[float], *, dimension: int | None = None
+) -> str:
+    """Return the exact backend's canonical normalized query-vector identity."""
+
+    return _vector_sha256(_normalize_vector(vector, dimension=dimension))
+
+
 def _generation_id(settings: Mapping[str, str]) -> str:
     identity = {key: value for key, value in settings.items() if key != "generation_id"}
     return f"sha256:{_sha256_json(identity)}"
@@ -612,4 +620,5 @@ __all__ = [
     "FaissExactIndexUnavailableError",
     "FaissExactSearchResult",
     "MetadataValue",
+    "normalized_vector_sha256",
 ]

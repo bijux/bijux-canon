@@ -42,9 +42,16 @@ from bijux_canon_index.application.index_service import (
     IndexQueryRequest,
     IndexService,
 )
+from bijux_canon_index.application.vex import (
+    ExactSearchCandidate,
+    ExactSearchWitness,
+    build_exact_search_witness,
+)
 
 __all__ = [
     "AdmittedIndexChunk",
+    "ExactSearchCandidate",
+    "ExactSearchWitness",
     "IndexActivationError",
     "IndexActivationInspection",
     "IndexBuildLimits",
@@ -73,5 +80,6 @@ __all__ = [
     "IndexService",
     "apply_index_delta",
     "audit_index_generation",
+    "build_exact_search_witness",
     "inspect_index_generation",
 ]

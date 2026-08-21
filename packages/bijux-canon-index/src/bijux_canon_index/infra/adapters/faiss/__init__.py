@@ -11,6 +11,7 @@ from .exact import (
     FaissExactIndexCorruptionError,
     FaissExactIndexManifest,
     FaissExactSearchResult,
+    normalized_vector_sha256,
 )
 from .hnsw import (
     FaissHnswIndex,
@@ -35,4 +36,5 @@ __all__ = [
     "HnswParameters",
     "HnswRecallMeasurement",
     "measure_hnsw_recall",
+    "normalized_vector_sha256",
 ]

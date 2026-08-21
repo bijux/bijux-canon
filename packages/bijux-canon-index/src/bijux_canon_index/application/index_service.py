@@ -20,6 +20,10 @@ from bijux_canon_index.application.index_generation import (
     IndexGeneration,
 )
 from bijux_canon_index.application.index_inspection import IndexInspectionReport
+from bijux_canon_index.application.vex.witnesses import (
+    ExactSearchWitness,
+    build_exact_search_witness,
+)
 from bijux_canon_index.domain.metadata_filters import MetadataFilter
 from bijux_canon_index.infra.adapters.faiss.hnsw import HnswParameters
 
@@ -207,6 +211,25 @@ class IndexService:
                 channel=request.channel,
                 chunk_set_sha256=generation.manifest.chunk_set_sha256,
                 hits=hits,
+            )
+
+    def exact_witness(
+        self,
+        request: IndexQueryRequest,
+        *,
+        generation_id: str | None = None,
+    ) -> ExactSearchWitness:
+        """Build an exact reference ranking for one admitted dense query."""
+
+        if request.channel is IndexQueryChannel.lexical:
+            raise ValueError("exact witnesses require a dense query")
+        assert request.query_vector is not None
+        with self._registry.open(generation_id) as generation:
+            return build_exact_search_witness(
+                generation,
+                tuple(request.query_vector),
+                top_k=request.top_k,
+                metadata_filter=request.metadata_filter,
             )
 
 
