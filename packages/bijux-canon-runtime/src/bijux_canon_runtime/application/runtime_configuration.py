@@ -49,6 +49,8 @@ class RuntimeConfiguration:
     """Validated behavior-affecting runtime configuration."""
 
     database_path: Path | None
+    retrieval_index_path: Path | None
+    working_root: Path | None
     strict_determinism: bool
     offline: bool
     resource_budget: ExecutionBudget
@@ -87,6 +89,10 @@ class RuntimeConfiguration:
         """Return auditable settings without resolving or exposing secret values."""
         return {
             "database_path": str(self.database_path) if self.database_path else None,
+            "retrieval_index_path": (
+                str(self.retrieval_index_path) if self.retrieval_index_path else None
+            ),
+            "working_root": str(self.working_root) if self.working_root else None,
             "strict_determinism": self.strict_determinism,
             "offline": self.offline,
             "resource_budget": {
@@ -112,6 +118,8 @@ _BUDGET_FIELDS = (
 )
 _FIELDS = {
     "database_path",
+    "retrieval_index_path",
+    "working_root",
     "strict_determinism",
     "offline",
     "provider_api_key_ref",
@@ -119,6 +127,8 @@ _FIELDS = {
 }
 _CANONICAL_ENVIRONMENT = {
     "database_path": "BIJUX_CANON_RUNTIME_DB_PATH",
+    "retrieval_index_path": "BIJUX_CANON_RUNTIME_RETRIEVAL_INDEX_PATH",
+    "working_root": "BIJUX_CANON_RUNTIME_WORKING_ROOT",
     "strict_determinism": "BIJUX_CANON_RUNTIME_STRICT",
     "offline": "BIJUX_CANON_RUNTIME_OFFLINE",
     "provider_api_key_ref": "BIJUX_CANON_RUNTIME_PROVIDER_API_KEY_REF",
@@ -138,6 +148,8 @@ _LEGACY_ENVIRONMENT = {
 def _normalize_file_values(values: Mapping[str, object]) -> dict[str, object]:
     allowed = {
         "database_path",
+        "retrieval_index_path",
+        "working_root",
         "strict_determinism",
         "offline",
         "provider_api_key_ref",
@@ -199,7 +211,7 @@ def _normalized_value(field_name: str, value: object) -> object:
         return _parse_bool(field_name, value)
     if field_name in _BUDGET_FIELDS:
         return _parse_optional_int(field_name, value)
-    if field_name == "database_path":
+    if field_name in {"database_path", "retrieval_index_path", "working_root"}:
         if value is None:
             return None
         if not isinstance(value, (str, Path)) or not str(value).strip():
@@ -223,6 +235,8 @@ def resolve_runtime_configuration(
     """Resolve and validate configuration with explicit, recorded precedence."""
     values: dict[str, object] = {
         "database_path": None,
+        "retrieval_index_path": None,
+        "working_root": None,
         "strict_determinism": False,
         "offline": True,
         "provider_api_key_ref": None,
@@ -271,9 +285,15 @@ def resolve_runtime_configuration(
         trace_event_limit=cast(int | None, values["trace_event_limit"]),
     )
     database_path = values["database_path"]
+    retrieval_index_path = values["retrieval_index_path"]
+    working_root = values["working_root"]
     provider_api_key = values["provider_api_key_ref"]
     return RuntimeConfiguration(
         database_path=database_path if isinstance(database_path, Path) else None,
+        retrieval_index_path=(
+            retrieval_index_path if isinstance(retrieval_index_path, Path) else None
+        ),
+        working_root=working_root if isinstance(working_root, Path) else None,
         strict_determinism=bool(values["strict_determinism"]),
         offline=bool(values["offline"]),
         resource_budget=budget,
