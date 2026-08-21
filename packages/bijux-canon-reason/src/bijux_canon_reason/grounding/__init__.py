@@ -4,6 +4,16 @@
 
 from __future__ import annotations
 
+from bijux_canon_reason.grounding.abstention import (
+    CalibratedAbstentionPolicy,
+    EvidenceGap,
+    EvidenceGapCode,
+    GroundingAdmissionDecision,
+    GroundingAdmissionOutcome,
+    GroundingAdmissionService,
+    GroundingRequestStatus,
+    RejectedGroundingClaim,
+)
 from bijux_canon_reason.grounding.claim_normalization import (
     AtomicClaim,
     AtomicClaimNormalizer,
@@ -87,6 +97,7 @@ __all__ = [
     "AtomicClaim",
     "AtomicClaimNormalizer",
     "AtomicClaimPolarity",
+    "CalibratedAbstentionPolicy",
     "CandidateOutcome",
     "CandidatePolarity",
     "CitationEvidence",
@@ -120,7 +131,13 @@ __all__ = [
     "EvidenceTrust",
     "EntailmentVerdict",
     "EvidenceEntailmentAssessment",
+    "EvidenceGap",
+    "EvidenceGapCode",
     "ExtractiveSynthesisPoint",
+    "GroundingAdmissionDecision",
+    "GroundingAdmissionOutcome",
+    "GroundingAdmissionService",
+    "GroundingRequestStatus",
     "ImmutableEvidenceLocator",
     "JsonHttpResponse",
     "JsonTransport",
@@ -131,6 +148,7 @@ __all__ = [
     "ProviderAttemptKind",
     "ProviderAttemptReceipt",
     "ProviderAttemptStatus",
+    "RejectedGroundingClaim",
     "SelectionDisposition",
     "SynthesisOutcome",
     "SynthesisStyle",
