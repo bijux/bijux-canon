@@ -3,6 +3,15 @@
 
 """Verified vector-execution application contracts."""
 
+from .policy import (
+    VexExecutionBudget,
+    VexExecutionObservation,
+    VexPolicyDecision,
+    VexPolicyMode,
+    VexPolicyStatus,
+    VexPolicyViolation,
+    evaluate_vex_budget,
+)
 from .witnesses import (
     ExactSearchCandidate,
     ExactSearchWitness,
@@ -12,5 +21,12 @@ from .witnesses import (
 __all__ = [
     "ExactSearchCandidate",
     "ExactSearchWitness",
+    "VexExecutionBudget",
+    "VexExecutionObservation",
+    "VexPolicyDecision",
+    "VexPolicyMode",
+    "VexPolicyStatus",
+    "VexPolicyViolation",
     "build_exact_search_witness",
+    "evaluate_vex_budget",
 ]

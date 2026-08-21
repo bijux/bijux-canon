@@ -45,13 +45,26 @@ from bijux_canon_index.application.index_service import (
 from bijux_canon_index.application.vex import (
     ExactSearchCandidate,
     ExactSearchWitness,
+    VexExecutionBudget,
+    VexExecutionObservation,
+    VexPolicyDecision,
+    VexPolicyMode,
+    VexPolicyStatus,
+    VexPolicyViolation,
     build_exact_search_witness,
+    evaluate_vex_budget,
 )
 
 __all__ = [
     "AdmittedIndexChunk",
     "ExactSearchCandidate",
     "ExactSearchWitness",
+    "VexExecutionBudget",
+    "VexExecutionObservation",
+    "VexPolicyDecision",
+    "VexPolicyMode",
+    "VexPolicyStatus",
+    "VexPolicyViolation",
     "IndexActivationError",
     "IndexActivationInspection",
     "IndexBuildLimits",
@@ -81,5 +94,6 @@ __all__ = [
     "apply_index_delta",
     "audit_index_generation",
     "build_exact_search_witness",
+    "evaluate_vex_budget",
     "inspect_index_generation",
 ]
