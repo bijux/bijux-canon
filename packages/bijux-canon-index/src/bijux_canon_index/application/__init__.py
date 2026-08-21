@@ -43,11 +43,18 @@ from bijux_canon_index.application.index_service import (
     IndexService,
 )
 from bijux_canon_index.application.retrieval import (
+    DenseCandidate,
+    DenseCandidateBatch,
+    DenseCandidateCompatibilityError,
+    DenseCandidateMode,
+    DenseCandidateOutcome,
+    DenseCandidateService,
     LexicalCandidateBatch,
     LexicalCandidateDecision,
     LexicalCandidateDisposition,
     LexicalCandidateOutcome,
     LexicalCandidateService,
+    QueryEmbeddingProvider,
 )
 from bijux_canon_index.application.vex import (
     ExactSearchCandidate,
@@ -75,6 +82,12 @@ from bijux_canon_index.application.vex import (
 
 __all__ = [
     "AdmittedIndexChunk",
+    "DenseCandidate",
+    "DenseCandidateBatch",
+    "DenseCandidateCompatibilityError",
+    "DenseCandidateMode",
+    "DenseCandidateOutcome",
+    "DenseCandidateService",
     "ExactSearchCandidate",
     "ExactSearchWitness",
     "VexArtifactStore",
@@ -123,6 +136,7 @@ __all__ = [
     "LexicalCandidateDisposition",
     "LexicalCandidateOutcome",
     "LexicalCandidateService",
+    "QueryEmbeddingProvider",
     "apply_index_delta",
     "audit_index_generation",
     "build_exact_search_witness",

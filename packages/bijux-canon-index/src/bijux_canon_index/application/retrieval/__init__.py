@@ -3,6 +3,15 @@
 
 """Canonical retrieval application services."""
 
+from .dense import (
+    DenseCandidate,
+    DenseCandidateBatch,
+    DenseCandidateCompatibilityError,
+    DenseCandidateMode,
+    DenseCandidateOutcome,
+    DenseCandidateService,
+    QueryEmbeddingProvider,
+)
 from .lexical import (
     LexicalCandidateBatch,
     LexicalCandidateDecision,
@@ -12,9 +21,16 @@ from .lexical import (
 )
 
 __all__ = [
+    "DenseCandidate",
+    "DenseCandidateBatch",
+    "DenseCandidateCompatibilityError",
+    "DenseCandidateMode",
+    "DenseCandidateOutcome",
+    "DenseCandidateService",
     "LexicalCandidateBatch",
     "LexicalCandidateDecision",
     "LexicalCandidateDisposition",
     "LexicalCandidateOutcome",
     "LexicalCandidateService",
+    "QueryEmbeddingProvider",
 ]

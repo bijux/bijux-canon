@@ -111,7 +111,9 @@ def test_store_refuses_tamper_noncanonical_bytes_and_invalid_identity(
 
 
 def test_artifact_refuses_incomplete_and_nonfinite_payloads() -> None:
-    with pytest.raises(ValueError, match="candidates and logs"):
-        replace(_execution(), candidates=())
+    empty = replace(_execution(), candidates=())
+    assert empty.candidates == ()
+    with pytest.raises(ValueError, match="execution logs"):
+        replace(_execution(), logs=())
     with pytest.raises(ValueError, match="JSON"):
         replace(_execution(), metrics={"latency_ms": float("nan")})

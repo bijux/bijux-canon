@@ -104,8 +104,8 @@ class VexExecutionArtifact:
         object.__setattr__(self, "metrics", _canonical_mapping(self.metrics))
         object.__setattr__(self, "candidates", tuple(self.candidates))
         object.__setattr__(self, "logs", tuple(self.logs))
-        if not self.candidates or not self.logs:
-            raise ValueError("VEX execution artifacts require candidates and logs")
+        if not self.logs:
+            raise ValueError("VEX execution artifacts require execution logs")
         sections = {
             "request": self.request,
             "normalized_vector": self.normalized_vector_sha256,

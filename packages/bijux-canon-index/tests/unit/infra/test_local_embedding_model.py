@@ -71,6 +71,7 @@ def test_local_embedding_preserves_order_and_bounds_batch(tmp_path: Path) -> Non
 
     assert result.vectors == ((1.0, 0.0), (0.0, 1.0))
     assert result.device == "cpu"
+    assert result.inference_threads == 1
     assert model.calls == [
         {
             "texts": ["first", "second"],

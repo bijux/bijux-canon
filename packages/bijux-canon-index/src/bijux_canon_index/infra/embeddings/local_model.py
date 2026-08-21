@@ -14,6 +14,8 @@ from typing import Any
 from bijux_canon_index.domain.embedding import EmbeddingModelLock
 from bijux_canon_index.infra.embeddings.model_cache import verify_materialized_model
 
+INFERENCE_THREADS = 1
+
 
 @dataclass(frozen=True, slots=True)
 class EmbeddedBatch:
@@ -23,12 +25,15 @@ class EmbeddedBatch:
     model_lock_id: str
     device: str
     batch_size: int
+    inference_threads: int = INFERENCE_THREADS
 
 
 ModelLoader = Callable[[Path, str], Any]
 
 
 def _load_model(model_root: Path, device: str) -> Any:
+    torch = importlib.import_module("torch")
+    torch.set_num_threads(INFERENCE_THREADS)
     module = importlib.import_module("sentence_transformers")
     return module.SentenceTransformer(
         str(model_root),
@@ -88,7 +93,8 @@ class LocalEmbeddingModel:
             model_lock_id=self.lock.lock_id,
             device=self.device,
             batch_size=self.batch_size,
+            inference_threads=INFERENCE_THREADS,
         )
 
 
-__all__ = ["EmbeddedBatch", "LocalEmbeddingModel"]
+__all__ = ["EmbeddedBatch", "INFERENCE_THREADS", "LocalEmbeddingModel"]
