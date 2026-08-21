@@ -64,7 +64,11 @@ api = [
 config = [
   "PyYAML>=6.0,<7.0",
 ]
-embeddings = []
+embeddings = [
+  "numpy>=1.26,<3.0",
+  "sentence-transformers>=5.1,<6.0",
+  "torch>=2.7,<3.0",
+]
 nd = [
   "hnswlib>=0.8.0,<1.0",
 ]
