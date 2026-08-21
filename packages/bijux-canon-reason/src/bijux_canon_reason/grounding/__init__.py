@@ -14,6 +14,15 @@ from bijux_canon_reason.grounding.claim_normalization import (
     ClaimNormalizationOutcome,
     NormalizedClaimSet,
 )
+from bijux_canon_reason.grounding.citation_linking import (
+    CitationLinkingError,
+    CitationLinkingErrorCode,
+    CitationSourceDescriptor,
+    ClaimCitationLink,
+    ClaimCitationLinker,
+    ClaimCitationRole,
+    ClaimCitationSet,
+)
 from bijux_canon_reason.grounding.extractive_synthesis import (
     CredentialFreeSynthesis,
     CredentialFreeSynthesisPolicy,
@@ -69,6 +78,13 @@ __all__ = [
     "CandidateOutcome",
     "CandidatePolarity",
     "CitationEvidence",
+    "CitationLinkingError",
+    "CitationLinkingErrorCode",
+    "CitationSourceDescriptor",
+    "ClaimCitationLink",
+    "ClaimCitationLinker",
+    "ClaimCitationRole",
+    "ClaimCitationSet",
     "ClaimConfidenceBasis",
     "ClaimNormalizationError",
     "ClaimNormalizationErrorCode",
