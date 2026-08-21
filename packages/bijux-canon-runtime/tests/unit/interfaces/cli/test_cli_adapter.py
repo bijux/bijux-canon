@@ -180,18 +180,16 @@ def test_cli_delegates_to_api_run_flow(tmp_path: Path, monkeypatch) -> None:
 
     cli_main()
 
-    assert calls == [
-        _RunCall(
-            manifest=resolved.manifest,
-            config=ExecutionConfig(
-                mode=RunMode.PLAN,
-                determinism_level=resolved.manifest.determinism_level,
-            ),
-        )
-    ]
+    assert len(calls) == 1
+    assert calls[0].manifest == resolved.manifest
+    assert calls[0].config.mode == RunMode.PLAN
+    assert calls[0].config.determinism_level == resolved.manifest.determinism_level
+    assert calls[0].config.runtime_configuration is not None
+    assert calls[0].config.runtime_configuration.offline is True
 
 
 def test_cli_sets_strict_determinism_flag(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.setenv("BIJUX_CANON_RUNTIME_STEP_LIMIT", "7")
     manifest_path = tmp_path / "manifest.json"
     manifest_path.write_text(
         json.dumps(
@@ -351,6 +349,8 @@ def test_cli_sets_strict_determinism_flag(tmp_path: Path, monkeypatch) -> None:
     assert calls
     assert calls[0].config.mode == RunMode.LIVE
     assert calls[0].config.strict_determinism is True
+    assert calls[0].config.budget is not None
+    assert calls[0].config.budget.step_limit == 7
 
 
 @pytest.mark.parametrize(

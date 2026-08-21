@@ -13,7 +13,6 @@ from __future__ import annotations
 
 from collections.abc import Awaitable, Callable
 import os
-from pathlib import Path
 from typing import Annotated
 
 from fastapi import Body, FastAPI, Header, Request, status
@@ -37,6 +36,9 @@ from bijux_canon_runtime.api.v1.schemas import (
     ReplayRequest,
 )
 from bijux_canon_runtime.application.readiness import runtime_store_is_ready
+from bijux_canon_runtime.application.runtime_configuration import (
+    resolve_runtime_configuration,
+)
 
 HTTP_HEADER_VALUE_PATTERN = r"^[A-Za-z0-9._:-]+$"
 
@@ -201,10 +203,10 @@ def health() -> HealthResponse:
 )
 def ready() -> JSONResponse:
     """Provide a readiness signal without performing deep dependency checks."""
-    db_path = os.environ.get("AGENTIC_FLOWS_DB_PATH")
-    if not db_path:
+    configuration = resolve_runtime_configuration(environment=os.environ)
+    if configuration.database_path is None:
         return JSONResponse(status_code=503, content={"ready": False})
-    if not runtime_store_is_ready(Path(db_path)):
+    if not runtime_store_is_ready(configuration.database_path):
         return JSONResponse(status_code=503, content={"ready": False})
     return JSONResponse(content={"ready": True})
 

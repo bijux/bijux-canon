@@ -4,12 +4,17 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import replace
+import os
 from pathlib import Path
 
 from bijux_canon_runtime.application.execute_flow import ExecutionConfig, FlowRunResult
 from bijux_canon_runtime.application.planner import ExecutionPlanner
 from bijux_canon_runtime.application.replay_store import replay_with_store
+from bijux_canon_runtime.application.runtime_configuration import (
+    resolve_runtime_configuration,
+)
 from bijux_canon_runtime.model.execution.run_mode import RunMode
 from bijux_canon_runtime.model.flows.manifest import FlowManifest
 from bijux_canon_runtime.model.verification.verification import VerificationPolicy
@@ -27,17 +32,30 @@ def prepare_execution(
     db_path: Path | None,
     strict_determinism: bool,
     policy: VerificationPolicy | None,
+    environment: Mapping[str, str] | None = None,
 ) -> tuple[FlowManifest, ExecutionConfig]:
     """Construct explicit execution adapters for a parsed manifest."""
-    config = ExecutionConfig.from_command(command).for_manifest(manifest)
+    explicit: dict[str, object] = {}
     if db_path is not None:
-        config = ExecutionConfig(
-            mode=config.mode,
-            determinism_level=manifest.determinism_level,
-            execution_store=DuckDBExecutionWriteStore(db_path),
-        )
+        explicit["database_path"] = db_path
     if strict_determinism:
-        config = replace(config, strict_determinism=True)
+        explicit["strict_determinism"] = True
+    settings = resolve_runtime_configuration(
+        environment=os.environ if environment is None else environment,
+        explicit=explicit,
+    )
+    config = ExecutionConfig.from_command(command).for_manifest(manifest)
+    config = replace(
+        config,
+        strict_determinism=settings.strict_determinism,
+        budget=settings.resource_budget,
+        runtime_configuration=settings,
+    )
+    if settings.database_path is not None:
+        config = replace(
+            config,
+            execution_store=DuckDBExecutionWriteStore(settings.database_path),
+        )
     if policy is not None:
         config = replace(config, verification_policy=policy)
     return manifest, config
@@ -51,18 +69,30 @@ def replay_persisted_run(
     run_id: str,
     tenant_id: str,
     strict_determinism: bool,
+    environment: Mapping[str, str] | None = None,
 ) -> tuple[dict[str, object], FlowRunResult]:
     """Replay one persisted run using application-owned storage adapters."""
+    settings = resolve_runtime_configuration(
+        environment=os.environ if environment is None else environment,
+        explicit={
+            "database_path": db_path,
+            **({"strict_determinism": True} if strict_determinism else {}),
+        },
+    )
     resolved_flow = ExecutionPlanner().resolve(manifest)
-    read_store = DuckDBExecutionReadStore(db_path)
-    write_store = DuckDBExecutionWriteStore(db_path)
+    if settings.database_path is None:
+        raise ValueError("database_path is required for replay")
+    read_store = DuckDBExecutionReadStore(settings.database_path)
+    write_store = DuckDBExecutionWriteStore(settings.database_path)
     config = ExecutionConfig(
         mode=RunMode.LIVE,
         determinism_level=manifest.determinism_level,
         execution_store=write_store,
         execution_read_store=read_store,
         verification_policy=policy,
-        strict_determinism=strict_determinism,
+        strict_determinism=settings.strict_determinism,
+        budget=settings.resource_budget,
+        runtime_configuration=settings,
     )
     return replay_with_store(
         store=read_store,

@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from dataclasses import replace
-import os
 
 from bijux_canon_runtime.application.execution_persistence import (
     ResumeState,
@@ -51,15 +50,22 @@ from bijux_canon_runtime.runtime.non_determinism_lifecycle import (
 
 
 def effective_execution_config(execution_config: ExecutionConfig) -> ExecutionConfig:
-    """Apply strict-mode environment overrides to the execution config."""
-    strict_env = os.environ.get("BIJUX_CANON_RUNTIME_STRICT")
-    if strict_env is None:
-        strict_env = os.environ.get("AGENTIC_FLOWS_STRICT")
-    if strict_env != "1":
+    """Apply settings owned by the validated runtime configuration."""
+    settings = execution_config.runtime_configuration
+    if settings is None:
         return execution_config
-    if execution_config.mode in {RunMode.DRY_RUN, RunMode.UNSAFE}:
+    if settings.strict_determinism and execution_config.mode in {
+        RunMode.DRY_RUN,
+        RunMode.UNSAFE,
+    }:
         raise ValueError("BIJUX_CANON_RUNTIME_STRICT forbids best-effort execution")
-    return replace(execution_config, strict_determinism=True)
+    return replace(
+        execution_config,
+        strict_determinism=(
+            execution_config.strict_determinism or settings.strict_determinism
+        ),
+        budget=execution_config.budget or settings.resource_budget,
+    )
 
 
 def prepare_plan_flow(

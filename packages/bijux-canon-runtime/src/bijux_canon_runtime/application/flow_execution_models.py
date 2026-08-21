@@ -38,6 +38,9 @@ from bijux_canon_runtime.runtime.context import ExecutionContext
 from bijux_canon_runtime.runtime.execution.step_executor import ExecutionOutcome
 
 if TYPE_CHECKING:
+    from bijux_canon_runtime.application.runtime_configuration import (
+        RuntimeConfiguration,
+    )
     from bijux_canon_runtime.model.flows.manifest import FlowManifest
 
 
@@ -73,6 +76,7 @@ class ExecutionConfig:
     observers: tuple[RuntimeObserver, ...] | None = None
     resume_run_id: RunID | None = None
     strict_determinism: bool = False
+    runtime_configuration: RuntimeConfiguration | None = None
 
     @classmethod
     def from_command(cls, command: str) -> ExecutionConfig:
@@ -99,6 +103,7 @@ class ExecutionConfig:
             observers=self.observers,
             resume_run_id=self.resume_run_id,
             strict_determinism=self.strict_determinism,
+            runtime_configuration=self.runtime_configuration,
         )
 
 
