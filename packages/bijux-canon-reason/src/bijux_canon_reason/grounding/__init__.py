@@ -4,6 +4,16 @@
 
 from __future__ import annotations
 
+from bijux_canon_reason.grounding.claim_normalization import (
+    AtomicClaim,
+    AtomicClaimNormalizer,
+    AtomicClaimPolarity,
+    ClaimConfidenceBasis,
+    ClaimNormalizationError,
+    ClaimNormalizationErrorCode,
+    ClaimNormalizationOutcome,
+    NormalizedClaimSet,
+)
 from bijux_canon_reason.grounding.extractive_synthesis import (
     CredentialFreeSynthesis,
     CredentialFreeSynthesisPolicy,
@@ -53,9 +63,16 @@ from bijux_canon_reason.grounding.evidence_packets import (
 )
 
 __all__ = [
+    "AtomicClaim",
+    "AtomicClaimNormalizer",
+    "AtomicClaimPolarity",
     "CandidateOutcome",
     "CandidatePolarity",
     "CitationEvidence",
+    "ClaimConfidenceBasis",
+    "ClaimNormalizationError",
+    "ClaimNormalizationErrorCode",
+    "ClaimNormalizationOutcome",
     "CredentialFreeSynthesis",
     "CredentialFreeSynthesisPolicy",
     "CredentialFreeSynthesizer",
@@ -70,6 +87,7 @@ __all__ = [
     "ImmutableEvidenceLocator",
     "JsonHttpResponse",
     "JsonTransport",
+    "NormalizedClaimSet",
     "OpenAICompatibleStructuredSynthesizer",
     "OmissionReason",
     "PacketCompleteness",
