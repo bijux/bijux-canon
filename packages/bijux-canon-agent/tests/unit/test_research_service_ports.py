@@ -8,10 +8,14 @@ import pytest
 
 from bijux_canon_agent.application import (
     InjectedResearchServices,
+    BudgetAction,
+    BudgetDimensions,
     PolicyEnforcedResearchServices,
     ResearchOperation,
     ResearchRole,
     ResearchRoleMachine,
+    ResearchBudgetPolicy,
+    ResearchBudgetLedger,
     ToolPolicyDenied,
 )
 from bijux_canon_agent.contracts import (
@@ -47,7 +51,7 @@ def planning_input() -> ResearchPlanningInput:
             "seed": 17,
         },
         budget={
-            "iterations": 3,
+            "iterations": 8,
             "retrievals": 1,
             "candidates": 4,
             "evidence_items": 2,
@@ -63,6 +67,10 @@ def planning_input() -> ResearchPlanningInput:
 
 def tool_policy() -> ToolPolicy:
     return ToolPolicy.for_plan(planning_input())
+
+
+def budget_policy() -> ResearchBudgetPolicy:
+    return ResearchBudgetPolicy.for_plan(planning_input())
 
 
 class RecordingRetriever:
@@ -222,7 +230,10 @@ def test_research_role_machine_executes_one_operation_per_legal_edge() -> None:
     services = InjectedResearchServices(retriever=retriever, reasoner=reasoner)
 
     result = ResearchRoleMachine(
-        planning_input=planning_input(), services=services, tool_policy=tool_policy()
+        planning_input=planning_input(),
+        services=services,
+        tool_policy=tool_policy(),
+        budget_policy=budget_policy(),
     ).run()
 
     assert [record.operation for record in result.operations] == [
@@ -258,6 +269,12 @@ def test_research_role_machine_executes_one_operation_per_legal_edge() -> None:
         ToolPolicyAction.ALLOW,
     ]
     assert result.tool_policy_artifact_id == tool_policy().artifact_id
+    assert result.budget_policy_artifact_id == budget_policy().artifact_id
+    assert not result.exhausted_budget_dimensions
+    assert all(
+        decision.action is BudgetAction.CONTINUE
+        for decision in result.budget_decisions
+    )
     assert result.operations[1].payload["tool_policy_decision_artifact_id"] == (
         result.tool_decisions[0].artifact_id
     )
@@ -275,6 +292,7 @@ def test_research_role_machine_is_deterministic_and_terminal() -> None:
                 retriever=RecordingRetriever(), reasoner=RecordingReasoner()
             ),
             tool_policy=tool_policy(),
+            budget_policy=budget_policy(),
         ).run()
 
     first = execute()
@@ -287,6 +305,7 @@ def test_research_role_machine_is_deterministic_and_terminal() -> None:
             retriever=RecordingRetriever(), reasoner=RecordingReasoner()
         ),
         tool_policy=tool_policy(),
+        budget_policy=budget_policy(),
     )
     machine.run()
     assert machine.role is ResearchRole.TERMINAL
@@ -320,7 +339,104 @@ def test_role_machine_requires_a_plan_bound_policy() -> None:
                 retriever=RecordingRetriever(), reasoner=RecordingReasoner()
             ),
             tool_policy=ToolPolicy.for_plan(other),
+            budget_policy=ResearchBudgetPolicy.for_plan(other),
         )
+
+
+def test_role_machine_terminates_deterministically_on_global_budget() -> None:
+    plan = planning_input()
+    base = ResearchBudgetPolicy.for_plan(plan)
+    constrained = ResearchBudgetPolicy(
+        plan_sha256=base.plan_sha256,
+        global_limits=BudgetDimensions(
+            **{
+                **base.global_limits.payload(),
+                "iterations": 2,
+            }
+        ),
+        role_limits=base.role_limits,
+    )
+
+    def execute():
+        return ResearchRoleMachine(
+            planning_input=plan,
+            services=InjectedResearchServices(
+                retriever=RecordingRetriever(), reasoner=RecordingReasoner()
+            ),
+            tool_policy=ToolPolicy.for_plan(plan),
+            budget_policy=constrained,
+        ).run()
+
+    first = execute()
+    restarted = execute()
+    assert first == restarted
+    assert first.terminal_outcome == "budget_exhausted:iterations"
+    assert first.exhausted_budget_dimensions == ("iterations",)
+    assert first.reasoning is None
+    assert first.transitions[-1].to_role is ResearchRole.TERMINAL
+
+
+def test_role_machine_terminates_on_per_role_budget() -> None:
+    plan = planning_input()
+    base = ResearchBudgetPolicy.for_plan(plan)
+    roles = dict(base.role_limits)
+    roles[ResearchRole.SYNTHESIZE.value] = BudgetDimensions(
+        **{
+            **roles[ResearchRole.SYNTHESIZE.value].payload(),
+            "provider_calls": 0,
+        }
+    )
+    constrained = ResearchBudgetPolicy(
+        plan_sha256=base.plan_sha256,
+        global_limits=base.global_limits,
+        role_limits=roles,
+    )
+
+    result = ResearchRoleMachine(
+        planning_input=plan,
+        services=InjectedResearchServices(
+            retriever=RecordingRetriever(), reasoner=RecordingReasoner()
+        ),
+        tool_policy=ToolPolicy.for_plan(plan),
+        budget_policy=constrained,
+    ).run()
+
+    assert result.terminal_outcome == "budget_exhausted:synthesize.provider_calls"
+    assert result.exhausted_budget_dimensions == ("synthesize.provider_calls",)
+    assert result.reasoning is None
+
+
+@pytest.mark.parametrize(
+    "dimension",
+    [
+        "iterations",
+        "retrievals",
+        "candidates",
+        "evidence_items",
+        "tool_calls",
+        "provider_calls",
+        "tokens",
+        "elapsed_ms",
+        "retries",
+        "artifact_bytes",
+    ],
+)
+def test_budget_ledger_enforces_every_global_dimension(dimension: str) -> None:
+    plan = planning_input()
+    charge = BudgetDimensions(**{dimension: 1})
+    ledger = ResearchBudgetLedger(
+        ResearchBudgetPolicy(
+            plan_sha256=plan_sha256(plan),
+            global_limits=BudgetDimensions(),
+            role_limits={"plan": charge},
+        )
+    )
+
+    decision = ledger.charge(role="plan", label="boundary", usage=charge)
+
+    assert decision.action is BudgetAction.TERMINATE
+    assert decision.exhausted_dimensions == (dimension,)
+    assert ledger.global_usage == charge
 
 
 def test_policy_gateway_records_allowed_and_denied_calls() -> None:

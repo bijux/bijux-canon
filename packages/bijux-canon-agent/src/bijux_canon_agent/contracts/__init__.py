@@ -27,6 +27,13 @@ from .research_ports import (
     RetrieverPort,
     ServicePortDescriptor,
 )
+from .research_budget import (
+    BudgetAction,
+    BudgetDecision,
+    BudgetDimensions,
+    ResearchBudgetLedger,
+    ResearchBudgetPolicy,
+)
 from .tool_policy import (
     ResearchTool,
     ResearchToolOperation,
@@ -55,6 +62,9 @@ __all__ = [
     "AgentOutput",
     "AgentOutputSchema",
     "AgentScore",
+    "BudgetAction",
+    "BudgetDecision",
+    "BudgetDimensions",
     "ExecutionPlan",
     "PlanningBudget",
     "ProviderProfile",
@@ -62,6 +72,8 @@ __all__ = [
     "RetrievalRequest",
     "RetrievalResponse",
     "ResearchPlanningInput",
+    "ResearchBudgetLedger",
+    "ResearchBudgetPolicy",
     "ResearchTool",
     "ResearchToolOperation",
     "ReasonerPort",

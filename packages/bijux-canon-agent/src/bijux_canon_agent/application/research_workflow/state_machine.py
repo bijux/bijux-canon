@@ -18,6 +18,13 @@ from bijux_canon_agent.contracts.research_ports import (
     ReasoningPortResult,
     RetrievalPortResult,
 )
+from bijux_canon_agent.contracts.research_budget import (
+    BudgetAction,
+    BudgetDecision,
+    BudgetDimensions,
+    ResearchBudgetLedger,
+    ResearchBudgetPolicy,
+)
 from bijux_canon_agent.contracts.tool_policy import ToolPolicy, ToolPolicyDecision
 
 
@@ -140,12 +147,16 @@ class ResearchExecutionResult:
 
     artifact_id: str
     planning_input: ResearchPlanningInput
-    retrieval: RetrievalPortResult
-    reasoning: ReasoningPortResult
+    retrieval: RetrievalPortResult | None
+    reasoning: ReasoningPortResult | None
     operations: tuple[ResearchOperationRecord, ...]
     transitions: tuple[ResearchTransition, ...]
     tool_policy_artifact_id: str
     tool_decisions: tuple[ToolPolicyDecision, ...]
+    budget_policy_artifact_id: str
+    budget_decisions: tuple[BudgetDecision, ...]
+    budget_usage: BudgetDimensions
+    exhausted_budget_dimensions: tuple[str, ...]
     terminal_outcome: str
 
 
@@ -180,6 +191,7 @@ class ResearchRoleMachine:
         planning_input: ResearchPlanningInput,
         services: InjectedResearchServices,
         tool_policy: ToolPolicy,
+        budget_policy: ResearchBudgetPolicy,
     ) -> None:
         self._planning_input = planning_input
         self._services = PolicyEnforcedResearchServices(
@@ -187,6 +199,9 @@ class ResearchRoleMachine:
             services=services,
             policy=tool_policy,
         )
+        if budget_policy.plan_sha256 != tool_policy.plan_sha256:
+            raise ValueError("budget policy is not bound to the research plan")
+        self._budget = ResearchBudgetLedger(budget_policy)
         self._role = ResearchRole.PLAN
         self._retrieval: RetrievalPortResult | None = None
         self._reasoning: ReasoningPortResult | None = None
@@ -210,6 +225,11 @@ class ResearchRoleMachine:
     def tool_decisions(self) -> tuple[ToolPolicyDecision, ...]:
         """Return policy decisions, including a denial that halted execution."""
         return self._services.decisions
+
+    @property
+    def budget_decisions(self) -> tuple[BudgetDecision, ...]:
+        """Return every global and per-role accounting decision."""
+        return self._budget.decisions
 
     @classmethod
     def validate_transition(
@@ -259,13 +279,22 @@ class ResearchRoleMachine:
         """Run the complete bounded sequence and return immutable terminal state."""
         while self._role is not ResearchRole.TERMINAL:
             self.advance()
-        if self._retrieval is None or self._reasoning is None:
-            raise RuntimeError("terminal research execution is incomplete")
-        terminal_outcome = self._reasoning.outcome
+        if self._budget.exhausted_dimensions:
+            terminal_outcome = "budget_exhausted:" + ",".join(
+                self._budget.exhausted_dimensions
+            )
+        elif self._retrieval is None or self._reasoning is None:
+            terminal_outcome = "incomplete"
+        else:
+            terminal_outcome = self._reasoning.outcome
         payload = {
             "planning_input": self._planning_input.model_dump(mode="json"),
-            "retrieval_artifact_id": self._retrieval.artifact_id,
-            "reasoning_artifact_id": self._reasoning.artifact_id,
+            "retrieval_artifact_id": (
+                None if self._retrieval is None else self._retrieval.artifact_id
+            ),
+            "reasoning_artifact_id": (
+                None if self._reasoning is None else self._reasoning.artifact_id
+            ),
             "operation_artifact_ids": [item.artifact_id for item in self._operations],
             "transition_artifact_ids": [
                 item.artifact_id for item in self._transitions
@@ -274,6 +303,14 @@ class ResearchRoleMachine:
             "tool_decision_artifact_ids": [
                 item.artifact_id for item in self._services.decisions
             ],
+            "budget_policy_artifact_id": self._budget.policy.artifact_id,
+            "budget_decision_artifact_ids": [
+                item.artifact_id for item in self._budget.decisions
+            ],
+            "budget_usage": self._budget.global_usage.payload(),
+            "exhausted_budget_dimensions": list(
+                self._budget.exhausted_dimensions
+            ),
             "terminal_outcome": terminal_outcome,
         }
         return ResearchExecutionResult(
@@ -285,6 +322,10 @@ class ResearchRoleMachine:
             transitions=tuple(self._transitions),
             tool_policy_artifact_id=self._services.policy.artifact_id,
             tool_decisions=self._services.decisions,
+            budget_policy_artifact_id=self._budget.policy.artifact_id,
+            budget_decisions=self._budget.decisions,
+            budget_usage=self._budget.global_usage,
+            exhausted_budget_dimensions=self._budget.exhausted_dimensions,
             terminal_outcome=terminal_outcome,
         )
 
@@ -293,6 +334,33 @@ class ResearchRoleMachine:
     ) -> ResearchOperationRecord:
         sequence = len(self._operations)
         inputs = self._operation_inputs()
+        role = self._role.value
+        start_charge = BudgetDimensions(
+            iterations=1,
+            retrievals=int(operation is ResearchOperation.RETRIEVE_EVIDENCE),
+            tool_calls=int(operation is ResearchOperation.RETRIEVE_EVIDENCE),
+            provider_calls=int(operation is ResearchOperation.SYNTHESIZE_ANSWER),
+            elapsed_ms=1,
+        )
+        start_decision = self._budget.charge(
+            role=role,
+            label=f"{operation.value}:start",
+            usage=start_charge,
+        )
+        if start_decision.action is BudgetAction.TERMINATE:
+            return ResearchOperationRecord.create(
+                sequence=sequence,
+                role=self._role,
+                operation=operation,
+                input_artifact_ids=inputs,
+                payload={
+                    "budget_decision_artifact_id": start_decision.artifact_id,
+                    "status": "budget_exhausted",
+                    "exhausted_dimensions": list(
+                        start_decision.exhausted_dimensions
+                    ),
+                },
+            )
         if operation is ResearchOperation.VALIDATE_PLAN:
             payload: Mapping[str, Any] = {
                 "planning_input_sha256": hashlib.sha256(
@@ -348,11 +416,63 @@ class ResearchRoleMachine:
                 "artifact_identity_valid": reasoning.artifact_id.startswith("sha256:"),
             }
         else:
-            reasoning = self._require_reasoning()
+            terminal_reasoning = self._reasoning
             payload = {
-                "reasoning_artifact_id": reasoning.artifact_id,
-                "terminal_outcome": reasoning.outcome,
+                "reasoning_artifact_id": (
+                    None
+                    if terminal_reasoning is None
+                    else terminal_reasoning.artifact_id
+                ),
+                "terminal_outcome": (
+                    "budget_exhausted"
+                    if terminal_reasoning is None
+                    else terminal_reasoning.outcome
+                ),
             }
+        payload = {"budget_decision_artifact_id": start_decision.artifact_id, **payload}
+        output_bytes = len(_canonical(payload))
+        if (
+            operation is ResearchOperation.RETRIEVE_EVIDENCE
+            and self._retrieval is not None
+        ):
+            output_bytes += len(
+                _canonical(self._retrieval.model_dump(mode="json"))
+            )
+        if (
+            operation is ResearchOperation.SYNTHESIZE_ANSWER
+            and self._reasoning is not None
+        ):
+            output_bytes += len(_canonical(self._reasoning.model_dump(mode="json")))
+        dynamic_charge = BudgetDimensions(
+            candidates=(
+                len(self._retrieval.records)
+                if operation is ResearchOperation.RETRIEVE_EVIDENCE
+                and self._retrieval is not None
+                else 0
+            ),
+            evidence_items=(
+                len(self._retrieval.records)
+                if operation is ResearchOperation.RETRIEVE_EVIDENCE
+                and self._retrieval is not None
+                else 0
+            ),
+            tokens=(
+                len((self._reasoning.text or "").split())
+                if operation is ResearchOperation.SYNTHESIZE_ANSWER
+                and self._reasoning is not None
+                else 0
+            ),
+            artifact_bytes=output_bytes,
+        )
+        finish_decision = self._budget.charge(
+            role=role,
+            label=f"{operation.value}:finish",
+            usage=dynamic_charge,
+        )
+        payload = {
+            **payload,
+            "budget_finish_decision_artifact_id": finish_decision.artifact_id,
+        }
         return ResearchOperationRecord.create(
             sequence=sequence,
             role=self._role,
