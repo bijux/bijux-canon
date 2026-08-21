@@ -10,25 +10,12 @@ from typing import NoReturn, no_type_check
 
 import typer
 
-from bijux_canon_reason.application.run_artifacts import (
-    RunArtifacts,
-    RunBuilder,
-    RunInputs,
+from bijux_canon_reason.application.cli_services import (
+    execute_eval_command,
+    execute_replay_command,
+    execute_run_command,
+    execute_verify_command,
 )
-from bijux_canon_reason.core.types import (
-    Plan,
-    ProblemSpec,
-    ReplayResult,
-    VerificationReport,
-)
-from bijux_canon_reason.evaluation.suite_workflow import EvalResult, run_eval_suite
-from bijux_canon_reason.interfaces.serialization.json_file import (
-    read_json_file,
-    write_json_file,
-)
-from bijux_canon_reason.interfaces.serialization.trace_jsonl import read_trace_jsonl
-from bijux_canon_reason.traces.replay import replay_from_artifacts
-from bijux_canon_reason.verification.verifier import verify_trace
 
 app = typer.Typer(
     add_completion=False,
@@ -95,28 +82,26 @@ def run(
     ),
 ) -> None:
     """Run the requested operation."""
-    raw = read_json_file(spec)
-    spec_obj = ProblemSpec.model_validate(raw)
-
-    inputs = RunInputs(spec=spec_obj, preset=preset, seed=seed)
-    builder = RunBuilder()
-    arts: RunArtifacts = builder.build(inputs=inputs, artifacts_root=artifacts_dir)
-    trace_id = arts.trace.id
-    if trace_id is None:
-        _exit(2, "run failed: trace id missing (invariant violation)")
-
-    report = arts.verify_report
-    if report.failures and fail_on_verify:
+    try:
+        result = execute_run_command(
+            spec_path=spec,
+            preset=preset,
+            seed=seed,
+            artifacts_dir=artifacts_dir,
+        )
+    except RuntimeError as exc:
+        _exit(2, f"run failed: {exc}")
+    if result.failure_count and fail_on_verify:
         _exit(
             2,
-            f"run failed verification ({len(report.failures)} issues). see: {arts.verify_path}",
+            f"run failed verification ({result.failure_count} issues). see: {result.verify_path}",
         )
 
     if json_output:
-        _emit_json(_run_payload(arts))
+        _emit_json(result.payload)
         _exit(0)
 
-    typer.echo(str(arts.run_dir))
+    typer.echo(str(result.run_dir))
     _exit(0)
 
 
@@ -131,25 +116,19 @@ def verify(
     ),
 ) -> None:
     """Handle verify."""
-    tr = read_trace_jsonl(trace)
-    trace_id = tr.id
-    if trace_id is None:
-        _exit(2, "verification failed: trace id missing (invariant violation)")
-
-    pl_raw = read_json_file(plan)
-    pl = Plan.model_validate(pl_raw)
-
-    report = verify_trace(trace=tr, plan=pl, artifacts_dir=trace.parent)
-
-    out = trace.parent / "verify.verify.json"
-    write_json_file(out, report.model_dump(mode="json"))
-
-    if report.failures and fail_on_verify:
-        _exit(2, f"verification failed ({len(report.failures)} issues). see: {out}")
+    try:
+        result = execute_verify_command(trace_path=trace, plan_path=plan)
+    except RuntimeError as exc:
+        _exit(2, f"verification failed: {exc}")
+    if result.failure_count and fail_on_verify:
+        _exit(
+            2,
+            f"verification failed ({result.failure_count} issues). see: {result.output_path}",
+        )
 
     if json_output:
-        _emit_json(_verify_payload(report))
-        _exit(0 if not report.failures else 2)
+        _emit_json(result.payload)
+        _exit(0 if not result.failure_count else 2)
 
     typer.echo("ok")
     _exit(0)
@@ -165,18 +144,15 @@ def replay(
     ),
 ) -> None:
     """Handle replay."""
-    res, replay_trace = replay_from_artifacts(trace)
-    payload = _replay_payload(replay_trace=replay_trace, result=res)
-    _emit_json(payload)
+    result = execute_replay_command(trace)
+    _emit_json(result.payload)
 
-    if (
-        fail_on_diff
-        and res.original_trace_fingerprint != res.replayed_trace_fingerprint
-    ):
+    if fail_on_diff and result.mismatch:
         _exit(
             2,
             "replay mismatch: fingerprints differ. "
-            f"Replay trace: {payload['replay_trace_path']}. Diff: {res.diff_summary}",
+            f"Replay trace: {result.payload['replay_trace_path']}. "
+            f"Diff: {result.payload['diff_summary']}",
         )
 
     _exit(0)
@@ -194,52 +170,19 @@ def eval_suite(
     ),
 ) -> None:
     """Handle eval suite."""
-    res, out_path = run_eval_suite(
-        suite=suite, artifacts_dir=artifacts_dir, preset=preset, seed=seed
+    result = execute_eval_command(
+        suite=suite,
+        artifacts_dir=artifacts_dir,
+        preset=preset,
+        seed=seed,
     )
-    payload = _eval_payload(summary_path=out_path, result=res)
-    _emit_json(payload if json_output else {"summary": str(out_path)})
-    if res.failed:
-        _exit(2, f"eval failed ({res.failed}/{res.total} cases). see: {out_path}")
+    _emit_json(
+        result.payload if json_output else {"summary": str(result.summary_path)}
+    )
+    if result.failed:
+        _exit(
+            2,
+            f"eval failed ({result.failed}/{result.total} cases). "
+            f"see: {result.summary_path}",
+        )
     _exit(0)
-
-
-def _run_payload(artifacts: RunArtifacts) -> dict[str, object]:
-    """Handle run payload."""
-    return {
-        "run_dir": str(artifacts.run_dir),
-        "verify_failures": len(artifacts.verify_report.failures),
-        "summary": artifacts.verify_report.summary_metrics,
-    }
-
-
-def _verify_payload(report: VerificationReport) -> dict[str, object]:
-    """Handle verify payload."""
-    return {
-        "status": "ok" if not report.failures else "failed",
-        "failures": [failure.message for failure in report.failures],
-        "checks": [check.model_dump(mode="json") for check in report.checks],
-    }
-
-
-def _replay_payload(
-    *,
-    replay_trace: Path,
-    result: ReplayResult,
-) -> dict[str, object]:
-    """Handle replay payload."""
-    payload = {
-        "original_trace_fingerprint": result.original_trace_fingerprint,
-        "replayed_trace_fingerprint": result.replayed_trace_fingerprint,
-        "diff_summary": result.diff_summary,
-        "replay_trace_path": str(replay_trace),
-    }
-    payload["original_fingerprint"] = payload["original_trace_fingerprint"]
-    payload["replayed_fingerprint"] = payload["replayed_trace_fingerprint"]
-    payload["diff"] = payload["diff_summary"]
-    return payload
-
-
-def _eval_payload(*, summary_path: Path, result: EvalResult) -> dict[str, object]:
-    """Handle eval payload."""
-    return {"summary": str(summary_path), **result.to_json()}
