@@ -12,6 +12,15 @@ from .exact import (
     FaissExactIndexManifest,
     FaissExactSearchResult,
 )
+from .hnsw import (
+    FaissHnswIndex,
+    FaissHnswIndexCorruptionError,
+    FaissHnswIndexManifest,
+    FaissHnswSearchResult,
+    HnswParameters,
+    HnswRecallMeasurement,
+    measure_hnsw_recall,
+)
 
 __all__ = [
     "DenseVectorRecord",
@@ -19,4 +28,11 @@ __all__ = [
     "FaissExactIndexCorruptionError",
     "FaissExactIndexManifest",
     "FaissExactSearchResult",
+    "FaissHnswIndex",
+    "FaissHnswIndexCorruptionError",
+    "FaissHnswIndexManifest",
+    "FaissHnswSearchResult",
+    "HnswParameters",
+    "HnswRecallMeasurement",
+    "measure_hnsw_recall",
 ]
