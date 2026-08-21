@@ -8,12 +8,13 @@
   "identity_excluded_json_pointers": ["/artifact_id"],
   "schema_bundle": {
     "path": "reasoning-artifacts.schema.json",
-    "sha256": "864a3be69be2446f1bf820ad20458d2ab05a3c06523262a201829e445ef92f74",
+    "sha256": "5ddff84cfddf64528f54bb7f2c919a41d0ceacb3c8f34899332ce7b7a294de78",
     "definitions": {
       "bijux.canon.reason.assumption": "#/$defs/assumption",
       "bijux.canon.reason.citation": "#/$defs/citation",
       "bijux.canon.reason.claim": "#/$defs/claim",
       "bijux.canon.reason.claim_citation_link": "#/$defs/claim_citation_link",
+      "bijux.canon.reason.claim_derivation": "#/$defs/claim_derivation",
       "bijux.canon.reason.confidence": "#/$defs/confidence",
       "bijux.canon.reason.conflict_assessment": "#/$defs/conflict_assessment",
       "bijux.canon.reason.evidence_packet": "#/$defs/evidence_packet",
@@ -23,20 +24,24 @@
       "bijux.canon.reason.policy_outcome": "#/$defs/policy_outcome",
       "bijux.canon.reason.provider_provenance": "#/$defs/provider_provenance",
       "bijux.canon.reason.question": "#/$defs/question",
+      "bijux.canon.reason.research_claim_graph": "#/$defs/research_claim_graph",
+      "bijux.canon.reason.research_gap": "#/$defs/research_gap",
+      "bijux.canon.reason.research_graph_edge": "#/$defs/research_graph_edge",
+      "bijux.canon.reason.research_subquestion": "#/$defs/research_subquestion",
       "bijux.canon.reason.scope": "#/$defs/scope",
       "bijux.canon.reason.verification_receipt": "#/$defs/verification_receipt"
     }
   },
   "migration_policy": {
     "path": "migration-policy.json",
-    "sha256": "d9e23bc2f6c743b478307ff28a7f1e1a51ba54eb997283fd30a7e6a817b9d39b",
+    "sha256": "74045c98773bda787d1887de63e563a8b8be664fe0f9592deeb9b0be3c093824",
     "implicit_migration_allowed": false,
     "registered_transform_count": 0
   },
   "conformance_example": {
     "path": "examples/evaluation-claim-records.json",
-    "sha256": "e768899cfc768405456c83b44c1035dd59433df5096713ad38f6c3ce4d5aafa4",
-    "record_count": 15,
+    "sha256": "b80d760f2332e6c4e18e77a9630029c206c27503ba2fd133f60884a8e79b4fda",
+    "record_count": 20,
     "source_corpus_sha256": "03a79d793dc4bc525745c8c564a5b116ea727a2dfea9766397d886edfc39e4aa",
     "source_document_count": 25,
     "source_document_id": "d01_fastq"

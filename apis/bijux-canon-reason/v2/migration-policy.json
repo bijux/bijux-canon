@@ -14,6 +14,7 @@
       "validate source and target records",
       "preserve exact citation spans, claim and relation identities, assumptions, insufficiency, confidence, and verification lineage",
       "preserve question and scope identity, bounded evidence packet selection, exact claim-citation links, conflicts, provider provenance, and policy outcome",
+      "preserve research graph topology, subquestion and gap status, typed edges, derivations, topological order, and immutable revision lineage",
       "preserve abstention and refusal without synthesizing claims or citations"
     ]
   },

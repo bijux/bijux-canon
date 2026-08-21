@@ -85,6 +85,80 @@
       "claim_citation_link_artifact_ids": ["sha256:fb430e3e452bcdbc5a2d60299f7a5a69418528f57e3792f978cd9f2be13687d3"], "assumption_artifact_ids": ["sha256:70e36a5c8b1cf972c057d03c659bd792fba9c774d6d63d0ded5144a04d7c543c"], "insufficiency_artifact_ids": ["sha256:4eb91b847597c897cbe46fcd458acf96eab3f5a373902b22ab8650efc68ead4f"],
       "conflict_assessment_artifact_ids": ["sha256:5842a9ebbdace6f20a6f2efaccd55758b4b8004412d9ca582220dbdb3b5ea333"], "provider_provenance_artifact_id": "sha256:35ff8f25c2f5509f099583e138ef0679f5c906d842f7ce7fc0705e06278e481e", "verification_receipt_artifact_id": "sha256:2bcfd08a114e9b649952c77fadfddfee1a293bb3f79d82a301dc2092652ae170",
       "policy_outcome_artifact_id": "sha256:33ead83e8b96088780af22f63c7d1d399429ff76a5f47e51de533776363aa064", "created_at": "2026-08-21T06:01:03Z"
+    },
+    {
+      "schema_version": "2.0.0",
+      "artifact_type": "bijux.canon.reason.research_subquestion",
+      "parent_question_artifact_id": "sha256:95f3f783e2f51e32b322061224c87acf129d6ed5473a5f16ba820a02054254aa",
+      "text": "Which source evidence directly supports the FASTQ format claim?",
+      "text_sha256": "5f270c03f51c4c81cf8ab7221dcc31ebc3ec8ae86d3fcc50a62899b937c54427",
+      "scope_artifact_id": "sha256:a1f94ce368a9c3eb263cf9d11c82c2bafa2710881d2d3dee8da20cea06b23143",
+      "rationale": "Direct support must be identified before the root question can be closed.",
+      "evidence_needs": ["exact source span", "support relation"],
+      "priority": 90,
+      "status": "answered",
+      "artifact_id": "sha256:903ce3e0474998881e282a3977328399c52a3581009194a48ac998f2c3459bcb"
+    },
+    {
+      "schema_version": "2.0.0",
+      "artifact_type": "bijux.canon.reason.research_gap",
+      "question_artifact_id": "sha256:95f3f783e2f51e32b322061224c87acf129d6ed5473a5f16ba820a02054254aa",
+      "subquestion_artifact_id": "sha256:903ce3e0474998881e282a3977328399c52a3581009194a48ac998f2c3459bcb",
+      "claim_artifact_ids": ["sha256:251bd65e22ba7c6d780bac18d6073be26b1470dfc1b05f8a470879d9762bc9e6"],
+      "gap_type": "missing_counterevidence",
+      "description": "No admitted counterevidence search has yet challenged the supported claim.",
+      "priority": 60,
+      "status": "open",
+      "artifact_id": "sha256:a1043742d7a9c2cf77419a42c87119bfcf072c83e0a27b939459b2a4376f0e04"
+    },
+    {
+      "schema_version": "2.0.0",
+      "artifact_type": "bijux.canon.reason.claim_derivation",
+      "conclusion_claim_artifact_id": "sha256:251bd65e22ba7c6d780bac18d6073be26b1470dfc1b05f8a470879d9762bc9e6",
+      "premise_claim_artifact_ids": [],
+      "evidence_relation_artifact_ids": ["sha256:9fb6e93c288055f950ee1f0f739e14ae177363cbecd83bca99301dd7331d6639"],
+      "assumption_artifact_ids": ["sha256:70e36a5c8b1cf972c057d03c659bd792fba9c774d6d63d0ded5144a04d7c543c"],
+      "method": "extractive",
+      "rationale": "The exact cited sentence states the atomic claim and the declared assumption remains visible.",
+      "artifact_id": "sha256:981f1a2caf847db3c6036da6c4e1828ddd05af009270a2f484eb259dc2549ebd"
+    },
+    {
+      "schema_version": "2.0.0",
+      "artifact_type": "bijux.canon.reason.research_graph_edge",
+      "source_artifact_id": "sha256:95f3f783e2f51e32b322061224c87acf129d6ed5473a5f16ba820a02054254aa",
+      "target_artifact_id": "sha256:903ce3e0474998881e282a3977328399c52a3581009194a48ac998f2c3459bcb",
+      "relationship": "decomposes_into",
+      "rationale": "The subquestion isolates the direct-support requirement.",
+      "artifact_id": "sha256:496b092e04c4c822c2595fd68f9507d5e798c518cc5655c725e2bf14f92a013d"
+    },
+    {
+      "schema_version": "2.0.0",
+      "artifact_type": "bijux.canon.reason.research_claim_graph",
+      "root_question_artifact_id": "sha256:95f3f783e2f51e32b322061224c87acf129d6ed5473a5f16ba820a02054254aa",
+      "subquestion_artifact_ids": ["sha256:903ce3e0474998881e282a3977328399c52a3581009194a48ac998f2c3459bcb"],
+      "claim_artifact_ids": ["sha256:251bd65e22ba7c6d780bac18d6073be26b1470dfc1b05f8a470879d9762bc9e6"],
+      "citation_artifact_ids": ["sha256:5bbd60ddcf894e0986b48921c655896c743185cd7bdd8d2f84473405d027d9c6"],
+      "evidence_relation_artifact_ids": ["sha256:9fb6e93c288055f950ee1f0f739e14ae177363cbecd83bca99301dd7331d6639"],
+      "assumption_artifact_ids": ["sha256:70e36a5c8b1cf972c057d03c659bd792fba9c774d6d63d0ded5144a04d7c543c"],
+      "gap_artifact_ids": ["sha256:a1043742d7a9c2cf77419a42c87119bfcf072c83e0a27b939459b2a4376f0e04"],
+      "derivation_artifact_ids": ["sha256:981f1a2caf847db3c6036da6c4e1828ddd05af009270a2f484eb259dc2549ebd"],
+      "confidence_artifact_ids": ["sha256:f2dbbf2efa4dab2f39c61e5ebd8aadc8af9e0a28fb73ecec34da584b77220d8f"],
+      "edge_artifact_ids": ["sha256:496b092e04c4c822c2595fd68f9507d5e798c518cc5655c725e2bf14f92a013d"],
+      "topological_order": [
+        "sha256:95f3f783e2f51e32b322061224c87acf129d6ed5473a5f16ba820a02054254aa",
+        "sha256:903ce3e0474998881e282a3977328399c52a3581009194a48ac998f2c3459bcb",
+        "sha256:5bbd60ddcf894e0986b48921c655896c743185cd7bdd8d2f84473405d027d9c6",
+        "sha256:9fb6e93c288055f950ee1f0f739e14ae177363cbecd83bca99301dd7331d6639",
+        "sha256:70e36a5c8b1cf972c057d03c659bd792fba9c774d6d63d0ded5144a04d7c543c",
+        "sha256:251bd65e22ba7c6d780bac18d6073be26b1470dfc1b05f8a470879d9762bc9e6",
+        "sha256:a1043742d7a9c2cf77419a42c87119bfcf072c83e0a27b939459b2a4376f0e04",
+        "sha256:981f1a2caf847db3c6036da6c4e1828ddd05af009270a2f484eb259dc2549ebd",
+        "sha256:f2dbbf2efa4dab2f39c61e5ebd8aadc8af9e0a28fb73ecec34da584b77220d8f"
+      ],
+      "status": "researching",
+      "revision": 1,
+      "previous_graph_artifact_id": null,
+      "artifact_id": "sha256:137c6bc3a3798bf47186a6823fd85d28080d083345f2db4fe500ce7ba14c1834"
     }
   ]
 }

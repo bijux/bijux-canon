@@ -8,6 +8,13 @@ verification receipts. Records are closed and use RFC 8785 canonical JSON.
 Their `artifact_id` is SHA-256 over the complete canonical record after removing
 only the root `artifact_id`.
 
+Research claim graphs preserve the root question, scoped subquestions, atomic
+claims, exact evidence, support, opposition, ambiguity, assumptions, explicit
+gaps, derivations, confidence, and research status as one immutable revision.
+Typed edges and a complete topological order make the graph acyclic and
+inspectable; later revisions link to an earlier complete graph instead of
+mutating it in place.
+
 Citation coordinates select exact bytes or Unicode code points from an admitted
 chunk. A verifier recomputes the quoted text and digest; a nearby sentence, a
 document-level URL, or an unverified marker is not an exact citation. Evidence

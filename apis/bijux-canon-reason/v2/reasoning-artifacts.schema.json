@@ -17,7 +17,12 @@
     {"$ref": "#/$defs/conflict_assessment"},
     {"$ref": "#/$defs/provider_provenance"},
     {"$ref": "#/$defs/policy_outcome"},
-    {"$ref": "#/$defs/grounded_answer"}
+    {"$ref": "#/$defs/grounded_answer"},
+    {"$ref": "#/$defs/research_subquestion"},
+    {"$ref": "#/$defs/research_gap"},
+    {"$ref": "#/$defs/claim_derivation"},
+    {"$ref": "#/$defs/research_graph_edge"},
+    {"$ref": "#/$defs/research_claim_graph"}
   ],
   "$defs": {
     "artifact_id": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
@@ -187,6 +192,56 @@
         {"if": {"properties": {"outcome": {"enum": ["answered", "partial"]}}}, "then": {"properties": {"claim_artifact_ids": {"minItems": 1}, "claim_citation_link_artifact_ids": {"minItems": 1}}}},
         {"if": {"properties": {"outcome": {"enum": ["abstained", "refused"]}}}, "then": {"properties": {"claim_artifact_ids": {"maxItems": 0}, "claim_citation_link_artifact_ids": {"maxItems": 0}}}}
       ]
+    },
+    "research_subquestion": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "artifact_type", "artifact_id", "parent_question_artifact_id", "text", "text_sha256", "scope_artifact_id", "rationale", "evidence_needs", "priority", "status"],
+      "properties": {
+        "schema_version": {"const": "2.0.0"}, "artifact_type": {"const": "bijux.canon.reason.research_subquestion"}, "artifact_id": {"$ref": "#/$defs/artifact_id"},
+        "parent_question_artifact_id": {"$ref": "#/$defs/artifact_id"}, "text": {"type": "string", "minLength": 1, "pattern": "\\S"}, "text_sha256": {"$ref": "#/$defs/sha256"}, "scope_artifact_id": {"$ref": "#/$defs/artifact_id"},
+        "rationale": {"type": "string", "minLength": 1}, "evidence_needs": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}, "uniqueItems": true, "x-bijux-ordering": "lexicographic"},
+        "priority": {"type": "integer", "minimum": 1, "maximum": 100}, "status": {"enum": ["pending", "active", "answered", "insufficient"]}
+      }
+    },
+    "research_gap": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "artifact_type", "artifact_id", "question_artifact_id", "subquestion_artifact_id", "claim_artifact_ids", "gap_type", "description", "priority", "status"],
+      "properties": {
+        "schema_version": {"const": "2.0.0"}, "artifact_type": {"const": "bijux.canon.reason.research_gap"}, "artifact_id": {"$ref": "#/$defs/artifact_id"},
+        "question_artifact_id": {"$ref": "#/$defs/artifact_id"}, "subquestion_artifact_id": {"oneOf": [{"$ref": "#/$defs/artifact_id"}, {"type": "null"}]}, "claim_artifact_ids": {"$ref": "#/$defs/artifact_ids"},
+        "gap_type": {"enum": ["missing_support", "missing_counterevidence", "scope", "source_quality", "unresolved_conflict"]}, "description": {"type": "string", "minLength": 1},
+        "priority": {"type": "integer", "minimum": 1, "maximum": 100}, "status": {"enum": ["open", "searching", "filled", "unresolved"]}
+      }
+    },
+    "claim_derivation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "artifact_type", "artifact_id", "conclusion_claim_artifact_id", "premise_claim_artifact_ids", "evidence_relation_artifact_ids", "assumption_artifact_ids", "method", "rationale"],
+      "properties": {
+        "schema_version": {"const": "2.0.0"}, "artifact_type": {"const": "bijux.canon.reason.claim_derivation"}, "artifact_id": {"$ref": "#/$defs/artifact_id"},
+        "conclusion_claim_artifact_id": {"$ref": "#/$defs/artifact_id"}, "premise_claim_artifact_ids": {"$ref": "#/$defs/artifact_ids"}, "evidence_relation_artifact_ids": {"$ref": "#/$defs/artifact_ids"}, "assumption_artifact_ids": {"$ref": "#/$defs/artifact_ids"},
+        "method": {"enum": ["extractive", "deductive", "abductive", "comparative"]}, "rationale": {"type": "string", "minLength": 1}
+      },
+      "anyOf": [{"properties": {"premise_claim_artifact_ids": {"minItems": 1}}}, {"properties": {"evidence_relation_artifact_ids": {"minItems": 1}}}]
+    },
+    "research_graph_edge": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "artifact_type", "artifact_id", "source_artifact_id", "target_artifact_id", "relationship", "rationale"],
+      "properties": {
+        "schema_version": {"const": "2.0.0"}, "artifact_type": {"const": "bijux.canon.reason.research_graph_edge"}, "artifact_id": {"$ref": "#/$defs/artifact_id"},
+        "source_artifact_id": {"$ref": "#/$defs/artifact_id"}, "target_artifact_id": {"$ref": "#/$defs/artifact_id"},
+        "relationship": {"enum": ["decomposes_into", "derives", "supports", "opposes", "ambiguous", "assumes", "identifies_gap"]}, "rationale": {"type": "string", "minLength": 1}
+      }
+    },
+    "research_claim_graph": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "artifact_type", "artifact_id", "root_question_artifact_id", "subquestion_artifact_ids", "claim_artifact_ids", "citation_artifact_ids", "evidence_relation_artifact_ids", "assumption_artifact_ids", "gap_artifact_ids", "derivation_artifact_ids", "confidence_artifact_ids", "edge_artifact_ids", "topological_order", "status", "revision", "previous_graph_artifact_id"],
+      "properties": {
+        "schema_version": {"const": "2.0.0"}, "artifact_type": {"const": "bijux.canon.reason.research_claim_graph"}, "artifact_id": {"$ref": "#/$defs/artifact_id"},
+        "root_question_artifact_id": {"$ref": "#/$defs/artifact_id"}, "subquestion_artifact_ids": {"$ref": "#/$defs/artifact_ids"}, "claim_artifact_ids": {"$ref": "#/$defs/artifact_ids"}, "citation_artifact_ids": {"$ref": "#/$defs/artifact_ids"},
+        "evidence_relation_artifact_ids": {"$ref": "#/$defs/artifact_ids"}, "assumption_artifact_ids": {"$ref": "#/$defs/artifact_ids"}, "gap_artifact_ids": {"$ref": "#/$defs/artifact_ids"}, "derivation_artifact_ids": {"$ref": "#/$defs/artifact_ids"}, "confidence_artifact_ids": {"$ref": "#/$defs/artifact_ids"}, "edge_artifact_ids": {"$ref": "#/$defs/artifact_ids"},
+        "topological_order": {"allOf": [{"$ref": "#/$defs/artifact_ids"}, {"minItems": 1}], "x-bijux-ordering": "dependency order"}, "status": {"enum": ["planning", "researching", "converged", "insufficient", "verified"]},
+        "revision": {"type": "integer", "minimum": 1}, "previous_graph_artifact_id": {"oneOf": [{"$ref": "#/$defs/artifact_id"}, {"type": "null"}]}
+      }
     }
   },
   "x-bijux-identity": {"algorithm": "sha-256", "canonicalization": "RFC 8785", "excluded_json_pointers": ["/artifact_id"]},
@@ -197,6 +252,9 @@
     "verification receipts close every referenced reasoning artifact and retain named check results",
     "a grounded answer binds question, scope, evidence packet, claims, exact claim-citation links, assumptions, insufficiency, conflict, provider provenance, verification, and policy outcome",
     "answered and partial outcomes require atomic claims and claim-citation links; abstained and refused outcomes cannot expose claims",
-    "provider provenance records hashes and bounded attempts but never credentials"
+    "provider provenance records hashes and bounded attempts but never credentials",
+    "research claim graphs close questions, subquestions, claims, evidence, relations, assumptions, gaps, derivations, confidence, and typed edges",
+    "topological_order contains every graph node exactly once and every edge source precedes its target, so cycles fail closed",
+    "graph revisions are immutable and previous_graph_artifact_id may reference only an earlier complete graph"
   ]
 }
