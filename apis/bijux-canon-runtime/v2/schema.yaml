@@ -1,0 +1,1249 @@
+openapi: 3.1.0
+info:
+  title: bijux-canon-runtime API
+  version: v2
+  summary: Typed application operations for durable Bijux Canon workflows.
+  description: >-
+    The v2 boundary exposes explicit application use cases shared by library,
+    JSON CLI, and HTTP transports. Long-running operations return durable job
+    identities. Every request carries version, correlation, deadline, and
+    cancellation context; every result carries typed provenance or a stable
+    failure envelope.
+  contact:
+    name: Bijux
+    url: https://github.com/bijux/bijux-canon
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+servers:
+  - url: /
+paths:
+  /api/v2/corpora/prepare:
+    post:
+      operationId: prepareCorpus
+      summary: Admit sources and prepare an immutable corpus snapshot.
+      parameters:
+        - $ref: '#/components/parameters/ApiVersion'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PrepareCorpusRequest'
+      responses:
+        '202':
+          $ref: '#/components/responses/JobAccepted'
+        '400':
+          $ref: '#/components/responses/InvalidRequest'
+        '406':
+          $ref: '#/components/responses/UnsupportedVersion'
+        '409':
+          $ref: '#/components/responses/Conflict'
+  /api/v2/corpora/{corpus_id}:
+    get:
+      operationId: inspectCorpus
+      summary: Inspect an immutable corpus snapshot and its provenance.
+      parameters:
+        - $ref: '#/components/parameters/ApiVersion'
+        - $ref: '#/components/parameters/CorpusId'
+      responses:
+        '200':
+          description: Corpus snapshot inspection.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CorpusInspection'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '406':
+          $ref: '#/components/responses/UnsupportedVersion'
+  /api/v2/indexes/build:
+    post:
+      operationId: buildIndex
+      summary: Build and atomically publish an index generation.
+      parameters:
+        - $ref: '#/components/parameters/ApiVersion'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BuildIndexRequest'
+      responses:
+        '202':
+          $ref: '#/components/responses/JobAccepted'
+        '400':
+          $ref: '#/components/responses/InvalidRequest'
+        '406':
+          $ref: '#/components/responses/UnsupportedVersion'
+        '409':
+          $ref: '#/components/responses/Conflict'
+  /api/v2/indexes/{index_id}:
+    get:
+      operationId: inspectIndex
+      summary: Inspect an index generation, capabilities, and provenance.
+      parameters:
+        - $ref: '#/components/parameters/ApiVersion'
+        - $ref: '#/components/parameters/IndexId'
+      responses:
+        '200':
+          description: Index generation inspection.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IndexInspection'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '406':
+          $ref: '#/components/responses/UnsupportedVersion'
+  /api/v2/retrievals:
+    post:
+      operationId: retrieveEvidence
+      summary: Retrieve citation-ready evidence from a named index generation.
+      parameters:
+        - $ref: '#/components/parameters/ApiVersion'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RetrieveRequest'
+      responses:
+        '200':
+          description: Ordered retrieval hits with execution provenance.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetrievalResult'
+        '400':
+          $ref: '#/components/responses/InvalidRequest'
+        '406':
+          $ref: '#/components/responses/UnsupportedVersion'
+        '422':
+          $ref: '#/components/responses/CapabilityRefused'
+  /api/v2/answers:
+    post:
+      operationId: askQuestion
+      summary: Produce a grounded answer from a named corpus and index.
+      parameters:
+        - $ref: '#/components/parameters/ApiVersion'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AskRequest'
+      responses:
+        '202':
+          $ref: '#/components/responses/JobAccepted'
+        '400':
+          $ref: '#/components/responses/InvalidRequest'
+        '406':
+          $ref: '#/components/responses/UnsupportedVersion'
+  /api/v2/research:
+    post:
+      operationId: researchQuestion
+      summary: Run bounded counterevidence research and verification.
+      parameters:
+        - $ref: '#/components/parameters/ApiVersion'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResearchRequest'
+      responses:
+        '202':
+          $ref: '#/components/responses/JobAccepted'
+        '400':
+          $ref: '#/components/responses/InvalidRequest'
+        '406':
+          $ref: '#/components/responses/UnsupportedVersion'
+  /api/v2/runs:
+    post:
+      operationId: runWorkflow
+      summary: Submit a typed workflow DAG for durable execution.
+      parameters:
+        - $ref: '#/components/parameters/ApiVersion'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RunRequest'
+      responses:
+        '202':
+          $ref: '#/components/responses/JobAccepted'
+        '400':
+          $ref: '#/components/responses/InvalidRequest'
+        '406':
+          $ref: '#/components/responses/UnsupportedVersion'
+  /api/v2/runs/{run_id}:
+    get:
+      operationId: inspectRun
+      summary: Inspect a durable run after process restart.
+      parameters:
+        - $ref: '#/components/parameters/ApiVersion'
+        - $ref: '#/components/parameters/RunId'
+      responses:
+        '200':
+          description: Run state, lineage, artifacts, and limitations.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RunInspection'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '406':
+          $ref: '#/components/responses/UnsupportedVersion'
+  /api/v2/runs/{run_id}/replays:
+    post:
+      operationId: replayRun
+      summary: Create a linked attempt from immutable recorded inputs.
+      parameters:
+        - $ref: '#/components/parameters/ApiVersion'
+        - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: '#/components/parameters/RunId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReplayRequest'
+      responses:
+        '202':
+          $ref: '#/components/responses/JobAccepted'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '406':
+          $ref: '#/components/responses/UnsupportedVersion'
+        '422':
+          $ref: '#/components/responses/CapabilityRefused'
+  /api/v2/comparisons:
+    post:
+      operationId: compareRuns
+      summary: Compare two immutable run attempts with typed explanations.
+      parameters:
+        - $ref: '#/components/parameters/ApiVersion'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompareRequest'
+      responses:
+        '200':
+          description: Semantic and performance differences.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComparisonResult'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '406':
+          $ref: '#/components/responses/UnsupportedVersion'
+  /api/v2/jobs/{job_id}:
+    get:
+      operationId: inspectJob
+      summary: Inspect durable job state after process restart.
+      parameters:
+        - $ref: '#/components/parameters/ApiVersion'
+        - $ref: '#/components/parameters/JobId'
+      responses:
+        '200':
+          description: Current durable job state.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobStatus'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '406':
+          $ref: '#/components/responses/UnsupportedVersion'
+  /api/v2/jobs/{job_id}/result:
+    get:
+      operationId: getJobResult
+      summary: Resolve the typed terminal result of a durable job.
+      parameters:
+        - $ref: '#/components/parameters/ApiVersion'
+        - $ref: '#/components/parameters/JobId'
+      responses:
+        '200':
+          description: Typed terminal operation result.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobResult'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '406':
+          $ref: '#/components/responses/UnsupportedVersion'
+        '409':
+          $ref: '#/components/responses/Conflict'
+  /api/v2/jobs/{job_id}/cancellation:
+    post:
+      operationId: cancelJob
+      summary: Request cooperative cancellation of queued or running work.
+      parameters:
+        - $ref: '#/components/parameters/ApiVersion'
+        - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: '#/components/parameters/JobId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CancelRequest'
+      responses:
+        '202':
+          description: Cancellation request accepted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobStatus'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '406':
+          $ref: '#/components/responses/UnsupportedVersion'
+        '409':
+          $ref: '#/components/responses/Conflict'
+components:
+  parameters:
+    ApiVersion:
+      in: header
+      name: Bijux-API-Version
+      required: true
+      description: Requested application contract version.
+      schema:
+        const: v2
+        type: string
+    IdempotencyKey:
+      in: header
+      name: Idempotency-Key
+      required: true
+      description: Stable caller-selected identity for a mutating request.
+      schema:
+        type: string
+        minLength: 16
+        maxLength: 200
+    CorpusId:
+      in: path
+      name: corpus_id
+      required: true
+      schema:
+        $ref: '#/components/schemas/StableId'
+    IndexId:
+      in: path
+      name: index_id
+      required: true
+      schema:
+        $ref: '#/components/schemas/StableId'
+    RunId:
+      in: path
+      name: run_id
+      required: true
+      schema:
+        $ref: '#/components/schemas/StableId'
+    JobId:
+      in: path
+      name: job_id
+      required: true
+      schema:
+        $ref: '#/components/schemas/StableId'
+  responses:
+    JobAccepted:
+      description: Durable asynchronous work accepted.
+      headers:
+        Bijux-API-Supported-Versions:
+          schema:
+            type: string
+            const: v2
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/JobStatus'
+    InvalidRequest:
+      description: Request violates the typed application contract.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/FailureEnvelope'
+    UnsupportedVersion:
+      description: Requested contract version is not supported.
+      headers:
+        Bijux-API-Supported-Versions:
+          required: true
+          schema:
+            type: string
+            const: v2
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/FailureEnvelope'
+    Conflict:
+      description: Idempotency, lifecycle, or immutable-state conflict.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/FailureEnvelope'
+    NotFound:
+      description: Named immutable resource does not exist or is not visible.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/FailureEnvelope'
+    CapabilityRefused:
+      description: Requested profile or replay behavior is unsupported.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/FailureEnvelope'
+  schemas:
+    StableId:
+      type: string
+      pattern: '^[a-z][a-z0-9-]*_[0-9a-f]{16,64}$'
+    RequestContext:
+      type: object
+      additionalProperties: false
+      required:
+        - contract_version
+        - request_id
+        - correlation_id
+      properties:
+        contract_version:
+          type: string
+          const: v2
+        request_id:
+          $ref: '#/components/schemas/StableId'
+        correlation_id:
+          $ref: '#/components/schemas/StableId'
+        deadline:
+          type:
+            - string
+            - 'null'
+          format: date-time
+        cancellation_token:
+          type:
+            - string
+            - 'null'
+          minLength: 16
+    ExecutionProfile:
+      type: string
+      enum:
+        - offline-lexical
+        - local-hybrid-exact
+        - local-hybrid-ann
+        - qdrant-hybrid
+    Budget:
+      type: object
+      additionalProperties: false
+      required:
+        - timeout_seconds
+        - max_artifact_bytes
+      properties:
+        timeout_seconds:
+          type: number
+          exclusiveMinimum: 0
+        max_artifact_bytes:
+          type: integer
+          minimum: 1
+        max_steps:
+          type:
+            - integer
+            - 'null'
+          minimum: 1
+        max_provider_tokens:
+          type:
+            - integer
+            - 'null'
+          minimum: 1
+    SourceSelection:
+      type: object
+      additionalProperties: false
+      required:
+        - source_uris
+        - admission_policy_id
+      properties:
+        source_uris:
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items:
+            type: string
+            format: uri
+        admission_policy_id:
+          $ref: '#/components/schemas/StableId'
+        expected_source_digests:
+          type: object
+          additionalProperties:
+            type: string
+            pattern: '^[0-9a-f]{64}$'
+    ArtifactRef:
+      type: object
+      additionalProperties: false
+      required:
+        - artifact_id
+        - media_type
+        - sha256
+        - byte_length
+      properties:
+        artifact_id:
+          $ref: '#/components/schemas/StableId'
+        media_type:
+          type: string
+        sha256:
+          type: string
+          pattern: '^[0-9a-f]{64}$'
+        byte_length:
+          type: integer
+          minimum: 0
+    Provenance:
+      type: object
+      additionalProperties: false
+      required:
+        - source_commit
+        - configuration_sha256
+        - input_artifact_ids
+        - produced_at
+      properties:
+        source_commit:
+          type: string
+          pattern: '^[0-9a-f]{40}$'
+        configuration_sha256:
+          type: string
+          pattern: '^[0-9a-f]{64}$'
+        input_artifact_ids:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/StableId'
+        produced_at:
+          type: string
+          format: date-time
+        limitations:
+          type: array
+          items:
+            type: string
+    PrepareCorpusRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - context
+        - sources
+        - parser_profile
+        - chunk_profile
+        - budget
+      properties:
+        context:
+          $ref: '#/components/schemas/RequestContext'
+        sources:
+          $ref: '#/components/schemas/SourceSelection'
+        parser_profile:
+          type: string
+          minLength: 1
+        chunk_profile:
+          type: string
+          minLength: 1
+        budget:
+          $ref: '#/components/schemas/Budget'
+    CorpusInspection:
+      type: object
+      additionalProperties: false
+      required:
+        - corpus_id
+        - state
+        - document_count
+        - chunk_count
+        - artifacts
+        - provenance
+      properties:
+        corpus_id:
+          $ref: '#/components/schemas/StableId'
+        state:
+          type: string
+          enum: [admitted, rejected, superseded]
+        document_count:
+          type: integer
+          minimum: 0
+        chunk_count:
+          type: integer
+          minimum: 0
+        artifacts:
+          type: array
+          items:
+            $ref: '#/components/schemas/ArtifactRef'
+        provenance:
+          $ref: '#/components/schemas/Provenance'
+    BuildIndexRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - context
+        - corpus_id
+        - execution_profile
+        - embedding_profile_id
+        - budget
+      properties:
+        context:
+          $ref: '#/components/schemas/RequestContext'
+        corpus_id:
+          $ref: '#/components/schemas/StableId'
+        execution_profile:
+          $ref: '#/components/schemas/ExecutionProfile'
+        embedding_profile_id:
+          $ref: '#/components/schemas/StableId'
+        replace_index_id:
+          oneOf:
+            - $ref: '#/components/schemas/StableId'
+            - type: 'null'
+        budget:
+          $ref: '#/components/schemas/Budget'
+    IndexInspection:
+      type: object
+      additionalProperties: false
+      required:
+        - index_id
+        - corpus_id
+        - generation
+        - execution_profile
+        - capabilities
+        - state
+        - artifacts
+        - provenance
+      properties:
+        index_id:
+          $ref: '#/components/schemas/StableId'
+        corpus_id:
+          $ref: '#/components/schemas/StableId'
+        generation:
+          type: integer
+          minimum: 1
+        execution_profile:
+          $ref: '#/components/schemas/ExecutionProfile'
+        capabilities:
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items:
+            type: string
+        state:
+          type: string
+          enum: [building, active, failed, superseded]
+        artifacts:
+          type: array
+          items:
+            $ref: '#/components/schemas/ArtifactRef'
+        provenance:
+          $ref: '#/components/schemas/Provenance'
+    RetrievalFilters:
+      type: object
+      additionalProperties: false
+      properties:
+        document_ids:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/StableId'
+        source_uris:
+          type: array
+          uniqueItems: true
+          items:
+            type: string
+            format: uri
+    RetrieveRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - context
+        - query
+        - index_id
+        - mode
+        - top_k
+        - filters
+        - budget
+      properties:
+        context:
+          $ref: '#/components/schemas/RequestContext'
+        query:
+          type: string
+          minLength: 1
+          maxLength: 32768
+        index_id:
+          $ref: '#/components/schemas/StableId'
+        mode:
+          type: string
+          enum: [lexical, dense-exact, dense-ann, hybrid]
+        top_k:
+          type: integer
+          minimum: 1
+          maximum: 1000
+        filters:
+          $ref: '#/components/schemas/RetrievalFilters'
+        budget:
+          $ref: '#/components/schemas/Budget'
+    RetrievalHit:
+      type: object
+      additionalProperties: false
+      required:
+        - rank
+        - document_id
+        - chunk_id
+        - locator
+        - score
+        - content_sha256
+      properties:
+        rank:
+          type: integer
+          minimum: 1
+        document_id:
+          $ref: '#/components/schemas/StableId'
+        chunk_id:
+          $ref: '#/components/schemas/StableId'
+        locator:
+          type: string
+          minLength: 1
+        score:
+          type: number
+        content_sha256:
+          type: string
+          pattern: '^[0-9a-f]{64}$'
+    RetrievalResult:
+      type: object
+      additionalProperties: false
+      required:
+        - retrieval_id
+        - index_id
+        - hits
+        - exact_witness_artifact
+        - provenance
+      properties:
+        retrieval_id:
+          $ref: '#/components/schemas/StableId'
+        index_id:
+          $ref: '#/components/schemas/StableId'
+        hits:
+          type: array
+          items:
+            $ref: '#/components/schemas/RetrievalHit'
+        exact_witness_artifact:
+          oneOf:
+            - $ref: '#/components/schemas/ArtifactRef'
+            - type: 'null'
+        provenance:
+          $ref: '#/components/schemas/Provenance'
+    AnswerPolicy:
+      type: object
+      additionalProperties: false
+      required:
+        - provider
+        - require_citations
+        - permit_insufficient_answer
+      properties:
+        provider:
+          type: string
+          minLength: 1
+        require_citations:
+          type: boolean
+        permit_insufficient_answer:
+          type: boolean
+    AskRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - context
+        - question
+        - corpus_id
+        - index_id
+        - retrieval
+        - answer_policy
+        - budget
+      properties:
+        context:
+          $ref: '#/components/schemas/RequestContext'
+        question:
+          type: string
+          minLength: 1
+          maxLength: 32768
+        corpus_id:
+          $ref: '#/components/schemas/StableId'
+        index_id:
+          $ref: '#/components/schemas/StableId'
+        retrieval:
+          $ref: '#/components/schemas/RetrieveRequest'
+        answer_policy:
+          $ref: '#/components/schemas/AnswerPolicy'
+        budget:
+          $ref: '#/components/schemas/Budget'
+    ResearchRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - context
+        - question
+        - corpus_id
+        - index_id
+        - answer_policy
+        - max_cycles
+        - counterevidence_required
+        - budget
+      properties:
+        context:
+          $ref: '#/components/schemas/RequestContext'
+        question:
+          type: string
+          minLength: 1
+          maxLength: 32768
+        corpus_id:
+          $ref: '#/components/schemas/StableId'
+        index_id:
+          $ref: '#/components/schemas/StableId'
+        answer_policy:
+          $ref: '#/components/schemas/AnswerPolicy'
+        max_cycles:
+          type: integer
+          minimum: 1
+          maximum: 100
+        counterevidence_required:
+          type: boolean
+        budget:
+          $ref: '#/components/schemas/Budget'
+    DagStep:
+      type: object
+      additionalProperties: false
+      required:
+        - step_id
+        - kind
+        - depends_on
+        - input_artifact_ids
+      properties:
+        step_id:
+          $ref: '#/components/schemas/StableId'
+        kind:
+          type: string
+          enum:
+            - corpus.prepare
+            - index.build
+            - retrieve
+            - ask
+            - research
+            - verify
+            - persist
+            - publish
+        depends_on:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/StableId'
+        input_artifact_ids:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/StableId'
+    RunRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - context
+        - steps
+        - execution_profile
+        - budget
+      properties:
+        context:
+          $ref: '#/components/schemas/RequestContext'
+        steps:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/DagStep'
+        execution_profile:
+          $ref: '#/components/schemas/ExecutionProfile'
+        budget:
+          $ref: '#/components/schemas/Budget'
+    ReplayRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - context
+        - attempt_id
+        - mode
+        - network_policy
+      properties:
+        context:
+          $ref: '#/components/schemas/RequestContext'
+        attempt_id:
+          $ref: '#/components/schemas/StableId'
+        mode:
+          type: string
+          enum: [exact, invariant, bounded]
+        network_policy:
+          type: string
+          enum: [disabled, recorded-only, permitted]
+    CompareRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - context
+        - baseline_attempt_id
+        - candidate_attempt_id
+        - dimensions
+      properties:
+        context:
+          $ref: '#/components/schemas/RequestContext'
+        baseline_attempt_id:
+          $ref: '#/components/schemas/StableId'
+        candidate_attempt_id:
+          $ref: '#/components/schemas/StableId'
+        dimensions:
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items:
+            type: string
+            enum: [dag, configuration, corpus, index, model, retrieval, claims, citations, provider-calls, timing, policy, outcome]
+    CancelRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - context
+        - reason
+      properties:
+        context:
+          $ref: '#/components/schemas/RequestContext'
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 1000
+    JobStatus:
+      type: object
+      additionalProperties: false
+      required:
+        - job_id
+        - run_id
+        - attempt_id
+        - operation
+        - status
+        - accepted_at
+        - status_uri
+        - result_uri
+        - cancellation_uri
+      properties:
+        job_id:
+          $ref: '#/components/schemas/StableId'
+        run_id:
+          $ref: '#/components/schemas/StableId'
+        attempt_id:
+          $ref: '#/components/schemas/StableId'
+        operation:
+          type: string
+          enum: [corpus.prepare, index.build, ask, research, run, replay, cancel]
+        status:
+          type: string
+          enum: [queued, running, cancelling, completed, failed, cancelled, timed-out]
+        accepted_at:
+          type: string
+          format: date-time
+        status_uri:
+          type: string
+          format: uri-reference
+        result_uri:
+          type: string
+          format: uri-reference
+        cancellation_uri:
+          type: string
+          format: uri-reference
+    StepInspection:
+      type: object
+      additionalProperties: false
+      required:
+        - step_id
+        - kind
+        - status
+        - attempt_id
+        - input_artifact_ids
+        - output_artifact_ids
+      properties:
+        step_id:
+          $ref: '#/components/schemas/StableId'
+        kind:
+          type: string
+        status:
+          type: string
+          enum: [planned, ready, running, completed, failed, cancelled, skipped]
+        attempt_id:
+          $ref: '#/components/schemas/StableId'
+        input_artifact_ids:
+          type: array
+          items:
+            $ref: '#/components/schemas/StableId'
+        output_artifact_ids:
+          type: array
+          items:
+            $ref: '#/components/schemas/StableId'
+        error:
+          oneOf:
+            - $ref: '#/components/schemas/FailureEnvelope'
+            - type: 'null'
+    RunInspection:
+      type: object
+      additionalProperties: false
+      required:
+        - run_id
+        - selected_attempt_id
+        - status
+        - steps
+        - artifacts
+        - provenance
+      properties:
+        run_id:
+          $ref: '#/components/schemas/StableId'
+        selected_attempt_id:
+          $ref: '#/components/schemas/StableId'
+        status:
+          type: string
+          enum: [queued, running, completed, failed, cancelled, timed-out]
+        steps:
+          type: array
+          items:
+            $ref: '#/components/schemas/StepInspection'
+        artifacts:
+          type: array
+          items:
+            $ref: '#/components/schemas/ArtifactRef'
+        provenance:
+          $ref: '#/components/schemas/Provenance'
+    Citation:
+      type: object
+      additionalProperties: false
+      required:
+        - citation_id
+        - document_id
+        - chunk_id
+        - locator
+        - content_sha256
+      properties:
+        citation_id:
+          $ref: '#/components/schemas/StableId'
+        document_id:
+          $ref: '#/components/schemas/StableId'
+        chunk_id:
+          $ref: '#/components/schemas/StableId'
+        locator:
+          type: string
+          minLength: 1
+        content_sha256:
+          type: string
+          pattern: '^[0-9a-f]{64}$'
+    Claim:
+      type: object
+      additionalProperties: false
+      required:
+        - claim_id
+        - text
+        - disposition
+        - citation_ids
+      properties:
+        claim_id:
+          $ref: '#/components/schemas/StableId'
+        text:
+          type: string
+          minLength: 1
+        disposition:
+          type: string
+          enum: [supported, opposed, ambiguous, insufficient]
+        citation_ids:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/StableId'
+    AnswerResult:
+      type: object
+      additionalProperties: false
+      required:
+        - operation
+        - run_id
+        - answer
+        - claims
+        - citations
+        - artifacts
+        - provenance
+      properties:
+        operation:
+          type: string
+          const: ask
+        run_id:
+          $ref: '#/components/schemas/StableId'
+        answer:
+          type: string
+        claims:
+          type: array
+          items:
+            $ref: '#/components/schemas/Claim'
+        citations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Citation'
+        artifacts:
+          type: array
+          items:
+            $ref: '#/components/schemas/ArtifactRef'
+        provenance:
+          $ref: '#/components/schemas/Provenance'
+    ResearchResult:
+      type: object
+      additionalProperties: false
+      required:
+        - operation
+        - run_id
+        - synthesis
+        - claims
+        - citations
+        - assumptions
+        - insufficiencies
+        - cycles_completed
+        - artifacts
+        - provenance
+      properties:
+        operation:
+          type: string
+          const: research
+        run_id:
+          $ref: '#/components/schemas/StableId'
+        synthesis:
+          type: string
+        claims:
+          type: array
+          items:
+            $ref: '#/components/schemas/Claim'
+        citations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Citation'
+        assumptions:
+          type: array
+          items:
+            type: string
+        insufficiencies:
+          type: array
+          items:
+            type: string
+        cycles_completed:
+          type: integer
+          minimum: 0
+        artifacts:
+          type: array
+          items:
+            $ref: '#/components/schemas/ArtifactRef'
+        provenance:
+          $ref: '#/components/schemas/Provenance'
+    JobResult:
+      oneOf:
+        - $ref: '#/components/schemas/CorpusInspection'
+        - $ref: '#/components/schemas/IndexInspection'
+        - $ref: '#/components/schemas/AnswerResult'
+        - $ref: '#/components/schemas/ResearchResult'
+        - $ref: '#/components/schemas/RunInspection'
+    Difference:
+      type: object
+      additionalProperties: false
+      required:
+        - dimension
+        - path
+        - classification
+        - explanation
+      properties:
+        dimension:
+          type: string
+        path:
+          type: string
+        classification:
+          type: string
+          enum: [equal, expected, bounded, regression, incomparable]
+        explanation:
+          type: string
+          minLength: 1
+    ComparisonResult:
+      type: object
+      additionalProperties: false
+      required:
+        - comparison_id
+        - baseline_attempt_id
+        - candidate_attempt_id
+        - verdict
+        - differences
+        - provenance
+      properties:
+        comparison_id:
+          $ref: '#/components/schemas/StableId'
+        baseline_attempt_id:
+          $ref: '#/components/schemas/StableId'
+        candidate_attempt_id:
+          $ref: '#/components/schemas/StableId'
+        verdict:
+          type: string
+          enum: [equivalent, acceptable, regression, incomparable]
+        differences:
+          type: array
+          items:
+            $ref: '#/components/schemas/Difference'
+        provenance:
+          $ref: '#/components/schemas/Provenance'
+    FailureEnvelope:
+      type: object
+      additionalProperties: false
+      required:
+        - type
+        - title
+        - status
+        - code
+        - correlation_id
+        - retryable
+        - remediation
+      properties:
+        type:
+          type: string
+          format: uri
+        title:
+          type: string
+          minLength: 1
+        status:
+          type: integer
+          minimum: 400
+          maximum: 599
+        code:
+          type: string
+          enum:
+            - invalid-request
+            - unsupported-version
+            - missing-capability
+            - not-found
+            - conflict
+            - deadline-exceeded
+            - cancelled
+            - dependency-failed
+            - integrity-failed
+            - internal-error
+        correlation_id:
+          $ref: '#/components/schemas/StableId'
+        run_id:
+          oneOf:
+            - $ref: '#/components/schemas/StableId'
+            - type: 'null'
+        retryable:
+          type: boolean
+        remediation:
+          type: string
+          minLength: 1
+        cause:
+          type:
+            - string
+            - 'null'
+        evidence_ids:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/StableId'

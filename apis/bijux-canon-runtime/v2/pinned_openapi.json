@@ -1,0 +1,1934 @@
+{
+  "components": {
+    "parameters": {
+      "ApiVersion": {
+        "description": "Requested application contract version.",
+        "in": "header",
+        "name": "Bijux-API-Version",
+        "required": true,
+        "schema": {
+          "const": "v2",
+          "type": "string"
+        }
+      },
+      "CorpusId": {
+        "in": "path",
+        "name": "corpus_id",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/StableId"
+        }
+      },
+      "IdempotencyKey": {
+        "description": "Stable caller-selected identity for a mutating request.",
+        "in": "header",
+        "name": "Idempotency-Key",
+        "required": true,
+        "schema": {
+          "maxLength": 200,
+          "minLength": 16,
+          "type": "string"
+        }
+      },
+      "IndexId": {
+        "in": "path",
+        "name": "index_id",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/StableId"
+        }
+      },
+      "JobId": {
+        "in": "path",
+        "name": "job_id",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/StableId"
+        }
+      },
+      "RunId": {
+        "in": "path",
+        "name": "run_id",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/StableId"
+        }
+      }
+    },
+    "responses": {
+      "CapabilityRefused": {
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/FailureEnvelope"
+            }
+          }
+        },
+        "description": "Requested profile or replay behavior is unsupported."
+      },
+      "Conflict": {
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/FailureEnvelope"
+            }
+          }
+        },
+        "description": "Idempotency, lifecycle, or immutable-state conflict."
+      },
+      "InvalidRequest": {
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/FailureEnvelope"
+            }
+          }
+        },
+        "description": "Request violates the typed application contract."
+      },
+      "JobAccepted": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/JobStatus"
+            }
+          }
+        },
+        "description": "Durable asynchronous work accepted.",
+        "headers": {
+          "Bijux-API-Supported-Versions": {
+            "schema": {
+              "const": "v2",
+              "type": "string"
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/FailureEnvelope"
+            }
+          }
+        },
+        "description": "Named immutable resource does not exist or is not visible."
+      },
+      "UnsupportedVersion": {
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/FailureEnvelope"
+            }
+          }
+        },
+        "description": "Requested contract version is not supported.",
+        "headers": {
+          "Bijux-API-Supported-Versions": {
+            "required": true,
+            "schema": {
+              "const": "v2",
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "AnswerPolicy": {
+        "additionalProperties": false,
+        "properties": {
+          "permit_insufficient_answer": {
+            "type": "boolean"
+          },
+          "provider": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "require_citations": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "provider",
+          "require_citations",
+          "permit_insufficient_answer"
+        ],
+        "type": "object"
+      },
+      "AnswerResult": {
+        "additionalProperties": false,
+        "properties": {
+          "answer": {
+            "type": "string"
+          },
+          "artifacts": {
+            "items": {
+              "$ref": "#/components/schemas/ArtifactRef"
+            },
+            "type": "array"
+          },
+          "citations": {
+            "items": {
+              "$ref": "#/components/schemas/Citation"
+            },
+            "type": "array"
+          },
+          "claims": {
+            "items": {
+              "$ref": "#/components/schemas/Claim"
+            },
+            "type": "array"
+          },
+          "operation": {
+            "const": "ask",
+            "type": "string"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          },
+          "run_id": {
+            "$ref": "#/components/schemas/StableId"
+          }
+        },
+        "required": [
+          "operation",
+          "run_id",
+          "answer",
+          "claims",
+          "citations",
+          "artifacts",
+          "provenance"
+        ],
+        "type": "object"
+      },
+      "ArtifactRef": {
+        "additionalProperties": false,
+        "properties": {
+          "artifact_id": {
+            "$ref": "#/components/schemas/StableId"
+          },
+          "byte_length": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "media_type": {
+            "type": "string"
+          },
+          "sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "artifact_id",
+          "media_type",
+          "sha256",
+          "byte_length"
+        ],
+        "type": "object"
+      },
+      "AskRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "answer_policy": {
+            "$ref": "#/components/schemas/AnswerPolicy"
+          },
+          "budget": {
+            "$ref": "#/components/schemas/Budget"
+          },
+          "context": {
+            "$ref": "#/components/schemas/RequestContext"
+          },
+          "corpus_id": {
+            "$ref": "#/components/schemas/StableId"
+          },
+          "index_id": {
+            "$ref": "#/components/schemas/StableId"
+          },
+          "question": {
+            "maxLength": 32768,
+            "minLength": 1,
+            "type": "string"
+          },
+          "retrieval": {
+            "$ref": "#/components/schemas/RetrieveRequest"
+          }
+        },
+        "required": [
+          "context",
+          "question",
+          "corpus_id",
+          "index_id",
+          "retrieval",
+          "answer_policy",
+          "budget"
+        ],
+        "type": "object"
+      },
+      "Budget": {
+        "additionalProperties": false,
+        "properties": {
+          "max_artifact_bytes": {
+            "minimum": 1,
+            "type": "integer"
+          },
+          "max_provider_tokens": {
+            "minimum": 1,
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "max_steps": {
+            "minimum": 1,
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "timeout_seconds": {
+            "exclusiveMinimum": 0,
+            "type": "number"
+          }
+        },
+        "required": [
+          "timeout_seconds",
+          "max_artifact_bytes"
+        ],
+        "type": "object"
+      },
+      "BuildIndexRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "budget": {
+            "$ref": "#/components/schemas/Budget"
+          },
+          "context": {
+            "$ref": "#/components/schemas/RequestContext"
+          },
+          "corpus_id": {
+            "$ref": "#/components/schemas/StableId"
+          },
+          "embedding_profile_id": {
+            "$ref": "#/components/schemas/StableId"
+          },
+          "execution_profile": {
+            "$ref": "#/components/schemas/ExecutionProfile"
+          },
+          "replace_index_id": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/StableId"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "context",
+          "corpus_id",
+          "execution_profile",
+          "embedding_profile_id",
+          "budget"
+        ],
+        "type": "object"
+      },
+      "CancelRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "context": {
+            "$ref": "#/components/schemas/RequestContext"
+          },
+          "reason": {
+            "maxLength": 1000,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "context",
+          "reason"
+        ],
+        "type": "object"
+      },
+      "Citation": {
+        "additionalProperties": false,
+        "properties": {
+          "chunk_id": {
+            "$ref": "#/components/schemas/StableId"
+          },
+          "citation_id": {
+            "$ref": "#/components/schemas/StableId"
+          },
+          "content_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "type": "string"
+          },
+          "document_id": {
+            "$ref": "#/components/schemas/StableId"
+          },
+          "locator": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "citation_id",
+          "document_id",
+          "chunk_id",
+          "locator",
+          "content_sha256"
+        ],
+        "type": "object"
+      },
+      "Claim": {
+        "additionalProperties": false,
+        "properties": {
+          "citation_ids": {
+            "items": {
+              "$ref": "#/components/schemas/StableId"
+            },
+            "type": "array",
+            "uniqueItems": true
+          },
+          "claim_id": {
+            "$ref": "#/components/schemas/StableId"
+          },
+          "disposition": {
+            "enum": [
+              "supported",
+              "opposed",
+              "ambiguous",
+              "insufficient"
+            ],
+            "type": "string"
+          },
+          "text": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "claim_id",
+          "text",
+          "disposition",
+          "citation_ids"
+        ],
+        "type": "object"
+      },
+      "CompareRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "baseline_attempt_id": {
+            "$ref": "#/components/schemas/StableId"
+          },
+          "candidate_attempt_id": {
+            "$ref": "#/components/schemas/StableId"
+          },
+          "context": {
+            "$ref": "#/components/schemas/RequestContext"
+          },
+          "dimensions": {
+            "items": {
+              "enum": [
+                "dag",
+                "configuration",
+                "corpus",
+                "index",
+                "model",
+                "retrieval",
+                "claims",
+                "citations",
+                "provider-calls",
+                "timing",
+                "policy",
+                "outcome"
+              ],
+              "type": "string"
+            },
+            "minItems": 1,
+            "type": "array",
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "context",
+          "baseline_attempt_id",
+          "candidate_attempt_id",
+          "dimensions"
+        ],
+        "type": "object"
+      },
+      "ComparisonResult": {
+        "additionalProperties": false,
+        "properties": {
+          "baseline_attempt_id": {
+            "$ref": "#/components/schemas/StableId"
+          },
+          "candidate_attempt_id": {
+            "$ref": "#/components/schemas/StableId"
+          },
+          "comparison_id": {
+            "$ref": "#/components/schemas/StableId"
+          },
+          "differences": {
+            "items": {
+              "$ref": "#/components/schemas/Difference"
+            },
+            "type": "array"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          },
+          "verdict": {
+            "enum": [
+              "equivalent",
+              "acceptable",
+              "regression",
+              "incomparable"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "comparison_id",
+          "baseline_attempt_id",
+          "candidate_attempt_id",
+          "verdict",
+          "differences",
+          "provenance"
+        ],
+        "type": "object"
+      },
+      "CorpusInspection": {
+        "additionalProperties": false,
+        "properties": {
+          "artifacts": {
+            "items": {
+              "$ref": "#/components/schemas/ArtifactRef"
+            },
+            "type": "array"
+          },
+          "chunk_count": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "corpus_id": {
+            "$ref": "#/components/schemas/StableId"
+          },
+          "document_count": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          },
+          "state": {
+            "enum": [
+              "admitted",
+              "rejected",
+              "superseded"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "corpus_id",
+          "state",
+          "document_count",
+          "chunk_count",
+          "artifacts",
+          "provenance"
+        ],
+        "type": "object"
+      },
+      "DagStep": {
+        "additionalProperties": false,
+        "properties": {
+          "depends_on": {
+            "items": {
+              "$ref": "#/components/schemas/StableId"
+            },
+            "type": "array",
+            "uniqueItems": true
+          },
+          "input_artifact_ids": {
+            "items": {
+              "$ref": "#/components/schemas/StableId"
+            },
+            "type": "array",
+            "uniqueItems": true
+          },
+          "kind": {
+            "enum": [
+              "corpus.prepare",
+              "index.build",
+              "retrieve",
+              "ask",
+              "research",
+              "verify",
+              "persist",
+              "publish"
+            ],
+            "type": "string"
+          },
+          "step_id": {
+            "$ref": "#/components/schemas/StableId"
+          }
+        },
+        "required": [
+          "step_id",
+          "kind",
+          "depends_on",
+          "input_artifact_ids"
+        ],
+        "type": "object"
+      },
+      "Difference": {
+        "additionalProperties": false,
+        "properties": {
+          "classification": {
+            "enum": [
+              "equal",
+              "expected",
+              "bounded",
+              "regression",
+              "incomparable"
+            ],
+            "type": "string"
+          },
+          "dimension": {
+            "type": "string"
+          },
+          "explanation": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "dimension",
+          "path",
+          "classification",
+          "explanation"
+        ],
+        "type": "object"
+      },
+      "ExecutionProfile": {
+        "enum": [
+          "offline-lexical",
+          "local-hybrid-exact",
+          "local-hybrid-ann",
+          "qdrant-hybrid"
+        ],
+        "type": "string"
+      },
+      "FailureEnvelope": {
+        "additionalProperties": false,
+        "properties": {
+          "cause": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "code": {
+            "enum": [
+              "invalid-request",
+              "unsupported-version",
+              "missing-capability",
+              "not-found",
+              "conflict",
+              "deadline-exceeded",
+              "cancelled",
+              "dependency-failed",
+              "integrity-failed",
+              "internal-error"
+            ],
+            "type": "string"
+          },
+          "correlation_id": {
+            "$ref": "#/components/schemas/StableId"
+          },
+          "evidence_ids": {
+            "items": {
+              "$ref": "#/components/schemas/StableId"
+            },
+            "type": "array",
+            "uniqueItems": true
+          },
+          "remediation": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "retryable": {
+            "type": "boolean"
+          },
+          "run_id": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/StableId"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "status": {
+            "maximum": 599,
+            "minimum": 400,
+            "type": "integer"
+          },
+          "title": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "type": {
+            "format": "uri",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "title",
+          "status",
+          "code",
+          "correlation_id",
+          "retryable",
+          "remediation"
+        ],
+        "type": "object"
+      },
+      "IndexInspection": {
+        "additionalProperties": false,
+        "properties": {
+          "artifacts": {
+            "items": {
+              "$ref": "#/components/schemas/ArtifactRef"
+            },
+            "type": "array"
+          },
+          "capabilities": {
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "type": "array",
+            "uniqueItems": true
+          },
+          "corpus_id": {
+            "$ref": "#/components/schemas/StableId"
+          },
+          "execution_profile": {
+            "$ref": "#/components/schemas/ExecutionProfile"
+          },
+          "generation": {
+            "minimum": 1,
+            "type": "integer"
+          },
+          "index_id": {
+            "$ref": "#/components/schemas/StableId"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          },
+          "state": {
+            "enum": [
+              "building",
+              "active",
+              "failed",
+              "superseded"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "index_id",
+          "corpus_id",
+          "generation",
+          "execution_profile",
+          "capabilities",
+          "state",
+          "artifacts",
+          "provenance"
+        ],
+        "type": "object"
+      },
+      "JobResult": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/CorpusInspection"
+          },
+          {
+            "$ref": "#/components/schemas/IndexInspection"
+          },
+          {
+            "$ref": "#/components/schemas/AnswerResult"
+          },
+          {
+            "$ref": "#/components/schemas/ResearchResult"
+          },
+          {
+            "$ref": "#/components/schemas/RunInspection"
+          }
+        ]
+      },
+      "JobStatus": {
+        "additionalProperties": false,
+        "properties": {
+          "accepted_at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "attempt_id": {
+            "$ref": "#/components/schemas/StableId"
+          },
+          "cancellation_uri": {
+            "format": "uri-reference",
+            "type": "string"
+          },
+          "job_id": {
+            "$ref": "#/components/schemas/StableId"
+          },
+          "operation": {
+            "enum": [
+              "corpus.prepare",
+              "index.build",
+              "ask",
+              "research",
+              "run",
+              "replay",
+              "cancel"
+            ],
+            "type": "string"
+          },
+          "result_uri": {
+            "format": "uri-reference",
+            "type": "string"
+          },
+          "run_id": {
+            "$ref": "#/components/schemas/StableId"
+          },
+          "status": {
+            "enum": [
+              "queued",
+              "running",
+              "cancelling",
+              "completed",
+              "failed",
+              "cancelled",
+              "timed-out"
+            ],
+            "type": "string"
+          },
+          "status_uri": {
+            "format": "uri-reference",
+            "type": "string"
+          }
+        },
+        "required": [
+          "job_id",
+          "run_id",
+          "attempt_id",
+          "operation",
+          "status",
+          "accepted_at",
+          "status_uri",
+          "result_uri",
+          "cancellation_uri"
+        ],
+        "type": "object"
+      },
+      "PrepareCorpusRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "budget": {
+            "$ref": "#/components/schemas/Budget"
+          },
+          "chunk_profile": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "context": {
+            "$ref": "#/components/schemas/RequestContext"
+          },
+          "parser_profile": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "sources": {
+            "$ref": "#/components/schemas/SourceSelection"
+          }
+        },
+        "required": [
+          "context",
+          "sources",
+          "parser_profile",
+          "chunk_profile",
+          "budget"
+        ],
+        "type": "object"
+      },
+      "Provenance": {
+        "additionalProperties": false,
+        "properties": {
+          "configuration_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "type": "string"
+          },
+          "input_artifact_ids": {
+            "items": {
+              "$ref": "#/components/schemas/StableId"
+            },
+            "type": "array",
+            "uniqueItems": true
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "produced_at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "source_commit": {
+            "pattern": "^[0-9a-f]{40}$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "source_commit",
+          "configuration_sha256",
+          "input_artifact_ids",
+          "produced_at"
+        ],
+        "type": "object"
+      },
+      "ReplayRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "attempt_id": {
+            "$ref": "#/components/schemas/StableId"
+          },
+          "context": {
+            "$ref": "#/components/schemas/RequestContext"
+          },
+          "mode": {
+            "enum": [
+              "exact",
+              "invariant",
+              "bounded"
+            ],
+            "type": "string"
+          },
+          "network_policy": {
+            "enum": [
+              "disabled",
+              "recorded-only",
+              "permitted"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "context",
+          "attempt_id",
+          "mode",
+          "network_policy"
+        ],
+        "type": "object"
+      },
+      "RequestContext": {
+        "additionalProperties": false,
+        "properties": {
+          "cancellation_token": {
+            "minLength": 16,
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "contract_version": {
+            "const": "v2",
+            "type": "string"
+          },
+          "correlation_id": {
+            "$ref": "#/components/schemas/StableId"
+          },
+          "deadline": {
+            "format": "date-time",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "request_id": {
+            "$ref": "#/components/schemas/StableId"
+          }
+        },
+        "required": [
+          "contract_version",
+          "request_id",
+          "correlation_id"
+        ],
+        "type": "object"
+      },
+      "ResearchRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "answer_policy": {
+            "$ref": "#/components/schemas/AnswerPolicy"
+          },
+          "budget": {
+            "$ref": "#/components/schemas/Budget"
+          },
+          "context": {
+            "$ref": "#/components/schemas/RequestContext"
+          },
+          "corpus_id": {
+            "$ref": "#/components/schemas/StableId"
+          },
+          "counterevidence_required": {
+            "type": "boolean"
+          },
+          "index_id": {
+            "$ref": "#/components/schemas/StableId"
+          },
+          "max_cycles": {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "question": {
+            "maxLength": 32768,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "context",
+          "question",
+          "corpus_id",
+          "index_id",
+          "answer_policy",
+          "max_cycles",
+          "counterevidence_required",
+          "budget"
+        ],
+        "type": "object"
+      },
+      "ResearchResult": {
+        "additionalProperties": false,
+        "properties": {
+          "artifacts": {
+            "items": {
+              "$ref": "#/components/schemas/ArtifactRef"
+            },
+            "type": "array"
+          },
+          "assumptions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "citations": {
+            "items": {
+              "$ref": "#/components/schemas/Citation"
+            },
+            "type": "array"
+          },
+          "claims": {
+            "items": {
+              "$ref": "#/components/schemas/Claim"
+            },
+            "type": "array"
+          },
+          "cycles_completed": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "insufficiencies": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "operation": {
+            "const": "research",
+            "type": "string"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          },
+          "run_id": {
+            "$ref": "#/components/schemas/StableId"
+          },
+          "synthesis": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "operation",
+          "run_id",
+          "synthesis",
+          "claims",
+          "citations",
+          "assumptions",
+          "insufficiencies",
+          "cycles_completed",
+          "artifacts",
+          "provenance"
+        ],
+        "type": "object"
+      },
+      "RetrievalFilters": {
+        "additionalProperties": false,
+        "properties": {
+          "document_ids": {
+            "items": {
+              "$ref": "#/components/schemas/StableId"
+            },
+            "type": "array",
+            "uniqueItems": true
+          },
+          "source_uris": {
+            "items": {
+              "format": "uri",
+              "type": "string"
+            },
+            "type": "array",
+            "uniqueItems": true
+          }
+        },
+        "type": "object"
+      },
+      "RetrievalHit": {
+        "additionalProperties": false,
+        "properties": {
+          "chunk_id": {
+            "$ref": "#/components/schemas/StableId"
+          },
+          "content_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "type": "string"
+          },
+          "document_id": {
+            "$ref": "#/components/schemas/StableId"
+          },
+          "locator": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "rank": {
+            "minimum": 1,
+            "type": "integer"
+          },
+          "score": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "rank",
+          "document_id",
+          "chunk_id",
+          "locator",
+          "score",
+          "content_sha256"
+        ],
+        "type": "object"
+      },
+      "RetrievalResult": {
+        "additionalProperties": false,
+        "properties": {
+          "exact_witness_artifact": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ArtifactRef"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "hits": {
+            "items": {
+              "$ref": "#/components/schemas/RetrievalHit"
+            },
+            "type": "array"
+          },
+          "index_id": {
+            "$ref": "#/components/schemas/StableId"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          },
+          "retrieval_id": {
+            "$ref": "#/components/schemas/StableId"
+          }
+        },
+        "required": [
+          "retrieval_id",
+          "index_id",
+          "hits",
+          "exact_witness_artifact",
+          "provenance"
+        ],
+        "type": "object"
+      },
+      "RetrieveRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "budget": {
+            "$ref": "#/components/schemas/Budget"
+          },
+          "context": {
+            "$ref": "#/components/schemas/RequestContext"
+          },
+          "filters": {
+            "$ref": "#/components/schemas/RetrievalFilters"
+          },
+          "index_id": {
+            "$ref": "#/components/schemas/StableId"
+          },
+          "mode": {
+            "enum": [
+              "lexical",
+              "dense-exact",
+              "dense-ann",
+              "hybrid"
+            ],
+            "type": "string"
+          },
+          "query": {
+            "maxLength": 32768,
+            "minLength": 1,
+            "type": "string"
+          },
+          "top_k": {
+            "maximum": 1000,
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "context",
+          "query",
+          "index_id",
+          "mode",
+          "top_k",
+          "filters",
+          "budget"
+        ],
+        "type": "object"
+      },
+      "RunInspection": {
+        "additionalProperties": false,
+        "properties": {
+          "artifacts": {
+            "items": {
+              "$ref": "#/components/schemas/ArtifactRef"
+            },
+            "type": "array"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          },
+          "run_id": {
+            "$ref": "#/components/schemas/StableId"
+          },
+          "selected_attempt_id": {
+            "$ref": "#/components/schemas/StableId"
+          },
+          "status": {
+            "enum": [
+              "queued",
+              "running",
+              "completed",
+              "failed",
+              "cancelled",
+              "timed-out"
+            ],
+            "type": "string"
+          },
+          "steps": {
+            "items": {
+              "$ref": "#/components/schemas/StepInspection"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "run_id",
+          "selected_attempt_id",
+          "status",
+          "steps",
+          "artifacts",
+          "provenance"
+        ],
+        "type": "object"
+      },
+      "RunRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "budget": {
+            "$ref": "#/components/schemas/Budget"
+          },
+          "context": {
+            "$ref": "#/components/schemas/RequestContext"
+          },
+          "execution_profile": {
+            "$ref": "#/components/schemas/ExecutionProfile"
+          },
+          "steps": {
+            "items": {
+              "$ref": "#/components/schemas/DagStep"
+            },
+            "minItems": 1,
+            "type": "array"
+          }
+        },
+        "required": [
+          "context",
+          "steps",
+          "execution_profile",
+          "budget"
+        ],
+        "type": "object"
+      },
+      "SourceSelection": {
+        "additionalProperties": false,
+        "properties": {
+          "admission_policy_id": {
+            "$ref": "#/components/schemas/StableId"
+          },
+          "expected_source_digests": {
+            "additionalProperties": {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            "type": "object"
+          },
+          "source_uris": {
+            "items": {
+              "format": "uri",
+              "type": "string"
+            },
+            "minItems": 1,
+            "type": "array",
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "source_uris",
+          "admission_policy_id"
+        ],
+        "type": "object"
+      },
+      "StableId": {
+        "pattern": "^[a-z][a-z0-9-]*_[0-9a-f]{16,64}$",
+        "type": "string"
+      },
+      "StepInspection": {
+        "additionalProperties": false,
+        "properties": {
+          "attempt_id": {
+            "$ref": "#/components/schemas/StableId"
+          },
+          "error": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/FailureEnvelope"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "input_artifact_ids": {
+            "items": {
+              "$ref": "#/components/schemas/StableId"
+            },
+            "type": "array"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "output_artifact_ids": {
+            "items": {
+              "$ref": "#/components/schemas/StableId"
+            },
+            "type": "array"
+          },
+          "status": {
+            "enum": [
+              "planned",
+              "ready",
+              "running",
+              "completed",
+              "failed",
+              "cancelled",
+              "skipped"
+            ],
+            "type": "string"
+          },
+          "step_id": {
+            "$ref": "#/components/schemas/StableId"
+          }
+        },
+        "required": [
+          "step_id",
+          "kind",
+          "status",
+          "attempt_id",
+          "input_artifact_ids",
+          "output_artifact_ids"
+        ],
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "contact": {
+      "name": "Bijux",
+      "url": "https://github.com/bijux/bijux-canon"
+    },
+    "description": "The v2 boundary exposes explicit application use cases shared by library, JSON CLI, and HTTP transports. Long-running operations return durable job identities. Every request carries version, correlation, deadline, and cancellation context; every result carries typed provenance or a stable failure envelope.",
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0"
+    },
+    "summary": "Typed application operations for durable Bijux Canon workflows.",
+    "title": "bijux-canon-runtime API",
+    "version": "v2"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/v2/answers": {
+      "post": {
+        "operationId": "askQuestion",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ApiVersion"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AskRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "$ref": "#/components/responses/JobAccepted"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidRequest"
+          },
+          "406": {
+            "$ref": "#/components/responses/UnsupportedVersion"
+          }
+        },
+        "summary": "Produce a grounded answer from a named corpus and index."
+      }
+    },
+    "/api/v2/comparisons": {
+      "post": {
+        "operationId": "compareRuns",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ApiVersion"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompareRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComparisonResult"
+                }
+              }
+            },
+            "description": "Semantic and performance differences."
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "406": {
+            "$ref": "#/components/responses/UnsupportedVersion"
+          }
+        },
+        "summary": "Compare two immutable run attempts with typed explanations."
+      }
+    },
+    "/api/v2/corpora/prepare": {
+      "post": {
+        "operationId": "prepareCorpus",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ApiVersion"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PrepareCorpusRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "$ref": "#/components/responses/JobAccepted"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidRequest"
+          },
+          "406": {
+            "$ref": "#/components/responses/UnsupportedVersion"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
+        },
+        "summary": "Admit sources and prepare an immutable corpus snapshot."
+      }
+    },
+    "/api/v2/corpora/{corpus_id}": {
+      "get": {
+        "operationId": "inspectCorpus",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ApiVersion"
+          },
+          {
+            "$ref": "#/components/parameters/CorpusId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CorpusInspection"
+                }
+              }
+            },
+            "description": "Corpus snapshot inspection."
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "406": {
+            "$ref": "#/components/responses/UnsupportedVersion"
+          }
+        },
+        "summary": "Inspect an immutable corpus snapshot and its provenance."
+      }
+    },
+    "/api/v2/indexes/build": {
+      "post": {
+        "operationId": "buildIndex",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ApiVersion"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BuildIndexRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "$ref": "#/components/responses/JobAccepted"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidRequest"
+          },
+          "406": {
+            "$ref": "#/components/responses/UnsupportedVersion"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
+        },
+        "summary": "Build and atomically publish an index generation."
+      }
+    },
+    "/api/v2/indexes/{index_id}": {
+      "get": {
+        "operationId": "inspectIndex",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ApiVersion"
+          },
+          {
+            "$ref": "#/components/parameters/IndexId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IndexInspection"
+                }
+              }
+            },
+            "description": "Index generation inspection."
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "406": {
+            "$ref": "#/components/responses/UnsupportedVersion"
+          }
+        },
+        "summary": "Inspect an index generation, capabilities, and provenance."
+      }
+    },
+    "/api/v2/jobs/{job_id}": {
+      "get": {
+        "operationId": "inspectJob",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ApiVersion"
+          },
+          {
+            "$ref": "#/components/parameters/JobId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobStatus"
+                }
+              }
+            },
+            "description": "Current durable job state."
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "406": {
+            "$ref": "#/components/responses/UnsupportedVersion"
+          }
+        },
+        "summary": "Inspect durable job state after process restart."
+      }
+    },
+    "/api/v2/jobs/{job_id}/cancellation": {
+      "post": {
+        "operationId": "cancelJob",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ApiVersion"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/JobId"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobStatus"
+                }
+              }
+            },
+            "description": "Cancellation request accepted."
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "406": {
+            "$ref": "#/components/responses/UnsupportedVersion"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
+        },
+        "summary": "Request cooperative cancellation of queued or running work."
+      }
+    },
+    "/api/v2/jobs/{job_id}/result": {
+      "get": {
+        "operationId": "getJobResult",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ApiVersion"
+          },
+          {
+            "$ref": "#/components/parameters/JobId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobResult"
+                }
+              }
+            },
+            "description": "Typed terminal operation result."
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "406": {
+            "$ref": "#/components/responses/UnsupportedVersion"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
+        },
+        "summary": "Resolve the typed terminal result of a durable job."
+      }
+    },
+    "/api/v2/research": {
+      "post": {
+        "operationId": "researchQuestion",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ApiVersion"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResearchRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "$ref": "#/components/responses/JobAccepted"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidRequest"
+          },
+          "406": {
+            "$ref": "#/components/responses/UnsupportedVersion"
+          }
+        },
+        "summary": "Run bounded counterevidence research and verification."
+      }
+    },
+    "/api/v2/retrievals": {
+      "post": {
+        "operationId": "retrieveEvidence",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ApiVersion"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RetrieveRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RetrievalResult"
+                }
+              }
+            },
+            "description": "Ordered retrieval hits with execution provenance."
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidRequest"
+          },
+          "406": {
+            "$ref": "#/components/responses/UnsupportedVersion"
+          },
+          "422": {
+            "$ref": "#/components/responses/CapabilityRefused"
+          }
+        },
+        "summary": "Retrieve citation-ready evidence from a named index generation."
+      }
+    },
+    "/api/v2/runs": {
+      "post": {
+        "operationId": "runWorkflow",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ApiVersion"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RunRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "$ref": "#/components/responses/JobAccepted"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidRequest"
+          },
+          "406": {
+            "$ref": "#/components/responses/UnsupportedVersion"
+          }
+        },
+        "summary": "Submit a typed workflow DAG for durable execution."
+      }
+    },
+    "/api/v2/runs/{run_id}": {
+      "get": {
+        "operationId": "inspectRun",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ApiVersion"
+          },
+          {
+            "$ref": "#/components/parameters/RunId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunInspection"
+                }
+              }
+            },
+            "description": "Run state, lineage, artifacts, and limitations."
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "406": {
+            "$ref": "#/components/responses/UnsupportedVersion"
+          }
+        },
+        "summary": "Inspect a durable run after process restart."
+      }
+    },
+    "/api/v2/runs/{run_id}/replays": {
+      "post": {
+        "operationId": "replayRun",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ApiVersion"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/RunId"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReplayRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "$ref": "#/components/responses/JobAccepted"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "406": {
+            "$ref": "#/components/responses/UnsupportedVersion"
+          },
+          "422": {
+            "$ref": "#/components/responses/CapabilityRefused"
+          }
+        },
+        "summary": "Create a linked attempt from immutable recorded inputs."
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "/"
+    }
+  ]
+}
