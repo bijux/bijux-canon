@@ -347,6 +347,39 @@ def test_clean_terminal_graph_is_answered_with_explicit_scope_limit() -> None:
     )
 
 
+def test_declared_conflict_without_opposition_has_only_declared_provenance() -> None:
+    graph_id = _id("declared-conflict-graph")
+    merge = _merge(graph_id)
+    source_ids = tuple(item.source_claim_artifact_id for item in merge.mappings)
+    relations = tuple(
+        _relation(source, _id(f"declared-evidence-{ordinal}"), EvidenceRelationKind.supports)
+        for ordinal, source in enumerate(source_ids)
+    )
+    attachment = _attachment(graph_id, relations)
+    delta = _delta(graph_id, attachment)
+    declaration = create_claim_conflict(
+        relationship=ConflictRelationship.divergent,
+        claim_artifact_ids=source_ids,
+        summary="The admitted claims diverge.",
+        scope_note="Their source scopes differ.",
+    )
+
+    result = VerifiedGraphSynthesisService().synthesize(
+        question="Where does the evidence diverge?",
+        claim_merge=merge,
+        evidence_relations=attachment,
+        assumption_insufficiency=delta,
+        convergence=_convergence(graph_id),
+        declared_conflicts=(declaration,),
+    )
+
+    assert result.outcome is ResearchSynthesisOutcome.partial
+    assert not result.consensus
+    assert len(result.conflicted_claims) == 2
+    assert len(result.conflicts) == 1
+    assert result.conflicts[0].source_artifact_ids == (declaration.artifact_id,)
+
+
 def test_terminal_graph_without_supported_claims_is_insufficient() -> None:
     graph_id = _id("empty-graph")
     merge = _merge(graph_id, empty=True)

@@ -660,6 +660,8 @@ def _conflicts(
                 if item.relation is EvidenceRelationKind.opposes
             )
         )
+        if not sources:
+            continue
         result.append(
             _conflict(
                 (claim.canonical_claim_artifact_id,),
