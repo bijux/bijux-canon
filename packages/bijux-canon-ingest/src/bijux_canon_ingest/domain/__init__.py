@@ -54,6 +54,12 @@ from .source_discovery import (
     DiscoveryRoot,
     SymlinkPolicy,
 )
+from .source_mapping import (
+    NormalizedSpanMapping,
+    SourceByteSpan,
+    TextTransformation,
+    TransformationOperation,
+)
 from .source_metadata import (
     CanonicalSourceMetadata,
     MetadataConflict,
@@ -98,6 +104,11 @@ __all__ = [
     "MetadataField",
     "MetadataValue",
     "RawMetadataValue",
+    # Source mappings
+    "NormalizedSpanMapping",
+    "SourceByteSpan",
+    "TextTransformation",
+    "TransformationOperation",
     # Document extraction
     "BlockRole",
     "DocumentMetadata",
