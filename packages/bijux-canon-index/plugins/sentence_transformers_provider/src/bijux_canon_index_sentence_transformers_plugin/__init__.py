@@ -1,5 +1,8 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+
+"""Sentence-transformers embedding provider plugin."""
+
 from __future__ import annotations
 
 from collections.abc import Mapping
@@ -26,12 +29,14 @@ class SentenceTransformersProvider(EmbeddingProvider):
     @property
     def provider_version(self) -> str | None:
         """Return the provider library version."""
+
         return getattr(sentence_transformers, "__version__", None)
 
     def embed(
         self, texts: list[str], model: str, options: Mapping[str, str] | None = None
     ) -> EmbeddingBatch:
         """Encode texts into float32 vectors."""
+
         if not model:
             raise ValueError("model id required for embeddings")
         resolved_options = dict(options or {})
@@ -70,6 +75,7 @@ class SentenceTransformersProvider(EmbeddingProvider):
 
 def register(registry: EmbeddingProviderRegistry) -> None:
     """Register the sentence-transformers embedding provider."""
+
     registry.register(
         SentenceTransformersProvider.name,
         factory=SentenceTransformersProvider,
@@ -80,3 +86,6 @@ def register(registry: EmbeddingProviderRegistry) -> None:
         ),
         default=True,
     )
+
+
+__all__ = ["SentenceTransformersProvider", "register"]

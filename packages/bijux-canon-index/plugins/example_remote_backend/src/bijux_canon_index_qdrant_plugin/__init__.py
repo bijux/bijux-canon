@@ -1,5 +1,8 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi <bijan@bijux.io>
+
+"""Qdrant plugin entry point for installed distribution discovery."""
+
 from __future__ import annotations
 
 from bijux_canon_index.infra.adapters.qdrant.adapter import QdrantVectorStoreAdapter
@@ -8,11 +11,13 @@ from bijux_canon_index.infra.plugins.contract import PluginContract
 
 
 def register(registry) -> None:
+    """Register the explicitly experimental remote Qdrant adapter."""
+
     registry.register(
         "qdrant_plugin_example",
         descriptor=VectorStoreDescriptor(
             name="qdrant_plugin_example",
-            available=True,
+            available=False,
             supports_exact=True,
             supports_ann=True,
             delete_supported=True,
@@ -20,7 +25,7 @@ def register(registry) -> None:
             deterministic_exact=False,
             experimental=True,
             consistency="eventual",
-            notes="Example external-style plugin wrapping Qdrant adapter.",
+            notes="Requires separate live-service admission before use.",
         ),
         factory=lambda uri, options: QdrantVectorStoreAdapter(uri=uri, options=options),
         contract=PluginContract(
