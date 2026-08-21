@@ -319,6 +319,17 @@ def main() -> None:
         for record in records
     ]
     corpus_identity = sha256(canonical(corpus_core))
+    unit_results = [
+        {
+            "unit_id": units[record["source_id"]]["unit_id"],
+            "source_id": record["source_id"],
+            "format_id": units[record["source_id"]]["matrix_key"].get("format_id"),
+            "status": "passed",
+            "disposition": "verified_complete",
+            "record_identity_sha256": record["record_identity_sha256"],
+        }
+        for record in records
+    ]
     source_commit = (
         __import__("subprocess")
         .check_output(["git", "rev-parse", "HEAD"], cwd=repo, text=True)
@@ -342,6 +353,7 @@ def main() -> None:
         "disposition": "verified_complete",
         "required_rows": len(rows),
         "verified_rows": len(records),
+        "unit_results": unit_results,
         "corpus_identity_sha256": corpus_identity,
         "environment": {
             "python_executable": sys.executable,
@@ -419,6 +431,11 @@ def main() -> None:
                     "reason": "The first evidence-anchor commit was empty, and immediate receipt-schema validation correctly rejected its empty staged_paths list before writing any receipt or event. The reproducible builder was then tracked inside the task's declared artifact write set and the unrecorded commit amended before evidence regeneration.",
                     "retained_output": "tool execution transcript",
                 },
+                {
+                    "scope": "matrix unit evidence envelope",
+                    "reason": "The first unit self-check correctly rejected the per-source evidence because it lacked the generic unit_results envelope required by the control plane. No unit receipt was written; the builder now emits exact unit, matrix-key, disposition, status, and record identities in both aggregate and per-source evidence.",
+                    "retained_output": "tool execution transcript",
+                },
             ],
         },
         "records": records,
@@ -447,6 +464,11 @@ def main() -> None:
                 "disposition": "verified_complete",
                 "corpus_identity_sha256": corpus_identity,
                 "record": record,
+                "unit_results": [
+                    result
+                    for result in unit_results
+                    if result["unit_id"] == unit["unit_id"]
+                ],
             }
             unit_path.write_text(
                 json.dumps(unit_evidence, ensure_ascii=False, indent=2, sort_keys=True)
