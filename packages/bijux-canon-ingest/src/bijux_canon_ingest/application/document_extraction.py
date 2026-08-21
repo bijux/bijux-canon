@@ -8,6 +8,7 @@ from __future__ import annotations
 from bijux_canon_ingest.domain.document_extraction import (
     DocumentParseError,
     ParsedDocument,
+    ParsedDocxDocument,
     ParsedHtmlDocument,
     ParsedPdfDocument,
     ParsedTextDocument,
@@ -15,6 +16,7 @@ from bijux_canon_ingest.domain.document_extraction import (
 from bijux_canon_ingest.domain.source_admission import AdmissionResult
 from bijux_canon_ingest.infra.adapters.file_admission import read_current_source
 from bijux_canon_ingest.infra.admission.limits import AdmissionFailure
+from bijux_canon_ingest.infra.parsers.docx import parse_docx_content
 from bijux_canon_ingest.infra.parsers.html import parse_html_content
 from bijux_canon_ingest.infra.parsers.jats import parse_jats_content
 from bijux_canon_ingest.infra.parsers.pdf import parse_pdf_content
@@ -143,4 +145,34 @@ def parse_text(admission: AdmissionResult) -> ParsedTextDocument:
     )
 
 
-__all__ = ["parse_html", "parse_jats", "parse_markdown", "parse_pdf", "parse_text"]
+def parse_docx(admission: AdmissionResult) -> ParsedDocxDocument:
+    """Parse one immutable source admitted specifically as DOCX."""
+
+    if not admission.admitted:
+        raise DocumentParseError(
+            "source_not_admitted", "source must pass admission before DOCX parsing"
+        )
+    if admission.format_id != "docx":
+        raise DocumentParseError(
+            "format_mismatch", "admitted source format is not DOCX"
+        )
+    try:
+        content = read_current_source(admission.source, admission.budgets)
+    except AdmissionFailure as error:
+        if error.code == "source_changed":
+            raise DocumentParseError("source_changed", error.detail) from error
+        raise DocumentParseError("unsafe_markup", error.detail) from error
+    return parse_docx_content(
+        content,
+        source_content_sha256=admission.source.content_sha256,
+    )
+
+
+__all__ = [
+    "parse_docx",
+    "parse_html",
+    "parse_jats",
+    "parse_markdown",
+    "parse_pdf",
+    "parse_text",
+]

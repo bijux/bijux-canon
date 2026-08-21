@@ -66,6 +66,16 @@ NewlineStyle = Literal["none", "lf", "crlf", "cr", "mixed"]
 _TEXT_BLOCK_ROLES = frozenset(get_args(TextBlockRole))
 _TEXT_ENCODINGS = frozenset(get_args(TextEncoding))
 _NEWLINE_STYLES = frozenset(get_args(NewlineStyle))
+DocxBlockRole = Literal[
+    "title",
+    "heading",
+    "paragraph",
+    "list-item",
+    "table-cell",
+    "hyperlink",
+    "footnote",
+]
+_DOCX_BLOCK_ROLES = frozenset(get_args(DocxBlockRole))
 
 
 def _canonical_json(value: object) -> bytes:
@@ -675,6 +685,104 @@ class ParsedTextDocument:
         return {"manifest_sha256": _identity(payload), **payload}
 
 
+@dataclass(frozen=True, slots=True)
+class DocxDocumentMetadata:
+    """Core OOXML document properties preserved without inferred values."""
+
+    creator: str | None
+    last_modified_by: str | None
+    created_at: str | None
+    modified_at: str | None
+    revision: str | None
+    raw_fields: tuple[tuple[str, str], ...]
+
+    def manifest(self) -> dict[str, object]:
+        """Return the core property values and their original field names."""
+
+        return {
+            "created_at": self.created_at,
+            "creator": self.creator,
+            "last_modified_by": self.last_modified_by,
+            "modified_at": self.modified_at,
+            "raw_fields": dict(self.raw_fields),
+            "revision": self.revision,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class ParsedDocxBlock:
+    """One semantic OOXML block with package-part lineage."""
+
+    index: int
+    role: DocxBlockRole
+    text: str
+    locator: SourceLocator
+    section_path: tuple[str, ...] = ()
+    target: str | None = None
+
+    def __post_init__(self) -> None:
+        if self.index < 0 or self.role not in _DOCX_BLOCK_ROLES or not self.text:
+            raise ValueError("ParsedDocxBlock requires a valid index, role, and text")
+
+    @property
+    def text_sha256(self) -> str:
+        """Return the normalized OOXML text digest."""
+
+        return _text_sha256(self.text)
+
+    def manifest(self) -> dict[str, object]:
+        """Return the source-resolving OOXML block representation."""
+
+        return {
+            "index": self.index,
+            "locator": self.locator.manifest(),
+            "role": self.role,
+            "section_path": list(self.section_path),
+            "target": self.target,
+            "text": self.text,
+            "text_sha256": self.text_sha256,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class ParsedDocxDocument:
+    """A deterministic DOCX extraction bound to immutable package bytes."""
+
+    source_content_sha256: str
+    parser_name: str
+    parser_version: str
+    metadata: DocxDocumentMetadata
+    blocks: tuple[ParsedDocxBlock, ...]
+
+    def __post_init__(self) -> None:
+        if not self.parser_name or not self.parser_version:
+            raise ValueError("ParsedDocxDocument parser identity must be complete")
+        if len(self.source_content_sha256) != 64 or any(
+            character not in "0123456789abcdef"
+            for character in self.source_content_sha256
+        ):
+            raise ValueError("ParsedDocxDocument source hash must be lowercase SHA-256")
+        if not self.blocks or tuple(block.index for block in self.blocks) != tuple(
+            range(len(self.blocks))
+        ):
+            raise ValueError(
+                "ParsedDocxDocument blocks must use contiguous source order"
+            )
+
+    def manifest(self) -> dict[str, object]:
+        """Return a canonical DOCX extraction manifest and its identity."""
+
+        payload: dict[str, object] = {
+            "blocks": [block.manifest() for block in self.blocks],
+            "format_id": "docx",
+            "metadata": self.metadata.manifest(),
+            "parser": {"name": self.parser_name, "version": self.parser_version},
+            "schema_version": "bijux.canon.ingest.parsed_docx_document.v1",
+            "source_content_sha256": self.source_content_sha256,
+        }
+        return {"manifest_sha256": _identity(payload), **payload}
+
+
 class DocumentParseError(ValueError):
     """A typed refusal at the semantic document parsing boundary."""
 
@@ -693,7 +801,11 @@ __all__ = [
     "DocumentMetadata",
     "DocumentParseError",
     "DocumentParseIssueCode",
+    "DocxBlockRole",
+    "DocxDocumentMetadata",
     "ParsedBlock",
+    "ParsedDocxBlock",
+    "ParsedDocxDocument",
     "ParsedDocument",
     "ParsedHtmlBlock",
     "ParsedHtmlDocument",
