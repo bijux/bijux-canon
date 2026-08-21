@@ -478,6 +478,7 @@ class SQLiteLexicalIndex:
             self._connection.execute(
                 "INSERT INTO lexical_search(lexical_search, rank) VALUES('integrity-check', 1)"
             )
+            self._connection.rollback()
         except sqlite3.DatabaseError as error:
             raise LexicalIndexCorruptionError(
                 "SQLite FTS5 index failed integrity verification"
