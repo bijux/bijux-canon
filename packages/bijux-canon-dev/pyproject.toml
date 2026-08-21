@@ -23,6 +23,7 @@ classifiers = [
   "Typing :: Typed",
 ]
 dependencies = [
+  "jsonschema[format-nongpl]>=4.23,<5.0",
   "packaging>=24.0,<27.0",
   "PyYAML>=6.0,<7.0",
 ]
@@ -46,6 +47,7 @@ dev = [
   "ruff>=0.6.8,<1.0",
   "mypy>=1.11.2,<3.0",
   "types-PyYAML>=6.0.12.20250822,<7.0",
+  "types-jsonschema>=4.23,<5.0",
   "vulture>=2.7,<3.0",
   "deptry>=0.10.0,<1.0",
   "interrogate>=1.7.0,<2.0",

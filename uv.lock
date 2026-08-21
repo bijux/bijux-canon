@@ -1,6 +1,6 @@
 version = 1
 revision = 3
-requires-python = ">=3.11, <4.0"
+requires-python = ">=3.11, <4"
 resolution-markers = [
     "python_full_version >= '3.15' and sys_platform == 'win32'",
     "python_full_version >= '3.15' and sys_platform == 'emscripten'",
@@ -635,6 +635,7 @@ provides-extras = ["api", "dev", "doc", "document-readers", "env", "extra", "pro
 name = "bijux-canon-dev"
 source = { editable = "packages/bijux-canon-dev" }
 dependencies = [
+    { name = "jsonschema", extra = ["format-nongpl"] },
     { name = "packaging" },
     { name = "pyyaml" },
 ]
@@ -662,6 +663,7 @@ dev = [
     { name = "pytest-cov" },
     { name = "pytest-timeout" },
     { name = "ruff" },
+    { name = "types-jsonschema" },
     { name = "types-pyyaml" },
     { name = "vulture" },
 ]
@@ -674,6 +676,7 @@ requires-dist = [
     { name = "deptry", marker = "extra == 'dev'", specifier = ">=0.10.0,<1.0" },
     { name = "hatch", marker = "extra == 'dev'", specifier = ">=1.14.0,<2.0" },
     { name = "interrogate", marker = "extra == 'dev'", specifier = ">=1.7.0,<2.0" },
+    { name = "jsonschema", extras = ["format-nongpl"], specifier = ">=4.23,<5.0" },
     { name = "mkdocs", marker = "extra == 'dev'", specifier = ">=1.6.1,<2.0" },
     { name = "mkdocs-autorefs", marker = "extra == 'dev'", specifier = ">=1.4.4,<2.0" },
     { name = "mkdocs-git-revision-date-localized-plugin", marker = "extra == 'dev'", specifier = ">=1.2.0,<2.0" },
@@ -691,6 +694,7 @@ requires-dist = [
     { name = "pytest-timeout", marker = "extra == 'dev'", specifier = ">=2.4.0,<3.0" },
     { name = "pyyaml", specifier = ">=6.0,<7.0" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.6.8,<1.0" },
+    { name = "types-jsonschema", marker = "extra == 'dev'", specifier = ">=4.23,<5.0" },
     { name = "types-pyyaml", marker = "extra == 'dev'", specifier = ">=6.0.12.20250822,<7.0" },
     { name = "vulture", marker = "extra == 'dev'", specifier = ">=2.7,<3.0" },
 ]
@@ -5905,6 +5909,18 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/be/d5/4870d88c6c87adf786ef33d674cbf82b3a2d5fcbe6deec29282cff80e8b3/types_colorama-0.4.15.20260508.tar.gz", hash = "sha256:3a8916039e57452bd21f57e674e1f221ca9e4f319893c5e3bbd37b845c27d8e6", size = 10638, upload-time = "2026-05-08T04:47:14.593Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/56/33/a3449e3e93c43861b92d0a93ed4ea5505756463e507625812cfb29c91c7a/types_colorama-0.4.15.20260508-py3-none-any.whl", hash = "sha256:b0c39908a3e5171ef1f8bf3d59fae082e9eaff3a19ca49b6d640b83f78cff61c", size = 10755, upload-time = "2026-05-08T04:47:13.761Z" },
+]
+
+[[package]]
+name = "types-jsonschema"
+version = "4.26.0.20260518"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "referencing" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/dd/46/73b6a5d61a61015c4248030a8cb07e5bdddb4041430fae9e585a68692578/types_jsonschema-4.26.0.20260518.tar.gz", hash = "sha256:e1dd53dc97a64f5eccdd6fa9839666e09bb500a8ebba2db6fdaf1789faea81a6", size = 16638, upload-time = "2026-05-18T06:06:44.106Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/07/d5/134f8a147dcecda10db7f60cfc6af0578a25a5c53c87b3907a64385e0184/types_jsonschema-4.26.0.20260518-py3-none-any.whl", hash = "sha256:30b30a518c7fe335df85c919fcbcc631b69c03d4a4b5b632fa916bea03065307", size = 16072, upload-time = "2026-05-18T06:06:43.264Z" },
 ]
 
 [[package]]

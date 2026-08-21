@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+"""Build hash-bound source and license reviews for the real corpus."""
+
 from __future__ import annotations
 
 import argparse
@@ -45,7 +47,7 @@ class CitationMetadata(HTMLParser):
         attributes = dict(attrs)
         name = attributes.get("name", "")
         content = attributes.get("content")
-        if name.startswith("citation_") and content is not None:
+        if name is not None and name.startswith("citation_") and content is not None:
             self.values.setdefault(name, []).append(html.unescape(content))
 
 
@@ -344,6 +346,8 @@ def main() -> None:
     )
     installed_audit = json.loads(installed_audit_path.read_text())
     installed_evidence = json.loads(installed_evidence_path.read_text())
+    builder_path = Path(__file__).resolve(strict=True)
+    builder_sha256 = sha256(builder_path.read_bytes())
     result = {
         "schema_version": "bijux.canon.production_finalization.corpus_source_review.v1",
         "task_id": "CORPUS-002",
@@ -359,7 +363,10 @@ def main() -> None:
             "python_executable": sys.executable,
             "python_version": sys.version.split()[0],
         },
+        "invocation": sys.argv,
         "governing_identities": {
+            "review_builder_path": str(builder_path.relative_to(repo)),
+            "review_builder_sha256": builder_sha256,
             "corpus_matrix_sha256": sha256(matrix_path.read_bytes()),
             "document_corpus_and_license_contract_sha256": sha256(
                 (
@@ -428,7 +435,7 @@ def main() -> None:
                 },
                 {
                     "scope": "commit receipt path binding",
-                    "reason": "The first evidence-anchor commit was empty, and immediate receipt-schema validation correctly rejected its empty staged_paths list before writing any receipt or event. The reproducible builder was then tracked inside the task's declared artifact write set and the unrecorded commit amended before evidence regeneration.",
+                    "reason": "The first evidence-anchor commit was empty, and immediate receipt-schema validation correctly rejected its empty staged_paths list before writing any receipt or event. The builder was initially tracked under artifacts to give the commit a path, then relocated to the repository maintenance package when the user clarified that artifacts is wholly disposable; generated review JSON remains ignored.",
                     "retained_output": "tool execution transcript",
                 },
                 {
@@ -463,6 +470,7 @@ def main() -> None:
                 "row_sha256": unit["row_sha256"],
                 "disposition": "verified_complete",
                 "corpus_identity_sha256": corpus_identity,
+                "review_builder_sha256": builder_sha256,
                 "record": record,
                 "unit_results": [
                     result

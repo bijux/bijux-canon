@@ -74,6 +74,7 @@ contracts to make the lane pass.
 - [`src/bijux_canon_dev/sbom`](src/bijux_canon_dev/sbom) for bill-of-materials generation
 - [`src/bijux_canon_dev/release`](src/bijux_canon_dev/release) for release support
 - [`src/bijux_canon_dev/api`](src/bijux_canon_dev/api) for OpenAPI and schema tooling
+- [`src/bijux_canon_dev/corpus`](src/bijux_canon_dev/corpus) for real-corpus review tooling
 - [`src/bijux_canon_dev/packages`](src/bijux_canon_dev/packages) for package-specific maintenance helpers
 - [`tests`](tests) for executable protection of repo tooling behavior
 

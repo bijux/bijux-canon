@@ -1,3 +1,5 @@
+"""Validate cross-package v2 schema and example closure."""
+
 from __future__ import annotations
 
 import argparse
@@ -6,14 +8,23 @@ import hashlib
 import importlib.metadata
 import json
 from pathlib import Path
-import sys
-from typing import Any
+from typing import Any, TypedDict
 
 from jsonschema import Draft202012Validator, FormatChecker, ValidationError
 from referencing import Registry, Resource
 
 
-PACKAGE_CONFIG = {
+class PackageConfig(TypedDict):
+    """One package's generated contract surfaces."""
+
+    api: str
+    distribution: str
+    module: str
+    schema_sections: list[str]
+    example_sections: list[str]
+
+
+PACKAGE_CONFIG: dict[str, PackageConfig] = {
     "agent": {
         "api": "bijux-canon-agent",
         "distribution": "bijux-canon-agent",
@@ -121,8 +132,13 @@ def manifest_example_entries(
     package: str, manifest: dict[str, Any]
 ) -> list[dict[str, Any]]:
     if package == "ingest":
-        return [dict(entry) for _, entry in sorted(manifest["conformance_examples"].items())]
-    return [dict(manifest[section]) for section in PACKAGE_CONFIG[package]["example_sections"]]
+        return [
+            dict(entry) for _, entry in sorted(manifest["conformance_examples"].items())
+        ]
+    return [
+        dict(manifest[section])
+        for section in PACKAGE_CONFIG[package]["example_sections"]
+    ]
 
 
 def schema_for_artifact(
@@ -132,7 +148,9 @@ def schema_for_artifact(
     schemas: dict[str, dict[str, Any]],
 ) -> dict[str, Any]:
     if package == "ingest":
-        entry = next(entry for entry in schema_entries if entry["artifact_type"] == artifact_type)
+        entry = next(
+            entry for entry in schema_entries if entry["artifact_type"] == artifact_type
+        )
         return schemas[entry["path"]]
     definition_name = artifact_type.rsplit(".", 1)[-1]
     entry = next(
@@ -181,10 +199,10 @@ def package_closure(repo: Path, package: str) -> tuple[dict[str, Any], list[str]
     generated_schemas = []
     definition_count = 0
     if package == "ingest":
-        expected_hashes = {
-            entry["path"]: entry["sha256"] for entry in schema_entries
-        }
-        expected_hashes[manifest["shared_schema"]["path"]] = manifest["shared_schema"]["sha256"]
+        expected_hashes = {entry["path"]: entry["sha256"] for entry in schema_entries}
+        expected_hashes[manifest["shared_schema"]["path"]] = manifest["shared_schema"][
+            "sha256"
+        ]
         definition_count = len(schema_entries)
     else:
         expected_hashes = {entry["path"]: entry["sha256"] for entry in schema_entries}
@@ -231,7 +249,9 @@ def package_closure(repo: Path, package: str) -> tuple[dict[str, Any], list[str]
         )
         for record in records:
             artifact_type = record["artifact_type"]
-            schema = schema_for_artifact(package, artifact_type, schema_entries, schemas)
+            schema = schema_for_artifact(
+                package, artifact_type, schema_entries, schemas
+            )
             validator = validator_for(schema, schemas)
             validator.validate(record)
             assert artifact_identity(record) == record["artifact_id"]
@@ -328,9 +348,7 @@ def installed_surfaces() -> dict[str, dict[str, str]]:
     for package, config in sorted(PACKAGE_CONFIG.items()):
         distribution = importlib.metadata.distribution(config["distribution"])
         origin = Path(
-            distribution.locate_file(
-                Path(config["module"]) / "__init__.py"
-            )
+            str(distribution.locate_file(Path(config["module"]) / "__init__.py"))
         ).resolve()
         assert origin.is_file()
         assert "site-packages" in origin.parts
@@ -349,27 +367,33 @@ def main() -> None:
     mode.add_argument("--write", action="store_true")
     mode.add_argument("--check", action="store_true")
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--repo", type=Path, required=True)
     parser.add_argument("--require-installed", action="store_true")
     args = parser.parse_args()
-    repo = Path(__file__).resolve().parents[3]
+    repo = args.repo.resolve(strict=True)
     closure = generate_closure(repo)
     if args.write:
         args.output.write_text(json.dumps(closure, indent=2, sort_keys=True) + "\n")
     else:
         assert load_json(args.output) == closure
     installed = installed_surfaces() if args.require_installed else {}
-    print(json.dumps({
-        "status": "verified",
-        "mode": "write" if args.write else "check",
-        "closure_sha256": digest(canonical(closure)),
-        "package_boundaries": closure["package_boundary_count"],
-        "schema_documents": closure["schema_document_count"],
-        "artifact_definitions": closure["artifact_definition_count"],
-        "example_records": closure["example_record_count"],
-        "drift_rejections": closure["drift_rejection_count"],
-        "migration_rejections": closure["migration_rejection_count"],
-        "installed_surfaces": installed,
-    }, sort_keys=True))
+    print(
+        json.dumps(
+            {
+                "status": "verified",
+                "mode": "write" if args.write else "check",
+                "closure_sha256": digest(canonical(closure)),
+                "package_boundaries": closure["package_boundary_count"],
+                "schema_documents": closure["schema_document_count"],
+                "artifact_definitions": closure["artifact_definition_count"],
+                "example_records": closure["example_record_count"],
+                "drift_rejections": closure["drift_rejection_count"],
+                "migration_rejections": closure["migration_rejection_count"],
+                "installed_surfaces": installed,
+            },
+            sort_keys=True,
+        )
+    )
 
 
 if __name__ == "__main__":
