@@ -36,9 +36,7 @@ from bijux_canon_runtime.api.v1.schemas import (
     ReadyResponse,
     ReplayRequest,
 )
-from bijux_canon_runtime.observability.storage.execution_store import (
-    DuckDBExecutionStore,
-)
+from bijux_canon_runtime.application.readiness import runtime_store_is_ready
 
 HTTP_HEADER_VALUE_PATTERN = r"^[A-Za-z0-9._:-]+$"
 
@@ -206,10 +204,7 @@ def ready() -> JSONResponse:
     db_path = os.environ.get("AGENTIC_FLOWS_DB_PATH")
     if not db_path:
         return JSONResponse(status_code=503, content={"ready": False})
-    try:
-        store = DuckDBExecutionStore(Path(db_path))
-        store.close()
-    except Exception:
+    if not runtime_store_is_ready(Path(db_path)):
         return JSONResponse(status_code=503, content={"ready": False})
     return JSONResponse(content={"ready": True})
 
