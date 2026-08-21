@@ -59,10 +59,12 @@ from bijux_canon_index.application.retrieval import (
     QueryEmbeddingProvider,
     RankedChannelCandidate,
     RetrievalChannel,
+    RetrievalFilterCapability,
     RrfContribution,
     RrfFusionBatch,
     RrfFusionPolicy,
     reciprocal_rank_fusion,
+    retrieval_filter_capability,
 )
 from bijux_canon_index.application.vex import (
     ExactSearchCandidate,
@@ -149,6 +151,7 @@ __all__ = [
     "QueryEmbeddingProvider",
     "RankedChannelCandidate",
     "RetrievalChannel",
+    "RetrievalFilterCapability",
     "RrfContribution",
     "RrfFusionBatch",
     "RrfFusionPolicy",
@@ -160,4 +163,5 @@ __all__ = [
     "inspect_index_generation",
     "replay_vex_execution",
     "reciprocal_rank_fusion",
+    "retrieval_filter_capability",
 ]

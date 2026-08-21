@@ -22,6 +22,7 @@ from .fusion import (
     RrfFusionPolicy,
     reciprocal_rank_fusion,
 )
+from .filters import RetrievalFilterCapability, retrieval_filter_capability
 from .lexical import (
     LexicalCandidateBatch,
     LexicalCandidateDecision,
@@ -47,8 +48,10 @@ __all__ = [
     "QueryEmbeddingProvider",
     "RankedChannelCandidate",
     "RetrievalChannel",
+    "RetrievalFilterCapability",
     "RrfContribution",
     "RrfFusionBatch",
     "RrfFusionPolicy",
     "reciprocal_rank_fusion",
+    "retrieval_filter_capability",
 ]

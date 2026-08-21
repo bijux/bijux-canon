@@ -138,6 +138,10 @@ def test_dense_candidates_embed_once_and_persist_complete_vex_provenance(
     assert stored.record["metrics"]["result_reachability"] == 1.0
     assert stored.record["plan"]["backend"] in {"faiss-flat-ip", "faiss-hnsw"}
     assert stored.record["plan"]["embedding_inference_threads"] == 1
+    assert (
+        stored.record["plan"]["filter_enforcement"]["enforcement_stage"]
+        == "query_time_before_result_limit"
+    )
 
     restarted = DenseCandidateService(
         root,

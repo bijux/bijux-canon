@@ -59,9 +59,7 @@ def _registry(tmp_path: Path) -> tuple[Path, str, IndexCompatibility]:
         snapshot_artifact_id="sha256:snapshot",
         model_lock_artifact_id="sha256:model",
         limits=IndexBuildLimits(10, 10_000, 10_000, 10_000),
-        hnsw_parameters=HnswParameters(
-            m=2, ef_construction=8, ef_search=8, seed=17
-        ),
+        hnsw_parameters=HnswParameters(m=2, ef_construction=8, ef_search=8, seed=17),
         activate=True,
     )
     return root, report.generation_id, compatibility
@@ -83,24 +81,27 @@ def test_lexical_candidates_retain_bm25_filter_and_limit_decisions(
 
     assert batch.outcome is LexicalCandidateOutcome.success
     assert batch.generation_id == generation_id
-    assert [decision.source_rank for decision in batch.decisions] == [1, 2, 3]
+    assert [decision.source_rank for decision in batch.decisions] == [1, 2]
     assert all(decision.score > 0 for decision in batch.decisions)
     assert [decision.output_rank for decision in batch.candidates] == [1]
     assert {decision.disposition for decision in batch.decisions} == {
         LexicalCandidateDisposition.included,
-        LexicalCandidateDisposition.excluded_by_filter,
         LexicalCandidateDisposition.excluded_by_limit,
     }
+    assert all(decision.chunk_id != "chunk-b" for decision in batch.decisions)
     assert all(len(decision.source_text_sha256) == 64 for decision in batch.decisions)
 
     restarted = LexicalCandidateService(root, compatibility=compatibility)
-    assert restarted.generate(
-        "ancient dna",
-        generation_id=generation_id,
-        top_k=1,
-        candidate_limit=3,
-        metadata_filter=MetadataFilter(languages=("en",)),
-    ) == batch
+    assert (
+        restarted.generate(
+            "ancient dna",
+            generation_id=generation_id,
+            top_k=1,
+            candidate_limit=3,
+            metadata_filter=MetadataFilter(languages=("en",)),
+        )
+        == batch
+    )
 
 
 def test_lexical_candidates_handle_phrases_empty_and_filtered_empty(
@@ -119,19 +120,25 @@ def test_lexical_candidates_handle_phrases_empty_and_filtered_empty(
         "chunk-a",
         "chunk-b",
     }
-    assert service.generate(
-        "   ",
-        generation_id=generation_id,
-        top_k=1,
-        candidate_limit=1,
-    ).outcome is LexicalCandidateOutcome.empty_query
-    assert service.generate(
-        "contamination",
-        generation_id=generation_id,
-        top_k=1,
-        candidate_limit=1,
-        metadata_filter=MetadataFilter(languages=("en",)),
-    ).outcome is LexicalCandidateOutcome.filtered_empty
+    assert (
+        service.generate(
+            "   ",
+            generation_id=generation_id,
+            top_k=1,
+            candidate_limit=1,
+        ).outcome
+        is LexicalCandidateOutcome.empty_query
+    )
+    assert (
+        service.generate(
+            "contamination",
+            generation_id=generation_id,
+            top_k=1,
+            candidate_limit=1,
+            metadata_filter=MetadataFilter(languages=("en",)),
+        ).outcome
+        is LexicalCandidateOutcome.filtered_empty
+    )
 
 
 def test_lexical_candidates_require_explicit_generation_and_bounded_pool(
@@ -154,3 +161,19 @@ def test_lexical_candidates_require_explicit_generation_and_bounded_pool(
             top_k=1,
             candidate_limit=1,
         )
+
+
+def test_lexical_filter_is_applied_before_candidate_limit(tmp_path: Path) -> None:
+    root, generation_id, compatibility = _registry(tmp_path)
+    service = LexicalCandidateService(root, compatibility=compatibility)
+
+    batch = service.generate(
+        "ancient dna",
+        generation_id=generation_id,
+        top_k=1,
+        candidate_limit=1,
+        metadata_filter=MetadataFilter(languages=("sv",)),
+    )
+
+    assert batch.outcome is LexicalCandidateOutcome.success
+    assert [candidate.chunk_id for candidate in batch.candidates] == ["chunk-b"]

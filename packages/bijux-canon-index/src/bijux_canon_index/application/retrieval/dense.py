@@ -37,6 +37,8 @@ from bijux_canon_index.application.vex import (
 from bijux_canon_index.domain.metadata_filters import MetadataFilter
 from bijux_canon_index.infra.embeddings.local_model import EmbeddedBatch
 
+from .filters import retrieval_filter_capability
+
 
 class DenseCandidateMode(str, Enum):
     """Dense backend admitted for canonical retrieval."""
@@ -274,6 +276,9 @@ class DenseCandidateService:
         }
         if mode is DenseCandidateMode.ann:
             plan["hnsw_parameters"] = asdict(hnsw_parameters)
+        plan["filter_enforcement"] = asdict(
+            retrieval_filter_capability(report.channel.value)
+        )
         query_text_sha256 = hashlib.sha256(query_text.encode("utf-8")).hexdigest()
         artifact = VexExecutionArtifact(
             request={

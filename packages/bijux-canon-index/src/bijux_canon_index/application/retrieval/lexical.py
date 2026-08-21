@@ -16,7 +16,6 @@ from bijux_canon_index.application.index_activation import IndexGenerationRegist
 from bijux_canon_index.application.index_audit import IndexCompatibility
 from bijux_canon_index.domain.metadata_filters import (
     MetadataFilter,
-    matches_metadata_filter,
 )
 
 
@@ -150,17 +149,15 @@ class LexicalCandidateService:
                     outcome=LexicalCandidateOutcome.empty_query,
                     decisions=(),
                 )
-            matches = generation.lexical.query(query_text, top_k=candidate_limit)
+            matches = generation.lexical.query(
+                query_text,
+                top_k=candidate_limit,
+                metadata_filter=metadata_filter,
+            )
             decisions = []
             output_rank = 0
             for match in matches:
-                if metadata_filter is not None and not matches_metadata_filter(
-                    match.chunk.metadata,
-                    metadata_filter,
-                ):
-                    disposition = LexicalCandidateDisposition.excluded_by_filter
-                    selected_rank = None
-                elif output_rank == top_k:
+                if output_rank == top_k:
                     disposition = LexicalCandidateDisposition.excluded_by_limit
                     selected_rank = None
                 else:
@@ -183,8 +180,13 @@ class LexicalCandidateService:
                 )
             if output_rank:
                 outcome = LexicalCandidateOutcome.success
-            elif decisions and metadata_filter is not None:
-                outcome = LexicalCandidateOutcome.filtered_empty
+            elif metadata_filter is not None:
+                unfiltered_probe = generation.lexical.query(query_text, top_k=1)
+                outcome = (
+                    LexicalCandidateOutcome.filtered_empty
+                    if unfiltered_probe
+                    else LexicalCandidateOutcome.no_matches
+                )
             else:
                 outcome = LexicalCandidateOutcome.no_matches
             return LexicalCandidateBatch(
