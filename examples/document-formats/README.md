@@ -33,6 +33,19 @@ python -m bijux_canon_dev.corpus.parser_lock \
   --lock examples/document-formats/corpus.lock.json
 ```
 
+`locator-truth.jsonl` is an independently selected, identity-bound review set.
+It covers every required semantic role with exact text and SHA-256 digests for
+the six admitted formats, plus a typed full-image OCR refusal without invented
+text. Validate its page, DOM, line, XML, and OOXML locators against the lock:
+
+```console
+python -m bijux_canon_dev.corpus.parser_locator_truth \
+  --portfolio examples/document-formats/sources.jsonl \
+  --output-root examples/document-formats \
+  --lock examples/document-formats/corpus.lock.json \
+  --truth examples/document-formats/locator-truth.jsonl
+```
+
 Generated download logs and verification evidence are disposable and remain
 under the ignored repository `artifacts/` directory. They are never source
 inputs and are never tracked by Git.
