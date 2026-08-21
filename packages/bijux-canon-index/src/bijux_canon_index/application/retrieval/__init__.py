@@ -41,6 +41,17 @@ from .selection import (
     EvidenceSelectionPolicy,
     select_evidence,
 )
+from .reranking import (
+    RerankBatch,
+    RerankFailurePolicy,
+    RerankOutcome,
+    RerankPolicy,
+    RerankResponse,
+    RerankScore,
+    RerankedCandidate,
+    Reranker,
+    rerank_candidates,
+)
 
 __all__ = [
     "DeduplicationKey",
@@ -68,10 +79,19 @@ __all__ = [
     "RankedChannelCandidate",
     "RetrievalChannel",
     "RetrievalFilterCapability",
+    "RerankBatch",
+    "RerankFailurePolicy",
+    "RerankOutcome",
+    "RerankPolicy",
+    "RerankResponse",
+    "RerankScore",
+    "RerankedCandidate",
+    "Reranker",
     "RrfContribution",
     "RrfFusionBatch",
     "RrfFusionPolicy",
     "reciprocal_rank_fusion",
     "retrieval_filter_capability",
+    "rerank_candidates",
     "select_evidence",
 ]
