@@ -587,6 +587,20 @@ class FaissExactIndex:
             for rank, (score, record) in enumerate(candidates[:top_k], start=1)
         )
 
+    def records(self) -> tuple[DenseVectorRecord, ...]:
+        """Reconstruct canonical normalized records for immutable derivation."""
+
+        return tuple(
+            DenseVectorRecord(
+                chunk_id=record.chunk_id,
+                vector=tuple(
+                    float(value) for value in self._index.reconstruct(record.position)
+                ),
+                metadata=record.metadata,
+            )
+            for record in self._records
+        )
+
 
 __all__ = [
     "BACKEND_ID",

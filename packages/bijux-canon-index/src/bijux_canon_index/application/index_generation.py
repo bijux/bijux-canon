@@ -147,6 +147,26 @@ class IndexBuildStageReceipt:
 
 
 @dataclass(frozen=True, slots=True)
+class IndexGenerationLineage:
+    """Content-bound parent and delta identity for a derived generation."""
+
+    parent_generation_id: str
+    delta_sha256: str
+    added: int
+    modified: int
+    deleted: int
+    tombstoned: int
+
+    def __post_init__(self) -> None:
+        if not self.parent_generation_id or not self.delta_sha256:
+            raise ValueError("index generation lineage identities must not be empty")
+        if min(self.added, self.modified, self.deleted, self.tombstoned) < 0:
+            raise ValueError("index generation lineage counts must not be negative")
+        if self.added + self.modified + self.deleted + self.tombstoned == 0:
+            raise ValueError("index generation lineage requires a non-empty delta")
+
+
+@dataclass(frozen=True, slots=True)
 class IndexGenerationManifest:
     """Identity and receipts for one coherent three-segment generation."""
 
@@ -159,6 +179,7 @@ class IndexGenerationManifest:
     hnsw_parameters: HnswParameters
     chunk_set_sha256: str
     stages: tuple[IndexBuildStageReceipt, ...]
+    lineage: IndexGenerationLineage | None = None
 
 
 class IndexGenerationBuildError(RuntimeError):
@@ -182,6 +203,7 @@ def _manifest_payload(manifest: IndexGenerationManifest) -> dict[str, object]:
         "generation_id": manifest.generation_id,
         "hnsw_parameters": asdict(manifest.hnsw_parameters),
         "limits": asdict(manifest.limits),
+        "lineage": None if manifest.lineage is None else asdict(manifest.lineage),
         "model_lock_artifact_id": manifest.model_lock_artifact_id,
         "schema_version": manifest.schema_version,
         "snapshot_artifact_id": manifest.snapshot_artifact_id,
@@ -204,6 +226,7 @@ def _parse_manifest(payload: object) -> IndexGenerationManifest:
         "generation_id",
         "hnsw_parameters",
         "limits",
+        "lineage",
         "model_lock_artifact_id",
         "schema_version",
         "snapshot_artifact_id",
@@ -216,6 +239,12 @@ def _parse_manifest(payload: object) -> IndexGenerationManifest:
         stages_payload = payload["stages"]
         if not isinstance(stages_payload, list):
             raise TypeError("stages must be a list")
+        lineage_payload = payload["lineage"]
+        lineage = (
+            None
+            if lineage_payload is None
+            else IndexGenerationLineage(**lineage_payload)
+        )
         manifest = IndexGenerationManifest(
             schema_version=int(payload["schema_version"]),
             generation_id=str(payload["generation_id"]),
@@ -226,6 +255,7 @@ def _parse_manifest(payload: object) -> IndexGenerationManifest:
             hnsw_parameters=HnswParameters(**payload["hnsw_parameters"]),
             chunk_set_sha256=str(payload["chunk_set_sha256"]),
             stages=tuple(IndexBuildStageReceipt(**item) for item in stages_payload),
+            lineage=lineage,
         )
     except (KeyError, TypeError, ValueError) as error:
         raise ValueError("index generation manifest is invalid") from error
@@ -420,6 +450,7 @@ class IndexGeneration:
         model_lock_artifact_id: str,
         limits: IndexBuildLimits,
         hnsw_parameters: HnswParameters | None = None,
+        lineage: IndexGenerationLineage | None = None,
     ) -> IndexGeneration:
         """Build and atomically publish all segments from one admitted stream."""
 
@@ -520,6 +551,7 @@ class IndexGeneration:
                 hnsw_parameters=parameters,
                 chunk_set_sha256=chunk_set_sha256,
                 stages=tuple(receipts),
+                lineage=lineage,
             )
             payload = _manifest_payload(initial)
             manifest = IndexGenerationManifest(
@@ -532,6 +564,7 @@ class IndexGeneration:
                 hnsw_parameters=initial.hnsw_parameters,
                 chunk_set_sha256=initial.chunk_set_sha256,
                 stages=initial.stages,
+                lineage=initial.lineage,
             )
             manifest_path = temporary / MANIFEST_NAME
             manifest_path.write_text(
@@ -561,6 +594,31 @@ class IndexGeneration:
                 raise
             raise IndexGenerationBuildError(stage, receipts, error) from error
         return cls.open(destination)
+
+    def admitted_chunks(self) -> tuple[AdmittedIndexChunk, ...]:
+        """Return the exact verified material needed to derive a new generation."""
+
+        lexical = {chunk.chunk_id: chunk for chunk in self.lexical.chunks()}
+        dense = {record.chunk_id: record for record in self.exact.records()}
+        if set(lexical) != set(dense):
+            raise ValueError("index generation segment mappings diverged")
+        result = []
+        for chunk_id in sorted(lexical):
+            lexical_chunk = lexical[chunk_id]
+            dense_record = dense[chunk_id]
+            if lexical_chunk.metadata != dense_record.metadata:
+                raise ValueError("index generation segment metadata diverged")
+            result.append(
+                AdmittedIndexChunk(
+                    chunk_id=chunk_id,
+                    document_id=lexical_chunk.document_id,
+                    ordinal=lexical_chunk.ordinal,
+                    text=lexical_chunk.text,
+                    vector=dense_record.vector,
+                    metadata=lexical_chunk.metadata,
+                )
+            )
+        return tuple(result)
 
     def close(self) -> None:
         """Close every segment connection."""
@@ -602,5 +660,6 @@ __all__ = [
     "IndexBuildStatistics",
     "IndexGeneration",
     "IndexGenerationBuildError",
+    "IndexGenerationLineage",
     "IndexGenerationManifest",
 ]

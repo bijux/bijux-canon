@@ -7,7 +7,13 @@ from bijux_canon_index.application.index_generation import (
     IndexBuildStatistics,
     IndexGeneration,
     IndexGenerationBuildError,
+    IndexGenerationLineage,
     IndexGenerationManifest,
+)
+from bijux_canon_index.application.index_mutation import (
+    IndexDelta,
+    IndexMutationReceipt,
+    apply_index_delta,
 )
 
 __all__ = [
@@ -17,5 +23,9 @@ __all__ = [
     "IndexBuildStatistics",
     "IndexGeneration",
     "IndexGenerationBuildError",
+    "IndexGenerationLineage",
     "IndexGenerationManifest",
+    "IndexDelta",
+    "IndexMutationReceipt",
+    "apply_index_delta",
 ]

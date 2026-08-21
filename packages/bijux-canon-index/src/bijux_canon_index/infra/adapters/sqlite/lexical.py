@@ -576,6 +576,26 @@ class SQLiteLexicalIndex:
                 break
         return tuple(results)
 
+    def chunks(self) -> tuple[LexicalChunk, ...]:
+        """Return every verified chunk in canonical generation order."""
+
+        rows = self._connection.execute(
+            """
+            SELECT chunk_id, document_id, ordinal, text, metadata_json
+            FROM lexical_chunks ORDER BY chunk_id
+            """
+        ).fetchall()
+        return tuple(
+            LexicalChunk(
+                chunk_id=str(chunk_id),
+                document_id=str(document_id),
+                ordinal=int(ordinal),
+                text=str(text),
+                metadata=json.loads(metadata_json),
+            )
+            for chunk_id, document_id, ordinal, text, metadata_json in rows
+        )
+
 
 __all__ = [
     "BACKEND_ID",
