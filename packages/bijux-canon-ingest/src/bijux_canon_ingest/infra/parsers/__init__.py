@@ -3,7 +3,8 @@
 
 """Format-specific parsers for sources that passed admission."""
 
+from bijux_canon_ingest.infra.parsers.html import parse_html_content
 from bijux_canon_ingest.infra.parsers.jats import parse_jats_content
 from bijux_canon_ingest.infra.parsers.pdf import parse_pdf_content
 
-__all__ = ["parse_jats_content", "parse_pdf_content"]
+__all__ = ["parse_html_content", "parse_jats_content", "parse_pdf_content"]

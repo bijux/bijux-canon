@@ -37,6 +37,15 @@ _BLOCK_ROLES = frozenset(get_args(BlockRole))
 _PARSE_ISSUE_CODES = frozenset(get_args(DocumentParseIssueCode))
 PdfPageExtraction = Literal["digital-text", "ocr-required"]
 _PDF_PAGE_EXTRACTIONS = frozenset(get_args(PdfPageExtraction))
+HtmlBlockRole = Literal[
+    "title",
+    "abstract",
+    "section-heading",
+    "paragraph",
+    "list-item",
+    "table",
+]
+_HTML_BLOCK_ROLES = frozenset(get_args(HtmlBlockRole))
 
 
 def _canonical_json(value: object) -> bytes:
@@ -68,7 +77,11 @@ class SourceLocator:
         if not self.scheme:
             raise ValueError("SourceLocator.scheme must not be empty")
         names = [name for name, _ in self.selectors]
-        if not names or any(not name for name in names) or len(names) != len(set(names)):
+        if (
+            not names
+            or any(not name for name in names)
+            or len(names) != len(set(names))
+        ):
             raise ValueError("SourceLocator selectors must have unique non-empty names")
 
     def get(self, name: str) -> LocatorValue | None:
@@ -107,7 +120,9 @@ class DocumentMetadata:
         }
         missing = [name for name, value in required.items() if not value]
         if missing or not self.authors or self.publication_year <= 0:
-            raise ValueError("DocumentMetadata requires complete bibliographic metadata")
+            raise ValueError(
+                "DocumentMetadata requires complete bibliographic metadata"
+            )
 
     def manifest(self) -> dict[str, object]:
         """Return the canonical bibliographic fields."""
@@ -312,7 +327,9 @@ class ParsedPdfDocument:
         if not self.pages or tuple(page.page_number for page in self.pages) != tuple(
             range(1, len(self.pages) + 1)
         ):
-            raise ValueError("ParsedPdfDocument pages must use contiguous one-based order")
+            raise ValueError(
+                "ParsedPdfDocument pages must use contiguous one-based order"
+            )
 
     def resolve_text(self, locator: SourceLocator) -> str:
         """Resolve and integrity-check one exact page character span."""
@@ -367,6 +384,145 @@ class ParsedPdfDocument:
         return {"manifest_sha256": _identity(payload), **payload}
 
 
+@dataclass(frozen=True, slots=True)
+class HtmlLink:
+    """One preserved hyperlink with its original DOM identity."""
+
+    text: str
+    href: str
+    title: str | None
+    locator: SourceLocator
+
+    def __post_init__(self) -> None:
+        if not self.href:
+            raise ValueError("HtmlLink.href must not be empty")
+
+    def manifest(self) -> dict[str, object]:
+        """Return the preserved link representation."""
+
+        return {
+            "href": self.href,
+            "locator": self.locator.manifest(),
+            "text": self.text,
+            "title": self.title,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class HtmlDocumentMetadata:
+    """Citation and document metadata preserved from HTML markup."""
+
+    title: str
+    authors: tuple[str, ...]
+    doi: str
+    language: str | None
+    canonical_url: str | None
+    raw_meta: tuple[tuple[str, str], ...]
+
+    def __post_init__(self) -> None:
+        if not self.title or not self.authors or not self.doi:
+            raise ValueError("HtmlDocumentMetadata requires title, authors, and DOI")
+
+    def manifest(self) -> dict[str, object]:
+        """Return citation metadata without discarding repeated fields."""
+
+        return {
+            "authors": list(self.authors),
+            "canonical_url": self.canonical_url,
+            "doi": self.doi,
+            "language": self.language,
+            "raw_meta": [list(item) for item in self.raw_meta],
+            "title": self.title,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class ParsedHtmlBlock:
+    """One ordered semantic HTML block with stable DOM lineage."""
+
+    index: int
+    role: HtmlBlockRole
+    text: str
+    source_text: str
+    locator: SourceLocator
+    section_path: tuple[str, ...] = ()
+    links: tuple[HtmlLink, ...] = ()
+
+    def __post_init__(self) -> None:
+        if self.index < 0:
+            raise ValueError("ParsedHtmlBlock.index must not be negative")
+        if self.role not in _HTML_BLOCK_ROLES:
+            raise ValueError("unsupported HTML block role")
+        if not self.text:
+            raise ValueError("ParsedHtmlBlock.text must not be empty")
+
+    @property
+    def text_sha256(self) -> str:
+        """Return the normalized block text digest."""
+
+        return _text_sha256(self.text)
+
+    @property
+    def source_text_sha256(self) -> str:
+        """Return the exact HTML text-node sequence digest."""
+
+        return _text_sha256(self.source_text)
+
+    def manifest(self) -> dict[str, object]:
+        """Return the source-resolving block representation."""
+
+        return {
+            "index": self.index,
+            "links": [link.manifest() for link in self.links],
+            "locator": self.locator.manifest(),
+            "role": self.role,
+            "section_path": list(self.section_path),
+            "source_text": self.source_text,
+            "source_text_sha256": self.source_text_sha256,
+            "text": self.text,
+            "text_sha256": self.text_sha256,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class ParsedHtmlDocument:
+    """A deterministic semantic HTML extraction bound to source bytes."""
+
+    source_content_sha256: str
+    parser_name: str
+    parser_version: str
+    metadata: HtmlDocumentMetadata
+    blocks: tuple[ParsedHtmlBlock, ...]
+
+    def __post_init__(self) -> None:
+        if not self.parser_name or not self.parser_version:
+            raise ValueError("ParsedHtmlDocument parser identity must be complete")
+        if len(self.source_content_sha256) != 64 or any(
+            character not in "0123456789abcdef"
+            for character in self.source_content_sha256
+        ):
+            raise ValueError("ParsedHtmlDocument source hash must be lowercase SHA-256")
+        if not self.blocks or tuple(block.index for block in self.blocks) != tuple(
+            range(len(self.blocks))
+        ):
+            raise ValueError(
+                "ParsedHtmlDocument blocks must use contiguous source order"
+            )
+
+    def manifest(self) -> dict[str, object]:
+        """Return a canonical HTML extraction manifest and its identity."""
+
+        payload: dict[str, object] = {
+            "blocks": [block.manifest() for block in self.blocks],
+            "format_id": "html",
+            "metadata": self.metadata.manifest(),
+            "parser": {"name": self.parser_name, "version": self.parser_version},
+            "schema_version": "bijux.canon.ingest.parsed_html_document.v1",
+            "source_content_sha256": self.source_content_sha256,
+        }
+        return {"manifest_sha256": _identity(payload), **payload}
+
+
 class DocumentParseError(ValueError):
     """A typed refusal at the semantic document parsing boundary."""
 
@@ -387,7 +543,12 @@ __all__ = [
     "DocumentParseIssueCode",
     "ParsedBlock",
     "ParsedDocument",
+    "ParsedHtmlBlock",
+    "ParsedHtmlDocument",
     "ParsedPdfDocument",
+    "HtmlBlockRole",
+    "HtmlDocumentMetadata",
+    "HtmlLink",
     "PdfDocumentMetadata",
     "PdfPage",
     "PdfPageExtraction",

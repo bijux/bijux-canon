@@ -38,6 +38,7 @@ _LAZY_EXPORTS: dict[str, LazyExport] = {
     "compile_to_dask_bag": (".pipeline_definitions", "compile_to_dask_bag"),
     "dask_available": (".pipeline_definitions", "dask_available"),
     "discover_sources": (".source_discovery", "discover_sources"),
+    "parse_html": (".document_extraction", "parse_html"),
     "parse_jats": (".document_extraction", "parse_jats"),
     "parse_pdf": (".document_extraction", "parse_pdf"),
     "ingest_docs_to_chunks": (".indexing", "ingest_docs_to_chunks"),
@@ -89,6 +90,7 @@ __all__ = [
     "spec_hash",
     "reconstruct_pipeline",
     "discover_sources",
+    "parse_html",
     "parse_jats",
     "parse_pdf",
 ]

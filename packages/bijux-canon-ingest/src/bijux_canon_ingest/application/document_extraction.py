@@ -8,11 +8,13 @@ from __future__ import annotations
 from bijux_canon_ingest.domain.document_extraction import (
     DocumentParseError,
     ParsedDocument,
+    ParsedHtmlDocument,
     ParsedPdfDocument,
 )
 from bijux_canon_ingest.domain.source_admission import AdmissionResult
 from bijux_canon_ingest.infra.adapters.file_admission import read_current_source
 from bijux_canon_ingest.infra.admission.limits import AdmissionFailure
+from bijux_canon_ingest.infra.parsers.html import parse_html_content
 from bijux_canon_ingest.infra.parsers.jats import parse_jats_content
 from bijux_canon_ingest.infra.parsers.pdf import parse_pdf_content
 
@@ -67,4 +69,27 @@ def parse_pdf(admission: AdmissionResult) -> ParsedPdfDocument:
     )
 
 
-__all__ = ["parse_jats", "parse_pdf"]
+def parse_html(admission: AdmissionResult) -> ParsedHtmlDocument:
+    """Parse one immutable source admitted specifically as HTML."""
+
+    if not admission.admitted:
+        raise DocumentParseError(
+            "source_not_admitted", "source must pass admission before HTML parsing"
+        )
+    if admission.format_id != "html":
+        raise DocumentParseError(
+            "format_mismatch", "admitted source format is not HTML"
+        )
+    try:
+        content = read_current_source(admission.source, admission.budgets)
+    except AdmissionFailure as error:
+        if error.code == "source_changed":
+            raise DocumentParseError("source_changed", error.detail) from error
+        raise DocumentParseError("unsafe_markup", error.detail) from error
+    return parse_html_content(
+        content,
+        source_content_sha256=admission.source.content_sha256,
+    )
+
+
+__all__ = ["parse_html", "parse_jats", "parse_pdf"]
