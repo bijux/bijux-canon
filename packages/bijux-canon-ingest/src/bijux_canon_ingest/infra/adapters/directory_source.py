@@ -134,6 +134,12 @@ def _read_file(
 def _media_type(path: str, prefix: bytes) -> str:
     lowered = prefix.lstrip(b"\xef\xbb\xbf\x00\t\n\r ").lower()
     suffix = PurePosixPath(path).suffix.lower()
+    if prefix.startswith(b"\xff\xd8\xff"):
+        return "image/jpeg"
+    if prefix.startswith(b"\x89PNG\r\n\x1a\n"):
+        return "image/png"
+    if prefix.startswith((b"II*\x00", b"MM\x00*")):
+        return "image/tiff"
     if b"%pdf-" in prefix[:1024].lower():
         return "application/pdf"
     if prefix.startswith(b"PK\x03\x04") and suffix == ".docx":

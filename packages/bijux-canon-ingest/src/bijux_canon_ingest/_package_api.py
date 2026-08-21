@@ -8,6 +8,22 @@ from __future__ import annotations
 from bijux_canon_ingest._lazy_exports import LazyExport
 
 LAZY_EXPORTS: dict[str, LazyExport] = {
+    "CanonicalIngestError": (
+        ".application.canonical_ingest",
+        "CanonicalIngestError",
+    ),
+    "CanonicalIngestRequest": (
+        ".application.canonical_ingest",
+        "CanonicalIngestRequest",
+    ),
+    "CanonicalIngestResult": (
+        ".application.canonical_ingest",
+        "CanonicalIngestResult",
+    ),
+    "CanonicalIngestRuntime": (
+        ".application.canonical_ingest",
+        "CanonicalIngestRuntime",
+    ),
     "AdmissionBudgets": (".domain.source_admission", "AdmissionBudgets"),
     "AdmissionDisposition": (".domain.source_admission", "AdmissionDisposition"),
     "AdmissionEvidence": (".domain.source_admission", "AdmissionEvidence"),
@@ -153,6 +169,7 @@ LAZY_EXPORTS: dict[str, LazyExport] = {
     "build_ingest_deps": (".config.ingest", "build_ingest_deps"),
     "discover_sources": (".application.source_discovery", "discover_sources"),
     "iter_chunks_from_cleaned": (".application.pipeline", "iter_chunks_from_cleaned"),
+    "ingest_corpus": (".application.canonical_ingest", "ingest_corpus"),
     "iter_ingest_pipeline": (".application.pipeline", "iter_ingest_pipeline"),
     "iter_ingest_pipeline_core": (".application.pipeline", "iter_ingest_pipeline_core"),
     "make_chunk_stream_fn": (".config.ingest", "make_chunk_stream_fn"),
@@ -197,6 +214,10 @@ PUBLIC_API = [
     "AdmissionIssueCode",
     "AdmissionResult",
     "CanonicalSourceMetadata",
+    "CanonicalIngestError",
+    "CanonicalIngestRequest",
+    "CanonicalIngestResult",
+    "CanonicalIngestRuntime",
     "CorpusSnapshot",
     "CorpusSnapshotConfiguration",
     "CorpusSnapshotDocument",
@@ -281,6 +302,7 @@ PUBLIC_API = [
     "chunk_doc",
     "iter_chunk_spans",
     "iter_chunk_doc",
+    "ingest_corpus",
     "iter_overlapping_chunks_text",
     "embed_chunk",
     "structural_dedup_chunks",

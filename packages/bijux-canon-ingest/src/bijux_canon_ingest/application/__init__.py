@@ -14,6 +14,10 @@ from typing import Any
 from bijux_canon_ingest._lazy_exports import LazyExport, resolve_lazy_export
 
 _LAZY_EXPORTS: dict[str, LazyExport] = {
+    "CanonicalIngestError": (".canonical_ingest", "CanonicalIngestError"),
+    "CanonicalIngestRequest": (".canonical_ingest", "CanonicalIngestRequest"),
+    "CanonicalIngestResult": (".canonical_ingest", "CanonicalIngestResult"),
+    "CanonicalIngestRuntime": (".canonical_ingest", "CanonicalIngestRuntime"),
     "apply_corpus_delta": (".corpus_delta", "apply_corpus_delta"),
     "assess_ocr_requirement": (".document_extraction", "assess_ocr_requirement"),
     "DebugConfig": ("bijux_canon_ingest.observability", "DebugConfig"),
@@ -60,6 +64,7 @@ _LAZY_EXPORTS: dict[str, LazyExport] = {
     "ingest_docs_to_chunks": (".indexing", "ingest_docs_to_chunks"),
     "iter_chunks_from_cleaned": (".pipeline", "iter_chunks_from_cleaned"),
     "iter_ingest_pipeline": (".pipeline", "iter_ingest_pipeline"),
+    "ingest_corpus": (".canonical_ingest", "ingest_corpus"),
     "iter_ingest_pipeline_core": (".pipeline", "iter_ingest_pipeline_core"),
     "parse_filters": (".querying", "parse_filters"),
     "plan_corpus_delta": (".corpus_delta", "plan_corpus_delta"),
@@ -81,9 +86,14 @@ _LAZY_EXPORTS: dict[str, LazyExport] = {
 }
 
 __all__ = [
+    "CanonicalIngestError",
+    "CanonicalIngestRequest",
+    "CanonicalIngestResult",
+    "CanonicalIngestRuntime",
     "apply_corpus_delta",
     "assess_ocr_requirement",
     "iter_ingest_pipeline",
+    "ingest_corpus",
     "iter_ingest_pipeline_core",
     "iter_chunks_from_cleaned",
     "run_ingest_pipeline",

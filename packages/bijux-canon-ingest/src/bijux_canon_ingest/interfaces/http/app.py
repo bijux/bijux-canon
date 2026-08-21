@@ -5,11 +5,19 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 from fastapi import APIRouter, FastAPI, HTTPException
 
+from bijux_canon_ingest.application.canonical_ingest import (
+    CanonicalIngestError,
+    CanonicalIngestRequest,
+    CanonicalIngestRuntime,
+)
 from bijux_canon_ingest.application.service import (
     IngestService,
 )
+from bijux_canon_ingest.domain.corpus_snapshot import CorpusSnapshotConfiguration
 from bijux_canon_ingest.interfaces.http.mappers import (
     ask_response_from_payload,
     chunk_response_from_result,
@@ -22,6 +30,8 @@ from bijux_canon_ingest.interfaces.http.models import (
     AskResponse,
     ChunkRequest,
     ChunkResponse,
+    CorpusIngestRequest,
+    CorpusIngestResponse,
     HealthResponse,
     IndexBuildRequest,
     IndexBuildResponse,
@@ -82,6 +92,7 @@ def create_app() -> FastAPI:
     router = APIRouter(prefix="/v1")
 
     rag_app = IngestService()
+    canonical_ingest = CanonicalIngestRuntime()
     index_store = InMemoryIndexStore()
 
     @router.get(
@@ -94,6 +105,36 @@ def create_app() -> FastAPI:
     )
     async def healthz() -> dict[str, bool]:
         return {"ok": True}
+
+    @router.post(
+        "/corpora/ingest",
+        response_model=CorpusIngestResponse,
+        tags=["Chunking"],
+        summary="Ingest a canonical source corpus",
+        operation_id="ingestCanonicalCorpus",
+    )
+    async def ingest_corpus(req: CorpusIngestRequest) -> CorpusIngestResponse:
+        try:
+            result = canonical_ingest.ingest(
+                CanonicalIngestRequest(
+                    root_path=Path(req.root_path),
+                    root_name=req.root_name,
+                    configuration=CorpusSnapshotConfiguration(
+                        corpus_name=req.corpus_name
+                    ),
+                    include=tuple(req.include),
+                    exclude=tuple(req.exclude),
+                    symlink_policy=req.symlink_policy,
+                    publication_root=(
+                        Path(req.publication_root)
+                        if req.publication_root is not None
+                        else None
+                    ),
+                )
+            )
+        except (CanonicalIngestError, OSError, ValueError) as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
+        return CorpusIngestResponse.model_validate(result.manifest())
 
     @router.post(
         "/chunks",

@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field, model_validator
 
@@ -195,6 +195,31 @@ class HealthResponse(BaseModel):
     ok: bool = Field(description="Liveness indicator for the HTTP adapter.")
 
 
+class CorpusIngestRequest(BaseModel):
+    root_path: str = Field(..., min_length=1)
+    root_name: str = Field(..., min_length=1)
+    corpus_name: str = Field(..., min_length=1)
+    include: list[str] = Field(default_factory=lambda: ["**/*"], min_length=1)
+    exclude: list[str] = Field(default_factory=list)
+    symlink_policy: Literal["reject", "files_within_root", "all_within_root"] = "reject"
+    publication_root: str | None = None
+
+
+class CorpusIngestResponse(BaseModel):
+    canonical_byte_length: int
+    canonical_sha256: str
+    chunk_count: int
+    configuration_sha256: str
+    discovery_issue_count: int
+    document_count: int
+    formats: dict[str, int]
+    ocr_required_count: int
+    publication: dict[str, Any] | None
+    rejection_count: int
+    schema_version: Literal["bijux.canon.ingest.result.v1"]
+    snapshot_id: str
+
+
 __all__ = [
     "AskRequest",
     "AskResponse",
@@ -203,6 +228,8 @@ __all__ = [
     "ChunkRequest",
     "ChunkResponse",
     "CitationModel",
+    "CorpusIngestRequest",
+    "CorpusIngestResponse",
     "DocIn",
     "HealthResponse",
     "IndexBuildRequest",

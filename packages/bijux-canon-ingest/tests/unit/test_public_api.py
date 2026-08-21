@@ -35,3 +35,4 @@ def test_root_package_declares_lazy_exports_in_dir() -> None:
     assert "publish_corpus_snapshot" in exported_names
     assert "read_published_corpus_snapshot" in exported_names
     assert "recover_corpus_snapshot_store" in exported_names
+    assert "ingest_corpus" in exported_names
