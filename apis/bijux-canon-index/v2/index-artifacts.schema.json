@@ -108,12 +108,48 @@
     },
     "index_generation": {
       "type": "object", "additionalProperties": false,
-      "required": ["schema_version", "artifact_type", "artifact_id", "corpus_snapshot_artifact_id", "model_lock_artifact_ids", "lexical_segment_artifact_ids", "dense_segment_artifact_ids", "filter_artifact_ids", "build_configuration_sha256", "integrity_artifact_id", "created_at"],
+      "required": ["schema_version", "artifact_type", "artifact_id", "corpus_snapshot_artifact_id", "chunk_artifact_ids", "chunk_set_sha256", "model_lock_artifact_ids", "lexical_tokenizer", "lexical_segment_artifact_ids", "dense_segment_artifact_ids", "backend_bindings", "filter_artifact_ids", "build_configuration_sha256", "build_attempt", "lineage", "integrity_artifact_id", "created_at"],
       "properties": {
         "schema_version": {"const": "2.0.0"}, "artifact_type": {"const": "bijux.canon.index.generation"}, "artifact_id": {"$ref": "#/$defs/artifact_id"},
-        "corpus_snapshot_artifact_id": {"$ref": "#/$defs/artifact_id"}, "model_lock_artifact_ids": {"$ref": "#/$defs/artifact_id_list"},
-        "lexical_segment_artifact_ids": {"$ref": "#/$defs/artifact_id_list"}, "dense_segment_artifact_ids": {"$ref": "#/$defs/artifact_id_list"}, "filter_artifact_ids": {"$ref": "#/$defs/artifact_id_list"},
-        "build_configuration_sha256": {"$ref": "#/$defs/sha256"}, "integrity_artifact_id": {"$ref": "#/$defs/artifact_id"}, "created_at": {"$ref": "#/$defs/timestamp"}
+        "corpus_snapshot_artifact_id": {"$ref": "#/$defs/artifact_id"},
+        "chunk_artifact_ids": {"allOf": [{"$ref": "#/$defs/artifact_id_list"}, {"minItems": 1}]}, "chunk_set_sha256": {"$ref": "#/$defs/sha256"},
+        "model_lock_artifact_ids": {"allOf": [{"$ref": "#/$defs/artifact_id_list"}, {"minItems": 1}]},
+        "lexical_tokenizer": {
+          "type": "object", "additionalProperties": false,
+          "required": ["implementation", "implementation_version", "configuration_sha256"],
+          "properties": {
+            "implementation": {"type": "string", "minLength": 1}, "implementation_version": {"type": "string", "minLength": 1}, "configuration_sha256": {"$ref": "#/$defs/sha256"}
+          }
+        },
+        "lexical_segment_artifact_ids": {"$ref": "#/$defs/artifact_id_list"}, "dense_segment_artifact_ids": {"$ref": "#/$defs/artifact_id_list"},
+        "backend_bindings": {
+          "type": "array", "minItems": 1, "uniqueItems": true,
+          "items": {
+            "type": "object", "additionalProperties": false,
+            "required": ["backend", "backend_version", "parameters_sha256", "segment_artifact_ids"],
+            "properties": {
+              "backend": {"type": "string", "minLength": 1}, "backend_version": {"type": "string", "minLength": 1}, "parameters_sha256": {"$ref": "#/$defs/sha256"}, "segment_artifact_ids": {"allOf": [{"$ref": "#/$defs/artifact_id_list"}, {"minItems": 1}]}
+            }
+          },
+          "x-bijux-ordering": "backend ascending"
+        },
+        "filter_artifact_ids": {"$ref": "#/$defs/artifact_id_list"},
+        "build_configuration_sha256": {"$ref": "#/$defs/sha256"},
+        "build_attempt": {
+          "type": "object", "additionalProperties": false,
+          "required": ["attempt_id", "source_commit", "actor", "started_at", "completed_at", "status"],
+          "properties": {
+            "attempt_id": {"$ref": "#/$defs/artifact_id"}, "source_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"}, "actor": {"type": "string", "minLength": 1}, "started_at": {"$ref": "#/$defs/timestamp"}, "completed_at": {"$ref": "#/$defs/timestamp"}, "status": {"const": "succeeded"}
+          }
+        },
+        "lineage": {
+          "type": "object", "additionalProperties": false,
+          "required": ["parent_generation_artifact_id", "parent_activation_artifact_id"],
+          "properties": {
+            "parent_generation_artifact_id": {"oneOf": [{"$ref": "#/$defs/artifact_id"}, {"type": "null"}]}, "parent_activation_artifact_id": {"oneOf": [{"$ref": "#/$defs/artifact_id"}, {"type": "null"}]}
+          }
+        },
+        "integrity_artifact_id": {"$ref": "#/$defs/artifact_id"}, "created_at": {"$ref": "#/$defs/timestamp"}
       },
       "anyOf": [{"properties": {"lexical_segment_artifact_ids": {"minItems": 1}}}, {"properties": {"dense_segment_artifact_ids": {"minItems": 1}}}]
     },
@@ -145,6 +181,8 @@
     "all artifact ID arrays and integrity members are sorted and unique",
     "vector shape, dtype, metric, and model lock agree",
     "generation references at least one lexical or dense segment",
+    "generation chunk-set hash covers the complete sorted admitted chunk ID array",
+    "generation backend bindings cover every referenced lexical and dense segment",
     "integrity root covers every generation member",
     "activation is admitted only after every integrity member is durable and verified"
   ]

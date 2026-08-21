@@ -14,9 +14,12 @@ never repaired on read.
 
 Model locks bind immutable provider revisions, dimensions, dtypes,
 normalization, pooling, tokenizer revisions, licenses, file hashes, and offline
-policy. Generations cannot activate until all referenced segments and vectors
-are durable and the integrity record verifies. Activation receipts retain the
-previous generation and atomic-write identity.
+policy. Generation records bind the complete admitted chunk set, its canonical
+hash, lexical tokenizer, backend versions and parameter hashes, filters,
+segments, build attempt, and parent generation/activation lineage. Generations
+cannot activate until all referenced segments and vectors are durable and the
+integrity record verifies. Activation receipts retain the previous generation
+and atomic-write identity.
 
 `sha256-merkle-v1` defines its manifest root as SHA-256 over the RFC 8785
 canonical JSON bytes of the complete `members` array. Members are sorted by

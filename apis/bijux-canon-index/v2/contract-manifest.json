@@ -1,14 +1,16 @@
 {
-  "schema_version": "1.1.0",
+  "schema_version": "1.2.0",
   "contract_id": "bijux.canon.index.artifacts.v2",
   "artifact_schema_version": "2.0.0",
   "json_schema_dialect": "https://json-schema.org/draft/2020-12/schema",
   "canonical_serialization": "RFC 8785",
   "identity_algorithm": "sha-256",
-  "identity_excluded_json_pointers": ["/artifact_id"],
+  "identity_excluded_json_pointers": [
+    "/artifact_id"
+  ],
   "schema_bundle": {
     "path": "index-artifacts.schema.json",
-    "sha256": "78704489d3dfc61477ac27b44646a8a20ead4b1d3e64b766fd13a0e82dc99f38",
+    "sha256": "aae45363a269fad7548cfa925b5043d2da28b0a53858b4b0af910a3156142b22",
     "definitions": {
       "bijux.canon.index.activation_receipt": "#/$defs/activation_receipt",
       "bijux.canon.index.dense_segment": "#/$defs/dense_segment",
@@ -42,14 +44,14 @@
   },
   "conformance_example": {
     "path": "examples/evaluation-index-records.json",
-    "sha256": "edaa154d6e74d07b9cbc24cb2cb66fb556156b29ffee26c3ba9e4bb84a58092e",
+    "sha256": "dc21d81db73b06f2e0eb36d471731dcbd020233891f76fa02493344536989bbe",
     "record_count": 8,
     "source_corpus_sha256": "03a79d793dc4bc525745c8c564a5b116ea727a2dfea9766397d886edfc39e4aa",
     "source_document_count": 25
   },
   "retrieval_conformance_example": {
     "path": "examples/evaluation-retrieval-records.json",
-    "sha256": "c614e08ca49eb8cce183d21ff899bb0917469a6648e6a4ace0acb4f986927934",
+    "sha256": "4413429764260d7ef8c1feaffa082d6ab3929a5aa0e366fbdf9509fed4d2092a",
     "record_count": 9,
     "query_text_sha256": "d72953f67842f7f9c31a083d80ab9ee54f9ddcb85989e62989d3773fded3cfbe",
     "source_corpus_sha256": "03a79d793dc4bc525745c8c564a5b116ea727a2dfea9766397d886edfc39e4aa",
