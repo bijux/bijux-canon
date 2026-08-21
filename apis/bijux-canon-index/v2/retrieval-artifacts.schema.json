@@ -79,11 +79,28 @@
     },
     "execution": {
       "type": "object", "additionalProperties": false,
-      "required": ["schema_version", "artifact_type", "artifact_id", "query_artifact_id", "generation_artifact_id", "candidate_artifact_ids", "fused_hit_artifact_ids", "approximation_artifact_id", "status", "result_sha256", "started_at", "completed_at"],
+      "required": ["schema_version", "artifact_type", "artifact_id", "query_artifact_id", "query_vector_sha256", "generation_artifact_id", "backend_binding", "filter_artifact_ids", "execution_budget", "software_versions", "hardware_class", "candidate_artifact_ids", "candidate_order_sha256", "fused_hit_artifact_ids", "approximation_artifact_id", "status", "result_sha256", "started_at", "completed_at"],
       "properties": {
-        "schema_version": {"const": "2.0.0"}, "artifact_type": {"const": "bijux.canon.index.execution"}, "artifact_id": {"$ref": "#/$defs/artifact_id"}, "query_artifact_id": {"$ref": "#/$defs/artifact_id"}, "generation_artifact_id": {"$ref": "#/$defs/artifact_id"},
+        "schema_version": {"const": "2.0.0"}, "artifact_type": {"const": "bijux.canon.index.execution"}, "artifact_id": {"$ref": "#/$defs/artifact_id"}, "query_artifact_id": {"$ref": "#/$defs/artifact_id"}, "query_vector_sha256": {"$ref": "#/$defs/sha256"}, "generation_artifact_id": {"$ref": "#/$defs/artifact_id"},
+        "backend_binding": {
+          "type": "object", "additionalProperties": false, "required": ["backend", "backend_version", "algorithm", "algorithm_version", "index_parameters", "query_parameters"],
+          "properties": {
+            "backend": {"type": "string", "minLength": 1}, "backend_version": {"type": "string", "minLength": 1}, "algorithm": {"type": "string", "minLength": 1}, "algorithm_version": {"type": "string", "minLength": 1},
+            "index_parameters": {"type": "array", "items": {"$ref": "#/$defs/parameter"}, "uniqueItems": true, "x-bijux-ordering": "name ascending"}, "query_parameters": {"type": "array", "items": {"$ref": "#/$defs/parameter"}, "uniqueItems": true, "x-bijux-ordering": "name ascending"}
+          }
+        },
+        "filter_artifact_ids": {"$ref": "#/$defs/sorted_artifact_ids"},
+        "execution_budget": {
+          "type": "object", "additionalProperties": false, "required": ["max_latency_ms", "max_memory_bytes", "max_candidates", "max_distance_computations", "minimum_recall"],
+          "properties": {"max_latency_ms": {"type": "number", "exclusiveMinimum": 0}, "max_memory_bytes": {"type": "integer", "minimum": 1}, "max_candidates": {"type": "integer", "minimum": 1}, "max_distance_computations": {"type": "integer", "minimum": 1}, "minimum_recall": {"type": "number", "minimum": 0, "maximum": 1}}
+        },
+        "software_versions": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/implementation_lock"}, "uniqueItems": true, "x-bijux-ordering": "name ascending"},
+        "hardware_class": {
+          "type": "object", "additionalProperties": false, "required": ["architecture", "cpu_class", "accelerator_class"],
+          "properties": {"architecture": {"type": "string", "minLength": 1}, "cpu_class": {"type": "string", "minLength": 1}, "accelerator_class": {"type": "string", "minLength": 1}}
+        },
         "candidate_artifact_ids": {"allOf": [{"$ref": "#/$defs/ordered_artifact_ids"}, {"minItems": 1}]}, "fused_hit_artifact_ids": {"allOf": [{"$ref": "#/$defs/ordered_artifact_ids"}, {"minItems": 1}]},
-        "approximation_artifact_id": {"oneOf": [{"$ref": "#/$defs/artifact_id"}, {"type": "null"}]}, "status": {"enum": ["success", "partial", "failed"]}, "result_sha256": {"$ref": "#/$defs/sha256"},
+        "candidate_order_sha256": {"$ref": "#/$defs/sha256"}, "approximation_artifact_id": {"oneOf": [{"$ref": "#/$defs/artifact_id"}, {"type": "null"}]}, "status": {"enum": ["success", "partial", "failed"]}, "result_sha256": {"$ref": "#/$defs/sha256"},
         "started_at": {"$ref": "#/$defs/timestamp"}, "completed_at": {"$ref": "#/$defs/timestamp"}
       }
     },
@@ -112,6 +129,7 @@
   "x-bijux-identity": {"algorithm": "sha-256", "canonicalization": "RFC 8785", "excluded_json_pointers": ["/artifact_id"]},
   "x-bijux-invariants": [
     "candidate and hit arrays retain declared rank order and use artifact identity for ties",
+    "execution identity binds the normalized query vector, generation, backend, parameters, filters, budgets, software, hardware class, candidate order, and output hash",
     "query text, execution results, implementation locks, and provenance are hash-bound",
     "approximate execution carries a seed, witness, explicit error bounds, and immutable index generation",
     "replay compares canonical result hashes and never overwrites the original execution"

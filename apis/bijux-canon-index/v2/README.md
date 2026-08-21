@@ -7,6 +7,12 @@ provenance, and replay receipts. Each schema bundle exposes one closed
 definition per artifact type and the manifest binds every public type to exact
 schema bytes.
 
+Execution identity binds the normalized query-vector hash, immutable index
+generation, backend and algorithm versions, index and query parameters,
+filters, resource and recall budgets, software locks, hardware class,
+candidate order, and result hash. Replay may therefore distinguish an output
+change from input, implementation, hardware, or ordering drift.
+
 Records use RFC 8785 canonical JSON. Their `artifact_id` is SHA-256 over the
 complete canonical record after removing only the root `artifact_id`. Arrays
 marked with `x-bijux-ordering` are sorted before identity calculation and are
