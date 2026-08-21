@@ -4,6 +4,23 @@
 
 from __future__ import annotations
 
+from bijux_canon_reason.research.gap_retrieval import (
+    EvidenceChange,
+    GapRetrievalError,
+    GapRetrievalErrorCode,
+    GapRetrievalPolicy,
+    GapRetrievalRecord,
+    GapRetrievalRun,
+    GapRetrievalService,
+    RetrievalBatchStatus,
+    RetrievalEvidenceBatch,
+    RetrievalEvidencePort,
+    RetrievalTargetKind,
+    ScopedRetrievalRequest,
+    create_gap_retrieval_request,
+    create_retrieval_evidence_batch,
+    create_subquestion_retrieval_request,
+)
 from bijux_canon_reason.research.question_decomposition import (
     QuestionDecomposer,
     QuestionDecompositionDecision,
@@ -21,6 +38,13 @@ from bijux_canon_reason.research.question_decomposition import (
 )
 
 __all__ = [
+    "EvidenceChange",
+    "GapRetrievalError",
+    "GapRetrievalErrorCode",
+    "GapRetrievalPolicy",
+    "GapRetrievalRecord",
+    "GapRetrievalRun",
+    "GapRetrievalService",
     "QuestionDecomposer",
     "QuestionDecompositionDecision",
     "QuestionDecompositionError",
@@ -30,8 +54,16 @@ __all__ = [
     "ResearchQuestion",
     "ResearchQuestionIntent",
     "ResearchSubquestion",
+    "RetrievalBatchStatus",
+    "RetrievalEvidenceBatch",
+    "RetrievalEvidencePort",
+    "RetrievalTargetKind",
+    "ScopedRetrievalRequest",
     "SubquestionCandidate",
     "SubquestionDisposition",
     "SubquestionStatus",
+    "create_gap_retrieval_request",
+    "create_retrieval_evidence_batch",
+    "create_subquestion_retrieval_request",
     "create_subquestion_candidate",
 ]
