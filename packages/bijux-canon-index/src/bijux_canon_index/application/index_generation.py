@@ -197,6 +197,10 @@ class IndexGenerationBuildError(RuntimeError):
         super().__init__(f"index generation stage {stage!r} failed: {cause}")
 
 
+class IndexGenerationIntegrityError(ValueError):
+    """A stored generation envelope or cross-segment invariant is invalid."""
+
+
 def _manifest_payload(manifest: IndexGenerationManifest) -> dict[str, object]:
     return {
         "chunk_set_sha256": manifest.chunk_set_sha256,
@@ -348,21 +352,41 @@ class IndexGeneration:
 
         root = Path(path).resolve()
         manifest_path = root / MANIFEST_NAME
-        raw = manifest_path.read_bytes()
+        try:
+            raw = manifest_path.read_bytes()
+        except FileNotFoundError as error:
+            if not root.is_dir():
+                raise
+            raise IndexGenerationIntegrityError(
+                "index generation manifest is unavailable"
+            ) from error
+        except OSError as error:
+            raise IndexGenerationIntegrityError(
+                "index generation manifest is unavailable"
+            ) from error
         try:
             payload = json.loads(raw)
         except (UnicodeDecodeError, json.JSONDecodeError) as error:
-            raise ValueError("index generation manifest is unreadable") from error
-        manifest = _parse_manifest(payload)
+            raise IndexGenerationIntegrityError(
+                "index generation manifest is unreadable"
+            ) from error
+        try:
+            manifest = _parse_manifest(payload)
+        except ValueError as error:
+            raise IndexGenerationIntegrityError(str(error)) from error
         if raw != (_canonical_json(payload) + "\n").encode("utf-8"):
-            raise ValueError("index generation manifest is not canonical JSON")
+            raise IndexGenerationIntegrityError(
+                "index generation manifest is not canonical JSON"
+            )
         receipts = {receipt.stage: receipt for receipt in manifest.stages}
         if len(manifest.stages) != 3 or set(receipts) != {
             "lexical",
             "dense_exact",
             "dense_hnsw",
         }:
-            raise ValueError("index generation does not contain all required stages")
+            raise IndexGenerationIntegrityError(
+                "index generation does not contain all required stages"
+            )
         expected_names = {
             "lexical": LEXICAL_NAME,
             "dense_exact": EXACT_NAME,
@@ -379,9 +403,19 @@ class IndexGeneration:
                 receipt.file_name != file_name
                 or receipt.backend != expected_backends[stage]
             ):
-                raise ValueError("index generation segment descriptor is unsupported")
-            if _sha256_file(root / file_name) != receipt.file_sha256:
-                raise ValueError(f"index generation {stage} segment hash mismatch")
+                raise IndexGenerationIntegrityError(
+                    "index generation segment descriptor is unsupported"
+                )
+            try:
+                file_sha256 = _sha256_file(root / file_name)
+            except OSError as error:
+                raise IndexGenerationIntegrityError(
+                    f"index generation {stage} segment is unavailable"
+                ) from error
+            if file_sha256 != receipt.file_sha256:
+                raise IndexGenerationIntegrityError(
+                    f"index generation {stage} segment hash mismatch"
+                )
         lexical = SQLiteLexicalIndex(root / LEXICAL_NAME)
         try:
             exact = FaissExactIndex(root / EXACT_NAME)
@@ -407,7 +441,7 @@ class IndexGeneration:
                     or backend_manifest.chunk_set_sha256 != receipt.chunk_set_sha256
                     or receipt.chunk_set_sha256 != manifest.chunk_set_sha256
                 ):
-                    raise ValueError(
+                    raise IndexGenerationIntegrityError(
                         f"index generation {stage} receipt does not match its segment"
                     )
             if (
@@ -416,7 +450,9 @@ class IndexGeneration:
                 or hnsw.manifest.model_lock_artifact_id
                 != manifest.model_lock_artifact_id
             ):
-                raise ValueError("dense segments do not match the generation model lock")
+                raise IndexGenerationIntegrityError(
+                    "dense segments do not match the generation model lock"
+                )
             counts = {
                 lexical.manifest.chunk_count,
                 exact.manifest.vector_count,
@@ -430,9 +466,13 @@ class IndexGeneration:
                 manifest.statistics.dimension,
             }
             if len(counts) != 1 or len(dimensions) != 1:
-                raise ValueError("index generation chunk count does not match its segments")
+                raise IndexGenerationIntegrityError(
+                    "index generation chunk count does not match its segments"
+                )
             if hnsw.manifest.parameters != manifest.hnsw_parameters:
-                raise ValueError("HNSW segment does not match generation parameters")
+                raise IndexGenerationIntegrityError(
+                    "HNSW segment does not match generation parameters"
+                )
         except BaseException:
             hnsw.close()
             exact.close()
@@ -660,6 +700,7 @@ __all__ = [
     "IndexBuildStatistics",
     "IndexGeneration",
     "IndexGenerationBuildError",
+    "IndexGenerationIntegrityError",
     "IndexGenerationLineage",
     "IndexGenerationManifest",
 ]
