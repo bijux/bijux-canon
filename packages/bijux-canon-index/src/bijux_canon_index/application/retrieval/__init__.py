@@ -12,6 +12,16 @@ from .dense import (
     DenseCandidateService,
     QueryEmbeddingProvider,
 )
+from .fusion import (
+    FusedCandidate,
+    FusionChannelRanking,
+    RankedChannelCandidate,
+    RetrievalChannel,
+    RrfContribution,
+    RrfFusionBatch,
+    RrfFusionPolicy,
+    reciprocal_rank_fusion,
+)
 from .lexical import (
     LexicalCandidateBatch,
     LexicalCandidateDecision,
@@ -27,10 +37,18 @@ __all__ = [
     "DenseCandidateMode",
     "DenseCandidateOutcome",
     "DenseCandidateService",
+    "FusedCandidate",
+    "FusionChannelRanking",
     "LexicalCandidateBatch",
     "LexicalCandidateDecision",
     "LexicalCandidateDisposition",
     "LexicalCandidateOutcome",
     "LexicalCandidateService",
     "QueryEmbeddingProvider",
+    "RankedChannelCandidate",
+    "RetrievalChannel",
+    "RrfContribution",
+    "RrfFusionBatch",
+    "RrfFusionPolicy",
+    "reciprocal_rank_fusion",
 ]
