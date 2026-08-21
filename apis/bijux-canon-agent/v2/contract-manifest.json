@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0.0",
+  "contract_id": "bijux.canon.agent.research_loop.v2",
+  "artifact_schema_version": "2.0.0",
+  "schema_bundle": {
+    "path": "research-loop-artifacts.schema.json",
+    "sha256": "e67aa598832e4157ada474a43f47c69fe956021274ff7f7c2adb68f20395c3a0",
+    "definitions": {
+      "budget": "#/$defs/budget",
+      "causal_trace": "#/$defs/causal_trace",
+      "critique": "#/$defs/critique",
+      "provider_call": "#/$defs/provider_call",
+      "research_plan": "#/$defs/research_plan",
+      "role_transition": "#/$defs/role_transition",
+      "stop_decision": "#/$defs/stop_decision",
+      "synthesis": "#/$defs/synthesis",
+      "tool_call": "#/$defs/tool_call"
+    }
+  },
+  "migration_policy": {
+    "path": "migration-policy.json",
+    "sha256": "88a93747f0d5b10681deb3eb0ed7843ea44be70e1b9bd17a15eef71a2cd67a4e"
+  },
+  "conformance": {
+    "path": "examples/evaluation-research-loop-records.json",
+    "sha256": "2c29a936e0c79cd60a11b54a7d02724e154eb45bda638c70c2330086351e8ea6",
+    "record_count": 9,
+    "source_corpus": {
+      "sha256": "03a79d793dc4bc525745c8c564a5b116ea727a2dfea9766397d886edfc39e4aa",
+      "document_count": 25,
+      "source_document_id": "d01_fastq"
+    }
+  }
+}
