@@ -33,6 +33,7 @@ _LAZY_EXPORTS: dict[str, LazyExport] = {
     "ask": (".querying", "ask"),
     "beam_available": (".pipeline_definitions", "beam_available"),
     "build_chunk_span_mapping": (".source_mapping", "build_chunk_span_mapping"),
+    "build_corpus_snapshot": (".corpus_snapshot", "build_corpus_snapshot"),
     "build_document_span_mappings": (
         ".source_mapping",
         "build_document_span_mappings",
@@ -87,6 +88,7 @@ __all__ = [
     "IngestService",
     "ingest_docs_to_chunks",
     "build_chunk_span_mapping",
+    "build_corpus_snapshot",
     "build_document_span_mappings",
     "chunk_document_mappings",
     "build_index_from_docs",

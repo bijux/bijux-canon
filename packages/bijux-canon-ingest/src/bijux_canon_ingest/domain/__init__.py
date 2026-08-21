@@ -15,6 +15,12 @@ from __future__ import annotations
 
 from .capabilities import Cache, Clock, Logger, Storage, StorageRead, StorageWrite
 from .composition import chain_io, logged_read
+from .corpus_snapshot import (
+    CorpusSnapshot,
+    CorpusSnapshotConfiguration,
+    CorpusSnapshotDocument,
+    SnapshotParsedDocument,
+)
 from .document_extraction import (
     BlockRole,
     DocumentMetadata,
@@ -105,6 +111,11 @@ __all__ = [
     "MetadataField",
     "MetadataValue",
     "RawMetadataValue",
+    # Corpus snapshots
+    "CorpusSnapshot",
+    "CorpusSnapshotConfiguration",
+    "CorpusSnapshotDocument",
+    "SnapshotParsedDocument",
     # Semantic chunks
     "SemanticChunk",
     "SemanticChunkingPolicy",
