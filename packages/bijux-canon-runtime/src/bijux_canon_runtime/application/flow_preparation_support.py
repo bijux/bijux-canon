@@ -47,6 +47,7 @@ from bijux_canon_runtime.runtime.execution.observer_executor import ObserverExec
 from bijux_canon_runtime.runtime.non_determinism_lifecycle import (
     NonDeterminismLifecycle,
 )
+from bijux_canon_runtime.runtime.persistence import InMemoryArtifactPayloadStore
 
 
 def effective_execution_config(execution_config: ExecutionConfig) -> ExecutionConfig:
@@ -289,6 +290,8 @@ def build_execution_context(
         artifact_store=artifact_store
         or execution_config.artifact_store
         or InMemoryArtifactStore(),
+        payload_store=execution_config.payload_store
+        or InMemoryArtifactPayloadStore(),
         trace_recorder=start_state.trace_recorder,
         mode=execution_config.mode,
         verification_policy=execution_config.verification_policy,

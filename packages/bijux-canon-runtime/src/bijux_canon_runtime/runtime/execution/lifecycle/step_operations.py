@@ -6,7 +6,8 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
+import json
 from typing import Protocol
 
 from bijux_canon_runtime.contracts.step_contract import validate_outputs
@@ -355,6 +356,19 @@ def execute_reasoning_step(
             parent_artifacts=tuple(artifact.artifact_id for artifact in step_artifacts),
             content_hash=bundle_hash,
             scope=ArtifactScope.AUDIT,
+        )
+        context.persist_payload(
+            logical_artifact_id=reasoning_artifact.artifact_id,
+            payload=json.dumps(
+                asdict(bundle),
+                sort_keys=True,
+                separators=(",", ":"),
+                ensure_ascii=False,
+            ).encode("utf-8"),
+            schema_id="bijux.runtime.reasoning-bundle.v1",
+            media_type="application/json",
+            producer="bijux-canon-reason:reasoning",
+            parent_artifacts=reasoning_artifact.parent_artifacts,
         )
         artifacts.append(reasoning_artifact)
         callbacks.record_artifacts([reasoning_artifact])

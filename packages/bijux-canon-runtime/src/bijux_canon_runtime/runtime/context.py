@@ -5,8 +5,8 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import TYPE_CHECKING, cast
+from dataclasses import dataclass, field
+from typing import TYPE_CHECKING, Any, cast
 
 from bijux_canon_runtime.core.authority import AuthorityToken
 from bijux_canon_runtime.model.artifact.artifact import Artifact
@@ -23,6 +23,7 @@ from bijux_canon_runtime.observability.capture.observed_run import ObservedRun
 from bijux_canon_runtime.observability.capture.trace_recorder import TraceRecorder
 from bijux_canon_runtime.ontology import EntropyMagnitude
 from bijux_canon_runtime.ontology.ids import (
+    ArtifactID,
     ClaimID,
     EnvironmentFingerprint,
     FlowID,
@@ -34,6 +35,10 @@ from bijux_canon_runtime.runtime.artifact_store import ArtifactStore
 from bijux_canon_runtime.runtime.budget import BudgetState
 from bijux_canon_runtime.runtime.non_determinism_lifecycle import (
     NonDeterminismLifecycle,
+)
+from bijux_canon_runtime.runtime.persistence import (
+    ArtifactPayloadStore,
+    InMemoryArtifactPayloadStore,
 )
 
 if TYPE_CHECKING:
@@ -75,6 +80,60 @@ class ExecutionContext:
     strict_determinism: bool = False
     observed_run: ObservedRun | None = None
     _cancelled: bool = False
+    payload_store: ArtifactPayloadStore = field(
+        default_factory=InMemoryArtifactPayloadStore
+    )
+
+    def persist_payload(
+        self,
+        *,
+        logical_artifact_id: ArtifactID,
+        payload: Any,
+        schema_id: str,
+        media_type: str = "application/json",
+        producer: str,
+        parent_artifacts: tuple[ArtifactID, ...] = (),
+    ) -> ArtifactID:
+        """Persist complete bytes and bind the legacy runtime artifact name."""
+        from bijux_canon_runtime.model.artifact import AddressedArtifact
+
+        dependencies = tuple(
+            sorted(
+                self.payload_store.binding(parent, tenant_id=self.tenant_id)
+                .target_artifact_id
+                for parent in parent_artifacts
+            )
+        )
+        if isinstance(payload, bytes):
+            addressed = AddressedArtifact.from_bytes(
+                payload,
+                schema_id=schema_id,
+                media_type=media_type,
+                producer=producer,
+                dependencies=dependencies,
+            )
+        elif isinstance(payload, str) and media_type != "application/json":
+            addressed = AddressedArtifact.from_bytes(
+                payload.encode("utf-8"),
+                schema_id=schema_id,
+                media_type=media_type,
+                producer=producer,
+                dependencies=dependencies,
+            )
+        else:
+            addressed = AddressedArtifact.from_json(
+                payload,
+                schema_id=schema_id,
+                producer=producer,
+                dependencies=dependencies,
+            )
+        self.payload_store.put(addressed)
+        self.payload_store.bind(
+            tenant_id=self.tenant_id,
+            logical_artifact_id=logical_artifact_id,
+            target_artifact_id=addressed.descriptor.artifact_id,
+        )
+        return addressed.descriptor.artifact_id
 
     def record_evidence(
         self, step_index: int, evidence: list[RetrievedEvidence]
