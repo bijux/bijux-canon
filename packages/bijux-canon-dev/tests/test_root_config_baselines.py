@@ -57,7 +57,8 @@ def test_root_pytest_configuration_matches_shared_python_baseline() -> None:
     assert pytest_config["python_classes"] == "Test*"
     assert pytest_config["python_functions"] == "test_*"
     assert pytest_config["asyncio_mode"] == "auto"
-    assert pytest_config["cache_dir"] == "artifacts/root/pytest-cache"
+    cache_dir = (REPO_ROOT / "configs" / pytest_config["cache_dir"]).resolve()
+    assert cache_dir == REPO_ROOT / "artifacts" / "root" / "pytest-cache"
     assert pytest_config["timeout"] == "120"
     assert pytest_config["timeout_method"] == "thread"
     assert pytest_config["timeout_func_only"] == "true"
