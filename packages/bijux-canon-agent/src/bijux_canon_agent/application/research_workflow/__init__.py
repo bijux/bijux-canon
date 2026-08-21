@@ -1,7 +1,6 @@
-"""Application services for Bijux Canon Agent."""
+"""Bounded research-role workflow owned by Bijux Canon Agent."""
 
-from bijux_canon_agent.application.research_services import InjectedResearchServices
-from bijux_canon_agent.application.research_workflow import (
+from bijux_canon_agent.application.research_workflow.state_machine import (
     ResearchExecutionResult,
     ResearchOperation,
     ResearchOperationRecord,
@@ -11,7 +10,6 @@ from bijux_canon_agent.application.research_workflow import (
 )
 
 __all__ = [
-    "InjectedResearchServices",
     "ResearchExecutionResult",
     "ResearchOperation",
     "ResearchOperationRecord",

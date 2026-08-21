@@ -6,7 +6,12 @@ import inspect
 from pydantic import ValidationError
 import pytest
 
-from bijux_canon_agent.application import InjectedResearchServices
+from bijux_canon_agent.application import (
+    InjectedResearchServices,
+    ResearchOperation,
+    ResearchRole,
+    ResearchRoleMachine,
+)
 from bijux_canon_agent.contracts import (
     ReasoningPortResult,
     ResearchPlanningInput,
@@ -164,3 +169,83 @@ def test_injected_services_reject_unbound_results() -> None:
             retriever=retriever,
             reasoner=RecordingReasoner(mismatched=True),
         ).reason(plan, retrieval)
+
+
+def test_research_role_machine_executes_one_operation_per_legal_edge() -> None:
+    retriever = RecordingRetriever()
+    reasoner = RecordingReasoner()
+    services = InjectedResearchServices(retriever=retriever, reasoner=reasoner)
+
+    result = ResearchRoleMachine(
+        planning_input=planning_input(), services=services
+    ).run()
+
+    assert [record.operation for record in result.operations] == [
+        ResearchOperation.VALIDATE_PLAN,
+        ResearchOperation.RETRIEVE_EVIDENCE,
+        ResearchOperation.ANALYZE_EVIDENCE,
+        ResearchOperation.ASSESS_COUNTEREVIDENCE,
+        ResearchOperation.RESOLVE_EVIDENCE_GAPS,
+        ResearchOperation.SYNTHESIZE_ANSWER,
+        ResearchOperation.VERIFY_ANSWER,
+        ResearchOperation.TERMINATE_RUN,
+    ]
+    assert [transition.from_role for transition in result.transitions] == [
+        ResearchRole.PLAN,
+        ResearchRole.RETRIEVE,
+        ResearchRole.ANALYZE,
+        ResearchRole.SKEPTIC,
+        ResearchRole.GAP_FILL,
+        ResearchRole.SYNTHESIZE,
+        ResearchRole.VERIFY,
+        ResearchRole.TERMINATE,
+    ]
+    assert result.transitions[-1].to_role is ResearchRole.TERMINAL
+    assert [item.sequence for item in result.operations] == list(range(8))
+    assert [item.sequence for item in result.transitions] == list(range(8))
+    assert [item.operation_artifact_id for item in result.transitions] == [
+        item.artifact_id for item in result.operations
+    ]
+    assert len(retriever.requests) == 1
+    assert len(reasoner.requests) == 1
+    assert result.terminal_outcome == "answered"
+
+
+def test_research_role_machine_is_deterministic_and_terminal() -> None:
+    def execute():
+        return ResearchRoleMachine(
+            planning_input=planning_input(),
+            services=InjectedResearchServices(
+                retriever=RecordingRetriever(), reasoner=RecordingReasoner()
+            ),
+        ).run()
+
+    first = execute()
+    second = execute()
+    assert first == second
+
+    machine = ResearchRoleMachine(
+        planning_input=planning_input(),
+        services=InjectedResearchServices(
+            retriever=RecordingRetriever(), reasoner=RecordingReasoner()
+        ),
+    )
+    machine.run()
+    assert machine.role is ResearchRole.TERMINAL
+    with pytest.raises(RuntimeError, match="cannot advance"):
+        machine.advance()
+
+
+def test_research_role_machine_rejects_skips_and_wrong_operations() -> None:
+    with pytest.raises(ValueError, match="illegal research transition"):
+        ResearchRoleMachine.validate_transition(
+            from_role=ResearchRole.PLAN,
+            to_role=ResearchRole.ANALYZE,
+            operation=ResearchOperation.VALIDATE_PLAN,
+        )
+    with pytest.raises(ValueError, match="not owned"):
+        ResearchRoleMachine.validate_transition(
+            from_role=ResearchRole.PLAN,
+            to_role=ResearchRole.RETRIEVE,
+            operation=ResearchOperation.RETRIEVE_EVIDENCE,
+        )
