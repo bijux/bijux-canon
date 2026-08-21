@@ -1,9 +1,11 @@
 # Bijux Canon index artifact contract v2
 
 This contract versions model locks, vectors, lexical and dense segments, filter
-expressions, index generations, activation receipts, and integrity records. The
-single schema bundle exposes one closed definition per artifact type so the
-manifest can bind every public type to the same immutable schema bytes.
+expressions, index generations, activation receipts, integrity records,
+queries, candidates, fused hits, witnesses, approximation reports, executions,
+provenance, and replay receipts. Each schema bundle exposes one closed
+definition per artifact type and the manifest binds every public type to exact
+schema bytes.
 
 Records use RFC 8785 canonical JSON. Their `artifact_id` is SHA-256 over the
 complete canonical record after removing only the root `artifact_id`. Arrays

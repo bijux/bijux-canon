@@ -12,7 +12,7 @@
     "future_migration_requirements": [
       "register an explicit adjacent-version deterministic transform",
       "validate source and target records",
-      "preserve model, vector, segment, generation, filter, activation, and integrity identities in migration lineage",
+      "preserve model, vector, segment, generation, filter, activation, integrity, query, candidate, hit, witness, approximation, execution, provenance, and replay identities in migration lineage",
       "recompute and verify integrity before activation"
     ]
   },
