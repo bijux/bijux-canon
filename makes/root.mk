@@ -1,5 +1,10 @@
 ROOT_MAKEFILE_DIR := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 
+# Build backends may change directories, so every inherited process/cache path
+# must derive from an absolute repository artifact root.
+PROJECT_ARTIFACTS_DIR := $(abspath artifacts)
+PROJECT_PROCESS_DIR := $(abspath artifacts/root/process)
+
 include $(ROOT_MAKEFILE_DIR)/bijux-py/root/env.mk
 include $(ROOT_MAKEFILE_DIR)/env.mk
 include $(ROOT_MAKEFILE_DIR)/packages.mk
@@ -26,6 +31,10 @@ ROOT_CHECK_ENV_COMMAND = @test -x "$(ROOT_CHECK_PYTHON)" || { \
 include $(ROOT_MAKEFILE_DIR)/bijux-py/repository/root.mk
 
 include $(ROOT_MAKEFILE_DIR)/bijux-py/root/package-dispatch.mk
+# Root verification must inspect the submitted tree. Package profiles may keep
+# autofix defaults for their explicit formatting workflow, but never for lint.
+lint: export RUFF_CHECK_FIX := 0
+lint: export FMT_RUN_RUFF_CHECK_FIX := 0
 ROOT_TARGET_PACKAGES_test-all := $(CHECK_PACKAGES)
 ROOT_TARGET_PACKAGES_test-all-plus-run-time := $(CHECK_PACKAGES)
 include $(ROOT_MAKEFILE_DIR)/bijux-py/root/docs.mk

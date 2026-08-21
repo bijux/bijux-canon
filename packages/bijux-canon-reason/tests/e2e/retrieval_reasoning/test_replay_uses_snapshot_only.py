@@ -7,9 +7,8 @@ from __future__ import annotations
 from pathlib import Path
 import sys
 
-import pytest
-
 from bijux_canon_reason_e2e_support import run_cli, write_spec
+import pytest
 
 
 @pytest.mark.e2e
