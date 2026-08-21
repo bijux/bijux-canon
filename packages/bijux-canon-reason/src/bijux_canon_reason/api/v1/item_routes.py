@@ -5,10 +5,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from contextlib import closing
 from pathlib import Path
-import sqlite3
-import uuid
 
 from fastapi import FastAPI, HTTPException, Query, Request, Response
 from fastapi import Path as FastPath
@@ -18,6 +15,12 @@ from bijux_canon_reason.api.v1.openapi_models import (
     ErrorDetail,
     ItemListResponse,
     ItemResponse,
+)
+from bijux_canon_reason.application.item_service import (
+    ItemConflictError,
+    ItemNotFoundError,
+    ItemRequestError,
+    ItemService,
 )
 
 MAX_ITEM_ID = 1_000_000
@@ -40,23 +43,8 @@ class ItemUpdate(BaseModel):
 
 
 def configure_item_store(artifacts_dir: Path) -> Path:
-    """Handle configure item store."""
-    db_path = artifacts_dir / "api_storage.db"
-    db_path.parent.mkdir(parents=True, exist_ok=True)
-    with closing(_connect_item_store(db_path)) as conn:
-        conn.execute(
-            """
-            CREATE TABLE IF NOT EXISTS items (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT NOT NULL UNIQUE,
-                description TEXT DEFAULT '',
-                deleted INTEGER NOT NULL DEFAULT 0
-            )
-            """
-        )
-        conn.execute("UPDATE items SET description = '' WHERE description IS NULL")
-        conn.commit()
-    return db_path
+    """Configure the item application service and return its store path."""
+    return ItemService.configure(artifacts_dir).db_path
 
 
 def register_item_routes(
@@ -68,7 +56,7 @@ def register_item_routes(
     max_offset: int,
 ) -> None:
     """Register item routes."""
-    db_path = Path(app.state.db_path)
+    service = ItemService(Path(app.state.db_path))
     guard_responses = {
         401: {
             "description": "Authentication failed for the requested endpoint.",
@@ -114,24 +102,7 @@ def register_item_routes(
         """List items."""
         guard_request(request)
         _reject_unknown_query_params(request=request, allowed={"limit", "offset"})
-        with closing(_connect_item_store(db_path)) as conn:
-            rows = conn.execute(
-                """
-                SELECT id, name, description FROM items
-                WHERE deleted = 0
-                ORDER BY id ASC
-                LIMIT ? OFFSET ?
-                """,
-                (limit, offset),
-            ).fetchall()
-            total = int(
-                conn.execute("SELECT COUNT(*) FROM items WHERE deleted = 0").fetchone()[
-                    0
-                ]
-            )
-        return enforce_response_size(
-            {"items": [_row_to_item(row) for row in rows], "total": total}
-        )
+        return enforce_response_size(service.list_items(limit=limit, offset=offset))
 
     @app.get(
         "/v1/items/{item_id}",
@@ -159,8 +130,10 @@ def register_item_routes(
         """Return item."""
         guard_request(request)
         _validate_item_id(item_id)
-        with closing(_connect_item_store(db_path)) as conn:
-            return _read_active_item(conn, item_id=item_id)
+        try:
+            return service.get_item(item_id=item_id)
+        except ItemNotFoundError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
 
     @app.delete(
         "/v1/items/{item_id}",
@@ -189,14 +162,10 @@ def register_item_routes(
         """Handle delete item."""
         guard_request(request)
         _validate_item_id(item_id)
-        with closing(_connect_item_store(db_path)) as conn:
-            row = _read_item_row(conn, item_id=item_id)
-            if row is None:
-                raise HTTPException(status_code=404, detail="item not found")
-            if row["deleted"]:
-                raise HTTPException(status_code=404, detail="item deleted")
-            conn.execute("UPDATE items SET deleted = 1 WHERE id = ?", (item_id,))
-            conn.commit()
+        try:
+            service.delete_item(item_id=item_id)
+        except ItemNotFoundError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
         return Response(status_code=204)
 
     @app.post(
@@ -229,25 +198,15 @@ def register_item_routes(
     def create_item(request: Request, payload: ItemCreate) -> dict[str, object]:
         """Create item."""
         guard_request(request)
-        item_name = payload.name or f"item-{uuid.uuid4().hex[:8]}"
-        description = payload.description or ""
-        with closing(_connect_item_store(db_path)) as conn:
-            try:
-                item = _create_or_restore_item(
-                    conn,
-                    item_name=item_name,
-                    description=description,
-                )
-                conn.commit()
-                return item
-            except sqlite3.IntegrityError as exc:
-                conn.rollback()
-                raise HTTPException(
-                    status_code=409, detail="name already exists"
-                ) from exc
-            except sqlite3.Error as exc:  # pragma: no cover - defensive
-                conn.rollback()
-                raise HTTPException(status_code=422, detail="invalid request") from exc
+        try:
+            return service.create_item(
+                name=payload.name,
+                description=payload.description,
+            )
+        except ItemConflictError as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+        except ItemRequestError as exc:  # pragma: no cover - defensive
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
 
     @app.put(
         "/v1/items/{item_id}",
@@ -284,33 +243,18 @@ def register_item_routes(
         """Handle update item."""
         guard_request(request)
         _validate_item_id(item_id)
-        item_name = payload.name or f"item-{item_id}"
-        description = payload.description or ""
-        with closing(_connect_item_store(db_path)) as conn:
-            try:
-                item = _upsert_item(
-                    conn,
-                    item_id=item_id,
-                    item_name=item_name,
-                    description=description,
-                )
-                conn.commit()
-                return item
-            except sqlite3.IntegrityError as exc:
-                conn.rollback()
-                raise HTTPException(
-                    status_code=409, detail="name already exists"
-                ) from exc
-            except sqlite3.Error as exc:  # pragma: no cover - defensive
-                conn.rollback()
-                raise HTTPException(status_code=422, detail="invalid request") from exc
-
-
-def _connect_item_store(db_path: Path) -> sqlite3.Connection:
-    """Handle connect item store."""
-    conn = sqlite3.connect(db_path)
-    conn.row_factory = sqlite3.Row
-    return conn
+        try:
+            return service.update_item(
+                item_id=item_id,
+                name=payload.name,
+                description=payload.description,
+            )
+        except ItemNotFoundError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+        except ItemConflictError as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+        except ItemRequestError as exc:  # pragma: no cover - defensive
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
 
 
 def _reject_unknown_query_params(*, request: Request, allowed: set[str]) -> None:
@@ -321,89 +265,6 @@ def _reject_unknown_query_params(*, request: Request, allowed: set[str]) -> None
             status_code=422,
             detail=f"unknown query params: {', '.join(sorted(extras))}",
         )
-
-
-def _read_item_row(conn: sqlite3.Connection, *, item_id: int) -> sqlite3.Row | None:
-    """Read item row."""
-    return conn.execute(
-        "SELECT id, name, description, deleted FROM items WHERE id = ?",
-        (item_id,),
-    ).fetchone()
-
-
-def _read_item_by_name(
-    conn: sqlite3.Connection, *, item_name: str
-) -> sqlite3.Row | None:
-    """Read item by name."""
-    return conn.execute(
-        "SELECT id, name, description, deleted FROM items WHERE name = ?",
-        (item_name,),
-    ).fetchone()
-
-
-def _read_active_item(conn: sqlite3.Connection, *, item_id: int) -> dict[str, object]:
-    """Read active item."""
-    row = _read_item_row(conn, item_id=item_id)
-    if row is None:
-        raise HTTPException(status_code=404, detail="item not found")
-    if row["deleted"]:
-        raise HTTPException(status_code=404, detail="item deleted")
-    return _row_to_item(row)
-
-
-def _create_or_restore_item(
-    conn: sqlite3.Connection, *, item_name: str, description: str
-) -> dict[str, object]:
-    """Create or restore item."""
-    row = _read_item_by_name(conn, item_name=item_name)
-    if row and not row["deleted"]:
-        return _row_to_item(row)
-    if row and row["deleted"]:
-        conn.execute(
-            "UPDATE items SET description = ?, deleted = 0 WHERE id = ?",
-            (description, row["id"]),
-        )
-        return _read_active_item(conn, item_id=int(row["id"]))
-
-    item_id = conn.execute(
-        "INSERT INTO items (name, description, deleted) VALUES (?, ?, 0)",
-        (item_name, description),
-    ).lastrowid
-    return _read_active_item(conn, item_id=int(item_id))
-
-
-def _upsert_item(
-    conn: sqlite3.Connection,
-    *,
-    item_id: int,
-    item_name: str,
-    description: str,
-) -> dict[str, object]:
-    """Handle upsert item."""
-    row = _read_item_row(conn, item_id=item_id)
-    if row is None:
-        conn.execute(
-            "INSERT INTO items (id, name, description, deleted) VALUES (?, ?, ?, 0)",
-            (item_id, item_name, description),
-        )
-        return _read_active_item(conn, item_id=item_id)
-    if row["deleted"]:
-        raise HTTPException(status_code=404, detail="item deleted")
-
-    conn.execute(
-        "UPDATE items SET name = ?, description = ? WHERE id = ?",
-        (item_name, description, item_id),
-    )
-    return _read_active_item(conn, item_id=item_id)
-
-
-def _row_to_item(row: sqlite3.Row) -> dict[str, object]:
-    """Handle row to item."""
-    return {
-        "id": row["id"],
-        "name": row["name"],
-        "description": row["description"] or "",
-    }
 
 
 def _validate_item_id(item_id: int) -> None:
