@@ -40,6 +40,10 @@ _LAZY_EXPORTS: dict[str, LazyExport] = {
     "build_index_from_docs": (".indexing", "build_index_from_docs"),
     "build_rag_pipeline": (".pipeline_definitions", "build_rag_pipeline"),
     "canonical_json": (".pipeline_definitions", "canonical_json"),
+    "chunk_document_mappings": (
+        ".semantic_chunking",
+        "chunk_document_mappings",
+    ),
     "compile_to_beam": (".pipeline_definitions", "compile_to_beam"),
     "compile_to_dask_bag": (".pipeline_definitions", "compile_to_dask_bag"),
     "dask_available": (".pipeline_definitions", "dask_available"),
@@ -84,6 +88,7 @@ __all__ = [
     "ingest_docs_to_chunks",
     "build_chunk_span_mapping",
     "build_document_span_mappings",
+    "chunk_document_mappings",
     "build_index_from_docs",
     "retrieve",
     "ask",

@@ -45,6 +45,7 @@ from .document_extraction import (
 )
 from .idempotent import AtomicWriteCap, content_key, idempotent_write
 from .logging import LogEntry, LogMonoid, Logs, log_tell, trace_stage, trace_value
+from .semantic_chunking import SemanticChunk, SemanticChunkingPolicy
 from .source_discovery import (
     DiscoveredSource,
     DiscoveryIssue,
@@ -104,6 +105,9 @@ __all__ = [
     "MetadataField",
     "MetadataValue",
     "RawMetadataValue",
+    # Semantic chunks
+    "SemanticChunk",
+    "SemanticChunkingPolicy",
     # Source mappings
     "NormalizedSpanMapping",
     "SourceByteSpan",
