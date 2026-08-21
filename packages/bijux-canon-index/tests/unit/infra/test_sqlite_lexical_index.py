@@ -171,3 +171,22 @@ def test_sqlite_fts5_escapes_query_syntax(tmp_path: Path) -> None:
     chunks = (LexicalChunk("chunk-a", "document", 0, 'Quoted "DNA" evidence.', {}),)
     with SQLiteLexicalIndex.build(tmp_path / "lexical.sqlite", chunks) as index:
         assert index.query('quoted "DNA"')[0].chunk.chunk_id == "chunk-a"
+
+
+def test_sqlite_fts5_preserves_declared_phrases_and_rejects_bad_quotes(
+    tmp_path: Path,
+) -> None:
+    chunks = (
+        LexicalChunk("chunk-a", "document-a", 0, "Ancient DNA evidence.", {}),
+        LexicalChunk("chunk-b", "document-b", 0, "DNA from ancient remains.", {}),
+    )
+    with SQLiteLexicalIndex.build(tmp_path / "lexical.sqlite", chunks) as index:
+        assert {hit.chunk.chunk_id for hit in index.query("ancient dna")} == {
+            "chunk-a",
+            "chunk-b",
+        }
+        assert [
+            hit.chunk.chunk_id for hit in index.query('"ancient DNA"')
+        ] == ["chunk-a"]
+        with pytest.raises(ValueError, match="unterminated phrase"):
+            index.query('"ancient DNA')

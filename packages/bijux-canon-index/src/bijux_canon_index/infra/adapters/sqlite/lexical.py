@@ -110,13 +110,37 @@ def _chunk_payload(chunk: LexicalChunk) -> dict[str, object]:
 
 
 def _query_expression(query: str) -> str:
-    normalized = " ".join(unicodedata.normalize("NFKC", query).casefold().split())
+    normalized = unicodedata.normalize("NFKC", query).casefold().strip()
     if not normalized:
         raise ValueError("lexical query must not be empty")
     terms = []
-    for term in sorted(normalized.split(" ")):
+    position = 0
+    while position < len(normalized):
+        while position < len(normalized) and normalized[position].isspace():
+            position += 1
+        if position == len(normalized):
+            break
+        if normalized[position] == '"':
+            end = normalized.find('"', position + 1)
+            if end < 0:
+                raise ValueError("lexical query contains an unterminated phrase")
+            term = " ".join(normalized[position + 1 : end].split())
+            if not term:
+                raise ValueError("lexical query phrases must not be empty")
+            position = end + 1
+        else:
+            end = position
+            while end < len(normalized) and not normalized[end].isspace():
+                if normalized[end] == '"':
+                    raise ValueError("lexical query quote must start a phrase")
+                end += 1
+            term = normalized[position:end]
+            position = end
         escaped = term.replace('"', '""')
         terms.append(f'"{escaped}"')
+    if not terms:
+        raise ValueError("lexical query must not be empty")
+    terms.sort()
     return " AND ".join(terms)
 
 

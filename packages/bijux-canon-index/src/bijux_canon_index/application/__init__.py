@@ -42,6 +42,13 @@ from bijux_canon_index.application.index_service import (
     IndexQueryRequest,
     IndexService,
 )
+from bijux_canon_index.application.retrieval import (
+    LexicalCandidateBatch,
+    LexicalCandidateDecision,
+    LexicalCandidateDisposition,
+    LexicalCandidateOutcome,
+    LexicalCandidateService,
+)
 from bijux_canon_index.application.vex import (
     ExactSearchCandidate,
     ExactSearchWitness,
@@ -111,6 +118,11 @@ __all__ = [
     "IndexQueryRequest",
     "IndexSegmentInspection",
     "IndexService",
+    "LexicalCandidateBatch",
+    "LexicalCandidateDecision",
+    "LexicalCandidateDisposition",
+    "LexicalCandidateOutcome",
+    "LexicalCandidateService",
     "apply_index_delta",
     "audit_index_generation",
     "build_exact_search_witness",
