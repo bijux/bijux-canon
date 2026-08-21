@@ -203,7 +203,6 @@ include = [
     "CHANGELOG.md",
     "src/bijux_canon_agent/**",
 ]
-force-include = { "LICENSE" = "LICENSE", "NOTICE" = "NOTICE" }
 
 [tool.mypy-core]
 config-file = "../../configs/mypy.ini"

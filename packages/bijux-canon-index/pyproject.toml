@@ -174,7 +174,6 @@ include = [
   "CHANGELOG.md",
   "src/bijux_canon_index/**",
 ]
-force-include = { "LICENSE" = "LICENSE", "NOTICE" = "NOTICE" }
 
 [tool.hatch.metadata.hooks.fancy-pypi-readme]
 content-type = "text/markdown"

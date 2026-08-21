@@ -126,7 +126,6 @@ include = [
   "CHANGELOG.md",
   "src/bijux_canon_runtime/py.typed",
 ]
-force-include = { "LICENSE" = "LICENSE", "NOTICE" = "NOTICE" }
 
 [tool.hatch.version]
 source = "vcs"

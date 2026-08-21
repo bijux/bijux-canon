@@ -68,7 +68,6 @@ canonical-name = "bijux-canon-agent"
 ignore-vcs = true
 include = ["pyproject.toml", "README.md", "CHANGELOG.md", "overview.md", "hatch_build.py", "src/bijux_agent/**"]
 exclude = [".gitignore", "/.gitignore", "**/.gitignore"]
-force-include = { "LICENSE" = "LICENSE", "NOTICE" = "NOTICE" }
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/bijux_agent"]
