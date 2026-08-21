@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.bijux.org/canon/ingest/v2/document-record.schema.json",
+  "title": "Immutable extracted document record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "artifact_type",
+    "artifact_id",
+    "logical_document_id",
+    "source_artifact_id",
+    "media_type",
+    "language",
+    "byte_length",
+    "content_sha256",
+    "payload_ref",
+    "extraction"
+  ],
+  "properties": {
+    "schema_version": {"$ref": "common.schema.json#/$defs/schema_version"},
+    "artifact_type": {"const": "bijux.canon.ingest.document"},
+    "artifact_id": {"$ref": "common.schema.json#/$defs/artifact_id"},
+    "logical_document_id": {"type": "string", "minLength": 1, "maxLength": 512},
+    "source_artifact_id": {"$ref": "common.schema.json#/$defs/artifact_id"},
+    "title": {"type": "string", "minLength": 1},
+    "media_type": {"type": "string", "pattern": "^[^/\\s]+/[^/\\s]+$"},
+    "language": {"type": "string", "pattern": "^[a-z]{2,3}(-[A-Z]{2})?$"},
+    "byte_length": {"type": "integer", "minimum": 0},
+    "content_sha256": {"$ref": "common.schema.json#/$defs/sha256"},
+    "payload_ref": {"$ref": "common.schema.json#/$defs/cas_uri"},
+    "extraction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["method", "implementation", "implementation_version", "configuration_sha256"],
+      "properties": {
+        "method": {"enum": ["identity", "text", "structured", "ocr", "transcription"]},
+        "implementation": {"type": "string", "minLength": 1},
+        "implementation_version": {"type": "string", "minLength": 1},
+        "configuration_sha256": {"$ref": "common.schema.json#/$defs/sha256"}
+      }
+    },
+    "annotations": {"$ref": "common.schema.json#/$defs/annotations"}
+  },
+  "x-bijux-identity": {
+    "algorithm": "sha-256",
+    "canonicalization": "RFC 8785",
+    "excluded_json_pointers": ["/artifact_id"]
+  }
+}

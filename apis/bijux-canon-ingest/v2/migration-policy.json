@@ -1,0 +1,37 @@
+{
+  "schema_version": "1.0.0",
+  "artifact_family": "bijux.canon.ingest",
+  "current_artifact_schema_version": "2.0.0",
+  "canonical_serialization": {
+    "media_type": "application/json",
+    "standard": "RFC 8785",
+    "unicode": "preserve code points; do not apply implicit normalization",
+    "duplicate_object_keys": "reject",
+    "non_finite_numbers": "reject",
+    "artifact_identity": {
+      "algorithm": "sha-256",
+      "input": "RFC 8785 canonical bytes of the complete record after removing only /artifact_id",
+      "encoding": "sha256:<lowercase hexadecimal digest>"
+    }
+  },
+  "migration_rules": {
+    "implicit_migration_allowed": false,
+    "unknown_version": "reject with unsupported_schema_version",
+    "downgrade": "reject with unsupported_schema_version",
+    "in_place_mutation": false,
+    "lossy_migration": false,
+    "identity_migration": {
+      "from": "2.0.0",
+      "to": "2.0.0",
+      "operation": "return the byte-identical admitted record"
+    },
+    "future_migration_requirements": [
+      "register an explicit adjacent-version transform before admitting its input version",
+      "validate the input against its source schema before transforming",
+      "produce a new immutable artifact identity and retain the predecessor identity in lineage",
+      "validate the output against the target schema",
+      "prove deterministic repeated output and retain golden success and rejection vectors"
+    ]
+  },
+  "registered_transforms": []
+}

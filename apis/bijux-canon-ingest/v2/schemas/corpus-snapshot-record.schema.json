@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.bijux.org/canon/ingest/v2/corpus-snapshot-record.schema.json",
+  "title": "Immutable admitted corpus snapshot record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "artifact_type",
+    "artifact_id",
+    "corpus_name",
+    "source_artifact_ids",
+    "document_artifact_ids",
+    "rejection_artifact_ids",
+    "lineage_artifact_ids",
+    "admission_policy_sha256",
+    "created_at"
+  ],
+  "properties": {
+    "schema_version": {"$ref": "common.schema.json#/$defs/schema_version"},
+    "artifact_type": {"const": "bijux.canon.ingest.corpus_snapshot"},
+    "artifact_id": {"$ref": "common.schema.json#/$defs/artifact_id"},
+    "corpus_name": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{0,127}$"},
+    "source_artifact_ids": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"$ref": "common.schema.json#/$defs/artifact_id"},
+      "x-bijux-ordering": "ascending"
+    },
+    "document_artifact_ids": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"$ref": "common.schema.json#/$defs/artifact_id"},
+      "x-bijux-ordering": "ascending"
+    },
+    "rejection_artifact_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "common.schema.json#/$defs/artifact_id"},
+      "x-bijux-ordering": "ascending"
+    },
+    "lineage_artifact_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "common.schema.json#/$defs/artifact_id"},
+      "x-bijux-ordering": "ascending"
+    },
+    "admission_policy_sha256": {"$ref": "common.schema.json#/$defs/sha256"},
+    "created_at": {"$ref": "common.schema.json#/$defs/timestamp"},
+    "annotations": {"$ref": "common.schema.json#/$defs/annotations"}
+  },
+  "x-bijux-identity": {
+    "algorithm": "sha-256",
+    "canonicalization": "RFC 8785",
+    "excluded_json_pointers": ["/artifact_id"]
+  }
+}

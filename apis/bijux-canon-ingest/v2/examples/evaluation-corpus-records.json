@@ -1,0 +1,120 @@
+{
+  "bundle_schema_version": "1.0.0",
+  "records": [
+    {
+      "schema_version": "2.0.0",
+      "artifact_type": "bijux.canon.ingest.source",
+      "artifact_id": "sha256:6d8abea9ce88c61324c0851838e8015127e15b2f9db0596d703774033bb09271",
+      "source_uri": "repo://packages/bijux-canon-ingest/tests/eval/corpus.jsonl",
+      "media_type": "application/x-ndjson",
+      "byte_length": 5604,
+      "content_sha256": "03a79d793dc4bc525745c8c564a5b116ea727a2dfea9766397d886edfc39e4aa",
+      "payload_ref": "cas+sha256://03a79d793dc4bc525745c8c564a5b116ea727a2dfea9766397d886edfc39e4aa",
+      "acquired_at": "2026-08-21T04:19:46Z",
+      "acquisition": {
+        "method": "file",
+        "connector": "bijux-canon-ingest-evaluation-corpus",
+        "connector_version": "0.3.9",
+        "immutable_revision": "ffa888857a59c280bff640533cb1c95c478b7517"
+      },
+      "rights": {
+        "license_id": "Apache-2.0",
+        "redistribution_allowed": true
+      },
+      "annotations": {
+        "document_count": 25,
+        "purpose": "retrieval-evaluation"
+      }
+    },
+    {
+      "schema_version": "2.0.0",
+      "artifact_type": "bijux.canon.ingest.document",
+      "artifact_id": "sha256:4adb322d62f0dd62623689bb2dce62508575bece2401eaf7dd3c20a462e14577",
+      "logical_document_id": "d01_fastq",
+      "source_artifact_id": "sha256:6d8abea9ce88c61324c0851838e8015127e15b2f9db0596d703774033bb09271",
+      "title": "FASTQ file format",
+      "media_type": "text/plain",
+      "language": "en",
+      "byte_length": 154,
+      "content_sha256": "0db0badceafa9decd9cedb6bfb49c01124fd8deb3658b4c11d97178d4c5bbed4",
+      "payload_ref": "cas+sha256://0db0badceafa9decd9cedb6bfb49c01124fd8deb3658b4c11d97178d4c5bbed4",
+      "extraction": {
+        "method": "structured",
+        "implementation": "bijux-canon-ingest-jsonl-abstract",
+        "implementation_version": "0.3.9",
+        "configuration_sha256": "6d3f04b2690bf5a8da1bcba97e5a8f217a3c1afc4e1e4262481e53a1ea60b45a"
+      },
+      "annotations": {
+        "category": "bioinformatics"
+      }
+    },
+    {
+      "schema_version": "2.0.0",
+      "artifact_type": "bijux.canon.ingest.rejection",
+      "artifact_id": "sha256:ae090010cc584c3a42f3da8328e05b021d79d9e7a9ad33497f1e8e36967edeb4",
+      "target_type": "document",
+      "target_identity": "evaluation-invalid-missing-document-id",
+      "observed_content_sha256": "341881dd267eec8ed8d052a672e0e4d08f63aa42165134cf7fbed2197e25ece7",
+      "stage": "validation",
+      "code": "malformed_document",
+      "safe_message": "document identifier is required",
+      "remediation": "provide a stable nonempty document identifier and resubmit",
+      "retryable": false,
+      "policy_sha256": "abd8ec877a11f6877b18cba4ba39258a5f4fc112980d15ea9ed4e5d1f915aaf5",
+      "rejected_at": "2026-08-21T04:19:46Z"
+    },
+    {
+      "schema_version": "2.0.0",
+      "artifact_type": "bijux.canon.ingest.lineage",
+      "artifact_id": "sha256:84ed95e544aa0a734667a744b43bdb7625b131ba79d2fdde580fb4db6facff78",
+      "inputs": [
+        {
+          "artifact_id": "sha256:6d8abea9ce88c61324c0851838e8015127e15b2f9db0596d703774033bb09271",
+          "artifact_type": "bijux.canon.ingest.source",
+          "schema_version": "2.0.0"
+        }
+      ],
+      "outputs": [
+        {
+          "artifact_id": "sha256:4adb322d62f0dd62623689bb2dce62508575bece2401eaf7dd3c20a462e14577",
+          "artifact_type": "bijux.canon.ingest.document",
+          "schema_version": "2.0.0"
+        }
+      ],
+      "operation": {
+        "name": "extract.jsonl_abstract",
+        "implementation": "bijux-canon-ingest-jsonl-abstract",
+        "implementation_version": "0.3.9",
+        "configuration_sha256": "6d3f04b2690bf5a8da1bcba97e5a8f217a3c1afc4e1e4262481e53a1ea60b45a",
+        "deterministic": true
+      },
+      "started_at": "2026-08-21T04:19:46Z",
+      "completed_at": "2026-08-21T04:19:46Z"
+    },
+    {
+      "schema_version": "2.0.0",
+      "artifact_type": "bijux.canon.ingest.corpus_snapshot",
+      "artifact_id": "sha256:0baea209d67d992101eee0fa7007d798a02285918822ec774c7a9dc8e7e18a91",
+      "corpus_name": "bijux-canon-ingest-evaluation",
+      "source_artifact_ids": [
+        "sha256:6d8abea9ce88c61324c0851838e8015127e15b2f9db0596d703774033bb09271"
+      ],
+      "document_artifact_ids": [
+        "sha256:4adb322d62f0dd62623689bb2dce62508575bece2401eaf7dd3c20a462e14577"
+      ],
+      "rejection_artifact_ids": [
+        "sha256:ae090010cc584c3a42f3da8328e05b021d79d9e7a9ad33497f1e8e36967edeb4"
+      ],
+      "lineage_artifact_ids": [
+        "sha256:84ed95e544aa0a734667a744b43bdb7625b131ba79d2fdde580fb4db6facff78"
+      ],
+      "admission_policy_sha256": "abd8ec877a11f6877b18cba4ba39258a5f4fc112980d15ea9ed4e5d1f915aaf5",
+      "created_at": "2026-08-21T04:19:46Z",
+      "annotations": {
+        "admitted_document_count": 1,
+        "evaluation_corpus_document_count": 25,
+        "rejected_example_count": 1
+      }
+    }
+  ]
+}

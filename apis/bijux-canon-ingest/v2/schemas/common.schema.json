@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.bijux.org/canon/ingest/v2/common.schema.json",
+  "title": "Bijux Canon ingest v2 common artifact definitions",
+  "$defs": {
+    "artifact_id": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "cas_uri": {
+      "type": "string",
+      "pattern": "^cas\\+sha256://[0-9a-f]{64}$"
+    },
+    "schema_version": {
+      "const": "2.0.0"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "Z$"
+    },
+    "artifact_reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact_id", "artifact_type", "schema_version"],
+      "properties": {
+        "artifact_id": {"$ref": "#/$defs/artifact_id"},
+        "artifact_type": {
+          "type": "string",
+          "pattern": "^bijux\\.canon\\.[a-z][a-z0-9_.-]+$"
+        },
+        "schema_version": {"$ref": "#/$defs/schema_version"}
+      }
+    },
+    "annotations": {
+      "type": "object",
+      "propertyNames": {"pattern": "^[a-z][a-z0-9_.-]*$"},
+      "additionalProperties": {
+        "oneOf": [
+          {"type": "string"},
+          {"type": "integer"},
+          {"type": "boolean"},
+          {
+            "type": "array",
+            "items": {"type": "string"},
+            "uniqueItems": true
+          }
+        ]
+      }
+    }
+  }
+}
