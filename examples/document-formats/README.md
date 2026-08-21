@@ -7,9 +7,20 @@ these documents establish parser and locator behavior, not research relevance.
 `sources.jsonl` is the durable source policy. Each line records canonical
 metadata, an exact acquisition endpoint, license evidence, redistribution
 terms, format-specific admission requirements, and the independent locator
-truth that must be authored before admission. The source bytes, acquisition
-receipts, byte lock, and locator truth are added only after their corresponding
-reviews succeed.
+truth that must be authored before admission. `media/`, `sources/`, and
+`acquisition-receipts/` contain the immutable, reviewed acquisition outputs.
+The PLOS HTML source is a declared deterministic extraction of the licensed
+article body and citation metadata; publisher interface code, global chrome,
+and embedded images are not stored.
+
+Replaying the acquisition command is offline and byte-stable when all durable
+receipts exist:
+
+```console
+python -m bijux_canon_dev.corpus.parser_sources \
+  --portfolio examples/document-formats/sources.jsonl \
+  --output-root examples/document-formats
+```
 
 Generated download logs and verification evidence are disposable and remain
 under the ignored repository `artifacts/` directory. They are never source
