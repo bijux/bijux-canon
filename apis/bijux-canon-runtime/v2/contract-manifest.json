@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0.0",
+  "contract_id": "bijux.canon.runtime.run.v2",
+  "artifact_schema_version": "2.0.0",
+  "schema_bundle": {
+    "path": "runtime-run-artifacts.schema.json",
+    "sha256": "6ed12ed4925530c563e50a137e4507edf9720d05fd0f9c0b1a527685c1914ca6",
+    "definitions": {
+      "artifact": "#/$defs/artifact",
+      "cancellation": "#/$defs/cancellation",
+      "comparison": "#/$defs/comparison",
+      "dag": "#/$defs/dag",
+      "event": "#/$defs/event",
+      "inspection": "#/$defs/inspection",
+      "job": "#/$defs/job",
+      "policy": "#/$defs/policy",
+      "publication_receipt": "#/$defs/publication_receipt",
+      "replay": "#/$defs/replay",
+      "step_attempt": "#/$defs/step_attempt"
+    }
+  },
+  "migration_policy": {
+    "path": "migration-policy.json",
+    "sha256": "8f1bff595e2ff5763c1d4dde3519386c6d693f1cabef037c4dacffaf0c87bb47"
+  },
+  "conformance": {
+    "path": "examples/evaluation-runtime-run-records.json",
+    "sha256": "de6cf59c8d10fdf88d397ad36bbf54f3d1f46993c2735e8efeed781b2dea3622",
+    "record_count": 11,
+    "source_corpus": {
+      "sha256": "03a79d793dc4bc525745c8c564a5b116ea727a2dfea9766397d886edfc39e4aa",
+      "document_count": 25,
+      "source_document_id": "d01_fastq"
+    }
+  }
+}
