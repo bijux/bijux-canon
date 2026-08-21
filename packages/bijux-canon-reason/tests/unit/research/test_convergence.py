@@ -62,6 +62,26 @@ def test_continues_only_when_no_terminal_condition_holds() -> None:
     assert decision.reasons == (ConvergenceReason.continue_research,)
 
 
+def test_integer_metric_inputs_have_canonical_float_identity() -> None:
+    observation = create_convergence_observation(
+        iteration=1,
+        graph_artifact_id=_artifact("a"),
+        coverage=0,
+        verified_answerable_claims=0,
+        required_claims=0,
+        blocking_gap_count=1,
+        new_evidence_count=0,
+        marginal_evidence_value=0,
+        cumulative_tool_calls=1,
+        cumulative_tokens=0,
+        cumulative_elapsed_ms=1,
+        explicit_insufficiency=True,
+    )
+
+    assert observation.coverage == 0.0
+    assert observation.marginal_evidence_value == 0.0
+
+
 def test_coverage_and_verified_answerability_converge() -> None:
     decision = ConvergenceService().evaluate(
         (_observation(coverage=0.9, verified=2, required=2, gaps=0),)
