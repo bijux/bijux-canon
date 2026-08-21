@@ -7,7 +7,7 @@ these documents establish parser and locator behavior, not research relevance.
 `sources.jsonl` is the durable source policy. Each line records canonical
 metadata, an exact acquisition endpoint, license evidence, redistribution
 terms, format-specific admission requirements, and the independent locator
-truth that must be authored before admission. `media/`, `sources/`, and
+truth that must be authored before admission. `corpus/`, `sources/`, and
 `acquisition-receipts/` contain the immutable, reviewed acquisition outputs.
 The PLOS HTML source is a declared deterministic extraction of the licensed
 article body and citation metadata; publisher interface code, global chrome,

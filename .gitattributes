@@ -1,2 +1,2 @@
 examples/ancient-dna-research/corpus/sources/*.xml -text -whitespace
-examples/document-formats/media/** binary
+examples/document-formats/corpus/** binary

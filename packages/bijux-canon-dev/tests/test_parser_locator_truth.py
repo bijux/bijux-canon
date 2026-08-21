@@ -41,12 +41,12 @@ def test_real_truth_covers_every_required_source_and_role() -> None:
     result = _validate(records)
     assert result == {
         "lock_identity_sha256": (
-            "9ae6edf1acf046b589ab689454ce892f92820d86c1cd9ba00aef75cedf1190c2"
+            "9a0b63f5222b44bb571e8c2ed95b0a1b2abb1e508ac0d6e2ff5aae2fba6366c9"
         ),
         "record_count": 34,
         "source_count": 7,
         "truth_set_sha256": (
-            "657880ef25b73363b91231b78c243762d0e9a426fc5be58137a1022e57fcd99e"
+            "9a3324044c06999eb9c235d252e75267f56cc1d6ab9ed1d9942df76fef540294"
         ),
     }
     assert len({record["truth_id"] for record in records}) == 34

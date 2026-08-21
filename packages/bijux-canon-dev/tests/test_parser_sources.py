@@ -169,7 +169,7 @@ def test_existing_receipt_replays_without_network(tmp_path: Path) -> None:
     record["parser_source_id"] = "parser-markdown-real"
     body = b"# Title\n\n- item\n\n| A | B |\n| - | - |\n| 1 | 2 |\n\n```sh\necho ok\n```\n\n[link](https://example.test)\n"
     source_identity = sha256(canonical(record))
-    media = tmp_path / "media/parser-markdown-real.md"
+    media = tmp_path / "corpus/parser-markdown-real.md"
     source = tmp_path / "sources/parser-markdown-real.json"
     receipt = tmp_path / "acquisition-receipts/parser-markdown-real.json"
     write_exclusive(media, body)
@@ -182,7 +182,7 @@ def test_existing_receipt_replays_without_network(tmp_path: Path) -> None:
         "media_type": "text/plain",
         "sha256": sha256(body),
         "byte_count": len(body),
-        "local_path": "media/parser-markdown-real.md",
+        "local_path": "corpus/parser-markdown-real.md",
         "license": record["license"],
         "license_evidence": {},
         "attribution": record["attribution"],

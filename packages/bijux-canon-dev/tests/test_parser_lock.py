@@ -69,7 +69,7 @@ def test_lock_identity_rejects_metadata_tampering() -> None:
 def test_builder_rejects_media_byte_drift(tmp_path: Path) -> None:
     copied = tmp_path / "document-formats"
     shutil.copytree(PORTFOLIO_ROOT, copied)
-    media = copied / "media/parser-markdown-real.md"
+    media = copied / "corpus/parser-markdown-real.md"
     os.chmod(media, 0o644)
     media.write_bytes(media.read_bytes() + b"\nchanged\n")
     with pytest.raises(RuntimeError, match="receipt drift"):

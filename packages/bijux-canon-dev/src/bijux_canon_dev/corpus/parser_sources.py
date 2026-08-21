@@ -535,7 +535,7 @@ def acquire_record(record: Mapping[str, Any], *, output_root: Path) -> dict[str,
 
     source_id = record["parser_source_id"]
     extension = EXTENSIONS[record["format_id"]]
-    media_path = output_root / "media" / f"{source_id}{extension}"
+    media_path = output_root / "corpus" / f"{source_id}{extension}"
     source_path = output_root / "sources" / f"{source_id}.json"
     receipt_path = output_root / "acquisition-receipts" / f"{source_id}.json"
     source_core = dict(record)
@@ -550,7 +550,7 @@ def acquire_record(record: Mapping[str, Any], *, output_root: Path) -> dict[str,
             receipt["parser_source_id"] != source_id
             or receipt["format_id"] != record["format_id"]
             or receipt["state"] != "acquired"
-            or receipt["local_path"] != f"media/{source_id}{extension}"
+            or receipt["local_path"] != f"corpus/{source_id}{extension}"
             or receipt["source_record_identity_sha256"] != source_identity
             or receipt["sha256"] != sha256(body)
             or receipt["byte_count"] != len(body)
@@ -574,7 +574,7 @@ def acquire_record(record: Mapping[str, Any], *, output_root: Path) -> dict[str,
         "media_type": transport["content_type"],
         "byte_count": len(body),
         "sha256": sha256(body),
-        "local_path": f"media/{source_id}{extension}",
+        "local_path": f"corpus/{source_id}{extension}",
         "license": record["license"],
         "license_evidence": license_evidence,
         "attribution": record["attribution"],

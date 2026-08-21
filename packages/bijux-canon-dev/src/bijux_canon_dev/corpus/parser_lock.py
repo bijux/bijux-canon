@@ -70,7 +70,7 @@ def locked_source(record: Mapping[str, Any], *, output_root: Path) -> dict[str, 
     extension = EXTENSIONS[record["format_id"]]
     source_relative = Path("sources") / f"{source_id}.json"
     receipt_relative = Path("acquisition-receipts") / f"{source_id}.json"
-    media_relative = Path("media") / f"{source_id}{extension}"
+    media_relative = Path("corpus") / f"{source_id}{extension}"
     source_path = output_root / source_relative
     receipt_path = output_root / receipt_relative
     media_path = output_root / media_relative
