@@ -14,8 +14,7 @@ from dataclasses import dataclass
 from pathlib import Path
 import sqlite3
 import tempfile
-from types import MappingProxyType
-from typing import Any, TypeAlias
+from typing import Any
 
 try:  # pragma: no cover - availability is exercised by installed-profile checks
     import faiss
@@ -25,8 +24,14 @@ except Exception:  # pragma: no cover - optional dependency
     np = None
 
 from bijux_canon_index.infra.runtime_paths import ensure_parent_dir
+from bijux_canon_index.domain.metadata_filters import (
+    MetadataFilter,
+    MetadataValue,
+    matches_metadata_filter,
+    validated_metadata,
+)
 
-MetadataValue: TypeAlias = str | int | float | bool | None
+_validated_metadata = validated_metadata
 
 SCHEMA_VERSION = 1
 BACKEND_ID = "faiss-flat-ip"
@@ -71,21 +76,6 @@ def _sha256_bytes(value: bytes) -> str:
 
 def _sha256_json(value: object) -> str:
     return _sha256_bytes(_canonical_json(value).encode("utf-8"))
-
-
-def _validated_metadata(
-    metadata: Mapping[str, MetadataValue],
-) -> Mapping[str, MetadataValue]:
-    result: dict[str, MetadataValue] = {}
-    for key, value in metadata.items():
-        if not isinstance(key, str) or not key:
-            raise ValueError("dense metadata keys must be non-empty strings")
-        if not isinstance(value, str | int | float | bool | None):
-            raise ValueError("dense metadata values must be JSON scalars")
-        if isinstance(value, float) and not math.isfinite(value):
-            raise ValueError("dense metadata numbers must be finite")
-        result[key] = value
-    return MappingProxyType(dict(sorted(result.items())))
 
 
 def _validated_vector(vector: Sequence[float]) -> tuple[float, ...]:
@@ -556,12 +546,15 @@ class FaissExactIndex:
         *,
         top_k: int = 10,
         filters: Mapping[str, MetadataValue] | None = None,
+        metadata_filter: MetadataFilter | None = None,
     ) -> tuple[FaissExactSearchResult, ...]:
         """Return exact inner-product results with deterministic tie breaking."""
 
         _, numpy = _require_runtime()
         if not 1 <= top_k <= 1000:
             raise ValueError("top_k must be between 1 and 1000")
+        if filters is not None and metadata_filter is not None:
+            raise ValueError("legacy and typed metadata filters are mutually exclusive")
         normalized_filters = _validated_metadata(filters or {})
         query = _normalize_vector(vector, dimension=self._manifest.dimension)
         scores, positions = self._index.search(
@@ -576,6 +569,10 @@ class FaissExactIndex:
             if any(
                 key not in record.metadata or record.metadata[key] != value
                 for key, value in normalized_filters.items()
+            ):
+                continue
+            if metadata_filter is not None and not matches_metadata_filter(
+                record.metadata, metadata_filter
             ):
                 continue
             candidates.append((float(score), record))

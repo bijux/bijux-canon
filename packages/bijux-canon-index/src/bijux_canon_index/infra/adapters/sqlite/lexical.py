@@ -7,20 +7,23 @@ from __future__ import annotations
 
 import hashlib
 import json
-import math
 import os
 from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 import sqlite3
 import tempfile
-from types import MappingProxyType
-from typing import TypeAlias
 import unicodedata
 
+from bijux_canon_index.domain.metadata_filters import (
+    MetadataFilter,
+    MetadataValue,
+    matches_metadata_filter,
+    validated_metadata,
+)
 from bijux_canon_index.infra.runtime_paths import ensure_parent_dir
 
-MetadataValue: TypeAlias = str | int | float | bool | None
+_validated_metadata = validated_metadata
 
 SCHEMA_VERSION = 1
 BACKEND_ID = "sqlite-fts5"
@@ -52,21 +55,6 @@ def _canonical_json(value: object) -> str:
 
 def _sha256(value: str) -> str:
     return hashlib.sha256(value.encode("utf-8")).hexdigest()
-
-
-def _validated_metadata(
-    metadata: Mapping[str, MetadataValue],
-) -> Mapping[str, MetadataValue]:
-    result: dict[str, MetadataValue] = {}
-    for key, value in metadata.items():
-        if not isinstance(key, str) or not key:
-            raise ValueError("lexical metadata keys must be non-empty strings")
-        if not isinstance(value, str | int | float | bool | None):
-            raise ValueError("lexical metadata values must be JSON scalars")
-        if isinstance(value, float) and not math.isfinite(value):
-            raise ValueError("lexical metadata numbers must be finite")
-        result[key] = value
-    return MappingProxyType(dict(sorted(result.items())))
 
 
 @dataclass(frozen=True, slots=True)
@@ -520,11 +508,14 @@ class SQLiteLexicalIndex:
         top_k: int = 10,
         filters: Mapping[str, MetadataValue] | None = None,
         document_ids: Sequence[str] | None = None,
+        metadata_filter: MetadataFilter | None = None,
     ) -> tuple[LexicalSearchResult, ...]:
         """Run a parameterized BM25 query with deterministic tie breaking."""
 
         if not 1 <= top_k <= 1000:
             raise ValueError("top_k must be between 1 and 1000")
+        if filters is not None and metadata_filter is not None:
+            raise ValueError("legacy and typed metadata filters are mutually exclusive")
         normalized_filters = _validated_metadata(filters or {})
         if document_ids is not None and not document_ids:
             return ()
@@ -548,7 +539,7 @@ class SQLiteLexicalIndex:
             placeholders = ",".join("?" for _ in normalized_document_ids)
             clauses.append(f"chunks.document_id IN ({placeholders})")
             parameters.extend(normalized_document_ids)
-        parameters.append(top_k)
+        parameters.append(self._manifest.chunk_count if metadata_filter else top_k)
         rows = self._connection.execute(
             f"""
             SELECT chunks.chunk_id, chunks.document_id, chunks.ordinal,
@@ -562,8 +553,8 @@ class SQLiteLexicalIndex:
             """,
             parameters,
         ).fetchall()
-        results = []
-        for rank, row in enumerate(rows, start=1):
+        results: list[LexicalSearchResult] = []
+        for row in rows:
             chunk_id, document_id, ordinal, text, metadata_json, score = row
             chunk = LexicalChunk(
                 chunk_id=str(chunk_id),
@@ -572,9 +563,17 @@ class SQLiteLexicalIndex:
                 text=str(text),
                 metadata=json.loads(metadata_json),
             )
+            if metadata_filter is not None and not matches_metadata_filter(
+                chunk.metadata, metadata_filter
+            ):
+                continue
             results.append(
-                LexicalSearchResult(rank=rank, score=-float(score), chunk=chunk)
+                LexicalSearchResult(
+                    rank=len(results) + 1, score=-float(score), chunk=chunk
+                )
             )
+            if len(results) == top_k:
+                break
         return tuple(results)
 
 

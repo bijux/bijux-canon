@@ -14,9 +14,12 @@ import os
 from pathlib import Path
 import shutil
 import tempfile
-from types import MappingProxyType
-from typing import Protocol, TypeAlias
+from typing import Protocol
 
+from bijux_canon_index.domain.metadata_filters import (
+    MetadataValue,
+    validated_metadata,
+)
 from bijux_canon_index.infra.adapters.faiss.exact import (
     DenseVectorRecord,
     FaissExactIndex,
@@ -30,8 +33,6 @@ from bijux_canon_index.infra.adapters.sqlite.lexical import (
     SQLiteLexicalIndex,
 )
 
-MetadataValue: TypeAlias = str | int | float | bool | None
-
 SCHEMA_VERSION = 1
 MANIFEST_NAME = "generation.json"
 LEXICAL_NAME = "lexical.sqlite"
@@ -40,8 +41,11 @@ HNSW_NAME = "dense-hnsw.sqlite"
 
 
 class _SegmentManifest(Protocol):
-    generation_id: str
-    chunk_set_sha256: str
+    @property
+    def generation_id(self) -> str: ...
+
+    @property
+    def chunk_set_sha256(self) -> str: ...
 
 
 def _canonical_json(value: object) -> str:
@@ -64,21 +68,6 @@ def _sha256_file(path: Path) -> str:
         for block in iter(lambda: handle.read(1024 * 1024), b""):
             digest.update(block)
     return digest.hexdigest()
-
-
-def _validated_metadata(
-    metadata: Mapping[str, MetadataValue],
-) -> Mapping[str, MetadataValue]:
-    result: dict[str, MetadataValue] = {}
-    for key, value in metadata.items():
-        if not isinstance(key, str) or not key:
-            raise ValueError("index metadata keys must be non-empty strings")
-        if not isinstance(value, str | int | float | bool | None):
-            raise ValueError("index metadata values must be JSON scalars")
-        if isinstance(value, float) and not math.isfinite(value):
-            raise ValueError("index metadata numbers must be finite")
-        result[key] = value
-    return MappingProxyType(dict(sorted(result.items())))
 
 
 @dataclass(frozen=True, slots=True)
@@ -271,7 +260,7 @@ def _admit_chunks(
             dimension = len(vector)
         elif len(vector) != dimension:
             raise ValueError("all index vectors must have the same dimension")
-        metadata = _validated_metadata(source.metadata)
+        metadata = validated_metadata(source.metadata)
         text_bytes += len(source.text.encode("utf-8"))
         vector_bytes += len(vector) * 4
         metadata_bytes += len(_canonical_json(dict(metadata)).encode("utf-8"))

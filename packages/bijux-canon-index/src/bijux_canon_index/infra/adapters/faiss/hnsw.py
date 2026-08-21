@@ -30,6 +30,10 @@ from bijux_canon_index.infra.adapters.faiss.exact import (
     _vector_sha256,
 )
 from bijux_canon_index.infra.runtime_paths import ensure_parent_dir
+from bijux_canon_index.domain.metadata_filters import (
+    MetadataFilter,
+    matches_metadata_filter,
+)
 
 SCHEMA_VERSION = 1
 BACKEND_ID = "faiss-hnsw"
@@ -553,17 +557,20 @@ class FaissHnswIndex:
         *,
         top_k: int = 10,
         filters: Mapping[str, MetadataValue] | None = None,
+        metadata_filter: MetadataFilter | None = None,
     ) -> tuple[FaissHnswSearchResult, ...]:
         """Return approximate inner-product results with stable tie breaking."""
 
         _, numpy = _require_runtime()
         if not 1 <= top_k <= 1000:
             raise ValueError("top_k must be between 1 and 1000")
+        if filters is not None and metadata_filter is not None:
+            raise ValueError("legacy and typed metadata filters are mutually exclusive")
         normalized_filters = _validated_metadata(filters or {})
         query = _normalize_vector(vector, dimension=self._manifest.dimension)
         search_count = (
             self._manifest.vector_count
-            if normalized_filters
+            if normalized_filters or metadata_filter is not None
             else min(
                 self._manifest.vector_count,
                 max(top_k, self._manifest.parameters.ef_search),
@@ -581,6 +588,10 @@ class FaissHnswIndex:
             if any(
                 key not in record.metadata or record.metadata[key] != value
                 for key, value in normalized_filters.items()
+            ):
+                continue
+            if metadata_filter is not None and not matches_metadata_filter(
+                record.metadata, metadata_filter
             ):
                 continue
             candidates.append((float(score), record))
