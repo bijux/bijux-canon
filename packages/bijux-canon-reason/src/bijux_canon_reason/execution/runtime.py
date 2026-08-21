@@ -17,7 +17,6 @@ from bijux_canon_reason.core.types import (
 )
 from bijux_canon_reason.execution.tool_runtime import (
     BM25Retriever,
-    FakeTool,
     FrozenToolRegistry,
     ToolRegistry,
 )
@@ -77,18 +76,12 @@ class Runtime:
         )
 
     @staticmethod
-    def fake(seed: int, *, artifacts_dir: Path | None = None) -> Runtime:
-        """Handle fake."""
-        tools = ToolRegistry(
-            tools={
-                "retrieve": FakeTool(name="retrieve"),
-                "compute": FakeTool(name="compute"),
-            }
-        )
+    def credential_free(seed: int, *, artifacts_dir: Path | None = None) -> Runtime:
+        """Create an honest no-tool runtime for evidence-free local operation."""
         return Runtime(
             seed=seed,
-            tools=tools,
-            runtime_kind="FakeRuntime",
+            tools=ToolRegistry(tools={}),
+            runtime_kind="CredentialFreeRuntime",
             mode="live",
             artifacts_dir=artifacts_dir,
         )
@@ -117,7 +110,6 @@ class Runtime:
                     b=b,
                     corpus_max_bytes=corpus_max_bytes,
                 ),
-                "compute": FakeTool(name="compute"),
             }
         )
         return Runtime(

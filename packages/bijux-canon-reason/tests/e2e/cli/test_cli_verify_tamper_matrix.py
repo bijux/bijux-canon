@@ -13,6 +13,7 @@ import pytest
 
 def _run_with_evidence(
     tmp_path: Path,
+    corpus_fixture: Path,
     write_spec: Any,
     run_cli: Any,
     *,
@@ -22,7 +23,11 @@ def _run_with_evidence(
     artifacts.mkdir(parents=True, exist_ok=True)
     spec_path = write_spec(
         description=f"tamper seed={seed}",
-        constraints={"needs_retrieval": True, "top_k": 2},
+        constraints={
+            "needs_retrieval": True,
+            "top_k": 2,
+            "corpus_path": str(corpus_fixture),
+        },
     )
     p = run_cli(
         [
@@ -61,12 +66,15 @@ def _run_with_evidence(
 )
 def test_cli_verify_fails_on_evidence_tampering(
     tmp_path: Path,
+    corpus_fixture: Path,
     write_spec: Any,
     run_cli: Any,
     seed: int,
     mutation: str,
 ) -> None:
-    run_dir = _run_with_evidence(tmp_path, write_spec, run_cli, seed=seed)
+    run_dir = _run_with_evidence(
+        tmp_path, corpus_fixture, write_spec, run_cli, seed=seed
+    )
     ev_files = sorted((run_dir / "evidence").glob("*.txt"))
     assert ev_files
 
@@ -103,10 +111,13 @@ def test_cli_verify_fails_on_evidence_tampering(
 @pytest.mark.e2e
 def test_cli_verify_fails_on_support_snippet_tamper(
     tmp_path: Path,
+    corpus_fixture: Path,
     write_spec: Any,
     run_cli: Any,
 ) -> None:
-    run_dir = _run_with_evidence(tmp_path, write_spec, run_cli, seed=123)
+    run_dir = _run_with_evidence(
+        tmp_path, corpus_fixture, write_spec, run_cli, seed=123
+    )
     trace_path = run_dir / "trace.jsonl"
     lines = trace_path.read_text(encoding="utf-8").splitlines()
     mutated: list[str] = []

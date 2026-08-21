@@ -6,9 +6,19 @@ import hashlib
 from pathlib import Path
 from typing import cast
 
-from bijux_canon_reason.core.types import ProblemSpec, TraceEventKind
+from bijux_canon_reason.core.types import (
+    Claim,
+    ClaimType,
+    PlanNode,
+    ProblemSpec,
+    SupportKind,
+    SupportRef,
+    TraceEventKind,
+    VerifyOutput,
+)
 from bijux_canon_reason.execution.executor import ExecutionPolicy, execute_plan
 from bijux_canon_reason.execution.runtime import ExecutionRuntime, Runtime
+from bijux_canon_reason.execution.step_execution import ExecutionState, build_step_output
 from bijux_canon_reason.planning.planner import plan_problem
 
 
@@ -44,6 +54,7 @@ def test_executor_emits_claims_with_grounded_supports(tmp_path: Path) -> None:
     assert claim_events, "no claims emitted"
     claim = claim_events[0].claim
     assert claim.supports
+    assert claim.confidence == 0.0
     sup = claim.supports[0]
     assert sup.span is not None and sup.snippet_sha256 is not None
 
@@ -59,3 +70,36 @@ def test_executor_emits_claims_with_grounded_supports(tmp_path: Path) -> None:
     assert data[b0:b1]
     expected_sha = hashlib.sha256(data[b0:b1]).hexdigest()
     assert expected_sha == sup.snippet_sha256
+
+
+def test_verification_rejects_support_presence_without_exact_digest() -> None:
+    evidence_id = "evidence-1"
+    claim = Claim(
+        statement="Exact source statement.",
+        claim_type=ClaimType.derived,
+        supports=[
+            SupportRef(
+                kind=SupportKind.evidence,
+                ref_id=evidence_id,
+                span=(0, 23),
+                snippet_sha256="0" * 64,
+            )
+        ],
+    ).with_content_id()
+    state = ExecutionState(
+        claims={claim.id: claim},
+        evidence_ids=[evidence_id],
+        evidence_bytes={evidence_id: b"Exact source statement."},
+    )
+
+    output = build_step_output(
+        node=PlanNode(kind="verify"),
+        spec=ProblemSpec(description="Question"),
+        state=state,
+        min_supports=1,
+    )
+
+    assert isinstance(output, VerifyOutput)
+    assert output.validated_claim_ids == []
+    assert output.rejected_claim_ids == [claim.id]
+    assert output.missing_support_claim_ids == [claim.id]

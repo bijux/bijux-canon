@@ -14,12 +14,12 @@ from bijux_canon_reason.planning.planner import plan_problem
 def test_executor_is_deterministic_same_plan_seed_same_trace_fp() -> None:
     spec = ProblemSpec(
         description="x",
-        constraints={"needs_retrieval": True, "query": "abc", "top_k": 2},
+        constraints={},
     )
     plan = plan_problem(spec=spec, preset="default")
 
-    r1 = Runtime.fake(seed=7)
-    r2 = Runtime.fake(seed=7)
+    r1 = Runtime.credential_free(seed=7)
+    r2 = Runtime.credential_free(seed=7)
 
     t1 = execute_plan(plan=plan, runtime=cast(ExecutionRuntime, r1))
     t2 = execute_plan(plan=plan, runtime=cast(ExecutionRuntime, r2))

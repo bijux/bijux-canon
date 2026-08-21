@@ -215,7 +215,7 @@ def test_mixed_verdicts_admit_only_supported_claim_and_citation() -> None:
     )
     assert tuple(item.verdict for item in report.claims) == (
         EntailmentVerdict.direct_support,
-        EntailmentVerdict.irrelevance,
+        EntailmentVerdict.insufficiency,
     )
 
     decision = GroundingAdmissionService().decide(
@@ -230,7 +230,7 @@ def test_mixed_verdicts_admit_only_supported_claim_and_citation() -> None:
         citations.links[0].artifact_id,
     )
     assert decision.rejected_claims[0].claim_artifact_id == claims.claims[1].artifact_id
-    assert decision.evidence_gaps[0].code is EvidenceGapCode.irrelevant_evidence
+    assert decision.evidence_gaps[0].code is EvidenceGapCode.insufficient_evidence
 
 
 def test_unsupported_claim_abstains_without_invented_citation() -> None:
@@ -248,7 +248,7 @@ def test_unsupported_claim_abstains_without_invented_citation() -> None:
     assert decision.admitted_claim_artifact_ids == ()
     assert decision.admitted_citation_link_artifact_ids == ()
     assert {gap.code for gap in decision.evidence_gaps} == {
-        EvidenceGapCode.irrelevant_evidence,
+        EvidenceGapCode.insufficient_evidence,
         EvidenceGapCode.support_coverage_below_policy,
     }
 

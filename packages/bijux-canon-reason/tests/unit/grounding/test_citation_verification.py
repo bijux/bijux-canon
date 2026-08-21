@@ -168,30 +168,33 @@ def test_exact_evidence_span_is_direct_support_with_complete_integrity() -> None
     assert assessment.exact_claim_span is True
 
 
-def test_high_overlap_with_opposite_negation_is_opposition() -> None:
+def test_high_overlap_with_opposite_negation_requires_semantic_verification() -> None:
     report, _, _ = _verification(
         "The control did change.", "The control did not change."
     )
 
-    assert report.claims[0].verdict is EntailmentVerdict.opposition
+    assert report.claims[0].verdict is EntailmentVerdict.insufficiency
+    assert report.claims[0].assessments[0].rationale_code == (
+        "semantic_entailment_not_deterministically_established"
+    )
 
 
-def test_related_nonexact_evidence_is_ambiguous() -> None:
+def test_related_nonexact_evidence_requires_semantic_verification() -> None:
     report, _, _ = _verification(
         "Ancient DNA fragments were shorter.",
         "Ancient DNA fragments may have been shorter in a subset.",
     )
 
-    assert report.claims[0].verdict is EntailmentVerdict.ambiguity
+    assert report.claims[0].verdict is EntailmentVerdict.insufficiency
 
 
-def test_unrelated_citation_is_irrelevant_not_supported() -> None:
+def test_unrelated_citation_is_not_given_an_overlap_only_verdict() -> None:
     report, _, _ = _verification(
         "Ocean temperatures increased globally.",
         "Ancient DNA fragments degraded in the tested samples.",
     )
 
-    assert report.claims[0].verdict is EntailmentVerdict.irrelevance
+    assert report.claims[0].verdict is EntailmentVerdict.insufficiency
 
 
 def test_too_little_evidence_is_insufficient_even_when_present() -> None:

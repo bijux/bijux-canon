@@ -35,16 +35,6 @@ RUN_TIME_BUDGET_SEC = float(os.getenv("RAR_RUN_TIME_BUDGET_SEC", "0"))
 RUN_CPU_BUDGET_SEC = float(os.getenv("RAR_RUN_CPU_BUDGET_SEC", "0"))
 
 
-def _default_corpus_fixture() -> Path:
-    """Return the default corpus fixture."""
-    module_path = Path(__file__).resolve()
-    for parent in module_path.parents:
-        candidate = parent / "tests" / "fixtures" / "corpus_small.jsonl"
-        if candidate.exists():
-            return candidate
-    return module_path.parents[3] / "tests" / "fixtures" / "corpus_small.jsonl"
-
-
 def _dir_size(root: Path) -> int:
     """Handle dir size."""
     total = 0
@@ -241,13 +231,10 @@ def _resolve_runtime_config(spec: ProblemSpec) -> RunRuntimeConfig:
     """Resolve runtime config."""
     constraints = spec.constraints or {}
     needs_retrieval = bool(constraints.get("needs_retrieval"))
-    default_corpus = _default_corpus_fixture()
     corpus_path = constraints.get("corpus_path")
     use_corpus: Path | None = None
     if isinstance(corpus_path, str) and corpus_path.strip():
         use_corpus = Path(corpus_path)
-    elif needs_retrieval and default_corpus.exists():
-        use_corpus = default_corpus
 
     return RunRuntimeConfig(
         needs_retrieval=needs_retrieval,
@@ -266,7 +253,10 @@ def _build_runtime(
     *, seed: int, artifacts_dir: Path | None, config: RunRuntimeConfig
 ) -> Runtime:
     """Build runtime."""
-    if config.needs_retrieval and config.corpus_path is not None:
+    if config.needs_retrieval and config.corpus_path is None:
+        raise ValueError("retrieval requires an explicit corpus_path")
+    if config.needs_retrieval:
+        assert config.corpus_path is not None
         return Runtime.local_bm25(
             seed=seed,
             corpus_path=config.corpus_path,
@@ -277,7 +267,7 @@ def _build_runtime(
             b=config.b,
             corpus_max_bytes=config.corpus_max_bytes,
         )
-    return Runtime.fake(seed=seed, artifacts_dir=artifacts_dir)
+    return Runtime.credential_free(seed=seed, artifacts_dir=artifacts_dir)
 
 
 def _coerce_int_constraint(value: object, *, default: int) -> int:

@@ -221,7 +221,7 @@ def _read_runtime_metadata(
         else RuntimeDescriptor.model_validate(descriptor_raw)
     )
     return (
-        str(runtime.get("kind", "FakeRuntime")),
+        str(runtime.get("kind", "CredentialFreeRuntime")),
         str(runtime.get("mode", "live")),
         descriptor,
     )

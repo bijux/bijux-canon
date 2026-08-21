@@ -368,18 +368,9 @@ class DeterministicCitationVerifier:
         elif exact_span:
             verdict = EntailmentVerdict.direct_support
             rationale = "claim_is_exact_evidence_span"
-        elif (
-            coverage >= self._policy.opposition_claim_term_coverage
-            and claim_negated is not evidence_negated
-        ):
-            verdict = EntailmentVerdict.opposition
-            rationale = "high_overlap_with_opposite_negation"
-        elif coverage >= self._policy.related_claim_term_coverage:
-            verdict = EntailmentVerdict.ambiguity
-            rationale = "related_but_not_exactly_entailed"
         else:
-            verdict = EntailmentVerdict.irrelevance
-            rationale = "insufficient_claim_term_overlap"
+            verdict = EntailmentVerdict.insufficiency
+            rationale = "semantic_entailment_not_deterministically_established"
         payload = {
             "claim_artifact_id": claim.artifact_id,
             "claim_ordinal": claim.ordinal,

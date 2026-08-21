@@ -22,6 +22,7 @@ def _sha256_path(p: Path) -> str:
 )
 def test_cli_run_writes_evidence_files_and_manifest(
     tmp_path: Path,
+    corpus_fixture: Path,
     write_spec: Any,
     run_cli: Any,
     seed: int,
@@ -32,7 +33,11 @@ def test_cli_run_writes_evidence_files_and_manifest(
 
     spec_path = write_spec(
         description=f"evidence contract seed={seed} top_k={top_k}",
-        constraints={"needs_retrieval": True, "top_k": top_k},
+        constraints={
+            "needs_retrieval": True,
+            "top_k": top_k,
+            "corpus_path": str(corpus_fixture),
+        },
     )
 
     p = run_cli(

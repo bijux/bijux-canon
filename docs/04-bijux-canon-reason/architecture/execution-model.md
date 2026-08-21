@@ -55,11 +55,13 @@ Finished actions use typed outputs. In addition to the five plan kinds, a run
 can record `insufficient_evidence` explicitly. That result is a meaningful
 reasoning outcome, not a transport failure.
 
-The default runtime is seeded and local. A spec with `needs_retrieval` can use
-the local BM25 runtime with a pinned corpus, chunk size, overlap, and BM25
-parameters. Otherwise the package uses its deterministic fake runtime. A caller
-may inject another `ExecutionRuntime`, but its kind, mode, tools, versions, and
-configuration fingerprints become part of the retained runtime descriptor.
+The default runtime is seeded, local, and credential-free. It exposes no
+synthetic tools. A spec with `needs_retrieval` requires an explicit corpus path
+and uses the local BM25 runtime with pinned chunk size, overlap, and BM25
+parameters. A run without retrieval can still plan and terminate with an
+explicit insufficient-evidence outcome. A caller may inject another
+`ExecutionRuntime`, but its kind, mode, tools, versions, and configuration
+fingerprints become part of the retained runtime descriptor.
 
 ## Evidence and Claims
 

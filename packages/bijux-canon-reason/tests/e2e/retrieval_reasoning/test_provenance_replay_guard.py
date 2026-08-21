@@ -13,11 +13,20 @@ import pytest
 
 def _run_and_get_dir(tmp_path: Path) -> Path:
     artifacts = tmp_path / "artifacts"
+    corpus = tmp_path / "corpus.jsonl"
+    corpus.write_text(
+        '{"doc_id":"d1","text":"Replay provenance requires immutable evidence."}\n',
+        encoding="utf-8",
+    )
     spec_path = tmp_path / "spec.json"
     write_spec(
         spec_path,
         description="provenance replay guard",
-        constraints={"needs_retrieval": True, "top_k": 1},
+        constraints={
+            "needs_retrieval": True,
+            "top_k": 1,
+            "corpus_path": str(corpus),
+        },
     )
     cp = run_cli(
         [

@@ -4,15 +4,15 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from bijux_canon_reason.execution.tool_runtime import BM25Retriever, FakeTool
+from bijux_canon_reason.execution.runtime import Runtime
+from bijux_canon_reason.execution.tool_runtime import BM25Retriever
 
 
-def test_fake_tool_retrieve_returns_evidences() -> None:
-    tool = FakeTool(name="retrieve")
-    out = tool.invoke(arguments={"query": "q", "top_k": 2}, seed=0)
-    assert isinstance(out, dict)
-    assert "evidences" in out
-    assert len(out["evidences"]) == 2
+def test_credential_free_runtime_exposes_no_synthetic_tools() -> None:
+    runtime = Runtime.credential_free(seed=0)
+
+    assert runtime.tools.describe() == []
+    assert runtime.descriptor.kind == "CredentialFreeRuntime"
 
 
 def test_bm25_retriever_config_fingerprint_changes_with_params(tmp_path: Path) -> None:

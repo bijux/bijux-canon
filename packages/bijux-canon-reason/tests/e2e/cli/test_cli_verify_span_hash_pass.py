@@ -14,6 +14,7 @@ import pytest
 @pytest.mark.e2e
 def test_cli_verify_span_hash_passes(
     tmp_path: Path,
+    corpus_fixture: Path,
     write_spec: Any,
     run_cli: Any,
 ) -> None:
@@ -21,7 +22,11 @@ def test_cli_verify_span_hash_passes(
     artifacts.mkdir(parents=True, exist_ok=True)
     spec_path = write_spec(
         description="span hash pass",
-        constraints={"needs_retrieval": True, "top_k": 1},
+        constraints={
+            "needs_retrieval": True,
+            "top_k": 1,
+            "corpus_path": str(corpus_fixture),
+        },
     )
     run = run_cli(
         [

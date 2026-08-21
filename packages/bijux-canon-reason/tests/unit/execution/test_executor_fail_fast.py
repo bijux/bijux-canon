@@ -10,7 +10,7 @@ import pytest
 from bijux_canon_reason.core.types import JsonValue, Plan, ProblemSpec, TraceEventKind
 from bijux_canon_reason.execution.executor import ExecutionPolicy, execute_plan
 from bijux_canon_reason.execution.runtime import ExecutionRuntime, Runtime
-from bijux_canon_reason.execution.tool_runtime import FakeTool, ToolRegistry
+from bijux_canon_reason.execution.tool_runtime import ToolRegistry
 from bijux_canon_reason.planning.planner import plan_problem
 
 
@@ -25,12 +25,7 @@ class ExplodingTool:
 def _build_runtime(tmp_path: Path) -> Runtime:
     return Runtime(
         seed=0,
-        tools=ToolRegistry(
-            tools={
-                "retrieve": ExplodingTool(),
-                "compute": FakeTool(name="compute"),
-            }
-        ),
+        tools=ToolRegistry(tools={"retrieve": ExplodingTool()}),
         runtime_kind="ExplodingRuntime",
         mode="live",
         artifacts_dir=tmp_path,
