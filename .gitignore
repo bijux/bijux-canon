@@ -28,8 +28,7 @@ node_modules/
 *.egg-info/
 pip-wheel-metadata/
 
-artifacts/*
-!artifacts/.gitkeep
+artifacts/
 packages/*/artifacts/
 packages/*/artifacts
 
