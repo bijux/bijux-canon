@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+from bijux_canon_runtime_claim_support import build_claim_statement
 import pytest
 
 import bijux_canon_agent
@@ -66,7 +67,6 @@ from bijux_canon_runtime.runtime.artifact_store import InMemoryArtifactStore
 from bijux_canon_runtime.runtime.budget import BudgetState
 from bijux_canon_runtime.runtime.context import ExecutionContext, RunMode
 import bijux_rag
-from bijux_canon_runtime_claim_support import build_claim_statement
 
 pytestmark = pytest.mark.regression
 

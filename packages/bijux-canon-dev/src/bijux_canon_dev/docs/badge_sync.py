@@ -8,7 +8,6 @@ import sys
 from types import ModuleType
 from typing import Any
 
-
 REPO_ROOT = Path(__file__).resolve().parents[5]
 SHARED_RENDERER = (
     REPO_ROOT / ".bijux/shared/bijux-makes-py/repository/badge_renderer.py"
