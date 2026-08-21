@@ -11,6 +11,8 @@ from typing import Any
 import zipfile
 
 from bijux_canon_index.application.engine import VectorExecutionEngine
+from bijux_canon_index.application.index_audit import IndexCompatibility
+from bijux_canon_index.application.index_service import IndexService
 from bijux_canon_index.core.config import ExecutionConfig
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.errors import ValidationError
@@ -20,6 +22,32 @@ from bijux_canon_index.infra.embeddings.registry import EMBEDDING_PROVIDERS
 from bijux_canon_index.infra.logging import enable_trace, trace_events
 from bijux_canon_index.infra.metrics import METRICS
 from bijux_canon_index.infra.run_store import RunStore
+from bijux_canon_index.infra.runtime_paths import default_generation_registry_path
+
+
+def index_service_from_environment(
+    *,
+    registry_root: str | Path | None = None,
+) -> IndexService:
+    """Compose the canonical generation service from operator configuration."""
+
+    root = Path(
+        registry_root
+        or os.getenv("BIJUX_CANON_INDEX_GENERATION_ROOT")
+        or default_generation_registry_path()
+    )
+    model_lock_artifact_id = os.getenv("BIJUX_CANON_INDEX_MODEL_LOCK_ARTIFACT_ID")
+    raw_dimension = os.getenv("BIJUX_CANON_INDEX_MODEL_DIMENSION")
+    if (model_lock_artifact_id is None) != (raw_dimension is None):
+        raise ValueError(
+            "generation compatibility requires both model lock and dimension"
+        )
+    compatibility = (
+        None
+        if model_lock_artifact_id is None
+        else IndexCompatibility(model_lock_artifact_id, int(raw_dimension or ""))
+    )
+    return IndexService(root, compatibility=compatibility)
 
 
 def list_execution_runs(*, limit: int | None, offset: int) -> list[str]:
@@ -211,6 +239,7 @@ __all__ = [
     "enable_execution_trace",
     "environment_report",
     "execution_trace_events",
+    "index_service_from_environment",
     "list_execution_runs",
     "load_execution_run",
     "metrics_payload",

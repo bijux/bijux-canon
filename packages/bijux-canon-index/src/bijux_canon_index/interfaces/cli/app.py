@@ -21,6 +21,9 @@ from bijux_canon_index.interfaces.cli.diagnostic_commands import (
 from bijux_canon_index.interfaces.cli.execution_commands import (
     register_execution_commands,
 )
+from bijux_canon_index.interfaces.cli.index_generation_commands import (
+    register_index_generation_commands,
+)
 from bijux_canon_index.interfaces.cli.performance_commands import (
     register_performance_commands,
 )
@@ -38,6 +41,8 @@ config_app = typer.Typer(add_completion=False, help="Configuration utilities")
 app.add_typer(config_app, name="config")
 artifact_app = typer.Typer(add_completion=False, help="Artifact bundle utilities")
 app.add_typer(artifact_app, name="artifact")
+index_app = typer.Typer(add_completion=False, help="Immutable index generations")
+app.add_typer(index_app, name="index")
 
 
 @app.callback()
@@ -84,6 +89,7 @@ register_vector_store_commands(vdb_app)
 register_artifact_commands(artifact_app)
 register_performance_commands(app, nd_app)
 register_diagnostic_commands(app, config_app)
+register_index_generation_commands(index_app)
 
 
 if __name__ == "__main__":

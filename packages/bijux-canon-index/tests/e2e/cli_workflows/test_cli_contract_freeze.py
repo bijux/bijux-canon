@@ -44,6 +44,7 @@ CLI_HELP = """
 │ nd               ND utilities                                                │
 │ config           Configuration utilities                                     │
 │ artifact         Artifact bundle utilities                                   │
+│ index            Immutable index generations                                 │
 ╰──────────────────────────────────────────────────────────────────────────────╯
 
 """

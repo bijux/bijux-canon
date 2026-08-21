@@ -22,6 +22,12 @@ def default_embedding_cache_path() -> Path:
     return package_artifacts_root() / "cache" / "embeddings.sqlite"
 
 
+def default_generation_registry_path() -> Path:
+    """Return the default immutable index-generation registry path."""
+
+    return package_artifacts_root() / "generations"
+
+
 def default_pgvector_state_path() -> Path:
     """Return the default pgvector state path."""
     return package_artifacts_root() / "state" / "pgvector.sqlite"
@@ -36,6 +42,7 @@ def ensure_parent_dir(path: str | Path) -> Path:
 
 __all__ = [
     "default_embedding_cache_path",
+    "default_generation_registry_path",
     "default_pgvector_state_path",
     "default_state_path",
     "ensure_parent_dir",

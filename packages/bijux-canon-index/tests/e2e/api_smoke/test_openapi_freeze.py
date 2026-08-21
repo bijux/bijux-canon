@@ -9,7 +9,7 @@ from bijux_canon_index.core.canon import canon
 from bijux_canon_index.core.identity.ids import fingerprint
 
 EXPECTED_OPENAPI_FINGERPRINT = (
-    "acabfc3b388d424eb63cda9bbe1f5b20821cbbf6c00ccd8323bc3a1af0fc2993"
+    "6236187c935b35f82ccf5fb2b96458c69846e6495d4334ed9b55ff336ade266e"
 )
 
 
