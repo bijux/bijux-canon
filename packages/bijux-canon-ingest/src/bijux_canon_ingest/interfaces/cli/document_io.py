@@ -8,8 +8,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
+from bijux_canon_ingest.application.surface_services import read_documents
 from bijux_canon_ingest.core.types import Chunk, RawDoc
-from bijux_canon_ingest.infra.adapters.file_storage import FileStorage
 from bijux_canon_ingest.interfaces.cli.document_pipeline import DocumentChunkShell
 from bijux_canon_ingest.interfaces.cli.document_pipeline_io import (
     read_csv_docs,
@@ -41,17 +41,10 @@ def read_docs_csv(
 
 class CsvDocumentReader:
     def read_docs(self, path: str) -> Result[list[RawDoc], str]:
-        storage = FileStorage()
-        docs: list[RawDoc] = []
-        errors: list[str] = []
-        for result in storage.read_docs(path):
-            if isinstance(result, Ok):
-                docs.append(result.value)
-            elif isinstance(result, Err):
-                errors.append(result.error.msg)
-        if errors:
-            return Err("; ".join(errors))
-        return Ok(docs)
+        result = read_documents(Path(path))
+        if isinstance(result, Err):
+            return Err(result.error.msg)
+        return Ok(result.value)
 
 
 def write_chunks_jsonl(path: str, chunks: list[Chunk]) -> Result[None, str]:
