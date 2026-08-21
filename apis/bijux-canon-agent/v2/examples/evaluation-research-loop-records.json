@@ -3,7 +3,8 @@
   "external_artifact_ids": [
     "sha256:251bd65e22ba7c6d780bac18d6073be26b1470dfc1b05f8a470879d9762bc9e6",
     "sha256:795a8ff50e129b0da5d2abaa55a0d778668395c6dda20b0b8bd76599bebd2942",
-    "sha256:d5409e9ff5aa1515f9d2a37156d24ed3650b82368d77672c2b557af5967c2d08"
+    "sha256:d5409e9ff5aa1515f9d2a37156d24ed3650b82368d77672c2b557af5967c2d08",
+    "sha256:e1b3c2662adb229f9bbdbe287d507433005762108d60a1c31d5679776079b53c"
   ],
   "records": [
     {
@@ -54,6 +55,26 @@
         {"cause_artifact_id": "sha256:908dee54d799184964521c0a4d1652434d28703c555dafecc863f2ce1ac401f8", "effect_artifact_id": "sha256:3a696e5c7d93b48d012f22ca80251a99699a3f95ba8eef0c64a558ff89167abd", "relation": "terminated"},
         {"cause_artifact_id": "sha256:286a85571b8f8ce4eb56d2a4cbcc3ccf604c5049ff49bbc1995878314b61601c", "effect_artifact_id": "sha256:3a696e5c7d93b48d012f22ca80251a99699a3f95ba8eef0c64a558ff89167abd", "relation": "terminated"}
       ], "head_artifact_id": "sha256:3a696e5c7d93b48d012f22ca80251a99699a3f95ba8eef0c64a558ff89167abd", "trace_sha256": "3b7833954b0e68067c1b6ccf503f55c99e45d5a3e4d17e3d60917e43ceaf54b6"
+    },
+    {
+      "schema_version": "2.0.0", "artifact_type": "bijux.canon.agent.tool_policy", "artifact_id": "sha256:e436b8d3893e36db1f59072dabd6f98da8b9699489794769bc7cd2361011ac1a", "run_artifact_id": "sha256:d5409e9ff5aa1515f9d2a37156d24ed3650b82368d77672c2b557af5967c2d08", "sequence": 9,
+      "plan_artifact_id": "sha256:a16d9adb8cb26ae57509ca993c88b10c988ac7f02546b6b8da0a2f3cc32071c1", "default_action": "deny", "grants": [{"tool": "bijux-canon-index.retrieve", "operations": ["retrieve"], "scope_artifact_ids": ["sha256:795a8ff50e129b0da5d2abaa55a0d778668395c6dda20b0b8bd76599bebd2942"], "max_calls": 1}], "denied_tools": ["network.fetch"], "policy_sha256": "3bc0761beb8e0a8c07438acc69dafc01dcd8b259a9e93d1f4b4a4aa3c23b38ab"
+    },
+    {
+      "schema_version": "2.0.0", "artifact_type": "bijux.canon.agent.bounded_budget", "artifact_id": "sha256:8955ee7fc30d9076077c992cad6d792d84be3e0e7fc5a96ea5b512375932b335", "run_artifact_id": "sha256:d5409e9ff5aa1515f9d2a37156d24ed3650b82368d77672c2b557af5967c2d08", "sequence": 10,
+      "plan_artifact_id": "sha256:a16d9adb8cb26ae57509ca993c88b10c988ac7f02546b6b8da0a2f3cc32071c1", "limits": {"iterations": 3, "retrievals": 2, "candidates": 4, "evidence_items": 8, "tool_calls": 2, "provider_calls": 2, "tokens": 256, "elapsed_ms": 30000, "retries": 1, "artifact_bytes": 16384}, "usage": {"iterations": 1, "retrievals": 1, "candidates": 1, "evidence_items": 1, "tool_calls": 1, "provider_calls": 1, "tokens": 48, "elapsed_ms": 6000, "retries": 0, "artifact_bytes": 4096}, "deadline": "2026-08-21T06:10:30Z", "exhausted_dimensions": [], "within_limits": true
+    },
+    {
+      "schema_version": "2.0.0", "artifact_type": "bijux.canon.agent.cancellation", "artifact_id": "sha256:1d82e91c14304203ac23c7526feaa7af43c64aff75f4f1935d8c6c3ec13be523", "run_artifact_id": "sha256:d5409e9ff5aa1515f9d2a37156d24ed3650b82368d77672c2b557af5967c2d08", "sequence": 11,
+      "requested": false, "request_artifact_id": null, "reason": null, "requested_at": null, "deadline": null, "propagated_to": []
+    },
+    {
+      "schema_version": "2.0.0", "artifact_type": "bijux.canon.agent.checkpoint", "artifact_id": "sha256:e2eb580c6e06644a098f2011341dc04bef7c8f05e8c86196d35cd9ca3a2ad96e", "run_artifact_id": "sha256:d5409e9ff5aa1515f9d2a37156d24ed3650b82368d77672c2b557af5967c2d08", "sequence": 12,
+      "previous_checkpoint_artifact_id": null, "state_payload_sha256": "bf69c44e6af97e051538d2293cd709e3383735af93e55abde0e55a8f09e9c5a4", "trigger": "terminal", "event_artifact_ids": ["sha256:3a696e5c7d93b48d012f22ca80251a99699a3f95ba8eef0c64a558ff89167abd"], "preserved_artifact_ids": ["sha256:251bd65e22ba7c6d780bac18d6073be26b1470dfc1b05f8a470879d9762bc9e6", "sha256:286a85571b8f8ce4eb56d2a4cbcc3ccf604c5049ff49bbc1995878314b61601c"], "created_at": "2026-08-21T06:10:07Z"
+    },
+    {
+      "schema_version": "2.0.0", "artifact_type": "bijux.canon.agent.agent_state", "artifact_id": "sha256:ee75545355e88b186d033c6357f7e3306d120f2e8684727c9b021d0bf0501e9a", "run_artifact_id": "sha256:d5409e9ff5aa1515f9d2a37156d24ed3650b82368d77672c2b557af5967c2d08", "sequence": 13,
+      "state_revision": 1, "previous_state_artifact_id": null, "role": "verifier", "plan_artifact_id": "sha256:a16d9adb8cb26ae57509ca993c88b10c988ac7f02546b6b8da0a2f3cc32071c1", "current_question": {"query_artifact_id": "sha256:795a8ff50e129b0da5d2abaa55a0d778668395c6dda20b0b8bd76599bebd2942", "text": "What is FASTQ?", "text_sha256": "7c9729a84a2d1edbdd02015a760a880c73cbb5e33049d06a325508309addd0c7"}, "claim_graph_artifact_id": "sha256:e1b3c2662adb229f9bbdbe287d507433005762108d60a1c31d5679776079b53c", "evidence_gap_artifact_ids": [], "tool_policy_artifact_id": "sha256:e436b8d3893e36db1f59072dabd6f98da8b9699489794769bc7cd2361011ac1a", "budget_artifact_id": "sha256:8955ee7fc30d9076077c992cad6d792d84be3e0e7fc5a96ea5b512375932b335", "checkpoint_artifact_id": "sha256:e2eb580c6e06644a098f2011341dc04bef7c8f05e8c86196d35cd9ca3a2ad96e", "cancellation_artifact_id": "sha256:1d82e91c14304203ac23c7526feaa7af43c64aff75f4f1935d8c6c3ec13be523", "provider_record_artifact_ids": ["sha256:8fcf331feae0551f8e2ba7cc1f3d498760cb4d84b186ed5a736f840997ee0405"], "status": "terminal", "terminal_outcome": {"status": "answered", "reason": "The exact cited sentence supports the synthesis.", "result_artifact_ids": ["sha256:286a85571b8f8ce4eb56d2a4cbcc3ccf604c5049ff49bbc1995878314b61601c"]}, "updated_at": "2026-08-21T06:10:07Z"
     }
   ]
 }

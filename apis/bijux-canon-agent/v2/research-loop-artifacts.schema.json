@@ -5,7 +5,9 @@
   "oneOf": [
     {"$ref": "#/$defs/research_plan"}, {"$ref": "#/$defs/role_transition"}, {"$ref": "#/$defs/tool_call"},
     {"$ref": "#/$defs/budget"}, {"$ref": "#/$defs/provider_call"}, {"$ref": "#/$defs/critique"},
-    {"$ref": "#/$defs/synthesis"}, {"$ref": "#/$defs/stop_decision"}, {"$ref": "#/$defs/causal_trace"}
+    {"$ref": "#/$defs/synthesis"}, {"$ref": "#/$defs/stop_decision"}, {"$ref": "#/$defs/causal_trace"},
+    {"$ref": "#/$defs/tool_policy"}, {"$ref": "#/$defs/bounded_budget"}, {"$ref": "#/$defs/cancellation"},
+    {"$ref": "#/$defs/checkpoint"}, {"$ref": "#/$defs/agent_state"}
   ],
   "$defs": {
     "artifact_id": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
@@ -65,8 +67,54 @@
       "allOf": [{"$ref": "#/$defs/base"}, {"type": "object", "additionalProperties": false, "required": ["schema_version", "artifact_type", "artifact_id", "run_artifact_id", "sequence", "event_artifact_ids", "links", "head_artifact_id", "trace_sha256"], "properties": {
         "schema_version": {}, "artifact_type": {"const": "bijux.canon.agent.causal_trace"}, "artifact_id": {}, "run_artifact_id": {}, "sequence": {}, "event_artifact_ids": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/artifact_id"}, "uniqueItems": true, "x-bijux-ordering": "event sequence ascending"}, "links": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/causal_link"}, "uniqueItems": true, "x-bijux-ordering": "effect sequence, cause sequence"}, "head_artifact_id": {"$ref": "#/$defs/artifact_id"}, "trace_sha256": {"$ref": "#/$defs/sha256"}
       }}]
+    },
+    "tool_grant": {
+      "type": "object", "additionalProperties": false, "required": ["tool", "operations", "scope_artifact_ids", "max_calls"],
+      "properties": {"tool": {"type": "string", "minLength": 1}, "operations": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}, "uniqueItems": true, "x-bijux-ordering": "lexicographic"}, "scope_artifact_ids": {"$ref": "#/$defs/artifact_ids"}, "max_calls": {"type": "integer", "minimum": 0}}
+    },
+    "tool_policy": {
+      "allOf": [{"$ref": "#/$defs/base"}, {"type": "object", "additionalProperties": false, "required": ["schema_version", "artifact_type", "artifact_id", "run_artifact_id", "sequence", "plan_artifact_id", "default_action", "grants", "denied_tools", "policy_sha256"], "properties": {
+        "schema_version": {}, "artifact_type": {"const": "bijux.canon.agent.tool_policy"}, "artifact_id": {}, "run_artifact_id": {}, "sequence": {}, "plan_artifact_id": {"$ref": "#/$defs/artifact_id"}, "default_action": {"const": "deny"}, "grants": {"type": "array", "items": {"$ref": "#/$defs/tool_grant"}, "uniqueItems": true, "x-bijux-ordering": "tool ascending"}, "denied_tools": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true, "x-bijux-ordering": "lexicographic"}, "policy_sha256": {"$ref": "#/$defs/sha256"}
+      }}]
+    },
+    "budget_dimensions": {
+      "type": "object", "additionalProperties": false, "required": ["iterations", "retrievals", "candidates", "evidence_items", "tool_calls", "provider_calls", "tokens", "elapsed_ms", "retries", "artifact_bytes"],
+      "properties": {"iterations": {"type": "integer", "minimum": 0}, "retrievals": {"type": "integer", "minimum": 0}, "candidates": {"type": "integer", "minimum": 0}, "evidence_items": {"type": "integer", "minimum": 0}, "tool_calls": {"type": "integer", "minimum": 0}, "provider_calls": {"type": "integer", "minimum": 0}, "tokens": {"type": "integer", "minimum": 0}, "elapsed_ms": {"type": "integer", "minimum": 0}, "retries": {"type": "integer", "minimum": 0}, "artifact_bytes": {"type": "integer", "minimum": 0}}
+    },
+    "bounded_budget": {
+      "allOf": [{"$ref": "#/$defs/base"}, {"type": "object", "additionalProperties": false, "required": ["schema_version", "artifact_type", "artifact_id", "run_artifact_id", "sequence", "plan_artifact_id", "limits", "usage", "deadline", "exhausted_dimensions", "within_limits"], "properties": {
+        "schema_version": {}, "artifact_type": {"const": "bijux.canon.agent.bounded_budget"}, "artifact_id": {}, "run_artifact_id": {}, "sequence": {}, "plan_artifact_id": {"$ref": "#/$defs/artifact_id"}, "limits": {"$ref": "#/$defs/budget_dimensions"}, "usage": {"$ref": "#/$defs/budget_dimensions"}, "deadline": {"$ref": "#/$defs/timestamp"}, "exhausted_dimensions": {"type": "array", "items": {"enum": ["iterations", "retrievals", "candidates", "evidence_items", "tool_calls", "provider_calls", "tokens", "elapsed_ms", "retries", "artifact_bytes"]}, "uniqueItems": true, "x-bijux-ordering": "schema declaration order"}, "within_limits": {"type": "boolean"}
+      }}]
+    },
+    "cancellation": {
+      "allOf": [{"$ref": "#/$defs/base"}, {"type": "object", "additionalProperties": false, "required": ["schema_version", "artifact_type", "artifact_id", "run_artifact_id", "sequence", "requested", "request_artifact_id", "reason", "requested_at", "deadline", "propagated_to"], "properties": {
+        "schema_version": {}, "artifact_type": {"const": "bijux.canon.agent.cancellation"}, "artifact_id": {}, "run_artifact_id": {}, "sequence": {}, "requested": {"type": "boolean"}, "request_artifact_id": {"oneOf": [{"$ref": "#/$defs/artifact_id"}, {"type": "null"}]}, "reason": {"oneOf": [{"type": "string", "minLength": 1}, {"type": "null"}]}, "requested_at": {"oneOf": [{"$ref": "#/$defs/timestamp"}, {"type": "null"}]}, "deadline": {"oneOf": [{"$ref": "#/$defs/timestamp"}, {"type": "null"}]}, "propagated_to": {"$ref": "#/$defs/artifact_ids"}
+      }, "allOf": [
+        {"if": {"properties": {"requested": {"const": true}}, "required": ["requested"]}, "then": {"properties": {"request_artifact_id": {"$ref": "#/$defs/artifact_id"}, "reason": {"type": "string", "minLength": 1}, "requested_at": {"$ref": "#/$defs/timestamp"}}}},
+        {"if": {"properties": {"requested": {"const": false}}, "required": ["requested"]}, "then": {"properties": {"request_artifact_id": {"type": "null"}, "reason": {"type": "null"}, "requested_at": {"type": "null"}, "deadline": {"type": "null"}, "propagated_to": {"maxItems": 0}}}}
+      ]}]
+    },
+    "checkpoint": {
+      "allOf": [{"$ref": "#/$defs/base"}, {"type": "object", "additionalProperties": false, "required": ["schema_version", "artifact_type", "artifact_id", "run_artifact_id", "sequence", "previous_checkpoint_artifact_id", "state_payload_sha256", "trigger", "event_artifact_ids", "preserved_artifact_ids", "created_at"], "properties": {
+        "schema_version": {}, "artifact_type": {"const": "bijux.canon.agent.checkpoint"}, "artifact_id": {}, "run_artifact_id": {}, "sequence": {}, "previous_checkpoint_artifact_id": {"oneOf": [{"$ref": "#/$defs/artifact_id"}, {"type": "null"}]}, "state_payload_sha256": {"$ref": "#/$defs/sha256"}, "trigger": {"enum": ["transition", "budget", "tool", "provider", "cancellation", "terminal"]}, "event_artifact_ids": {"allOf": [{"$ref": "#/$defs/artifact_ids"}, {"minItems": 1}]}, "preserved_artifact_ids": {"$ref": "#/$defs/artifact_ids"}, "created_at": {"$ref": "#/$defs/timestamp"}
+      }}]
+    },
+    "current_question": {
+      "type": "object", "additionalProperties": false, "required": ["query_artifact_id", "text", "text_sha256"],
+      "properties": {"query_artifact_id": {"$ref": "#/$defs/artifact_id"}, "text": {"type": "string", "minLength": 1}, "text_sha256": {"$ref": "#/$defs/sha256"}}
+    },
+    "terminal_outcome": {
+      "type": "object", "additionalProperties": false, "required": ["status", "reason", "result_artifact_ids"],
+      "properties": {"status": {"enum": ["answered", "partial", "insufficient", "cancelled", "failed"]}, "reason": {"type": "string", "minLength": 1}, "result_artifact_ids": {"$ref": "#/$defs/artifact_ids"}}
+    },
+    "agent_state": {
+      "allOf": [{"$ref": "#/$defs/base"}, {"type": "object", "additionalProperties": false, "required": ["schema_version", "artifact_type", "artifact_id", "run_artifact_id", "sequence", "state_revision", "previous_state_artifact_id", "role", "plan_artifact_id", "current_question", "claim_graph_artifact_id", "evidence_gap_artifact_ids", "tool_policy_artifact_id", "budget_artifact_id", "checkpoint_artifact_id", "cancellation_artifact_id", "provider_record_artifact_ids", "status", "terminal_outcome", "updated_at"], "properties": {
+        "schema_version": {}, "artifact_type": {"const": "bijux.canon.agent.agent_state"}, "artifact_id": {}, "run_artifact_id": {}, "sequence": {}, "state_revision": {"type": "integer", "minimum": 0}, "previous_state_artifact_id": {"oneOf": [{"$ref": "#/$defs/artifact_id"}, {"type": "null"}]}, "role": {"enum": ["planner", "researcher", "critic", "synthesizer", "verifier"]}, "plan_artifact_id": {"$ref": "#/$defs/artifact_id"}, "current_question": {"$ref": "#/$defs/current_question"}, "claim_graph_artifact_id": {"$ref": "#/$defs/artifact_id"}, "evidence_gap_artifact_ids": {"$ref": "#/$defs/artifact_ids"}, "tool_policy_artifact_id": {"$ref": "#/$defs/artifact_id"}, "budget_artifact_id": {"$ref": "#/$defs/artifact_id"}, "checkpoint_artifact_id": {"$ref": "#/$defs/artifact_id"}, "cancellation_artifact_id": {"$ref": "#/$defs/artifact_id"}, "provider_record_artifact_ids": {"$ref": "#/$defs/artifact_ids"}, "status": {"enum": ["planning", "researching", "critiquing", "synthesizing", "verifying", "terminal"]}, "terminal_outcome": {"oneOf": [{"$ref": "#/$defs/terminal_outcome"}, {"type": "null"}]}, "updated_at": {"$ref": "#/$defs/timestamp"}
+      }, "allOf": [
+        {"if": {"properties": {"status": {"const": "terminal"}}, "required": ["status"]}, "then": {"properties": {"terminal_outcome": {"$ref": "#/$defs/terminal_outcome"}}}, "else": {"properties": {"terminal_outcome": {"type": "null"}}}}
+      ]}]
     }
   },
   "x-bijux-identity": {"algorithm": "sha-256", "canonicalization": "RFC 8785", "excluded_json_pointers": ["/artifact_id"]},
-  "x-bijux-invariants": ["sequence values are unique and strictly increasing", "causal links resolve and point from lower to higher sequence", "usage never exceeds limits unless exhausted is true", "replayable provider calls require temperature zero and a seed", "the trace head is the terminal stop decision"]
+  "x-bijux-invariants": ["sequence values are unique and strictly increasing", "causal links resolve and point from lower to higher sequence", "usage never exceeds limits unless exhausted is true", "bounded budget usage and exhausted dimensions are consistent with limits", "tools not explicitly granted are denied", "a cancellation request is propagated before another external call", "every state transition produces a checkpoint that preserves partial evidence", "terminal state has exactly one terminal outcome", "replayable provider calls require temperature zero and a seed", "the trace head is the terminal stop decision"]
 }

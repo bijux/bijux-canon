@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0", "artifact_family": "bijux.canon.agent", "current_artifact_schema_version": "2.0.0",
   "canonical_serialization": {"standard": "RFC 8785", "identity_algorithm": "sha-256", "excluded_json_pointers": ["/artifact_id"]},
-  "migration_rules": {"implicit_migration_allowed": false, "unknown_version": "reject with unsupported_schema_version", "downgrade": "reject with unsupported_schema_version", "in_place_mutation": false, "lossy_migration": false, "future_migration_requirements": ["register an explicit adjacent-version deterministic transform", "validate source and target records", "preserve plan, transition, call, budget, critique, synthesis, stop, and causal identities"]},
+  "migration_rules": {"implicit_migration_allowed": false, "unknown_version": "reject with unsupported_schema_version", "downgrade": "reject with unsupported_schema_version", "in_place_mutation": false, "lossy_migration": false, "future_migration_requirements": ["register an explicit adjacent-version deterministic transform", "validate source and target records", "preserve plan, transition, call, policy, budget, critique, synthesis, stop, cancellation, checkpoint, state, and causal identities"]},
   "registered_transforms": []
 }
