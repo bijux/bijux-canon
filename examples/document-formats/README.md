@@ -22,6 +22,17 @@ python -m bijux_canon_dev.corpus.parser_sources \
   --output-root examples/document-formats
 ```
 
+`corpus.lock.json` binds every reviewed source to its media type, byte count,
+SHA-256 digest, license, attribution, retrieval time, declared transformations,
+and acquisition evidence. Rebuild or verify it from the same durable inputs:
+
+```console
+python -m bijux_canon_dev.corpus.parser_lock \
+  --portfolio examples/document-formats/sources.jsonl \
+  --output-root examples/document-formats \
+  --lock examples/document-formats/corpus.lock.json
+```
+
 Generated download logs and verification evidence are disposable and remain
 under the ignored repository `artifacts/` directory. They are never source
 inputs and are never tracked by Git.
