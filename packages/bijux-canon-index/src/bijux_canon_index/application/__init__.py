@@ -14,6 +14,12 @@ from bijux_canon_index.application.index_activation import (
     IndexActivationError,
     IndexGenerationRegistry,
 )
+from bijux_canon_index.application.index_audit import (
+    IndexCompatibility,
+    IndexGenerationAuditReport,
+    IndexGenerationIncompatibleError,
+    audit_index_generation,
+)
 from bijux_canon_index.application.index_mutation import (
     IndexDelta,
     IndexMutationReceipt,
@@ -27,11 +33,15 @@ __all__ = [
     "IndexBuildStageReceipt",
     "IndexBuildStatistics",
     "IndexGeneration",
+    "IndexGenerationAuditReport",
     "IndexGenerationBuildError",
     "IndexGenerationLineage",
+    "IndexGenerationIncompatibleError",
     "IndexGenerationManifest",
     "IndexGenerationRegistry",
+    "IndexCompatibility",
     "IndexDelta",
     "IndexMutationReceipt",
     "apply_index_delta",
+    "audit_index_generation",
 ]

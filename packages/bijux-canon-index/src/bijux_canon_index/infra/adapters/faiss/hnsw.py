@@ -606,6 +606,11 @@ class FaissHnswIndex:
             for rank, (score, record) in enumerate(candidates[:top_k], start=1)
         )
 
+    def chunk_ids(self) -> tuple[str, ...]:
+        """Return the verified chunk mapping in canonical position order."""
+
+        return tuple(record.chunk_id for record in self._records)
+
 
 def measure_hnsw_recall(
     approximate: FaissHnswIndex,

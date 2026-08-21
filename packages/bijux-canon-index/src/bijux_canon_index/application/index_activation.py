@@ -15,6 +15,10 @@ import shutil
 import tempfile
 from typing import Iterator
 
+from bijux_canon_index.application.index_audit import (
+    IndexCompatibility,
+    audit_index_generation,
+)
 from bijux_canon_index.application.index_generation import (
     EXACT_NAME,
     HNSW_NAME,
@@ -54,12 +58,18 @@ def _generation_directory_name(generation_id: str) -> str:
 class IndexGenerationRegistry:
     """Persistent manifest-last registry with one atomic active pointer."""
 
-    def __init__(self, root: str | Path) -> None:
+    def __init__(
+        self,
+        root: str | Path,
+        *,
+        compatibility: IndexCompatibility | None = None,
+    ) -> None:
         self.root = Path(root).resolve()
         self.generations = self.root / GENERATIONS_NAME
         self.root.mkdir(parents=True, exist_ok=True)
         self.generations.mkdir(exist_ok=True)
         (self.root / LOCK_NAME).touch(exist_ok=True)
+        self._compatibility = compatibility
 
     @contextmanager
     def _exclusive(self) -> Iterator[None]:
@@ -74,8 +84,10 @@ class IndexGenerationRegistry:
         """Verify and publish a complete generation without activating it."""
 
         source_path = Path(source).resolve()
-        with IndexGeneration.open(source_path) as generation:
-            generation_id = str(generation.manifest.generation_id)
+        audit = audit_index_generation(
+            source_path, compatibility=self._compatibility
+        )
+        generation_id = audit.generation_id
         destination = self.generations / _generation_directory_name(generation_id)
         with self._exclusive():
             if destination.exists():
@@ -122,9 +134,11 @@ class IndexGenerationRegistry:
 
         generation_path = self.generations / _generation_directory_name(generation_id)
         with self._exclusive():
-            with IndexGeneration.open(generation_path) as generation:
-                if generation.manifest.generation_id != generation_id:
-                    raise IndexActivationError("generation path and identity diverged")
+            audit = audit_index_generation(
+                generation_path, compatibility=self._compatibility
+            )
+            if audit.generation_id != generation_id:
+                raise IndexActivationError("generation path and identity diverged")
             previous = self.active_generation_id(required=False)
             payload = {
                 "generation_id": generation_id,
@@ -185,9 +199,9 @@ class IndexGenerationRegistry:
 
         generation_id = self.active_generation_id()
         assert generation_id is not None
-        return IndexGeneration.open(
-            self.generations / _generation_directory_name(generation_id)
-        )
+        path = self.generations / _generation_directory_name(generation_id)
+        audit_index_generation(path, compatibility=self._compatibility)
+        return IndexGeneration.open(path)
 
     def recover(self) -> tuple[str, ...]:
         """Remove only recognized interrupted publications and verify activation."""
