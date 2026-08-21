@@ -114,6 +114,7 @@ modules, and CLI implementation modules should not be imported as library APIs.
 | Responsibility | Supported import | Required evidence |
 | --- | --- | --- |
 | construct or inspect reasoning records | package root | model validation and invariant checks |
+| execute, inspect, verify, replay, or compare bounded research | `ResearchApplicationService` from the package root | manifested record, exact restart verification, and attributed attempt comparison |
 | generate or compare stable identities | package root | canonicalization version, algorithm, and fixed-vector tests |
 | read or write canonical JSON and trace JSONL | `interfaces.serialization` | byte-level round trip and trace fingerprint |
 | host the versioned HTTP application | `api.v1` | pinned OpenAPI and route/error contracts |

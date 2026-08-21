@@ -90,6 +90,10 @@ bijux-canon-reason verify \
 bijux-canon-reason replay \
   --trace artifacts/bijux-canon-reason/runs/<run-id>/trace.jsonl \
   --fail-on-diff --json
+
+bijux-canon-reason research \
+  --input research-input.json \
+  --artifacts-dir artifacts/bijux-canon-reason --json
 ```
 
 `run` writes `spec.json`, `plan.json`, `trace.jsonl`, `verify.json`,
@@ -97,8 +101,16 @@ bijux-canon-reason replay \
 identifier. The manifest and invariant checksum bind the inputs, plan, trace,
 runtime descriptor, schema version, and producer version.
 
-The `eval` command exists, but its suite selector is currently a fixed stub. It
-must not be treated as evidence of a mature configurable evaluation catalog.
+Bounded RAR uses one `ResearchApplicationService` across the package-root API,
+the canonical command, and the `bijux-rar` compatibility command. A research
+record binds verified graph synthesis, exact evidence provenance, immutable
+attempts, replayed states, and their attributed comparison. The `inspect`,
+`verify --research-id`, `replay --research-id`, and `compare` commands all load
+that same manifested record after restart.
+
+The `eval` command loads a named suite from a declared suite root, retains every
+case run, and writes case and summary diagnostics. Those diagnostics do not
+replace reviewed retrieval, claim, citation, or refusal truth.
 
 ## HTTP Contract
 

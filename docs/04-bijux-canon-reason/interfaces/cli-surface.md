@@ -18,8 +18,11 @@ governed verification, replay, or evaluation failure.
 | Command | Reads | Writes | Success output |
 | --- | --- | --- | --- |
 | `run` | one `ProblemSpec` JSON file | a complete run directory | run directory, or a JSON run summary |
-| `verify` | `trace.jsonl` and `plan.json` | `verify.verify.json` beside the trace | `ok`, or a JSON verification report |
-| `replay` | a trace and its sibling run artifacts | `replay/trace.jsonl` | JSON fingerprint and diff data |
+| `research` | one `ResearchApplicationInput` JSON file | one immutable research record and manifest | research identity or JSON summary |
+| `inspect` | a research identity | nothing | complete typed research record |
+| `verify` | a research identity, or `trace.jsonl` and `plan.json` | `verify.verify.json` only in trace mode | exact restart verification or trace report |
+| `replay` | a research identity, or a trace and sibling run artifacts | `replay/trace.jsonl` only in trace mode | replayed states or trace fingerprint data |
+| `compare` | a research identity | nothing | attributed differences between adjacent attempts |
 | `eval` | `problems.jsonl` from a named suite | case runs, `cases.jsonl`, and `summary.json` | JSON containing the summary path, optionally with counts |
 
 ## `run`
@@ -63,6 +66,37 @@ Every completed run directory contains:
 | `evidence/` | Materialized evidence when the run registers evidence. |
 | `provenance/` | Retrieval corpus, index, and provenance when retrieval is used. |
 
+## Research records
+
+`ResearchApplicationInput` is the installed handoff from admitted RAG evidence
+and verified graph components into bounded RAR. Execute it and retain the
+content-derived identity:
+
+```bash
+RESEARCH_ID=$(bijux-canon-reason research \
+  --input research-input.json \
+  --artifacts-dir artifacts/bijux-canon-reason)
+
+bijux-canon-reason inspect --research-id "$RESEARCH_ID" \
+  --artifacts-dir artifacts/bijux-canon-reason
+bijux-canon-reason verify --research-id "$RESEARCH_ID" \
+  --artifacts-dir artifacts/bijux-canon-reason
+bijux-canon-reason replay --research-id "$RESEARCH_ID" \
+  --artifacts-dir artifacts/bijux-canon-reason
+bijux-canon-reason compare --research-id "$RESEARCH_ID" \
+  --artifacts-dir artifacts/bijux-canon-reason
+```
+
+All five operations call `ResearchApplicationService`. The record retains the
+input, graph synthesis, independently verified evidence paths, two immutable
+attempts, replayed states, and an event-attributed comparison. Its manifest
+binds the canonical record bytes. Inspection, verification, replay, and
+comparison reject a changed record before returning results.
+
+The `bijux-rar` compatibility command exposes these same operations by calling
+the canonical application. It does not translate the input or maintain a
+separate research store.
+
 ## `verify`
 
 ```bash
@@ -73,9 +107,11 @@ bijux-canon-reason verify \
   --json
 ```
 
-Both `--trace` and `--plan` are required existing files. Verification writes
-`verify.verify.json` beside the trace. This is deliberately separate from the
-run-time `verify.json`.
+In trace mode, both `--trace` and `--plan` are required existing files and
+verification writes `verify.verify.json` beside the trace. This is deliberately
+separate from the run-time `verify.json`. Research mode instead accepts
+`--research-id` with `--artifacts-dir` and recomputes synthesis, provenance,
+replay, and comparison from the manifested application input.
 
 Exit behavior deserves explicit handling:
 
@@ -97,11 +133,13 @@ bijux-canon-reason replay \
   --json
 ```
 
-`--fail-on-diff` is enabled by default; `--no-fail-on-diff` reports a mismatch
-without failing the command. Replay always emits JSON, so `--json` is accepted
-but does not change its current output format. The payload includes original
-and replayed fingerprints, a structural diff summary, and the replay trace
-path.
+In trace mode, `--fail-on-diff` is enabled by default;
+`--no-fail-on-diff` reports a mismatch without failing the command. Replay
+always emits JSON, so `--json` is accepted but does not change its current
+output format. The payload includes original and replayed fingerprints, a
+structural diff summary, and the replay trace path. Research mode accepts
+`--research-id`, replays the retained immutable attempt chain, and requires
+exact parity with both persisted states.
 
 Replay loads `spec.json`, `plan.json`, and `run_meta.json` from the trace's
 directory, validates the recorded invariant checksum, and runs with recorded

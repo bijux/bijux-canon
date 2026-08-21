@@ -64,7 +64,15 @@ def test_version_matches_pyproject() -> None:
 
 def test_cli_surface_and_models_are_frozen() -> None:
     command = cast(Any, typer.main.get_command(app))
-    assert set(command.commands.keys()) == {"run", "verify", "replay", "eval"}
+    assert set(command.commands.keys()) == {
+        "run",
+        "research",
+        "inspect",
+        "verify",
+        "replay",
+        "compare",
+        "eval",
+    }
 
     def _opts(cmd_name: str) -> set[str]:
         params = command.commands[cmd_name].params
@@ -87,6 +95,11 @@ def test_cli_surface_and_models_are_frozen() -> None:
     # Verify/replay/eval must expose required flags.
     assert "--trace" in _opts("verify")
     assert "--trace" in _opts("replay")
+    assert "--research-id" in _opts("verify")
+    assert "--research-id" in _opts("replay")
+    assert _opts("research") == {"--input", "--artifacts-dir", "--json"}
+    assert _opts("inspect") == {"--research-id", "--artifacts-dir"}
+    assert _opts("compare") == {"--research-id", "--artifacts-dir"}
     assert "--suite" in _opts("eval")
 
     # Guard critical model field sets to prevent accidental API drift.

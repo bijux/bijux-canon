@@ -261,6 +261,14 @@ from bijux_canon_reason.research import (
     create_subquestion_retrieval_request,
     create_subquestion_candidate,
 )
+from bijux_canon_reason.application import (
+    ResearchApplicationError,
+    ResearchApplicationErrorCode,
+    ResearchApplicationInput,
+    ResearchApplicationRecord,
+    ResearchApplicationService,
+    ResearchApplicationVerification,
+)
 
 __all__ = [
     "__version__",
@@ -419,6 +427,12 @@ __all__ = [
     "RagExecutionStageKind",
     "RejectedGroundingClaim",
     "RejectedEvidenceRelation",
+    "ResearchApplicationError",
+    "ResearchApplicationErrorCode",
+    "ResearchApplicationInput",
+    "ResearchApplicationRecord",
+    "ResearchApplicationService",
+    "ResearchApplicationVerification",
     "ResearchQuestion",
     "ResearchQuestionIntent",
     "ResearchSubquestion",

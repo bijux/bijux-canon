@@ -7,6 +7,10 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
+from bijux_canon_reason.application.research_service import (
+    ResearchApplicationInput,
+    ResearchApplicationService,
+)
 from bijux_canon_reason.application.run_artifacts import RunBuilder, RunInputs
 from bijux_canon_reason.core.types import Plan, ProblemSpec
 from bijux_canon_reason.evaluation.suite_workflow import run_eval_suite
@@ -46,6 +50,14 @@ class EvalCommandResult:
     summary_path: Path
     failed: int
     total: int
+
+
+@dataclass(frozen=True)
+class ResearchCommandResult:
+    """Structured result returned by a research command transport."""
+
+    payload: dict[str, object]
+    research_id: str
 
 
 def execute_run_command(
@@ -129,12 +141,90 @@ def execute_eval_command(
     )
 
 
+def execute_research_command(
+    *, input_path: Path, artifacts_dir: Path
+) -> ResearchCommandResult:
+    """Execute and persist a complete verified research graph."""
+    request = ResearchApplicationInput.model_validate(read_json_file(input_path))
+    record = ResearchApplicationService(artifacts_dir=artifacts_dir).research(request)
+    return ResearchCommandResult(
+        payload={
+            "research_id": record.research_id,
+            "record_artifact_id": record.artifact_id,
+            "outcome": record.synthesis.outcome.value,
+            "synthesis_artifact_id": record.synthesis.artifact_id,
+            "provenance_artifact_id": record.provenance.artifact_id,
+            "comparison_artifact_id": record.comparison.artifact_id,
+        },
+        research_id=record.research_id,
+    )
+
+
+def execute_inspect_research_command(
+    *, research_id: str, artifacts_dir: Path
+) -> ResearchCommandResult:
+    """Inspect the complete typed record through the shared service."""
+    record = ResearchApplicationService(artifacts_dir=artifacts_dir).inspect(research_id)
+    return ResearchCommandResult(
+        payload=record.model_dump(mode="json"), research_id=record.research_id
+    )
+
+
+def execute_verify_research_command(
+    *, research_id: str, artifacts_dir: Path
+) -> ResearchCommandResult:
+    """Verify a persisted research record after restart."""
+    result = ResearchApplicationService(artifacts_dir=artifacts_dir).verify(research_id)
+    return ResearchCommandResult(
+        payload=result.model_dump(mode="json"), research_id=result.research_id
+    )
+
+
+def execute_replay_research_command(
+    *, research_id: str, artifacts_dir: Path
+) -> ResearchCommandResult:
+    """Replay persisted research attempts through the shared service."""
+    replayed = ResearchApplicationService(artifacts_dir=artifacts_dir).replay(
+        research_id
+    )
+    return ResearchCommandResult(
+        payload={
+            "research_id": research_id,
+            "replayed_attempts": [item.model_dump(mode="json") for item in replayed],
+            "restart_exact": True,
+        },
+        research_id=research_id,
+    )
+
+
+def execute_compare_research_command(
+    *, research_id: str, artifacts_dir: Path
+) -> ResearchCommandResult:
+    """Compare persisted research attempts through the shared service."""
+    comparison = ResearchApplicationService(artifacts_dir=artifacts_dir).compare(
+        research_id
+    )
+    return ResearchCommandResult(
+        payload={
+            "research_id": research_id,
+            "comparison": comparison.model_dump(mode="json"),
+        },
+        research_id=research_id,
+    )
+
+
 __all__ = [
     "EvalCommandResult",
+    "ResearchCommandResult",
     "ReplayCommandResult",
     "RunCommandResult",
     "VerifyCommandResult",
     "execute_eval_command",
+    "execute_compare_research_command",
+    "execute_inspect_research_command",
+    "execute_replay_research_command",
+    "execute_research_command",
+    "execute_verify_research_command",
     "execute_replay_command",
     "execute_run_command",
     "execute_verify_command",

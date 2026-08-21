@@ -96,7 +96,9 @@ types in validators, registries, and serializers.
 The bridge command and module entrypoint call the canonical reason application
 without translating plans, evidence, failures, output, or exit status. The
 canonical package remains the sole authority for acceptance and refusal
-semantics.
+semantics. This includes the `research`, `inspect`, `verify --research-id`,
+`replay --research-id`, and `compare` operations, which all use the canonical
+`ResearchApplicationService` and its manifested record.
 
 ## Verify A Consumer
 

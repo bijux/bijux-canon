@@ -11,10 +11,15 @@ from typing import NoReturn, no_type_check
 import typer
 
 from bijux_canon_reason.application.cli_services import (
+    execute_compare_research_command,
     execute_eval_command,
+    execute_inspect_research_command,
     execute_replay_command,
+    execute_replay_research_command,
+    execute_research_command,
     execute_run_command,
     execute_verify_command,
+    execute_verify_research_command,
 )
 
 app = typer.Typer(
@@ -38,14 +43,19 @@ FAIL_ON_VERIFY_OPTION = typer.Option(
     help="Exit non-zero if verify fails.",
 )
 TRACE_PATH_OPTION = typer.Option(
-    ..., "--trace", exists=True, dir_okay=False, help="Path to trace.jsonl"
+    None, "--trace", exists=True, dir_okay=False, help="Path to trace.jsonl"
 )
 PLAN_PATH_OPTION = typer.Option(
-    ...,
+    None,
     "--plan",
     exists=True,
     dir_okay=False,
     help="Plan JSON required for verification",
+)
+RESEARCH_ID_OPTION = typer.Option(
+    None,
+    "--research-id",
+    help="Content-derived research record identity.",
 )
 FAIL_ON_DIFF_OPTION = typer.Option(
     True,
@@ -107,15 +117,72 @@ def run(
 
 @app.command()
 @no_type_check
+def research(
+    input_path: Path = typer.Option(
+        ..., "--input", exists=True, dir_okay=False, help="Research input JSON."
+    ),
+    artifacts_dir: Path = ARTIFACTS_DIR_OPTION,
+    json_output: bool = typer.Option(
+        False, "--json", help="Emit the complete structured command result."
+    ),
+) -> None:
+    """Execute and persist one bounded verified research graph."""
+    try:
+        result = execute_research_command(
+            input_path=input_path, artifacts_dir=artifacts_dir
+        )
+    except (RuntimeError, ValueError) as exc:
+        _exit(2, f"research failed: {exc}")
+    if json_output:
+        _emit_json(result.payload)
+    else:
+        typer.echo(result.research_id)
+    _exit(0)
+
+
+@app.command()
+@no_type_check
+def inspect(
+    research_id: str = typer.Option(..., "--research-id"),
+    artifacts_dir: Path = ARTIFACTS_DIR_OPTION,
+) -> None:
+    """Inspect one persisted typed research record."""
+    try:
+        result = execute_inspect_research_command(
+            research_id=research_id, artifacts_dir=artifacts_dir
+        )
+    except (RuntimeError, ValueError) as exc:
+        _exit(2, f"research inspection failed: {exc}")
+    _emit_json(result.payload)
+    _exit(0)
+
+
+@app.command()
+@no_type_check
 def verify(
-    trace: Path = TRACE_PATH_OPTION,
-    plan: Path = PLAN_PATH_OPTION,
+    trace: Path | None = TRACE_PATH_OPTION,
+    plan: Path | None = PLAN_PATH_OPTION,
+    research_id: str | None = RESEARCH_ID_OPTION,
+    artifacts_dir: Path = ARTIFACTS_DIR_OPTION,
     fail_on_verify: bool = FAIL_ON_VERIFY_OPTION,
     json_output: bool = typer.Option(
         False, "--json", help="Emit structured JSON instead of plain output."
     ),
 ) -> None:
     """Handle verify."""
+    if research_id is not None:
+        if trace is not None or plan is not None:
+            _exit(2, "verification accepts either --research-id or --trace/--plan")
+        try:
+            research_result = execute_verify_research_command(
+                research_id=research_id, artifacts_dir=artifacts_dir
+            )
+        except (RuntimeError, ValueError) as exc:
+            _exit(2, f"research verification failed: {exc}")
+        _emit_json(research_result.payload)
+        _exit(0 if research_result.payload["passed"] else 2)
+    if trace is None or plan is None:
+        _exit(2, "verification requires --research-id or both --trace and --plan")
     try:
         result = execute_verify_command(trace_path=trace, plan_path=plan)
     except RuntimeError as exc:
@@ -137,13 +204,28 @@ def verify(
 @app.command()
 @no_type_check
 def replay(
-    trace: Path = TRACE_PATH_OPTION,
+    trace: Path | None = TRACE_PATH_OPTION,
+    research_id: str | None = RESEARCH_ID_OPTION,
+    artifacts_dir: Path = ARTIFACTS_DIR_OPTION,
     fail_on_diff: bool = FAIL_ON_DIFF_OPTION,
     json_output: bool = typer.Option(
         False, "--json", help="Emit structured JSON instead of plain output."
     ),
 ) -> None:
     """Handle replay."""
+    if research_id is not None:
+        if trace is not None:
+            _exit(2, "replay accepts either --research-id or --trace")
+        try:
+            research_result = execute_replay_research_command(
+                research_id=research_id, artifacts_dir=artifacts_dir
+            )
+        except (RuntimeError, ValueError) as exc:
+            _exit(2, f"research replay failed: {exc}")
+        _emit_json(research_result.payload)
+        _exit(0)
+    if trace is None:
+        _exit(2, "replay requires either --research-id or --trace")
     result = execute_replay_command(trace)
     _emit_json(result.payload)
 
@@ -155,6 +237,23 @@ def replay(
             f"Diff: {result.payload['diff_summary']}",
         )
 
+    _exit(0)
+
+
+@app.command()
+@no_type_check
+def compare(
+    research_id: str = typer.Option(..., "--research-id"),
+    artifacts_dir: Path = ARTIFACTS_DIR_OPTION,
+) -> None:
+    """Compare adjacent persisted research attempts with exact attribution."""
+    try:
+        result = execute_compare_research_command(
+            research_id=research_id, artifacts_dir=artifacts_dir
+        )
+    except (RuntimeError, ValueError) as exc:
+        _exit(2, f"research comparison failed: {exc}")
+    _emit_json(result.payload)
     _exit(0)
 
 
