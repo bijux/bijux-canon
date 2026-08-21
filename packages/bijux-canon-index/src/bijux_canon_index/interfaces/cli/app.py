@@ -11,7 +11,7 @@ from typing import no_type_check
 
 import typer
 
-from bijux_canon_index.infra.logging import enable_trace
+from bijux_canon_index.application.surface_services import enable_execution_trace
 from bijux_canon_index.interfaces.cli.artifact_commands import (
     register_artifact_commands,
 )
@@ -65,7 +65,7 @@ def _main_callback(
 ) -> None:
     """Handle main callback."""
     if trace:
-        enable_trace()
+        enable_execution_trace()
     if no_color:
         os.environ["RICH_NO_COLOR"] = "1"
         os.environ["TYPER_COLOR"] = "0"

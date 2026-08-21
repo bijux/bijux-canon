@@ -14,8 +14,10 @@ import zipfile
 import typer
 
 from bijux_canon_index.core.config import ExecutionConfig
-from bijux_canon_index.infra.adapters.vectorstore_registry import VECTOR_STORES
-from bijux_canon_index.infra.logging import trace_events
+from bijux_canon_index.application.surface_services import (
+    execution_trace_events,
+    redact_vector_store_uri,
+)
 
 
 @dataclass(frozen=True)
@@ -67,7 +69,7 @@ def emit(
 
     payload: object = data
     if trace:
-        payload = {"data": data, "trace": trace_events()}
+        payload = {"data": data, "trace": execution_trace_events()}
 
     if fmt == "table":
         table_payload = table or render_table(data)
@@ -96,14 +98,7 @@ def config_to_dict(config: ExecutionConfig | None) -> dict[str, object]:
 def redact_config(config: ExecutionConfig | None) -> dict[str, object]:
     """Handle redact config."""
     payload = config_to_dict(config)
-    vector_store = payload.get("vector_store")
-    if isinstance(vector_store, dict) and vector_store.get("uri"):
-        resolved = VECTOR_STORES.resolve(
-            vector_store.get("backend") or "memory",
-            uri=str(vector_store.get("uri")),
-        )
-        vector_store["uri"] = resolved.uri_redacted
-    return payload
+    return redact_vector_store_uri(payload)
 
 
 def load_bundle(path: Path) -> dict[str, object]:

@@ -12,7 +12,7 @@ import typer
 
 from bijux_canon_index.application.engine import VectorExecutionEngine
 from bijux_canon_index.core.errors import ValidationError
-from bijux_canon_index.infra.run_store import RunStore
+from bijux_canon_index.application.surface_services import list_execution_runs
 from bijux_canon_index.interfaces.cli.configuration import (
     build_config as _build_config,
 )
@@ -38,7 +38,7 @@ def list_runs(
     offset: int = typer.Option(0, "--offset"),
 ) -> None:
     """List runs."""
-    runs = RunStore().list_runs(limit=limit, offset=offset)
+    runs = list_execution_runs(limit=limit, offset=offset)
     _emit(ctx, {"runs": runs})
 
 

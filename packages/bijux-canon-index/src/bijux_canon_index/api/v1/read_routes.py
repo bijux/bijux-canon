@@ -9,7 +9,7 @@ from typing import cast
 from fastapi import FastAPI, Header, Response
 
 from bijux_canon_index.application.engine import VectorExecutionEngine
-from bijux_canon_index.infra.run_store import RunStore
+from bijux_canon_index.application.surface_services import list_execution_runs
 from bijux_canon_index.interfaces.schemas.api_responses import (
     ListArtifactsResponse,
     ListRunsResponse,
@@ -141,7 +141,7 @@ def register_read_routes(app: FastAPI) -> None:
         """List runs."""
         if correlation_id:
             response.headers["X-Correlation-Id"] = correlation_id
-        runs = RunStore().list_runs(limit=limit, offset=offset)
+        runs = list_execution_runs(limit=limit, offset=offset)
         return {"runs": runs}
 
 
