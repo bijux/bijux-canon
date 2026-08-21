@@ -11,7 +11,6 @@ from bijux_canon_agent.agents.base import BaseAgent
 from bijux_canon_agent.constants import CONTRACT_VERSION
 from bijux_canon_agent.contracts import ExecutionPlan, ResearchPlanningInput
 from bijux_canon_agent.contracts.agent_contract import AgentOutputSchema
-from bijux_canon_agent.contracts.retrieval import RetrievalRequest
 from bijux_canon_agent.enums import AgentType, DecisionOutcome
 
 
@@ -83,15 +82,7 @@ class PlannerAgent(BaseAgent[dict[str, Any], AgentOutputSchema]):
             AgentType.CRITIQUE,
             AgentType.VERIFIER,
         ]
-        retrieval = RetrievalRequest(
-            query=planning_input.query,
-            corpus_generation=planning_input.corpus_generation,
-            index_generation=planning_input.index_generation,
-            scope=planning_input.scope,
-            top_k=planning_input.top_k,
-            retrieval_mode=planning_input.retrieval_mode,
-            constraints=planning_input.constraints,
-        )
+        retrieval = planning_input.retrieval_request()
         return ExecutionPlan(
             planning_input=planning_input,
             dag=dag,

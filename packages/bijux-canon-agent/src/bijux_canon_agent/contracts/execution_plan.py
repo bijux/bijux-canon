@@ -83,6 +83,18 @@ class ResearchPlanningInput(TypedBaseModel):
         except (TypeError, ValueError) as exc:
             raise ValueError("constraints must be canonical JSON values") from exc
 
+    def retrieval_request(self) -> RetrievalRequest:
+        """Project the exact retrieval-affecting fields into the port request."""
+        return RetrievalRequest(
+            query=self.query,
+            corpus_generation=self.corpus_generation,
+            index_generation=self.index_generation,
+            scope=self.scope,
+            top_k=self.top_k,
+            retrieval_mode=self.retrieval_mode,
+            constraints=self.constraints,
+        )
+
 
 class ExecutionPlan(TypedBaseModel):
     """Deterministic execution graph bound to its complete planning inputs."""

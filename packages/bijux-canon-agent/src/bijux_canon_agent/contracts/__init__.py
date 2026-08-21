@@ -19,6 +19,14 @@ from .retrieval import (
     RetrievalRequest,
     RetrievalResponse,
 )
+from .research_ports import (
+    ReasonerPort,
+    ReasoningPortRequest,
+    ReasoningPortResult,
+    RetrievalPortResult,
+    RetrieverPort,
+    ServicePortDescriptor,
+)
 from .runtime_models import (
     AgentError,
     AgentInput,
@@ -43,5 +51,11 @@ __all__ = [
     "RetrievalRequest",
     "RetrievalResponse",
     "ResearchPlanningInput",
+    "ReasonerPort",
+    "ReasoningPortRequest",
+    "ReasoningPortResult",
+    "RetrievalPortResult",
+    "RetrieverPort",
     "RunMetadata",
+    "ServicePortDescriptor",
 ]
