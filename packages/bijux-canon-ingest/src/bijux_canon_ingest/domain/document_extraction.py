@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 from dataclasses import dataclass
 from typing import Literal, get_args
 
@@ -21,8 +22,11 @@ BlockRole = Literal[
 ]
 DocumentParseIssueCode = Literal[
     "format_mismatch",
+    "encrypted_document",
+    "invalid_locator",
     "malformed_document",
     "missing_required_metadata",
+    "ocr_required",
     "source_changed",
     "source_not_admitted",
     "unsafe_markup",
@@ -31,6 +35,8 @@ LocatorValue = str | int
 
 _BLOCK_ROLES = frozenset(get_args(BlockRole))
 _PARSE_ISSUE_CODES = frozenset(get_args(DocumentParseIssueCode))
+PdfPageExtraction = Literal["digital-text", "ocr-required"]
+_PDF_PAGE_EXTRACTIONS = frozenset(get_args(PdfPageExtraction))
 
 
 def _canonical_json(value: object) -> bytes:
@@ -199,6 +205,168 @@ class ParsedDocument:
         return {"manifest_sha256": _identity(payload), **payload}
 
 
+@dataclass(frozen=True, slots=True)
+class PdfDocumentMetadata:
+    """Standard PDF information fields preserved without inferred values."""
+
+    title: str | None
+    author: str | None
+    subject: str | None
+    keywords: str | None
+    creator: str | None
+    producer: str | None
+    created_at: str | None
+    modified_at: str | None
+    raw_fields: tuple[tuple[str, str], ...]
+
+    def __post_init__(self) -> None:
+        names = [name for name, _ in self.raw_fields]
+        if len(names) != len(set(names)):
+            raise ValueError("PdfDocumentMetadata.raw_fields must have unique names")
+
+    def manifest(self) -> dict[str, object]:
+        """Return embedded metadata without supplementing missing fields."""
+
+        return {
+            "author": self.author,
+            "created_at": self.created_at,
+            "creator": self.creator,
+            "keywords": self.keywords,
+            "modified_at": self.modified_at,
+            "producer": self.producer,
+            "raw_fields": dict(self.raw_fields),
+            "subject": self.subject,
+            "title": self.title,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class PdfPage:
+    """Exact extracted page text with page geometry and character lineage."""
+
+    page_number: int
+    text: str
+    width_points: float
+    height_points: float
+    rotation_degrees: int
+    extraction_method: PdfPageExtraction
+    locator: SourceLocator
+
+    def __post_init__(self) -> None:
+        if self.page_number <= 0:
+            raise ValueError("PdfPage.page_number must be positive")
+        if (
+            not math.isfinite(self.width_points)
+            or not math.isfinite(self.height_points)
+            or self.width_points <= 0
+            or self.height_points <= 0
+        ):
+            raise ValueError("PdfPage geometry must be positive and finite")
+        if self.extraction_method not in _PDF_PAGE_EXTRACTIONS:
+            raise ValueError("unsupported PDF page extraction method")
+        if self.extraction_method == "digital-text" and not self.text.strip():
+            raise ValueError("digital-text pages must contain extractable text")
+        if self.extraction_method == "ocr-required" and self.text.strip():
+            raise ValueError("ocr-required pages must not claim extracted text")
+
+    @property
+    def text_sha256(self) -> str:
+        """Return the exact extracted page text digest."""
+
+        return _text_sha256(self.text)
+
+    def manifest(self) -> dict[str, object]:
+        """Return exact page text, geometry, status, and locator."""
+
+        return {
+            "extraction_method": self.extraction_method,
+            "height_points": self.height_points,
+            "locator": self.locator.manifest(),
+            "page_number": self.page_number,
+            "rotation_degrees": self.rotation_degrees,
+            "text": self.text,
+            "text_sha256": self.text_sha256,
+            "width_points": self.width_points,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class ParsedPdfDocument:
+    """A deterministic digital-PDF extraction bound to immutable source bytes."""
+
+    source_content_sha256: str
+    parser_name: str
+    parser_version: str
+    extractor: str
+    metadata: PdfDocumentMetadata
+    pages: tuple[PdfPage, ...]
+
+    def __post_init__(self) -> None:
+        if not self.parser_name or not self.parser_version or not self.extractor:
+            raise ValueError("ParsedPdfDocument parser identity must be complete")
+        if len(self.source_content_sha256) != 64 or any(
+            character not in "0123456789abcdef"
+            for character in self.source_content_sha256
+        ):
+            raise ValueError("ParsedPdfDocument source hash must be lowercase SHA-256")
+        if not self.pages or tuple(page.page_number for page in self.pages) != tuple(
+            range(1, len(self.pages) + 1)
+        ):
+            raise ValueError("ParsedPdfDocument pages must use contiguous one-based order")
+
+    def resolve_text(self, locator: SourceLocator) -> str:
+        """Resolve and integrity-check one exact page character span."""
+
+        if locator.scheme != "pdf-page-text-span":
+            raise DocumentParseError(
+                "invalid_locator", "locator scheme is not pdf-page-text-span"
+            )
+        extractor = locator.get("extractor")
+        page_number = locator.get("page_number")
+        page_sha256 = locator.get("page_text_sha256")
+        text_start = locator.get("text_start")
+        text_end = locator.get("text_end")
+        if (
+            extractor != self.extractor
+            or isinstance(page_number, bool)
+            or not isinstance(page_number, int)
+            or not isinstance(page_sha256, str)
+            or isinstance(text_start, bool)
+            or not isinstance(text_start, int)
+            or isinstance(text_end, bool)
+            or not isinstance(text_end, int)
+            or page_number <= 0
+            or page_number > len(self.pages)
+        ):
+            raise DocumentParseError(
+                "invalid_locator", "PDF locator selectors do not match this extraction"
+            )
+        page = self.pages[page_number - 1]
+        if page.text_sha256 != page_sha256:
+            raise DocumentParseError(
+                "invalid_locator", "PDF locator page text identity does not match"
+            )
+        if text_start < 0 or text_end < text_start or text_end > len(page.text):
+            raise DocumentParseError(
+                "invalid_locator", "PDF locator character span is out of bounds"
+            )
+        return page.text[text_start:text_end]
+
+    def manifest(self) -> dict[str, object]:
+        """Return a canonical PDF extraction manifest and its identity."""
+
+        payload: dict[str, object] = {
+            "extractor": self.extractor,
+            "format_id": "pdf-digital",
+            "metadata": self.metadata.manifest(),
+            "pages": [page.manifest() for page in self.pages],
+            "parser": {"name": self.parser_name, "version": self.parser_version},
+            "schema_version": "bijux.canon.ingest.parsed_pdf_document.v1",
+            "source_content_sha256": self.source_content_sha256,
+        }
+        return {"manifest_sha256": _identity(payload), **payload}
+
+
 class DocumentParseError(ValueError):
     """A typed refusal at the semantic document parsing boundary."""
 
@@ -219,5 +387,9 @@ __all__ = [
     "DocumentParseIssueCode",
     "ParsedBlock",
     "ParsedDocument",
+    "ParsedPdfDocument",
+    "PdfDocumentMetadata",
+    "PdfPage",
+    "PdfPageExtraction",
     "SourceLocator",
 ]

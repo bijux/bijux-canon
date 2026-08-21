@@ -846,6 +846,7 @@ dependencies = [
     { name = "msgpack" },
     { name = "numpy" },
     { name = "pydantic" },
+    { name = "pypdf" },
     { name = "pyyaml" },
     { name = "uvicorn" },
 ]
@@ -941,6 +942,7 @@ requires-dist = [
     { name = "pydantic", specifier = ">=2.7,<3" },
     { name = "pymdown-extensions", marker = "extra == 'dev'", specifier = ">=10.8,<12" },
     { name = "pymdown-extensions", marker = "extra == 'docs'", specifier = ">=10.8,<12" },
+    { name = "pypdf", specifier = "==6.14.2" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=9.0.3,<10.0" },
     { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=1.0.0,<2.0" },
     { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=6.0,<8.0" },

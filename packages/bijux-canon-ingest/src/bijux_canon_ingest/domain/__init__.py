@@ -22,6 +22,10 @@ from .document_extraction import (
     DocumentParseIssueCode,
     ParsedBlock,
     ParsedDocument,
+    ParsedPdfDocument,
+    PdfDocumentMetadata,
+    PdfPage,
+    PdfPageExtraction,
     SourceLocator,
 )
 from .idempotent import AtomicWriteCap, content_key, idempotent_write
@@ -73,5 +77,9 @@ __all__ = [
     "DocumentParseIssueCode",
     "ParsedBlock",
     "ParsedDocument",
+    "ParsedPdfDocument",
+    "PdfDocumentMetadata",
+    "PdfPage",
+    "PdfPageExtraction",
     "SourceLocator",
 ]
