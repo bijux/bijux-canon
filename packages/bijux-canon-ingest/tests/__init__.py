@@ -1,4 +1,0 @@
-# SPDX-License-Identifier: Apache-2.0
-# Copyright © 2026 Bijan Mousavi
-
-"""Test suite for the bijux_canon_ingest educational pipeline."""

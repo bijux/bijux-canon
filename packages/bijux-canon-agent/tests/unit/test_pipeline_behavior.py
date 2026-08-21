@@ -19,8 +19,8 @@ from bijux_canon_agent.enums import DecisionOutcome
 from bijux_canon_agent.interfaces.cli.helpers import build_trace_from_result
 from bijux_canon_agent.pipeline import AuditableDocPipeline
 from bijux_canon_agent.pipeline.termination import ExecutionTerminationReason
-from tests.stubs.file_reader_stub import FileReaderStub
-from tests.utils.trace_helpers import default_model_metadata
+from bijux_canon_agent_reader_support import FileReaderStub
+from bijux_canon_agent_trace_support import default_model_metadata
 
 
 class SummarizerStub(SummarizerAgent):

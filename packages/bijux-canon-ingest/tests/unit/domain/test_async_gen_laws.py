@@ -8,7 +8,6 @@ from dataclasses import dataclass
 
 from hypothesis import given, settings
 from hypothesis import strategies as st
-from tests.helpers import collect
 
 from bijux_canon_ingest.domain.effects.asyncio import (
     async_gen_and_then,
@@ -17,6 +16,7 @@ from bijux_canon_ingest.domain.effects.asyncio import (
     async_gen_using,
 )
 from bijux_canon_ingest.result.types import Err, ErrInfo, Ok
+from bijux_canon_ingest_async_support import collect
 
 
 @given(x=st.integers())

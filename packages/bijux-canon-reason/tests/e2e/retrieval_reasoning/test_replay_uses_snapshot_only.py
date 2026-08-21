@@ -9,7 +9,7 @@ import sys
 
 import pytest
 
-from tests.e2e._helpers import run_cli, write_spec
+from bijux_canon_reason_e2e_support import run_cli, write_spec
 
 
 @pytest.mark.e2e

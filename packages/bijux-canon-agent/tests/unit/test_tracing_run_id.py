@@ -6,7 +6,7 @@ from pathlib import Path
 
 from bijux_canon_agent.constants import CONTRACT_VERSION
 from bijux_canon_agent.traces import ReplayMetadata, TraceEntry, TraceRecorder
-from tests.utils.trace_helpers import (
+from bijux_canon_agent_trace_support import (
     build_replay_metadata,
     build_run_fingerprint,
     default_model_metadata,

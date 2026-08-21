@@ -13,7 +13,10 @@ from _pytest.monkeypatch import MonkeyPatch
 import pytest
 
 PACKAGE_ROOT = Path(__file__).resolve().parents[1]
+TESTS_ROOT = Path(__file__).resolve().parent
 MONOREPO_ROOT = PACKAGE_ROOT.parents[1]
+if str(TESTS_ROOT) not in sys.path:
+    sys.path.insert(0, str(TESTS_ROOT))
 ALLOWED_ARTIFACTS_ROOT = MONOREPO_ROOT / "artifacts" / "bijux-canon-agent" / "test"
 PYCACHE_PREFIX = ALLOWED_ARTIFACTS_ROOT / "pycache"
 PYCACHE_PREFIX.mkdir(parents=True, exist_ok=True)
@@ -53,7 +56,7 @@ def _assert_within_allowed(path: Path) -> None:
     )
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(autouse=True)
 def enforce_artifact_boundary():
     ALLOWED_ARTIFACTS_ROOT.mkdir(parents=True, exist_ok=True)
 

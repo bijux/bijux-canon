@@ -7,7 +7,6 @@ from itertools import islice
 
 import pytest
 from hypothesis import given
-from tests.strategies import deep_chain_strategy, tree_strategy
 
 from bijux_canon_ingest.tree import (
     flatten,
@@ -15,6 +14,7 @@ from bijux_canon_ingest.tree import (
     iter_flatten_buffered,
     recursive_flatten,
 )
+from bijux_canon_ingest_strategies import deep_chain_strategy, tree_strategy
 
 
 @given(tree=tree_strategy())

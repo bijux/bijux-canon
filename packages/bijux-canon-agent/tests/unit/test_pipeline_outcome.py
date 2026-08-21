@@ -16,7 +16,7 @@ from bijux_canon_agent.pipeline.epistemic import EpistemicVerdict
 from bijux_canon_agent.pipeline.results.outcome import PipelineResult, PipelineStatus
 from bijux_canon_agent.traces import RunTrace, TraceEntry
 from bijux_canon_agent.traces.trace import ModelMetadata
-from tests.utils.trace_helpers import (
+from bijux_canon_agent_trace_support import (
     build_replay_metadata,
     build_run_fingerprint,
     build_trace_header,

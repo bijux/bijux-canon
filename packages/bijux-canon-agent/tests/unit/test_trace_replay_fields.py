@@ -16,7 +16,7 @@ from bijux_canon_agent.traces import (
     RunTraceHeader,
     TraceEntry,
 )
-from tests.utils.trace_helpers import build_trace_header
+from bijux_canon_agent_trace_support import build_trace_header
 
 
 def _definition() -> PipelineDefinition:

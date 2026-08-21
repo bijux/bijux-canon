@@ -23,7 +23,7 @@ from bijux_canon_agent.pipeline.convergence.monitor import (
 from bijux_canon_agent.pipeline.definition import standard_pipeline_definition
 from bijux_canon_agent.pipeline.trace_validation.trace_validator import TraceValidator
 from bijux_canon_agent.traces import RunTrace, TraceEntry
-from tests.utils.trace_helpers import (
+from bijux_canon_agent_trace_support import (
     build_replay_metadata,
     build_run_fingerprint,
     build_trace_header,

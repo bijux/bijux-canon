@@ -14,7 +14,7 @@ from pathlib import Path
 
 from bijux_canon_reason.core.types import ClaimEmittedEvent, EvidenceRegisteredEvent
 from bijux_canon_reason.interfaces.serialization.trace_jsonl import read_trace_jsonl
-from tests.e2e._helpers import read_json, run_cli, write_spec
+from bijux_canon_reason_e2e_support import read_json, run_cli, write_spec
 
 
 def _corpus_fixture() -> Path:

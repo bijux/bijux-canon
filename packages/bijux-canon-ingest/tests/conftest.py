@@ -14,8 +14,11 @@ import pytest
 sys.dont_write_bytecode = True
 
 PACKAGE_ROOT = Path(__file__).resolve().parents[1]
+TESTS_ROOT = Path(__file__).resolve().parent
 SRC_ROOT = PACKAGE_ROOT / "src"
 
+if str(TESTS_ROOT) not in sys.path:
+    sys.path.insert(0, str(TESTS_ROOT))
 if str(SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(SRC_ROOT))
 

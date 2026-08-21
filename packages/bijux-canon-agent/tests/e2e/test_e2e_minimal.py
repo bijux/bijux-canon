@@ -13,7 +13,7 @@ from bijux_canon_agent.llm.registry import Provider
 from bijux_canon_agent.observability.logging import LoggerConfig, LoggerManager
 from bijux_canon_agent.pipeline.control.lifecycle import PipelineLifecycle
 from bijux_canon_agent.traces import TraceEntry, TraceRecorder
-from tests.utils.trace_helpers import (
+from bijux_canon_agent_trace_support import (
     build_replay_metadata,
     build_run_fingerprint,
     default_model_metadata,

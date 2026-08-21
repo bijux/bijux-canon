@@ -59,7 +59,7 @@ from bijux_canon_runtime.ontology.public import (
 )
 from bijux_canon_runtime.runtime.budget import ExecutionBudget
 import bijux_rag
-from tests.helpers import build_claim_statement
+from bijux_canon_runtime_claim_support import build_claim_statement
 
 pytestmark = pytest.mark.regression
 

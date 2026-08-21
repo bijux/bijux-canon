@@ -66,7 +66,7 @@ from bijux_canon_runtime.runtime.artifact_store import InMemoryArtifactStore
 from bijux_canon_runtime.runtime.budget import BudgetState
 from bijux_canon_runtime.runtime.context import ExecutionContext, RunMode
 import bijux_rag
-from tests.helpers import build_claim_statement
+from bijux_canon_runtime_claim_support import build_claim_statement
 
 pytestmark = pytest.mark.regression
 

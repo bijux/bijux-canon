@@ -10,7 +10,7 @@ from bijux_canon_agent.traces.replayability import (
     has_required_replay_metadata,
     resolve_contract_version,
 )
-from tests.utils.trace_helpers import default_model_metadata
+from bijux_canon_agent_trace_support import default_model_metadata
 
 
 def test_resolve_contract_version_defaults_when_metadata_missing() -> None:

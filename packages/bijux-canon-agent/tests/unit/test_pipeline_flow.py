@@ -44,7 +44,7 @@ from bijux_canon_agent.traces import (
     TraceEntry,
     TraceRecorder,
 )
-from tests.utils.trace_helpers import (
+from bijux_canon_agent_trace_support import (
     build_replay_metadata,
     build_run_fingerprint,
     build_trace_header,

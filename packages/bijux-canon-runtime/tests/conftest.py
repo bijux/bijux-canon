@@ -6,7 +6,6 @@ from __future__ import annotations
 from collections.abc import Callable
 from pathlib import Path
 import sys
-import types
 
 import pytest
 
@@ -62,33 +61,11 @@ from bijux_canon_runtime.ontology.public import (
 )
 from bijux_canon_runtime.runtime.artifact_store import InMemoryArtifactStore
 
+TESTS_ROOT = Path(__file__).resolve().parent
+if str(TESTS_ROOT) not in sys.path:
+    sys.path.insert(0, str(TESTS_ROOT))
+
 PlanHashFactory = Callable[..., PlanHash]
-
-
-def _register_stub(name: str, **attributes: object) -> None:
-    stub = types.ModuleType(name)
-    stub.__dict__.update(attributes)
-    sys.modules[name] = stub
-
-
-def pytest_configure() -> None:
-    if "bijux_cli" not in sys.modules:
-        _register_stub("bijux_cli", __version__="0.3.6")
-    if "bijux_canon_agent" not in sys.modules:
-        _register_stub(
-            "bijux_canon_agent",
-            __version__="0.3.7",
-            run=lambda **_kwargs: [],
-        )
-    if "bijux_rag" not in sys.modules:
-        _register_stub("bijux_rag", retrieve=lambda **_kwargs: [])
-    if "bijux_canon_index" not in sys.modules:
-        _register_stub(
-            "bijux_canon_index",
-            enforce_contract=lambda *_args, **_kwargs: True,
-        )
-    if "bijux_canon_reason" not in sys.modules:
-        _register_stub("bijux_canon_reason", reason=lambda **_kwargs: None)
 
 
 @pytest.fixture(autouse=True)

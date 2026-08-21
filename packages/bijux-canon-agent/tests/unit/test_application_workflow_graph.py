@@ -23,7 +23,7 @@ from bijux_canon_agent.contracts.agent_contract import (
 )
 from bijux_canon_agent.enums import PipelineState
 from bijux_canon_agent.pipeline.control.stop_conditions import StopReason
-from tests.utils.trace_helpers import default_model_metadata
+from bijux_canon_agent_trace_support import default_model_metadata
 
 
 @pytest.mark.asyncio
