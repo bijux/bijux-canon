@@ -7,6 +7,14 @@ provenance, and replay receipts. Each schema bundle exposes one closed
 definition per artifact type and the manifest binds every public type to exact
 schema bytes.
 
+The canonical retrieval request binds query text to one corpus and immutable
+index generation. It declares retrieval mode, per-channel candidate and
+latency budgets, typed filters, deduplication and diversity policies, bounded
+reranking, source/document/section scope, offline behavior, and the exact
+trace content that must be retained. These fields are request inputs rather
+than transport defaults, so CLI, HTTP, replay, and evaluation cannot silently
+select different retrieval behavior.
+
 Execution identity binds the normalized query-vector hash, immutable index
 generation, backend and algorithm versions, index and query parameters,
 filters, resource and recall budgets, software locks, hardware class,

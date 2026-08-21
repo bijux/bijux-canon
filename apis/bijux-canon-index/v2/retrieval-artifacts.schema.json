@@ -22,16 +22,83 @@
       "type": "object", "additionalProperties": false, "required": ["name", "value"],
       "properties": {"name": {"type": "string", "pattern": "^[a-z][a-z0-9_.-]*$"}, "value": {"type": ["string", "integer", "number", "boolean"]}}
     },
+    "channel_budget": {
+      "type": "object", "additionalProperties": false, "required": ["channel", "candidate_limit", "max_latency_ms"],
+      "properties": {
+        "channel": {"enum": ["lexical", "dense"]}, "candidate_limit": {"type": "integer", "minimum": 1}, "max_latency_ms": {"type": "number", "exclusiveMinimum": 0}
+      }
+    },
+    "deduplication_policy": {
+      "type": "object", "additionalProperties": false, "required": ["enabled", "lineage_key"],
+      "properties": {"enabled": {"type": "boolean"}, "lineage_key": {"enum": ["content_hash", "source_span"]}}
+    },
+    "diversity_policy": {
+      "type": "object", "additionalProperties": false, "required": ["enabled", "strategy", "maximum_per_source", "maximum_per_section"],
+      "properties": {
+        "enabled": {"type": "boolean"}, "strategy": {"enum": ["none", "source-section"]}, "maximum_per_source": {"type": "integer", "minimum": 1}, "maximum_per_section": {"type": "integer", "minimum": 1}
+      },
+      "allOf": [{"if": {"properties": {"enabled": {"const": false}}}, "then": {"properties": {"strategy": {"const": "none"}}}}, {"if": {"properties": {"enabled": {"const": true}}}, "then": {"properties": {"strategy": {"const": "source-section"}}}}]
+    },
+    "rerank_policy": {
+      "type": "object", "additionalProperties": false, "required": ["enabled", "candidate_limit", "timeout_ms", "reranker_artifact_id", "failure_policy"],
+      "properties": {
+        "enabled": {"type": "boolean"}, "candidate_limit": {"type": "integer", "minimum": 1}, "timeout_ms": {"type": "integer", "minimum": 1}, "reranker_artifact_id": {"oneOf": [{"$ref": "#/$defs/artifact_id"}, {"type": "null"}]}, "failure_policy": {"enum": ["retain-retrieval-order", "refuse"]}
+      },
+      "allOf": [{"if": {"properties": {"enabled": {"const": false}}}, "then": {"properties": {"reranker_artifact_id": {"type": "null"}}}}, {"if": {"properties": {"enabled": {"const": true}}}, "then": {"properties": {"reranker_artifact_id": {"$ref": "#/$defs/artifact_id"}}}}]
+    },
+    "retrieval_scope": {
+      "type": "object", "additionalProperties": false, "required": ["source_ids", "document_ids", "section_ids", "allow_unscoped"],
+      "properties": {
+        "source_ids": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true, "x-bijux-ordering": "lexicographic"},
+        "document_ids": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true, "x-bijux-ordering": "lexicographic"},
+        "section_ids": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true, "x-bijux-ordering": "lexicographic"},
+        "allow_unscoped": {"type": "boolean"}
+      },
+      "allOf": [{"if": {"properties": {"allow_unscoped": {"const": false}}}, "then": {"anyOf": [{"properties": {"source_ids": {"minItems": 1}}}, {"properties": {"document_ids": {"minItems": 1}}}, {"properties": {"section_ids": {"minItems": 1}}}]}}]
+    },
+    "trace_requirements": {
+      "type": "object", "additionalProperties": false, "required": ["persist", "include_candidates", "include_decisions", "include_timings"],
+      "properties": {"persist": {"type": "boolean"}, "include_candidates": {"type": "boolean"}, "include_decisions": {"type": "boolean"}, "include_timings": {"type": "boolean"}}
+    },
     "query": {
       "type": "object", "additionalProperties": false,
-      "required": ["schema_version", "artifact_type", "artifact_id", "generation_artifact_id", "query_text", "query_text_sha256", "top_k", "channels", "filter_artifact_ids", "execution_contract", "random_seed", "created_at"],
+      "required": ["schema_version", "artifact_type", "artifact_id", "corpus_artifact_id", "generation_artifact_id", "query_text", "query_text_sha256", "retrieval_mode", "top_k", "channels", "channel_budgets", "filter_artifact_ids", "deduplication", "diversity", "rerank", "scope", "offline_policy", "trace_requirements", "execution_contract", "random_seed", "created_at"],
       "properties": {
         "schema_version": {"const": "2.0.0"}, "artifact_type": {"const": "bijux.canon.index.query"}, "artifact_id": {"$ref": "#/$defs/artifact_id"},
-        "generation_artifact_id": {"$ref": "#/$defs/artifact_id"}, "query_text": {"type": "string", "minLength": 1}, "query_text_sha256": {"$ref": "#/$defs/sha256"},
-        "top_k": {"type": "integer", "minimum": 1}, "channels": {"type": "array", "minItems": 1, "items": {"enum": ["lexical", "dense"]}, "uniqueItems": true, "x-bijux-ordering": "lexical before dense"},
+        "corpus_artifact_id": {"$ref": "#/$defs/artifact_id"}, "generation_artifact_id": {"$ref": "#/$defs/artifact_id"}, "query_text": {"type": "string", "minLength": 1, "pattern": "\\S"}, "query_text_sha256": {"$ref": "#/$defs/sha256"},
+        "retrieval_mode": {"enum": ["lexical", "dense-exact", "local-hybrid-exact", "local-hybrid-ann"]}, "top_k": {"type": "integer", "minimum": 1, "maximum": 1000}, "channels": {"type": "array", "minItems": 1, "items": {"enum": ["lexical", "dense"]}, "uniqueItems": true, "x-bijux-ordering": "lexical before dense"},
+        "channel_budgets": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/channel_budget"}, "uniqueItems": true, "x-bijux-ordering": "channel lexical before dense"},
         "filter_artifact_ids": {"$ref": "#/$defs/ordered_artifact_ids"}, "execution_contract": {"enum": ["deterministic", "non_deterministic"]},
+        "deduplication": {"$ref": "#/$defs/deduplication_policy"}, "diversity": {"$ref": "#/$defs/diversity_policy"}, "rerank": {"$ref": "#/$defs/rerank_policy"}, "scope": {"$ref": "#/$defs/retrieval_scope"},
+        "offline_policy": {"enum": ["required", "preferred", "forbidden"]}, "trace_requirements": {"$ref": "#/$defs/trace_requirements"},
         "random_seed": {"oneOf": [{"type": "integer", "minimum": 0}, {"type": "null"}]}, "created_at": {"$ref": "#/$defs/timestamp"}
-      }
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"retrieval_mode": {"const": "lexical"}}},
+          "then": {"properties": {"channels": {"const": ["lexical"]}, "channel_budgets": {"minItems": 1, "maxItems": 1, "items": {"allOf": [{"$ref": "#/$defs/channel_budget"}, {"properties": {"channel": {"const": "lexical"}}}]}}}}
+        },
+        {
+          "if": {"properties": {"retrieval_mode": {"const": "dense-exact"}}},
+          "then": {"properties": {"channels": {"const": ["dense"]}, "channel_budgets": {"minItems": 1, "maxItems": 1, "items": {"allOf": [{"$ref": "#/$defs/channel_budget"}, {"properties": {"channel": {"const": "dense"}}}]}}}}
+        },
+        {
+          "if": {"properties": {"retrieval_mode": {"enum": ["local-hybrid-exact", "local-hybrid-ann"]}}},
+          "then": {
+            "properties": {
+              "channels": {"const": ["lexical", "dense"]},
+              "channel_budgets": {
+                "minItems": 2, "maxItems": 2,
+                "prefixItems": [
+                  {"allOf": [{"$ref": "#/$defs/channel_budget"}, {"properties": {"channel": {"const": "lexical"}}}]},
+                  {"allOf": [{"$ref": "#/$defs/channel_budget"}, {"properties": {"channel": {"const": "dense"}}}]}
+                ],
+                "items": false
+              }
+            }
+          }
+        }
+      ]
     },
     "candidate": {
       "type": "object", "additionalProperties": false,
@@ -128,6 +195,7 @@
   },
   "x-bijux-identity": {"algorithm": "sha-256", "canonicalization": "RFC 8785", "excluded_json_pointers": ["/artifact_id"]},
   "x-bijux-invariants": [
+    "query identity carries corpus and generation, retrieval mode, channel budgets, filters, deduplication, diversity, reranking, scope, offline policy, and trace requirements end to end",
     "candidate and hit arrays retain declared rank order and use artifact identity for ties",
     "execution identity binds the normalized query vector, generation, backend, parameters, filters, budgets, software, hardware class, candidate order, and output hash",
     "query text, execution results, implementation locks, and provenance are hash-bound",

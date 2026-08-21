@@ -1,6 +1,7 @@
 {
   "bundle_schema_version": "1.0.0",
   "external_artifact_ids": [
+    "sha256:03a79d793dc4bc525745c8c564a5b116ea727a2dfea9766397d886edfc39e4aa",
     "sha256:05df4b6bcb0ea3feb3335953f8c914f697d101b2e5193c4b44822ad7cf4e6dc7",
     "sha256:23173e59d7ef9f5df218a89745452aaf9fd81f328e0ee080a4f33f5101c8d8bb",
     "sha256:2423549a0f9d7b00d8d89d8fecc98a18eb3530956d05d90f4ea45c82a22ea377",
@@ -9,51 +10,53 @@
   ],
   "records": [
     {
-      "schema_version": "2.0.0", "artifact_type": "bijux.canon.index.query", "artifact_id": "sha256:231a1d9bac203b75814bb95f7e565e316034e4358f44fa336b5cd295da43b3d6",
-      "generation_artifact_id": "sha256:55ef70ded9947f316a7a114b859c2023d8be06cecd947fda4f7d22e55afd8be1", "query_text": "FASTQ sequence quality", "query_text_sha256": "d72953f67842f7f9c31a083d80ab9ee54f9ddcb85989e62989d3773fded3cfbe",
-      "top_k": 5, "channels": ["lexical", "dense"], "filter_artifact_ids": [], "execution_contract": "non_deterministic", "random_seed": 17, "created_at": "2026-08-21T05:30:00Z"
+      "schema_version": "2.0.0", "artifact_type": "bijux.canon.index.query", "artifact_id": "sha256:c2a749e2c601be9dca32000c3905d08b461bfb75b3bac935fc7258a60eb4d711",
+      "corpus_artifact_id": "sha256:03a79d793dc4bc525745c8c564a5b116ea727a2dfea9766397d886edfc39e4aa", "generation_artifact_id": "sha256:55ef70ded9947f316a7a114b859c2023d8be06cecd947fda4f7d22e55afd8be1", "query_text": "FASTQ sequence quality", "query_text_sha256": "d72953f67842f7f9c31a083d80ab9ee54f9ddcb85989e62989d3773fded3cfbe",
+      "retrieval_mode": "local-hybrid-ann", "top_k": 5, "channels": ["lexical", "dense"], "channel_budgets": [{"channel": "lexical", "candidate_limit": 25, "max_latency_ms": 100}, {"channel": "dense", "candidate_limit": 25, "max_latency_ms": 250}], "filter_artifact_ids": [],
+      "deduplication": {"enabled": true, "lineage_key": "source_span"}, "diversity": {"enabled": true, "strategy": "source-section", "maximum_per_source": 2, "maximum_per_section": 2}, "rerank": {"enabled": false, "candidate_limit": 10, "timeout_ms": 100, "reranker_artifact_id": null, "failure_policy": "retain-retrieval-order"},
+      "scope": {"source_ids": [], "document_ids": [], "section_ids": [], "allow_unscoped": true}, "offline_policy": "required", "trace_requirements": {"persist": true, "include_candidates": true, "include_decisions": true, "include_timings": true}, "execution_contract": "non_deterministic", "random_seed": 17, "created_at": "2026-08-21T05:30:00Z"
     },
     {
-      "schema_version": "2.0.0", "artifact_type": "bijux.canon.index.candidate", "artifact_id": "sha256:9806295ff4d6d98735c17ed09db8f466be46145dbdef22e3065e8f67514ef3fc", "query_artifact_id": "sha256:231a1d9bac203b75814bb95f7e565e316034e4358f44fa336b5cd295da43b3d6",
+      "schema_version": "2.0.0", "artifact_type": "bijux.canon.index.candidate", "artifact_id": "sha256:81b4f56407f34041e417f5eb0be403fcf9d7d4d29ef200a9bef524eb18ed7ee1", "query_artifact_id": "sha256:c2a749e2c601be9dca32000c3905d08b461bfb75b3bac935fc7258a60eb4d711",
       "chunk_artifact_id": "sha256:2423549a0f9d7b00d8d89d8fecc98a18eb3530956d05d90f4ea45c82a22ea377", "segment_artifact_id": "sha256:23173e59d7ef9f5df218a89745452aaf9fd81f328e0ee080a4f33f5101c8d8bb",
       "channel": "lexical", "rank": 1, "score": 8.957913688307354, "score_semantics": "higher_is_better", "deterministic_tiebreak": "score_then_chunk_artifact_id"
     },
     {
-      "schema_version": "2.0.0", "artifact_type": "bijux.canon.index.candidate", "artifact_id": "sha256:d5514614b21150548466e5fa1ad3529847ea37fdb113989faa3d04d67fb91ecc", "query_artifact_id": "sha256:231a1d9bac203b75814bb95f7e565e316034e4358f44fa336b5cd295da43b3d6",
+      "schema_version": "2.0.0", "artifact_type": "bijux.canon.index.candidate", "artifact_id": "sha256:09861f7ca9591df1744fa775c71d281239f1df89ceebf14122c40eeb95e4ab3a", "query_artifact_id": "sha256:c2a749e2c601be9dca32000c3905d08b461bfb75b3bac935fc7258a60eb4d711",
       "chunk_artifact_id": "sha256:2423549a0f9d7b00d8d89d8fecc98a18eb3530956d05d90f4ea45c82a22ea377", "segment_artifact_id": "sha256:05df4b6bcb0ea3feb3335953f8c914f697d101b2e5193c4b44822ad7cf4e6dc7",
       "channel": "dense", "rank": 3, "score": 0.8439111709594727, "score_semantics": "higher_is_better", "deterministic_tiebreak": "score_then_chunk_artifact_id"
     },
     {
-      "schema_version": "2.0.0", "artifact_type": "bijux.canon.index.fused_hit", "artifact_id": "sha256:4b93f5f55a83aa488aa30c92154d8264f1c94a9db371f4d47a2605458d5b517a", "query_artifact_id": "sha256:231a1d9bac203b75814bb95f7e565e316034e4358f44fa336b5cd295da43b3d6", "chunk_artifact_id": "sha256:2423549a0f9d7b00d8d89d8fecc98a18eb3530956d05d90f4ea45c82a22ea377",
+      "schema_version": "2.0.0", "artifact_type": "bijux.canon.index.fused_hit", "artifact_id": "sha256:689c89326e67c52762817d7ddc9d10e923169784c740b37f82f66c58caae11bd", "query_artifact_id": "sha256:c2a749e2c601be9dca32000c3905d08b461bfb75b3bac935fc7258a60eb4d711", "chunk_artifact_id": "sha256:2423549a0f9d7b00d8d89d8fecc98a18eb3530956d05d90f4ea45c82a22ea377",
       "rank": 1, "fused_score": 0.032266458495966696, "fusion_method": "rrf-v1", "contributions": [
-        {"candidate_artifact_id": "sha256:9806295ff4d6d98735c17ed09db8f466be46145dbdef22e3065e8f67514ef3fc", "channel": "lexical", "channel_rank": 1, "weighted_score": 0.01639344262295082},
-        {"candidate_artifact_id": "sha256:d5514614b21150548466e5fa1ad3529847ea37fdb113989faa3d04d67fb91ecc", "channel": "dense", "channel_rank": 3, "weighted_score": 0.015873015873015872}
+        {"candidate_artifact_id": "sha256:81b4f56407f34041e417f5eb0be403fcf9d7d4d29ef200a9bef524eb18ed7ee1", "channel": "lexical", "channel_rank": 1, "weighted_score": 0.01639344262295082},
+        {"candidate_artifact_id": "sha256:09861f7ca9591df1744fa775c71d281239f1df89ceebf14122c40eeb95e4ab3a", "channel": "dense", "channel_rank": 3, "weighted_score": 0.015873015873015872}
       ], "deterministic_tiebreak": "fused_score_then_chunk_artifact_id"
     },
     {
-      "schema_version": "2.0.0", "artifact_type": "bijux.canon.index.witness", "artifact_id": "sha256:ee6695f7e4a3533a9ef8f166723f209b0d6af59865cc18f2b9119b01854406ad", "query_artifact_id": "sha256:231a1d9bac203b75814bb95f7e565e316034e4358f44fa336b5cd295da43b3d6",
-      "exact_candidate_artifact_ids": ["sha256:9806295ff4d6d98735c17ed09db8f466be46145dbdef22e3065e8f67514ef3fc"], "approximate_candidate_artifact_ids": ["sha256:d5514614b21150548466e5fa1ad3529847ea37fdb113989faa3d04d67fb91ecc"], "sample_k": 1, "overlap_ratio": 1.0, "recall_at_k": 1.0, "rank_displacement": 2.0
+      "schema_version": "2.0.0", "artifact_type": "bijux.canon.index.witness", "artifact_id": "sha256:aeba313e54d6e2bc487d78e46b4cd4dd2710648871b1da97dd7408787f37e617", "query_artifact_id": "sha256:c2a749e2c601be9dca32000c3905d08b461bfb75b3bac935fc7258a60eb4d711",
+      "exact_candidate_artifact_ids": ["sha256:81b4f56407f34041e417f5eb0be403fcf9d7d4d29ef200a9bef524eb18ed7ee1"], "approximate_candidate_artifact_ids": ["sha256:09861f7ca9591df1744fa775c71d281239f1df89ceebf14122c40eeb95e4ab3a"], "sample_k": 1, "overlap_ratio": 1.0, "recall_at_k": 1.0, "rank_displacement": 2.0
     },
     {
-      "schema_version": "2.0.0", "artifact_type": "bijux.canon.index.approximation", "artifact_id": "sha256:cee6b7ca001d6339c9bc7ae6b5df401ca988ae851d460c2e2ce55d98f9e9b82a", "query_artifact_id": "sha256:231a1d9bac203b75814bb95f7e565e316034e4358f44fa336b5cd295da43b3d6", "generation_artifact_id": "sha256:55ef70ded9947f316a7a114b859c2023d8be06cecd947fda4f7d22e55afd8be1", "witness_artifact_id": "sha256:ee6695f7e4a3533a9ef8f166723f209b0d6af59865cc18f2b9119b01854406ad",
+      "schema_version": "2.0.0", "artifact_type": "bijux.canon.index.approximation", "artifact_id": "sha256:a31c21ea50782be9fb4a6c2c7c61d67afb36fb54280b18e6c4a4edf1ea62a7f0", "query_artifact_id": "sha256:c2a749e2c601be9dca32000c3905d08b461bfb75b3bac935fc7258a60eb4d711", "generation_artifact_id": "sha256:55ef70ded9947f316a7a114b859c2023d8be06cecd947fda4f7d22e55afd8be1", "witness_artifact_id": "sha256:aeba313e54d6e2bc487d78e46b4cd4dd2710648871b1da97dd7408787f37e617",
       "algorithm": "reference-ann-truncation", "algorithm_version": "1.0.0", "backend": "memory", "backend_version": "0.3.9", "parameters": [{"name": "candidate_k", "value": 5}, {"name": "metric", "value": "cosine"}], "random_seed": 17,
       "candidate_count": 5, "recall_at_k": 1.0, "allowed_recall_drop": 0.05, "allowed_rank_jitter": 2, "degraded": false
     },
     {
-      "schema_version": "2.0.0", "artifact_type": "bijux.canon.index.execution", "artifact_id": "sha256:734d89137e01609e7de08116d113241e97369c959dc2a25cd7be853632f929e7", "query_artifact_id": "sha256:231a1d9bac203b75814bb95f7e565e316034e4358f44fa336b5cd295da43b3d6", "generation_artifact_id": "sha256:55ef70ded9947f316a7a114b859c2023d8be06cecd947fda4f7d22e55afd8be1",
+      "schema_version": "2.0.0", "artifact_type": "bijux.canon.index.execution", "artifact_id": "sha256:83eabce4e77c9300aeba841970a77dfb185b811534fd8b675273b2e416c8c657", "query_artifact_id": "sha256:c2a749e2c601be9dca32000c3905d08b461bfb75b3bac935fc7258a60eb4d711", "generation_artifact_id": "sha256:55ef70ded9947f316a7a114b859c2023d8be06cecd947fda4f7d22e55afd8be1",
       "query_vector_sha256": "cc87cbf8686f8609e04b37679a66ff25740adeaa1dff0f00517f159a5ee0f617", "backend_binding": {"backend": "memory", "backend_version": "0.3.9", "algorithm": "reference-ann-truncation", "algorithm_version": "1.0.0", "index_parameters": [{"name": "metric", "value": "cosine"}], "query_parameters": [{"name": "candidate_k", "value": 5}, {"name": "top_k", "value": 5}]}, "filter_artifact_ids": ["sha256:765c2dfe154610b6fa334ac4f935b4415e8ba79c06a8d6ac249a64c20928658a"],
       "execution_budget": {"max_latency_ms": 250, "max_memory_bytes": 268435456, "max_candidates": 25, "max_distance_computations": 25000, "minimum_recall": 0.95}, "software_versions": [{"name": "bijux-canon-index", "version": "0.3.9", "sha256": "5b61f2c377361909e38991f601f69d28f549b3885c25ce2bdb1be882d6b80de0"}, {"name": "numpy", "version": "2.4.4", "sha256": "3cf9c9c0005135165dc85a100dcaf247407e7c1e8f1e833b357a8654803cf946"}], "hardware_class": {"architecture": "arm64", "cpu_class": "general-purpose", "accelerator_class": "none"},
-      "candidate_artifact_ids": ["sha256:9806295ff4d6d98735c17ed09db8f466be46145dbdef22e3065e8f67514ef3fc", "sha256:d5514614b21150548466e5fa1ad3529847ea37fdb113989faa3d04d67fb91ecc"], "candidate_order_sha256": "9d133b659600561ded5b1cdc21ccb8dc23488205e5d563d0b7a30df56d328f2a", "fused_hit_artifact_ids": ["sha256:4b93f5f55a83aa488aa30c92154d8264f1c94a9db371f4d47a2605458d5b517a"], "approximation_artifact_id": "sha256:cee6b7ca001d6339c9bc7ae6b5df401ca988ae851d460c2e2ce55d98f9e9b82a", "status": "success", "result_sha256": "00a550f25e30c8cc9b54bf81937ebb09f9c02de7e4180fa7c8230b6111b0a8c9", "started_at": "2026-08-21T05:30:00Z", "completed_at": "2026-08-21T05:30:01Z"
+      "candidate_artifact_ids": ["sha256:81b4f56407f34041e417f5eb0be403fcf9d7d4d29ef200a9bef524eb18ed7ee1", "sha256:09861f7ca9591df1744fa775c71d281239f1df89ceebf14122c40eeb95e4ab3a"], "candidate_order_sha256": "c3294b28c685119c61e2624fa4e14bacaa72065da738bd312fcaeaab94ad2760", "fused_hit_artifact_ids": ["sha256:689c89326e67c52762817d7ddc9d10e923169784c740b37f82f66c58caae11bd"], "approximation_artifact_id": "sha256:a31c21ea50782be9fb4a6c2c7c61d67afb36fb54280b18e6c4a4edf1ea62a7f0", "status": "success", "result_sha256": "00a550f25e30c8cc9b54bf81937ebb09f9c02de7e4180fa7c8230b6111b0a8c9", "started_at": "2026-08-21T05:30:00Z", "completed_at": "2026-08-21T05:30:01Z"
     },
     {
-      "schema_version": "2.0.0", "artifact_type": "bijux.canon.index.provenance", "artifact_id": "sha256:8d5b1cb1732ea6ba33249c376c256479a9ee25920ba18a38b8ecc82adcd84aad", "execution_artifact_id": "sha256:734d89137e01609e7de08116d113241e97369c959dc2a25cd7be853632f929e7",
-      "input_artifact_ids": ["sha256:55ef70ded9947f316a7a114b859c2023d8be06cecd947fda4f7d22e55afd8be1", "sha256:231a1d9bac203b75814bb95f7e565e316034e4358f44fa336b5cd295da43b3d6"], "implementation_locks": [
+      "schema_version": "2.0.0", "artifact_type": "bijux.canon.index.provenance", "artifact_id": "sha256:9f9aaeb27413e19a26f67471698b14eb67e2dd200b959b98a0c1b3173a2a2cbf", "execution_artifact_id": "sha256:83eabce4e77c9300aeba841970a77dfb185b811534fd8b675273b2e416c8c657",
+      "input_artifact_ids": ["sha256:55ef70ded9947f316a7a114b859c2023d8be06cecd947fda4f7d22e55afd8be1", "sha256:c2a749e2c601be9dca32000c3905d08b461bfb75b3bac935fc7258a60eb4d711"], "implementation_locks": [
         {"name": "bijux-canon-index", "version": "0.3.9", "sha256": "5b61f2c377361909e38991f601f69d28f549b3885c25ce2bdb1be882d6b80de0"},
         {"name": "bijux-canon-ingest", "version": "0.3.9", "sha256": "e73b540e707132d0cf0dbdb326020870386da2aa61239eb6e8f87447e7b0b34a"}
       ], "environment_sha256": "67626c0a2063482510590a50efdbe78e7ad2b2cc1013fb206b8853bacd5f647b", "source_commit": "da508a3d2bdd5967b01fcf07c17607ff3fcaa151", "recorded_at": "2026-08-21T05:30:01Z"
     },
     {
-      "schema_version": "2.0.0", "artifact_type": "bijux.canon.index.replay", "artifact_id": "sha256:e5f47fd6b8317085ed9e115a344889b947ed20fc7b4aa8a7da9609a73d3c46c8", "original_execution_artifact_id": "sha256:734d89137e01609e7de08116d113241e97369c959dc2a25cd7be853632f929e7", "provenance_artifact_id": "sha256:8d5b1cb1732ea6ba33249c376c256479a9ee25920ba18a38b8ecc82adcd84aad",
+      "schema_version": "2.0.0", "artifact_type": "bijux.canon.index.replay", "artifact_id": "sha256:20ecac9edf52dda4a3cb67f6e03cb4264d4017f51b9abecb5bd65dc17b31772f", "original_execution_artifact_id": "sha256:83eabce4e77c9300aeba841970a77dfb185b811534fd8b675273b2e416c8c657", "provenance_artifact_id": "sha256:9f9aaeb27413e19a26f67471698b14eb67e2dd200b959b98a0c1b3173a2a2cbf",
       "expected_result_sha256": "00a550f25e30c8cc9b54bf81937ebb09f9c02de7e4180fa7c8230b6111b0a8c9", "observed_result_sha256": "00a550f25e30c8cc9b54bf81937ebb09f9c02de7e4180fa7c8230b6111b0a8c9", "outcome": "exact_match", "divergence": [], "replayed_at": "2026-08-21T05:31:00Z"
     }
   ]
