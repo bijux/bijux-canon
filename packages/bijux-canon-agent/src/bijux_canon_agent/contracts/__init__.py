@@ -9,6 +9,12 @@ from .agent_contract import (
     AgentOutputSchema,
 )
 from .causal_trace import CausalDecisionEvent, ResearchCausalTrace
+from .execution_control import (
+    CancellationPort,
+    CancellationSignal,
+    ResearchFailureKind,
+    ResearchFailureRecord,
+)
 from .execution_plan import (
     ExecutionPlan,
     PlanningBudget,
@@ -67,6 +73,8 @@ __all__ = [
     "BudgetDecision",
     "BudgetDimensions",
     "CausalDecisionEvent",
+    "CancellationPort",
+    "CancellationSignal",
     "ExecutionPlan",
     "PlanningBudget",
     "ProviderProfile",
@@ -77,6 +85,8 @@ __all__ = [
     "ResearchBudgetLedger",
     "ResearchBudgetPolicy",
     "ResearchCausalTrace",
+    "ResearchFailureKind",
+    "ResearchFailureRecord",
     "ResearchTool",
     "ResearchToolOperation",
     "ReasonerPort",

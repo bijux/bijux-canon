@@ -14,8 +14,15 @@ from pydantic import TypeAdapter  # type: ignore[attr-defined]
 from bijux_canon_agent.application.research_services import InjectedResearchServices
 from bijux_canon_agent.application.research_tool_gateway import (
     PolicyEnforcedResearchServices,
+    ToolPolicyDenied,
 )
 from bijux_canon_agent.contracts.execution_plan import ResearchPlanningInput
+from bijux_canon_agent.contracts.execution_control import (
+    CancellationPort,
+    CancellationSignal,
+    ResearchFailureKind,
+    ResearchFailureRecord,
+)
 from bijux_canon_agent.contracts.causal_trace import (
     CausalDecisionEvent,
     ResearchCausalTrace,
@@ -167,6 +174,8 @@ class ResearchCheckpoint:
     tool_decisions: tuple[ToolPolicyDecision, ...]
     budget_decisions: tuple[BudgetDecision, ...]
     causal_events: tuple[CausalDecisionEvent, ...]
+    cancellation_signal: CancellationSignal | None
+    failure_records: tuple[ResearchFailureRecord, ...]
     cancellation_lineage: tuple[str, ...]
     failure_lineage: tuple[str, ...]
 
@@ -217,6 +226,8 @@ class ResearchExecutionResult:
     checkpoint_artifact_id: str
     causal_events: tuple[CausalDecisionEvent, ...]
     causal_trace: ResearchCausalTrace
+    cancellation_signal: CancellationSignal | None
+    failure_records: tuple[ResearchFailureRecord, ...]
     terminal_outcome: str
 
 
@@ -263,6 +274,7 @@ class ResearchRoleMachine:
         tool_policy: ToolPolicy,
         budget_policy: ResearchBudgetPolicy,
         checkpoint_port: ResearchCheckpointPort,
+        cancellation_port: CancellationPort,
         cancellation_lineage: tuple[str, ...] = (),
         failure_lineage: tuple[str, ...] = (),
     ) -> None:
@@ -278,6 +290,11 @@ class ResearchRoleMachine:
         if not isinstance(checkpoint_port, ResearchCheckpointPort):
             raise TypeError("checkpoint_port must implement ResearchCheckpointPort")
         self._checkpoint_port = checkpoint_port
+        if not isinstance(cancellation_port, CancellationPort):
+            raise TypeError("cancellation_port must implement CancellationPort")
+        self._cancellation_port = cancellation_port
+        self._cancellation_signal: CancellationSignal | None = None
+        self._failure_records: list[ResearchFailureRecord] = []
         self._cancellation_lineage = cancellation_lineage
         self._failure_lineage = failure_lineage
         self._checkpoint: ResearchCheckpoint | None = None
@@ -331,6 +348,7 @@ class ResearchRoleMachine:
         tool_policy: ToolPolicy,
         budget_policy: ResearchBudgetPolicy,
         checkpoint_port: ResearchCheckpointPort,
+        cancellation_port: CancellationPort,
     ) -> ResearchRoleMachine:
         """Restore a validated checkpoint without repeating completed tools."""
         checkpoint = checkpoint_port.load(checkpoint_artifact_id)
@@ -340,6 +358,7 @@ class ResearchRoleMachine:
             tool_policy=tool_policy,
             budget_policy=budget_policy,
             checkpoint_port=checkpoint_port,
+            cancellation_port=cancellation_port,
             cancellation_lineage=checkpoint.cancellation_lineage,
             failure_lineage=checkpoint.failure_lineage,
         )
@@ -352,6 +371,8 @@ class ResearchRoleMachine:
         machine._services.restore(checkpoint.tool_decisions)
         machine._budget.restore(checkpoint.budget_decisions)
         machine._causal_events = list(checkpoint.causal_events)
+        machine._cancellation_signal = checkpoint.cancellation_signal
+        machine._failure_records = list(checkpoint.failure_records)
         machine._checkpoint = checkpoint
         return machine
 
@@ -389,7 +410,26 @@ class ResearchRoleMachine:
             to_role=to_role,
             operation=operation,
         )
-        record = self._execute_operation(operation)
+        try:
+            record = self._execute_operation(operation)
+        except Exception as error:
+            failure = self._classify_failure(error, operation)
+            self._failure_records.append(failure)
+            self._failure_lineage = tuple(
+                dict.fromkeys(self._failure_lineage + (failure.artifact_id,))
+            )
+            record = ResearchOperationRecord.create(
+                sequence=len(self._operations),
+                role=self._role,
+                operation=operation,
+                input_artifact_ids=self._operation_inputs(),
+                payload={
+                    "status": "failed",
+                    "failure_artifact_id": failure.artifact_id,
+                    "failure_kind": failure.kind.value,
+                    "retryable": failure.retryable,
+                },
+            )
         transition = ResearchTransition.create(
             sequence=len(self._transitions),
             from_role=from_role,
@@ -416,7 +456,11 @@ class ResearchRoleMachine:
         """Run the complete bounded sequence and return immutable terminal state."""
         while self._role is not ResearchRole.TERMINAL:
             self.advance()
-        if self._budget.exhausted_dimensions:
+        if self._cancellation_signal is not None:
+            terminal_outcome = "cancelled:" + str(self._cancellation_signal.reason)
+        elif self._failure_records:
+            terminal_outcome = "failed:" + self._failure_records[-1].kind.value
+        elif self._budget.exhausted_dimensions:
             terminal_outcome = "budget_exhausted:" + ",".join(
                 self._budget.exhausted_dimensions
             )
@@ -453,6 +497,14 @@ class ResearchRoleMachine:
                 None if self._checkpoint is None else self._checkpoint.artifact_id
             ),
             "causal_trace_artifact_id": causal_trace.artifact_id,
+            "cancellation_artifact_id": (
+                None
+                if self._cancellation_signal is None
+                else self._cancellation_signal.artifact_id
+            ),
+            "failure_artifact_ids": [
+                item.artifact_id for item in self._failure_records
+            ],
             "terminal_outcome": terminal_outcome,
         }
         if self._checkpoint is None:
@@ -473,6 +525,8 @@ class ResearchRoleMachine:
             checkpoint_artifact_id=self._checkpoint.artifact_id,
             causal_events=tuple(self._causal_events),
             causal_trace=causal_trace,
+            cancellation_signal=self._cancellation_signal,
+            failure_records=tuple(self._failure_records),
             terminal_outcome=terminal_outcome,
         )
 
@@ -481,6 +535,37 @@ class ResearchRoleMachine:
     ) -> ResearchOperationRecord:
         sequence = len(self._operations)
         inputs = self._operation_inputs()
+        if self._cancellation_signal is None and not self._failure_records:
+            signal = self._cancellation_port.current()
+            if not isinstance(signal, CancellationSignal):
+                raise TypeError("cancellation port returned an invalid signal")
+            if signal.requested:
+                self._cancellation_signal = signal
+                self._cancellation_lineage = tuple(
+                    dict.fromkeys(self._cancellation_lineage + (signal.artifact_id,))
+                )
+        if self._cancellation_signal is not None:
+            return ResearchOperationRecord.create(
+                sequence=sequence,
+                role=self._role,
+                operation=operation,
+                input_artifact_ids=inputs,
+                payload={
+                    "status": "cancelled",
+                    "cancellation_artifact_id": self._cancellation_signal.artifact_id,
+                },
+            )
+        if self._failure_records:
+            return ResearchOperationRecord.create(
+                sequence=sequence,
+                role=self._role,
+                operation=operation,
+                input_artifact_ids=inputs,
+                payload={
+                    "status": "failed_dependency",
+                    "failure_artifact_id": self._failure_records[-1].artifact_id,
+                },
+            )
         role = self._role.value
         start_charge = BudgetDimensions(
             iterations=1,
@@ -668,6 +753,8 @@ class ResearchRoleMachine:
             tool_decisions=self._services.decisions,
             budget_decisions=self._budget.decisions,
             causal_events=tuple(self._causal_events),
+            cancellation_signal=self._cancellation_signal,
+            failure_records=tuple(self._failure_records),
             cancellation_lineage=self._cancellation_lineage,
             failure_lineage=self._failure_lineage,
         )
@@ -716,6 +803,14 @@ class ResearchRoleMachine:
             ],
             "causal_event_artifact_ids": [
                 item.artifact_id for item in self._causal_events
+            ],
+            "cancellation_artifact_id": (
+                None
+                if self._cancellation_signal is None
+                else self._cancellation_signal.artifact_id
+            ),
+            "failure_artifact_ids": [
+                item.artifact_id for item in self._failure_records
             ],
             "cancellation_lineage": list(self._cancellation_lineage),
             "failure_lineage": list(self._failure_lineage),
@@ -790,6 +885,32 @@ class ResearchRoleMachine:
                 != checkpoint.transitions[sequence].artifact_id
             ):
                 raise ValueError("causal event transition dependency is invalid")
+        if checkpoint.cancellation_signal is not None:
+            signal = checkpoint.cancellation_signal
+            expected_signal = (
+                CancellationSignal.active(
+                    reason=str(signal.reason),
+                    request_artifact_id=str(signal.request_artifact_id),
+                )
+                if signal.requested
+                else CancellationSignal.inactive()
+            )
+            if signal != expected_signal:
+                raise ValueError("checkpoint cancellation identity is invalid")
+        for sequence, failure in enumerate(checkpoint.failure_records):
+            expected_failure = ResearchFailureRecord.create(
+                sequence=sequence,
+                role=failure.role,
+                operation=failure.operation,
+                kind=failure.kind,
+                retryable=failure.retryable,
+                exception_type=failure.exception_type,
+                partial_evidence_artifact_ids=(
+                    failure.partial_evidence_artifact_ids
+                ),
+            )
+            if failure != expected_failure:
+                raise ValueError("checkpoint failure identity is invalid")
         lineage = checkpoint.cancellation_lineage + checkpoint.failure_lineage
         if any(
             len(item) != 71
@@ -837,6 +958,14 @@ class ResearchRoleMachine:
                 "causal_event_artifact_ids": [
                     item.artifact_id for item in checkpoint.causal_events
                 ],
+                "cancellation_artifact_id": (
+                    None
+                    if checkpoint.cancellation_signal is None
+                    else checkpoint.cancellation_signal.artifact_id
+                ),
+                "failure_artifact_ids": [
+                    item.artifact_id for item in checkpoint.failure_records
+                ],
                 "cancellation_lineage": list(checkpoint.cancellation_lineage),
                 "failure_lineage": list(checkpoint.failure_lineage),
             }
@@ -856,6 +985,40 @@ class ResearchRoleMachine:
         ):
             if current[field] != getattr(checkpoint, field):
                 raise ValueError(f"checkpoint dependency mismatch: {field}")
+
+    def _classify_failure(
+        self, error: Exception, operation: ResearchOperation
+    ) -> ResearchFailureRecord:
+        if isinstance(error, ToolPolicyDenied):
+            kind = ResearchFailureKind.POLICY_DENIED
+            retryable = False
+        elif isinstance(error, TimeoutError):
+            kind = ResearchFailureKind.TIMEOUT
+            retryable = True
+        elif isinstance(error, ConnectionError) or bool(
+            getattr(error, "transient", False)
+        ):
+            kind = ResearchFailureKind.RETRYABLE_TOOL
+            retryable = True
+        else:
+            kind = ResearchFailureKind.PERMANENT_TOOL
+            retryable = False
+        partial: tuple[str, ...] = ()
+        if self._retrieval is not None:
+            partial = (self._retrieval.artifact_id,) + tuple(
+                "sha256:" + str(record["source_text_sha256"])
+                for record in self._retrieval.records
+                if "source_text_sha256" in record
+            )
+        return ResearchFailureRecord.create(
+            sequence=len(self._failure_records),
+            role=self._role.value,
+            operation=operation.value,
+            kind=kind,
+            retryable=retryable,
+            exception_type=type(error).__name__,
+            partial_evidence_artifact_ids=partial,
+        )
 
     def _create_causal_event(
         self,

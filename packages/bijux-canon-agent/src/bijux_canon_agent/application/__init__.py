@@ -26,12 +26,20 @@ from bijux_canon_agent.contracts.causal_trace import (
     CausalDecisionEvent,
     ResearchCausalTrace,
 )
+from bijux_canon_agent.contracts.execution_control import (
+    CancellationPort,
+    CancellationSignal,
+    ResearchFailureKind,
+    ResearchFailureRecord,
+)
 
 __all__ = [
     "BudgetAction",
     "BudgetDecision",
     "BudgetDimensions",
     "CausalDecisionEvent",
+    "CancellationPort",
+    "CancellationSignal",
     "InjectedResearchServices",
     "PolicyEnforcedResearchServices",
     "ResearchExecutionResult",
@@ -40,6 +48,8 @@ __all__ = [
     "ResearchBudgetLedger",
     "ResearchBudgetPolicy",
     "ResearchCausalTrace",
+    "ResearchFailureKind",
+    "ResearchFailureRecord",
     "ResearchOperation",
     "ResearchOperationRecord",
     "ResearchRole",

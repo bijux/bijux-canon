@@ -11,6 +11,7 @@ from bijux_canon_agent.application import (
     InjectedResearchServices,
     BudgetAction,
     BudgetDimensions,
+    CancellationSignal,
     PolicyEnforcedResearchServices,
     ResearchOperation,
     ResearchRole,
@@ -18,6 +19,7 @@ from bijux_canon_agent.application import (
     ResearchBudgetPolicy,
     ResearchBudgetLedger,
     ResearchCheckpoint,
+    ResearchFailureKind,
     ToolPolicyDenied,
 )
 from bijux_canon_agent.contracts import (
@@ -154,6 +156,14 @@ class RecordingCheckpointPort:
         return self.checkpoints[artifact_id]
 
 
+class StaticCancellation:
+    def __init__(self, signal: CancellationSignal | None = None) -> None:
+        self.signal = signal or CancellationSignal.inactive()
+
+    def current(self) -> CancellationSignal:
+        return self.signal
+
+
 def test_injected_services_carry_exact_requests() -> None:
     retriever = RecordingRetriever()
     reasoner = RecordingReasoner()
@@ -251,6 +261,7 @@ def test_research_role_machine_executes_one_operation_per_legal_edge() -> None:
         tool_policy=tool_policy(),
         budget_policy=budget_policy(),
         checkpoint_port=checkpoints,
+        cancellation_port=StaticCancellation(),
     ).run()
 
     assert [record.operation for record in result.operations] == [
@@ -342,6 +353,7 @@ def test_research_role_machine_is_deterministic_and_terminal() -> None:
             tool_policy=tool_policy(),
             budget_policy=budget_policy(),
             checkpoint_port=RecordingCheckpointPort(),
+            cancellation_port=StaticCancellation(),
         ).run()
 
     first = execute()
@@ -356,6 +368,7 @@ def test_research_role_machine_is_deterministic_and_terminal() -> None:
         tool_policy=tool_policy(),
         budget_policy=budget_policy(),
         checkpoint_port=RecordingCheckpointPort(),
+        cancellation_port=StaticCancellation(),
     )
     machine.run()
     assert machine.role is ResearchRole.TERMINAL
@@ -377,6 +390,7 @@ def test_research_role_machine_resumes_without_duplicate_tool_calls() -> None:
         tool_policy=policy,
         budget_policy=budget,
         checkpoint_port=checkpoints,
+        cancellation_port=StaticCancellation(),
         cancellation_lineage=("sha256:" + "c" * 64,),
         failure_lineage=("sha256:" + "f" * 64,),
     )
@@ -397,6 +411,7 @@ def test_research_role_machine_resumes_without_duplicate_tool_calls() -> None:
         tool_policy=policy,
         budget_policy=budget,
         checkpoint_port=checkpoints,
+        cancellation_port=StaticCancellation(),
     ).run()
 
     assert resumed.terminal_outcome == "answered"
@@ -425,6 +440,7 @@ def test_research_role_machine_rejects_checkpoint_dependency_drift() -> None:
         tool_policy=policy,
         budget_policy=budget,
         checkpoint_port=checkpoints,
+        cancellation_port=StaticCancellation(),
     )
     machine.advance()
     checkpoint = machine.checkpoint
@@ -449,6 +465,7 @@ def test_research_role_machine_rejects_checkpoint_dependency_drift() -> None:
             tool_policy=policy,
             budget_policy=budget,
             checkpoint_port=checkpoints,
+            cancellation_port=StaticCancellation(),
         )
 
 
@@ -463,6 +480,7 @@ def test_research_checkpoint_round_trips_canonical_json() -> None:
         tool_policy=ToolPolicy.for_plan(plan),
         budget_policy=ResearchBudgetPolicy.for_plan(plan),
         checkpoint_port=checkpoints,
+        cancellation_port=StaticCancellation(),
     )
     machine.advance()
     checkpoint = machine.checkpoint
@@ -475,6 +493,121 @@ def test_research_checkpoint_round_trips_canonical_json() -> None:
     assert restored == checkpoint
     with pytest.raises(ValueError, match="exact canonical"):
         ResearchCheckpoint.from_payload({**payload, "undeclared": True})
+
+
+def test_research_role_machine_cancels_before_external_effects() -> None:
+    plan = planning_input()
+    retriever = RecordingRetriever()
+    reasoner = RecordingReasoner()
+    signal = CancellationSignal.active(
+        reason="user requested stop", request_artifact_id="sha256:" + "1" * 64
+    )
+    result = ResearchRoleMachine(
+        planning_input=plan,
+        services=InjectedResearchServices(retriever=retriever, reasoner=reasoner),
+        tool_policy=ToolPolicy.for_plan(plan),
+        budget_policy=ResearchBudgetPolicy.for_plan(plan),
+        checkpoint_port=RecordingCheckpointPort(),
+        cancellation_port=StaticCancellation(signal),
+    ).run()
+
+    assert result.terminal_outcome == "cancelled:user requested stop"
+    assert result.cancellation_signal == signal
+    assert result.failure_records == ()
+    assert retriever.requests == []
+    assert reasoner.requests == []
+    assert all(item.payload["status"] == "cancelled" for item in result.operations)
+
+
+def test_research_role_machine_preserves_evidence_on_cooperative_cancellation() -> None:
+    plan = planning_input()
+    cancellation = StaticCancellation()
+    retriever = RecordingRetriever()
+    reasoner = RecordingReasoner()
+    machine = ResearchRoleMachine(
+        planning_input=plan,
+        services=InjectedResearchServices(retriever=retriever, reasoner=reasoner),
+        tool_policy=ToolPolicy.for_plan(plan),
+        budget_policy=ResearchBudgetPolicy.for_plan(plan),
+        checkpoint_port=RecordingCheckpointPort(),
+        cancellation_port=cancellation,
+    )
+    machine.advance()
+    machine.advance()
+    cancellation.signal = CancellationSignal.active(
+        reason="deadline reached", request_artifact_id="sha256:" + "2" * 64
+    )
+
+    result = machine.run()
+
+    assert result.terminal_outcome == "cancelled:deadline reached"
+    assert result.retrieval is not None
+    assert len(retriever.requests) == 1
+    assert reasoner.requests == []
+
+
+@pytest.mark.parametrize(
+    ("error", "kind", "retryable"),
+    [
+        (TimeoutError("secret timeout detail"), ResearchFailureKind.TIMEOUT, True),
+        (ValueError("secret permanent detail"), ResearchFailureKind.PERMANENT_TOOL, False),
+        (
+            ConnectionError("secret connection detail"),
+            ResearchFailureKind.RETRYABLE_TOOL,
+            True,
+        ),
+    ],
+)
+def test_research_role_machine_classifies_failure_and_preserves_evidence(
+    error: Exception,
+    kind: ResearchFailureKind,
+    retryable: bool,
+) -> None:
+    class FailingReasoner(RecordingReasoner):
+        def reason(self, request):
+            self.requests.append(request)
+            raise error
+
+    plan = planning_input()
+    reasoner = FailingReasoner()
+    checkpoints = RecordingCheckpointPort()
+    machine = ResearchRoleMachine(
+        planning_input=plan,
+        services=InjectedResearchServices(
+            retriever=RecordingRetriever(), reasoner=reasoner
+        ),
+        tool_policy=ToolPolicy.for_plan(plan),
+        budget_policy=ResearchBudgetPolicy.for_plan(plan),
+        checkpoint_port=checkpoints,
+        cancellation_port=StaticCancellation(),
+    )
+    result = machine.run()
+
+    assert result.terminal_outcome == f"failed:{kind.value}"
+    assert len(reasoner.requests) == 1
+    assert len(result.failure_records) == 1
+    failure = result.failure_records[0]
+    assert failure.kind is kind
+    assert failure.retryable is retryable
+    assert failure.exception_type == type(error).__name__
+    assert result.retrieval is not None
+    assert failure.partial_evidence_artifact_ids[0] == result.retrieval.artifact_id
+    assert "secret" not in repr(failure)
+
+    resumed_reasoner = RecordingReasoner()
+    resumed = ResearchRoleMachine.resume(
+        checkpoint_artifact_id=result.checkpoint_artifact_id,
+        planning_input=plan,
+        services=InjectedResearchServices(
+            retriever=RecordingRetriever(), reasoner=resumed_reasoner
+        ),
+        tool_policy=ToolPolicy.for_plan(plan),
+        budget_policy=ResearchBudgetPolicy.for_plan(plan),
+        checkpoint_port=checkpoints,
+        cancellation_port=StaticCancellation(),
+    ).run()
+    assert resumed == result
+    assert resumed_reasoner.requests == []
 
 
 def test_research_role_machine_rejects_skips_and_wrong_operations() -> None:
@@ -505,6 +638,7 @@ def test_role_machine_requires_a_plan_bound_policy() -> None:
             tool_policy=ToolPolicy.for_plan(other),
             budget_policy=ResearchBudgetPolicy.for_plan(other),
             checkpoint_port=RecordingCheckpointPort(),
+            cancellation_port=StaticCancellation(),
         )
 
 
@@ -531,6 +665,7 @@ def test_role_machine_terminates_deterministically_on_global_budget() -> None:
             tool_policy=ToolPolicy.for_plan(plan),
             budget_policy=constrained,
             checkpoint_port=RecordingCheckpointPort(),
+            cancellation_port=StaticCancellation(),
         ).run()
 
     first = execute()
@@ -566,6 +701,7 @@ def test_role_machine_terminates_on_per_role_budget() -> None:
         tool_policy=ToolPolicy.for_plan(plan),
         budget_policy=constrained,
         checkpoint_port=RecordingCheckpointPort(),
+        cancellation_port=StaticCancellation(),
     ).run()
 
     assert result.terminal_outcome == "budget_exhausted:synthesize.provider_calls"
