@@ -53,6 +53,18 @@ def _canonical_mapping(value: Mapping[str, object]) -> dict[str, object]:
     return cast(dict[str, object], normalized)
 
 
+def _execution_identity_payload(
+    request: object,
+    normalized_vector_sha256: object,
+    plan: object,
+) -> dict[str, object]:
+    return {
+        "normalized_vector_sha256": normalized_vector_sha256,
+        "plan": plan,
+        "request": request,
+    }
+
+
 @dataclass(frozen=True, slots=True)
 class VexCandidateRecord:
     """One persisted candidate in declared execution order."""
@@ -106,11 +118,12 @@ class VexExecutionArtifact:
         }
         hashes = {key: _sha256_json(value) for key, value in sections.items()}
         object.__setattr__(self, "component_hashes", hashes)
-        object.__setattr__(
-            self,
-            "execution_id",
-            f"sha256:{_sha256_json({'request': self.request, 'plan': self.plan})}",
+        identity = _execution_identity_payload(
+            self.request,
+            self.normalized_vector_sha256,
+            self.plan,
         )
+        object.__setattr__(self, "execution_id", f"sha256:{_sha256_json(identity)}")
         object.__setattr__(self, "artifact_id", f"sha256:{_sha256_json(self.payload())}")
 
     def payload(self) -> dict[str, object]:
@@ -212,6 +225,14 @@ class VexArtifactStore:
         expected_id = f"sha256:{_sha256_json(payload)}"
         if stored_id != artifact_id or expected_id != artifact_id:
             raise ValueError("VEX artifact content address does not match its payload")
+        execution_identity = _execution_identity_payload(
+            record.get("request"),
+            record.get("normalized_vector_sha256"),
+            record.get("plan"),
+        )
+        expected_execution_id = f"sha256:{_sha256_json(execution_identity)}"
+        if record.get("execution_id") != expected_execution_id:
+            raise ValueError("VEX execution identity does not match its immutable inputs")
         hashes = record.get("component_hashes")
         if not isinstance(hashes, dict):
             raise ValueError("VEX artifact component hashes are missing")

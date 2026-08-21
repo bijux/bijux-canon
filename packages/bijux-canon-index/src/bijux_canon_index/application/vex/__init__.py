@@ -18,6 +18,15 @@ from .policy import (
     VexPolicyViolation,
     evaluate_vex_budget,
 )
+from .replay import (
+    VexDriftKind,
+    VexReplayComparison,
+    VexReplayExecutor,
+    VexReplayInput,
+    VexReplayOutcome,
+    compare_vex_artifacts,
+    replay_vex_execution,
+)
 from .witnesses import (
     ExactSearchCandidate,
     ExactSearchWitness,
@@ -29,6 +38,7 @@ __all__ = [
     "ExactSearchWitness",
     "VexArtifactStore",
     "VexCandidateRecord",
+    "VexDriftKind",
     "VexExecutionBudget",
     "VexExecutionArtifact",
     "VexExecutionObservation",
@@ -36,7 +46,13 @@ __all__ = [
     "VexPolicyMode",
     "VexPolicyStatus",
     "VexPolicyViolation",
+    "VexReplayComparison",
+    "VexReplayExecutor",
+    "VexReplayInput",
+    "VexReplayOutcome",
     "VexStoredArtifact",
     "build_exact_search_witness",
+    "compare_vex_artifacts",
     "evaluate_vex_budget",
+    "replay_vex_execution",
 ]
