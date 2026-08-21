@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0.0",
+  "artifact_family": "bijux.canon.index",
+  "current_artifact_schema_version": "2.0.0",
+  "canonical_serialization": {"standard": "RFC 8785", "identity_algorithm": "sha-256", "excluded_json_pointers": ["/artifact_id"]},
+  "migration_rules": {
+    "implicit_migration_allowed": false,
+    "unknown_version": "reject with unsupported_schema_version",
+    "downgrade": "reject with unsupported_schema_version",
+    "in_place_mutation": false,
+    "lossy_migration": false,
+    "future_migration_requirements": [
+      "register an explicit adjacent-version deterministic transform",
+      "validate source and target records",
+      "preserve model, vector, segment, generation, filter, activation, and integrity identities in migration lineage",
+      "recompute and verify integrity before activation"
+    ]
+  },
+  "registered_transforms": []
+}

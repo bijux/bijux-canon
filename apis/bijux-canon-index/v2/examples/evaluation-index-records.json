@@ -1,0 +1,60 @@
+{
+  "bundle_schema_version": "1.0.0",
+  "external_artifact_ids": [
+    "sha256:0baea209d67d992101eee0fa7007d798a02285918822ec774c7a9dc8e7e18a91",
+    "sha256:2423549a0f9d7b00d8d89d8fecc98a18eb3530956d05d90f4ea45c82a22ea377"
+  ],
+  "records": [
+    {
+      "schema_version": "2.0.0", "artifact_type": "bijux.canon.index.model_lock", "artifact_id": "sha256:c10a4ea4c56dc30cb6c216a8d14bae14e67ae4b2d9cf8cc4c95cf95eb9e68f0b",
+      "provider": "bijux", "model_id": "hash16", "immutable_revision": "bijux-canon-ingest-0.3.9", "dimension": 16, "dtype": "float32", "normalization": "l2", "pooling": "none",
+      "tokenizer": {"implementation": "bijux-canon-ingest-hash-tokenizer", "revision": "0.3.9"}, "license_id": "Apache-2.0",
+      "files": [{"path": "bijux_canon_ingest/retrieval/embedders.py", "sha256": "219e63d44de609d8e0b5be0aceef517bdc1bbfa3438f237d245b531b4a87af44", "byte_length": 3838}],
+      "offline_policy": "required"
+    },
+    {
+      "schema_version": "2.0.0", "artifact_type": "bijux.canon.index.vector", "artifact_id": "sha256:86df2bed1dcd13a4d2398627e8012fb58cbf6cfe3c6ea569b8ccd344cd3b6907",
+      "chunk_artifact_id": "sha256:2423549a0f9d7b00d8d89d8fecc98a18eb3530956d05d90f4ea45c82a22ea377", "model_lock_artifact_id": "sha256:c10a4ea4c56dc30cb6c216a8d14bae14e67ae4b2d9cf8cc4c95cf95eb9e68f0b",
+      "dimension": 16, "dtype": "float32", "metric": "cosine", "normalized": true,
+      "values_sha256": "cc87cbf8686f8609e04b37679a66ff25740adeaa1dff0f00517f159a5ee0f617", "values_byte_length": 316, "values_ref": "cas+sha256://cc87cbf8686f8609e04b37679a66ff25740adeaa1dff0f00517f159a5ee0f617"
+    },
+    {
+      "schema_version": "2.0.0", "artifact_type": "bijux.canon.index.lexical_segment", "artifact_id": "sha256:23173e59d7ef9f5df218a89745452aaf9fd81f328e0ee080a4f33f5101c8d8bb",
+      "corpus_snapshot_artifact_id": "sha256:0baea209d67d992101eee0fa7007d798a02285918822ec774c7a9dc8e7e18a91", "chunk_artifact_ids": ["sha256:2423549a0f9d7b00d8d89d8fecc98a18eb3530956d05d90f4ea45c82a22ea377"],
+      "analyzer": {"implementation": "bijux-canon-ingest-bm25", "implementation_version": "0.3.9", "configuration_sha256": "d0c0244cb1d6edc017a4eb81270e33fa2069934b53ffea363f90acd67c4cb077"},
+      "document_count": 25, "term_count": 301, "postings_sha256": "fd0ee4db0beda8a83c520a3bfa37ccfae2944383e144d7fd934d26f24a9d4e14", "postings_byte_length": 17294, "postings_ref": "cas+sha256://fd0ee4db0beda8a83c520a3bfa37ccfae2944383e144d7fd934d26f24a9d4e14", "format": "bijux-bm25-msgpack-v1"
+    },
+    {
+      "schema_version": "2.0.0", "artifact_type": "bijux.canon.index.dense_segment", "artifact_id": "sha256:05df4b6bcb0ea3feb3335953f8c914f697d101b2e5193c4b44822ad7cf4e6dc7",
+      "model_lock_artifact_id": "sha256:c10a4ea4c56dc30cb6c216a8d14bae14e67ae4b2d9cf8cc4c95cf95eb9e68f0b", "vector_artifact_ids": ["sha256:86df2bed1dcd13a4d2398627e8012fb58cbf6cfe3c6ea569b8ccd344cd3b6907"],
+      "backend": "numpy-cosine", "backend_version": "0.3.9", "metric": "cosine", "dimension": 16, "vector_count": 1,
+      "segment_sha256": "cc87cbf8686f8609e04b37679a66ff25740adeaa1dff0f00517f159a5ee0f617", "segment_byte_length": 316, "segment_ref": "cas+sha256://cc87cbf8686f8609e04b37679a66ff25740adeaa1dff0f00517f159a5ee0f617"
+    },
+    {
+      "schema_version": "2.0.0", "artifact_type": "bijux.canon.index.filter", "artifact_id": "sha256:765c2dfe154610b6fa334ac4f935b4415e8ba79c06a8d6ac249a64c20928658a",
+      "expression": {"operator": "eq", "field": "category", "value": "bioinformatics"}
+    },
+    {
+      "schema_version": "2.0.0", "artifact_type": "bijux.canon.index.integrity", "artifact_id": "sha256:74bbc16205ff2440148ee55f6f40941d916d6cda73f3b8f533323809fef022c6",
+      "algorithm": "sha256-merkle-v1", "members": [
+        {"artifact_id": "sha256:05df4b6bcb0ea3feb3335953f8c914f697d101b2e5193c4b44822ad7cf4e6dc7", "content_sha256": "9dd6d9ef6ba22da4da274a6a4eab7ba71cb848eb185783982470345e3f62c910", "byte_length": 666},
+        {"artifact_id": "sha256:23173e59d7ef9f5df218a89745452aaf9fd81f328e0ee080a4f33f5101c8d8bb", "content_sha256": "6db29f06a8a525de079698e90c0f43338700cdefb16ce6949c95a904be1b65db", "byte_length": 825},
+        {"artifact_id": "sha256:765c2dfe154610b6fa334ac4f935b4415e8ba79c06a8d6ac249a64c20928658a", "content_sha256": "b2fcd0d26de50d3d741526f03bb7289d22f92496a5e0527d1e722b0d28f44f3f", "byte_length": 232},
+        {"artifact_id": "sha256:86df2bed1dcd13a4d2398627e8012fb58cbf6cfe3c6ea569b8ccd344cd3b6907", "content_sha256": "5398b34d1b0b718683aabff193cc8e742089065e45e36c3a67c50dbfc3589dcf", "byte_length": 620},
+        {"artifact_id": "sha256:c10a4ea4c56dc30cb6c216a8d14bae14e67ae4b2d9cf8cc4c95cf95eb9e68f0b", "content_sha256": "f0a7f3037537b83bbdda3d4d8b21c4ae05ce8dcc359182ff36677a8121778f0b", "byte_length": 617}
+      ], "root_sha256": "9561631784901d81a84b8f17f36c6b7feafcd142b8798d30524889e98654b17c"
+    },
+    {
+      "schema_version": "2.0.0", "artifact_type": "bijux.canon.index.generation", "artifact_id": "sha256:5ae355d1558fd5e2cabb1ab72cbd8028d248ca979347b06d0cb599f242a4cc83",
+      "corpus_snapshot_artifact_id": "sha256:0baea209d67d992101eee0fa7007d798a02285918822ec774c7a9dc8e7e18a91", "model_lock_artifact_ids": ["sha256:c10a4ea4c56dc30cb6c216a8d14bae14e67ae4b2d9cf8cc4c95cf95eb9e68f0b"],
+      "lexical_segment_artifact_ids": ["sha256:23173e59d7ef9f5df218a89745452aaf9fd81f328e0ee080a4f33f5101c8d8bb"], "dense_segment_artifact_ids": ["sha256:05df4b6bcb0ea3feb3335953f8c914f697d101b2e5193c4b44822ad7cf4e6dc7"], "filter_artifact_ids": ["sha256:765c2dfe154610b6fa334ac4f935b4415e8ba79c06a8d6ac249a64c20928658a"],
+      "build_configuration_sha256": "9793c990d7ec3529bd21ec53fadd79643b5bb0adc054aaa94afe4d5ea2b3568f", "integrity_artifact_id": "sha256:74bbc16205ff2440148ee55f6f40941d916d6cda73f3b8f533323809fef022c6", "created_at": "2026-08-21T04:19:46Z"
+    },
+    {
+      "schema_version": "2.0.0", "artifact_type": "bijux.canon.index.activation_receipt", "artifact_id": "sha256:c0e8579a00b2eaf1e03807cc35b91591ce39f7b758f0571b37b254df8d1eddbd",
+      "generation_artifact_id": "sha256:5ae355d1558fd5e2cabb1ab72cbd8028d248ca979347b06d0cb599f242a4cc83", "previous_generation_artifact_id": null,
+      "atomic_write_sha256": "6d643ac8a1e4dba9b106ad125506b9f892f782f1bd92c1a6e58bb747a5c9370d", "activated_at": "2026-08-21T04:19:46Z", "actor": "bijux-canon-index", "state": "active"
+    }
+  ],
+  "vector_values": [0.42265480756759644, 0.3175145089626312, 0.3084402084350586, 0.03027406893670559, 0.16404399275779724, 0.1970258206129074, 0.2607043981552124, 0.09024103730916977, 0.18845345079898834, 0.39644238352775574, 0.15518103539943695, 0.32136479020118713, 0.03247329965233803, 0.11910178512334824, 0.33081555366516113, 0.1947803497314453]
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0.0",
+  "contract_id": "bijux.canon.index.artifacts.v2",
+  "artifact_schema_version": "2.0.0",
+  "json_schema_dialect": "https://json-schema.org/draft/2020-12/schema",
+  "canonical_serialization": "RFC 8785",
+  "identity_algorithm": "sha-256",
+  "identity_excluded_json_pointers": ["/artifact_id"],
+  "schema_bundle": {
+    "path": "index-artifacts.schema.json",
+    "sha256": "78704489d3dfc61477ac27b44646a8a20ead4b1d3e64b766fd13a0e82dc99f38",
+    "definitions": {
+      "bijux.canon.index.activation_receipt": "#/$defs/activation_receipt",
+      "bijux.canon.index.dense_segment": "#/$defs/dense_segment",
+      "bijux.canon.index.filter": "#/$defs/filter",
+      "bijux.canon.index.generation": "#/$defs/index_generation",
+      "bijux.canon.index.integrity": "#/$defs/integrity",
+      "bijux.canon.index.lexical_segment": "#/$defs/lexical_segment",
+      "bijux.canon.index.model_lock": "#/$defs/model_lock",
+      "bijux.canon.index.vector": "#/$defs/vector"
+    }
+  },
+  "migration_policy": {
+    "path": "migration-policy.json",
+    "sha256": "97b8a8c2fa01bb7f9aca74151af8a7f212efda10e53befbd3cf836af008734a3",
+    "implicit_migration_allowed": false,
+    "registered_transform_count": 0
+  },
+  "conformance_example": {
+    "path": "examples/evaluation-index-records.json",
+    "sha256": "edaa154d6e74d07b9cbc24cb2cb66fb556156b29ffee26c3ba9e4bb84a58092e",
+    "record_count": 8,
+    "source_corpus_sha256": "03a79d793dc4bc525745c8c564a5b116ea727a2dfea9766397d886edfc39e4aa",
+    "source_document_count": 25
+  }
+}
