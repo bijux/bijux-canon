@@ -124,7 +124,36 @@ async def test_e2e_real_model_flow(tmp_path) -> None:
     context = {
         "task_goal": "Summarize the policy document cleanly",
         "context_id": "real-e2e",
-        "payload": {},
+        "payload": {
+            "planning_input": {
+                "query": "Summarize the policy document cleanly",
+                "corpus_generation": "corpus:policy:live",
+                "index_generation": "index:policy:live",
+                "scope": ["policy:document"],
+                "top_k": 4,
+                "retrieval_mode": "lexical",
+                "constraints": {"require_exact_citations": True},
+                "provider_profile": {
+                    "provider": "OpenAI",
+                    "model": "gpt-3.5-turbo",
+                    "immutable_revision": "gpt-3.5-turbo",
+                    "temperature": 0.0,
+                    "seed": None,
+                },
+                "budget": {
+                    "iterations": 3,
+                    "retrievals": 2,
+                    "candidates": 8,
+                    "evidence_items": 4,
+                    "tool_calls": 2,
+                    "provider_calls": 3,
+                    "tokens": 1024,
+                    "elapsed_ms": 120000,
+                    "retries": 1,
+                    "artifact_bytes": 131072,
+                },
+            }
+        },
     }
 
     controller.transition_to(PipelineLifecycle.PLAN)

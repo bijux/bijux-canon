@@ -4,8 +4,10 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 import hashlib
+import json
+from typing import Annotated, Any, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class RetrievalConfidenceEnvelope(BaseModel):
@@ -27,15 +29,47 @@ class RetrievedDocument(BaseModel):
 
 
 class RetrievalRequest(BaseModel):
-    query: str
-    top_k: int = Field(5, ge=1, le=50)
+    """A retrieval request bound to immutable data generations and policy."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid", str_strip_whitespace=True)
+
+    query: Annotated[str, Field(min_length=1)]
+    corpus_generation: Annotated[str, Field(min_length=1)]
+    index_generation: Annotated[str, Field(min_length=1)]
+    scope: tuple[Annotated[str, Field(min_length=1)], ...] = Field(min_length=1)
+    top_k: int = Field(..., ge=1, le=1000)
+    retrieval_mode: Literal[
+        "lexical", "dense_exact", "dense_approximate", "hybrid"
+    ]
+    constraints: Mapping[str, Any]
     filters: list[str] = Field(default_factory=list)
     metadata: Mapping[str, str] = Field(default_factory=dict)
 
+    def model_post_init(self, __context: Any) -> None:
+        """Reject ambiguous scopes and non-JSON retrieval constraints."""
+        if len(self.scope) != len(set(self.scope)):
+            raise ValueError("scope entries must be unique")
+        try:
+            json.dumps(
+                dict(self.constraints),
+                sort_keys=True,
+                separators=(",", ":"),
+                ensure_ascii=False,
+                allow_nan=False,
+            )
+        except (TypeError, ValueError) as exc:
+            raise ValueError("constraints must be canonical JSON values") from exc
+
     def request_hash(self) -> str:
-        digest = hashlib.sha256(self.query.encode("utf-8"))
-        digest.update(str(self.top_k).encode("utf-8"))
-        return digest.hexdigest()
+        """Hash every field that can change retrieval behavior."""
+        payload = json.dumps(
+            self.model_dump(),
+            sort_keys=True,
+            separators=(",", ":"),
+            ensure_ascii=False,
+            allow_nan=False,
+        ).encode("utf-8")
+        return hashlib.sha256(payload).hexdigest()
 
 
 class RetrievalResponse(BaseModel):

@@ -8,7 +8,12 @@ from .agent_contract import (
     AgentInputSchema,
     AgentOutputSchema,
 )
-from .execution_plan import ExecutionPlan
+from .execution_plan import (
+    ExecutionPlan,
+    PlanningBudget,
+    ProviderProfile,
+    ResearchPlanningInput,
+)
 from .retrieval import (
     RetrievalConfidenceEnvelope,
     RetrievalRequest,
@@ -32,8 +37,11 @@ __all__ = [
     "AgentOutputSchema",
     "AgentScore",
     "ExecutionPlan",
+    "PlanningBudget",
+    "ProviderProfile",
     "RetrievalConfidenceEnvelope",
     "RetrievalRequest",
     "RetrievalResponse",
+    "ResearchPlanningInput",
     "RunMetadata",
 ]
