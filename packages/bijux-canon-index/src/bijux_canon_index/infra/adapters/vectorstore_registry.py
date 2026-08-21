@@ -237,6 +237,8 @@ class VectorStoreRegistry:
             raise ValueError("Plugin contract must declare determinism")
         if contract.randomness_sources is None:
             raise ValueError("Plugin contract must declare randomness sources")
+        if key in self._entries:
+            raise ValueError(f"Vector store plugin name conflicts with {key!r}")
         self._entries[key] = (descriptor, factory, availability, contract)
         if self._active_plugin is not None:
             self._plugin_sources[key] = dict(self._active_plugin)
