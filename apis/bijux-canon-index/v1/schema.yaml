@@ -1135,7 +1135,7 @@ paths:
                       reason: determinism_violation
                       remediation: Use deterministic inputs or switch to non_deterministic
                         contract with declared randomness.
-          description: Unprocessable Content
+          description: Unprocessable Entity
       summary: Execute a vector query
       tags:
       - Execution
