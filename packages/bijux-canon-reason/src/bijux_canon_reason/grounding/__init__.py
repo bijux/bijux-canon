@@ -4,6 +4,14 @@
 
 from __future__ import annotations
 
+from bijux_canon_reason.grounding.extractive_synthesis import (
+    CredentialFreeSynthesis,
+    CredentialFreeSynthesisPolicy,
+    CredentialFreeSynthesizer,
+    ExtractiveSynthesisPoint,
+    SynthesisOutcome,
+    SynthesisStyle,
+)
 from bijux_canon_reason.grounding.evidence_packets import (
     CitationEvidence,
     EvidencePacket,
@@ -23,6 +31,9 @@ from bijux_canon_reason.grounding.evidence_packets import (
 
 __all__ = [
     "CitationEvidence",
+    "CredentialFreeSynthesis",
+    "CredentialFreeSynthesisPolicy",
+    "CredentialFreeSynthesizer",
     "EvidencePacket",
     "EvidencePacketBuilder",
     "EvidencePacketError",
@@ -30,10 +41,13 @@ __all__ = [
     "EvidencePacketPolicy",
     "EvidenceSelectionDecision",
     "EvidenceTrust",
+    "ExtractiveSynthesisPoint",
     "ImmutableEvidenceLocator",
     "OmissionReason",
     "PacketCompleteness",
     "SelectionDisposition",
+    "SynthesisOutcome",
+    "SynthesisStyle",
     "TokenCounter",
     "UnicodeLexicalTokenCounter",
 ]
