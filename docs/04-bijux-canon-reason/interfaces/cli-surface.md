@@ -127,10 +127,10 @@ then searches package ancestors. Each problem produces a governed run beneath
 `summary.json`.
 
 The default suite name is `small`. A missing suite fails before evaluation,
-and any case with verification failures makes the command exit `2`. Metrics
-such as the current retrieval recall and reciprocal-rank values are workflow
-proxies based on whether evidence was registered; they are not benchmark-grade
-relevance judgments.
+and any case with verification failures makes the command exit `2`.
+`exact_support_rate` and `support_links_per_supported_claim` recompute retained
+evidence spans and digests as workflow diagnostics. They are not retrieval
+relevance or semantic-faithfulness measurements.
 
 ## Scaffolding boundary
 
