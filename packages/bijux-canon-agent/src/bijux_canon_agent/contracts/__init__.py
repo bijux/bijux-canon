@@ -27,6 +27,17 @@ from .research_ports import (
     RetrieverPort,
     ServicePortDescriptor,
 )
+from .tool_policy import (
+    ResearchTool,
+    ResearchToolOperation,
+    ToolGrant,
+    ToolInvocation,
+    ToolPolicy,
+    ToolPolicyAction,
+    ToolPolicyDecision,
+    ToolPolicyReason,
+    plan_sha256,
+)
 from .runtime_models import (
     AgentError,
     AgentInput,
@@ -51,6 +62,8 @@ __all__ = [
     "RetrievalRequest",
     "RetrievalResponse",
     "ResearchPlanningInput",
+    "ResearchTool",
+    "ResearchToolOperation",
     "ReasonerPort",
     "ReasoningPortRequest",
     "ReasoningPortResult",
@@ -58,4 +71,11 @@ __all__ = [
     "RetrieverPort",
     "RunMetadata",
     "ServicePortDescriptor",
+    "ToolGrant",
+    "ToolInvocation",
+    "ToolPolicy",
+    "ToolPolicyAction",
+    "ToolPolicyDecision",
+    "ToolPolicyReason",
+    "plan_sha256",
 ]

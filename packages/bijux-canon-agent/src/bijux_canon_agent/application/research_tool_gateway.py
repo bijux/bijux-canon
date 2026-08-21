@@ -1,0 +1,138 @@
+"""Policy-enforced execution of injected research service ports."""
+
+from __future__ import annotations
+
+from collections import Counter
+
+from bijux_canon_agent.application.research_services import InjectedResearchServices
+from bijux_canon_agent.contracts.execution_plan import ResearchPlanningInput
+from bijux_canon_agent.contracts.research_ports import (
+    ReasoningPortRequest,
+    ReasoningPortResult,
+    RetrievalPortResult,
+)
+from bijux_canon_agent.contracts.tool_policy import (
+    ResearchTool,
+    ResearchToolOperation,
+    ToolInvocation,
+    ToolPolicy,
+    ToolPolicyAction,
+    ToolPolicyDecision,
+    plan_sha256,
+)
+
+
+class ToolPolicyDenied(PermissionError):
+    """A tool invocation was rejected before the port received control."""
+
+    def __init__(self, decision: ToolPolicyDecision) -> None:
+        super().__init__(
+            f"tool policy denied {decision.invocation.tool}: {decision.reason.value}"
+        )
+        self.decision = decision
+
+
+class PolicyEnforcedResearchServices:
+    """Authorize, type-check, and bind every Agent service invocation."""
+
+    def __init__(
+        self,
+        *,
+        planning_input: ResearchPlanningInput,
+        services: InjectedResearchServices,
+        policy: ToolPolicy,
+    ) -> None:
+        if not isinstance(planning_input, ResearchPlanningInput):
+            raise TypeError("planning_input must be ResearchPlanningInput")
+        if not isinstance(services, InjectedResearchServices):
+            raise TypeError("services must be InjectedResearchServices")
+        if not isinstance(policy, ToolPolicy):
+            raise TypeError("policy must be ToolPolicy")
+        if policy.plan_sha256 != plan_sha256(planning_input):
+            raise ValueError("tool policy is not bound to the research plan")
+        self._planning_input = planning_input
+        self._services = services
+        self._policy = policy
+        self._decisions: list[ToolPolicyDecision] = []
+        self._allowed_calls: Counter[str] = Counter()
+
+    @property
+    def policy(self) -> ToolPolicy:
+        """Return the immutable policy controlling this gateway."""
+        return self._policy
+
+    @property
+    def decisions(self) -> tuple[ToolPolicyDecision, ...]:
+        """Return every allow or deny decision in evaluation order."""
+        return tuple(self._decisions)
+
+    def retrieve(self) -> RetrievalPortResult:
+        """Authorize one exact retrieval request, then validate its output."""
+        request = self._planning_input.retrieval_request()
+        self._authorize(
+            ToolInvocation(
+                tool=ResearchTool.RETRIEVE.value,
+                operation=ResearchToolOperation.RETRIEVE.value,
+                plan_sha256=plan_sha256(self._planning_input),
+                request_sha256=request.request_hash(),
+                corpus_generation=request.corpus_generation,
+                index_generation=request.index_generation,
+                scope=request.scope,
+                filesystem_paths=(),
+                timeout_ms=self._planning_input.budget.elapsed_ms,
+            )
+        )
+        result = self._services.retrieve(self._planning_input)
+        if not isinstance(result, RetrievalPortResult):
+            raise TypeError("retriever output must be RetrievalPortResult")
+        return result
+
+    def reason(self, retrieval: RetrievalPortResult) -> ReasoningPortResult:
+        """Authorize one exact reasoning request, then validate its output."""
+        if not isinstance(retrieval, RetrievalPortResult):
+            raise TypeError("retrieval must be RetrievalPortResult")
+        request = ReasoningPortRequest(
+            question=self._planning_input.query,
+            retrieval=retrieval,
+            constraints=self._planning_input.constraints,
+            provider_profile=self._planning_input.provider_profile,
+            budget=self._planning_input.budget,
+        )
+        self._authorize(
+            ToolInvocation(
+                tool=ResearchTool.REASON.value,
+                operation=ResearchToolOperation.REASON.value,
+                plan_sha256=plan_sha256(self._planning_input),
+                request_sha256=request.request_hash(),
+                corpus_generation=self._planning_input.corpus_generation,
+                index_generation=self._planning_input.index_generation,
+                scope=self._planning_input.scope,
+                filesystem_paths=(),
+                timeout_ms=self._planning_input.budget.elapsed_ms,
+            )
+        )
+        result = self._services.reason(self._planning_input, retrieval)
+        if not isinstance(result, ReasoningPortResult):
+            raise TypeError("reasoner output must be ReasoningPortResult")
+        return result
+
+    def authorize(self, invocation: ToolInvocation) -> ToolPolicyDecision:
+        """Expose the same fail-closed gate for additional declared tools."""
+        if not isinstance(invocation, ToolInvocation):
+            raise TypeError("invocation must be ToolInvocation")
+        return self._authorize(invocation)
+
+    def _authorize(self, invocation: ToolInvocation) -> ToolPolicyDecision:
+        decision = self._policy.decide(
+            invocation,
+            sequence=len(self._decisions),
+            prior_allowed_calls=self._allowed_calls[invocation.tool],
+        )
+        self._decisions.append(decision)
+        if decision.action is ToolPolicyAction.DENY:
+            raise ToolPolicyDenied(decision)
+        self._allowed_calls[invocation.tool] += 1
+        return decision
+
+
+__all__ = ["PolicyEnforcedResearchServices", "ToolPolicyDenied"]

@@ -10,11 +10,15 @@ import json
 from typing import Any, ClassVar
 
 from bijux_canon_agent.application.research_services import InjectedResearchServices
+from bijux_canon_agent.application.research_tool_gateway import (
+    PolicyEnforcedResearchServices,
+)
 from bijux_canon_agent.contracts.execution_plan import ResearchPlanningInput
 from bijux_canon_agent.contracts.research_ports import (
     ReasoningPortResult,
     RetrievalPortResult,
 )
+from bijux_canon_agent.contracts.tool_policy import ToolPolicy, ToolPolicyDecision
 
 
 def _canonical(value: object) -> bytes:
@@ -140,6 +144,8 @@ class ResearchExecutionResult:
     reasoning: ReasoningPortResult
     operations: tuple[ResearchOperationRecord, ...]
     transitions: tuple[ResearchTransition, ...]
+    tool_policy_artifact_id: str
+    tool_decisions: tuple[ToolPolicyDecision, ...]
     terminal_outcome: str
 
 
@@ -173,9 +179,14 @@ class ResearchRoleMachine:
         *,
         planning_input: ResearchPlanningInput,
         services: InjectedResearchServices,
+        tool_policy: ToolPolicy,
     ) -> None:
         self._planning_input = planning_input
-        self._services = services
+        self._services = PolicyEnforcedResearchServices(
+            planning_input=planning_input,
+            services=services,
+            policy=tool_policy,
+        )
         self._role = ResearchRole.PLAN
         self._retrieval: RetrievalPortResult | None = None
         self._reasoning: ReasoningPortResult | None = None
@@ -194,6 +205,11 @@ class ResearchRoleMachine:
     @property
     def transitions(self) -> tuple[ResearchTransition, ...]:
         return tuple(self._transitions)
+
+    @property
+    def tool_decisions(self) -> tuple[ToolPolicyDecision, ...]:
+        """Return policy decisions, including a denial that halted execution."""
+        return self._services.decisions
 
     @classmethod
     def validate_transition(
@@ -254,6 +270,10 @@ class ResearchRoleMachine:
             "transition_artifact_ids": [
                 item.artifact_id for item in self._transitions
             ],
+            "tool_policy_artifact_id": self._services.policy.artifact_id,
+            "tool_decision_artifact_ids": [
+                item.artifact_id for item in self._services.decisions
+            ],
             "terminal_outcome": terminal_outcome,
         }
         return ResearchExecutionResult(
@@ -263,6 +283,8 @@ class ResearchRoleMachine:
             reasoning=self._reasoning,
             operations=tuple(self._operations),
             transitions=tuple(self._transitions),
+            tool_policy_artifact_id=self._services.policy.artifact_id,
+            tool_decisions=self._services.decisions,
             terminal_outcome=terminal_outcome,
         )
 
@@ -279,10 +301,13 @@ class ResearchRoleMachine:
                 "step_count": self.MAX_TRANSITIONS,
             }
         elif operation is ResearchOperation.RETRIEVE_EVIDENCE:
-            self._retrieval = self._services.retrieve(self._planning_input)
+            self._retrieval = self._services.retrieve()
             payload = {
                 "retrieval_artifact_id": self._retrieval.artifact_id,
                 "record_count": len(self._retrieval.records),
+                "tool_policy_decision_artifact_id": (
+                    self._services.decisions[-1].artifact_id
+                ),
             }
         elif operation is ResearchOperation.ANALYZE_EVIDENCE:
             retrieval = self._require_retrieval()
@@ -307,12 +332,13 @@ class ResearchRoleMachine:
                 "remaining_gap_count": 0 if retrieval.records else 1,
             }
         elif operation is ResearchOperation.SYNTHESIZE_ANSWER:
-            self._reasoning = self._services.reason(
-                self._planning_input, self._require_retrieval()
-            )
+            self._reasoning = self._services.reason(self._require_retrieval())
             payload = {
                 "reasoning_artifact_id": self._reasoning.artifact_id,
                 "outcome": self._reasoning.outcome,
+                "tool_policy_decision_artifact_id": (
+                    self._services.decisions[-1].artifact_id
+                ),
             }
         elif operation is ResearchOperation.VERIFY_ANSWER:
             reasoning = self._require_reasoning()

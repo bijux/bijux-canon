@@ -40,8 +40,12 @@ class InjectedResearchServices:
 
     def retrieve(self, planning_input: ResearchPlanningInput) -> RetrievalPortResult:
         """Execute the injected retriever and bind its result to the request."""
+        if not isinstance(planning_input, ResearchPlanningInput):
+            raise TypeError("planning_input must be ResearchPlanningInput")
         request = planning_input.retrieval_request()
         result = self._retriever.retrieve(request)
+        if not isinstance(result, RetrievalPortResult):
+            raise TypeError("retriever output must be RetrievalPortResult")
         if result.request_sha256 != request.request_hash():
             raise ValueError("retriever result does not match its request")
         if result.generation_id != planning_input.index_generation:
@@ -56,6 +60,10 @@ class InjectedResearchServices:
         retrieval: RetrievalPortResult,
     ) -> ReasoningPortResult:
         """Execute the injected reasoner and bind its result to the request."""
+        if not isinstance(planning_input, ResearchPlanningInput):
+            raise TypeError("planning_input must be ResearchPlanningInput")
+        if not isinstance(retrieval, RetrievalPortResult):
+            raise TypeError("retrieval must be RetrievalPortResult")
         request = ReasoningPortRequest(
             question=planning_input.query,
             retrieval=retrieval,
@@ -64,6 +72,8 @@ class InjectedResearchServices:
             budget=planning_input.budget,
         )
         result = self._reasoner.reason(request)
+        if not isinstance(result, ReasoningPortResult):
+            raise TypeError("reasoner output must be ReasoningPortResult")
         if result.request_sha256 != request.request_hash():
             raise ValueError("reasoner result does not match its request")
         return result

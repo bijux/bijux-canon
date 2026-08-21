@@ -8,15 +8,25 @@ import pytest
 
 from bijux_canon_agent.application import (
     InjectedResearchServices,
+    PolicyEnforcedResearchServices,
     ResearchOperation,
     ResearchRole,
     ResearchRoleMachine,
+    ToolPolicyDenied,
 )
 from bijux_canon_agent.contracts import (
     ReasoningPortResult,
     ResearchPlanningInput,
     RetrievalPortResult,
     ServicePortDescriptor,
+    ResearchTool,
+    ResearchToolOperation,
+    ToolGrant,
+    ToolInvocation,
+    ToolPolicy,
+    ToolPolicyAction,
+    ToolPolicyReason,
+    plan_sha256,
 )
 
 
@@ -49,6 +59,10 @@ def planning_input() -> ResearchPlanningInput:
             "artifact_bytes": 65536,
         },
     )
+
+
+def tool_policy() -> ToolPolicy:
+    return ToolPolicy.for_plan(planning_input())
 
 
 class RecordingRetriever:
@@ -103,6 +117,18 @@ class RecordingReasoner:
             text="The admitted sources report two extraction methods.",
             record={"service": "ResearchApplicationService"},
         )
+
+
+class InvalidOutputRetriever(RecordingRetriever):
+    def retrieve(self, request):
+        self.requests.append(request)
+        return {"records": []}
+
+
+class InvalidOutputReasoner(RecordingReasoner):
+    def reason(self, request):
+        self.requests.append(request)
+        return {"outcome": "answered"}
 
 
 def test_injected_services_carry_exact_requests() -> None:
@@ -171,13 +197,32 @@ def test_injected_services_reject_unbound_results() -> None:
         ).reason(plan, retrieval)
 
 
+def test_injected_services_reject_untyped_inputs_and_outputs() -> None:
+    plan = planning_input()
+    with pytest.raises(TypeError, match="planning_input"):
+        InjectedResearchServices(
+            retriever=RecordingRetriever(), reasoner=RecordingReasoner()
+        ).retrieve({})
+    with pytest.raises(TypeError, match="retriever output"):
+        InjectedResearchServices(
+            retriever=InvalidOutputRetriever(), reasoner=RecordingReasoner()
+        ).retrieve(plan)
+    retrieval = InjectedResearchServices(
+        retriever=RecordingRetriever(), reasoner=RecordingReasoner()
+    ).retrieve(plan)
+    with pytest.raises(TypeError, match="reasoner output"):
+        InjectedResearchServices(
+            retriever=RecordingRetriever(), reasoner=InvalidOutputReasoner()
+        ).reason(plan, retrieval)
+
+
 def test_research_role_machine_executes_one_operation_per_legal_edge() -> None:
     retriever = RecordingRetriever()
     reasoner = RecordingReasoner()
     services = InjectedResearchServices(retriever=retriever, reasoner=reasoner)
 
     result = ResearchRoleMachine(
-        planning_input=planning_input(), services=services
+        planning_input=planning_input(), services=services, tool_policy=tool_policy()
     ).run()
 
     assert [record.operation for record in result.operations] == [
@@ -208,6 +253,17 @@ def test_research_role_machine_executes_one_operation_per_legal_edge() -> None:
     ]
     assert len(retriever.requests) == 1
     assert len(reasoner.requests) == 1
+    assert [decision.action for decision in result.tool_decisions] == [
+        ToolPolicyAction.ALLOW,
+        ToolPolicyAction.ALLOW,
+    ]
+    assert result.tool_policy_artifact_id == tool_policy().artifact_id
+    assert result.operations[1].payload["tool_policy_decision_artifact_id"] == (
+        result.tool_decisions[0].artifact_id
+    )
+    assert result.operations[5].payload["tool_policy_decision_artifact_id"] == (
+        result.tool_decisions[1].artifact_id
+    )
     assert result.terminal_outcome == "answered"
 
 
@@ -218,6 +274,7 @@ def test_research_role_machine_is_deterministic_and_terminal() -> None:
             services=InjectedResearchServices(
                 retriever=RecordingRetriever(), reasoner=RecordingReasoner()
             ),
+            tool_policy=tool_policy(),
         ).run()
 
     first = execute()
@@ -229,6 +286,7 @@ def test_research_role_machine_is_deterministic_and_terminal() -> None:
         services=InjectedResearchServices(
             retriever=RecordingRetriever(), reasoner=RecordingReasoner()
         ),
+        tool_policy=tool_policy(),
     )
     machine.run()
     assert machine.role is ResearchRole.TERMINAL
@@ -249,3 +307,127 @@ def test_research_role_machine_rejects_skips_and_wrong_operations() -> None:
             to_role=ResearchRole.RETRIEVE,
             operation=ResearchOperation.RETRIEVE_EVIDENCE,
         )
+
+
+def test_role_machine_requires_a_plan_bound_policy() -> None:
+    parameters = inspect.signature(ResearchRoleMachine).parameters
+    assert parameters["tool_policy"].default is inspect.Parameter.empty
+    other = planning_input().model_copy(update={"query": "A different question"})
+    with pytest.raises(ValueError, match="not bound"):
+        ResearchRoleMachine(
+            planning_input=planning_input(),
+            services=InjectedResearchServices(
+                retriever=RecordingRetriever(), reasoner=RecordingReasoner()
+            ),
+            tool_policy=ToolPolicy.for_plan(other),
+        )
+
+
+def test_policy_gateway_records_allowed_and_denied_calls() -> None:
+    plan = planning_input()
+    retriever = RecordingRetriever()
+    gateway = PolicyEnforcedResearchServices(
+        planning_input=plan,
+        services=InjectedResearchServices(
+            retriever=retriever, reasoner=RecordingReasoner()
+        ),
+        policy=ToolPolicy.for_plan(plan),
+    )
+
+    gateway.retrieve()
+    with pytest.raises(ToolPolicyDenied) as error:
+        gateway.retrieve()
+
+    assert len(retriever.requests) == 1
+    assert [decision.action for decision in gateway.decisions] == [
+        ToolPolicyAction.ALLOW,
+        ToolPolicyAction.DENY,
+    ]
+    assert error.value.decision.reason is ToolPolicyReason.CALL_BUDGET_EXHAUSTED
+    assert error.value.decision == gateway.decisions[-1]
+
+
+@pytest.mark.parametrize(
+    ("changes", "reason"),
+    [
+        ({"tool": "fabricated.execute"}, ToolPolicyReason.TOOL_NOT_WHITELISTED),
+        ({"operation": "write"}, ToolPolicyReason.OPERATION_NOT_GRANTED),
+        ({"corpus_generation": "other"}, ToolPolicyReason.CORPUS_SCOPE_DENIED),
+        ({"index_generation": "other"}, ToolPolicyReason.INDEX_SCOPE_DENIED),
+        ({"scope": ("source:three",)}, ToolPolicyReason.LOGICAL_SCOPE_DENIED),
+        ({"timeout_ms": 30001}, ToolPolicyReason.TIMEOUT_EXCEEDS_POLICY),
+    ],
+)
+def test_tool_policy_fails_closed_for_ungranted_authority(
+    changes: dict[str, object], reason: ToolPolicyReason
+) -> None:
+    plan = planning_input()
+    fields = {
+        "tool": ResearchTool.RETRIEVE.value,
+        "operation": ResearchToolOperation.RETRIEVE.value,
+        "plan_sha256": plan_sha256(plan),
+        "request_sha256": plan.retrieval_request().request_hash(),
+        "corpus_generation": plan.corpus_generation,
+        "index_generation": plan.index_generation,
+        "scope": plan.scope,
+        "filesystem_paths": (),
+        "timeout_ms": plan.budget.elapsed_ms,
+        **changes,
+    }
+    decision = ToolPolicy.for_plan(plan).decide(
+        ToolInvocation(**fields), sequence=0, prior_allowed_calls=0
+    )
+
+    assert decision.action is ToolPolicyAction.DENY
+    assert decision.reason is reason
+
+
+def test_tool_policy_resolves_filesystem_scope_before_authorizing(
+    tmp_path,
+) -> None:
+    plan = planning_input()
+    allowed_root = tmp_path / "allowed"
+    allowed_root.mkdir(exist_ok=True)
+    policy = ToolPolicy(
+        plan_sha256=plan_sha256(plan),
+        grants=(
+            ToolGrant(
+                tool=ResearchTool.FILESYSTEM_READ,
+                operation=ResearchToolOperation.READ,
+                corpus_generation=plan.corpus_generation,
+                index_generation=plan.index_generation,
+                scope=plan.scope,
+                filesystem_roots=(str(allowed_root),),
+                max_calls=1,
+                timeout_ms=100,
+            ),
+        ),
+    )
+
+    def invocation(path) -> ToolInvocation:
+        return ToolInvocation(
+            tool=ResearchTool.FILESYSTEM_READ.value,
+            operation=ResearchToolOperation.READ.value,
+            plan_sha256=plan_sha256(plan),
+            request_sha256="a" * 64,
+            corpus_generation=plan.corpus_generation,
+            index_generation=plan.index_generation,
+            scope=plan.scope,
+            filesystem_paths=(str(path),),
+            timeout_ms=100,
+        )
+
+    allowed = policy.decide(
+        invocation(allowed_root / "evidence.json"),
+        sequence=0,
+        prior_allowed_calls=0,
+    )
+    escaped = policy.decide(
+        invocation(allowed_root / ".." / "outside.json"),
+        sequence=1,
+        prior_allowed_calls=0,
+    )
+
+    assert allowed.action is ToolPolicyAction.ALLOW
+    assert escaped.action is ToolPolicyAction.DENY
+    assert escaped.reason is ToolPolicyReason.FILESYSTEM_SCOPE_DENIED
