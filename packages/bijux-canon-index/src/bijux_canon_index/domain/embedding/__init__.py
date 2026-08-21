@@ -5,14 +5,18 @@
 
 from .model_lock import (
     ArtifactDigest,
+    CompatibilityOperation,
     EmbeddingModelLock,
+    EmbeddingModelMismatchError,
     EmbeddingProfile,
     LOCAL_MINILM_PROFILE,
 )
 
 __all__ = [
     "ArtifactDigest",
+    "CompatibilityOperation",
     "EmbeddingModelLock",
+    "EmbeddingModelMismatchError",
     "EmbeddingProfile",
     "LOCAL_MINILM_PROFILE",
 ]

@@ -15,6 +15,7 @@ from typing import Literal
 ProviderKind = Literal["local", "remote", "qualification"]
 OfflinePolicy = Literal["required", "allowed", "forbidden"]
 SupportTier = Literal["production", "optional", "qualification"]
+CompatibilityOperation = Literal["build", "query", "execution"]
 
 
 def _canonical_json(value: object) -> bytes:
@@ -148,6 +149,32 @@ class EmbeddingProfile:
         }
 
 
+class EmbeddingModelMismatchError(ValueError):
+    """Typed model-lock incompatibility with a durable recovery action."""
+
+    def __init__(
+        self,
+        *,
+        expected_lock_id: str,
+        actual_lock_id: str,
+        mismatches: tuple[str, ...],
+        operation: CompatibilityOperation,
+    ) -> None:
+        self.expected_lock_id = expected_lock_id
+        self.actual_lock_id = actual_lock_id
+        self.mismatches = mismatches
+        self.operation = operation
+        self.remediation = (
+            "rebuild the index with the active embedding model lock or load the "
+            "exact lock used to build the existing index"
+        )
+        fields = ", ".join(mismatches)
+        super().__init__(
+            f"embedding model lock mismatch during {operation}: {fields}; "
+            f"{self.remediation}"
+        )
+
+
 @dataclass(frozen=True, slots=True)
 class EmbeddingModelLock:
     """A complete model profile bound to exact artifacts and library versions."""
@@ -183,11 +210,57 @@ class EmbeddingModelLock:
         payload = self.manifest_payload()
         return {"lock_id": _sha256_identity(payload), **payload}
 
-    def require_compatible(self, other: EmbeddingModelLock) -> None:
-        """Fail before index/query execution when any locked identity differs."""
+    def require_compatible(
+        self,
+        other: EmbeddingModelLock,
+        *,
+        operation: CompatibilityOperation = "execution",
+    ) -> None:
+        """Fail before build or query when any locked identity differs."""
 
-        if self.lock_id != other.lock_id:
-            raise ValueError("embedding model lock mismatch")
+        if self.lock_id == other.lock_id:
+            return
+        profile_fields: tuple[tuple[str, object, object], ...] = (
+            ("provider", self.profile.provider, other.profile.provider),
+            ("model", self.profile.model_id, other.profile.model_id),
+            ("revision", self.profile.revision, other.profile.revision),
+            ("dimension", self.profile.dimension, other.profile.dimension),
+            ("dtype", self.profile.dtype, other.profile.dtype),
+            (
+                "normalization",
+                self.profile.normalization,
+                other.profile.normalization,
+            ),
+            ("pooling", self.profile.pooling, other.profile.pooling),
+            (
+                "tokenizer",
+                (self.profile.tokenizer_id, self.profile.tokenizer_revision),
+                (other.profile.tokenizer_id, other.profile.tokenizer_revision),
+            ),
+            (
+                "device_policy",
+                self.profile.device_policy,
+                other.profile.device_policy,
+            ),
+            (
+                "numeric_policy",
+                self.profile.numeric_policy,
+                other.profile.numeric_policy,
+            ),
+        )
+        mismatches = tuple(
+            name for name, expected, actual in profile_fields if expected != actual
+        )
+        if self.artifacts != other.artifacts:
+            mismatches += ("artifacts",)
+        if self.library_versions != other.library_versions:
+            mismatches += ("library_versions",)
+        raise EmbeddingModelMismatchError(
+            expected_lock_id=self.lock_id,
+            actual_lock_id=other.lock_id,
+            mismatches=mismatches or ("profile",),
+            operation=operation,
+        )
 
     def validate_vector(self, vector: tuple[float, ...]) -> None:
         """Validate vector dimension, finiteness, and declared normalization."""
@@ -236,7 +309,9 @@ LOCAL_MINILM_PROFILE = EmbeddingProfile(
 
 __all__ = [
     "ArtifactDigest",
+    "CompatibilityOperation",
     "EmbeddingModelLock",
+    "EmbeddingModelMismatchError",
     "EmbeddingProfile",
     "LOCAL_MINILM_PROFILE",
     "OfflinePolicy",

@@ -3,13 +3,17 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import replace
 
 import pytest
 
 from bijux_canon_index.domain.embedding import (
     ArtifactDigest,
+    CompatibilityOperation,
     EmbeddingModelLock,
+    EmbeddingModelMismatchError,
+    EmbeddingProfile,
     LOCAL_MINILM_PROFILE,
 )
 
@@ -24,6 +28,26 @@ def _lock() -> EmbeddingModelLock:
         artifacts,
         (("sentence-transformers", "5.1.0"), ("torch", "2.8.0")),
     )
+
+
+def _revision_drift(profile: EmbeddingProfile) -> EmbeddingProfile:
+    return replace(profile, revision="2" * 40)
+
+
+def _dimension_drift(profile: EmbeddingProfile) -> EmbeddingProfile:
+    return replace(profile, dimension=768)
+
+
+def _normalization_drift(profile: EmbeddingProfile) -> EmbeddingProfile:
+    return replace(profile, normalization="none")
+
+
+def _tokenizer_drift(profile: EmbeddingProfile) -> EmbeddingProfile:
+    return replace(profile, tokenizer_id="incompatible/tokenizer")
+
+
+def _dtype_drift(profile: EmbeddingProfile) -> EmbeddingProfile:
+    return replace(profile, dtype="float64")
 
 
 def test_default_profile_binds_production_model_identity() -> None:
@@ -47,8 +71,42 @@ def test_lock_identity_binds_artifacts_and_libraries() -> None:
 
     assert lock.lock_id == _lock().lock_id
     assert lock.lock_id != changed.lock_id
-    with pytest.raises(ValueError, match="lock mismatch"):
+    with pytest.raises(EmbeddingModelMismatchError) as raised:
         lock.require_compatible(changed)
+    assert raised.value.mismatches == ("library_versions",)
+
+
+@pytest.mark.parametrize("operation", ["build", "query"])
+@pytest.mark.parametrize(
+    ("field", "mutate"),
+    [
+        ("revision", _revision_drift),
+        ("dimension", _dimension_drift),
+        ("normalization", _normalization_drift),
+        ("tokenizer", _tokenizer_drift),
+        ("dtype", _dtype_drift),
+    ],
+)
+def test_lock_rejects_semantic_drift_with_typed_remediation(
+    operation: CompatibilityOperation,
+    field: str,
+    mutate: Callable[[EmbeddingProfile], EmbeddingProfile],
+) -> None:
+    expected = _lock()
+    actual = replace(expected, profile=mutate(expected.profile))
+
+    with pytest.raises(EmbeddingModelMismatchError) as raised:
+        expected.require_compatible(actual, operation=operation)
+
+    error = raised.value
+    assert error.mismatches == (field,)
+    assert error.operation == operation
+    assert error.expected_lock_id == expected.lock_id
+    assert error.actual_lock_id == actual.lock_id
+    assert error.remediation == (
+        "rebuild the index with the active embedding model lock or load the "
+        "exact lock used to build the existing index"
+    )
 
 
 def test_lock_rejects_missing_artifact_and_invalid_vectors() -> None:
