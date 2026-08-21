@@ -163,6 +163,7 @@ class BudgetDecision:
 
     artifact_id: str
     sequence: int
+    policy_artifact_id: str
     role: str
     label: str
     action: BudgetAction
@@ -176,6 +177,7 @@ class BudgetDecision:
         cls,
         *,
         sequence: int,
+        policy_artifact_id: str,
         role: str,
         label: str,
         action: BudgetAction,
@@ -186,6 +188,7 @@ class BudgetDecision:
     ) -> BudgetDecision:
         payload = {
             "sequence": sequence,
+            "policy_artifact_id": policy_artifact_id,
             "role": role,
             "label": label,
             "action": action.value,
@@ -197,6 +200,7 @@ class BudgetDecision:
         return cls(
             artifact_id=_artifact_id(payload),
             sequence=sequence,
+            policy_artifact_id=policy_artifact_id,
             role=role,
             label=label,
             action=action,
@@ -246,6 +250,7 @@ class ResearchBudgetLedger:
         if self._exhausted:
             decision = BudgetDecision.create(
                 sequence=len(self._decisions),
+                policy_artifact_id=self._policy.artifact_id,
                 role=role,
                 label=label,
                 action=BudgetAction.TERMINATE,
@@ -270,6 +275,7 @@ class ResearchBudgetLedger:
         self._exhausted = exhausted
         decision = BudgetDecision.create(
             sequence=len(self._decisions),
+            policy_artifact_id=self._policy.artifact_id,
             role=role,
             label=label,
             action=action,

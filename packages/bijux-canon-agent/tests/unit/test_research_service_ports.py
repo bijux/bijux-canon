@@ -435,6 +435,7 @@ def test_budget_ledger_enforces_every_global_dimension(dimension: str) -> None:
     decision = ledger.charge(role="plan", label="boundary", usage=charge)
 
     assert decision.action is BudgetAction.TERMINATE
+    assert decision.policy_artifact_id == ledger.policy.artifact_id
     assert decision.exhausted_dimensions == (dimension,)
     assert ledger.global_usage == charge
 
