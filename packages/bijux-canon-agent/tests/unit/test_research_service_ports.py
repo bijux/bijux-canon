@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import inspect
+import json
 
 from pydantic import ValidationError
 import pytest
@@ -16,6 +17,7 @@ from bijux_canon_agent.application import (
     ResearchRoleMachine,
     ResearchBudgetPolicy,
     ResearchBudgetLedger,
+    ResearchCheckpoint,
     ToolPolicyDenied,
 )
 from bijux_canon_agent.contracts import (
@@ -139,6 +141,19 @@ class InvalidOutputReasoner(RecordingReasoner):
         return {"outcome": "answered"}
 
 
+class RecordingCheckpointPort:
+    def __init__(self) -> None:
+        self.checkpoints: dict[str, ResearchCheckpoint] = {}
+        self.persisted: list[ResearchCheckpoint] = []
+
+    def persist(self, checkpoint: ResearchCheckpoint) -> None:
+        self.checkpoints[checkpoint.artifact_id] = checkpoint
+        self.persisted.append(checkpoint)
+
+    def load(self, artifact_id: str) -> ResearchCheckpoint:
+        return self.checkpoints[artifact_id]
+
+
 def test_injected_services_carry_exact_requests() -> None:
     retriever = RecordingRetriever()
     reasoner = RecordingReasoner()
@@ -228,12 +243,14 @@ def test_research_role_machine_executes_one_operation_per_legal_edge() -> None:
     retriever = RecordingRetriever()
     reasoner = RecordingReasoner()
     services = InjectedResearchServices(retriever=retriever, reasoner=reasoner)
+    checkpoints = RecordingCheckpointPort()
 
     result = ResearchRoleMachine(
         planning_input=planning_input(),
         services=services,
         tool_policy=tool_policy(),
         budget_policy=budget_policy(),
+        checkpoint_port=checkpoints,
     ).run()
 
     assert [record.operation for record in result.operations] == [
@@ -282,6 +299,8 @@ def test_research_role_machine_executes_one_operation_per_legal_edge() -> None:
         result.tool_decisions[1].artifact_id
     )
     assert result.terminal_outcome == "answered"
+    assert len(checkpoints.persisted) == 8
+    assert result.checkpoint_artifact_id == checkpoints.persisted[-1].artifact_id
 
 
 def test_research_role_machine_is_deterministic_and_terminal() -> None:
@@ -293,6 +312,7 @@ def test_research_role_machine_is_deterministic_and_terminal() -> None:
             ),
             tool_policy=tool_policy(),
             budget_policy=budget_policy(),
+            checkpoint_port=RecordingCheckpointPort(),
         ).run()
 
     first = execute()
@@ -306,11 +326,125 @@ def test_research_role_machine_is_deterministic_and_terminal() -> None:
         ),
         tool_policy=tool_policy(),
         budget_policy=budget_policy(),
+        checkpoint_port=RecordingCheckpointPort(),
     )
     machine.run()
     assert machine.role is ResearchRole.TERMINAL
     with pytest.raises(RuntimeError, match="cannot advance"):
         machine.advance()
+
+
+def test_research_role_machine_resumes_without_duplicate_tool_calls() -> None:
+    plan = planning_input()
+    policy = ToolPolicy.for_plan(plan)
+    budget = ResearchBudgetPolicy.for_plan(plan)
+    checkpoints = RecordingCheckpointPort()
+    retriever = RecordingRetriever()
+    machine = ResearchRoleMachine(
+        planning_input=plan,
+        services=InjectedResearchServices(
+            retriever=retriever, reasoner=RecordingReasoner()
+        ),
+        tool_policy=policy,
+        budget_policy=budget,
+        checkpoint_port=checkpoints,
+        cancellation_lineage=("sha256:" + "c" * 64,),
+        failure_lineage=("sha256:" + "f" * 64,),
+    )
+    machine.advance()
+    machine.advance()
+    checkpoint = machine.checkpoint
+    assert checkpoint is not None
+    assert len(retriever.requests) == 1
+
+    resumed_retriever = RecordingRetriever()
+    resumed_reasoner = RecordingReasoner()
+    resumed = ResearchRoleMachine.resume(
+        checkpoint_artifact_id=checkpoint.artifact_id,
+        planning_input=plan,
+        services=InjectedResearchServices(
+            retriever=resumed_retriever, reasoner=resumed_reasoner
+        ),
+        tool_policy=policy,
+        budget_policy=budget,
+        checkpoint_port=checkpoints,
+    ).run()
+
+    assert resumed.terminal_outcome == "answered"
+    assert resumed_retriever.requests == []
+    assert len(resumed_reasoner.requests) == 1
+    assert len(checkpoints.persisted) == 8
+    assert checkpoints.persisted[-1].cancellation_lineage == (
+        "sha256:" + "c" * 64,
+    )
+    assert checkpoints.persisted[-1].failure_lineage == (
+        "sha256:" + "f" * 64,
+    )
+
+
+def test_research_role_machine_rejects_checkpoint_dependency_drift() -> None:
+    plan = planning_input()
+    policy = ToolPolicy.for_plan(plan)
+    budget = ResearchBudgetPolicy.for_plan(plan)
+    checkpoints = RecordingCheckpointPort()
+    machine = ResearchRoleMachine(
+        planning_input=plan,
+        services=InjectedResearchServices(
+            retriever=RecordingRetriever(), reasoner=RecordingReasoner()
+        ),
+        tool_policy=policy,
+        budget_policy=budget,
+        checkpoint_port=checkpoints,
+    )
+    machine.advance()
+    checkpoint = machine.checkpoint
+    assert checkpoint is not None
+
+    class DriftedRetriever(RecordingRetriever):
+        descriptor = ServicePortDescriptor(
+            port_kind="retriever",
+            owner_distribution="bijux-canon-index",
+            distribution_version="different",
+            implementation_module="bijux_canon_index.application.index_service",
+            implementation_name="IndexService",
+        )
+
+    with pytest.raises(ValueError, match="retriever_descriptor_sha256"):
+        ResearchRoleMachine.resume(
+            checkpoint_artifact_id=checkpoint.artifact_id,
+            planning_input=plan,
+            services=InjectedResearchServices(
+                retriever=DriftedRetriever(), reasoner=RecordingReasoner()
+            ),
+            tool_policy=policy,
+            budget_policy=budget,
+            checkpoint_port=checkpoints,
+        )
+
+
+def test_research_checkpoint_round_trips_canonical_json() -> None:
+    plan = planning_input()
+    checkpoints = RecordingCheckpointPort()
+    machine = ResearchRoleMachine(
+        planning_input=plan,
+        services=InjectedResearchServices(
+            retriever=RecordingRetriever(), reasoner=RecordingReasoner()
+        ),
+        tool_policy=ToolPolicy.for_plan(plan),
+        budget_policy=ResearchBudgetPolicy.for_plan(plan),
+        checkpoint_port=checkpoints,
+    )
+    machine.advance()
+    checkpoint = machine.checkpoint
+    assert checkpoint is not None
+
+    payload = checkpoint.to_payload()
+    encoded = json.dumps(payload, sort_keys=True, allow_nan=False)
+    restored = ResearchCheckpoint.from_payload(json.loads(encoded))
+
+    assert restored == checkpoint
+    with pytest.raises(ValueError, match="exact canonical"):
+        ResearchCheckpoint.from_payload({**payload, "undeclared": True})
 
 
 def test_research_role_machine_rejects_skips_and_wrong_operations() -> None:
@@ -340,6 +474,7 @@ def test_role_machine_requires_a_plan_bound_policy() -> None:
             ),
             tool_policy=ToolPolicy.for_plan(other),
             budget_policy=ResearchBudgetPolicy.for_plan(other),
+            checkpoint_port=RecordingCheckpointPort(),
         )
 
 
@@ -365,6 +500,7 @@ def test_role_machine_terminates_deterministically_on_global_budget() -> None:
             ),
             tool_policy=ToolPolicy.for_plan(plan),
             budget_policy=constrained,
+            checkpoint_port=RecordingCheckpointPort(),
         ).run()
 
     first = execute()
@@ -399,6 +535,7 @@ def test_role_machine_terminates_on_per_role_budget() -> None:
         ),
         tool_policy=ToolPolicy.for_plan(plan),
         budget_policy=constrained,
+        checkpoint_port=RecordingCheckpointPort(),
     ).run()
 
     assert result.terminal_outcome == "budget_exhausted:synthesize.provider_calls"

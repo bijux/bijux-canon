@@ -10,6 +10,7 @@ from bijux_canon_agent.contracts.research_ports import (
     ReasoningPortRequest,
     ReasoningPortResult,
     RetrievalPortResult,
+    ServicePortDescriptor,
 )
 from bijux_canon_agent.contracts.tool_policy import (
     ResearchTool,
@@ -66,6 +67,14 @@ class PolicyEnforcedResearchServices:
         """Return every allow or deny decision in evaluation order."""
         return tuple(self._decisions)
 
+    @property
+    def retriever_descriptor(self) -> ServicePortDescriptor:
+        return self._services.retriever_descriptor
+
+    @property
+    def reasoner_descriptor(self) -> ServicePortDescriptor:
+        return self._services.reasoner_descriptor
+
     def retrieve(self) -> RetrievalPortResult:
         """Authorize one exact retrieval request, then validate its output."""
         request = self._planning_input.retrieval_request()
@@ -121,6 +130,28 @@ class PolicyEnforcedResearchServices:
         if not isinstance(invocation, ToolInvocation):
             raise TypeError("invocation must be ToolInvocation")
         return self._authorize(invocation)
+
+    def restore(self, decisions: tuple[ToolPolicyDecision, ...]) -> None:
+        """Restore validated decisions without invoking any service port."""
+        if self._decisions:
+            raise RuntimeError("tool-policy gateway has already been used")
+        for expected_sequence, decision in enumerate(decisions):
+            if not isinstance(decision, ToolPolicyDecision):
+                raise TypeError("restored tool decisions must be ToolPolicyDecision")
+            if decision.sequence != expected_sequence:
+                raise ValueError("restored tool decisions are not contiguous")
+            if decision.policy_sha256 != self._policy.policy_sha256:
+                raise ValueError("restored tool decision has a different policy")
+            expected = self._policy.decide(
+                decision.invocation,
+                sequence=expected_sequence,
+                prior_allowed_calls=self._allowed_calls[decision.invocation.tool],
+            )
+            if decision != expected:
+                raise ValueError("restored tool decision failed exact validation")
+            self._decisions.append(decision)
+            if decision.action is ToolPolicyAction.ALLOW:
+                self._allowed_calls[decision.invocation.tool] += 1
 
     def _authorize(self, invocation: ToolInvocation) -> ToolPolicyDecision:
         decision = self._policy.decide(

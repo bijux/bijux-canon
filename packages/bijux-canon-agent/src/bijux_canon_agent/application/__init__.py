@@ -7,6 +7,8 @@ from bijux_canon_agent.application.research_tool_gateway import (
 )
 from bijux_canon_agent.application.research_workflow import (
     ResearchExecutionResult,
+    ResearchCheckpoint,
+    ResearchCheckpointPort,
     ResearchOperation,
     ResearchOperationRecord,
     ResearchRole,
@@ -28,6 +30,8 @@ __all__ = [
     "InjectedResearchServices",
     "PolicyEnforcedResearchServices",
     "ResearchExecutionResult",
+    "ResearchCheckpoint",
+    "ResearchCheckpointPort",
     "ResearchBudgetLedger",
     "ResearchBudgetPolicy",
     "ResearchOperation",

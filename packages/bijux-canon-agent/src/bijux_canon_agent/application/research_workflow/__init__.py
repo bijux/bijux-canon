@@ -2,6 +2,8 @@
 
 from bijux_canon_agent.application.research_workflow.state_machine import (
     ResearchExecutionResult,
+    ResearchCheckpoint,
+    ResearchCheckpointPort,
     ResearchOperation,
     ResearchOperationRecord,
     ResearchRole,
@@ -11,6 +13,8 @@ from bijux_canon_agent.application.research_workflow.state_machine import (
 
 __all__ = [
     "ResearchExecutionResult",
+    "ResearchCheckpoint",
+    "ResearchCheckpointPort",
     "ResearchOperation",
     "ResearchOperationRecord",
     "ResearchRole",

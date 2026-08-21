@@ -7,7 +7,9 @@ from dataclasses import dataclass
 from enum import StrEnum
 import hashlib
 import json
-from typing import Any, ClassVar
+from typing import Any, ClassVar, Protocol, cast, runtime_checkable
+
+from pydantic import TypeAdapter  # type: ignore[attr-defined]
 
 from bijux_canon_agent.application.research_services import InjectedResearchServices
 from bijux_canon_agent.application.research_tool_gateway import (
@@ -142,6 +144,56 @@ class ResearchTransition:
 
 
 @dataclass(frozen=True, slots=True)
+class ResearchCheckpoint:
+    """Complete durable machine state after one committed transition."""
+
+    artifact_id: str
+    sequence: int
+    previous_checkpoint_artifact_id: str | None
+    planning_input_sha256: str
+    tool_policy_artifact_id: str
+    budget_policy_artifact_id: str
+    retriever_descriptor_sha256: str
+    reasoner_descriptor_sha256: str
+    role: ResearchRole
+    retrieval: RetrievalPortResult | None
+    reasoning: ReasoningPortResult | None
+    operations: tuple[ResearchOperationRecord, ...]
+    transitions: tuple[ResearchTransition, ...]
+    tool_decisions: tuple[ToolPolicyDecision, ...]
+    budget_decisions: tuple[BudgetDecision, ...]
+    cancellation_lineage: tuple[str, ...]
+    failure_lineage: tuple[str, ...]
+
+    def to_payload(self) -> dict[str, Any]:
+        """Serialize the complete typed checkpoint as canonical JSON values."""
+        return cast(
+            dict[str, Any],
+            TypeAdapter(ResearchCheckpoint).dump_python(self, mode="json"),
+        )
+
+    @classmethod
+    def from_payload(cls, payload: Mapping[str, Any]) -> ResearchCheckpoint:
+        """Restore a typed checkpoint and reject ignored or transformed fields."""
+        restored = cast(
+            ResearchCheckpoint,
+            TypeAdapter(cls).validate_python(dict(payload)),
+        )
+        if restored.to_payload() != dict(payload):
+            raise ValueError("checkpoint payload is not exact canonical state")
+        return restored
+
+
+@runtime_checkable
+class ResearchCheckpointPort(Protocol):
+    """Runtime-owned durable storage used by the Agent state machine."""
+
+    def persist(self, checkpoint: ResearchCheckpoint) -> None: ...
+
+    def load(self, artifact_id: str) -> ResearchCheckpoint: ...
+
+
+@dataclass(frozen=True, slots=True)
 class ResearchExecutionResult:
     """Terminal immutable state produced by the research role machine."""
 
@@ -157,6 +209,7 @@ class ResearchExecutionResult:
     budget_decisions: tuple[BudgetDecision, ...]
     budget_usage: BudgetDimensions
     exhausted_budget_dimensions: tuple[str, ...]
+    checkpoint_artifact_id: str
     terminal_outcome: str
 
 
@@ -192,6 +245,9 @@ class ResearchRoleMachine:
         services: InjectedResearchServices,
         tool_policy: ToolPolicy,
         budget_policy: ResearchBudgetPolicy,
+        checkpoint_port: ResearchCheckpointPort,
+        cancellation_lineage: tuple[str, ...] = (),
+        failure_lineage: tuple[str, ...] = (),
     ) -> None:
         self._planning_input = planning_input
         self._services = PolicyEnforcedResearchServices(
@@ -202,6 +258,12 @@ class ResearchRoleMachine:
         if budget_policy.plan_sha256 != tool_policy.plan_sha256:
             raise ValueError("budget policy is not bound to the research plan")
         self._budget = ResearchBudgetLedger(budget_policy)
+        if not isinstance(checkpoint_port, ResearchCheckpointPort):
+            raise TypeError("checkpoint_port must implement ResearchCheckpointPort")
+        self._checkpoint_port = checkpoint_port
+        self._cancellation_lineage = cancellation_lineage
+        self._failure_lineage = failure_lineage
+        self._checkpoint: ResearchCheckpoint | None = None
         self._role = ResearchRole.PLAN
         self._retrieval: RetrievalPortResult | None = None
         self._reasoning: ReasoningPortResult | None = None
@@ -230,6 +292,44 @@ class ResearchRoleMachine:
     def budget_decisions(self) -> tuple[BudgetDecision, ...]:
         """Return every global and per-role accounting decision."""
         return self._budget.decisions
+
+    @property
+    def checkpoint(self) -> ResearchCheckpoint | None:
+        """Return the last state known to have been persisted."""
+        return self._checkpoint
+
+    @classmethod
+    def resume(
+        cls,
+        *,
+        checkpoint_artifact_id: str,
+        planning_input: ResearchPlanningInput,
+        services: InjectedResearchServices,
+        tool_policy: ToolPolicy,
+        budget_policy: ResearchBudgetPolicy,
+        checkpoint_port: ResearchCheckpointPort,
+    ) -> ResearchRoleMachine:
+        """Restore a validated checkpoint without repeating completed tools."""
+        checkpoint = checkpoint_port.load(checkpoint_artifact_id)
+        machine = cls(
+            planning_input=planning_input,
+            services=services,
+            tool_policy=tool_policy,
+            budget_policy=budget_policy,
+            checkpoint_port=checkpoint_port,
+            cancellation_lineage=checkpoint.cancellation_lineage,
+            failure_lineage=checkpoint.failure_lineage,
+        )
+        machine._validate_checkpoint(checkpoint)
+        machine._role = checkpoint.role
+        machine._retrieval = checkpoint.retrieval
+        machine._reasoning = checkpoint.reasoning
+        machine._operations = list(checkpoint.operations)
+        machine._transitions = list(checkpoint.transitions)
+        machine._services.restore(checkpoint.tool_decisions)
+        machine._budget.restore(checkpoint.budget_decisions)
+        machine._checkpoint = checkpoint
+        return machine
 
     @classmethod
     def validate_transition(
@@ -273,6 +373,9 @@ class ResearchRoleMachine:
         self._operations.append(record)
         self._transitions.append(transition)
         self._role = to_role
+        checkpoint = self._create_checkpoint()
+        self._checkpoint_port.persist(checkpoint)
+        self._checkpoint = checkpoint
         return transition
 
     def run(self) -> ResearchExecutionResult:
@@ -311,8 +414,13 @@ class ResearchRoleMachine:
             "exhausted_budget_dimensions": list(
                 self._budget.exhausted_dimensions
             ),
+            "checkpoint_artifact_id": (
+                None if self._checkpoint is None else self._checkpoint.artifact_id
+            ),
             "terminal_outcome": terminal_outcome,
         }
+        if self._checkpoint is None:
+            raise RuntimeError("terminal research execution was not checkpointed")
         return ResearchExecutionResult(
             artifact_id=_artifact_id(payload),
             planning_input=self._planning_input,
@@ -326,6 +434,7 @@ class ResearchRoleMachine:
             budget_decisions=self._budget.decisions,
             budget_usage=self._budget.global_usage,
             exhausted_budget_dimensions=self._budget.exhausted_dimensions,
+            checkpoint_artifact_id=self._checkpoint.artifact_id,
             terminal_outcome=terminal_outcome,
         )
 
@@ -496,9 +605,185 @@ class ResearchRoleMachine:
             raise RuntimeError("research operation requires reasoning output")
         return self._reasoning
 
+    def _create_checkpoint(self) -> ResearchCheckpoint:
+        payload = self._checkpoint_payload(
+            previous_checkpoint_artifact_id=(
+                None if self._checkpoint is None else self._checkpoint.artifact_id
+            )
+        )
+        return ResearchCheckpoint(
+            artifact_id=_artifact_id(payload),
+            sequence=len(self._transitions) - 1,
+            previous_checkpoint_artifact_id=payload[
+                "previous_checkpoint_artifact_id"
+            ],
+            planning_input_sha256=payload["planning_input_sha256"],
+            tool_policy_artifact_id=self._services.policy.artifact_id,
+            budget_policy_artifact_id=self._budget.policy.artifact_id,
+            retriever_descriptor_sha256=payload["retriever_descriptor_sha256"],
+            reasoner_descriptor_sha256=payload["reasoner_descriptor_sha256"],
+            role=self._role,
+            retrieval=self._retrieval,
+            reasoning=self._reasoning,
+            operations=tuple(self._operations),
+            transitions=tuple(self._transitions),
+            tool_decisions=self._services.decisions,
+            budget_decisions=self._budget.decisions,
+            cancellation_lineage=self._cancellation_lineage,
+            failure_lineage=self._failure_lineage,
+        )
+
+    def _checkpoint_payload(
+        self, *, previous_checkpoint_artifact_id: str | None
+    ) -> dict[str, Any]:
+        return {
+            "sequence": len(self._transitions) - 1,
+            "previous_checkpoint_artifact_id": previous_checkpoint_artifact_id,
+            "planning_input_sha256": hashlib.sha256(
+                _canonical(self._planning_input.model_dump(mode="json"))
+            ).hexdigest(),
+            "tool_policy_artifact_id": self._services.policy.artifact_id,
+            "budget_policy_artifact_id": self._budget.policy.artifact_id,
+            "retriever_descriptor_sha256": hashlib.sha256(
+                _canonical(
+                    self._services.retriever_descriptor.model_dump(mode="json")
+                )
+            ).hexdigest(),
+            "reasoner_descriptor_sha256": hashlib.sha256(
+                _canonical(
+                    self._services.reasoner_descriptor.model_dump(mode="json")
+                )
+            ).hexdigest(),
+            "role": self._role.value,
+            "retrieval": (
+                None
+                if self._retrieval is None
+                else self._retrieval.model_dump(mode="json")
+            ),
+            "reasoning": (
+                None
+                if self._reasoning is None
+                else self._reasoning.model_dump(mode="json")
+            ),
+            "operation_artifact_ids": [item.artifact_id for item in self._operations],
+            "transition_artifact_ids": [
+                item.artifact_id for item in self._transitions
+            ],
+            "tool_decision_artifact_ids": [
+                item.artifact_id for item in self._services.decisions
+            ],
+            "budget_decision_artifact_ids": [
+                item.artifact_id for item in self._budget.decisions
+            ],
+            "cancellation_lineage": list(self._cancellation_lineage),
+            "failure_lineage": list(self._failure_lineage),
+        }
+
+    def _validate_checkpoint(self, checkpoint: ResearchCheckpoint) -> None:
+        if not isinstance(checkpoint, ResearchCheckpoint):
+            raise TypeError("checkpoint port returned an invalid checkpoint")
+        if checkpoint.sequence != len(checkpoint.transitions) - 1:
+            raise ValueError("checkpoint sequence does not match transitions")
+        if len(checkpoint.operations) != len(checkpoint.transitions):
+            raise ValueError("checkpoint operation and transition counts differ")
+        if checkpoint.transitions and checkpoint.transitions[-1].to_role is not checkpoint.role:
+            raise ValueError("checkpoint role does not match the transition head")
+        for sequence, (operation, transition) in enumerate(
+            zip(checkpoint.operations, checkpoint.transitions, strict=True)
+        ):
+            if operation.sequence != sequence or transition.sequence != sequence:
+                raise ValueError("checkpoint execution sequence is not contiguous")
+            if operation != ResearchOperationRecord.create(
+                sequence=operation.sequence,
+                role=operation.role,
+                operation=operation.operation,
+                input_artifact_ids=operation.input_artifact_ids,
+                payload=operation.payload,
+            ):
+                raise ValueError("checkpoint operation identity is invalid")
+            if transition != ResearchTransition.create(
+                sequence=transition.sequence,
+                from_role=transition.from_role,
+                to_role=transition.to_role,
+                operation_artifact_id=transition.operation_artifact_id,
+            ):
+                raise ValueError("checkpoint transition identity is invalid")
+            self.validate_transition(
+                from_role=transition.from_role,
+                to_role=transition.to_role,
+                operation=operation.operation,
+            )
+            if transition.operation_artifact_id != operation.artifact_id:
+                raise ValueError("checkpoint transition is not bound to its operation")
+        lineage = checkpoint.cancellation_lineage + checkpoint.failure_lineage
+        if any(
+            len(item) != 71
+            or not item.startswith("sha256:")
+            or any(char not in "0123456789abcdef" for char in item[7:])
+            for item in lineage
+        ):
+            raise ValueError("checkpoint lineage contains an invalid artifact ID")
+        if checkpoint.artifact_id != _artifact_id(
+            {
+                "sequence": checkpoint.sequence,
+                "previous_checkpoint_artifact_id": (
+                    checkpoint.previous_checkpoint_artifact_id
+                ),
+                "planning_input_sha256": checkpoint.planning_input_sha256,
+                "tool_policy_artifact_id": checkpoint.tool_policy_artifact_id,
+                "budget_policy_artifact_id": checkpoint.budget_policy_artifact_id,
+                "retriever_descriptor_sha256": (
+                    checkpoint.retriever_descriptor_sha256
+                ),
+                "reasoner_descriptor_sha256": checkpoint.reasoner_descriptor_sha256,
+                "role": checkpoint.role.value,
+                "retrieval": (
+                    None
+                    if checkpoint.retrieval is None
+                    else checkpoint.retrieval.model_dump(mode="json")
+                ),
+                "reasoning": (
+                    None
+                    if checkpoint.reasoning is None
+                    else checkpoint.reasoning.model_dump(mode="json")
+                ),
+                "operation_artifact_ids": [
+                    item.artifact_id for item in checkpoint.operations
+                ],
+                "transition_artifact_ids": [
+                    item.artifact_id for item in checkpoint.transitions
+                ],
+                "tool_decision_artifact_ids": [
+                    item.artifact_id for item in checkpoint.tool_decisions
+                ],
+                "budget_decision_artifact_ids": [
+                    item.artifact_id for item in checkpoint.budget_decisions
+                ],
+                "cancellation_lineage": list(checkpoint.cancellation_lineage),
+                "failure_lineage": list(checkpoint.failure_lineage),
+            }
+        ):
+            raise ValueError("checkpoint content identity is invalid")
+        current = self._checkpoint_payload(
+            previous_checkpoint_artifact_id=(
+                checkpoint.previous_checkpoint_artifact_id
+            )
+        )
+        for field in (
+            "planning_input_sha256",
+            "tool_policy_artifact_id",
+            "budget_policy_artifact_id",
+            "retriever_descriptor_sha256",
+            "reasoner_descriptor_sha256",
+        ):
+            if current[field] != getattr(checkpoint, field):
+                raise ValueError(f"checkpoint dependency mismatch: {field}")
+
 
 __all__ = [
     "ResearchExecutionResult",
+    "ResearchCheckpoint",
+    "ResearchCheckpointPort",
     "ResearchOperation",
     "ResearchOperationRecord",
     "ResearchRole",

@@ -287,6 +287,25 @@ class ResearchBudgetLedger:
         self._decisions.append(decision)
         return decision
 
+    def restore(self, decisions: tuple[BudgetDecision, ...]) -> None:
+        """Reapply and validate checkpointed charges without executing work."""
+        if self._decisions:
+            raise RuntimeError("budget ledger has already been used")
+        for expected_sequence, decision in enumerate(decisions):
+            if not isinstance(decision, BudgetDecision):
+                raise TypeError("restored budget decisions must be BudgetDecision")
+            if decision.sequence != expected_sequence:
+                raise ValueError("restored budget decisions are not contiguous")
+            if decision.policy_artifact_id != self._policy.artifact_id:
+                raise ValueError("restored budget decision has a different policy")
+            restored = self.charge(
+                role=decision.role,
+                label=decision.label,
+                usage=decision.charge,
+            )
+            if restored != decision:
+                raise ValueError("restored budget decision failed exact validation")
+
 
 __all__ = [
     "BudgetAction",
