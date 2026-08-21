@@ -8,7 +8,9 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import shlex
 import shutil
+import sys
 import urllib.parse
 import urllib.request
 import uuid
@@ -27,6 +29,40 @@ ArtifactFetcher = Callable[[str, Path], None]
 
 class ModelMaterializationError(RuntimeError):
     """Pinned model metadata or artifacts failed verification."""
+
+    def __init__(
+        self,
+        message: str,
+        *,
+        remediation_command: tuple[str, ...] | None = None,
+    ) -> None:
+        self.remediation_command = remediation_command
+        if remediation_command is not None:
+            message = f"{message}; materialize with: {shlex.join(remediation_command)}"
+        super().__init__(message)
+
+
+def materialization_command(
+    model_root: str | Path,
+    profile: EmbeddingProfile,
+) -> tuple[str, ...]:
+    """Return the exact installed-module command for a missing model cache."""
+
+    root = Path(model_root)
+    cache_root = (
+        root.parent.parent
+        if root.name == profile.revision and root.parent.name == profile.profile_id
+        else root
+    )
+    return (
+        sys.executable,
+        "-m",
+        "bijux_canon_index.tooling.embedding_models",
+        "--profile",
+        profile.profile_id,
+        "--cache-root",
+        str(cache_root),
+    )
 
 
 def _canonical_json(value: object) -> bytes:
@@ -134,7 +170,8 @@ def verify_materialized_model(
         path = model_root / expected.path
         if not path.is_file() or path.is_symlink():
             raise ModelMaterializationError(
-                f"offline model artifact is missing: {expected.path}"
+                f"offline model artifact is missing: {expected.path}",
+                remediation_command=materialization_command(model_root, lock.profile),
             )
         if _digest(path, expected.path) != expected:
             raise ModelMaterializationError(
@@ -242,6 +279,7 @@ def materialize_model(
 
 __all__ = [
     "load_model_lock",
+    "materialization_command",
     "ModelMaterializationError",
     "materialize_model",
     "verify_materialized_model",
