@@ -174,6 +174,7 @@ exact ownership split.
 | understand root command delegation | [Automation Surfaces](automation-surfaces.md) |
 | govern source, pins, hashes, and live HTTP behavior | [API and Schema Governance](api-and-schema-governance.md) |
 | classify generated, retained, and published artifacts | [Artifact Governance](artifact-governance.md) |
+| assess production threats, controls, and required proof | [Production Threat Model](threat-model.md) |
 | coordinate a cross-surface change | [Change Management](change-management.md) |
 | review ownership, evidence, and compatibility | [Review Expectations](review-expectations.md) |
 | build and publish versioned distributions | [Release and Versioning](release-and-versioning.md) |
