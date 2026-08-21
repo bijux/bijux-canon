@@ -18,3 +18,4 @@ def test_root_package_declares_lazy_exports_in_dir() -> None:
     assert "IngestConfig" in exported_names
     assert "build_ingest_deps" in exported_names
     assert "discover_sources" in exported_names
+    assert "parse_jats" in exported_names

@@ -260,6 +260,34 @@ def test_admission_rejects_malformed_and_entity_bearing_xml(tmp_path: Path) -> N
     assert entity.issues[0].code == "unsafe_markup"
 
 
+def test_admission_allows_only_external_standard_jats_document_types(
+    tmp_path: Path,
+) -> None:
+    approved = admit_source(
+        _source(
+            tmp_path,
+            "approved.xml",
+            b'<!DOCTYPE article PUBLIC "-//NLM//DTD JATS Journal Publishing DTD v1.3 20210610//EN" '
+            b'"https://jats.nlm.nih.gov/publishing/1.3/JATS-journalpublishing1-3.dtd">'
+            b"<article><body><p>Evidence</p></body></article>",
+            "application/xml",
+        )
+    )
+    unapproved = admit_source(
+        _source(
+            tmp_path,
+            "unapproved.xml",
+            b'<!DOCTYPE article SYSTEM "https://example.com/article.dtd">'
+            b"<article><body><p>Evidence</p></body></article>",
+            "application/xml",
+        )
+    )
+
+    assert approved.admitted is True
+    assert approved.format_id == "jats"
+    assert unapproved.issues[0].code == "unsafe_markup"
+
+
 def test_admission_rejects_unsafe_and_oversized_docx_archives(
     tmp_path: Path,
 ) -> None:

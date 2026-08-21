@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import re
 from html.parser import HTMLParser
+from urllib.parse import urlsplit
 from xml.parsers import expat
 
 from bijux_canon_ingest.domain.source_admission import AdmissionBudgets
@@ -90,7 +91,7 @@ def inspect_xml(
     content: bytes,
     budgets: AdmissionBudgets,
 ) -> tuple[str, int, int]:
-    """Count bounded XML nodes and text while forbidding document types."""
+    """Count bounded XML nodes and text without resolving external resources."""
 
     node_count = 0
     text_bytes = 0
@@ -120,21 +121,52 @@ def inspect_xml(
             "max_text_bytes",
         )
 
-    def reject_doctype(
+    def inspect_doctype(
         name: str,
         system_id: str | None,
         public_id: str | None,
         has_internal_subset: int,
     ) -> None:
-        del name, system_id, public_id, has_internal_subset
-        raise AdmissionFailure(
-            "unsafe_markup", "XML document type declarations are forbidden"
-        )
+        if has_internal_subset:
+            raise AdmissionFailure(
+                "unsafe_markup", "XML internal document type subsets are forbidden"
+            )
+        if name != "article" or system_id is None:
+            raise AdmissionFailure(
+                "unsafe_markup", "XML document type is not an approved JATS declaration"
+            )
+        parsed = urlsplit(system_id)
+        if (
+            parsed.scheme not in {"http", "https"}
+            or parsed.hostname not in {"dtd.nlm.nih.gov", "jats.nlm.nih.gov"}
+            or parsed.username is not None
+            or parsed.password is not None
+            or parsed.query
+            or parsed.fragment
+            or not parsed.path.casefold().endswith(".dtd")
+        ):
+            raise AdmissionFailure(
+                "unsafe_markup", "XML document type does not reference an approved JATS DTD"
+            )
+        if public_id is not None and not public_id.startswith("-//NLM//DTD "):
+            raise AdmissionFailure(
+                "unsafe_markup", "XML document type has an unapproved public identifier"
+            )
+
+    def reject_entity(*arguments: object) -> None:
+        del arguments
+        raise AdmissionFailure("unsafe_markup", "XML entity declarations are forbidden")
+
+    def reject_external_entity(*arguments: object) -> int:
+        del arguments
+        raise AdmissionFailure("unsafe_markup", "XML external entities are forbidden")
 
     parser.StartElementHandler = start_element
     parser.CharacterDataHandler = character_data
-    parser.StartDoctypeDeclHandler = reject_doctype
-    parser.ExternalEntityRefHandler = lambda *arguments: 0
+    parser.StartDoctypeDeclHandler = inspect_doctype
+    parser.EntityDeclHandler = reject_entity
+    parser.ExternalEntityRefHandler = reject_external_entity
+    parser.SetParamEntityParsing(expat.XML_PARAM_ENTITY_PARSING_NEVER)
     try:
         parser.Parse(content, True)
     except AdmissionFailure:

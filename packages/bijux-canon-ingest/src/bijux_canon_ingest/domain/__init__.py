@@ -15,6 +15,15 @@ from __future__ import annotations
 
 from .capabilities import Cache, Clock, Logger, Storage, StorageRead, StorageWrite
 from .composition import chain_io, logged_read
+from .document_extraction import (
+    BlockRole,
+    DocumentMetadata,
+    DocumentParseError,
+    DocumentParseIssueCode,
+    ParsedBlock,
+    ParsedDocument,
+    SourceLocator,
+)
 from .idempotent import AtomicWriteCap, content_key, idempotent_write
 from .logging import LogEntry, LogMonoid, Logs, log_tell, trace_stage, trace_value
 from .source_discovery import (
@@ -57,4 +66,12 @@ __all__ = [
     "DiscoveryResult",
     "DiscoveryRoot",
     "SymlinkPolicy",
+    # Document extraction
+    "BlockRole",
+    "DocumentMetadata",
+    "DocumentParseError",
+    "DocumentParseIssueCode",
+    "ParsedBlock",
+    "ParsedDocument",
+    "SourceLocator",
 ]

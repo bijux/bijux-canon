@@ -83,7 +83,7 @@ def _reject(
     )
 
 
-def _read_current_source(
+def read_current_source(
     source: DiscoveredSource,
     budgets: AdmissionBudgets,
 ) -> bytes:
@@ -261,7 +261,7 @@ def admit_filesystem_source(
     )
     observations = _Observations()
     try:
-        content = _read_current_source(source, policy)
+        content = read_current_source(source, policy)
         format_id = _inspect_supported_format(content, declared, policy, observations)
     except AdmissionFailure as failure:
         return _reject(
@@ -281,4 +281,4 @@ def admit_filesystem_source(
     )
 
 
-__all__ = ["admit_filesystem_source"]
+__all__ = ["admit_filesystem_source", "read_current_source"]
