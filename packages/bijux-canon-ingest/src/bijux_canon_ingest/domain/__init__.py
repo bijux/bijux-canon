@@ -17,6 +17,15 @@ from .capabilities import Cache, Clock, Logger, Storage, StorageRead, StorageWri
 from .composition import chain_io, logged_read
 from .idempotent import AtomicWriteCap, content_key, idempotent_write
 from .logging import LogEntry, LogMonoid, Logs, log_tell, trace_stage, trace_value
+from .source_discovery import (
+    DiscoveredSource,
+    DiscoveryIssue,
+    DiscoveryIssueCode,
+    DiscoveryPolicy,
+    DiscoveryResult,
+    DiscoveryRoot,
+    SymlinkPolicy,
+)
 
 __all__ = [
     # Logging (pure data)
@@ -40,4 +49,12 @@ __all__ = [
     "AtomicWriteCap",
     "content_key",
     "idempotent_write",
+    # Source discovery
+    "DiscoveredSource",
+    "DiscoveryIssue",
+    "DiscoveryIssueCode",
+    "DiscoveryPolicy",
+    "DiscoveryResult",
+    "DiscoveryRoot",
+    "SymlinkPolicy",
 ]

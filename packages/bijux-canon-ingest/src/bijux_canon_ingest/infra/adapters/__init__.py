@@ -14,6 +14,7 @@ _LAZY_EXPORTS: dict[str, LazyExport] = {
     "CollectingLogger": (".logger", "CollectingLogger"),
     "ConsoleLogger": (".logger", "ConsoleLogger"),
     "deterministic_embedder_port": (".embedder_port", "deterministic_embedder_port"),
+    "discover_directory_sources": (".directory_source", "discover_directory_sources"),
     "FileStorage": (".file_storage", "FileStorage"),
     "InMemoryStorage": (".memory_storage", "InMemoryStorage"),
     "MonotonicTestClock": (".clock", "MonotonicTestClock"),
@@ -29,6 +30,7 @@ __all__ = [
     "ConsoleLogger",
     "CollectingLogger",
     "deterministic_embedder_port",
+    "discover_directory_sources",
 ]
 
 
