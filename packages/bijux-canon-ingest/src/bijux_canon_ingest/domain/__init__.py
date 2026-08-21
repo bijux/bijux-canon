@@ -22,6 +22,11 @@ from .corpus_delta import (
     SourceTombstone,
     TombstoneReason,
 )
+from .corpus_publication import (
+    PublishedCorpusSnapshot,
+    RecoveryStatus,
+    SnapshotRecovery,
+)
 from .corpus_snapshot import (
     CorpusSnapshot,
     CorpusSnapshotConfiguration,
@@ -129,6 +134,10 @@ __all__ = [
     "SourceRename",
     "SourceTombstone",
     "TombstoneReason",
+    # Corpus publication
+    "PublishedCorpusSnapshot",
+    "RecoveryStatus",
+    "SnapshotRecovery",
     # Semantic chunks
     "SemanticChunk",
     "SemanticChunkingPolicy",
