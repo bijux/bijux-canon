@@ -88,6 +88,7 @@ as a reproducible baseline but must not be represented as semantic retrieval.
 | Install supported extras and verify entrypoints | [Installation and setup](installation-and-setup.md) |
 | Work on the package locally | [Local development](local-development.md) |
 | Run common preparation and retrieval journeys | [Common workflows](common-workflows.md) |
+| Admit lawful real documents and independently reviewed truth | [Corpus admission](corpus-admission.md) |
 | Interpret logs, metrics, and run records | [Observability and diagnostics](observability-and-diagnostics.md) |
 | Plan memory, corpus size, and concurrency | [Performance and scaling](performance-and-scaling.md) |
 | Recover a failed run or inconsistent artifact | [Failure recovery](failure-recovery.md) |
