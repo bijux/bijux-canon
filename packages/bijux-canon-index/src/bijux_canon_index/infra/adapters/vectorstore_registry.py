@@ -6,6 +6,8 @@ from __future__ import annotations
 
 from collections.abc import Callable, Iterable, Mapping, Sequence
 from dataclasses import dataclass
+import math
+import threading
 from typing import Any
 from urllib.parse import urlsplit, urlunsplit
 
@@ -45,11 +47,15 @@ class VectorStoreResolution:
     uri_redacted: str | None
 
 
-class NoOpVectorStoreAdapter(VectorStoreAdapter):
-    """Represents no op vector store adapter."""
+class EphemeralVectorStoreAdapter(VectorStoreAdapter):
+    """Real exact store for development sessions, excluded from production."""
 
     backend = "memory"
-    is_noop = True
+
+    def __init__(self) -> None:
+        self._records: dict[str, tuple[tuple[float, ...], dict[str, Any]]] = {}
+        self._dimension: int | None = None
+        self._lock = threading.RLock()
 
     def connect(self) -> None:
         """Handle connect."""
@@ -61,19 +67,112 @@ class NoOpVectorStoreAdapter(VectorStoreAdapter):
         metadata: Iterable[dict[str, Any]] | None = None,
     ) -> list[str]:
         """Handle insert."""
-        if metadata:
-            return [entry.get("vector_id", "") for entry in metadata]
-        return []
+        values = [tuple(float(value) for value in vector) for vector in vectors]
+        entries = list(metadata or [])
+        if len(values) != len(entries):
+            raise ValidationError(message="metadata length must match vectors length")
+        if not values:
+            return []
+        dimension = len(values[0])
+        if dimension < 1 or any(
+            len(vector) != dimension
+            or any(not math.isfinite(value) for value in vector)
+            for vector in values
+        ):
+            raise ValidationError(message="memory vectors must be finite and uniform")
+        vector_ids = []
+        with self._lock:
+            if self._dimension is not None and self._dimension != dimension:
+                raise ValidationError(message="memory vector dimension mismatch")
+            self._dimension = dimension
+            for vector, entry in zip(values, entries, strict=True):
+                vector_id = entry.get("vector_id")
+                if not vector_id:
+                    raise ValidationError(message="vector_id is required")
+                identity = str(vector_id)
+                if identity in self._records:
+                    raise ValidationError(message="vector_id already exists")
+                self._records[identity] = (vector, dict(entry))
+                vector_ids.append(identity)
+        return vector_ids
 
     def query(
         self, vector: Sequence[float], k: int, mode: str
     ) -> list[tuple[str, float]]:
         """Query vector."""
-        return []
+        del mode
+        values = tuple(float(value) for value in vector)
+        if k < 1:
+            raise ValidationError(message="query result count must be positive")
+        with self._lock:
+            if self._dimension is None:
+                return []
+            if len(values) != self._dimension or any(
+                not math.isfinite(value) for value in values
+            ):
+                raise ValidationError(message="memory query dimension mismatch")
+            scored = [
+                (
+                    vector_id,
+                    -sum(
+                        (query_value - stored_value) ** 2
+                        for query_value, stored_value in zip(
+                            values, stored_vector, strict=True
+                        )
+                    ),
+                )
+                for vector_id, (stored_vector, _metadata) in self._records.items()
+            ]
+        scored.sort(key=lambda item: (-item[1], item[0]))
+        return scored[:k]
 
     def delete(self, ids: Iterable[str]) -> int:
         """Handle delete."""
-        return 0
+        identities = {str(identity) for identity in ids}
+        with self._lock:
+            removed = sum(identity in self._records for identity in identities)
+            for identity in identities:
+                self._records.pop(identity, None)
+            if not self._records:
+                self._dimension = None
+        return removed
+
+
+class ExcludedVectorStoreAdapter(VectorStoreAdapter):
+    """Fail-closed adapter for a named surface excluded from production."""
+
+    def __init__(self, backend: str, reason: str) -> None:
+        self.backend = backend
+        self._reason = reason
+
+    def connect(self) -> None:
+        """Validate the explicit exclusion without claiming connectivity."""
+
+    def _raise(self) -> None:
+        raise BackendCapabilityError(
+            message=(
+                f"vector store '{self.backend}' is excluded: {self._reason}; "
+                "use the persistent SQLite FTS5 or FAISS generation APIs"
+            )
+        )
+
+    def insert(
+        self,
+        vectors: Iterable[Sequence[float]],
+        metadata: Iterable[dict[str, Any]] | None = None,
+    ) -> list[str]:
+        del vectors, metadata
+        self._raise()
+
+    def query(
+        self, vector: Sequence[float], k: int, mode: str
+    ) -> list[tuple[str, float]]:
+        del vector, k, mode
+        self._raise()
+
+    def delete(self, ids: Iterable[str]) -> int:
+        del ids
+        self._raise()
 
 
 VectorStoreFactory = Callable[
@@ -197,6 +296,14 @@ class VectorStoreRegistry:
             raise PluginLoadError(
                 message=f"Vector store plugin failed to initialize: {exc}"
             ) from exc
+        if getattr(adapter, "is_noop", False):
+            raise BackendCapabilityError(
+                message=(
+                    "What happened: vector store backend was rejected.\n"
+                    f"Why: '{descriptor.name}' resolved to no-op behavior.\n"
+                    "How to fix: install or select a backend that persists real results."
+                )
+            )
         try:
             adapter.connect()
         except Exception as exc:
@@ -297,11 +404,21 @@ class VectorStoreRegistry:
 VECTOR_STORES = VectorStoreRegistry()
 
 
-def _noop_factory(
+def _memory_factory(
     uri: str | None, options: Mapping[str, str] | None
 ) -> VectorStoreAdapter:
-    """Handle noop factory."""
-    return NoOpVectorStoreAdapter()
+    del uri, options
+    return EphemeralVectorStoreAdapter()
+
+
+def _excluded_sqlite_factory(
+    uri: str | None, options: Mapping[str, str] | None
+) -> VectorStoreAdapter:
+    del uri, options
+    return ExcludedVectorStoreAdapter(
+        "sqlite",
+        "the former alias discarded vector writes and was not a persistent index",
+    )
 
 
 VECTOR_STORES.register(
@@ -314,11 +431,11 @@ VECTOR_STORES.register(
         delete_supported=True,
         filtering_supported=False,
         deterministic_exact=True,
-        experimental=False,
+        experimental=True,
         consistency="read_after_write",
-        notes="no-op adapter; uses local vector source",
+        notes="real ephemeral exact store; excluded from production profiles",
     ),
-    factory=_noop_factory,
+    factory=_memory_factory,
     contract=PluginContract(
         determinism="deterministic_exact",
         randomness_sources=(),
@@ -330,16 +447,16 @@ VECTOR_STORES.register(
     descriptor=VectorStoreDescriptor(
         name="sqlite",
         available=True,
-        supports_exact=True,
+        supports_exact=False,
         supports_ann=False,
-        delete_supported=True,
+        delete_supported=False,
         filtering_supported=False,
-        deterministic_exact=True,
-        experimental=False,
-        consistency="read_after_write",
-        notes="alias for local storage (no-op adapter)",
+        deterministic_exact=False,
+        experimental=True,
+        consistency=None,
+        notes="excluded alias; use the persistent SQLite FTS5 generation API",
     ),
-    factory=_noop_factory,
+    factory=_excluded_sqlite_factory,
     contract=PluginContract(
         determinism="deterministic_exact",
         randomness_sources=(),
@@ -368,13 +485,22 @@ def _faiss_factory(
 
 
 def _qdrant_available() -> tuple[bool, str | None, str | None]:
-    """Handle Qdrant available."""
+    """Exclude Qdrant until a live service is explicitly admitted."""
     try:
         import qdrant_client
 
-        return True, getattr(qdrant_client, "__version__", None), None
+        return (
+            False,
+            getattr(qdrant_client, "__version__", None),
+            "experimental excluded: no live service admission is recorded",
+        )
     except Exception:
-        return False, None, "qdrant-client not installed"
+        return (
+            False,
+            None,
+            "experimental excluded: no live service admission is recorded; "
+            "qdrant-client is not installed",
+        )
 
 
 def _qdrant_factory(
@@ -439,5 +565,6 @@ __all__ = [
     "VectorStoreResolution",
     "VectorStoreRegistry",
     "VECTOR_STORES",
-    "NoOpVectorStoreAdapter",
+    "EphemeralVectorStoreAdapter",
+    "ExcludedVectorStoreAdapter",
 ]
