@@ -25,3 +25,4 @@ def test_root_package_declares_lazy_exports_in_dir() -> None:
     assert "parse_markdown" in exported_names
     assert "parse_pdf" in exported_names
     assert "parse_text" in exported_names
+    assert "normalize_source_metadata" in exported_names

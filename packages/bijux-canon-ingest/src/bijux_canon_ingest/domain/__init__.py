@@ -54,6 +54,13 @@ from .source_discovery import (
     DiscoveryRoot,
     SymlinkPolicy,
 )
+from .source_metadata import (
+    CanonicalSourceMetadata,
+    MetadataConflict,
+    MetadataField,
+    MetadataValue,
+    RawMetadataValue,
+)
 
 __all__ = [
     # Logging (pure data)
@@ -85,6 +92,12 @@ __all__ = [
     "DiscoveryResult",
     "DiscoveryRoot",
     "SymlinkPolicy",
+    # Source metadata
+    "CanonicalSourceMetadata",
+    "MetadataConflict",
+    "MetadataField",
+    "MetadataValue",
+    "RawMetadataValue",
     # Document extraction
     "BlockRole",
     "DocumentMetadata",
