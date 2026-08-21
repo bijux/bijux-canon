@@ -12,6 +12,29 @@ from bijux_canon_reason.grounding.extractive_synthesis import (
     SynthesisOutcome,
     SynthesisStyle,
 )
+from bijux_canon_reason.grounding.provider_contracts import (
+    CandidateOutcome,
+    CandidatePolarity,
+    ProviderAttemptKind,
+    ProviderAttemptReceipt,
+    ProviderAttemptStatus,
+    StructuredCandidateClaim,
+    StructuredProviderSynthesis,
+    StructuredSynthesisCandidate,
+)
+from bijux_canon_reason.grounding.structured_provider import (
+    JsonHttpResponse,
+    JsonTransport,
+    OpenAICompatibleStructuredSynthesizer,
+    StructuredProviderConfiguration,
+    StructuredProviderError,
+    StructuredProviderErrorCode,
+    StructuredProviderPolicy,
+    UrllibJsonTransport,
+    prompt_artifact_id,
+    response_schema,
+    response_schema_sha256,
+)
 from bijux_canon_reason.grounding.evidence_packets import (
     CitationEvidence,
     EvidencePacket,
@@ -30,6 +53,8 @@ from bijux_canon_reason.grounding.evidence_packets import (
 )
 
 __all__ = [
+    "CandidateOutcome",
+    "CandidatePolarity",
     "CitationEvidence",
     "CredentialFreeSynthesis",
     "CredentialFreeSynthesisPolicy",
@@ -43,11 +68,28 @@ __all__ = [
     "EvidenceTrust",
     "ExtractiveSynthesisPoint",
     "ImmutableEvidenceLocator",
+    "JsonHttpResponse",
+    "JsonTransport",
+    "OpenAICompatibleStructuredSynthesizer",
     "OmissionReason",
     "PacketCompleteness",
+    "ProviderAttemptKind",
+    "ProviderAttemptReceipt",
+    "ProviderAttemptStatus",
     "SelectionDisposition",
     "SynthesisOutcome",
     "SynthesisStyle",
+    "StructuredCandidateClaim",
+    "StructuredProviderConfiguration",
+    "StructuredProviderError",
+    "StructuredProviderErrorCode",
+    "StructuredProviderPolicy",
+    "StructuredProviderSynthesis",
+    "StructuredSynthesisCandidate",
     "TokenCounter",
     "UnicodeLexicalTokenCounter",
+    "UrllibJsonTransport",
+    "prompt_artifact_id",
+    "response_schema",
+    "response_schema_sha256",
 ]
