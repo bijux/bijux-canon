@@ -14,6 +14,7 @@ from typing import Any
 from bijux_canon_ingest._lazy_exports import LazyExport, resolve_lazy_export
 
 _LAZY_EXPORTS: dict[str, LazyExport] = {
+    "apply_corpus_delta": (".corpus_delta", "apply_corpus_delta"),
     "assess_ocr_requirement": (".document_extraction", "assess_ocr_requirement"),
     "DebugConfig": ("bijux_canon_ingest.observability", "DebugConfig"),
     "ErrorPolicy": (".pipeline_definitions", "ErrorPolicy"),
@@ -61,6 +62,7 @@ _LAZY_EXPORTS: dict[str, LazyExport] = {
     "iter_ingest_pipeline": (".pipeline", "iter_ingest_pipeline"),
     "iter_ingest_pipeline_core": (".pipeline", "iter_ingest_pipeline_core"),
     "parse_filters": (".querying", "parse_filters"),
+    "plan_corpus_delta": (".corpus_delta", "plan_corpus_delta"),
     "reconstruct_pipeline": (".pipeline_definitions", "reconstruct_pipeline"),
     "retrieve": (".querying", "retrieve"),
     "run_ingest_pipeline": (".pipeline", "run_ingest_pipeline"),
@@ -70,6 +72,7 @@ _LAZY_EXPORTS: dict[str, LazyExport] = {
 }
 
 __all__ = [
+    "apply_corpus_delta",
     "assess_ocr_requirement",
     "iter_ingest_pipeline",
     "iter_ingest_pipeline_core",
@@ -95,6 +98,7 @@ __all__ = [
     "retrieve",
     "ask",
     "parse_filters",
+    "plan_corpus_delta",
     "StepConfig",
     "PipelineConfig",
     "build_rag_pipeline",

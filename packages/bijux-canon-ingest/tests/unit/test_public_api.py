@@ -30,3 +30,5 @@ def test_root_package_declares_lazy_exports_in_dir() -> None:
     assert "build_document_span_mappings" in exported_names
     assert "chunk_document_mappings" in exported_names
     assert "build_corpus_snapshot" in exported_names
+    assert "apply_corpus_delta" in exported_names
+    assert "plan_corpus_delta" in exported_names

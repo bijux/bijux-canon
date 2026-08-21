@@ -15,6 +15,13 @@ from __future__ import annotations
 
 from .capabilities import Cache, Clock, Logger, Storage, StorageRead, StorageWrite
 from .composition import chain_io, logged_read
+from .corpus_delta import (
+    CorpusDelta,
+    SourceModification,
+    SourceRename,
+    SourceTombstone,
+    TombstoneReason,
+)
 from .corpus_snapshot import (
     CorpusSnapshot,
     CorpusSnapshotConfiguration,
@@ -116,6 +123,12 @@ __all__ = [
     "CorpusSnapshotConfiguration",
     "CorpusSnapshotDocument",
     "SnapshotParsedDocument",
+    # Corpus deltas
+    "CorpusDelta",
+    "SourceModification",
+    "SourceRename",
+    "SourceTombstone",
+    "TombstoneReason",
     # Semantic chunks
     "SemanticChunk",
     "SemanticChunkingPolicy",
