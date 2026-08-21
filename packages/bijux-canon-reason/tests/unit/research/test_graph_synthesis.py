@@ -4,12 +4,18 @@
 
 from __future__ import annotations
 
+import hashlib
+
 import pytest
 from pydantic import ValidationError
 
 from bijux_canon_reason.grounding import (
     CitationIntegrityStatus,
+    CitationEvidence,
     ConflictRelationship,
+    EvidencePacketBuilder,
+    EvidencePacketPolicy,
+    ImmutableEvidenceLocator,
     SourceQualityGrade,
     create_claim_conflict,
     create_claim_context,
@@ -18,6 +24,7 @@ from bijux_canon_reason.grounding.provider_contracts import content_artifact_id
 from bijux_canon_reason.research import (
     AssumptionInsufficiencyDelta,
     AssumptionStatus,
+    CanonicalDerivationDependency,
     ConvergenceService,
     EvidenceRelationAttachment,
     EvidenceRelationKind,
@@ -39,6 +46,10 @@ from bijux_canon_reason.research import (
     VerifiedGraphSynthesis,
     VerifiedGraphSynthesisService,
     ClaimMergingService,
+    ReasoningProvenanceError,
+    ReasoningProvenanceErrorCode,
+    ReasoningProvenanceReport,
+    ReasoningProvenanceVerifier,
     create_convergence_observation,
     create_mergeable_claim,
 )
@@ -289,6 +300,68 @@ def _rich_inputs():
     return graph_id, merge, attachment, delta, context, conflict
 
 
+def _packet(evidence_ids: tuple[str, ...]):
+    candidates = []
+    for ordinal, evidence_id in enumerate(evidence_ids, start=1):
+        text = f"Exact admitted evidence text {ordinal}."
+        source_digest = hashlib.sha256(f"source-{ordinal}".encode()).hexdigest()
+        candidates.append(
+            CitationEvidence(
+                artifact_id=evidence_id,
+                chunk_artifact_id=_id(f"chunk-{ordinal}"),
+                retrieval_artifact_id=_id("retrieval"),
+                document_id=f"document-{ordinal}",
+                source_id=f"source-{ordinal}",
+                section_path=("Results",),
+                locator=ImmutableEvidenceLocator(
+                    artifact_id=_id(f"locator-{ordinal}"),
+                    source_artifact_id="sha256:" + source_digest,
+                    source_uri=f"https://example.test/source-{ordinal}",
+                    source_content_sha256=source_digest,
+                    scheme="section",
+                    selectors=(("section", "Results"),),
+                ),
+                exact_text=text,
+                exact_text_sha256=hashlib.sha256(text.encode()).hexdigest(),
+                rank=ordinal,
+                relevance_score=1.0 / ordinal,
+                claim_keys=(f"claim-{ordinal}",),
+            )
+        )
+    return EvidencePacketBuilder(
+        EvidencePacketPolicy(
+            token_budget=1000,
+            citation_budget=20,
+            claim_budget=20,
+            max_per_source=5,
+            max_per_section=20,
+        )
+    ).build(
+        question_artifact_id=_id("packet-question"),
+        scope_artifact_id=_id("packet-scope"),
+        retrieval_trace_artifact_ids=(_id("packet-retrieval-trace"),),
+        candidates=tuple(candidates),
+    )
+
+
+def _verified_bundle():
+    graph_id, merge, attachment, delta, context, conflict = _rich_inputs()
+    convergence = _convergence(graph_id, outcome="insufficient")
+    synthesis = VerifiedGraphSynthesisService().synthesize(
+        question="What does the admitted evidence show?",
+        claim_merge=merge,
+        evidence_relations=attachment,
+        assumption_insufficiency=delta,
+        convergence=convergence,
+        contexts=(context,),
+        declared_conflicts=(conflict,),
+    )
+    packet = _packet(
+        tuple(sorted({item.evidence_artifact_id for item in attachment.relations}))
+    )
+    return synthesis, packet, merge, attachment, delta, convergence
+
+
 def test_synthesizes_consensus_conflict_context_assumptions_and_gaps() -> None:
     graph_id, merge, attachment, delta, context, conflict = _rich_inputs()
 
@@ -517,3 +590,221 @@ def test_confidence_rejects_asserted_score_or_level() -> None:
 
     with pytest.raises(ValidationError, match="confidence must be derived"):
         GraphConfidenceBasis(artifact_id=content_artifact_id(payload), **payload)
+
+
+def test_verifies_every_final_claim_to_exact_admitted_evidence() -> None:
+    synthesis, packet, merge, attachment, delta, convergence = _verified_bundle()
+
+    report = ReasoningProvenanceVerifier().verify(
+        synthesis=synthesis,
+        evidence_packet=packet,
+        claim_merge=merge,
+        evidence_relations=attachment,
+        assumption_insufficiency=delta,
+        convergence=convergence,
+    )
+    restarted = ReasoningProvenanceReport.model_validate_json(report.model_dump_json())
+
+    assert restarted == report
+    assert len(report.claim_resolutions) == 2
+    assert len(report.evidence_paths) == len(attachment.relations)
+    assert all(item.support_path_count > 0 for item in report.claim_resolutions)
+    assert report.verified_evidence_artifact_ids == tuple(
+        sorted({item.evidence_artifact_id for item in attachment.relations})
+    )
+
+
+def test_provenance_rejects_exact_text_and_source_digest_mismatch() -> None:
+    synthesis, packet, merge, attachment, delta, convergence = _verified_bundle()
+    verifier = ReasoningProvenanceVerifier()
+    first = packet.selected[0]
+    corrupt_text = first.model_copy(update={"exact_text": first.exact_text + " altered"})
+    corrupt_packet = packet.model_copy(
+        update={"selected": (corrupt_text,) + packet.selected[1:]}
+    )
+
+    with pytest.raises(ReasoningProvenanceError) as text_error:
+        verifier.verify(
+            synthesis=synthesis,
+            evidence_packet=corrupt_packet,
+            claim_merge=merge,
+            evidence_relations=attachment,
+            assumption_insufficiency=delta,
+            convergence=convergence,
+        )
+    assert text_error.value.code is ReasoningProvenanceErrorCode.digest_mismatch
+
+    corrupt_locator = first.locator.model_copy(
+        update={"source_artifact_id": _id("wrong-source-content")}
+    )
+    corrupt_source = first.model_copy(update={"locator": corrupt_locator})
+    corrupt_packet = packet.model_copy(
+        update={"selected": (corrupt_source,) + packet.selected[1:]}
+    )
+    with pytest.raises(ReasoningProvenanceError) as source_error:
+        verifier.verify(
+            synthesis=synthesis,
+            evidence_packet=corrupt_packet,
+            claim_merge=merge,
+            evidence_relations=attachment,
+            assumption_insufficiency=delta,
+            convergence=convergence,
+        )
+    assert source_error.value.code is ReasoningProvenanceErrorCode.digest_mismatch
+
+
+def test_provenance_rejects_unadmitted_evidence_and_missing_trace() -> None:
+    synthesis, packet, merge, attachment, delta, convergence = _verified_bundle()
+    verifier = ReasoningProvenanceVerifier()
+    reduced_packet = _packet(tuple(item.artifact_id for item in packet.selected[:-1]))
+
+    with pytest.raises(ReasoningProvenanceError) as unadmitted:
+        verifier.verify(
+            synthesis=synthesis,
+            evidence_packet=reduced_packet,
+            claim_merge=merge,
+            evidence_relations=attachment,
+            assumption_insufficiency=delta,
+            convergence=convergence,
+        )
+    assert unadmitted.value.code is ReasoningProvenanceErrorCode.unadmitted_evidence
+
+    missing_trace = attachment.model_copy(update={"traces": attachment.traces[:-1]})
+    with pytest.raises(ReasoningProvenanceError) as trace_error:
+        verifier.verify(
+            synthesis=synthesis,
+            evidence_packet=packet,
+            claim_merge=merge,
+            evidence_relations=missing_trace,
+            assumption_insufficiency=delta,
+            convergence=convergence,
+        )
+    assert trace_error.value.code is ReasoningProvenanceErrorCode.relation_trace_mismatch
+
+
+def test_provenance_rejects_orphan_claim_and_unsupported_confidence() -> None:
+    synthesis, packet, merge, attachment, delta, convergence = _verified_bundle()
+    verifier = ReasoningProvenanceVerifier()
+    first = synthesis.consensus[0]
+    orphan = first.model_copy(
+        update={"canonical_claim_artifact_id": _id("orphan-canonical-claim")}
+    )
+    orphan_synthesis = synthesis.model_copy(
+        update={"consensus": (orphan,) + synthesis.consensus[1:]}
+    )
+
+    with pytest.raises(ReasoningProvenanceError) as orphan_error:
+        verifier.verify(
+            synthesis=orphan_synthesis,
+            evidence_packet=packet,
+            claim_merge=merge,
+            evidence_relations=attachment,
+            assumption_insufficiency=delta,
+            convergence=convergence,
+        )
+    assert orphan_error.value.code is ReasoningProvenanceErrorCode.orphan_claim
+
+    asserted = first.confidence.model_copy(
+        update={"score": 0.99, "level": SynthesisConfidenceLevel.high}
+    )
+    unsupported = first.model_copy(update={"confidence": asserted})
+    unsupported_synthesis = synthesis.model_copy(
+        update={"consensus": (unsupported,) + synthesis.consensus[1:]}
+    )
+    with pytest.raises(ReasoningProvenanceError) as confidence_error:
+        verifier.verify(
+            synthesis=unsupported_synthesis,
+            evidence_packet=packet,
+            claim_merge=merge,
+            evidence_relations=attachment,
+            assumption_insufficiency=delta,
+            convergence=convergence,
+        )
+    assert confidence_error.value.code is (
+        ReasoningProvenanceErrorCode.unsupported_confidence
+    )
+
+
+def test_provenance_rejects_dependency_cycles() -> None:
+    synthesis, packet, merge, attachment, delta, convergence = _verified_bundle()
+    canonical_ids = tuple(item.artifact_id for item in merge.canonical_claims)
+    source_ids = tuple(item.source_claim_artifact_id for item in merge.mappings)
+    dependencies = []
+    for ordinal, (parent, child) in enumerate(
+        ((canonical_ids[0], canonical_ids[1]), (canonical_ids[1], canonical_ids[0]))
+    ):
+        pairs = ((source_ids[ordinal], source_ids[1 - ordinal]),)
+        payload = {
+            "parent_canonical_claim_artifact_id": parent,
+            "child_canonical_claim_artifact_id": child,
+            "source_dependency_pairs": pairs,
+            "internal_to_canonical_claim": False,
+        }
+        dependencies.append(
+            CanonicalDerivationDependency(
+                artifact_id=content_artifact_id(payload),
+                parent_canonical_claim_artifact_id=parent,
+                child_canonical_claim_artifact_id=child,
+                source_dependency_pairs=pairs,
+                internal_to_canonical_claim=False,
+            )
+        )
+    cyclic_merge = merge.model_copy(update={"dependencies": tuple(dependencies)})
+
+    with pytest.raises(ReasoningProvenanceError) as cycle_error:
+        ReasoningProvenanceVerifier().verify(
+            synthesis=synthesis,
+            evidence_packet=packet,
+            claim_merge=cyclic_merge,
+            evidence_relations=attachment,
+            assumption_insufficiency=delta,
+            convergence=convergence,
+        )
+    assert cycle_error.value.code is ReasoningProvenanceErrorCode.dependency_cycle
+
+
+def test_provenance_rejects_source_graph_and_artifact_identity_mismatch() -> None:
+    synthesis, packet, merge, attachment, delta, convergence = _verified_bundle()
+    verifier = ReasoningProvenanceVerifier()
+    alien_merge = merge.model_copy(update={"artifact_id": _id("alien-merge")})
+
+    with pytest.raises(ReasoningProvenanceError) as source_error:
+        verifier.verify(
+            synthesis=synthesis,
+            evidence_packet=packet,
+            claim_merge=alien_merge,
+            evidence_relations=attachment,
+            assumption_insufficiency=delta,
+            convergence=convergence,
+        )
+    assert source_error.value.code is (
+        ReasoningProvenanceErrorCode.source_identity_mismatch
+    )
+
+    alien_convergence = convergence.model_copy(
+        update={"current_graph_artifact_id": _id("alien-graph")}
+    )
+    with pytest.raises(ReasoningProvenanceError) as graph_error:
+        verifier.verify(
+            synthesis=synthesis,
+            evidence_packet=packet,
+            claim_merge=merge,
+            evidence_relations=attachment,
+            assumption_insufficiency=delta,
+            convergence=alien_convergence,
+        )
+    assert graph_error.value.code is ReasoningProvenanceErrorCode.graph_identity_mismatch
+
+    changed_answer = synthesis.model_copy(update={"question": "Changed question"})
+    with pytest.raises(ReasoningProvenanceError) as identity_error:
+        verifier.verify(
+            synthesis=changed_answer,
+            evidence_packet=packet,
+            claim_merge=merge,
+            evidence_relations=attachment,
+            assumption_insufficiency=delta,
+            convergence=convergence,
+        )
+    assert identity_error.value.code is (
+        ReasoningProvenanceErrorCode.artifact_identity_mismatch
+    )

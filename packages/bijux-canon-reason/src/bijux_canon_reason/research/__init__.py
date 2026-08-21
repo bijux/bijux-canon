@@ -130,6 +130,14 @@ from bijux_canon_reason.research.question_decomposition import (
     SubquestionStatus,
     create_subquestion_candidate,
 )
+from bijux_canon_reason.research.provenance_verification import (
+    ClaimProvenanceResolution,
+    EvidenceProvenancePath,
+    ReasoningProvenanceError,
+    ReasoningProvenanceErrorCode,
+    ReasoningProvenanceReport,
+    ReasoningProvenanceVerifier,
+)
 
 __all__ = [
     "AssumptionCandidate",
@@ -147,6 +155,7 @@ __all__ = [
     "ClaimMergeResult",
     "ClaimMergingService",
     "ClaimQualification",
+    "ClaimProvenanceResolution",
     "ConvergenceDecision",
     "ConvergenceError",
     "ConvergenceErrorCode",
@@ -171,6 +180,7 @@ __all__ = [
     "EvidenceRelationAttachmentService",
     "EvidenceRelationKind",
     "EvidenceRelationTrace",
+    "EvidenceProvenancePath",
     "GapRetrievalError",
     "GapRetrievalErrorCode",
     "GapRetrievalPolicy",
@@ -211,6 +221,10 @@ __all__ = [
     "ResearchDeficiency",
     "ResearchDeficiencyKind",
     "ResearchDeficiencyStatus",
+    "ReasoningProvenanceError",
+    "ReasoningProvenanceErrorCode",
+    "ReasoningProvenanceReport",
+    "ReasoningProvenanceVerifier",
     "RejectedEvidenceRelation",
     "RelationClassificationMode",
     "RelationRejectionReason",
