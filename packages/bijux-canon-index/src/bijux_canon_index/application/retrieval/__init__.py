@@ -30,14 +30,33 @@ from .lexical import (
     LexicalCandidateOutcome,
     LexicalCandidateService,
 )
+from .selection import (
+    DeduplicationKey,
+    EvidenceDeduplicationPolicy,
+    EvidenceDiversityPolicy,
+    EvidenceLineage,
+    EvidenceSelectionBatch,
+    EvidenceSelectionDecision,
+    EvidenceSelectionDisposition,
+    EvidenceSelectionPolicy,
+    select_evidence,
+)
 
 __all__ = [
+    "DeduplicationKey",
     "DenseCandidate",
     "DenseCandidateBatch",
     "DenseCandidateCompatibilityError",
     "DenseCandidateMode",
     "DenseCandidateOutcome",
     "DenseCandidateService",
+    "EvidenceDeduplicationPolicy",
+    "EvidenceDiversityPolicy",
+    "EvidenceLineage",
+    "EvidenceSelectionBatch",
+    "EvidenceSelectionDecision",
+    "EvidenceSelectionDisposition",
+    "EvidenceSelectionPolicy",
     "FusedCandidate",
     "FusionChannelRanking",
     "LexicalCandidateBatch",
@@ -54,4 +73,5 @@ __all__ = [
     "RrfFusionPolicy",
     "reciprocal_rank_fusion",
     "retrieval_filter_capability",
+    "select_evidence",
 ]
