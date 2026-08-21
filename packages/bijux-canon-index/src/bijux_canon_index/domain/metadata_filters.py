@@ -16,7 +16,7 @@ from typing import TypeAlias
 MetadataScalar: TypeAlias = str | int | float | bool | None
 MetadataValue: TypeAlias = MetadataScalar | tuple[str, ...]
 
-_RESERVED_FIELDS = {
+GOVERNED_METADATA_FIELDS = (
     "date",
     "doi",
     "format",
@@ -25,7 +25,8 @@ _RESERVED_FIELDS = {
     "section",
     "source_id",
     "tags",
-}
+)
+_RESERVED_FIELDS = frozenset(GOVERNED_METADATA_FIELDS)
 
 
 def validated_metadata(
@@ -272,6 +273,7 @@ def matches_metadata_filter(
 
 
 __all__ = [
+    "GOVERNED_METADATA_FIELDS",
     "MetadataFilter",
     "MetadataOperator",
     "MetadataScalar",

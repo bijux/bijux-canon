@@ -26,6 +26,10 @@ from bijux_canon_index.application.index_generation import (
     MANIFEST_NAME,
     IndexGeneration,
 )
+from bijux_canon_index.application.index_inspection import (
+    IndexInspectionReport,
+    inspect_index_generation,
+)
 
 ACTIVE_NAME = "active.json"
 GENERATIONS_NAME = "generations"
@@ -202,6 +206,20 @@ class IndexGenerationRegistry:
         path = self.generations / _generation_directory_name(generation_id)
         audit_index_generation(path, compatibility=self._compatibility)
         return IndexGeneration.open(path)
+
+    def inspect(self, generation_id: str | None = None) -> IndexInspectionReport:
+        """Return a verified content-safe report for an admitted generation."""
+
+        active_generation_id = self.active_generation_id(required=False)
+        selected_generation_id = generation_id or active_generation_id
+        if selected_generation_id is None:
+            raise IndexActivationError("no index generation is available to inspect")
+        path = self.generations / _generation_directory_name(selected_generation_id)
+        return inspect_index_generation(
+            path,
+            compatibility=self._compatibility,
+            active_generation_id=active_generation_id,
+        )
 
     def recover(self) -> tuple[str, ...]:
         """Remove only recognized interrupted publications and verify activation."""

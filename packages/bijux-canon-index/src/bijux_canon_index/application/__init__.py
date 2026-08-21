@@ -25,10 +25,21 @@ from bijux_canon_index.application.index_mutation import (
     IndexMutationReceipt,
     apply_index_delta,
 )
+from bijux_canon_index.application.index_inspection import (
+    IndexActivationInspection,
+    IndexCompatibilityInspection,
+    IndexFilterInspection,
+    IndexInspectionReport,
+    IndexIntegrityInspection,
+    IndexLineageInspection,
+    IndexSegmentInspection,
+    inspect_index_generation,
+)
 
 __all__ = [
     "AdmittedIndexChunk",
     "IndexActivationError",
+    "IndexActivationInspection",
     "IndexBuildLimits",
     "IndexBuildStageReceipt",
     "IndexBuildStatistics",
@@ -40,8 +51,15 @@ __all__ = [
     "IndexGenerationManifest",
     "IndexGenerationRegistry",
     "IndexCompatibility",
+    "IndexCompatibilityInspection",
     "IndexDelta",
+    "IndexFilterInspection",
+    "IndexInspectionReport",
+    "IndexIntegrityInspection",
+    "IndexLineageInspection",
     "IndexMutationReceipt",
+    "IndexSegmentInspection",
     "apply_index_delta",
     "audit_index_generation",
+    "inspect_index_generation",
 ]
