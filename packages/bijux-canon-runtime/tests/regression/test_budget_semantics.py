@@ -8,9 +8,6 @@ from collections.abc import Callable
 from bijux_canon_runtime_claim_support import build_claim_statement
 import pytest
 
-import bijux_canon_agent
-import bijux_canon_index
-import bijux_canon_reason
 from bijux_canon_runtime.application.execute_flow import (
     ExecutionConfig,
     RunMode,
@@ -59,7 +56,7 @@ from bijux_canon_runtime.ontology.public import (
     ReplayAcceptability,
 )
 from bijux_canon_runtime.runtime.budget import ExecutionBudget
-import bijux_rag
+from bijux_canon_runtime.runtime.execution import integration_loaders as integrations
 
 pytestmark = pytest.mark.regression
 
@@ -124,7 +121,7 @@ def test_step_budget_halts_flow(
     dataset_descriptor: DatasetDescriptor,
     execution_store: DuckDBExecutionWriteStore,
 ) -> None:
-    bijux_canon_agent.run = lambda **_kwargs: [
+    integrations.agent_runner_override = lambda **_kwargs: [
         {
             "artifact_id": "agent-output",
             "artifact_type": ArtifactType.AGENT_INVOCATION.value,
@@ -132,7 +129,7 @@ def test_step_budget_halts_flow(
             "parent_artifacts": [],
         }
     ]
-    bijux_rag.retrieve = lambda **_kwargs: [
+    integrations.retrieval_runner_override = lambda **_kwargs: [
         {
             "evidence_id": "ev-1",
             "determinism": EvidenceDeterminism.DETERMINISTIC.value,
@@ -142,8 +139,8 @@ def test_step_budget_halts_flow(
             "vector_contract_id": "contract-1",
         }
     ]
-    bijux_canon_index.enforce_contract = lambda *_args, **_kwargs: True
-    bijux_canon_reason.reason = lambda **_kwargs: ReasoningBundle(
+    integrations.vector_contract_enforcer_override = lambda *_args, **_kwargs: True
+    integrations.reasoning_runner_override = lambda **_kwargs: ReasoningBundle(
         spec_version="v1",
         bundle_id=BundleID("bundle-1"),
         claims=(),
@@ -186,7 +183,7 @@ def test_token_budget_failure_is_deterministic(
     dataset_descriptor: DatasetDescriptor,
     execution_store: DuckDBExecutionWriteStore,
 ) -> None:
-    bijux_canon_agent.run = lambda **_kwargs: [
+    integrations.agent_runner_override = lambda **_kwargs: [
         {
             "artifact_id": "agent-output",
             "artifact_type": ArtifactType.AGENT_INVOCATION.value,
@@ -194,7 +191,7 @@ def test_token_budget_failure_is_deterministic(
             "parent_artifacts": [],
         }
     ]
-    bijux_rag.retrieve = lambda **_kwargs: [
+    integrations.retrieval_runner_override = lambda **_kwargs: [
         {
             "evidence_id": "ev-1",
             "determinism": EvidenceDeterminism.DETERMINISTIC.value,
@@ -204,7 +201,7 @@ def test_token_budget_failure_is_deterministic(
             "vector_contract_id": "contract-1",
         }
     ]
-    bijux_canon_index.enforce_contract = lambda *_args, **_kwargs: True
+    integrations.vector_contract_enforcer_override = lambda *_args, **_kwargs: True
 
     def _reason(
         agent_outputs: list[Artifact],
@@ -237,7 +234,7 @@ def test_token_budget_failure_is_deterministic(
             producer_agent_id=AgentID("agent-a"),
         )
 
-    bijux_canon_reason.reason = _reason
+    integrations.reasoning_runner_override = _reason
 
     resolved_flow = _resolved_flow_for_budget(
         resolved_flow_factory, entropy_budget, replay_envelope, dataset_descriptor
@@ -279,7 +276,7 @@ def test_artifact_step_budget_halts_flow(
     dataset_descriptor: DatasetDescriptor,
     execution_store: DuckDBExecutionWriteStore,
 ) -> None:
-    bijux_canon_agent.run = lambda **_kwargs: [
+    integrations.agent_runner_override = lambda **_kwargs: [
         {
             "artifact_id": "agent-output",
             "artifact_type": ArtifactType.AGENT_INVOCATION.value,
@@ -287,7 +284,7 @@ def test_artifact_step_budget_halts_flow(
             "parent_artifacts": [],
         }
     ]
-    bijux_rag.retrieve = lambda **_kwargs: [
+    integrations.retrieval_runner_override = lambda **_kwargs: [
         {
             "evidence_id": "ev-1",
             "determinism": EvidenceDeterminism.DETERMINISTIC.value,
@@ -297,8 +294,8 @@ def test_artifact_step_budget_halts_flow(
             "vector_contract_id": "contract-1",
         }
     ]
-    bijux_canon_index.enforce_contract = lambda *_args, **_kwargs: True
-    bijux_canon_reason.reason = lambda **_kwargs: ReasoningBundle(
+    integrations.vector_contract_enforcer_override = lambda *_args, **_kwargs: True
+    integrations.reasoning_runner_override = lambda **_kwargs: ReasoningBundle(
         spec_version="v1",
         bundle_id=BundleID("bundle-1"),
         claims=(),
@@ -341,7 +338,7 @@ def test_evidence_budget_halts_flow(
     dataset_descriptor: DatasetDescriptor,
     execution_store: DuckDBExecutionWriteStore,
 ) -> None:
-    bijux_canon_agent.run = lambda **_kwargs: [
+    integrations.agent_runner_override = lambda **_kwargs: [
         {
             "artifact_id": "agent-output",
             "artifact_type": ArtifactType.AGENT_INVOCATION.value,
@@ -349,7 +346,7 @@ def test_evidence_budget_halts_flow(
             "parent_artifacts": [],
         }
     ]
-    bijux_rag.retrieve = lambda **_kwargs: [
+    integrations.retrieval_runner_override = lambda **_kwargs: [
         {
             "evidence_id": "ev-1",
             "determinism": EvidenceDeterminism.DETERMINISTIC.value,
@@ -359,8 +356,8 @@ def test_evidence_budget_halts_flow(
             "vector_contract_id": "contract-1",
         }
     ]
-    bijux_canon_index.enforce_contract = lambda *_args, **_kwargs: True
-    bijux_canon_reason.reason = lambda **_kwargs: ReasoningBundle(
+    integrations.vector_contract_enforcer_override = lambda *_args, **_kwargs: True
+    integrations.reasoning_runner_override = lambda **_kwargs: ReasoningBundle(
         spec_version="v1",
         bundle_id=BundleID("bundle-1"),
         claims=(),

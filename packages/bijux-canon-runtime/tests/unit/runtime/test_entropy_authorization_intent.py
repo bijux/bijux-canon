@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import pytest
 
-import bijux_canon_agent
 from bijux_canon_runtime.application.execute_flow import (
     ExecutionConfig,
     RunMode,
@@ -47,6 +46,7 @@ from bijux_canon_runtime.ontology.public import (
     NonDeterminismIntentSource,
     ReplayAcceptability,
 )
+from bijux_canon_runtime.runtime.execution import integration_loaders as integrations
 
 
 @pytest.mark.unit
@@ -141,7 +141,7 @@ def test_unauthorized_entropy_intent(
         "bijux_canon_runtime.runtime.execution.retrieval_executor.RetrievalExecutor.execute",
         _retrieval_execute,
     )
-    bijux_canon_agent.run = lambda **_kwargs: [
+    integrations.agent_runner_override = lambda **_kwargs: [
         {
             "artifact_id": "artifact-entropy",
             "artifact_type": "agent_invocation",

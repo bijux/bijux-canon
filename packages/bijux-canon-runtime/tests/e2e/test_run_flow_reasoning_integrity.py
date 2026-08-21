@@ -5,8 +5,6 @@ from __future__ import annotations
 
 import pytest
 
-import bijux_canon_agent
-import bijux_canon_reason
 from bijux_canon_runtime.application.execute_flow import (
     ExecutionConfig,
     RunMode,
@@ -41,6 +39,7 @@ from bijux_canon_runtime.ontology.public import (
     EventType,
     ReplayAcceptability,
 )
+from bijux_canon_runtime.runtime.execution import integration_loaders as integrations
 
 pytestmark = pytest.mark.e2e
 
@@ -53,7 +52,7 @@ def test_reasoning_references_missing_evidence(
     dataset_descriptor,
     execution_store,
 ) -> None:
-    bijux_canon_agent.run = lambda **_kwargs: [
+    integrations.agent_runner_override = lambda **_kwargs: [
         {
             "artifact_id": "agent-output",
             "artifact_type": ArtifactType.AGENT_INVOCATION.value,
@@ -88,7 +87,7 @@ def test_reasoning_references_missing_evidence(
             producer_agent_id=AgentID("agent-a"),
         )
 
-    bijux_canon_reason.reason = _bad_reason
+    integrations.reasoning_runner_override = _bad_reason
 
     step = ResolvedStep(
         spec_version="v1",

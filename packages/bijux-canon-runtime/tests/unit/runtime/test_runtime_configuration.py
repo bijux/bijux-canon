@@ -26,6 +26,8 @@ def test_configuration_precedence_and_origins_are_explicit() -> None:
             "BIJUX_CANON_RUNTIME_DB_PATH": "canonical.duckdb",
             "BIJUX_CANON_RUNTIME_STRICT": "1",
             "BIJUX_CANON_RUNTIME_STEP_LIMIT": "5",
+            "BIJUX_CANON_RUNTIME_RETRIEVAL_INDEX_PATH": "index.msgpack",
+            "BIJUX_CANON_RUNTIME_WORKING_ROOT": "workspace",
         },
         explicit={"database_path": Path("explicit.duckdb")},
     )
@@ -34,6 +36,8 @@ def test_configuration_precedence_and_origins_are_explicit() -> None:
     assert configuration.strict_determinism is True
     assert configuration.resource_budget.step_limit == 5
     assert configuration.resource_budget.token_limit == 40
+    assert configuration.retrieval_index_path == Path("index.msgpack")
+    assert configuration.working_root == Path("workspace")
     assert configuration.source_for("database_path") is ConfigurationSource.EXPLICIT
     assert (
         configuration.source_for("strict_determinism")

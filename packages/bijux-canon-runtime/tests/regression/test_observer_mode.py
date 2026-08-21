@@ -5,13 +5,13 @@ from __future__ import annotations
 
 import pytest
 
-import bijux_canon_agent
 from bijux_canon_runtime.application.execute_flow import (
     ExecutionConfig,
     RunMode,
     execute_flow,
 )
 from bijux_canon_runtime.observability.capture.observed_run import ObservedRun
+from bijux_canon_runtime.runtime.execution import integration_loaders as integrations
 
 pytestmark = pytest.mark.regression
 
@@ -19,7 +19,7 @@ pytestmark = pytest.mark.regression
 def test_observer_mode_does_not_execute(
     resolved_flow, baseline_policy, execution_store
 ) -> None:
-    bijux_canon_agent.run = lambda **_kwargs: (_ for _ in ()).throw(
+    integrations.agent_runner_override = lambda **_kwargs: (_ for _ in ()).throw(
         AssertionError("observer mode must not execute agents")
     )
 

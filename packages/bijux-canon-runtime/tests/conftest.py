@@ -60,6 +60,7 @@ from bijux_canon_runtime.ontology.public import (
     ReplayMode,
 )
 from bijux_canon_runtime.runtime.artifact_store import InMemoryArtifactStore
+from bijux_canon_runtime.runtime.execution import integration_loaders as integrations
 
 TESTS_ROOT = Path(__file__).resolve().parent
 if str(TESTS_ROOT) not in sys.path:
@@ -69,17 +70,11 @@ PlanHashFactory = Callable[..., PlanHash]
 
 
 @pytest.fixture(autouse=True)
-def _stable_bijux_versions(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(
-        "bijux_canon_runtime.application.planner.ExecutionPlanner._bijux_cli_version",
-        "0.3.6",
-        raising=False,
-    )
-    monkeypatch.setattr(
-        "bijux_canon_runtime.application.planner.ExecutionPlanner._bijux_canon_agent_version",
-        "0.3.7",
-        raising=False,
-    )
+def _isolated_integration_overrides() -> None:
+    integrations.agent_runner_override = None
+    integrations.retrieval_runner_override = None
+    integrations.reasoning_runner_override = None
+    integrations.vector_contract_enforcer_override = None
 
 
 @pytest.fixture
