@@ -4,6 +4,21 @@
 
 from __future__ import annotations
 
+from bijux_canon_reason.research.assumptions_insufficiency import (
+    AssumptionCandidate,
+    AssumptionImpact,
+    AssumptionInsufficiencyDelta,
+    AssumptionInsufficiencyService,
+    AssumptionStatus,
+    ClaimSourceCoverage,
+    GraphAssumption,
+    GraphInsufficiency,
+    InsufficiencyOutcome,
+    ResearchDeficiency,
+    ResearchDeficiencyKind,
+    ResearchDeficiencyStatus,
+    create_assumption_candidate,
+)
 from bijux_canon_reason.research.evidence_relations import (
     EvidenceRelationAttachment,
     EvidenceRelationAttachmentService,
@@ -48,6 +63,12 @@ from bijux_canon_reason.research.question_decomposition import (
 )
 
 __all__ = [
+    "AssumptionCandidate",
+    "AssumptionImpact",
+    "AssumptionInsufficiencyDelta",
+    "AssumptionInsufficiencyService",
+    "AssumptionStatus",
+    "ClaimSourceCoverage",
     "EvidenceChange",
     "EvidenceRelationAttachment",
     "EvidenceRelationAttachmentService",
@@ -60,6 +81,9 @@ __all__ = [
     "GapRetrievalRun",
     "GapRetrievalService",
     "GraphEvidenceRelation",
+    "GraphAssumption",
+    "GraphInsufficiency",
+    "InsufficiencyOutcome",
     "QuestionDecomposer",
     "QuestionDecompositionDecision",
     "QuestionDecompositionError",
@@ -69,6 +93,9 @@ __all__ = [
     "ResearchQuestion",
     "ResearchQuestionIntent",
     "ResearchSubquestion",
+    "ResearchDeficiency",
+    "ResearchDeficiencyKind",
+    "ResearchDeficiencyStatus",
     "RejectedEvidenceRelation",
     "RelationClassificationMode",
     "RelationRejectionReason",
@@ -81,6 +108,7 @@ __all__ = [
     "SubquestionDisposition",
     "SubquestionStatus",
     "create_gap_retrieval_request",
+    "create_assumption_candidate",
     "create_retrieval_evidence_batch",
     "create_subquestion_retrieval_request",
     "create_subquestion_candidate",
