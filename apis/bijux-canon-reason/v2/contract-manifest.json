@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0.0",
+  "contract_id": "bijux.canon.reason.artifacts.v2",
+  "artifact_schema_version": "2.0.0",
+  "json_schema_dialect": "https://json-schema.org/draft/2020-12/schema",
+  "canonical_serialization": "RFC 8785",
+  "identity_algorithm": "sha-256",
+  "identity_excluded_json_pointers": ["/artifact_id"],
+  "schema_bundle": {
+    "path": "reasoning-artifacts.schema.json",
+    "sha256": "29ef418d159b8470437d7ee99b4470af09c98a8319a8665b2dc5748c8e4e334d",
+    "definitions": {
+      "bijux.canon.reason.assumption": "#/$defs/assumption",
+      "bijux.canon.reason.citation": "#/$defs/citation",
+      "bijux.canon.reason.claim": "#/$defs/claim",
+      "bijux.canon.reason.confidence": "#/$defs/confidence",
+      "bijux.canon.reason.evidence_relation": "#/$defs/evidence_relation",
+      "bijux.canon.reason.insufficiency": "#/$defs/insufficiency",
+      "bijux.canon.reason.verification_receipt": "#/$defs/verification_receipt"
+    }
+  },
+  "migration_policy": {
+    "path": "migration-policy.json",
+    "sha256": "5c218fdc641a46240a2fab7fdbd38be9a0d9b603b42bd2b93ca4160425d6b20c",
+    "implicit_migration_allowed": false,
+    "registered_transform_count": 0
+  },
+  "conformance_example": {
+    "path": "examples/evaluation-claim-records.json",
+    "sha256": "563728047cd4ac8baf77358c94ab08dd7b1359440107a55c151e942e779b7d50",
+    "record_count": 7,
+    "source_corpus_sha256": "03a79d793dc4bc525745c8c564a5b116ea727a2dfea9766397d886edfc39e4aa",
+    "source_document_count": 25,
+    "source_document_id": "d01_fastq"
+  }
+}

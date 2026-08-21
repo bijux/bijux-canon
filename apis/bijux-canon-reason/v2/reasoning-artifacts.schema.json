@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.bijux.org/canon/reason/v2/reasoning-artifacts.schema.json",
+  "title": "Bijux Canon claim and evidence records",
+  "oneOf": [
+    {"$ref": "#/$defs/citation"},
+    {"$ref": "#/$defs/claim"},
+    {"$ref": "#/$defs/evidence_relation"},
+    {"$ref": "#/$defs/assumption"},
+    {"$ref": "#/$defs/insufficiency"},
+    {"$ref": "#/$defs/confidence"},
+    {"$ref": "#/$defs/verification_receipt"}
+  ],
+  "$defs": {
+    "artifact_id": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "timestamp": {"type": "string", "format": "date-time", "pattern": "Z$"},
+    "artifact_ids": {"type": "array", "items": {"$ref": "#/$defs/artifact_id"}, "uniqueItems": true, "x-bijux-ordering": "artifact_id ascending"},
+    "citation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "artifact_type", "artifact_id", "chunk_artifact_id", "locator_artifact_id", "coordinate_system", "start", "end", "quoted_text", "quoted_text_sha256"],
+      "properties": {
+        "schema_version": {"const": "2.0.0"}, "artifact_type": {"const": "bijux.canon.reason.citation"}, "artifact_id": {"$ref": "#/$defs/artifact_id"},
+        "chunk_artifact_id": {"$ref": "#/$defs/artifact_id"}, "locator_artifact_id": {"$ref": "#/$defs/artifact_id"}, "coordinate_system": {"enum": ["utf8_byte", "unicode_code_point"]},
+        "start": {"type": "integer", "minimum": 0}, "end": {"type": "integer", "minimum": 1}, "quoted_text": {"type": "string", "minLength": 1}, "quoted_text_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "claim": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "artifact_type", "artifact_id", "statement", "statement_sha256", "claim_kind", "status", "atomic", "citation_artifact_ids"],
+      "properties": {
+        "schema_version": {"const": "2.0.0"}, "artifact_type": {"const": "bijux.canon.reason.claim"}, "artifact_id": {"$ref": "#/$defs/artifact_id"},
+        "statement": {"type": "string", "minLength": 1}, "statement_sha256": {"$ref": "#/$defs/sha256"}, "claim_kind": {"enum": ["observed", "derived", "assumed"]}, "status": {"enum": ["proposed", "validated", "rejected"]},
+        "atomic": {"const": true}, "citation_artifact_ids": {"allOf": [{"$ref": "#/$defs/artifact_ids"}, {"minItems": 1}]}
+      }
+    },
+    "evidence_relation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "artifact_type", "artifact_id", "claim_artifact_id", "evidence_artifact_id", "relation", "strength", "rationale"],
+      "properties": {
+        "schema_version": {"const": "2.0.0"}, "artifact_type": {"const": "bijux.canon.reason.evidence_relation"}, "artifact_id": {"$ref": "#/$defs/artifact_id"},
+        "claim_artifact_id": {"$ref": "#/$defs/artifact_id"}, "evidence_artifact_id": {"$ref": "#/$defs/artifact_id"}, "relation": {"enum": ["supports", "opposes", "ambiguous"]}, "strength": {"type": "number", "minimum": 0, "maximum": 1}, "rationale": {"type": "string", "minLength": 1}
+      }
+    },
+    "assumption": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "artifact_type", "artifact_id", "claim_artifact_id", "statement", "status", "impact"],
+      "properties": {
+        "schema_version": {"const": "2.0.0"}, "artifact_type": {"const": "bijux.canon.reason.assumption"}, "artifact_id": {"$ref": "#/$defs/artifact_id"}, "claim_artifact_id": {"$ref": "#/$defs/artifact_id"},
+        "statement": {"type": "string", "minLength": 1}, "status": {"enum": ["declared", "tested", "rejected"]}, "impact": {"enum": ["low", "medium", "high"]}
+      }
+    },
+    "insufficiency": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "artifact_type", "artifact_id", "claim_artifact_ids", "outcome", "minimum_supports", "observed_supports", "missing_information"],
+      "properties": {
+        "schema_version": {"const": "2.0.0"}, "artifact_type": {"const": "bijux.canon.reason.insufficiency"}, "artifact_id": {"$ref": "#/$defs/artifact_id"}, "claim_artifact_ids": {"allOf": [{"$ref": "#/$defs/artifact_ids"}, {"minItems": 1}]},
+        "outcome": {"enum": ["sufficient", "insufficient"]}, "minimum_supports": {"type": "integer", "minimum": 1}, "observed_supports": {"type": "integer", "minimum": 0},
+        "missing_information": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true, "x-bijux-ordering": "lexicographic"}
+      }
+    },
+    "confidence_factor": {
+      "type": "object", "additionalProperties": false, "required": ["name", "weight", "value"],
+      "properties": {"name": {"type": "string", "pattern": "^[a-z][a-z0-9_.-]*$"}, "weight": {"type": "number", "minimum": 0, "maximum": 1}, "value": {"type": "number", "minimum": 0, "maximum": 1}}
+    },
+    "confidence": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "artifact_type", "artifact_id", "claim_artifact_id", "relation_artifact_ids", "score", "method", "factors"],
+      "properties": {
+        "schema_version": {"const": "2.0.0"}, "artifact_type": {"const": "bijux.canon.reason.confidence"}, "artifact_id": {"$ref": "#/$defs/artifact_id"}, "claim_artifact_id": {"$ref": "#/$defs/artifact_id"}, "relation_artifact_ids": {"allOf": [{"$ref": "#/$defs/artifact_ids"}, {"minItems": 1}]},
+        "score": {"type": "number", "minimum": 0, "maximum": 1}, "method": {"enum": ["evidence-weighted-v1", "calibrated-v1"]},
+        "factors": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/confidence_factor"}, "uniqueItems": true, "x-bijux-ordering": "name ascending"}
+      }
+    },
+    "verification_check": {
+      "type": "object", "additionalProperties": false, "required": ["name", "passed", "details_sha256"],
+      "properties": {"name": {"type": "string", "pattern": "^[a-z][a-z0-9_.-]*$"}, "passed": {"type": "boolean"}, "details_sha256": {"$ref": "#/$defs/sha256"}}
+    },
+    "verification_receipt": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "artifact_type", "artifact_id", "claim_artifact_ids", "citation_artifact_ids", "relation_artifact_ids", "assumption_artifact_ids", "insufficiency_artifact_id", "confidence_artifact_ids", "checks", "outcome", "verified_at"],
+      "properties": {
+        "schema_version": {"const": "2.0.0"}, "artifact_type": {"const": "bijux.canon.reason.verification_receipt"}, "artifact_id": {"$ref": "#/$defs/artifact_id"},
+        "claim_artifact_ids": {"allOf": [{"$ref": "#/$defs/artifact_ids"}, {"minItems": 1}]}, "citation_artifact_ids": {"allOf": [{"$ref": "#/$defs/artifact_ids"}, {"minItems": 1}]}, "relation_artifact_ids": {"allOf": [{"$ref": "#/$defs/artifact_ids"}, {"minItems": 1}]}, "assumption_artifact_ids": {"$ref": "#/$defs/artifact_ids"},
+        "insufficiency_artifact_id": {"$ref": "#/$defs/artifact_id"}, "confidence_artifact_ids": {"allOf": [{"$ref": "#/$defs/artifact_ids"}, {"minItems": 1}]},
+        "checks": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/verification_check"}, "uniqueItems": true, "x-bijux-ordering": "name ascending"}, "outcome": {"enum": ["passed", "failed", "insufficient"]}, "verified_at": {"$ref": "#/$defs/timestamp"}
+      }
+    }
+  },
+  "x-bijux-identity": {"algorithm": "sha-256", "canonicalization": "RFC 8785", "excluded_json_pointers": ["/artifact_id"]},
+  "x-bijux-invariants": [
+    "citation spans select the exact quoted UTF-8 bytes and reproduce quoted_text_sha256",
+    "claims are atomic, relations are explicit, assumptions are declared, and confidence is bounded",
+    "insufficiency is a first-class outcome and cannot be represented as a successful verification",
+    "verification receipts close every referenced reasoning artifact and retain named check results"
+  ]
+}

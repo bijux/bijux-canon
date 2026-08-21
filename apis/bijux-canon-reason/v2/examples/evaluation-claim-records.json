@@ -1,0 +1,43 @@
+{
+  "bundle_schema_version": "1.0.0",
+  "external_artifact_ids": [
+    "sha256:2423549a0f9d7b00d8d89d8fecc98a18eb3530956d05d90f4ea45c82a22ea377",
+    "sha256:b3d1f39e2ad97ac288635738f99793c4d3ed575483220582536512942550ca56"
+  ],
+  "source_text": "FASTQ is a sequencing reads format. Each record is four lines: @header, sequence, +, and quality. Sanger FASTQ encodes PHRED quality with ASCII offset 33.",
+  "records": [
+    {
+      "schema_version": "2.0.0", "artifact_type": "bijux.canon.reason.citation", "artifact_id": "sha256:5bbd60ddcf894e0986b48921c655896c743185cd7bdd8d2f84473405d027d9c6",
+      "chunk_artifact_id": "sha256:2423549a0f9d7b00d8d89d8fecc98a18eb3530956d05d90f4ea45c82a22ea377", "locator_artifact_id": "sha256:b3d1f39e2ad97ac288635738f99793c4d3ed575483220582536512942550ca56",
+      "coordinate_system": "utf8_byte", "start": 0, "end": 35, "quoted_text": "FASTQ is a sequencing reads format.", "quoted_text_sha256": "84b612ef50a9399391569be6ca277c1d6c2cc5dab3d27d03df74e8973a325c15"
+    },
+    {
+      "schema_version": "2.0.0", "artifact_type": "bijux.canon.reason.claim", "artifact_id": "sha256:251bd65e22ba7c6d780bac18d6073be26b1470dfc1b05f8a470879d9762bc9e6", "statement": "FASTQ is a sequencing reads format.", "statement_sha256": "84b612ef50a9399391569be6ca277c1d6c2cc5dab3d27d03df74e8973a325c15",
+      "claim_kind": "derived", "status": "validated", "atomic": true, "citation_artifact_ids": ["sha256:5bbd60ddcf894e0986b48921c655896c743185cd7bdd8d2f84473405d027d9c6"]
+    },
+    {
+      "schema_version": "2.0.0", "artifact_type": "bijux.canon.reason.evidence_relation", "artifact_id": "sha256:9fb6e93c288055f950ee1f0f739e14ae177363cbecd83bca99301dd7331d6639", "claim_artifact_id": "sha256:251bd65e22ba7c6d780bac18d6073be26b1470dfc1b05f8a470879d9762bc9e6", "evidence_artifact_id": "sha256:5bbd60ddcf894e0986b48921c655896c743185cd7bdd8d2f84473405d027d9c6",
+      "relation": "supports", "strength": 1.0, "rationale": "The cited sentence states the claim verbatim."
+    },
+    {
+      "schema_version": "2.0.0", "artifact_type": "bijux.canon.reason.assumption", "artifact_id": "sha256:70e36a5c8b1cf972c057d03c659bd792fba9c774d6d63d0ded5144a04d7c543c", "claim_artifact_id": "sha256:251bd65e22ba7c6d780bac18d6073be26b1470dfc1b05f8a470879d9762bc9e6",
+      "statement": "The admitted evaluation abstract accurately describes FASTQ.", "status": "declared", "impact": "low"
+    },
+    {
+      "schema_version": "2.0.0", "artifact_type": "bijux.canon.reason.insufficiency", "artifact_id": "sha256:4eb91b847597c897cbe46fcd458acf96eab3f5a373902b22ab8650efc68ead4f", "claim_artifact_ids": ["sha256:251bd65e22ba7c6d780bac18d6073be26b1470dfc1b05f8a470879d9762bc9e6"],
+      "outcome": "sufficient", "minimum_supports": 1, "observed_supports": 1, "missing_information": []
+    },
+    {
+      "schema_version": "2.0.0", "artifact_type": "bijux.canon.reason.confidence", "artifact_id": "sha256:f2dbbf2efa4dab2f39c61e5ebd8aadc8af9e0a28fb73ecec34da584b77220d8f", "claim_artifact_id": "sha256:251bd65e22ba7c6d780bac18d6073be26b1470dfc1b05f8a470879d9762bc9e6", "relation_artifact_ids": ["sha256:9fb6e93c288055f950ee1f0f739e14ae177363cbecd83bca99301dd7331d6639"],
+      "score": 1.0, "method": "evidence-weighted-v1", "factors": [{"name": "citation_exactness", "weight": 1.0, "value": 1.0}]
+    },
+    {
+      "schema_version": "2.0.0", "artifact_type": "bijux.canon.reason.verification_receipt", "artifact_id": "sha256:2bcfd08a114e9b649952c77fadfddfee1a293bb3f79d82a301dc2092652ae170", "claim_artifact_ids": ["sha256:251bd65e22ba7c6d780bac18d6073be26b1470dfc1b05f8a470879d9762bc9e6"], "citation_artifact_ids": ["sha256:5bbd60ddcf894e0986b48921c655896c743185cd7bdd8d2f84473405d027d9c6"], "relation_artifact_ids": ["sha256:9fb6e93c288055f950ee1f0f739e14ae177363cbecd83bca99301dd7331d6639"], "assumption_artifact_ids": ["sha256:70e36a5c8b1cf972c057d03c659bd792fba9c774d6d63d0ded5144a04d7c543c"],
+      "insufficiency_artifact_id": "sha256:4eb91b847597c897cbe46fcd458acf96eab3f5a373902b22ab8650efc68ead4f", "confidence_artifact_ids": ["sha256:f2dbbf2efa4dab2f39c61e5ebd8aadc8af9e0a28fb73ecec34da584b77220d8f"], "checks": [
+        {"name": "atomic_claim", "passed": true, "details_sha256": "2e2a48ca361384290af54c8d7ba55abebc73dab8e85846a102819140fd6507bc"},
+        {"name": "citation_span", "passed": true, "details_sha256": "0395099745c8b9325f4eff06f4a7933f06bef871db892ac766b26af57c49a423"},
+        {"name": "relation_closure", "passed": true, "details_sha256": "028d0f855a88440c2a95214df1718eb694de8ab9f7ce74031de66db6d15d6c5f"}
+      ], "outcome": "passed", "verified_at": "2026-08-21T06:00:00Z"
+    }
+  ]
+}
