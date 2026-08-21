@@ -6,7 +6,6 @@ from collections.abc import Callable, Mapping
 import os
 from typing import Any
 
-from bijux_canon_agent.config.env import load_environment
 from bijux_canon_agent.llm.llm_adapter import (
     AdapterConfig,
     BaseLLMAdapter,
@@ -127,11 +126,33 @@ _ADAPTER_BUILDERS: dict[
 
 SKIP_DOTENV_ENV = "BIJUX_AGENT_SKIP_DOTENV"
 
+_SECRET_CONFIG_MARKERS = (
+    "api_key",
+    "authorization",
+    "credential",
+    "password",
+    "secret",
+    "token",
+)
+
+
+def _reject_secret_config(config: Mapping[str, Any]) -> None:
+    """Keep provider credentials out of serializable configuration."""
+    rejected = sorted(
+        str(key)
+        for key in config
+        if any(marker in str(key).casefold() for marker in _SECRET_CONFIG_MARKERS)
+    )
+    if rejected:
+        raise DeepSeekAdapterError(
+            "Provider credentials must be supplied through the selected provider's environment variable",
+            FailureClass.VALIDATION_ERROR,
+        )
+
 
 def build_adapter(config: Mapping[str, Any]) -> BaseLLMAdapter:
     """Build an adapter from the provided config."""
-    if os.getenv(SKIP_DOTENV_ENV) != "1":
-        load_environment()
+    _reject_secret_config(config)
     model_name = _resolve_model_name(config)
     validate_model_name(model_name)
     provider = resolve_provider(model_name)

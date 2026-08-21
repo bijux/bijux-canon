@@ -95,11 +95,42 @@ def test_deepseek_payload_shape_is_stable(monkeypatch: pytest.MonkeyPatch) -> No
     ]
 
 
-def test_missing_deepseek_key_fails_fast(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_missing_deepseek_key_fails_only_at_execution(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     monkeypatch.delenv("DEEPSEEK_API_KEY", raising=False)
+    adapter = build_adapter({"model": "deepseek-chat"})
     with pytest.raises(DeepSeekAdapterError) as exc_info:
-        build_adapter({"model": "deepseek-chat"})
+        adapter.generate("prompt")
     assert exc_info.value.failure_class == FailureClass.VALIDATION_ERROR
+    assert "DEEPSEEK_API_KEY" not in str(exc_info.value)
+
+
+@pytest.mark.parametrize("model", ["local-deterministic", "mock-model"])
+def test_keyless_profiles_build_and_execute_without_provider_secrets(
+    monkeypatch: pytest.MonkeyPatch, model: str
+) -> None:
+    for env_var in (
+        "OPENAI_API_KEY",
+        "ANTHROPIC_API_KEY",
+        "HUGGINGFACE_API_KEY",
+        "DEEPSEEK_API_KEY",
+    ):
+        monkeypatch.delenv(env_var, raising=False)
+    adapter = build_adapter({"model": model})
+    assert adapter.generate("offline").text
+
+
+@pytest.mark.parametrize(
+    "field", ["api_key", "access_token", "provider_secret", "password"]
+)
+def test_secret_bearing_config_is_rejected_without_echoing_value(
+    field: str,
+) -> None:
+    secret = "never-echo-this-value"
+    with pytest.raises(DeepSeekAdapterError) as exc_info:
+        build_adapter({"model": "local-deterministic", field: secret})
+    assert secret not in str(exc_info.value)
 
 
 def test_missing_model_selection_requires_config() -> None:
@@ -186,6 +217,35 @@ def test_provider_error_normalization(monkeypatch: pytest.MonkeyPatch) -> None:
     assert error.failure_class == FailureClass.EXECUTION_ERROR
     assert error.failure_category == FailureCategory.OPERATIONAL
     assert str(error) == "DeepSeek API error: status 418"
+
+
+def test_provider_failure_does_not_echo_selected_secret(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    secret = "selected-provider-secret"
+    monkeypatch.setenv("DEEPSEEK_API_KEY", secret)
+
+    class FailingClient:
+        def post(self, *args: Any, **kwargs: Any) -> None:
+            raise RuntimeError(f"transport included {secret}")
+
+    adapter = DeepSeekAdapter(_deepseek_config(), client=FailingClient())
+    with pytest.raises(DeepSeekAdapterError) as exc_info:
+        adapter.generate("prompt")
+
+    assert secret not in str(exc_info.value)
+    assert secret not in repr(adapter.config)
+
+
+def test_only_selected_provider_key_can_satisfy_execution(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("OPENAI_API_KEY", "unselected-secret")
+    monkeypatch.delenv("DEEPSEEK_API_KEY", raising=False)
+    adapter = build_adapter({"model": "deepseek-chat"})
+
+    with pytest.raises(DeepSeekAdapterError, match="selected provider Deepseek"):
+        adapter.generate("prompt")
 
 
 @pytest.mark.live
