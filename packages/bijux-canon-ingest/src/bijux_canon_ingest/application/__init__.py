@@ -14,6 +14,7 @@ from typing import Any
 from bijux_canon_ingest._lazy_exports import LazyExport, resolve_lazy_export
 
 _LAZY_EXPORTS: dict[str, LazyExport] = {
+    "assess_ocr_requirement": (".document_extraction", "assess_ocr_requirement"),
     "DebugConfig": ("bijux_canon_ingest.observability", "DebugConfig"),
     "ErrorPolicy": (".pipeline_definitions", "ErrorPolicy"),
     "IndexBackend": (".service", "IndexBackend"),
@@ -58,6 +59,7 @@ _LAZY_EXPORTS: dict[str, LazyExport] = {
 }
 
 __all__ = [
+    "assess_ocr_requirement",
     "iter_ingest_pipeline",
     "iter_ingest_pipeline_core",
     "iter_chunks_from_cleaned",

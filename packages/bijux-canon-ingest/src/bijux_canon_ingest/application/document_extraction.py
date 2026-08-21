@@ -7,6 +7,7 @@ from __future__ import annotations
 
 from bijux_canon_ingest.domain.document_extraction import (
     DocumentParseError,
+    OcrRequiredOutcome,
     ParsedDocument,
     ParsedDocxDocument,
     ParsedHtmlDocument,
@@ -19,6 +20,10 @@ from bijux_canon_ingest.infra.admission.limits import AdmissionFailure
 from bijux_canon_ingest.infra.parsers.docx import parse_docx_content
 from bijux_canon_ingest.infra.parsers.html import parse_html_content
 from bijux_canon_ingest.infra.parsers.jats import parse_jats_content
+from bijux_canon_ingest.infra.parsers.ocr import (
+    image_ocr_requirement,
+    pdf_ocr_requirement,
+)
 from bijux_canon_ingest.infra.parsers.pdf import parse_pdf_content
 from bijux_canon_ingest.infra.parsers.text import (
     parse_markdown_content,
@@ -168,7 +173,37 @@ def parse_docx(admission: AdmissionResult) -> ParsedDocxDocument:
     )
 
 
+def assess_ocr_requirement(admission: AdmissionResult) -> OcrRequiredOutcome:
+    """Return typed evidence without performing OCR."""
+
+    if not admission.admitted:
+        raise DocumentParseError(
+            "source_not_admitted", "source must pass admission before OCR assessment"
+        )
+    if admission.format_id not in {"ocr-required", "pdf-digital"}:
+        raise DocumentParseError(
+            "format_mismatch", "admitted source is not an OCR candidate"
+        )
+    try:
+        content = read_current_source(admission.source, admission.budgets)
+    except AdmissionFailure as error:
+        if error.code == "source_changed":
+            raise DocumentParseError("source_changed", error.detail) from error
+        raise DocumentParseError("unsafe_markup", error.detail) from error
+    if admission.format_id == "pdf-digital":
+        return pdf_ocr_requirement(
+            content, source_content_sha256=admission.source.content_sha256
+        )
+    return image_ocr_requirement(
+        content,
+        source_content_sha256=admission.source.content_sha256,
+        media_type=admission.evidence.detected_media_type
+        or admission.source.media_type,
+    )
+
+
 __all__ = [
+    "assess_ocr_requirement",
     "parse_docx",
     "parse_html",
     "parse_jats",

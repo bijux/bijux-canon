@@ -17,6 +17,7 @@ def test_root_package_declares_lazy_exports_in_dir() -> None:
     assert "DiscoveryPolicy" in exported_names
     assert "IngestConfig" in exported_names
     assert "build_ingest_deps" in exported_names
+    assert "assess_ocr_requirement" in exported_names
     assert "discover_sources" in exported_names
     assert "parse_docx" in exported_names
     assert "parse_html" in exported_names

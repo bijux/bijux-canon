@@ -783,6 +783,44 @@ class ParsedDocxDocument:
         return {"manifest_sha256": _identity(payload), **payload}
 
 
+@dataclass(frozen=True, slots=True)
+class OcrRequiredOutcome:
+    """Typed evidence that extraction requires a separately admitted OCR provider."""
+
+    source_content_sha256: str
+    media_type: str
+    reason: str
+    locator: SourceLocator
+    page_count: int | None = None
+
+    def __post_init__(self) -> None:
+        if (
+            len(self.source_content_sha256) != 64
+            or not self.media_type
+            or not self.reason
+        ):
+            raise ValueError("OcrRequiredOutcome requires source, media, and reason")
+        if self.page_count is not None and self.page_count <= 0:
+            raise ValueError("OcrRequiredOutcome page count must be positive")
+
+    def manifest(self) -> dict[str, object]:
+        """Return an explicit no-text OCR-required result."""
+
+        payload: dict[str, object] = {
+            "format_id": "ocr-required",
+            "locator": self.locator.manifest(),
+            "media_type": self.media_type,
+            "ocr_performed": False,
+            "ocr_provider_status": "not-admitted",
+            "page_count": self.page_count,
+            "reason": self.reason,
+            "schema_version": "bijux.canon.ingest.ocr_required.v1",
+            "source_content_sha256": self.source_content_sha256,
+            "text": None,
+        }
+        return {"manifest_sha256": _identity(payload), **payload}
+
+
 class DocumentParseError(ValueError):
     """A typed refusal at the semantic document parsing boundary."""
 
@@ -814,6 +852,7 @@ __all__ = [
     "HtmlDocumentMetadata",
     "HtmlLink",
     "NewlineStyle",
+    "OcrRequiredOutcome",
     "ParsedTextBlock",
     "ParsedTextDocument",
     "PdfDocumentMetadata",
