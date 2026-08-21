@@ -222,8 +222,10 @@ LOCAL_MINILM_PROFILE = EmbeddingProfile(
     required_artifacts=(
         "1_Pooling/config.json",
         "config.json",
+        "config_sentence_transformers.json",
         "model.safetensors",
         "modules.json",
+        "sentence_bert_config.json",
         "special_tokens_map.json",
         "tokenizer.json",
         "tokenizer_config.json",
