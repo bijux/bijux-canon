@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.0.0",
+  "schema_version": "1.1.0",
   "contract_id": "bijux.canon.ingest.artifacts.v2",
   "artifact_schema_version": "2.0.0",
   "json_schema_dialect": "https://json-schema.org/draft/2020-12/schema",
@@ -7,6 +7,10 @@
   "identity_algorithm": "sha-256",
   "identity_excluded_json_pointers": ["/artifact_id"],
   "schemas": {
+    "bijux.canon.ingest.chunk": {
+      "path": "schemas/chunk-record.schema.json",
+      "sha256": "cd97db9fc4efbe22eb937fe483e69a6405d596540146959813871dc8b781e7ad"
+    },
     "bijux.canon.ingest.corpus_snapshot": {
       "path": "schemas/corpus-snapshot-record.schema.json",
       "sha256": "c8ca5bdbec7ee4c58e2e26f983fa2fdf397a4a187f6bff89592c651d641fe721"
@@ -18,6 +22,10 @@
     "bijux.canon.ingest.lineage": {
       "path": "schemas/lineage-record.schema.json",
       "sha256": "e5d1d360f709f6b9329d88fa0896e8902e25acf652fdaf31eeda314c28f65afe"
+    },
+    "bijux.canon.ingest.locator": {
+      "path": "schemas/locator-record.schema.json",
+      "sha256": "a14231c5a09bd5c22445b96f5f53556aa55355ef7c538b88c43aef8c0c67b633"
     },
     "bijux.canon.ingest.rejection": {
       "path": "schemas/rejection-record.schema.json",
@@ -38,11 +46,19 @@
     "implicit_migration_allowed": false,
     "registered_transform_count": 0
   },
-  "conformance_example": {
-    "path": "examples/evaluation-corpus-records.json",
-    "sha256": "890c2e40dc2c5d9b4557ac307e9410958ef4097ba5f9ad8ec4df38fc897c5cdd",
-    "record_count": 5,
-    "source_corpus_sha256": "03a79d793dc4bc525745c8c564a5b116ea727a2dfea9766397d886edfc39e4aa",
-    "source_document_count": 25
+  "conformance_examples": {
+    "source_corpus": {
+      "path": "examples/evaluation-corpus-records.json",
+      "sha256": "890c2e40dc2c5d9b4557ac307e9410958ef4097ba5f9ad8ec4df38fc897c5cdd",
+      "record_count": 5,
+      "source_corpus_sha256": "03a79d793dc4bc525745c8c564a5b116ea727a2dfea9766397d886edfc39e4aa",
+      "source_document_count": 25
+    },
+    "structured_chunk": {
+      "path": "examples/evaluation-fastq-chunk-records.json",
+      "sha256": "a02a9c4063bcd20a73510c0f1a4645145d4adcb6c69b426d18a3b4a34d90c8cc",
+      "record_count": 3,
+      "source_document_id": "d01_fastq"
+    }
   }
 }

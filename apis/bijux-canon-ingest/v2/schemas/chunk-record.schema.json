@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.bijux.org/canon/ingest/v2/chunk-record.schema.json",
+  "title": "Immutable normalized chunk record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "artifact_type",
+    "artifact_id",
+    "document_artifact_id",
+    "locator_artifact_ids",
+    "parent_lineage_artifact_ids",
+    "chunk_index",
+    "original_content_sha256",
+    "normalized_text",
+    "normalized_text_sha256",
+    "normalized_byte_length",
+    "normalized_payload_ref",
+    "normalization_form",
+    "transformations"
+  ],
+  "properties": {
+    "schema_version": {"$ref": "common.schema.json#/$defs/schema_version"},
+    "artifact_type": {"const": "bijux.canon.ingest.chunk"},
+    "artifact_id": {"$ref": "common.schema.json#/$defs/artifact_id"},
+    "document_artifact_id": {"$ref": "common.schema.json#/$defs/artifact_id"},
+    "locator_artifact_ids": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"$ref": "common.schema.json#/$defs/artifact_id"},
+      "x-bijux-ordering": "ascending"
+    },
+    "parent_lineage_artifact_ids": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"$ref": "common.schema.json#/$defs/artifact_id"},
+      "x-bijux-ordering": "ascending"
+    },
+    "chunk_index": {"type": "integer", "minimum": 0},
+    "original_content_sha256": {"$ref": "common.schema.json#/$defs/sha256"},
+    "normalized_text": {"type": "string", "minLength": 1},
+    "normalized_text_sha256": {"$ref": "common.schema.json#/$defs/sha256"},
+    "normalized_byte_length": {"type": "integer", "minimum": 1},
+    "normalized_payload_ref": {"$ref": "common.schema.json#/$defs/cas_uri"},
+    "normalization_form": {"enum": ["NFC", "NFD", "NFKC", "NFKD", "none"]},
+    "transformations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/transformation"}
+    },
+    "annotations": {"$ref": "common.schema.json#/$defs/annotations"}
+  },
+  "$defs": {
+    "transformation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "operation",
+        "implementation",
+        "implementation_version",
+        "configuration_sha256",
+        "input_content_sha256",
+        "output_content_sha256"
+      ],
+      "properties": {
+        "operation": {
+          "enum": ["unicode_normalize", "case_fold", "whitespace_normalize", "trim", "segment"]
+        },
+        "implementation": {"type": "string", "minLength": 1},
+        "implementation_version": {"type": "string", "minLength": 1},
+        "configuration_sha256": {"$ref": "common.schema.json#/$defs/sha256"},
+        "input_content_sha256": {"$ref": "common.schema.json#/$defs/sha256"},
+        "output_content_sha256": {"$ref": "common.schema.json#/$defs/sha256"}
+      }
+    }
+  },
+  "x-bijux-invariants": [
+    "normalized_text hashes to normalized_text_sha256 and normalized_payload_ref",
+    "the first transformation input equals original_content_sha256",
+    "each transformation output equals the next transformation input",
+    "the final transformation output equals normalized_text_sha256",
+    "every locator references document_artifact_id and resolves to the original content"
+  ],
+  "x-bijux-identity": {
+    "algorithm": "sha-256",
+    "canonicalization": "RFC 8785",
+    "excluded_json_pointers": ["/artifact_id"]
+  }
+}

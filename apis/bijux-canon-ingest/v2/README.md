@@ -1,9 +1,9 @@
 # Bijux Canon ingest artifact contract v2
 
-This directory owns immutable source, extracted document, corpus snapshot,
-rejection, and lineage records for the ingest boundary. Each record is a closed
-JSON Schema Draft 2020-12 object with a fixed `artifact_type` and
-`schema_version`.
+This directory owns immutable source, extracted document, structured locator,
+normalized chunk, corpus snapshot, rejection, and lineage records for the ingest
+boundary. Each record is a closed JSON Schema Draft 2020-12 object with a fixed
+`artifact_type` and `schema_version`.
 
 ## Identity and serialization
 
@@ -33,6 +33,10 @@ must produce a new artifact with explicit predecessor lineage.
 
 - `source-record.schema.json` binds acquired bytes, origin, revision, and rights.
 - `document-record.schema.json` binds an extracted document to its source.
+- `locator-record.schema.json` binds typed text, section, page, and paragraph
+  selectors.
+- `chunk-record.schema.json` binds normalized text and its complete transformation
+  chain.
 - `corpus-snapshot-record.schema.json` freezes sorted admitted and rejected IDs.
 - `rejection-record.schema.json` retains a stable reason and remediation.
 - `lineage-record.schema.json` binds inputs and outputs to a reproducible operation.

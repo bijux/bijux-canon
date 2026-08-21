@@ -1,0 +1,109 @@
+{
+  "bundle_schema_version": "1.0.0",
+  "external_artifact_ids": [
+    "sha256:4adb322d62f0dd62623689bb2dce62508575bece2401eaf7dd3c20a462e14577",
+    "sha256:6d8abea9ce88c61324c0851838e8015127e15b2f9db0596d703774033bb09271",
+    "sha256:84ed95e544aa0a734667a744b43bdb7625b131ba79d2fdde580fb4db6facff78"
+  ],
+  "records": [
+    {
+      "schema_version": "2.0.0",
+      "artifact_type": "bijux.canon.ingest.locator",
+      "artifact_id": "sha256:7b2e5d23c0c44ceb5fc9cbe98a8598a6a7abf7bc8c322e4e372edc120311a658",
+      "source_artifact_id": "sha256:6d8abea9ce88c61324c0851838e8015127e15b2f9db0596d703774033bb09271",
+      "document_artifact_id": "sha256:4adb322d62f0dd62623689bb2dce62508575bece2401eaf7dd3c20a462e14577",
+      "selectors": [
+        {
+          "kind": "text_position",
+          "coordinate_system": "unicode_code_point",
+          "start": 0,
+          "end": 154,
+          "selected_text_sha256": "0db0badceafa9decd9cedb6bfb49c01124fd8deb3658b4c11d97178d4c5bbed4"
+        },
+        {
+          "kind": "section",
+          "path": [
+            {"ordinal": 1, "heading": "abstract"}
+          ]
+        },
+        {
+          "kind": "paragraph",
+          "ordinal": 1
+        }
+      ]
+    },
+    {
+      "schema_version": "2.0.0",
+      "artifact_type": "bijux.canon.ingest.chunk",
+      "artifact_id": "sha256:2423549a0f9d7b00d8d89d8fecc98a18eb3530956d05d90f4ea45c82a22ea377",
+      "document_artifact_id": "sha256:4adb322d62f0dd62623689bb2dce62508575bece2401eaf7dd3c20a462e14577",
+      "locator_artifact_ids": [
+        "sha256:7b2e5d23c0c44ceb5fc9cbe98a8598a6a7abf7bc8c322e4e372edc120311a658"
+      ],
+      "parent_lineage_artifact_ids": [
+        "sha256:84ed95e544aa0a734667a744b43bdb7625b131ba79d2fdde580fb4db6facff78"
+      ],
+      "chunk_index": 0,
+      "original_content_sha256": "0db0badceafa9decd9cedb6bfb49c01124fd8deb3658b4c11d97178d4c5bbed4",
+      "normalized_text": "fastq is a sequencing reads format. each record is four lines: @header, sequence, +, and quality. sanger fastq encodes phred quality with ascii offset 33.",
+      "normalized_text_sha256": "f9fdbbcdb66f11e8610774899a3335606f77ea7c5bc9be1413354672c3ab7335",
+      "normalized_byte_length": 154,
+      "normalized_payload_ref": "cas+sha256://f9fdbbcdb66f11e8610774899a3335606f77ea7c5bc9be1413354672c3ab7335",
+      "normalization_form": "none",
+      "transformations": [
+        {
+          "operation": "case_fold",
+          "implementation": "bijux-canon-ingest-clean-doc",
+          "implementation_version": "0.3.9",
+          "configuration_sha256": "3b41e534a01ecff7cccafefc5115a687d4f7922bd9bacf9d5a5cda6edd826486",
+          "input_content_sha256": "0db0badceafa9decd9cedb6bfb49c01124fd8deb3658b4c11d97178d4c5bbed4",
+          "output_content_sha256": "f9fdbbcdb66f11e8610774899a3335606f77ea7c5bc9be1413354672c3ab7335"
+        },
+        {
+          "operation": "segment",
+          "implementation": "bijux-canon-ingest-fixed-window",
+          "implementation_version": "0.3.9",
+          "configuration_sha256": "e57a27ecee071edd233dcd86b21c48156aef0b9c5a26b5cf31f7a76ae9b08b1f",
+          "input_content_sha256": "f9fdbbcdb66f11e8610774899a3335606f77ea7c5bc9be1413354672c3ab7335",
+          "output_content_sha256": "f9fdbbcdb66f11e8610774899a3335606f77ea7c5bc9be1413354672c3ab7335"
+        }
+      ],
+      "annotations": {
+        "category": "bioinformatics"
+      }
+    },
+    {
+      "schema_version": "2.0.0",
+      "artifact_type": "bijux.canon.ingest.lineage",
+      "artifact_id": "sha256:6ef253c1c2c30b4d8fae786fefa51e900afda7c3a91c8e433c6eb25a86eb7cbf",
+      "inputs": [
+        {
+          "artifact_id": "sha256:4adb322d62f0dd62623689bb2dce62508575bece2401eaf7dd3c20a462e14577",
+          "artifact_type": "bijux.canon.ingest.document",
+          "schema_version": "2.0.0"
+        }
+      ],
+      "outputs": [
+        {
+          "artifact_id": "sha256:2423549a0f9d7b00d8d89d8fecc98a18eb3530956d05d90f4ea45c82a22ea377",
+          "artifact_type": "bijux.canon.ingest.chunk",
+          "schema_version": "2.0.0"
+        },
+        {
+          "artifact_id": "sha256:7b2e5d23c0c44ceb5fc9cbe98a8598a6a7abf7bc8c322e4e372edc120311a658",
+          "artifact_type": "bijux.canon.ingest.locator",
+          "schema_version": "2.0.0"
+        }
+      ],
+      "operation": {
+        "name": "normalize_and_segment",
+        "implementation": "bijux-canon-ingest-fixed-window",
+        "implementation_version": "0.3.9",
+        "configuration_sha256": "e57a27ecee071edd233dcd86b21c48156aef0b9c5a26b5cf31f7a76ae9b08b1f",
+        "deterministic": true
+      },
+      "started_at": "2026-08-21T04:19:46Z",
+      "completed_at": "2026-08-21T04:19:46Z"
+    }
+  ]
+}

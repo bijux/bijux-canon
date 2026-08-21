@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.bijux.org/canon/ingest/v2/locator-record.schema.json",
+  "title": "Structured source locator record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "artifact_type",
+    "artifact_id",
+    "source_artifact_id",
+    "document_artifact_id",
+    "selectors"
+  ],
+  "properties": {
+    "schema_version": {"$ref": "common.schema.json#/$defs/schema_version"},
+    "artifact_type": {"const": "bijux.canon.ingest.locator"},
+    "artifact_id": {"$ref": "common.schema.json#/$defs/artifact_id"},
+    "source_artifact_id": {"$ref": "common.schema.json#/$defs/artifact_id"},
+    "document_artifact_id": {"$ref": "common.schema.json#/$defs/artifact_id"},
+    "selectors": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "oneOf": [
+          {"$ref": "#/$defs/text_position_selector"},
+          {"$ref": "#/$defs/section_selector"},
+          {"$ref": "#/$defs/page_selector"},
+          {"$ref": "#/$defs/paragraph_selector"}
+        ]
+      },
+      "x-bijux-ordering": "document order, then selector specificity"
+    }
+  },
+  "$defs": {
+    "text_position_selector": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "coordinate_system", "start", "end", "selected_text_sha256"],
+      "properties": {
+        "kind": {"const": "text_position"},
+        "coordinate_system": {"enum": ["unicode_code_point", "utf8_byte"]},
+        "start": {"type": "integer", "minimum": 0},
+        "end": {"type": "integer", "minimum": 1},
+        "selected_text_sha256": {"$ref": "common.schema.json#/$defs/sha256"}
+      }
+    },
+    "section_selector": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "path"],
+      "properties": {
+        "kind": {"const": "section"},
+        "path": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["ordinal", "heading"],
+            "properties": {
+              "ordinal": {"type": "integer", "minimum": 1},
+              "heading": {"type": "string", "minLength": 1}
+            }
+          }
+        }
+      }
+    },
+    "page_selector": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "page_number"],
+      "properties": {
+        "kind": {"const": "page"},
+        "page_number": {"type": "integer", "minimum": 1},
+        "bounding_box": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["unit", "left", "top", "right", "bottom"],
+          "properties": {
+            "unit": {"enum": ["point", "pixel", "normalized"]},
+            "left": {"type": "number", "minimum": 0},
+            "top": {"type": "number", "minimum": 0},
+            "right": {"type": "number", "exclusiveMinimum": 0},
+            "bottom": {"type": "number", "exclusiveMinimum": 0}
+          }
+        }
+      }
+    },
+    "paragraph_selector": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "ordinal"],
+      "properties": {
+        "kind": {"const": "paragraph"},
+        "ordinal": {"type": "integer", "minimum": 1}
+      }
+    }
+  },
+  "x-bijux-invariants": [
+    "text-position end is greater than start",
+    "bounding-box right is greater than left and bottom is greater than top",
+    "every selector resolves within the referenced immutable document"
+  ],
+  "x-bijux-identity": {
+    "algorithm": "sha-256",
+    "canonicalization": "RFC 8785",
+    "excluded_json_pointers": ["/artifact_id"]
+  }
+}
