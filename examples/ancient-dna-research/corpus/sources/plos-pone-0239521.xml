@@ -1,0 +1,836 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE article PUBLIC "-//NLM//DTD JATS (Z39.96) Journal Publishing DTD v1.1d3 20150301//EN" "http://jats.nlm.nih.gov/publishing/1.1d3/JATS-journalpublishing1.dtd">
+<article article-type="research-article" dtd-version="1.1d3" xml:lang="en" xmlns:mml="http://www.w3.org/1998/Math/MathML" xmlns:xlink="http://www.w3.org/1999/xlink">
+<front>
+<journal-meta>
+<journal-id journal-id-type="nlm-ta">PLoS ONE</journal-id>
+<journal-id journal-id-type="publisher-id">plos</journal-id>
+<journal-id journal-id-type="pmc">plosone</journal-id>
+<journal-title-group>
+<journal-title>PLOS ONE</journal-title>
+</journal-title-group>
+<issn pub-type="epub">1932-6203</issn>
+<publisher>
+<publisher-name>Public Library of Science</publisher-name>
+<publisher-loc>San Francisco, CA USA</publisher-loc>
+</publisher>
+</journal-meta>
+<article-meta>
+<article-id pub-id-type="doi">10.1371/journal.pone.0239521</article-id>
+<article-id pub-id-type="publisher-id">PONE-D-20-02649</article-id>
+<article-categories>
+<subj-group subj-group-type="heading">
+<subject>Research Article</subject>
+</subj-group>
+<subj-group subj-group-type="Discipline-v3">
+<subject>Biology and life sciences</subject><subj-group><subject>Zoology</subject><subj-group><subject>Entomology</subject><subj-group><subject>Insects</subject><subj-group><subject>Beetles</subject></subj-group></subj-group></subj-group></subj-group></subj-group><subj-group subj-group-type="Discipline-v3">
+<subject>Biology and life sciences</subject><subj-group><subject>Organisms</subject><subj-group><subject>Eukaryota</subject><subj-group><subject>Animals</subject><subj-group><subject>Invertebrates</subject><subj-group><subject>Arthropoda</subject><subj-group><subject>Insects</subject><subj-group><subject>Beetles</subject></subj-group></subj-group></subj-group></subj-group></subj-group></subj-group></subj-group></subj-group><subj-group subj-group-type="Discipline-v3">
+<subject>Biology and life sciences</subject><subj-group><subject>Zoology</subject><subj-group><subject>Animals</subject><subj-group><subject>Invertebrates</subject><subj-group><subject>Arthropoda</subject><subj-group><subject>Insects</subject><subj-group><subject>Beetles</subject></subj-group></subj-group></subj-group></subj-group></subj-group></subj-group></subj-group><subj-group subj-group-type="Discipline-v3">
+<subject>Biology and life sciences</subject><subj-group><subject>Molecular biology</subject><subj-group><subject>Molecular biology techniques</subject><subj-group><subject>Artificial gene amplification and extension</subject><subj-group><subject>Polymerase chain reaction</subject></subj-group></subj-group></subj-group></subj-group></subj-group><subj-group subj-group-type="Discipline-v3">
+<subject>Research and analysis methods</subject><subj-group><subject>Molecular biology techniques</subject><subj-group><subject>Artificial gene amplification and extension</subject><subj-group><subject>Polymerase chain reaction</subject></subj-group></subj-group></subj-group></subj-group><subj-group subj-group-type="Discipline-v3">
+<subject>Research and analysis methods</subject><subj-group><subject>Extraction techniques</subject><subj-group><subject>DNA extraction</subject></subj-group></subj-group></subj-group><subj-group subj-group-type="Discipline-v3">
+<subject>Physical sciences</subject><subj-group><subject>Chemistry</subject><subj-group><subject>Chemical compounds</subject><subj-group><subject>Organic compounds</subject><subj-group><subject>Alcohols</subject><subj-group><subject>Ethanol</subject></subj-group></subj-group></subj-group></subj-group></subj-group></subj-group><subj-group subj-group-type="Discipline-v3">
+<subject>Physical sciences</subject><subj-group><subject>Chemistry</subject><subj-group><subject>Organic chemistry</subject><subj-group><subject>Organic compounds</subject><subj-group><subject>Alcohols</subject><subj-group><subject>Ethanol</subject></subj-group></subj-group></subj-group></subj-group></subj-group></subj-group><subj-group subj-group-type="Discipline-v3">
+<subject>Biology and life sciences</subject><subj-group><subject>Zoology</subject><subj-group><subject>Entomology</subject><subj-group><subject>Insects</subject></subj-group></subj-group></subj-group></subj-group><subj-group subj-group-type="Discipline-v3">
+<subject>Biology and life sciences</subject><subj-group><subject>Organisms</subject><subj-group><subject>Eukaryota</subject><subj-group><subject>Animals</subject><subj-group><subject>Invertebrates</subject><subj-group><subject>Arthropoda</subject><subj-group><subject>Insects</subject></subj-group></subj-group></subj-group></subj-group></subj-group></subj-group></subj-group><subj-group subj-group-type="Discipline-v3">
+<subject>Biology and life sciences</subject><subj-group><subject>Zoology</subject><subj-group><subject>Animals</subject><subj-group><subject>Invertebrates</subject><subj-group><subject>Arthropoda</subject><subj-group><subject>Insects</subject></subj-group></subj-group></subj-group></subj-group></subj-group></subj-group><subj-group subj-group-type="Discipline-v3">
+<subject>Biology and life sciences</subject><subj-group><subject>Genetics</subject><subj-group><subject>DNA</subject><subj-group><subject>Ancient DNA</subject></subj-group></subj-group></subj-group></subj-group><subj-group subj-group-type="Discipline-v3">
+<subject>Biology and life sciences</subject><subj-group><subject>Biochemistry</subject><subj-group><subject>Nucleic acids</subject><subj-group><subject>DNA</subject><subj-group><subject>Ancient DNA</subject></subj-group></subj-group></subj-group></subj-group></subj-group><subj-group subj-group-type="Discipline-v3">
+<subject>Biology and life sciences</subject><subj-group><subject>Paleontology</subject><subj-group><subject>Paleogenetics</subject><subj-group><subject>Ancient DNA</subject></subj-group></subj-group></subj-group></subj-group><subj-group subj-group-type="Discipline-v3">
+<subject>Earth sciences</subject><subj-group><subject>Paleontology</subject><subj-group><subject>Paleogenetics</subject><subj-group><subject>Ancient DNA</subject></subj-group></subj-group></subj-group></subj-group><subj-group subj-group-type="Discipline-v3">
+<subject>Biology and life sciences</subject><subj-group><subject>Paleontology</subject><subj-group><subject>Fossils</subject></subj-group></subj-group></subj-group><subj-group subj-group-type="Discipline-v3">
+<subject>Earth sciences</subject><subj-group><subject>Paleontology</subject><subj-group><subject>Fossils</subject></subj-group></subj-group></subj-group><subj-group subj-group-type="Discipline-v3">
+<subject>Physical sciences</subject><subj-group><subject>Chemistry</subject><subj-group><subject>Chemical compounds</subject><subj-group><subject>Organic compounds</subject><subj-group><subject>Chloroform</subject></subj-group></subj-group></subj-group></subj-group></subj-group><subj-group subj-group-type="Discipline-v3">
+<subject>Physical sciences</subject><subj-group><subject>Chemistry</subject><subj-group><subject>Organic chemistry</subject><subj-group><subject>Organic compounds</subject><subj-group><subject>Chloroform</subject></subj-group></subj-group></subj-group></subj-group></subj-group></article-categories>
+<title-group>
+<article-title>DNA from resin-embedded organisms: Past, present and future</article-title>
+<alt-title alt-title-type="running-head">DNA from resin-embedded organisms</alt-title>
+</title-group>
+<contrib-group>
+<contrib contrib-type="author" corresp="yes" equal-contrib="yes" xlink:type="simple">
+<contrib-id authenticated="true" contrib-id-type="orcid">http://orcid.org/0000-0003-4074-7400</contrib-id>
+<name name-style="western">
+<surname>Peris</surname>
+<given-names>David</given-names>
+</name>
+<role content-type="https://casrai.org/credit/">Conceptualization</role>
+<role content-type="https://casrai.org/credit/">Formal analysis</role>
+<role content-type="https://casrai.org/credit/">Funding acquisition</role>
+<role content-type="https://casrai.org/credit/">Investigation</role>
+<role content-type="https://casrai.org/credit/">Methodology</role>
+<role content-type="https://casrai.org/credit/">Project administration</role>
+<role content-type="https://casrai.org/credit/">Supervision</role>
+<role content-type="https://casrai.org/credit/">Validation</role>
+<role content-type="https://casrai.org/credit/">Writing – original draft</role>
+<role content-type="https://casrai.org/credit/">Writing – review &amp; editing</role>
+<xref ref-type="aff" rid="aff001"><sup>1</sup></xref>
+<xref ref-type="corresp" rid="cor001">*</xref>
+</contrib>
+<contrib contrib-type="author" corresp="yes" equal-contrib="yes" xlink:type="simple">
+<name name-style="western">
+<surname>Janssen</surname>
+<given-names>Kathrin</given-names>
+</name>
+<role content-type="https://casrai.org/credit/">Conceptualization</role>
+<role content-type="https://casrai.org/credit/">Data curation</role>
+<role content-type="https://casrai.org/credit/">Formal analysis</role>
+<role content-type="https://casrai.org/credit/">Investigation</role>
+<role content-type="https://casrai.org/credit/">Methodology</role>
+<role content-type="https://casrai.org/credit/">Validation</role>
+<role content-type="https://casrai.org/credit/">Writing – original draft</role>
+<role content-type="https://casrai.org/credit/">Writing – review &amp; editing</role>
+<xref ref-type="aff" rid="aff002"><sup>2</sup></xref>
+<xref ref-type="corresp" rid="cor001">*</xref>
+</contrib>
+<contrib contrib-type="author" xlink:type="simple">
+<contrib-id authenticated="true" contrib-id-type="orcid">http://orcid.org/0000-0001-9511-6732</contrib-id>
+<name name-style="western">
+<surname>Barthel</surname>
+<given-names>H. Jonas</given-names>
+</name>
+<role content-type="https://casrai.org/credit/">Formal analysis</role>
+<role content-type="https://casrai.org/credit/">Investigation</role>
+<role content-type="https://casrai.org/credit/">Writing – review &amp; editing</role>
+<xref ref-type="aff" rid="aff001"><sup>1</sup></xref>
+</contrib>
+<contrib contrib-type="author" xlink:type="simple">
+<name name-style="western">
+<surname>Bierbaum</surname>
+<given-names>Gabriele</given-names>
+</name>
+<role content-type="https://casrai.org/credit/">Conceptualization</role>
+<role content-type="https://casrai.org/credit/">Funding acquisition</role>
+<role content-type="https://casrai.org/credit/">Supervision</role>
+<role content-type="https://casrai.org/credit/">Writing – review &amp; editing</role>
+<xref ref-type="aff" rid="aff002"><sup>2</sup></xref>
+</contrib>
+<contrib contrib-type="author" xlink:type="simple">
+<name name-style="western">
+<surname>Delclòs</surname>
+<given-names>Xavier</given-names>
+</name>
+<role content-type="https://casrai.org/credit/">Conceptualization</role>
+<role content-type="https://casrai.org/credit/">Data curation</role>
+<role content-type="https://casrai.org/credit/">Funding acquisition</role>
+<role content-type="https://casrai.org/credit/">Writing – review &amp; editing</role>
+<xref ref-type="aff" rid="aff003"><sup>3</sup></xref>
+</contrib>
+<contrib contrib-type="author" xlink:type="simple">
+<name name-style="western">
+<surname>Peñalver</surname>
+<given-names>Enrique</given-names>
+</name>
+<role content-type="https://casrai.org/credit/">Conceptualization</role>
+<role content-type="https://casrai.org/credit/">Data curation</role>
+<role content-type="https://casrai.org/credit/">Investigation</role>
+<role content-type="https://casrai.org/credit/">Writing – review &amp; editing</role>
+<xref ref-type="aff" rid="aff004"><sup>4</sup></xref>
+</contrib>
+<contrib contrib-type="author" xlink:type="simple">
+<name name-style="western">
+<surname>Solórzano-Kraemer</surname>
+<given-names>Mónica M.</given-names>
+</name>
+<role content-type="https://casrai.org/credit/">Data curation</role>
+<role content-type="https://casrai.org/credit/">Funding acquisition</role>
+<role content-type="https://casrai.org/credit/">Methodology</role>
+<role content-type="https://casrai.org/credit/">Writing – review &amp; editing</role>
+<xref ref-type="aff" rid="aff005"><sup>5</sup></xref>
+</contrib>
+<contrib contrib-type="author" xlink:type="simple">
+<name name-style="western">
+<surname>Jordal</surname>
+<given-names>Bjarte H.</given-names>
+</name>
+<role content-type="https://casrai.org/credit/">Data curation</role>
+<role content-type="https://casrai.org/credit/">Funding acquisition</role>
+<role content-type="https://casrai.org/credit/">Validation</role>
+<role content-type="https://casrai.org/credit/">Writing – review &amp; editing</role>
+<xref ref-type="aff" rid="aff006"><sup>6</sup></xref>
+</contrib>
+<contrib contrib-type="author" xlink:type="simple">
+<name name-style="western">
+<surname>Rust</surname>
+<given-names>Jes</given-names>
+</name>
+<role content-type="https://casrai.org/credit/">Conceptualization</role>
+<role content-type="https://casrai.org/credit/">Funding acquisition</role>
+<role content-type="https://casrai.org/credit/">Methodology</role>
+<role content-type="https://casrai.org/credit/">Supervision</role>
+<role content-type="https://casrai.org/credit/">Writing – review &amp; editing</role>
+<xref ref-type="aff" rid="aff001"><sup>1</sup></xref>
+</contrib>
+</contrib-group>
+<aff id="aff001"><label>1</label> <addr-line>Section Paleontology, Institute of Geosciences, University of Bonn, Bonn, Germany</addr-line></aff>
+<aff id="aff002"><label>2</label> <addr-line>Institute of Medical Microbiology, Immunology and Parasitology, Medical Faculty, University of Bonn, Bonn, Germany</addr-line></aff>
+<aff id="aff003"><label>3</label> <addr-line>Department of Earth and Ocean Dynamics and Biodiversity Research Institute (IRBio), Faculty of Earth Sciences, Universitat de Barcelona, Barcelona, Spain</addr-line></aff>
+<aff id="aff004"><label>4</label> <addr-line>Geological and Mining Institute of Spain (Geominero Museum), Valencia, Spain</addr-line></aff>
+<aff id="aff005"><label>5</label> <addr-line>Department of Palaeontology and Historical Geology, Senckenberg Research Institute, Frankfurt am Main, Germany</addr-line></aff>
+<aff id="aff006"><label>6</label> <addr-line>Museum of Natural History, University Museum of Bergen, University of Bergen, Bergen, Norway</addr-line></aff>
+<contrib-group>
+<contrib contrib-type="editor" xlink:type="simple">
+<name name-style="western">
+<surname>Caramelli</surname>
+<given-names>David</given-names>
+</name>
+<role>Editor</role>
+<xref ref-type="aff" rid="edit1"/>
+</contrib>
+</contrib-group>
+<aff id="edit1"><addr-line>University of Florence, ITALY</addr-line></aff>
+<author-notes>
+<fn fn-type="conflict" id="coi001">
+<p>The authors have declared that no competing interests exist.</p>
+</fn>
+<corresp id="cor001">* E-mail: <email xlink:type="simple">daperce@gmail.com</email> (DP); <email xlink:type="simple">Kathrin.Janssen@ukbonn.de</email> (KJ)</corresp>
+</author-notes>
+<pub-date pub-type="epub">
+<day>28</day>
+<month>9</month>
+<year>2020</year>
+</pub-date>
+<pub-date pub-type="collection">
+<year>2020</year>
+</pub-date>
+<volume>15</volume>
+<issue>9</issue>
+<elocation-id>e0239521</elocation-id>
+<history>
+<date date-type="received">
+<day>28</day>
+<month>1</month>
+<year>2020</year>
+</date>
+<date date-type="accepted">
+<day>9</day>
+<month>9</month>
+<year>2020</year>
+</date>
+</history>
+<permissions>
+<copyright-year>2020</copyright-year>
+<copyright-holder>Peris et al</copyright-holder>
+<license xlink:href="http://creativecommons.org/licenses/by/4.0/" xlink:type="simple">
+<license-p>This is an open access article distributed under the terms of the <ext-link ext-link-type="uri" xlink:href="http://creativecommons.org/licenses/by/4.0/" xlink:type="simple">Creative Commons Attribution License</ext-link>, which permits unrestricted use, distribution, and reproduction in any medium, provided the original author and source are credited.</license-p>
+</license>
+</permissions>
+<self-uri content-type="pdf" xlink:href="info:doi/10.1371/journal.pone.0239521"/>
+<abstract>
+<p>Past claims have been made for fossil DNA recovery from various organisms (bacteria, plants, insects and mammals, including humans) dating back in time from thousands to several million years BP. However, many of these recoveries, especially those described from million-year-old amber (fossil resin), have faced criticism as being the result of modern environmental contamination and for lack of reproducibility. Using modern genomic techniques, DNA can be obtained with confidence from a variety of substrates (e.g. bones, teeth, gum, museum specimens and fossil insects) of different ages, albeit always less than one million years BP, and results can also be obtained from much older materials using palaeoproteomics. Nevertheless, new attempts to determine if ancient DNA (aDNA) is present in insects preserved in 40 000-year old sub-fossilised resin, the precursor of amber, have been unsuccessful or not well documented. Resin-embedded specimens are therefore regarded as unsuitable for genetic studies. However, we demonstrate here, for the first time, that although a labile molecule, DNA is still present in platypodine beetles (Coleoptera: Curculionidae) embedded in six-year-old and two-year-old resin pieces from <italic>Hymenaea verrucosa</italic> (Angiospermae: Fabaceae) collected in Madagascar. We describe an optimised method which meets all the requirements and precautions for aDNA experiments for our purpose: to explore the DNA preservation limits in resin. Our objective is far from starting an uncontrolled search for aDNA in amber as it was in the past, but to start resolving basic aspects from the DNA preservation in resin and search from the most modern samples to the ancient ones, step by step. We conclude that it is therefore possible to study genomics from resin-embedded organisms, although the time limits remain to be determined.</p>
+</abstract>
+<funding-group>
+<funding-statement>DP - Alexander von Humboldt Foundation (Germany). <ext-link ext-link-type="uri" xlink:href="https://www.humboldt-foundation.de/web/home.html" xlink:type="simple">https://www.humboldt-foundation.de/web/home.html</ext-link>. DP, KJ, HJB, GB, JR - German Research Foundation Research Unit 2685 (Germany).This is contribution no. 25 of Research Unit 2685 (Projektnummer 396704301). <ext-link ext-link-type="uri" xlink:href="https://www.dfg.de/en/" xlink:type="simple">https://www.dfg.de/en/</ext-link>. DP, XD, EP, MMSK - CRE project funded by the Spanish AEI/FEDER, EU Grant CGL2017-84419. <ext-link ext-link-type="uri" xlink:href="http://www.idi.mineco.gob.es" xlink:type="simple">http://www.idi.mineco.gob.es</ext-link>. XD, EP, MMSK - National Geographic Global Exploration Fund Northern Europe, Grant GEFNE 127-14. <ext-link ext-link-type="uri" xlink:href="https://www.nationalgeographic.org/funding-opportunities/grants/what-we-fund/" xlink:type="simple">https://www.nationalgeographic.org/funding-opportunities/grants/what-we-fund/</ext-link>. MMSK - VolkswagenStiftung (Germany) Grant 90946. <ext-link ext-link-type="uri" xlink:href="https://www.volkswagenstiftung.de/" xlink:type="simple">https://www.volkswagenstiftung.de/</ext-link>.</funding-statement>
+</funding-group>
+<counts>
+<fig-count count="6"/>
+<table-count count="4"/>
+<page-count count="21"/>
+</counts>
+<custom-meta-group>
+<custom-meta id="data-availability">
+<meta-name>Data Availability</meta-name>
+<meta-value>All relevant data are within the manuscript and its Supporting Information files.</meta-value>
+</custom-meta>
+</custom-meta-group>
+</article-meta>
+</front>
+<body>
+<sec id="sec001" sec-type="intro">
+<title>Introduction</title>
+<p>Deoxyribonucleic acid (DNA) contains the genetic information that allows all life forms to function, grow and reproduce; in addition, it is present in all cells and thus forms part of the tissues. Ideally, fossil—or ancient—DNA (aDNA) might serve as an alternative to morphological analysis and palaeoethology, which for centuries have served as the only tools available for scientists to determine the phylogenetic relationships between past organisms. Genomic sequences also provide insights into molecular evolutionary changes over time, clarify evolutionary relationships among taxa and yield information on mutualism rates [<xref ref-type="bibr" rid="pone.0239521.ref001">1</xref>, <xref ref-type="bibr" rid="pone.0239521.ref002">2</xref>].</p>
+<p>Amber is fossilised tree resin that may preserve deep time fauna in exceptionally clear morphological detail [<xref ref-type="bibr" rid="pone.0239521.ref003">3</xref>–<xref ref-type="bibr" rid="pone.0239521.ref005">5</xref>], and therefore appeared a promising material for preserving aDNA. It was hoped that DNA could easily be extracted from ancient soft tissue remains that were desiccated and macroscopically well preserved [<xref ref-type="bibr" rid="pone.0239521.ref006">6</xref>], because the complete and rapid engulfment of arthropods in resin and their hypothetically rapid fixation and dehydration—a type of mummification—promised to promote the preservation of DNA [<xref ref-type="bibr" rid="pone.0239521.ref007">7</xref>, <xref ref-type="bibr" rid="pone.0239521.ref008">8</xref>]. Claims for DNA preserved in amber samples were rapidly made [<xref ref-type="bibr" rid="pone.0239521.ref009">9</xref>–<xref ref-type="bibr" rid="pone.0239521.ref012">12</xref>] in some cases with samples more than 125 million years old [<xref ref-type="bibr" rid="pone.0239521.ref013">13</xref>]. These studies overshadowed other less well-known studies on younger aDNA [<xref ref-type="bibr" rid="pone.0239521.ref014">14</xref>, <xref ref-type="bibr" rid="pone.0239521.ref015">15</xref>]. However, amber claims are suspected of being the result of modern environmental DNA contamination because authentication procedures were not followed [<xref ref-type="bibr" rid="pone.0239521.ref016">16</xref>–<xref ref-type="bibr" rid="pone.0239521.ref022">22</xref>].</p>
+<p>Natural resins are secreted from parenchymal cells in plants and trees and comprise complex mixtures of terpenoid compounds, including acids, alcohols and saccharides, some of which have preservative and antimicrobial properties [<xref ref-type="bibr" rid="pone.0239521.ref005">5</xref>, <xref ref-type="bibr" rid="pone.0239521.ref023">23</xref>]. It has been observed that modern resin and amber both exhibit extensive chemical variations [<xref ref-type="bibr" rid="pone.0239521.ref024">24</xref>], which may influence preservation processes and therefore the quality of embedded organisms [<xref ref-type="bibr" rid="pone.0239521.ref025">25</xref>, <xref ref-type="bibr" rid="pone.0239521.ref026">26</xref>]. Furthermore, DNA is a particularly labile macromolecule. In living cells, specific repair mechanisms act on damaged DNA, but these processes cease after cell death and DNA is naturally degraded [<xref ref-type="bibr" rid="pone.0239521.ref027">27</xref>]. Besides active cleavage of DNA by nucleases shortly after cell death [<xref ref-type="bibr" rid="pone.0239521.ref028">28</xref>, <xref ref-type="bibr" rid="pone.0239521.ref029">29</xref>], long-term DNA degradation by hydrolytic processes (initiating double-strand breaks) or oxidative dinucleotide modification and depurination (removal of the guanine and adenine bases from the sugar-phosphate backbone) highly affect the stability of DNA molecules [<xref ref-type="bibr" rid="pone.0239521.ref016">16</xref>, <xref ref-type="bibr" rid="pone.0239521.ref030">30</xref>–<xref ref-type="bibr" rid="pone.0239521.ref033">33</xref>]. Additionally, it seems that diagenetic events, including overburden pressure and heat generated through orogenesis over millions of years, affect amber permeability [<xref ref-type="bibr" rid="pone.0239521.ref034">34</xref>] and minimise the likelihood of DNA preservation in amber [<xref ref-type="bibr" rid="pone.0239521.ref021">21</xref>, <xref ref-type="bibr" rid="pone.0239521.ref035">35</xref>].</p>
+<p>The resin samples used in this study came from <italic>Hymenaea verrucosa</italic> Gaertner, 1791 [<xref ref-type="bibr" rid="pone.0239521.ref036">36</xref>] trees (Fabaceae), which produce copious amounts of resin that contains different types of sesquiterpene hydrocarbons and diterpenoid resin acids [<xref ref-type="bibr" rid="pone.0239521.ref023">23</xref>, <xref ref-type="bibr" rid="pone.0239521.ref037">37</xref>]. Plants from this genus are the source plant of Miocene amber deposits in Mexico, the Dominican Republic, Peru and Ethiopia, and of sub-fossil resin deposits in different parts of the world [<xref ref-type="bibr" rid="pone.0239521.ref038">38</xref>]. Cenozoic amber from India and China was produced by some species of Angiospermae: Dipterocarpaceae [<xref ref-type="bibr" rid="pone.0239521.ref039">39</xref>, <xref ref-type="bibr" rid="pone.0239521.ref040">40</xref>]. By contrast, the major Mesozoic amber deposits mainly derive from Coniferales [<xref ref-type="bibr" rid="pone.0239521.ref038">38</xref>]. The different plant group origin of the resin implies different sets of compounds in their chemical composition: monosaccharides, alcohols, aldehydes and esters [<xref ref-type="bibr" rid="pone.0239521.ref023">23</xref>]. The participation of esters in resin fossilisation (amberisation) and the biomolecules of the inclusions is still unknown [<xref ref-type="bibr" rid="pone.0239521.ref026">26</xref>]. Resin is a very complex (and not completely studied) preservation source with many variables simultaneously influencing preservation processes.</p>
+<p>Distinguishing ancient DNA from recent contamination may be difficult while no strict correlation exists between DNA degradation and the age of the studied organism [<xref ref-type="bibr" rid="pone.0239521.ref041">41</xref>]. Although a comparison of modern and older mitochondrial DNA (mtDNA) showed significant differences in average fragment size, there is no direct correlation between age and fragmentation, and it is assumed that the main processes affecting DNA fragmentation occur rapidly after cell death [<xref ref-type="bibr" rid="pone.0239521.ref041">41</xref>, <xref ref-type="bibr" rid="pone.0239521.ref042">42</xref>]. Heintzman et al. [<xref ref-type="bibr" rid="pone.0239521.ref043">43</xref>] found a time-dependent decrease in the concentration of amplifiable DNA in museum specimens. As mtDNA degrades more slowly than nuclear DNA (nuDNA), presumably due to additional protection of mtDNA by the double membranes of the mitochondrion, and is present in many more copies per cell, mtDNA may be more useful for aDNA studies [<xref ref-type="bibr" rid="pone.0239521.ref043">43</xref>–<xref ref-type="bibr" rid="pone.0239521.ref045">45</xref>]. Many different factors influence the state of preservation [<xref ref-type="bibr" rid="pone.0239521.ref003">3</xref>, <xref ref-type="bibr" rid="pone.0239521.ref004">4</xref>]; therefore, the conditions under which individual specimens have been preserved are of decisive importance [<xref ref-type="bibr" rid="pone.0239521.ref020">20</xref>].</p>
+<p>Attempts in various laboratories to repeat aDNA extraction from amber or from younger resin that will become amber have not been successful [<xref ref-type="bibr" rid="pone.0239521.ref021">21</xref>, <xref ref-type="bibr" rid="pone.0239521.ref046">46</xref>, <xref ref-type="bibr" rid="pone.0239521.ref047">47</xref>], which has raised further doubts about claims that aDNA was isolated from various fossilised insects in amber. Penney et al. [<xref ref-type="bibr" rid="pone.0239521.ref021">21</xref>] used next generation sequencing to analyse two Colombian sub-fossil resin bees, dated as less than 60 years and around 10 600 years BP, respectively. The young age of these resins means that they were not subjected to any extreme processes. Nevertheless, no convincing evidence was obtained for the preservation of endogenous DNA in either of the two studied sub-fossil resin inclusions. The clear conclusion of this study was that DNA is not preserved in insect inclusions in sub-fossil resin and amber [<xref ref-type="bibr" rid="pone.0239521.ref021">21</xref>]. After publication of these (and previous) results, the hypothesis that preserved DNA could be extracted and studied from animal remains in amber, or in younger resin, was totally discarded. However, these studies did provide negative evidence, demonstrating that DNA was not preserved in these samples.</p>
+<p>Some success with DNA amplification has been reported with pinned museum and permafrost-preserved invertebrates [<xref ref-type="bibr" rid="pone.0239521.ref043">43</xref>, <xref ref-type="bibr" rid="pone.0239521.ref048">48</xref>–<xref ref-type="bibr" rid="pone.0239521.ref051">51</xref>], and some of these samples were older than the oldest specimens analysed by Penney et al. [<xref ref-type="bibr" rid="pone.0239521.ref021">21</xref>]. These studies concluded that museum specimens could serve as a source of molecular information [<xref ref-type="bibr" rid="pone.0239521.ref048">48</xref>–<xref ref-type="bibr" rid="pone.0239521.ref050">50</xref>]. Of all recent publications, the sole hypothetical success with aDNA extraction from sub-fossil specimens embedded in resin was reported by Büsse et al. [<xref ref-type="bibr" rid="pone.0239521.ref051">51</xref>], who claimed to have successfully amplified aDNA from 61 species of 46 higher arthropod taxa from ca. 200-year-old dried museum specimens, as well as from two beetles embedded in sub-fossil resin. The two samples of ancient resin (<italic>sensu</italic> [<xref ref-type="bibr" rid="pone.0239521.ref052">52</xref>]) were analysed via accelerator mass spectrometry (standard-AMS) radiocarbon and dated to 790–700 years BP and 4030–3900 years BP. However, the positive results reported by Büsse et al. [<xref ref-type="bibr" rid="pone.0239521.ref051">51</xref>] should be viewed with caution as the publication does not contain a detailed discussion of the authentication procedures employed. The greatest problem with many studies of insect aDNA is their lack of reproducibility [<xref ref-type="bibr" rid="pone.0239521.ref047">47</xref>], a requirement for scientific evidence. Further limitations of studies of specimens embedded in resin include the implicit destruction of the samples and the small size and often uniqueness of the specimen analysed. Here, we discuss possible ways to solve these questions and limitations.</p>
+<p>Fortunately, many studies conducted since 2005 have analysed aDNA using more specific methods, such as next generation sequencing, which not only yields massive amounts of sequencing data and amplification of highly degraded DNA, but also enables more efficient exclusion of modern contamination [<xref ref-type="bibr" rid="pone.0239521.ref053">53</xref>, <xref ref-type="bibr" rid="pone.0239521.ref054">54</xref>]. Additionally, aDNA research has yielded promising results [e.g. <xref ref-type="bibr" rid="pone.0239521.ref018">18</xref>, <xref ref-type="bibr" rid="pone.0239521.ref054">54</xref>–<xref ref-type="bibr" rid="pone.0239521.ref057">57</xref>]; positive studies have been reported for aDNA from beetles in museum collections and permafrost [<xref ref-type="bibr" rid="pone.0239521.ref043">43</xref>, <xref ref-type="bibr" rid="pone.0239521.ref049">49</xref>] and more recently, novel insights have been obtained into biomolecule preservation in amber samples [<xref ref-type="bibr" rid="pone.0239521.ref058">58</xref>] and other fossils [<xref ref-type="bibr" rid="pone.0239521.ref002">2</xref>, <xref ref-type="bibr" rid="pone.0239521.ref059">59</xref>], including chewed birch pitch [<xref ref-type="bibr" rid="pone.0239521.ref060">60</xref>].</p>
+<p>Here, we describe attempts to amplify DNA from ambrosia beetles embedded in six-year-old and two-year-old resins (modern resin, <italic>sensu</italic> [<xref ref-type="bibr" rid="pone.0239521.ref052">52</xref>]) from Madagascar collected <italic>in situ</italic> from the producing trees. Authentication and potential contamination with modern DNA were taken carefully into consideration. Our objective was to explore the potential limits of DNA preservation in resins and to develop a standardised protocol for DNA extraction from these samples, which could guarantee unambiguous and independent verification of fossil DNA following the authentication procedures for aDNA research, but applied to a more modern samples by the moment.</p>
+</sec>
+<sec id="sec002" sec-type="materials|methods">
+<title>Material and methods</title>
+<sec id="sec003">
+<title>Samples</title>
+<p>We used platypodine beetles of the genus <italic>Mitosoma</italic> Chapuis, 1865 [<xref ref-type="bibr" rid="pone.0239521.ref061">61</xref>] (Coleoptera: Curculionidae: Platypodinae) embedded in resin (<xref ref-type="fig" rid="pone.0239521.g001">Fig 1</xref>). <italic>Mitosoma</italic> is an endemic genus from Madagascar and is abundantly found embedded in resin drops from <italic>Hymenaea verrucosa</italic> (Angiospermae: Fabales: Fabaceae). We collected specimens in resins from a lowland forest close to the Pangalanes Canal, in Ambahy (Nosy Varika, Mananjary) (20º46’ S, 48º28’ W) and Andranotsara (Sambava) (14º37’ S, 050º11’ W) on the east coast of Madagascar. The Government of Madagascar authorised sampling (permit no. 160/13 /MEF/SG/DGF/DCB.SAP/SCB and no. 192/17/ MEEF/SG/DGF/DSAP/SCB.Re) and exportation (permit no. 186 N.EA10/MG13 and no. N. 249/17/MEEF/SG/DREEF-SAVA) of samples. The specimens embedded in resin were collected by X.D., E.P. and M.S.K. directly from <italic>H</italic>. <italic>verrucosa</italic> trees in Madagascar in October 2013 and September–October 2017, respectively. Resin samples were stored at room temperature until commencing the study in February 2019, which increased the risk of greater DNA degradation [<xref ref-type="bibr" rid="pone.0239521.ref027">27</xref>]. After the first experiments, all resin samples were stored at -20°C.</p>
+<fig id="pone.0239521.g001" position="float">
+<object-id pub-id-type="doi">10.1371/journal.pone.0239521.g001</object-id>
+<label>Fig 1</label>
+<caption>
+<title>Resin samples from <italic>Hymenaea</italic> trees in Madagascar with embedded platypodine beetle specimens of the genus <italic>Mitosoma</italic>, sampled during fieldtrips in 2013 and 2017.</title>
+</caption>
+<graphic mimetype="image" position="float" xlink:href="info:doi/10.1371/journal.pone.0239521.g001" xlink:type="simple"/>
+</fig>
+<p>We used specimens of <italic>Mitosoma lobatum</italic> Schedl, 1961 [<xref ref-type="bibr" rid="pone.0239521.ref062">62</xref>], <italic>M</italic>. <italic>excisum</italic> Schaufuss, 1897 [<xref ref-type="bibr" rid="pone.0239521.ref063">63</xref>] and <italic>M</italic>. <italic>obconiceps</italic> Schedl, 1970 [<xref ref-type="bibr" rid="pone.0239521.ref064">64</xref>] as positive controls, collected in 2012 by B.J. when on a fieldtrip in Ranomafana National Park (Madagascar). Specimens were stored in &gt;96% ethanol immediately after collection and preserved at -20°C prior to DNA extraction.</p>
+<p>DNA extraction was performed at the Institute of Medical Microbiology, Immunology and Parasitology (University Clinic Bonn, Germany) from ten adult specimens in resin and four adult specimens in ethanol, all representing the same genus and body size, but different localities (see above) and ages (<xref ref-type="table" rid="pone.0239521.t001">Table 1</xref>).</p>
+<table-wrap id="pone.0239521.t001" position="float">
+<object-id pub-id-type="doi">10.1371/journal.pone.0239521.t001</object-id>
+<label>Table 1</label> <caption><title>Specimens of <italic>Mitosoma</italic> sp. used for DNA extraction and DNA concentration of the eluted DNA [ng/μl].</title></caption>
+<alternatives>
+<graphic id="pone.0239521.t001g" mimetype="image" position="float" xlink:href="info:doi/10.1371/journal.pone.0239521.t001" xlink:type="simple"/>
+<table>
+<colgroup>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+</colgroup>
+<thead>
+<tr>
+<th align="center">Year</th>
+<th align="center">Specimen</th>
+<th align="center">Body Part</th>
+<th align="center">DNA-Conc. [ng/μl]</th>
+<th align="center">260/280</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center" rowspan="11">2012</td>
+<td align="center" rowspan="3">In ethanol</td>
+<td align="center">head</td>
+<td align="center">3.20 ng/μl</td>
+<td align="center">2.20</td>
+</tr>
+<tr>
+<td align="center">thorax</td>
+<td align="center">6.90 ng/μl</td>
+<td align="center">1.70</td>
+</tr>
+<tr>
+<td align="center">abdomen</td>
+<td align="center">27.30 ng/μl</td>
+<td align="center">2.04</td>
+</tr>
+<tr>
+<td align="center" rowspan="3">In ethanol</td>
+<td align="center">head</td>
+<td align="center">9.44 ng/μl</td>
+<td align="center">1.87</td>
+</tr>
+<tr>
+<td align="center">thorax</td>
+<td align="center">15.67 ng/μl</td>
+<td align="center">2.20</td>
+</tr>
+<tr>
+<td align="center">abdomen</td>
+<td align="center">66.24 ng/μl</td>
+<td align="center">2.00</td>
+</tr>
+<tr>
+<td align="center" rowspan="2">In ethanol</td>
+<td align="center">head</td>
+<td align="center">11.32 ng/μl</td>
+<td align="center">1.86</td>
+</tr>
+<tr>
+<td align="center">abdomen</td>
+<td align="center">111.58 ng/μl</td>
+<td align="center">2.10</td>
+</tr>
+<tr>
+<td align="center" rowspan="3">In ethanol</td>
+<td align="center">head</td>
+<td align="center">13.86 ng/μl</td>
+<td align="center">1.99</td>
+</tr>
+<tr>
+<td align="center">thorax</td>
+<td align="center">38.54 ng/μl</td>
+<td align="center">2.12</td>
+</tr>
+<tr>
+<td align="center">abdomen</td>
+<td align="center">105.45 ng/μl</td>
+<td align="center">2.09</td>
+</tr>
+<tr>
+<td align="center" rowspan="3">2013</td>
+<td align="center">Resin</td>
+<td align="center">whole body</td>
+<td align="center">6.67 ng/μl</td>
+<td align="center">1.64</td>
+</tr>
+<tr>
+<td align="center">Resin</td>
+<td align="center">whole body</td>
+<td align="center">9.34 ng/μl</td>
+<td align="center">1.86</td>
+</tr>
+<tr>
+<td align="center">Resin</td>
+<td align="center">whole body</td>
+<td align="center">17.88 ng/μl</td>
+<td align="center">1.93</td>
+</tr>
+<tr>
+<td align="center" rowspan="7">2017</td>
+<td align="center">Resin</td>
+<td align="center">whole body</td>
+<td align="center">21.17 ng/μl</td>
+<td align="center">2.13</td>
+</tr>
+<tr>
+<td align="center">Resin</td>
+<td align="center">whole body</td>
+<td align="center">33.95 ng/μl</td>
+<td align="center">2.07</td>
+</tr>
+<tr>
+<td align="center">Resin</td>
+<td align="center">whole body</td>
+<td align="center">47.35 ng/μl</td>
+<td align="center">2.01</td>
+</tr>
+<tr>
+<td align="center">Resin</td>
+<td align="center">whole body</td>
+<td align="center">48.90 ng/μl</td>
+<td align="center">2.06</td>
+</tr>
+<tr>
+<td align="center">Resin + chloroform</td>
+<td align="center">whole body</td>
+<td align="center">2.90 ng/μl</td>
+<td align="center">1.87</td>
+</tr>
+<tr>
+<td align="center">Resin + chloroform</td>
+<td align="center">whole body</td>
+<td align="center">3.60 ng/μl</td>
+<td align="center">1.63</td>
+</tr>
+<tr>
+<td align="center">Resin + chloroform</td>
+<td align="center">whole body</td>
+<td align="center">3.95 ng/μl</td>
+<td align="center">1.67</td>
+</tr>
+</tbody>
+</table>
+</alternatives>
+<table-wrap-foot>
+<fn id="t001fn001"><p>DNA purity is depicted by the absorbance ratio at 260 nm and 280 nm (260/280).</p></fn>
+</table-wrap-foot>
+</table-wrap>
+<p>Only resin pieces with two or more complete specimens as syninclusions were selected in order to use some of them for analysis and store the other(s) at -20ºC at the Senckenberg Research Institute (Frankfurt, Germany) under the collection numbers SMF Be 13578–13584. We hoped thereby to halt degradation of the hypothetically preserved biomolecules [<xref ref-type="bibr" rid="pone.0239521.ref027">27</xref>] and to preserve the specimen(s) for future controls and experiments. These specimens are available to other researchers/laboratories upon request, for suitable research projects aimed at determining reproducibility. Different specimens from other resin samples collected at the same time (three from 2013 and four from 2017) were treated as independent replicates (<xref ref-type="table" rid="pone.0239521.t001">Table 1</xref>, <xref ref-type="fig" rid="pone.0239521.g001">Fig 1</xref>).</p>
+</sec>
+<sec id="sec004">
+<title>Sample preparation and DNA extraction</title>
+<p>All samples used in this study were entirely encased within <italic>H</italic>. <italic>verrucosa</italic> resin. The resins with insect inclusions were cut into small cubes with a sterile scalpel, leaving a few millimetres around the insect. The surfaces were sterilised with 0.1 M HCl and then washed in sterile water. All the following procedures were carried out under a laminar flow hood in a microbiology laboratory without any contact with entomological experiments. The resin cubes were ground with a micro-pestle in a 1.5 ml reaction tube to which 180 μl ATL-buffer with 20 μl proteinase K (Qiagen, Germany) was added. After incubation at 56°C for 72 h and occasional vortexing, the DNA was extracted using the DNeasy® Blood &amp; Tissue kit (Qiagen, Germany), following the manufacturer’s instructions. DNA was eluted in DNase- and RNase free water and stored at -20°C until further experiments. DNA concentration was measured using the NanoDrop™ One/OneC microvolume-UV/VIS-spectrophotometer (Thermo Scientific, USA). DNA extraction from beetles in ethanol was performed using an identical procedure except for a reduced lysis step of 24 h. To test an alternative methodology some cubes were incubated in 5 ml 100% chloroform (AppliChem GmbH, Germany) for 3 days at 40°C to dissolve the resin. After the chloroform treatment the beetle was washed in ≥ 99% EtOH and further processed as described above. Precautions to eliminate contamination included regular disinfection of all surfaces and working materials with Freka®-NOL AF (Dr. Schumacher GmbH, Germany) and the use of dedicated protective clothing, equipment and reagents. In addition, prior to DNA extraction and amplification experiments, working materials and surfaces were cleaned with DNA-ExitusPlus™ IF (AppliChem GmbH, Germany) to avoid contamination with extrinsic DNA.</p>
+</sec>
+<sec id="sec005">
+<title>Primers</title>
+<p>Primers and protocols were selected from previously published studies on the weevil subfamily Platypodinae [<xref ref-type="bibr" rid="pone.0239521.ref065">65</xref>–<xref ref-type="bibr" rid="pone.0239521.ref067">67</xref>], or newly designed based on Platypodinae DNA sequences. The primer pairs S3690F and A4285R, targeting the D2–D3 domains of the large nuclear ribosomal subunit (28S), and S2442F with A3014R, targeting the 3’ end of the mitochondrial cytochrome oxidase I (COI), efficiently detected DNA from extant <italic>Mitosoma</italic> samples and were therefore selected for further experiments (<xref ref-type="table" rid="pone.0239521.t002">Table 2</xref>). Two additional COI primers (<xref ref-type="table" rid="pone.0239521.t002">Table 2</xref>; COIRes F and COIRes R2; COInew) were designed based on sequences from the resin-embedded beetles collected in 2013. These enabled amplification of a much smaller fragments than the standardised primers used in previous studies (160 base pairs (bp) vs. more than 600 bp) and were more suitable for new experiments with older (and theoretically more fragmented) material.</p>
+<table-wrap id="pone.0239521.t002" position="float">
+<object-id pub-id-type="doi">10.1371/journal.pone.0239521.t002</object-id>
+<label>Table 2</label> <caption><title>Primer sequences for DNA extraction selected from the literature and two new sequences tested here.</title></caption>
+<alternatives>
+<graphic id="pone.0239521.t002g" mimetype="image" position="float" xlink:href="info:doi/10.1371/journal.pone.0239521.t002" xlink:type="simple"/>
+<table>
+<colgroup>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+</colgroup>
+<thead>
+<tr>
+<th align="center" colspan="2">Targeted Gene</th>
+<th align="center">Sequence</th>
+<th align="center">Fragment Size</th>
+<th align="center">Annealing Temperature</th>
+<th align="center">Reference</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" rowspan="2">Large ribosomal subunit (<italic>28S</italic>)</td>
+<td align="left" rowspan="2">28S</td>
+<td align="left">(S3690F) GAG AGT TMA ASA GTA CGT GAA AC</td>
+<td align="center" rowspan="2">~ 800 bp</td>
+<td align="center">55°C</td>
+<td align="center">[<xref ref-type="bibr" rid="pone.0239521.ref066">66</xref>]</td>
+</tr>
+<tr>
+<td align="left">(A4285R) CTG ACT TCG TCC TGA CCA GGC</td>
+<td align="center">55°C</td>
+<td align="center">[<xref ref-type="bibr" rid="pone.0239521.ref066">66</xref>]</td>
+</tr>
+<tr>
+<td align="left" rowspan="4">Cytochrome oxidase I (<italic>COI</italic>)</td>
+<td align="left" rowspan="2">COI (original primer pair)</td>
+<td align="left">(S2442F) CCA ACA GGA ATT AAA ATT TTT AGA TGA TTA GC</td>
+<td align="center" rowspan="2">~ 600 bp</td>
+<td align="center">49°C</td>
+<td align="center">[<xref ref-type="bibr" rid="pone.0239521.ref067">67</xref>]</td>
+</tr>
+<tr>
+<td align="left">(A3014R) TCC AAT GCA CTA ATC TGC CAT ATT A</td>
+<td align="center">49°C</td>
+<td align="center">[<xref ref-type="bibr" rid="pone.0239521.ref067">67</xref>]</td>
+</tr>
+<tr>
+<td align="left" rowspan="2">COInew (modified primer pair)</td>
+<td align="left">(COIRes F) CAG TAT TTG CTA TCT TAG CTG G</td>
+<td align="center" rowspan="2">~ 160 bp</td>
+<td align="center">50°C</td>
+<td align="center">This work</td>
+</tr>
+<tr>
+<td align="left">(COIRes R2) CGT GGT ATT CCT CTT AAA CC</td>
+<td align="center">50°C</td>
+<td align="center">This work</td>
+</tr>
+</tbody>
+</table>
+</alternatives>
+</table-wrap>
+</sec>
+<sec id="sec006">
+<title>Polymerase Chain Reaction (PCR) amplification</title>
+<p>The PCR reaction mixture used to amplify genes of interest was composed of 12.5 μl One<italic>Taq®</italic> 2X Master Mix with Standard Buffer (New England Biolabs, Germany), 0.5 μl of each primer (10 μM) and 50 ng DNA, adding water to a final volume of 25 μl. Addition of 1 μl bovine serum albumin (BSA) (10 mg/ml) to the PCR reaction mixture improved efficiency and enabled a reduction in PCR cycles. In each PCR, a negative (sterile water) and a positive control (beetle DNA from specimens in ethanol) were included. PCR was performed in a Gradient LabCycler (SensoQuest, Germany) with the standard cycle program: initial denaturation step at 95°C for 5 min, followed by 30–50 cycles of denaturation at 95°C for 30 s, annealing at specific temperatures (<xref ref-type="table" rid="pone.0239521.t002">Table 2</xref>) for 30 s and elongation at 68°C for 60 s, and a final elongation step at 68°C for 5 min. Further optimisation included different cycles and gradient PCRs to determine the annealing temperature. The PCR results were analysed by means of agarose gel electrophoresis (1.5%). The PCR products were purified using the GeneJet PCR Purification Kit or GeneJet Gel Extraction Kit (Thermo Scientific, USA), in case that fragments had to be extracted directly from the agarose gel, following the manufacturer’s instructions. Sanger sequencing was performed by Eurofins Genomics GmbH (Germany) with the amplification primers for 28S and COI (<xref ref-type="table" rid="pone.0239521.t002">Table 2</xref>). Alignments between DNA sequences from beetles in EtOH and resin-embedded specimens to analyse the sequence data and investigate potential contamination with modern DNA were performed with Geneious R10 (<ext-link ext-link-type="uri" xlink:href="https://www.geneious.com/" xlink:type="simple">https://www.geneious.com</ext-link>).</p>
+</sec>
+<sec id="sec007">
+<title>Authentication of DNA sequences</title>
+<p>We applied the following criteria to authenticate the amplified DNA sequences recovered from the beetles [<xref ref-type="bibr" rid="pone.0239521.ref041">41</xref>, <xref ref-type="bibr" rid="pone.0239521.ref068">68</xref>]:</p>
+<list list-type="order">
+<list-item><p>Negative controls, extraction blanks and PCR negative controls should be devoid of specific PCR amplification products.</p></list-item>
+<list-item><p>Amplified sequences should be consistently and reproducibly obtained from the same extract(s) from one specimen and from different samples of the same species to guarantee reproducibility.</p></list-item>
+<list-item><p>All procedures should be repeated three times in different laboratory rooms (in our case, at the Institute of Medical Microbiology, Immunology and Parasitology).</p></list-item>
+<list-item><p>All PCR products should be controlled and analysed via sequencing for quality, assembly and specificity.</p></list-item>
+</list>
+</sec>
+<sec id="sec008">
+<title>Illustrations</title>
+<p>General pictures of the resin samples were taken using a Nikon D3X with an AF-S Micro-NIKKOR 60 mm 1:2.8 G ED lens. Gel electrophoresis pictures were created using the FastGene FAS-Digi imaging system (NIPPON Genetics Europe). Detailed pictures of the beetle specimen were taken in the laboratory using a Keyence VHX1000 digital microscope under incident light (general body) and using a stereomicroscope in combination with a smartphone adapter. All figures were edited using CorelDraw-X8 software.</p>
+<p>Original uncropped and unadjusted images underlying all gel results reported in this work may be found in the <xref ref-type="supplementary-material" rid="pone.0239521.s001">S1 Raw</xref> images.</p>
+</sec>
+<sec id="sec009">
+<title>Statistics</title>
+<p>Significant differences between DNA concentrations from the analysed samples were calculated by an unpaired t-test using GraphPad Prism version 5.00 for Windows (GraphPad Software, La Jolla, California, USA; <ext-link ext-link-type="uri" xlink:href="http://www.graphpad.com/" xlink:type="simple">www.graphpad.com</ext-link>).</p>
+</sec>
+</sec>
+<sec id="sec010" sec-type="results">
+<title>Results</title>
+<p>Contrary to some previous experiments using insects in modern resin and sub-fossil resin [<xref ref-type="bibr" rid="pone.0239521.ref021">21</xref>, <xref ref-type="bibr" rid="pone.0239521.ref047">47</xref>], we successfully amplified DNA sequences from beetles preserved in resins that were six and two years old (<xref ref-type="fig" rid="pone.0239521.g002">Fig 2</xref>).</p>
+<fig id="pone.0239521.g002" position="float">
+<object-id pub-id-type="doi">10.1371/journal.pone.0239521.g002</object-id>
+<label>Fig 2</label>
+<caption>
+<title>Mean DNA concentration in the different samples analysed.</title>
+<p>* = Significant differences P &lt; 0.05; ** = Significant differences P &lt;0.01; n = Non-significant differences.</p>
+</caption>
+<graphic mimetype="image" position="float" xlink:href="info:doi/10.1371/journal.pone.0239521.g002" xlink:type="simple"/>
+</fig>
+<sec id="sec011">
+<title>DNA extraction</title>
+<p>DNA was extracted from beetle specimens of <italic>Mitosoma</italic> sp. and from specimens of the same genus preserved in resin of the same origin (<italic>H</italic>. <italic>verrucosa</italic>) but differing in age (2013 and 2017 fieldtrips) and collection site. DNA concentrations differed significantly between recent and resin-embedded beetles (<xref ref-type="table" rid="pone.0239521.t001">Table 1</xref>). We observed a time-correlated decrease, albeit not significant, in the amount of DNA obtained from resin beetles (<xref ref-type="table" rid="pone.0239521.t001">Table 1</xref>, <xref ref-type="fig" rid="pone.0239521.g002">Fig 2</xref>). The lowest DNA concentration was detected in resin beetles when the resin encasing the specimens had been dissolved in chloroform prior to DNA extraction (<xref ref-type="table" rid="pone.0239521.t001">Table 1</xref>, <xref ref-type="fig" rid="pone.0239521.g002">Fig 2</xref>).</p>
+</sec>
+<sec id="sec012">
+<title>PCR amplification</title>
+<p>Initial attempts to amplify DNA from two- and six-year-old resin samples, using the PCR protocol normally employed with recent DNA, were unsuccessful, whereas amplification of recent samples (beetles in ethanol) was positive with the original primer pairs COI and 28S. As DNA extraction from the resin samples was performed with completely ground insect together with remaining resin portions, it was suspected that the resin components might inhibit the PCR. This was tested by the addition of different proportions of resin to beetle samples at different time points during DNA extraction. Neither addition of resin to the sample before DNA extraction nor mixing of extracted DNA from resin and recent samples (<xref ref-type="table" rid="pone.0239521.t003">Table 3</xref>) supported the hypothesis of PCR inhibition by resin components. In further experiments, BSA was added to the PCR mixture to avoid any possible inhibition of the DNA polymerase (<xref ref-type="fig" rid="pone.0239521.g003">Fig 3</xref>). The blood plasma protein efficiently binds to inhibitors and thereby prevents a negative impact of these molecules on the DNA polymerase [<xref ref-type="bibr" rid="pone.0239521.ref069">69</xref>–<xref ref-type="bibr" rid="pone.0239521.ref071">71</xref>]. After that, two different approaches to amplify the specific DNA fragments were tested: a) two consecutive PCRs of 30 cycles each with a PCR product purification step in between, and b) an increase in the number of PCR cycles up to 50. Both strategies resulted in positive amplifications (<xref ref-type="fig" rid="pone.0239521.g004">Fig 4</xref>). Whereas the addition of BSA increased the amplification efficiency of the primer combination targeting the large fragment of COI and enabled successful amplification with a lower number of cycles (≥ 35 cycles), no product could be detected for 28S with less than 45 PCR cycles (<xref ref-type="fig" rid="pone.0239521.g003">Fig 3</xref>).</p>
+<fig id="pone.0239521.g003" position="float">
+<object-id pub-id-type="doi">10.1371/journal.pone.0239521.g003</object-id>
+<label>Fig 3</label>
+<caption>
+<title>Gel electrophoresis of specific DNA fragments amplified with the original primer combinations COI and 28S with different numbers of cycles.</title>
+<p>Comparison of PCR products with and without the addition of BSA to prevent DNA polymerase inhibition. Rb13 = Resin beetle (collected in 2013); Rb17 = Resin beetle (collected in 2017); (+) = positive control, DNA from beetles in ethanol; (-) = negative control, DNase- &amp; RNase-free water; M = 100 bp DNA ladder (New England Biolabs).</p>
+</caption>
+<graphic mimetype="image" position="float" xlink:href="info:doi/10.1371/journal.pone.0239521.g003" xlink:type="simple"/>
+</fig>
+<fig id="pone.0239521.g004" position="float">
+<object-id pub-id-type="doi">10.1371/journal.pone.0239521.g004</object-id>
+<label>Fig 4</label>
+<caption>
+<title>Gel electrophoresis of specific DNA fragments amplified with original primer combinations COI and 28S.</title>
+<p><bold>A</bold>. Positive results with an increase in number of cycles to 50. Rb13 = Resin beetle (collected in 2013); Rb17 = Resin beetle (collected in 2017); (+) = positive control, DNA from beetle in ethanol; (-) = negative control, DNase- &amp; RNase-free water; M = 100 bp DNA ladder (New England Biolabs). <bold>B</bold>. Two-step PCR with a PCR product purification step in between. Rb17<sup>2</sup> = Resin beetle (collected in 2017) after two consecutive PCRs of 30 cycles each; (+)<sup>1</sup> = positive control, DNA from beetle in ethanol after one PCR of 30 cycles; (+)<sup>2</sup> = positive control, DNA from beetle in ethanol after two consecutive PCRs of 30 cycles each; (-)<sup>1</sup> = negative control, DNase- &amp; RNase-free water after one PCR of 30 cycles; M = 100 bp DNA ladder (New England Biolabs).</p>
+</caption>
+<graphic mimetype="image" position="float" xlink:href="info:doi/10.1371/journal.pone.0239521.g004" xlink:type="simple"/>
+</fig>
+<table-wrap id="pone.0239521.t003" position="float">
+<object-id pub-id-type="doi">10.1371/journal.pone.0239521.t003</object-id>
+<label>Table 3</label> <caption><title>Inhibition test performed with the primer combination COI for different proportions of DNA from beetles in ethanol and resin beetles.</title></caption>
+<alternatives>
+<graphic id="pone.0239521.t003g" mimetype="image" position="float" xlink:href="info:doi/10.1371/journal.pone.0239521.t003" xlink:type="simple"/>
+<table>
+<colgroup>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+</colgroup>
+<thead>
+<tr>
+<th align="center">Test</th>
+<th align="center">Proportion of DNA from resin beetles</th>
+<th align="center">Proportion of DNA from beetles in ethanol</th>
+<th align="center">DNA amplification result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">1</td>
+<td align="center">1 μl (50 ng)</td>
+<td align="center">0 μl (0 ng)</td>
+<td align="center">Negative</td>
+</tr>
+<tr>
+<td align="center">2</td>
+<td align="center">0.8 μl (40 ng)</td>
+<td align="center">0.2 μl (10 ng)</td>
+<td align="center">Positive (weak)</td>
+</tr>
+<tr>
+<td align="center">3</td>
+<td align="center">0.5 μl (25 ng)</td>
+<td align="center">0.5 μl (25 ng)</td>
+<td align="center">Positive</td>
+</tr>
+<tr>
+<td align="center">4</td>
+<td align="center">0.2 μl (10 ng)</td>
+<td align="center">0.8 μl (40 ng)</td>
+<td align="center">Positive</td>
+</tr>
+<tr>
+<td align="center">5</td>
+<td align="center">0 μl (0 ng)</td>
+<td align="center">1 μl (50 ng)</td>
+<td align="center">Positive</td>
+</tr>
+</tbody>
+</table>
+</alternatives>
+</table-wrap>
+<p>Negative amplification was obtained when the DNA from beetles in ethanol was absent, weak positive result when the proportion was low and positive in the remainder of tests, even when resin remains were included.</p>
+</sec>
+<sec id="sec013">
+<title>Control for contamination</title>
+<p>Authentication procedures in aDNA studies are aimed at avoiding sample contamination with modern environmental DNA and detecting this should it occur. Therefore, each PCR product was purified and then sequenced by Sanger sequencing. To analyse the sequences several alignments were performed. Besides alignment of the sequences to Platypodinae sequences in the NCBI database BLAST to test for specificity, all products were checked for contamination with modern DNA. We especially examined the risk of inter-sample contamination from the positive control (beetles in ethanol) to the tested samples by multiple alignments of all sequences. Whereas the similarity between the sequences of insects extracted from resin in 2013 and 2017 was ≥ 97.4% with both primer combinations, a comparison between resin beetles and the sequence of beetles in ethanol yielded a similarity of only 73.7% for the original primer pair COI and 52.5% for primer combination 28S, respectively (<xref ref-type="table" rid="pone.0239521.t004">Table 4</xref>), excluding any contamination with DNA from beetles in ethanol.</p>
+<table-wrap id="pone.0239521.t004" position="float">
+<object-id pub-id-type="doi">10.1371/journal.pone.0239521.t004</object-id>
+<label>Table 4</label> <caption><title>Multiple alignments of all analyzed sequences and the similarity value for the different combinations.</title></caption>
+<alternatives>
+<graphic id="pone.0239521.t004g" mimetype="image" position="float" xlink:href="info:doi/10.1371/journal.pone.0239521.t004" xlink:type="simple"/>
+<table>
+<colgroup>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+</colgroup>
+<thead>
+<tr>
+<th align="center">Alignment</th>
+<th align="center">Primer-combination</th>
+<th align="center">Similarity [%]</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">Resin beetle (2013 + 2017)</td>
+<td align="center">original COI</td>
+<td align="center">97.4</td>
+</tr>
+<tr>
+<td align="left">Resin beetle (2013 + 2017)</td>
+<td align="center">28S</td>
+<td align="center">97.8</td>
+</tr>
+<tr>
+<td align="left">Resin beetle (2013 + 2017) alignment to beetles in ethanol</td>
+<td align="center">original COI</td>
+<td align="center">73.7</td>
+</tr>
+<tr>
+<td align="left">Resin beetle (2013 + 2017) alignment to beetles in ethanol</td>
+<td align="center">28S</td>
+<td align="center">52.5</td>
+</tr>
+</tbody>
+</table>
+</alternatives>
+</table-wrap>
+</sec>
+</sec>
+<sec id="sec014" sec-type="conclusions">
+<title>Discussion</title>
+<sec id="sec015">
+<title>Contamination occurring during analysis</title>
+<p>A major handicap in aDNA research, especially when using resin samples, is contamination with modern environmental DNA [<xref ref-type="bibr" rid="pone.0239521.ref016">16</xref>–<xref ref-type="bibr" rid="pone.0239521.ref020">20</xref>]. The selection of gene sequences for DNA amplification is a crucial step before working with genetically unknown organisms, as is the case of extinct organisms. Here, the closest living relatives often form the basis for identification of homologous sequences. In this study, primers were selected and specifically designed for beetles of the subfamily Platypodinae [<xref ref-type="bibr" rid="pone.0239521.ref066">66</xref>, <xref ref-type="bibr" rid="pone.0239521.ref067">67</xref>], to prevent amplification of contaminating modern DNA. Furthermore, our experiments were performed in a microbiology laboratory experienced in molecular methods, but which had never worked with entomological DNA before.</p>
+<p>To avoid contamination with modern DNA in the experiments presented here, several control procedures at different stages of the isolation and amplification processes were included in the experimental setup. Besides precautions for working with DNA, all PCR products were purified, sequenced and controlled for sequence specificity and inter-sample contamination. Relatively long fragments of the 28S ribosomal subunit (~ 800 bp) and the mitochondrial gene oxidase (~ 600 bp) (<xref ref-type="table" rid="pone.0239521.t001">Table 1</xref>, <xref ref-type="fig" rid="pone.0239521.g002">Fig 2</xref>) were successfully amplified.</p>
+<p>To take into account aDNA fragmentation due to decay, the primer used for amplification should encase small sequences. A basic premise is that primers should amplify fragments up to about 160 bp, because longer aDNA sequences become damaged and degraded and have generally proved impossible to amplify [<xref ref-type="bibr" rid="pone.0239521.ref018">18</xref>, <xref ref-type="bibr" rid="pone.0239521.ref041">41</xref>, <xref ref-type="bibr" rid="pone.0239521.ref068">68</xref>]. We designed primers for the amplification of small fragments (~ 160 bp) (<xref ref-type="table" rid="pone.0239521.t002">Table 2</xref>; COInew) for future experiments. The new primers were tested successfully in first experiments with resin-embedded platypodine specimens from 2017 (<xref ref-type="fig" rid="pone.0239521.g005">Fig 5</xref>) and therefore, build a fundament for future experiments with aDNA using the same insects after confirming the results obtained by longer fragments.</p>
+<fig id="pone.0239521.g005" position="float">
+<object-id pub-id-type="doi">10.1371/journal.pone.0239521.g005</object-id>
+<label>Fig 5</label>
+<caption>
+<title>Gelelectrophoresis of the specific DNA fragments amplified with primer combination COInew.</title>
+<p>The primers were designed based on specific DNA sequences from resin-embedded beetles (collected in 2017) to amplify smaller DNA fragments. Rb17 = Resin beetle (collected in 2017); (-) = negative control, DNase- &amp; RNase free water; M = 100 bp DNA ladder (New England Biolabs).</p>
+</caption>
+<graphic mimetype="image" position="float" xlink:href="info:doi/10.1371/journal.pone.0239521.g005" xlink:type="simple"/>
+</fig>
+</sec>
+<sec id="sec016">
+<title>Reproducibility</title>
+<p>Entomological studies can easily implement most recommended aDNA authentication procedures to increase the degree of reliability [<xref ref-type="bibr" rid="pone.0239521.ref018">18</xref>–<xref ref-type="bibr" rid="pone.0239521.ref020">20</xref>]. However, other criteria, such as reproducibility or independent replication, are difficult to meet with insect samples due to the small size and frequent uniqueness of the samples. The methodology entailed with samples embedded in resin renders the research even more difficult. The establishment of authentication procedures for aDNA from small samples requires further consideration [<xref ref-type="bibr" rid="pone.0239521.ref027">27</xref>]. Since aDNA isolation in amber insects requires the complete destruction of fossil material, which is obviously undesirable when dealing with rare and very old species stored in museum collections, a more feasible approach would be to analyse several individuals of the species of interest or individuals of any related species of a group [<xref ref-type="bibr" rid="pone.0239521.ref068">68</xref>]. A taxonomic group with relatively abundant representatives would be the perfect target for these experiments; when a specimen is truly unique, samples cannot be used for this purpose because of obvious methodological and ethical problems [<xref ref-type="bibr" rid="pone.0239521.ref027">27</xref>]. The problem of reproducibility is solved here by the selection of insect samples in resin that contain co-specific syninclusions (minimum 2), with a comparable degree of preservation. After cutting the resin sample, the remaining syninclusions were stored at -20°C to maintain their stability as far as possible and thereby preserve the DNA for future tests. Although they do exist, it is difficult to find similar syninclusions in older resins. For rare or unique finds, the approved protocol is to archive independent similar results in two independent laboratories [<xref ref-type="bibr" rid="pone.0239521.ref017">17</xref>, <xref ref-type="bibr" rid="pone.0239521.ref068">68</xref>]. However, it is extremely challenging to achieve this when using insects from resin or amber deposits because it is difficult to independently replicate DNA extraction from the same fossil insect. In addition, resins of different origin should be treated as independent experiments because of the different nature of their chemical compounds.</p>
+<p>Taking into account all the authentication procedures to increase the degree of reliability and avoid contamination in aDNA studies [<xref ref-type="bibr" rid="pone.0239521.ref017">17</xref>–<xref ref-type="bibr" rid="pone.0239521.ref020">20</xref>, <xref ref-type="bibr" rid="pone.0239521.ref027">27</xref>, <xref ref-type="bibr" rid="pone.0239521.ref068">68</xref>], we summarise here the optimal method that we employed, which we consider should become standard practice in taphonomic research on DNA preservation in modern and ancient resins:</p>
+<list list-type="order">
+<list-item><p>Analyse the sample in a DNA laboratory that has not previously worked with organisms similar to the target specimens, preferably with previous experience in aDNA research.</p></list-item>
+<list-item><p>Select a taxonomic group with abundant representatives as syninclusions in modern resin, sub-fossil resin or amber.</p></list-item>
+<list-item><p>Include negative controls, extraction blanks and PCR negative controls.</p></list-item>
+<list-item><p>Use specific primers for the target specimens instead of more general primers which amplify a broader range of genomes.</p></list-item>
+<list-item><p>Include a sequencing analysis for quality, assembly and specificity control.</p></list-item>
+<list-item><p>Repeat the experiment, ideally with similar specimens from the same sample. Close taxonomic groups from the same sample and corroboration with a sequencing process may be sufficient to demonstrate reliability and discard contamination.</p></list-item>
+<list-item><p>Include a detailed list of the protocols used in the experiments with a clear discussion of the authentication procedures employed.</p></list-item>
+</list>
+</sec>
+<sec id="sec017">
+<title>The use of chloroform in DNA extraction from specimens embedded in resin</title>
+<p>The dissolution of resin, sub-fossil resin and amber in chloroform is a typical procedure to release the embedded insects for further analysis [<xref ref-type="bibr" rid="pone.0239521.ref021">21</xref>, <xref ref-type="bibr" rid="pone.0239521.ref072">72</xref>]. Penney et al. [<xref ref-type="bibr" rid="pone.0239521.ref021">21</xref>] were unable to detect any insect DNA via next generation sequencing after the use of chloroform to dissolve the resin, and thus concluded that DNA was absent. Chloroform:phenol mixtures are frequently used for DNA extraction [<xref ref-type="bibr" rid="pone.0239521.ref073">73</xref>–<xref ref-type="bibr" rid="pone.0239521.ref075">75</xref>] and one might assume that the difference in age between the youngest sample analysed in Penney et al. [<xref ref-type="bibr" rid="pone.0239521.ref021">21</xref>] and the oldest one in this study (6 years vs. 60 years) could be a key factor in our successful amplification. Surprisingly, we found that the use of chloroform to dissolve the resin surrounding the specimens compromised DNA concentration (<xref ref-type="table" rid="pone.0239521.t001">Table 1</xref>, <xref ref-type="fig" rid="pone.0239521.g002">Fig 2</xref>). During work with DNA samples, the use of 70% ethanol also poses a problem as DNA precipitates at this ethanol concentration [<xref ref-type="bibr" rid="pone.0239521.ref047">47</xref>]. Therefore, only ≥ 80% ethanol should be used to sterilise resin surfaces. Büsse et al. [<xref ref-type="bibr" rid="pone.0239521.ref051">51</xref>] reported the amplification of DNA sequences from specimens preserved inside sub-fossil resin samples, but the lack of information about the methodology used with the specimens embedded in resin precludes comparisons. Further experiments are required to obtain more strongly supported conclusions about the effects of chloroform and ethanol on DNA extraction from resin-embedded material.</p>
+</sec>
+<sec id="sec018">
+<title>Dehydration of specimens</title>
+<p>The life-like preservation of many amber inclusions is accompanied by preservation of ultrastructural details such as muscle fibres [<xref ref-type="bibr" rid="pone.0239521.ref076">76</xref>], mitochondria [<xref ref-type="bibr" rid="pone.0239521.ref077">77</xref>], brain tissue [<xref ref-type="bibr" rid="pone.0239521.ref003">3</xref>], and internal genitalia [<xref ref-type="bibr" rid="pone.0239521.ref078">78</xref>]. After the death of an organism, enzymes such as DNases rapidly degrade the DNA, but some repair mechanisms, if active, can revert this process. Under rare circumstances, tissue rapidly desiccates after death [<xref ref-type="bibr" rid="pone.0239521.ref008">8</xref>, <xref ref-type="bibr" rid="pone.0239521.ref079">79</xref>] and DNA is absorbed by a mineral matrix [<xref ref-type="bibr" rid="pone.0239521.ref080">80</xref>]; in addition, rapid burial may change surrounding conditions, significantly reducing or completely inhibiting enzymatic and microbial degradation [<xref ref-type="bibr" rid="pone.0239521.ref081">81</xref>, <xref ref-type="bibr" rid="pone.0239521.ref082">82</xref>]. On such occasions, slow but still manifest chemical processes start to affect the DNA [<xref ref-type="bibr" rid="pone.0239521.ref018">18</xref>, <xref ref-type="bibr" rid="pone.0239521.ref083">83</xref>, <xref ref-type="bibr" rid="pone.0239521.ref084">84</xref>]. Cano [<xref ref-type="bibr" rid="pone.0239521.ref085">85</xref>] stated that sugars such as arabinose, galactose and sucrose, which are components of natural resins, increase osmotic pressure on cells and thereby draw out the water, which results in tissue dehydration and inhibition of biochemical reactions. Additionally, alcohols and terpenes may act as fixatives to preserve tissues.</p>
+<p>Dehydration and preservation in resin or permafrost are the three modes of preservation that retain more life-like organisms than any other kind of fossil, maintaining tissues over time [<xref ref-type="bibr" rid="pone.0239521.ref003">3</xref>]. While promising results have been obtained from permafrost-preserved invertebrates [<xref ref-type="bibr" rid="pone.0239521.ref043">43</xref>], none of the claims of DNA isolated from million-year-old amber samples could be independently replicated [<xref ref-type="bibr" rid="pone.0239521.ref021">21</xref>, <xref ref-type="bibr" rid="pone.0239521.ref047">47</xref>]. In a recent study, amplified fossil genomes were extracted from birch pitch [<xref ref-type="bibr" rid="pone.0239521.ref060">60</xref>], another organic plant substance like resin, but obtained by heating birch bark. Supposedly, volatile compounds cause thorough and rapid dehydration and fixation of tissue once the trapped organism comes into contact with the resin [<xref ref-type="bibr" rid="pone.0239521.ref003">3</xref>]. This contrasts with our observations of resin-embedded <italic>Mitosoma</italic> sp. specimens from Madagascar (<xref ref-type="fig" rid="pone.0239521.g006">Fig 6</xref>). Two-year-old ground specimens still contained apparently flesh-like tissue without any indication of dehydration or shrinkage (<xref ref-type="fig" rid="pone.0239521.g006">Fig 6C</xref>). Therefore, hypothetical dehydration in the resin is not as rapid as was thought and must be regarded as the result of a process lasting for several years. Although the mono- and sesquiterpenoid volatile compounds in resins are known to have antimicrobial and enzyme inhibiting characteristics [<xref ref-type="bibr" rid="pone.0239521.ref023">23</xref>, <xref ref-type="bibr" rid="pone.0239521.ref086">86</xref>, <xref ref-type="bibr" rid="pone.0239521.ref087">87</xref>], it is possible that the di- and triterpenoid non-volatile compounds, some of which are also antimicrobial, are crucial to stabilise tissue over longer timescales. The lack of preservation of other molecules, such as chitin and lignin, which are more time-resistant than DNA, in Miocene amber-embedded insects and plants [<xref ref-type="bibr" rid="pone.0239521.ref088">88</xref>] has also been used to argue against the preservation of DNA in these particular fossils [<xref ref-type="bibr" rid="pone.0239521.ref018">18</xref>]. However, ß-1,3 and ß-1,4-linked polysaccharides, and specifically N-acetylglucosamine residues from chitin, have been detected in fungal mycelia in resinicolous fungi from Spanish amber [<xref ref-type="bibr" rid="pone.0239521.ref089">89</xref>]. One explanation for the better preservation of aDNA in bones than in resins may be hydroxyapatite. This mineral, which predominates in bone, is known for its very strong binding affinity to DNA [<xref ref-type="bibr" rid="pone.0239521.ref015">15</xref>, <xref ref-type="bibr" rid="pone.0239521.ref080">80</xref>, <xref ref-type="bibr" rid="pone.0239521.ref090">90</xref>]. Our observations indicate that there is still no satisfactory explanation for preservation in amber, but imply that water is available in the system for longer than previously thought, which has a negative effect on DNA stability in specimens embedded in resin.</p>
+<fig id="pone.0239521.g006" position="float">
+<object-id pub-id-type="doi">10.1371/journal.pone.0239521.g006</object-id>
+<label>Fig 6</label>
+<caption>
+<title>Different specimens of <italic>Mitosoma</italic> sp. preserved in resin from <italic>Hymenaea verrucosa</italic> collected in the Sambava region (Madagascar) in 2017.</title>
+<p><bold>A</bold>. Lateral view of a complete specimen. <bold>B</bold>. Dorsal view of a complete specimen. <bold>C</bold>. Photomicrograph of the sectioned head of one <italic>Mitosoma</italic> beetle in resin, showing the still fleshy internal tissue after two years inside the resin.</p>
+</caption>
+<graphic mimetype="image" position="float" xlink:href="info:doi/10.1371/journal.pone.0239521.g006" xlink:type="simple"/>
+</fig>
+</sec>
+<sec id="sec019">
+<title>Future approach to determine the time limits of DNA preservation in resin specimens</title>
+<p>There are broad areas where further progress in studying aDNA from resin-embedded insects can be expected. Decay experiments provide a useful means to investigate variations in the preservation quality of different resin types [<xref ref-type="bibr" rid="pone.0239521.ref026">26</xref>] and offer a promising subject for future analysis. The preservation of inner structures of insects was highly compromised after only a few months embedded in different kinds of resin [<xref ref-type="bibr" rid="pone.0239521.ref026">26</xref>], but to the best of our knowledge, DNA preservation has never been tested. A comparison of DNA preservation in dead specimens of varying ages (such as those from museums and collections) [<xref ref-type="bibr" rid="pone.0239521.ref091">91</xref>], or specimens fixed in paraffin or embedded epoxy resin from less than one hundred years ago, would be highly interesting. Based on the positive results from this study, future experiments could investigate the limits of the DNA preservation in resin embedded specimens in short-time intervals. For future approaches with samples highly sensitive to contaminations, it will be required further adjustments of the methodology. For instance, the DNA concentration was measured via a microvolume-UV/VIS-spectrophotometer in this study, which lacks specificity, being unable to distinguish between DNA (single- and double-stranded), RNA and nucleotides, and is prone to contamination. Therefore, we recommend to use a fluorometer, which is highly accurate detecting fluorescent nucleic acids. Additionally, DNA of older resin embedded specimens should be analysed with more sensitive next generation sequencing technologies such as shotgun sequencing. This method is more specific, enabling distinction between modern contaminations and ancient DNA and provides further possibilities, e.g. analysis of fragmentation or degradation patterns. Proteins are thought to be more stable than DNA [<xref ref-type="bibr" rid="pone.0239521.ref092">92</xref>, <xref ref-type="bibr" rid="pone.0239521.ref093">93</xref>] and seem to provide similar phylogenetic information [<xref ref-type="bibr" rid="pone.0239521.ref002">2</xref>]. Some experiments detected biomolecules such as chitin-protein complexes in insect cuticle from sub-fossil resin but failed to do so when Dominican amber samples were tested [<xref ref-type="bibr" rid="pone.0239521.ref088">88</xref>], while other more recent studies found amino acids from fossil feathers in amber from almost 100 million years BP [<xref ref-type="bibr" rid="pone.0239521.ref058">58</xref>]. Therefore, proteins may be a promising target for the study of deep time specimens [<xref ref-type="bibr" rid="pone.0239521.ref094">94</xref>]. However, if the objective is DNA, it may be more effective to amplify mitochondrial DNA since this is present in higher copy numbers than nuclear DNA, rendering it a more promising candidate for genetic analyses of aDNA [<xref ref-type="bibr" rid="pone.0239521.ref043">43</xref>–<xref ref-type="bibr" rid="pone.0239521.ref045">45</xref>].</p>
+<p>The experiments presented here were performed using the commercial DNeasy® Blood &amp; Tissue Kit (Qiagen, Germany), which was recommended for the extraction of beetle DNA [<xref ref-type="bibr" rid="pone.0239521.ref065">65</xref>, <xref ref-type="bibr" rid="pone.0239521.ref066">66</xref>]. Other studies have also tested DNeasy® extraction systems, which are based on the binding of DNA to silica membranes, for other types of sample, such as bones or other insects [<xref ref-type="bibr" rid="pone.0239521.ref069">69</xref>, <xref ref-type="bibr" rid="pone.0239521.ref095">95</xref>]. As a beetle embedded in resin is a mixture of two sample types, tissue (insect) and environmental (resin), selection of the most suitable extraction kit must be carefully assessed. Environmental kits offer the advantage of additional steps to avoid PCR inhibitors [<xref ref-type="bibr" rid="pone.0239521.ref096">96</xref>–<xref ref-type="bibr" rid="pone.0239521.ref098">98</xref>], whereas tissue kits are specifically designed for DNA extraction from tissue samples. Other aspects such as choice of DNA polymerase can significantly affect PCR efficiency [<xref ref-type="bibr" rid="pone.0239521.ref069">69</xref>], and should be further investigated to identify the ideal DNA extraction and PCR amplification protocol.</p>
+<p>The interaction between a fossil sample and its environment following death of the specimen determines the preservation state of the biomolecules; age <italic>per se</italic> is not an absolute indicator of quantity or quality, at least over a longer timescale [<xref ref-type="bibr" rid="pone.0239521.ref018">18</xref>]. Storage conditions also play a crucial role in preservation, and dry, cold conditions are best for DNA preservation [<xref ref-type="bibr" rid="pone.0239521.ref027">27</xref>]. Since each case is unique, attending to our results, no biological sample should be disregarded as a potential source for recovery [<xref ref-type="bibr" rid="pone.0239521.ref015">15</xref>].</p>
+</sec>
+</sec>
+<sec id="sec020" sec-type="conclusions">
+<title>Conclusions</title>
+<p>The existence of aDNA in amber specimens is dependent on the possibility that the resin provides a protected environment for DNA preservation (both protective, through encapsulated conditions, and chemically favourable). In previous studies, no aDNA could be amplified either in amber or in specimens embedded in resin, suggesting that the protective and preservative environment in resin prevents tissue but not DNA degradation. However, modern techniques are more powerful and more sensitive. Recently, Büsse et al. [<xref ref-type="bibr" rid="pone.0239521.ref051">51</xref>] reported successful amplification of aDNA from sub-fossil specimens, but limited information was given about extraction methods, the exclusion of contamination or aspects of reproducibility; therefore, the positive results obtained in that study should be viewed with caution. By contrast, the methodology discussed here is intended for future use as a guide and base for studies of specimens embedded in resin. In future investigations next generation sequencing should be included into the methodology as this technique provides more possibilities when working with aDNA. Our study was designed to clarify fundamental aspects about DNA preservation in resin-embedded insects, including an evident experimental support, that was absent until now. Our positive amplification demonstrates that resin inclusions can also be a resource to explore in aDNA studies, albeit with caution. The risk of contamination demands the design of suitable authentication procedures and the possibility to re-evaluate the inclusion of further analysis once the method is established. Subjects for future studies include the time limits for aDNA detection in resins, the preservation state and assessment of possible taxonomic bias (both entomological and plants) in long-term DNA integrity. With this in mind, a new research project has been launched, moving from newer to older resin samples in order to determine the time limits of DNA preservation in resins.</p>
+</sec>
+<sec id="sec021">
+<title>Supporting information</title>
+<supplementary-material id="pone.0239521.s001" mimetype="application/pdf" position="float" xlink:href="info:doi/10.1371/journal.pone.0239521.s001" xlink:type="simple">
+<label>S1 Raw images</label>
+<caption>
+<title/>
+<p>(PDF)</p>
+</caption>
+</supplementary-material>
+</sec>
+</body>
+<back>
+<ack>
+<p>The first author (DP) thanks Francisco Rodríguez (Vall d’Hebron University Hospital, Barcelona, Spain), Victoria McCoy (University of Wisconsin, Milwaukee, USA), Jesús Gómez-Zurita (Institute of Evolutionary Biology, Barcelona, Spain), and Peter D. Heintzman (Royal Holloway University of London, Egham, UK) for their help and discussion in the early stages of writing this manuscript. We thank Georg Oleschinski (Rheinische Friedrich-Wilhelms-Universität Bonn, Germany) for the pictures of the resin pieces. Finally, we would like to thank the work from the two anonymous reviewers who improved a first version of this manuscript.</p>
+</ack>
+<ref-list>
+<title>References</title>
+<ref id="pone.0239521.ref001"><label>1</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Bokelmann</surname> <given-names>L</given-names></name>, <name name-style="western"><surname>Hajdinjak</surname> <given-names>M</given-names></name>, <name name-style="western"><surname>Peyrégne</surname> <given-names>S</given-names></name>, <name name-style="western"><surname>Brace</surname> <given-names>S</given-names></name>, <name name-style="western"><surname>Essel</surname> <given-names>E</given-names></name>, <name name-style="western"><surname>de Filippo</surname> <given-names>C</given-names></name>, <etal>et al</etal>. <article-title>A genetic analysis of the Gibraltar Neanderthals</article-title>. <source>PNAS</source>. <year>2019</year>; <volume>116</volume>: <fpage>15610</fpage>–<lpage>15615</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1073/pnas.1903984116" xlink:type="simple">10.1073/pnas.1903984116</ext-link></comment> <object-id pub-id-type="pmid">31308224</object-id></mixed-citation></ref>
+<ref id="pone.0239521.ref002"><label>2</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Cappellini</surname> <given-names>E</given-names></name>, <name name-style="western"><surname>Welker</surname> <given-names>F</given-names></name>, <name name-style="western"><surname>Pandolfi</surname> <given-names>L</given-names></name>, <name name-style="western"><surname>Madrigal</surname> <given-names>JR</given-names></name>, <name name-style="western"><surname>Fotakis</surname> <given-names>AK</given-names></name>, <name name-style="western"><surname>Lyon</surname> <given-names>D</given-names></name>, <etal>et al</etal>. <article-title>Early Pleistocene enamel proteome sequences from Dmanisi resolve <italic>Stephanorhinus</italic> phylogeny</article-title>. <source>Nature</source>. <year>2019</year>; <volume>574</volume>: <fpage>103</fpage>–<lpage>107</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1038/s41586-019-1555-y" xlink:type="simple">10.1038/s41586-019-1555-y</ext-link></comment> <object-id pub-id-type="pmid">31511700</object-id></mixed-citation></ref>
+<ref id="pone.0239521.ref003"><label>3</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Grimaldi</surname> <given-names>DA</given-names></name>, <name name-style="western"><surname>Bonwich</surname> <given-names>E</given-names></name>, <name name-style="western"><surname>Delannoy</surname> <given-names>M</given-names></name>, <name name-style="western"><surname>Doberstein</surname> <given-names>S</given-names></name>. <article-title>Electron microscopic studies of mummified tissues in amber fossils</article-title>. <source>Am Mus Novit</source>. <year>1994</year>; <volume>3097</volume>: <fpage>1</fpage>–<lpage>31</lpage>.</mixed-citation></ref>
+<ref id="pone.0239521.ref004"><label>4</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Martínez-Delclòs</surname> <given-names>X</given-names></name>, <name name-style="western"><surname>Briggs</surname> <given-names>DEG</given-names></name>, <name name-style="western"><surname>Peñalver</surname> <given-names>E</given-names></name>. <article-title>Taphonomy of insects in carbonates and amber</article-title>. <source>Palaeogeogr Palaeoclimatol Palaeoecol</source>. <year>2004</year>; <volume>203</volume>: <fpage>19</fpage>–<lpage>64</lpage>.</mixed-citation></ref>
+<ref id="pone.0239521.ref005"><label>5</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Amber</surname> <given-names>Labandeira C.</given-names></name> In: <name name-style="western"><surname>Laflamme</surname> <given-names>M</given-names></name>, <name name-style="western"><surname>Schiffbauer</surname> <given-names>JD</given-names></name>, <name name-style="western"><surname>Darroch</surname> <given-names>SAF</given-names></name>, editors. <article-title>Reading and Writing of the Fossil Record: Preservational Pathways to Exceptional Fossilization</article-title>. <source>Paleontol Soc Pap</source>. <year>2014</year>; <volume>20</volume>: <fpage>163</fpage>–<lpage>216</lpage>.</mixed-citation></ref>
+<ref id="pone.0239521.ref006"><label>6</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Pääbo</surname> <given-names>S.</given-names></name> <article-title>Ancient DNA: extraction, characterization, molecular cloning, and enzymatic amplification</article-title>. <source>PNAS</source>. <year>1989</year>; <volume>86</volume>: <fpage>1939</fpage>–<lpage>1943</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1073/pnas.86.6.1939" xlink:type="simple">10.1073/pnas.86.6.1939</ext-link></comment> <object-id pub-id-type="pmid">2928314</object-id></mixed-citation></ref>
+<ref id="pone.0239521.ref007"><label>7</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Bada</surname> <given-names>JL</given-names></name>, <name name-style="western"><surname>Wang</surname> <given-names>XS</given-names></name>, <name name-style="western"><surname>Poinar</surname> <given-names>HN</given-names></name>, <name name-style="western"><surname>Pääbo</surname> <given-names>S</given-names></name>, <name name-style="western"><surname>Poinar</surname> <given-names>GO</given-names> <suffix>Jr</suffix></name>. <article-title>Amino acid racemization in amber-entombed insects: Implications for DNA preservation</article-title>. <source>Geochim Cosmochim Acta</source>. <year>1994</year>; <volume>58</volume>: <fpage>3131</fpage>–<lpage>3135</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1016/0016-7037%2894%2990185-6" xlink:type="simple">10.1016/0016-7037(94)90185-6</ext-link></comment> <object-id pub-id-type="pmid">11539553</object-id></mixed-citation></ref>
+<ref id="pone.0239521.ref008"><label>8</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Mandrioli</surname> <given-names>M.</given-names></name> <article-title>Insect collections and DNA analyses: How to manage collections?</article-title> <source>Mus Manag Curatorship</source>. <year>2008</year>; <volume>23</volume>: <fpage>193</fpage>–<lpage>199</lpage>.</mixed-citation></ref>
+<ref id="pone.0239521.ref009"><label>9</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Cano</surname> <given-names>RJ</given-names></name>, <name name-style="western"><surname>Poinar</surname> <given-names>HN</given-names></name>, <name name-style="western"><surname>Roubik</surname> <given-names>DW</given-names></name>, <name name-style="western"><surname>Poinar</surname> <given-names>GO</given-names> <suffix>Jr</suffix></name>. <article-title>Enzymatic amplification and nucleotide sequencing of portions of the 18s rRNA gene of the bee <italic>Proplebeia dominicana</italic> (Apidae: Hymenoptera) isolated from 25–40 million year old Dominican amber</article-title>. <source>Med Sci Res</source>. <year>1992</year>; <volume>20</volume>: <fpage>249</fpage>–<lpage>251</lpage>.</mixed-citation></ref>
+<ref id="pone.0239521.ref010"><label>10</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Cano</surname> <given-names>RJ</given-names></name>, <name name-style="western"><surname>Poinar</surname> <given-names>HN</given-names></name>, <name name-style="western"><surname>Poinar</surname> <given-names>GO</given-names> <suffix>Jr</suffix></name>. <article-title>Isolation and partial characterization of DNA from the bee <italic>Proplebeia dominicana</italic> (Apidae: Hymenoptera) in 25–40 million year old amber</article-title>. <source>Med Sci Res</source>. <year>1992</year>; <volume>20</volume>: <fpage>619</fpage>–<lpage>623</lpage>.</mixed-citation></ref>
+<ref id="pone.0239521.ref011"><label>11</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>DeSalle</surname> <given-names>R</given-names></name>, <name name-style="western"><surname>Gatesy</surname> <given-names>J</given-names></name>, <name name-style="western"><surname>Wheeler</surname> <given-names>W</given-names></name>, <name name-style="western"><surname>Grimaldi</surname> <given-names>D</given-names></name>. <article-title>DNA sequences from a fossil termite in Oligomiocene amber and their phylogenetic implication</article-title>. <source>Science</source>. <year>1992</year>; <volume>257</volume>: <fpage>1933</fpage>–<lpage>1936</lpage> <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1126/science.1411508" xlink:type="simple">10.1126/science.1411508</ext-link></comment> <object-id pub-id-type="pmid">1411508</object-id></mixed-citation></ref>
+<ref id="pone.0239521.ref012"><label>12</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Poinar</surname> <given-names>HN</given-names></name>, <name name-style="western"><surname>Cano</surname> <given-names>RJ</given-names></name>, <name name-style="western"><surname>Poinar</surname> <given-names>GO</given-names> <suffix>Jr</suffix></name>. <article-title>DNA from an extinct plant</article-title>. <source>Nature</source>. <year>1993</year>; <volume>363</volume>: <fpage>677</fpage>.</mixed-citation></ref>
+<ref id="pone.0239521.ref013"><label>13</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Cano</surname> <given-names>RJ</given-names></name>, <name name-style="western"><surname>Poinar</surname> <given-names>HN</given-names></name>, <name name-style="western"><surname>Pieniazek</surname> <given-names>NJ</given-names></name>, <name name-style="western"><surname>Acra</surname> <given-names>A</given-names></name>, <name name-style="western"><surname>Poinar</surname> <given-names>GO</given-names> <suffix>Jr</suffix></name>. <article-title>Amplification and sequencing of DNA from a 120–135-million-year-old weevil</article-title>. <source>Nature</source>. <year>1993</year>; <volume>363</volume>: <fpage>536</fpage>–<lpage>538</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1038/363536a0" xlink:type="simple">10.1038/363536a0</ext-link></comment> <object-id pub-id-type="pmid">8505978</object-id></mixed-citation></ref>
+<ref id="pone.0239521.ref014"><label>14</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Thomas</surname> <given-names>RH</given-names></name>, <name name-style="western"><surname>Schaffner</surname> <given-names>W</given-names></name>, <name name-style="western"><surname>Wilson</surname> <given-names>AC</given-names></name>, <name name-style="western"><surname>Pääbo</surname> <given-names>S</given-names></name>. <article-title>DNA phylogeny of the extinct marsupial wolf</article-title>. <source>Nature</source>. <year>1989</year>; <volume>340</volume>: <fpage>465</fpage>–<lpage>467</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1038/340465a0" xlink:type="simple">10.1038/340465a0</ext-link></comment> <object-id pub-id-type="pmid">2755507</object-id></mixed-citation></ref>
+<ref id="pone.0239521.ref015"><label>15</label><mixed-citation publication-type="book" xlink:type="simple"><name name-style="western"><surname>Parsons</surname> <given-names>TJ</given-names></name>, <name name-style="western"><surname>Weedn</surname> <given-names>VW</given-names></name>. <chapter-title>Preservation and recovery of DNA in postmortem specimens and trace samples</chapter-title>. In: <name name-style="western"><surname>Haglund</surname> <given-names>W</given-names></name>, <name name-style="western"><surname>Sorg</surname> <given-names>M</given-names></name>, editors. <source>Advances in Forensic Taphonomy: The Fate of Human Remains</source>. <publisher-loc>New York</publisher-loc>: <publisher-name>CPR Press</publisher-name>; <year>1996</year>. pp. <fpage>109</fpage>–<lpage>138</lpage>.</mixed-citation></ref>
+<ref id="pone.0239521.ref016"><label>16</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Instability</surname> <given-names>Lindahl T.</given-names></name> and <article-title>decay of the primary structure of DNA</article-title>. <source>Nature</source>. <year>1993</year>; <volume>362</volume>: <fpage>709</fpage>–<lpage>715</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1038/362709a0" xlink:type="simple">10.1038/362709a0</ext-link></comment> <object-id pub-id-type="pmid">8469282</object-id></mixed-citation></ref>
+<ref id="pone.0239521.ref017"><label>17</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Lindahl</surname> <given-names>T.</given-names></name> <article-title>Recovery of antediluvian DNA</article-title>. <source>Nature</source>. <year>1993</year>; <volume>365</volume>: <fpage>700</fpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1038/365700a0" xlink:type="simple">10.1038/365700a0</ext-link></comment> <object-id pub-id-type="pmid">8413647</object-id></mixed-citation></ref>
+<ref id="pone.0239521.ref018"><label>18</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Pääbo</surname> <given-names>S</given-names></name>, <name name-style="western"><surname>Poinar</surname> <given-names>HN</given-names></name>, <name name-style="western"><surname>Serre</surname> <given-names>D</given-names></name>, <name name-style="western"><surname>Janicke-Després</surname> <given-names>V</given-names></name>, <name name-style="western"><surname>Hebler</surname> <given-names>J</given-names></name>, <name name-style="western"><surname>Rohland</surname> <given-names>N</given-names></name>, <etal>et al</etal>. <article-title>Genetic analyses from ancient DNA</article-title>. <source>Annu Rev Genet</source>. <year>2004</year>; <volume>38</volume>: <fpage>645</fpage>–<lpage>679</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1146/annurev.genet.37.110801.143214" xlink:type="simple">10.1146/annurev.genet.37.110801.143214</ext-link></comment> <object-id pub-id-type="pmid">15568989</object-id></mixed-citation></ref>
+<ref id="pone.0239521.ref019"><label>19</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Hebsgaard</surname> <given-names>MB</given-names></name>, <name name-style="western"><surname>Phillips</surname> <given-names>MJ</given-names></name>, <name name-style="western"><surname>Willerslev</surname> <given-names>E</given-names></name>. <article-title>Geologically ancient DNA: fact or artefact</article-title>? <source>Trends Microbiol</source>. <year>2005</year>; <volume>13</volume>: <fpage>212</fpage>–<lpage>220</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1016/j.tim.2005.03.010" xlink:type="simple">10.1016/j.tim.2005.03.010</ext-link></comment> <object-id pub-id-type="pmid">15866038</object-id></mixed-citation></ref>
+<ref id="pone.0239521.ref020"><label>20</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Willerslev</surname> <given-names>E</given-names></name>, <name name-style="western"><surname>Cooper</surname> <given-names>A</given-names></name>. <source>Ancient DNA. Proc R Soc B</source>. <year>2005</year>; <volume>272</volume>: <fpage>3</fpage>–<lpage>16</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1098/rspb.2004.2813" xlink:type="simple">10.1098/rspb.2004.2813</ext-link></comment> <object-id pub-id-type="pmid">15875564</object-id></mixed-citation></ref>
+<ref id="pone.0239521.ref021"><label>21</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Penney</surname> <given-names>D</given-names></name>, <name name-style="western"><surname>Wadsworth</surname> <given-names>C</given-names></name>, <name name-style="western"><surname>Fox</surname> <given-names>G</given-names></name>, <name name-style="western"><surname>Kennedy</surname> <given-names>SL</given-names></name>, <name name-style="western"><surname>Preziosi</surname> <given-names>RF</given-names></name>, <name name-style="western"><surname>Brown</surname> <given-names>AT</given-names></name>. <article-title>Absence of ancient DNA in sub-fossil insect inclusions preserved in ‘Anthropocene’ Colombian copal</article-title>. <source>PLoS ONE</source>. <year>2013</year>; <volume>8</volume>: <fpage>e73150</fpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1371/journal.pone.0073150" xlink:type="simple">10.1371/journal.pone.0073150</ext-link></comment> <object-id pub-id-type="pmid">24039876</object-id></mixed-citation></ref>
+<ref id="pone.0239521.ref022"><label>22</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Rosselló</surname> <given-names>JA</given-names></name>. <article-title>The never-ending story of geologically ancient DNA: was the model plant <italic>Arabidopsis</italic> the source of Miocene Dominican amber?</article-title> <source>Biol J Linn Soc</source>. <year>2014</year>; <volume>111</volume>: <fpage>234</fpage>–<lpage>240</lpage>.</mixed-citation></ref>
+<ref id="pone.0239521.ref023"><label>23</label><mixed-citation publication-type="book" xlink:type="simple"><name name-style="western"><surname>Langenheim</surname> <given-names>JH</given-names></name>. <chapter-title>Plant resins: chemistry, evolution, ecology and ethnobotany</chapter-title>. <publisher-loc>Cambridge</publisher-loc>: <publisher-name>Timber Press</publisher-name>; <year>2003</year>.</mixed-citation></ref>
+<ref id="pone.0239521.ref024"><label>24</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Lambert</surname> <given-names>JB</given-names></name>, <name name-style="western"><surname>Santiago-Blay</surname> <given-names>JA</given-names></name>, <name name-style="western"><surname>Wu</surname> <given-names>Y</given-names></name>, <name name-style="western"><surname>Levy</surname> <given-names>AJ</given-names></name>. <article-title>Examination of amber and 490 related materials by NMR spectroscopy</article-title>. <source>Magn Reson Chem</source>. <year>2015</year>; <volume>53</volume>: <fpage>2</fpage>–<lpage>8</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1002/mrc.4121" xlink:type="simple">10.1002/mrc.4121</ext-link></comment> <object-id pub-id-type="pmid">25176402</object-id></mixed-citation></ref>
+<ref id="pone.0239521.ref025"><label>25</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>McCoy</surname> <given-names>VE</given-names></name>, <name name-style="western"><surname>Soriano</surname> <given-names>C</given-names></name>, <name name-style="western"><surname>Gabbott</surname> <given-names>SE</given-names></name>. <article-title>A review of preservational variation of fossil inclusions in amber of different chemical groups</article-title>. <source>Earth Environ Sci Trans R Soc Edinb</source>. <year>2018</year>; <volume>107</volume>: <fpage>203</fpage>–<lpage>211</lpage>.</mixed-citation></ref>
+<ref id="pone.0239521.ref026"><label>26</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>McCoy</surname> <given-names>VE</given-names></name>, <name name-style="western"><surname>Soriano</surname> <given-names>C</given-names></name>, <name name-style="western"><surname>Pegoraro</surname> <given-names>M</given-names></name>, <name name-style="western"><surname>Luo</surname> <given-names>T</given-names></name>, <name name-style="western"><surname>Boom</surname> <given-names>A</given-names></name>, <name name-style="western"><surname>Foxman</surname> <given-names>B</given-names></name>, <etal>et al</etal>. <article-title>Unlocking preservation bias in the amber insect fossil record through experimental decay</article-title>. <source>PLoS ONE</source>. <year>2018</year>; <volume>13</volume>: <fpage>e0195482</fpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1371/journal.pone.0195482" xlink:type="simple">10.1371/journal.pone.0195482</ext-link></comment> <object-id pub-id-type="pmid">29621345</object-id></mixed-citation></ref>
+<ref id="pone.0239521.ref027"><label>27</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Reiss</surname> <given-names>RA</given-names></name>. <article-title>Ancient DNA from ice age insects: proceed with caution</article-title>. <source>Quat Sci Rev</source>. <year>2006</year>; <volume>25</volume>: <fpage>1877</fpage>–<lpage>1893</lpage>.</mixed-citation></ref>
+<ref id="pone.0239521.ref028"><label>28</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Darzynkiewicz</surname> <given-names>Z</given-names></name>, <name name-style="western"><surname>Juan</surname> <given-names>G</given-names></name>, <name name-style="western"><surname>Li</surname> <given-names>X</given-names></name>, <name name-style="western"><surname>Gorczyca</surname> <given-names>W</given-names></name>, <name name-style="western"><surname>Murakami</surname> <given-names>T</given-names></name>, <name name-style="western"><surname>Traganos</surname> <given-names>F</given-names></name>. <article-title>Cytometry in cell necrobiology: Analysis of apoptosis and accidental cell death (necrosis)</article-title>. <source>Cytometry</source>.<year>1997</year>; <volume>27</volume>: <fpage>1</fpage>–<lpage>20</lpage>. <object-id pub-id-type="pmid">9000580</object-id></mixed-citation></ref>
+<ref id="pone.0239521.ref029"><label>29</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Nagata</surname> <given-names>S.</given-names></name> <article-title>Apoptotic DNA fragmentation</article-title>. <source>Exp Cell Res</source>. <year>2000</year>; <volume>256</volume>: <fpage>12</fpage>–<lpage>18</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1006/excr.2000.4834" xlink:type="simple">10.1006/excr.2000.4834</ext-link></comment> <object-id pub-id-type="pmid">10739646</object-id></mixed-citation></ref>
+<ref id="pone.0239521.ref030"><label>30</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Lindahl</surname> <given-names>T</given-names></name>, <name name-style="western"><surname>Andersson</surname> <given-names>A</given-names></name>. <article-title>Rate of chain breakage at apurinic sites double-stranded deoxyribonucleic acid</article-title>. <source>Biochemistry</source>. <year>1972</year>; <volume>11</volume>: <fpage>3618</fpage>–<lpage>3623</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1021/bi00769a019" xlink:type="simple">10.1021/bi00769a019</ext-link></comment> <object-id pub-id-type="pmid">4559796</object-id></mixed-citation></ref>
+<ref id="pone.0239521.ref031"><label>31</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Lindahl</surname> <given-names>T</given-names></name>, <name name-style="western"><surname>Nyberg</surname> <given-names>B</given-names></name>. <article-title>Rate of depurination of native deoxyribonucleic acid</article-title>. <source>Biochemistry</source> <year>1972</year>; <volume>11</volume>: <fpage>3610</fpage>–<lpage>3618</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1021/bi00769a018" xlink:type="simple">10.1021/bi00769a018</ext-link></comment> <object-id pub-id-type="pmid">4626532</object-id></mixed-citation></ref>
+<ref id="pone.0239521.ref032"><label>32</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Briggs</surname> <given-names>AW</given-names></name>, <name name-style="western"><surname>Stenzel</surname> <given-names>U</given-names></name>, <name name-style="western"><surname>Johnson</surname> <given-names>PLF</given-names></name>, <name name-style="western"><surname>Green</surname> <given-names>RE</given-names></name>, <name name-style="western"><surname>Kelso</surname> <given-names>J</given-names></name>, <name name-style="western"><surname>Prüfer</surname> <given-names>K</given-names></name>, <etal>et al</etal>. <article-title>Patterns of damage in genomic DNA sequences from a Neandertal</article-title>. <source>PNAS</source>. <year>2007</year>; <volume>104</volume>; <fpage>14616</fpage>–<lpage>14621</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1073/pnas.0704665104" xlink:type="simple">10.1073/pnas.0704665104</ext-link></comment> <object-id pub-id-type="pmid">17715061</object-id></mixed-citation></ref>
+<ref id="pone.0239521.ref033"><label>33</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Dabney</surname> <given-names>J</given-names></name>, <name name-style="western"><surname>Meyer</surname> <given-names>M</given-names></name>, <name name-style="western"><surname>Pääbo</surname> <given-names>S</given-names></name>. <article-title>Ancient DNA damage</article-title>. <source>Cold Spring Harb Perspect Biol</source>. <year>2013</year>; <volume>5</volume>: <fpage>a012567</fpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1101/cshperspect.a012567" xlink:type="simple">10.1101/cshperspect.a012567</ext-link></comment> <object-id pub-id-type="pmid">23729639</object-id></mixed-citation></ref>
+<ref id="pone.0239521.ref034"><label>34</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Hopfenberg</surname> <given-names>HB</given-names></name>, <name name-style="western"><surname>Witchey</surname> <given-names>LC</given-names></name>, <name name-style="western"><surname>Poinar</surname> <given-names>GO</given-names></name>, <name name-style="western"><surname>Beck</surname> <given-names>CW</given-names></name>, <name name-style="western"><surname>Chave</surname> <given-names>KE</given-names></name>, <name name-style="western"><surname>Smith</surname> <given-names>SV</given-names></name>, <etal>et al</etal>. <article-title>Is the air in amber ancient?</article-title> <source>Science</source>. <year>1988</year>; <volume>241</volume>: <fpage>717</fpage>–<lpage>721</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1126/science.241.4866.717" xlink:type="simple">10.1126/science.241.4866.717</ext-link></comment> <object-id pub-id-type="pmid">17839082</object-id></mixed-citation></ref>
+<ref id="pone.0239521.ref035"><label>35</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Smith</surname> <given-names>CI</given-names></name>, <name name-style="western"><surname>Chamberlain</surname> <given-names>AT</given-names></name>, <name name-style="western"><surname>Riley</surname> <given-names>MS</given-names></name>, <name name-style="western"><surname>Stringer</surname> <given-names>C</given-names></name>, <name name-style="western"><surname>Collins</surname> <given-names>MJ</given-names></name>. <article-title>The thermal history of human fossils and the likelihood of successful DNA amplification</article-title>. <source>J Hum Evol</source>. <year>2003</year>; <volume>45</volume>: <fpage>203</fpage>–<lpage>217</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1016/s0047-2484%2803%2900106-4" xlink:type="simple">10.1016/s0047-2484(03)00106-4</ext-link></comment> <object-id pub-id-type="pmid">14580590</object-id></mixed-citation></ref>
+<ref id="pone.0239521.ref036"><label>36</label><mixed-citation publication-type="book" xlink:type="simple"><name name-style="western"><surname>Gaertner</surname> <given-names>J.</given-names></name> <source>De Fructibus et Seminibus Plantarum</source>. <publisher-loc>Stuttgart</publisher-loc>: <publisher-name>Stutgardie Typis Academie Caroline</publisher-name>; <year>1791</year>.</mixed-citation></ref>
+<ref id="pone.0239521.ref037"><label>37</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Anderson</surname> <given-names>KB</given-names></name>, <name name-style="western"><surname>Winans</surname> <given-names>RE</given-names></name>, <name name-style="western"><surname>Botto</surname> <given-names>RB</given-names></name>. <article-title>The nature and fate of natural resins in the geosphere—II. Identification, classification and nomenclature of resinites</article-title>. <source>Org Geochem</source>. <year>1992</year>; <volume>18</volume>: <fpage>829</fpage>–<lpage>841</lpage>.</mixed-citation></ref>
+<ref id="pone.0239521.ref038"><label>38</label><mixed-citation publication-type="book" xlink:type="simple"><name name-style="western"><surname>Penney</surname> <given-names>D.</given-names></name> <source>Biodiversity of fossils in amber from the major world deposits</source>. <publisher-loc>Manchester</publisher-loc>: <publisher-name>Siri Scientific Press</publisher-name>; <year>2010</year>.</mixed-citation></ref>
+<ref id="pone.0239521.ref039"><label>39</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Rust</surname> <given-names>J</given-names></name>, <name name-style="western"><surname>Singh</surname> <given-names>H</given-names></name>, <name name-style="western"><surname>Rana</surname> <given-names>RS</given-names></name>, <name name-style="western"><surname>McCann</surname> <given-names>T</given-names></name>, <name name-style="western"><surname>Singh</surname> <given-names>L</given-names></name>, <name name-style="western"><surname>Anderson</surname> <given-names>K</given-names></name>, <etal>et al</etal>. <article-title>Biogeographic and evolutionary implications of a diverse paleobiota in amber from the early Eocene of India</article-title>. <source>PNAS</source>. <year>2010</year>; <volume>107</volume>: <fpage>18360</fpage>–<lpage>18365</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1073/pnas.1007407107" xlink:type="simple">10.1073/pnas.1007407107</ext-link></comment> <object-id pub-id-type="pmid">20974929</object-id></mixed-citation></ref>
+<ref id="pone.0239521.ref040"><label>40</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Shi</surname> <given-names>G</given-names></name>, <name name-style="western"><surname>Dutta</surname> <given-names>S</given-names></name>, <name name-style="western"><surname>Paul</surname> <given-names>S</given-names></name>, <name name-style="western"><surname>Wang</surname> <given-names>B</given-names></name>, <name name-style="western"><surname>Jacques</surname> <given-names>FMB</given-names></name>. <article-title>Terpenoid compositions and botanical origins of Late Cretaceous and Miocene amber from China</article-title>. <source>PLoS ONE</source>. <year>2014</year>; <volume>9</volume>: <fpage>e111303</fpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1371/journal.pone.0111303" xlink:type="simple">10.1371/journal.pone.0111303</ext-link></comment> <object-id pub-id-type="pmid">25354364</object-id></mixed-citation></ref>
+<ref id="pone.0239521.ref041"><label>41</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Pääbo</surname> <given-names>S</given-names></name>, <name name-style="western"><surname>Higuchi</surname> <given-names>RG</given-names></name>, <name name-style="western"><surname>Wilson</surname> <given-names>AC</given-names></name>. <article-title>Ancient DNA and the polymerase chain reaction</article-title>. <source>J Biol Chem</source>. <year>1989</year>; <volume>264</volume>: <fpage>9709</fpage>–<lpage>9712</lpage>. <object-id pub-id-type="pmid">2656708</object-id></mixed-citation></ref>
+<ref id="pone.0239521.ref042"><label>42</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Sawyer</surname> <given-names>S</given-names></name>, <name name-style="western"><surname>Krause</surname> <given-names>J</given-names></name>, <name name-style="western"><surname>Guschanski</surname> <given-names>K</given-names></name>, <name name-style="western"><surname>Savolainen</surname> <given-names>V</given-names></name>, <name name-style="western"><surname>Pääbo</surname> <given-names>S</given-names></name>. <article-title>Temporal patterns of nucleotide misincorporations and DNA fragmentation in ancient DNA</article-title>. <source>PLoS ONE</source>. <year>2012</year>; <volume>7</volume>: <fpage>e34131</fpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1371/journal.pone.0034131" xlink:type="simple">10.1371/journal.pone.0034131</ext-link></comment> <object-id pub-id-type="pmid">22479540</object-id></mixed-citation></ref>
+<ref id="pone.0239521.ref043"><label>43</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Heintzman</surname> <given-names>PD</given-names></name>, <name name-style="western"><surname>Elias</surname> <given-names>SA</given-names></name>, <name name-style="western"><surname>Moore</surname> <given-names>K</given-names></name>, <name name-style="western"><surname>Paszkiewicz</surname> <given-names>K</given-names></name>, <name name-style="western"><surname>Barnes</surname> <given-names>I</given-names></name>. <article-title>Characterizing DNA preservation in degraded specimens of <italic>Amara alpina</italic> (Carabidae: Coleoptera)</article-title>. <source>Mol Ecol Resour</source>. <year>2014</year>; <volume>14</volume>: <fpage>606</fpage>–<lpage>615</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1111/1755-0998.12205" xlink:type="simple">10.1111/1755-0998.12205</ext-link></comment> <object-id pub-id-type="pmid">24266987</object-id></mixed-citation></ref>
+<ref id="pone.0239521.ref044"><label>44</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Schwarz</surname> <given-names>C</given-names></name>, <name name-style="western"><surname>Debruyne</surname> <given-names>R</given-names></name>, <name name-style="western"><surname>Kuch</surname> <given-names>M</given-names></name>, <name name-style="western"><surname>Mcnally</surname> <given-names>E</given-names></name>, <name name-style="western"><surname>Schwarcz</surname> <given-names>H</given-names></name>, <name name-style="western"><surname>Aubrey</surname> <given-names>AD</given-names></name>, <etal>et al</etal>. <article-title>New insights from old bones: DNA preservation and degradation in permafrost preserved mammoth remains</article-title>. <source>Nucleic Acids Res</source>. <year>2009</year>; <volume>37</volume>: <fpage>3215</fpage>–<lpage>3229</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1093/nar/gkp159" xlink:type="simple">10.1093/nar/gkp159</ext-link></comment> <object-id pub-id-type="pmid">19321502</object-id></mixed-citation></ref>
+<ref id="pone.0239521.ref045"><label>45</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Allentoft</surname> <given-names>ME</given-names></name>, <name name-style="western"><surname>Collins</surname> <given-names>M</given-names></name>, <name name-style="western"><surname>Harker</surname> <given-names>D</given-names></name>, <name name-style="western"><surname>Haile</surname> <given-names>J</given-names></name>, <name name-style="western"><surname>Oskam</surname> <given-names>CL</given-names></name>, <name name-style="western"><surname>Hale</surname> <given-names>ML</given-names></name>, <etal>et al</etal>. <article-title>The half-life of DNA in bone: Measuring decay kinetics in 158 dated fossils</article-title>. <source>Proc R Soc B</source>. <year>2012</year>; <volume>279</volume>: <fpage>4724</fpage>–<lpage>4733</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1098/rspb.2012.1745" xlink:type="simple">10.1098/rspb.2012.1745</ext-link></comment> <object-id pub-id-type="pmid">23055061</object-id></mixed-citation></ref>
+<ref id="pone.0239521.ref046"><label>46</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Pawlowski</surname> <given-names>J</given-names></name>, <name name-style="western"><surname>Kmieciak</surname> <given-names>D</given-names></name>, <name name-style="western"><surname>Szadziewski</surname> <given-names>R</given-names></name>, <name name-style="western"><surname>Burkiewicz</surname> <given-names>A</given-names></name>. <article-title>Attempted isolation of DNA from insects embedded in Baltic amber</article-title>. <source>Inclusion-Wrostek</source>. <year>1996</year>; <volume>26</volume>: <fpage>12</fpage>–<lpage>13</lpage>.</mixed-citation></ref>
+<ref id="pone.0239521.ref047"><label>47</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Austin</surname> <given-names>JJ</given-names></name>, <name name-style="western"><surname>Ross</surname> <given-names>AJ</given-names></name>, <name name-style="western"><surname>Smith</surname> <given-names>AB</given-names></name>, <name name-style="western"><surname>Fortey</surname> <given-names>RA</given-names></name>, <name name-style="western"><surname>Thomas</surname> <given-names>RH</given-names></name>. <article-title>Problems of reproducibility–does geologically ancient DNA survive in amber-preserved insects?</article-title> <source>Proc R Soc B</source>. <year>1997</year>; <volume>264</volume>: <fpage>467</fpage>–<lpage>474</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1098/rspb.1997.0067" xlink:type="simple">10.1098/rspb.1997.0067</ext-link></comment> <object-id pub-id-type="pmid">9149422</object-id></mixed-citation></ref>
+<ref id="pone.0239521.ref048"><label>48</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Gilbert</surname> <given-names>MTP</given-names></name>, <name name-style="western"><surname>Moore</surname> <given-names>W</given-names></name>, <name name-style="western"><surname>Melchior</surname> <given-names>L</given-names></name>, <name name-style="western"><surname>Worobey</surname> <given-names>M</given-names></name>. <article-title>DNA extraction from dry museum beetles without conferring external morphological damage</article-title>. <source>PLoS ONE</source>. <year>2007</year>; <volume>3</volume>: <fpage>e272</fpage>.</mixed-citation></ref>
+<ref id="pone.0239521.ref049"><label>49</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Thomsen</surname> <given-names>PF</given-names></name>, <name name-style="western"><surname>Elias</surname> <given-names>S</given-names></name>, <name name-style="western"><surname>Gilbert</surname> <given-names>MT</given-names></name>, <name name-style="western"><surname>Haile</surname> <given-names>J</given-names></name>, <name name-style="western"><surname>Munch</surname> <given-names>K</given-names></name>, <name name-style="western"><surname>Svetlana</surname> <given-names>K</given-names></name>, <etal>et al</etal>. <article-title>Non-destructive sampling of ancient insect DNA</article-title>. <source>PLoS ONE</source>. <year>2009</year>; <volume>4</volume>: <fpage>e5048</fpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1371/journal.pone.0005048" xlink:type="simple">10.1371/journal.pone.0005048</ext-link></comment> <object-id pub-id-type="pmid">19337382</object-id></mixed-citation></ref>
+<ref id="pone.0239521.ref050"><label>50</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Tagliavia</surname> <given-names>M</given-names></name>, <name name-style="western"><surname>Massa</surname> <given-names>B</given-names></name>, <name name-style="western"><surname>Albanese</surname> <given-names>I</given-names></name>, <name name-style="western"><surname>La Farina</surname> <given-names>M</given-names></name>. <article-title>DNA extraction from Orthoptera museum specimens</article-title>. <source>Anal Lett</source>. <year>2011</year>; <volume>44</volume>: <fpage>1058</fpage>–<lpage>1062</lpage>.</mixed-citation></ref>
+<ref id="pone.0239521.ref051"><label>51</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Büsse</surname> <given-names>S</given-names></name>, <name name-style="western"><surname>von Grumbkow</surname> <given-names>P</given-names></name>, <name name-style="western"><surname>Mazanec</surname> <given-names>J</given-names></name>, <name name-style="western"><surname>Tröster</surname> <given-names>G</given-names></name>, <name name-style="western"><surname>Hummel</surname> <given-names>S</given-names></name>, <name name-style="western"><surname>Hörnschemeyer</surname> <given-names>T</given-names></name>. <article-title>Note on using nuclear 28S rDNA for sequencing ancient and strongly degraded insect DNA</article-title>. <source>Entomol Sci</source>. <year>2017</year>; <volume>20</volume>: <fpage>137</fpage>–<lpage>141</lpage>.</mixed-citation></ref>
+<ref id="pone.0239521.ref052"><label>52</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Anderson</surname> <given-names>KB</given-names></name>. <article-title>The nature and fate of natural resins in the geosphere. VII. A radiocarbon (14C) age scale for description of immature natural resins. An invitation to scientific debate</article-title>. <source>Org Geochem</source>. <year>1996</year>; <volume>25</volume>: <fpage>251</fpage>–<lpage>253</lpage>.</mixed-citation></ref>
+<ref id="pone.0239521.ref053"><label>53</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Bunning</surname> <given-names>SL</given-names></name>, <name name-style="western"><surname>Jones</surname> <given-names>G</given-names></name>, <name name-style="western"><surname>Brown</surname> <given-names>TA</given-names></name>. <article-title>Next generation sequencing of DNA in 3300-year-old charred cereal grains</article-title>. <source>J Archaeol Sci</source>. <year>2012</year>; <volume>39</volume>: <fpage>2780</fpage>–<lpage>2784</lpage>.</mixed-citation></ref>
+<ref id="pone.0239521.ref054"><label>54</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Hofreiter</surname> <given-names>M</given-names></name>, <name name-style="western"><surname>Paijmans</surname> <given-names>JLA</given-names></name>, <name name-style="western"><surname>Goodchild</surname> <given-names>H</given-names></name>, <name name-style="western"><surname>Speller</surname> <given-names>CF</given-names></name>, <name name-style="western"><surname>Barlow</surname> <given-names>A</given-names></name>, <name name-style="western"><surname>Fortes</surname> <given-names>GG</given-names></name>, <etal>et al</etal>. <article-title>The future of ancient DNA: Technical advances and conceptual shifts</article-title>. <source>BioEssays</source>. <year>2014</year>; <volume>37</volume>: <fpage>284</fpage>–<lpage>293</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1002/bies.201400160" xlink:type="simple">10.1002/bies.201400160</ext-link></comment> <object-id pub-id-type="pmid">25413709</object-id></mixed-citation></ref>
+<ref id="pone.0239521.ref055"><label>55</label><mixed-citation publication-type="book" xlink:type="simple"><name name-style="western"><surname>Pääbo</surname> <given-names>S.</given-names></name> <source>Neanderthal man: In search of lost genomes</source>. <publisher-loc>New York</publisher-loc>: <publisher-name>Basic Books</publisher-name>; <year>2014</year>.</mixed-citation></ref>
+<ref id="pone.0239521.ref056"><label>56</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Slon</surname> <given-names>V</given-names></name>, <name name-style="western"><surname>Mafessoni</surname> <given-names>F</given-names></name>, <name name-style="western"><surname>Vernot</surname> <given-names>B</given-names></name>, <name name-style="western"><surname>de Filippo</surname> <given-names>C</given-names></name>, <name name-style="western"><surname>Grote</surname> <given-names>S</given-names></name>, <name name-style="western"><surname>Viola</surname> <given-names>TB</given-names></name>, <etal>et al</etal>. <article-title>The genome of the offspring of a Neanderthal mother and a Denisovan father</article-title>. <source>Nature</source>. <year>2018</year>; <volume>561</volume>: <fpage>113</fpage>–<lpage>116</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1038/s41586-018-0455-x" xlink:type="simple">10.1038/s41586-018-0455-x</ext-link></comment> <object-id pub-id-type="pmid">30135579</object-id></mixed-citation></ref>
+<ref id="pone.0239521.ref057"><label>57</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Bailleul</surname> <given-names>AM</given-names></name>, <name name-style="western"><surname>Zheng</surname> <given-names>W</given-names></name>, <name name-style="western"><surname>Horner</surname> <given-names>JR</given-names></name>, <name name-style="western"><surname>Hall</surname> <given-names>BK</given-names></name>, <name name-style="western"><surname>Holliday</surname> <given-names>CM</given-names></name>, <name name-style="western"><surname>Schweitzer</surname> <given-names>MH</given-names></name>. <source>Natl Sci Rev.</source> <year>2020</year>; <fpage>nwz206</fpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1093/nsr/nwz206" xlink:type="simple">10.1093/nsr/nwz206</ext-link></comment></mixed-citation></ref>
+<ref id="pone.0239521.ref058"><label>58</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>McCoy</surname> <given-names>VE</given-names></name>, <name name-style="western"><surname>Gabott</surname> <given-names>SE</given-names></name>, <name name-style="western"><surname>Penkman</surname> <given-names>K</given-names></name>, <name name-style="western"><surname>Collins</surname> <given-names>MJ</given-names></name>, <name name-style="western"><surname>Presslee</surname> <given-names>S</given-names></name>, <name name-style="western"><surname>Holt</surname> <given-names>J</given-names></name>, <etal>et al</etal>. <article-title>Ancient amino acids from fossil feathers in amber</article-title>. <source>Scientific Reports</source>. <year>2019</year>; <volume>9</volume>: <fpage>6420</fpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1038/s41598-019-42938-9" xlink:type="simple">10.1038/s41598-019-42938-9</ext-link></comment> <object-id pub-id-type="pmid">31015542</object-id></mixed-citation></ref>
+<ref id="pone.0239521.ref059"><label>59</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Boatman</surname> <given-names>EM</given-names></name>, <name name-style="western"><surname>Goodwin</surname> <given-names>MB</given-names></name>, <name name-style="western"><surname>Holman</surname> <given-names>H-Y</given-names></name>, <name name-style="western"><surname>Fakra</surname> <given-names>S</given-names></name>, <name name-style="western"><surname>Zheng</surname> <given-names>W</given-names></name>, <name name-style="western"><surname>Gronsky</surname> <given-names>R</given-names></name>, <etal>et al</etal>. <article-title>Mechanisms of soft tissue and protein preservation in <italic>Tyrannosaurus rex</italic></article-title>. <source>Sci Rep</source>. <year>2019</year>; <volume>9</volume>: <fpage>15678</fpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1038/s41598-019-51680-1" xlink:type="simple">10.1038/s41598-019-51680-1</ext-link></comment> <object-id pub-id-type="pmid">31666554</object-id></mixed-citation></ref>
+<ref id="pone.0239521.ref060"><label>60</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Jensen</surname> <given-names>TZT</given-names></name>, <name name-style="western"><surname>Niemann</surname> <given-names>J</given-names></name>, <name name-style="western"><surname>Iversen</surname> <given-names>KH</given-names></name>, <name name-style="western"><surname>Fotakis</surname> <given-names>AK</given-names></name>, <name name-style="western"><surname>Gopalakrishnan</surname> <given-names>S</given-names></name>, <name name-style="western"><surname>Vågene</surname> <given-names>ÅJ</given-names></name>, <etal>et al</etal>. <article-title>A 5700 year-old human genome and oral microbiome from chewed birch pitch</article-title>. <source>Nat Commun</source>. <year>2019</year>; <volume>10</volume>: <fpage>5520</fpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1038/s41467-019-13549-9" xlink:type="simple">10.1038/s41467-019-13549-9</ext-link></comment> <object-id pub-id-type="pmid">31848342</object-id></mixed-citation></ref>
+<ref id="pone.0239521.ref061"><label>61</label><mixed-citation publication-type="book" xlink:type="simple"><name name-style="western"><surname>Chapuis</surname> <given-names>F.</given-names></name> <source>Monographie des Platypides.</source> <publisher-loc>Liège</publisher-loc>: <publisher-name>H. Dessain</publisher-name>; <year>1865</year>.</mixed-citation></ref>
+<ref id="pone.0239521.ref062"><label>62</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Schedl</surname> <given-names>KE</given-names></name>. <article-title>Fauna Madagascariensis IV: 188. Contribution à la morphologie et à la systématique des coléoptères scolytoidea</article-title>. <source>Mém Inst Sci Madag</source>.<year>1961</year>; <volume>12</volume>: <fpage>127</fpage>–<lpage>170</lpage>.</mixed-citation></ref>
+<ref id="pone.0239521.ref063"><label>63</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Schaufuss</surname> <given-names>CFC</given-names></name>. <article-title>Beitrag zur Kaferfauna Madagascars. III. Missions scientifiques de M. Ch. Alluaud auxîles Séchelles (1892) et a Diego-Suarez, Madagascar (1893) (Scolytidae et Platypodidae).</article-title> <source>Tijdschr. Entomol</source>. <year>1897</year>; <volume>40</volume>: <fpage>209</fpage>–<lpage>225</lpage>.</mixed-citation></ref>
+<ref id="pone.0239521.ref064"><label>64</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Schedl</surname> <given-names>KE</given-names></name>. <article-title>Fauna Madagascariensis, V, Coleopteres, Scolytoidea</article-title>. <source>Ann Soc Entomol Fr</source>. <year>1970</year>; <volume>6</volume>: <fpage>233</fpage>–<lpage>241</lpage>.</mixed-citation></ref>
+<ref id="pone.0239521.ref065"><label>65</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Pistone</surname> <given-names>D</given-names></name>, <name name-style="western"><surname>Mugu</surname> <given-names>S</given-names></name>, <name name-style="western"><surname>Jordal</surname> <given-names>BH</given-names></name>. <article-title>Genomic mining of phylogenetically informative nuclear markers in bark and ambrosia beetles</article-title>. <source>PLoS ONE</source>. <year>2016</year>; <volume>11</volume>: <fpage>e0163529</fpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1371/journal.pone.0163529" xlink:type="simple">10.1371/journal.pone.0163529</ext-link></comment> <object-id pub-id-type="pmid">27668729</object-id></mixed-citation></ref>
+<ref id="pone.0239521.ref066"><label>66</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Mugu</surname> <given-names>S</given-names></name>, <name name-style="western"><surname>Pistone</surname> <given-names>D</given-names></name>, <name name-style="western"><surname>Jordal</surname> <given-names>BH</given-names></name>. <article-title>New molecular markers resolve the phylogenetic position of the enigmatic wood-boring weevils Platypodinae (Coleoptera: Curculionidae)</article-title>. <source>Arthropod Syst Phylo</source>. <year>2018</year>; <volume>76</volume>: <fpage>45</fpage>–<lpage>58</lpage>.</mixed-citation></ref>
+<ref id="pone.0239521.ref067"><label>67</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>McKenna</surname> <given-names>DD</given-names></name>, <name name-style="western"><surname>Farrell</surname> <given-names>BD</given-names></name>. <article-title>Molecular phylogenetics and evolution of host plant use in the Neotropical rolled leaf ‘hispine’ beetle genus <italic>Cephaloleia</italic> (Chevrolat) (Chrysomelidae: Cassidinae)</article-title>. <source>Mol Phylogenet Evol</source>. <year>2005</year>; <volume>37</volume>: <fpage>117</fpage>–<lpage>131</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1016/j.ympev.2005.06.011" xlink:type="simple">10.1016/j.ympev.2005.06.011</ext-link></comment> <object-id pub-id-type="pmid">16054400</object-id></mixed-citation></ref>
+<ref id="pone.0239521.ref068"><label>68</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Handt</surname> <given-names>O</given-names></name>, <name name-style="western"><surname>Höss</surname> <given-names>M</given-names></name>, <name name-style="western"><surname>Krings</surname> <given-names>M</given-names></name>, <name name-style="western"><surname>Pääbo</surname> <given-names>S</given-names></name>. <article-title>Ancient DNA: Methodological challenges</article-title>. <source>Experientia</source>. <year>1994</year>; <volume>50</volume>: <fpage>524</fpage>–<lpage>529</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1007/BF01921720" xlink:type="simple">10.1007/BF01921720</ext-link></comment> <object-id pub-id-type="pmid">8020612</object-id></mixed-citation></ref>
+<ref id="pone.0239521.ref069"><label>69</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Rohland</surname> <given-names>N</given-names></name>, <name name-style="western"><surname>Hofreiter</surname> <given-names>M</given-names></name>. <article-title>Comparison and optimization of ancient DNA extraction</article-title>. <source>BioTechniques</source>. <year>2007</year>; <volume>42</volume>: <fpage>343</fpage>–<lpage>352</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.2144/000112383" xlink:type="simple">10.2144/000112383</ext-link></comment> <object-id pub-id-type="pmid">17390541</object-id></mixed-citation></ref>
+<ref id="pone.0239521.ref070"><label>70</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Farell</surname> <given-names>EM</given-names></name>, <name name-style="western"><surname>Alexandre</surname> <given-names>G</given-names></name>. <article-title>Bovine serum albumin further enhances the effects of organic solvents on increased yield of polymerase chain reaction of GC-rich templates</article-title>. <source>BMC Res Notes</source>. <year>2012</year>; <volume>5</volume>: <fpage>257</fpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1186/1756-0500-5-257" xlink:type="simple">10.1186/1756-0500-5-257</ext-link></comment> <object-id pub-id-type="pmid">22624992</object-id></mixed-citation></ref>
+<ref id="pone.0239521.ref071"><label>71</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Sidstedt</surname> <given-names>M</given-names></name>, <name name-style="western"><surname>Steffen</surname> <given-names>CR</given-names></name>, <name name-style="western"><surname>Kiesler</surname> <given-names>KM</given-names></name>, <name name-style="western"><surname>Vallone</surname> <given-names>PM</given-names></name>, <name name-style="western"><surname>Rådström</surname> <given-names>P</given-names></name>, <name name-style="western"><surname>Hedman</surname> <given-names>J</given-names></name>. <article-title>The impact of common PCR inhibitors on forensic MPS analysis</article-title>. <source>Forensic Sci Int</source>. <year>2019</year>; <volume>40</volume>: <fpage>182</fpage>–<lpage>191</lpage>.</mixed-citation></ref>
+<ref id="pone.0239521.ref072"><label>72</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Mazur</surname> <given-names>N</given-names></name>, <name name-style="western"><surname>Nagel</surname> <given-names>M</given-names></name>, <name name-style="western"><surname>Leppin</surname> <given-names>U</given-names></name>, <name name-style="western"><surname>Bierbaum</surname> <given-names>G</given-names></name>, <name name-style="western"><surname>Rust</surname> <given-names>J</given-names></name>. <article-title>The extraction of fossil arthropods from Lower Eocene Cambay amber</article-title>. <source>Acta Palaeontol Pol</source>. <year>2014</year>; <volume>59</volume>: <fpage>455</fpage>–<lpage>459</lpage>.</mixed-citation></ref>
+<ref id="pone.0239521.ref073"><label>73</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Gaikwad</surname> <given-names>AB</given-names></name>. <article-title>DNA extraction: Comparison of methodologies</article-title>. <source>PLoS Biol</source>. <year>2002</year>; <volume>20</volume>: <fpage>162</fpage>–<lpage>173</lpage>.</mixed-citation></ref>
+<ref id="pone.0239521.ref074"><label>74</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Köchl</surname> <given-names>S</given-names></name>, <name name-style="western"><surname>Niederstätter</surname> <given-names>H</given-names></name>, <name name-style="western"><surname>Parson</surname> <given-names>W</given-names></name>. <article-title>DNA extraction and quantitation of forensic samples using the phenol-chloroform method and real-time PCR</article-title>. <source>Methods Mol Biol</source>. <year>2005</year>; <volume>297</volume>: <fpage>13</fpage>–<lpage>29</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1385/1-59259-867-6%3A013" xlink:type="simple">10.1385/1-59259-867-6:013</ext-link></comment> <object-id pub-id-type="pmid">15570097</object-id></mixed-citation></ref>
+<ref id="pone.0239521.ref075"><label>75</label><mixed-citation publication-type="book" xlink:type="simple"><name name-style="western"><surname>Barnett</surname> <given-names>R</given-names></name>, <name name-style="western"><surname>Larson</surname> <given-names>G</given-names></name>. <chapter-title>A phenol-chloroform protocol for extracting DNA from ancient samples</chapter-title>. In: <name name-style="western"><surname>Shapiro</surname> <given-names>B</given-names></name>, <name name-style="western"><surname>Hofreiter</surname> <given-names>M</given-names></name>, editors. <source>Ancient DNA</source>. <publisher-loc>Totowa</publisher-loc>: <publisher-name>Humana Press</publisher-name>; <year>2012</year>. pp. <fpage>13</fpage>–<lpage>19</lpage>.</mixed-citation></ref>
+<ref id="pone.0239521.ref076"><label>76</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Henwood</surname> <given-names>AA</given-names></name>. <article-title>Exceptional preservation of Dipteran flight muscle and the taphonomy of insects in amber</article-title>. <source>Palaios</source>. <year>1992</year>; <volume>7</volume>: <fpage>203</fpage>–<lpage>212</lpage>.</mixed-citation></ref>
+<ref id="pone.0239521.ref077"><label>77</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Poinar</surname> <given-names>HN</given-names></name>, <name name-style="western"><surname>Melzer</surname> <given-names>RR</given-names></name>, <name name-style="western"><surname>Poinar</surname> <given-names>GO</given-names> <suffix>Jr</suffix></name>. <article-title>Ultrastructure of 30–40 million year old leaflets from Dominican amber (<italic>Hymenaea protera</italic>, Fabaceae: Angiospermae)</article-title>. <source>Experientia</source>. <year>1996</year>; <volume>52</volume>: <fpage>387</fpage>–<lpage>390</lpage>.</mixed-citation></ref>
+<ref id="pone.0239521.ref078"><label>78</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Perreau</surname> <given-names>M</given-names></name>, <name name-style="western"><surname>Tafforeau</surname> <given-names>P</given-names></name>. <article-title>Virtual dissection using phase-contrast X-ray synchrotron microtomography: reducing the gap between fossils and extant species</article-title>. <source>Syst Entomol</source>. <year>2011</year>; <volume>36</volume>: <fpage>573</fpage>–<lpage>580</lpage>.</mixed-citation></ref>
+<ref id="pone.0239521.ref079"><label>79</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Shirkey</surname> <given-names>B</given-names></name>, <name name-style="western"><surname>McMaster</surname> <given-names>NJ</given-names></name>, <name name-style="western"><surname>Smith</surname> <given-names>SC</given-names></name>, <name name-style="western"><surname>Wright</surname> <given-names>DJ</given-names></name>, <name name-style="western"><surname>Rodriguez</surname> <given-names>H</given-names></name>, <name name-style="western"><surname>Jaruga</surname> <given-names>P</given-names></name>, <etal>et al</etal>. <article-title>Genomic DNA of <italic>Nostoc commune</italic> (Cyanobacteria) becomes covalently modified during long-term (decades) desiccation but is protected from oxidative damage and degradation</article-title>. <source>Nucleic Acids Res</source>. <year>2003</year>; <volume>31</volume>: <fpage>2995</fpage>–<lpage>3005</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1093/nar/gkg404" xlink:type="simple">10.1093/nar/gkg404</ext-link></comment> <object-id pub-id-type="pmid">12799425</object-id></mixed-citation></ref>
+<ref id="pone.0239521.ref080"><label>80</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Brundin</surname> <given-names>M</given-names></name>, <name name-style="western"><surname>Figdor</surname> <given-names>D</given-names></name>, <name name-style="western"><surname>Sundqvist</surname> <given-names>G</given-names></name>, <article-title>Sjögren, U. DNA binding to hydroxyapatite: A potential mechanism for preservation of microbial DNA</article-title>. <source>J Endod</source>. <year>2013</year>; <volume>39</volume>: <fpage>211</fpage>–<lpage>216</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1016/j.joen.2012.09.013" xlink:type="simple">10.1016/j.joen.2012.09.013</ext-link></comment> <object-id pub-id-type="pmid">23321233</object-id></mixed-citation></ref>
+<ref id="pone.0239521.ref081"><label>81</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Seilacher</surname> <given-names>A</given-names></name>, <name name-style="western"><surname>Reif</surname> <given-names>WE</given-names></name>, <name name-style="western"><surname>Westphal</surname> <given-names>F</given-names></name>. <article-title>Sedimentological, ecological and temporal patterns of fossil Lagerstätten</article-title>. <source>Philos T R Soc B</source>. <year>1985</year>; <volume>311</volume>: <fpage>5</fpage>–<lpage>24</lpage>.</mixed-citation></ref>
+<ref id="pone.0239521.ref082"><label>82</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Briggs</surname> <given-names>DEG</given-names></name>. <article-title>The role of decay and mineralization in the preservation of soft-bodied fossils</article-title>. <source>Annu Rev Earth Planet Sci</source>. <year>2003</year>; <volume>31</volume>: <fpage>275</fpage>–<lpage>301</lpage>.</mixed-citation></ref>
+<ref id="pone.0239521.ref083"><label>83</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Hofreiter</surname> <given-names>M</given-names></name>, <name name-style="western"><surname>Serre</surname> <given-names>D</given-names></name>, <name name-style="western"><surname>Pääbo</surname> <given-names>S</given-names></name>. <article-title>Ancient DNA</article-title>. <source>Nat Rev</source>. <year>2001</year>; <volume>2</volume>: <fpage>353</fpage>–<lpage>359</lpage>.</mixed-citation></ref>
+<ref id="pone.0239521.ref084"><label>84</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Willerslev</surname> <given-names>E</given-names></name>, <name name-style="western"><surname>Hansen</surname> <given-names>AJ</given-names></name>, <name name-style="western"><surname>Poinar</surname> <given-names>HN</given-names></name>. <article-title>Isolation of nucleic acids and cultures from fossil ice and permafrost</article-title>. <source>Trends Ecol Evol</source>. <year>2004</year>; <volume>19</volume>: <fpage>141</fpage>–<lpage>147</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1016/j.tree.2003.11.010" xlink:type="simple">10.1016/j.tree.2003.11.010</ext-link></comment> <object-id pub-id-type="pmid">16701245</object-id></mixed-citation></ref>
+<ref id="pone.0239521.ref085"><label>85</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Cano</surname> <given-names>RJ</given-names></name>. <article-title>Analysing ancient DNA</article-title>. <source>Endeavour</source>. <year>1996</year>; <volume>20</volume>: <fpage>162</fpage>–<lpage>167</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1016/s0160-9327%2896%2910031-4" xlink:type="simple">10.1016/s0160-9327(96)10031-4</ext-link></comment> <object-id pub-id-type="pmid">9022353</object-id></mixed-citation></ref>
+<ref id="pone.0239521.ref086"><label>86</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Deans</surname> <given-names>SG</given-names></name>, <name name-style="western"><surname>Ritchie</surname> <given-names>G</given-names></name>. <article-title>Antibacterial properties of plant essential oils</article-title>. <source>Int J Food Microbiol</source>. <year>1987</year>; <volume>5</volume>: <fpage>165</fpage>–<lpage>180</lpage>.</mixed-citation></ref>
+<ref id="pone.0239521.ref087"><label>87</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Ryan</surname> <given-names>MF</given-names></name>, <name name-style="western"><surname>Byrne</surname> <given-names>O</given-names></name>. <article-title>Plant-insect coevolution and inhibition of acetylcholinesterase</article-title>. <source>J Chem Ecol</source>. <year>1988</year>; <volume>14</volume>: <fpage>1965</fpage>–<lpage>1975</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1007/BF01013489" xlink:type="simple">10.1007/BF01013489</ext-link></comment> <object-id pub-id-type="pmid">24277106</object-id></mixed-citation></ref>
+<ref id="pone.0239521.ref088"><label>88</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Stankiewicz</surname> <given-names>BA</given-names></name>, <name name-style="western"><surname>Poinar</surname> <given-names>HN</given-names></name>, <name name-style="western"><surname>Briggs</surname> <given-names>DEG</given-names></name>, <name name-style="western"><surname>Evershed</surname> <given-names>RP</given-names></name>, <name name-style="western"><surname>Poinar</surname> <given-names>GO</given-names> <suffix>Jr</suffix></name>. <article-title>Chemical preservation of plants and insects in natural resins</article-title>. <source>Proc R Soc B</source>. <year>1998</year>; <volume>265</volume>: <fpage>641</fpage>–<lpage>647</lpage>.</mixed-citation></ref>
+<ref id="pone.0239521.ref089"><label>89</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Speranza</surname> <given-names>M</given-names></name>, <name name-style="western"><surname>Ascaso</surname> <given-names>C</given-names></name>, <name name-style="western"><surname>Delclòs</surname> <given-names>X</given-names></name>, <name name-style="western"><surname>Peñalver</surname> <given-names>E</given-names></name>. <article-title>Cretaceous mycelia preserving fungal polysaccharides: Taphonomic and paleoecological potential of microorganisms preserved in fossil resins</article-title>. <source>Geol Acta</source>. <year>2015</year>; <volume>13</volume>: <fpage>363</fpage>–<lpage>385</lpage>.</mixed-citation></ref>
+<ref id="pone.0239521.ref090"><label>90</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Adegoke</surname> <given-names>JA</given-names></name>, <name name-style="western"><surname>Ighavini</surname> <given-names>BO</given-names></name>, <name name-style="western"><surname>Onuigbo</surname> <given-names>RO</given-names></name>. <article-title>Characteristic features of the sonicated DNA of <italic>Agama agama agama</italic> L. (Reptilia, Agamidae) on hydroxyapatite columns, using mouse DNA as a reference</article-title>. <source>Generica</source>. <year>1991</year>; <volume>83</volume>: <fpage>171</fpage>–<lpage>80</lpage>.</mixed-citation></ref>
+<ref id="pone.0239521.ref091"><label>91</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Goldstein</surname> <given-names>PZ</given-names></name>, <name name-style="western"><surname>DeSalle</surname> <given-names>R</given-names></name>. <article-title>Calibrating phylogenetic species formation in a threatened insect using DNA from historical specimens</article-title>. <source>Mol Ecol</source>. <year>2003</year>; <volume>12</volume>: <fpage>1993</fpage>–<lpage>1998</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1046/j.1365-294x.2003.01860.x" xlink:type="simple">10.1046/j.1365-294x.2003.01860.x</ext-link></comment> <object-id pub-id-type="pmid">12803647</object-id></mixed-citation></ref>
+<ref id="pone.0239521.ref092"><label>92</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Nielsen-Marsh</surname> <given-names>C.</given-names></name> <article-title>Biomolecules in fossil remains: Multidisciplinary approach to endurance</article-title>. <source>Biochemist.</source> <year>2002</year>; <volume>24</volume>: <fpage>12</fpage>–<lpage>14</lpage>.</mixed-citation></ref>
+<ref id="pone.0239521.ref093"><label>93</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Wadsworth</surname> <given-names>C</given-names></name>, <name name-style="western"><surname>Procopio</surname> <given-names>N</given-names></name>, <name name-style="western"><surname>Anderung</surname> <given-names>C</given-names></name>, <name name-style="western"><surname>Carretero</surname> <given-names>J-M</given-names></name>, <name name-style="western"><surname>Iriarte</surname> <given-names>E</given-names></name>, <name name-style="western"><surname>Valdiosera</surname> <given-names>C</given-names></name>, <etal>et al</etal>. <article-title>Comparing ancient DNA survival and proteome content in 69 archaeological cattle tooth and bone samples from multiple European sites</article-title>. <source>J Proteom</source>. <year>2017</year>; <volume>158</volume>: <fpage>1</fpage>–<lpage>8</lpage>.</mixed-citation></ref>
+<ref id="pone.0239521.ref094"><label>94</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Schweitzer</surname> <given-names>MH</given-names></name>, <name name-style="western"><surname>Schroeter</surname> <given-names>ER</given-names></name>, <name name-style="western"><surname>Cleland</surname> <given-names>TP</given-names></name>, <name name-style="western"><surname>Zheng</surname> <given-names>W</given-names></name>. <article-title>Paleoproteomics of Mesozoic dinosaurs and other Mesozoic fossils</article-title>. <source>Proteomics</source>. <year>2019</year>; <volume>19</volume>: <fpage>1800251</fpage>.</mixed-citation></ref>
+<ref id="pone.0239521.ref095"><label>95</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Chen</surname> <given-names>H</given-names></name>, <name name-style="western"><surname>Rangasamy</surname> <given-names>M</given-names></name>, <name name-style="western"><surname>Tan</surname> <given-names>SY</given-names></name>, <name name-style="western"><surname>Wang</surname> <given-names>H</given-names></name>, <name name-style="western"><surname>Siegfried</surname> <given-names>BD</given-names></name>. <article-title>Evaluation of five methods for total DNA extraction from western corn rootworm beetles</article-title>. <source>PLoS ONE</source>. <year>2010</year>; <volume>5</volume>: <fpage>e11963</fpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1371/journal.pone.0011963" xlink:type="simple">10.1371/journal.pone.0011963</ext-link></comment> <object-id pub-id-type="pmid">20730102</object-id></mixed-citation></ref>
+<ref id="pone.0239521.ref096"><label>96</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Whitehouse</surname> <given-names>CA</given-names></name>, <name name-style="western"><surname>Hottel</surname> <given-names>HE</given-names></name>. <article-title>Comparison of five commercial DNA extraction kits for the recovery of <italic>Francisella tularensis</italic> DNA from spiked soil samples</article-title>. <source>Mol Cell Probe</source>. <year>2007</year>; <volume>21</volume>: <fpage>92</fpage>–<lpage>96</lpage>.</mixed-citation></ref>
+<ref id="pone.0239521.ref097"><label>97</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Dineen</surname> <given-names>SM</given-names></name>, <name name-style="western"><surname>Aranda</surname> <given-names>R</given-names></name>, <name name-style="western"><surname>Anders</surname> <given-names>DL</given-names></name>, <name name-style="western"><surname>Robertson</surname> <given-names>JM</given-names></name>. <article-title>An evaluation of commercial DNA extraction kits for the isolation of bacterial spore DNA from soil</article-title>. <source>J Appl Microbiol</source>. <year>2010</year>; <volume>109</volume>: <fpage>1886</fpage>–<lpage>1896</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1111/j.1365-2672.2010.04816.x" xlink:type="simple">10.1111/j.1365-2672.2010.04816.x</ext-link></comment> <object-id pub-id-type="pmid">20666869</object-id></mixed-citation></ref>
+<ref id="pone.0239521.ref098"><label>98</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Faber</surname> <given-names>KL</given-names></name>, <name name-style="western"><surname>Person</surname> <given-names>EC</given-names></name>, <name name-style="western"><surname>Hudlow</surname> <given-names>WR</given-names></name>. <article-title>PCR inhibitor removal using the NucleoSpin® DNA Clean-Up XS kit</article-title>. <source>Forensic Sci Int Genet</source>. <year>2013</year>; <volume>7</volume>: <fpage>209</fpage>–<lpage>213</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1016/j.fsigen.2012.06.013" xlink:type="simple">10.1016/j.fsigen.2012.06.013</ext-link></comment> <object-id pub-id-type="pmid">22784879</object-id></mixed-citation></ref>
+</ref-list>
+</back>
+</article>

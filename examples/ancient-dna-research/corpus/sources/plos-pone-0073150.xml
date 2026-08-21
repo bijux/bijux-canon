@@ -1,0 +1,407 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article
+  PUBLIC "-//NLM//DTD Journal Publishing DTD v3.0 20080202//EN" "http://dtd.nlm.nih.gov/publishing/3.0/journalpublishing3.dtd">
+<article xmlns:mml="http://www.w3.org/1998/Math/MathML" xmlns:xlink="http://www.w3.org/1999/xlink" article-type="research-article" dtd-version="3.0" xml:lang="en">
+<front>
+<journal-meta>
+<journal-id journal-id-type="nlm-ta">PLoS ONE</journal-id>
+<journal-id journal-id-type="publisher-id">plos</journal-id>
+<journal-id journal-id-type="pmc">plosone</journal-id><journal-title-group>
+<journal-title>PLoS ONE</journal-title></journal-title-group>
+<issn pub-type="epub">1932-6203</issn>
+<publisher>
+<publisher-name>Public Library of Science</publisher-name>
+<publisher-loc>San Francisco, USA</publisher-loc></publisher>
+</journal-meta>
+<article-meta>
+<article-id pub-id-type="publisher-id">PONE-D-13-13961</article-id>
+<article-id pub-id-type="doi">10.1371/journal.pone.0073150</article-id>
+<article-categories><subj-group subj-group-type="heading"><subject>Research Article</subject></subj-group></article-categories>
+<title-group>
+<article-title>Absence of Ancient DNA in Sub-Fossil Insect Inclusions Preserved in ‘Anthropocene’ Colombian Copal</article-title>
+<alt-title alt-title-type="running-head">Absence of DNA in Colombian Copal Insects</alt-title>
+</title-group>
+<contrib-group>
+<contrib contrib-type="author" xlink:type="simple"><name name-style="western"><surname>Penney</surname><given-names>David</given-names></name><xref ref-type="aff" rid="aff1"><sup>1</sup></xref><xref ref-type="corresp" rid="cor1"><sup>*</sup></xref></contrib>
+<contrib contrib-type="author" xlink:type="simple"><name name-style="western"><surname>Wadsworth</surname><given-names>Caroline</given-names></name><xref ref-type="aff" rid="aff2"><sup>2</sup></xref></contrib>
+<contrib contrib-type="author" xlink:type="simple"><name name-style="western"><surname>Fox</surname><given-names>Graeme</given-names></name><xref ref-type="aff" rid="aff1"><sup>1</sup></xref></contrib>
+<contrib contrib-type="author" xlink:type="simple"><name name-style="western"><surname>Kennedy</surname><given-names>Sandra L.</given-names></name><xref ref-type="aff" rid="aff2"><sup>2</sup></xref></contrib>
+<contrib contrib-type="author" xlink:type="simple"><name name-style="western"><surname>Preziosi</surname><given-names>Richard F.</given-names></name><xref ref-type="aff" rid="aff1"><sup>1</sup></xref></contrib>
+<contrib contrib-type="author" xlink:type="simple"><name name-style="western"><surname>Brown</surname><given-names>Terence A.</given-names></name><xref ref-type="aff" rid="aff2"><sup>2</sup></xref></contrib>
+</contrib-group>
+<aff id="aff1"><label>1</label><addr-line>Faculty of Life Sciences, University of Manchester, Manchester, United Kingdom</addr-line></aff>
+<aff id="aff2"><label>2</label><addr-line>Manchester Institute of Biotechnology, University of Manchester, Manchester, United Kingdom</addr-line></aff>
+<contrib-group>
+<contrib contrib-type="editor" xlink:type="simple"><name name-style="western"><surname>Orlando</surname><given-names>Ludovic</given-names></name>
+<role>Editor</role>
+<xref ref-type="aff" rid="edit1"/></contrib>
+</contrib-group>
+<aff id="edit1"><addr-line>Natural History Museum of Denmark, University of Copenhagen, Denmark</addr-line></aff>
+<author-notes>
+<corresp id="cor1">* E-mail: <email xlink:type="simple">david.penney@manchester.ac.uk</email></corresp>
+<fn fn-type="conflict"><p>The authors have declared that no competing interests exist.</p></fn>
+<fn fn-type="con"><p>Conceived and designed the experiments: DP RFP TAB. Performed the experiments: DP CW. Analyzed the data: GF SLK TAB. Contributed reagents/materials/analysis tools: DP GF. Wrote the paper: DP TAB. Revised the manuscript: TAB.</p></fn>
+</author-notes>
+<pub-date pub-type="collection"><year>2013</year></pub-date>
+<pub-date pub-type="epub"><day>11</day><month>9</month><year>2013</year></pub-date>
+<volume>8</volume>
+<issue>9</issue>
+<elocation-id>e73150</elocation-id>
+<history>
+<date date-type="received"><day>27</day><month>3</month><year>2013</year></date>
+<date date-type="accepted"><day>23</day><month>7</month><year>2013</year></date>
+</history>
+<permissions>
+<copyright-year>2013</copyright-year>
+<copyright-holder>Penney et al</copyright-holder><license xlink:type="simple"><license-p>This is an open-access article distributed under the terms of the Creative Commons Attribution License, which permits unrestricted use, distribution, and reproduction in any medium, provided the original author and source are credited.</license-p></license></permissions>
+<abstract>
+<p>Insects preserved in copal, the sub-fossilized resin precursor of amber, have potential value in molecular ecological studies of recently-extinct species and of extant species that have never been collected as living specimens. The objective of the work reported in this paper was therefore to determine if ancient DNA is present in insects preserved in copal. We prepared DNA libraries from two stingless bees (Apidae: Meliponini: <italic>Trigonisca ameliae</italic>) preserved in ‘Anthropocene’ Colombian copal, dated to ‘post-Bomb’ and 10,612±62 cal yr BP, respectively, and obtained sequence reads using the GS Junior 454 System. Read numbers were low, but were significantly higher for DNA extracts prepared from crushed insects compared with extracts obtained by a non-destructive method. The younger specimen yielded sequence reads up to 535 nucleotides in length, but searches of these sequences against the nucleotide database revealed very few significant matches. None of these hits was to stingless bees though one read of 97 nucleotides aligned with two non-contiguous segments of the mitochondrial cytochrome oxidase subunit I gene of the East Asia bumblebee <italic>Bombus hypocrita</italic>. The most significant hit was for 452 nucleotides of a 470-nucleotide read that aligned with part of the genome of the root-nodulating bacterium <italic>Bradyrhizobium japonicum</italic>. The other significant hits were to proteobacteria and an actinomycete. Searches directed specifically at Apidae nucleotide sequences only gave short and insignificant alignments. All of the reads from the older specimen appeared to be artefacts. We were therefore unable to obtain any convincing evidence for the preservation of ancient DNA in either of the two copal inclusions that we studied, and conclude that DNA is not preserved in this type of material. Our results raise further doubts about claims of DNA extraction from fossil insects in amber, many millions of years older than copal.</p>
+</abstract>
+<funding-group><funding-statement>DP was supported by a 2-month University of Manchester research grant awarded to TAB and RFP, CW acknowledges a Natural Environment Research Council PhD studentship. The funders had no role in study design, data collection and analysis, decision to publish, or preparation of the manuscript.</funding-statement></funding-group><counts><page-count count="5"/></counts></article-meta>
+</front>
+<body><sec id="s1">
+<title>Introduction</title>
+<p>Museum entomology collections represent an unparalleled wealth of species biodiversity and distribution data for all insect groups from around the globe. This information is becoming increasingly accessible as more museums host searchable catalogues online. Such archived samples are irreplaceable, hence destructive sampling for attempted DNA extraction is usually discouraged by museum curators. Although there has been only limited success in obtaining DNA sequences from samples such as detached legs from air-dried insects <xref ref-type="bibr" rid="pone.0073150-Watts1">[1]</xref>, there has been promising progress in the development of non-destructive methods of DNA recovery from museum insects, including specimens from as far back as 1820 that have been pinned and dried in the traditional manner <xref ref-type="bibr" rid="pone.0073150-Phillips1">[2]</xref>–<xref ref-type="bibr" rid="pone.0073150-Tagliavia1">[6]</xref>. These developments have numerous and diverse implications, particularly as many entomology collections hold large series of individual species allowing for replicated data to be obtained for extended time periods. For extinct species, museum specimens represent ‘fossils on a pin’ <xref ref-type="bibr" rid="pone.0073150-Larsen1">[7]</xref>, and sequence retrieval from these would aid positioning of the taxa within phylogenies. This would be particularly useful when investigating extinct, endemic island forms, not just to study their evolutionary relationships but also to elucidate their historical biogeographies in order to understand the cause of their insular isolation. An example would be the so-called dodo of the insect world, the St Helena giant earwig <italic>Labidura herculeana</italic>, which appears to have become extinct during the mid-twentieth century as a result of habitat destruction and the introduction of non-indigenous predators by humans <xref ref-type="bibr" rid="pone.0073150-Ashmole1">[8]</xref>. Alternatively, fauna once common on islands may now be locally extinct but still exist in continental populations, such as the large tortoiseshell butterfly <italic>Nymphalis polychloros</italic> now considered extinct in Britain but present in Europe <xref ref-type="bibr" rid="pone.0073150-Fox1">[9]</xref>.</p>
+<p>Another consideration is the difficulty in collecting insects in certain regions, due to funding constraints, armed conflict, local wildlife conservation laws, etc. It is not unheard of for entomologists to receive prison sentences for collecting insects without the appropriate permits <xref ref-type="bibr" rid="pone.0073150-Larsen1">[7]</xref>, <xref ref-type="bibr" rid="pone.0073150-Kothamasi1">[10]</xref>. Some species may be so rare that there is no guarantee of collecting them during fieldwork. Another potential benefit of DNA data from museum insects would be generation of a baseline dataset for examining the molecular effects of past pollution events, such as atomic bomb tests and other forms of radiation or chemical exposure, as recently demonstrated for butterflies following the Fukushima nuclear accident <xref ref-type="bibr" rid="pone.0073150-Hiyama1">[11]</xref>.</p>
+<p>Similar information might be obtained from sub-fossil insects in copal, the sub-fossilized resin precursor of amber, renowned for preserving insects with life-like fidelity <xref ref-type="bibr" rid="pone.0073150-Penney1">[12]</xref>, <xref ref-type="bibr" rid="pone.0073150-Penney2">[13]</xref>. Most palaeontologists consider copal to be too young to be of interest because many of the inclusions belong to extant species <xref ref-type="bibr" rid="pone.0073150-Penney3">[14]</xref>, <xref ref-type="bibr" rid="pone.0073150-Bosselaers1">[15]</xref>, but this material has potential value at many levels, including molecular palaeobiology <xref ref-type="bibr" rid="pone.0073150-Penney4">[16]</xref>, <xref ref-type="bibr" rid="pone.0073150-Penney5">[17]</xref>. Some of the species found in copal are thought to be extant but have not been collected as living specimens, and at least some of the taxa that have been formally described are considered extinct (e.g. the orchid bee described from Colombian copal <xref ref-type="bibr" rid="pone.0073150-HinojosaDaz1">[18]</xref>). Sub-fossil copal inclusions therefore represent the only source of genetic information for these extinct and extant but elusive species.</p>
+<p>The objective of the work reported in this paper was to determine if ancient DNA (aDNA) is present in insects preserved in copal. Intuitively, one might imagine that the complete and rapid engulfment in resin, resulting in almost instantaneous demise, might promote the preservation of DNA in a resin entombed insect. Within this protective environment, DNA preservation might be better than in an air-dried museum specimen. This rationale has been used to explain the remarkable preservation of DNA in million-year-old insects present in amber inclusions <xref ref-type="bibr" rid="pone.0073150-Cano1">[19]</xref>–<xref ref-type="bibr" rid="pone.0073150-DeSalle3">[24]</xref>. However, these amber DNA sequences have been questioned <xref ref-type="bibr" rid="pone.0073150-Austin1">[25]</xref>, with doubts regarding their authenticity arising because the results were obtained after DNA amplification by the polymerase chain reaction (PCR), which will preferentially amplify any modern, undamaged DNA molecules that contaminate an extract of partially degraded ancient ones <xref ref-type="bibr" rid="pone.0073150-Brown1">[26]</xref>. This approach, which has also been used with insects from museum collections <xref ref-type="bibr" rid="pone.0073150-Phillips1">[2]</xref>–<xref ref-type="bibr" rid="pone.0073150-Tagliavia1">[6]</xref> and archaeological deposits <xref ref-type="bibr" rid="pone.0073150-King1">[27]</xref>, can therefore give false positive results that might be mistaken for genuine aDNA sequences if careful authentication procedures are not followed. In other areas of aDNA research, many of the limitations of the conventional PCR approach to sequence retrieval have been sidestepped by switching to ‘next generation’ sequencing methods <xref ref-type="bibr" rid="pone.0073150-Knapp1">[28]</xref>. These methods are ideal for aDNA because they provide sequences for all the DNA molecules in an extract, regardless of their length, and are less likely to give preference to contaminating modern molecules. We therefore applied next generation sequencing to extracts prepared from two stingless bee inclusions from Colombian copal, dated to ‘post-Bomb’ and 10,612±62 cal yr BP, respectively.</p>
+</sec><sec id="s2" sec-type="materials|methods">
+<title>Materials and Methods</title>
+<p>All manipulations up to and including preparation of sequencing libraries were carried out within the aDNA facility at the University of Manchester, which comprises a suite of independent, physically isolated laboratories, each with an ultrafiltered air supply maintaining positive displacement pressure and a managed access system. All surfaces within the laboratories were periodically sterilised by UV irradiation and cleaned with 30% bleach and 70% ethanol, and all utensils and equipment were treated with DNA-Away (Molecular Bioproducts) before and after use. Items such as test tubes were UV irradiated (254 nm, 120,000 µJ cm<sup>-2</sup> for ×5 min, with 180° rotation between the two exposures) before use. Aqueous solutions we similarly irradiated for 15 min. Personnel wore protective clothing including forensic suits, face masks, hair nets, goggles and two pairs of sterile gloves at all times. Specimen preparation and DNA extraction were carried out in a Class II biological safety cabinet in one laboratory within the facility, and library preparation in a second, physically-isolated laboratory. Modern insect DNA had never been handled in the building within which these laboratories are located.</p>
+<p>The specimens were two stingless bees (Apidae: Meliponini: <italic>Trigonisca ameliae</italic> <xref ref-type="bibr" rid="pone.0073150-Penney6">[29]</xref>) in ‘Anthropocene’ Colombian copal (taken from the research collection of DP, University of Manchester), dated to ‘post-Bomb’ (&lt;60 years in age) and 10,612±62 cal yr BP, respectively (NSF–Arizona AMS Facility). Due to the destructive nature of the research nothing remained of either specimen, so no repository data are available, although voucher specimens (holotype and paratypes) of the species used are held in the Palaeontology Department of the Natural History Museum, London under the repository number: NHM II 3059 <xref ref-type="bibr" rid="pone.0073150-Penney6">[29]</xref>. Each specimen was trimmed to a small workable size using a saw (Hi-Tech Diamond) and then further shaved down using a scalpel into a small cube c.4 mm<sup>3</sup> and 0.4 g, taking care not to expose the inclusion. The surface of the cube was cleaned with 30% bleach, followed by absolute alcohol and DNA-Away. The remaining copal was removed by dissolution in chloroform <xref ref-type="bibr" rid="pone.0073150-Penney6">[29]</xref>. The sample was first placed in 5 ml chloroform for 15 min to dissolve off the surface layer of the copal, and then transferred to another 5 ml chloroform and incubated at 40<sup>°</sup>C for 48 h to 8 days to dissolve the remaining ‘resin’.</p>
+<p>Each insect was removed from the dissolved copal and rinsed in 2 ml absolute alcohol followed by 2 ml UV-irradiated HPLC grade water. DNA extraction was immediately carried out. For non-destructive DNA extraction, the insect was incubated in 1 ml extraction buffer (100 mM Tris-HCl pH 8.0, 100 mM NaCl, 3 mM CaCl<sub>2</sub>, 40 mM dithiothreitol, 2% sodium dodecyl sulphate, 250 µg ml<sup>–1</sup> proteinase K) for 20 h at 55°C with gentle agitation <xref ref-type="bibr" rid="pone.0073150-Gilbert1">[4]</xref>. Each insect was then transferred to 1 ml fresh extraction buffer and crushed until no large pieces remained. These destructed samples were then incubated in the extraction buffer for 20 h at 55°C with gentle agitation. DNA was then isolated from both the non-destructive and destructive extracts using a QiaQuick PCR purification kit (Qiagen).</p>
+<p>Sequencing was carried out with the GS Junior 454 System (Roche). The non-destructive and destructive extracts for each specimen were barcoded and pooled and two libraries prepared, one for each specimen. The GS FLX Rapid Library MID Adaptors Kit was used in accordance with the manufacturer's instructions, except that the DNA fragmentation step was omitted, due to the anticipated short lengths of any aDNA molecules in the extracts. The library was eluted in 30 µl TE buffer (10 mm Tris-HCl pH 8.0, 1 mm EDTA) and this entire amount used for emulsion amplification with the Titanium emPCR kit, again following the manufacturer's instructions, including the specific recommendations for short-length amplicon libraries. As enrichment was very low, three emulsions were prepared for each library and these combined before loading on to the sequencing chip. Sequencing was carried out with the Titanium sequencing kit using the preset filters, except for changing the vfTrimBackMinimumLength parameter from 84 flows to 20 flows so that short reads would not be excluded. All the test reads passed the standard quality controls and control reads were of good quality. As the test read numbers were very low, duplicates were not removed prior to downstream processing. Sequence reads were converted into FASTA format and searched using MEGAN4 <xref ref-type="bibr" rid="pone.0073150-Huson1">[30]</xref> and BLAST <xref ref-type="bibr" rid="pone.0073150-Altschul1">[31]</xref> against the NCBI nucleotide database and against a database of NCBI entries described as Apidae (dated May 2012). For MEGAN4, standard LCA parameters were used (Min support 5, Min Score 50, Top percentage 10, Win score 0, Min complexity 0.44) and for BLAST the standard blastn parameters were used (word size 11, DUST filter on, expect value 10, match/mismatch score 2,–3, gap costs existence 5 extension 2).</p>
+</sec><sec id="s3">
+<title>Results</title>
+<p>As we have previously reported <xref ref-type="bibr" rid="pone.0073150-Penney6">[29]</xref>, incubation with chloroform using the described procedure results in dissolution of the copal matrix, leaving the ‘resin’ as a viscous fraction floating on the surface of the solvent. Each intact insect was released from its copal matrix and positioned immediately below this fraction, visibly resembling a recent entomological specimen preserved in alcohol.</p>
+<p>Sequencing results are summarised in <xref ref-type="table" rid="pone-0073150-t001">Table 1</xref>. Read numbers were low, and could not be increased by adjusting the filter parameters. Significantly more reads were obtained after destruction of the specimen compared with extracts prepared by the non-destructive method. For specimen 1, the younger of the two, sequences obtained by the destructive method were also longer on average (destructive, 100.70 nucleotides; non-destructive, 49.33 nucleotides). MEGAN4 searches of these sequences against the complete nucleotide database revealed no significant matches, and BLAST searches gave only very few hits. Setting the maximum Expect (E) value at 10<sup>–6</sup>, two hits were obtained for the sequences from the non-destructive extract, and eight for the destructive library (<xref ref-type="table" rid="pone-0073150-t002">Table 2</xref>). None of these hits was to stingless bees though one read of 76 nucleotides aligned with two non-contiguous segments of the mitochondrial cytochrome oxidase subunit I gene of the East Asia bumblebee <italic>Bombus hypocrita</italic>. The most significant hit, with an E value of 5×10<sup>–98</sup> was for 452 nucleotides of a 459-nucleotide read that aligned with part of the genome of the root-nodulating bacterium <italic>Bradyrhizobium japonicum</italic>. The other hits with E values &lt;10<sup>–6</sup> were to the proteobacteria taxa <italic>Burkholderia</italic>, <italic>Xanthomonas</italic>, <italic>Mesorhizobium</italic>, <italic>Thiobacillus</italic>, <italic>Ralstonia</italic> and <italic>Stenotrophomonas</italic>, and the actinomycete <italic>Gordonia polyisoprenivorans</italic>. BLAST searches of the Apidae nucleotide database gave four additional hits with E values &lt;10<sup>–6</sup>, but the longest of these alignments was only 29 bp and none involved the full length of a sequence read.</p>
+<table-wrap id="pone-0073150-t001" position="float"><object-id pub-id-type="doi">10.1371/journal.pone.0073150.t001</object-id><label>Table 1</label><caption>
+<title>Summary of DNA sequencing results.</title>
+</caption><alternatives><graphic id="pone-0073150-t001-1" position="float" mimetype="image" xlink:href="info:doi/10.1371/journal.pone.0073150.t001" xlink:type="simple"/>
+<table><colgroup span="1"><col align="left" span="1"/><col align="center" span="1"/><col align="center" span="1"/><col align="center" span="1"/><col align="center" span="1"/><col align="center" span="1"/></colgroup>
+<thead>
+<tr>
+<td align="left" rowspan="1" colspan="1">Specimen</td>
+<td align="left" rowspan="1" colspan="1">Age</td>
+<td align="left" rowspan="1" colspan="1">Preparation method</td>
+<td align="left" rowspan="1" colspan="1">Number of reads<xref ref-type="table-fn" rid="nt101">a</xref></td>
+<td align="left" rowspan="1" colspan="1">Number of unique reads</td>
+<td align="left" rowspan="1" colspan="1">Length of sequences (nucleotides)</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" rowspan="1" colspan="1">1</td>
+<td align="left" rowspan="1" colspan="1">&lt;60 years</td>
+<td align="left" rowspan="1" colspan="1">Non-destructive</td>
+<td align="left" rowspan="1" colspan="1">30</td>
+<td align="left" rowspan="1" colspan="1">30</td>
+<td align="left" rowspan="1" colspan="1">25–100 (ave. 49.33)</td>
+</tr>
+<tr>
+<td align="left" rowspan="1" colspan="1"/>
+<td align="left" rowspan="1" colspan="1"/>
+<td align="left" rowspan="1" colspan="1">Destructive</td>
+<td align="left" rowspan="1" colspan="1">460</td>
+<td align="left" rowspan="1" colspan="1">460</td>
+<td align="left" rowspan="1" colspan="1">24–536 (ave. 100.70)</td>
+</tr>
+<tr>
+<td align="left" rowspan="1" colspan="1">2</td>
+<td align="left" rowspan="1" colspan="1">10,612±62 cal yr BP</td>
+<td align="left" rowspan="1" colspan="1">Non-destructive</td>
+<td align="left" rowspan="1" colspan="1">54</td>
+<td align="left" rowspan="1" colspan="1">28</td>
+<td align="left" rowspan="1" colspan="1">34–44 (ave. 39.44)</td>
+</tr>
+<tr>
+<td align="left" rowspan="1" colspan="1"/>
+<td align="left" rowspan="1" colspan="1"/>
+<td align="left" rowspan="1" colspan="1">Destructive</td>
+<td align="left" rowspan="1" colspan="1">1335</td>
+<td align="left" rowspan="1" colspan="1">103</td>
+<td align="left" rowspan="1" colspan="1">33–47 (ave. 40.36)</td>
+</tr>
+</tbody>
+</table>
+</alternatives><table-wrap-foot><fn id="nt101"><label>a</label><p>The anticipated performance of the GS Junior 454 System with control modern DNA is c.100,000 reads per run.</p></fn></table-wrap-foot></table-wrap><table-wrap id="pone-0073150-t002" position="float"><object-id pub-id-type="doi">10.1371/journal.pone.0073150.t002</object-id><label>Table 2</label><caption>
+<title>Sequence reads from specimen 1 giving BLAST hits with an E value ≤10<sup>–6</sup>.</title>
+</caption><alternatives><graphic id="pone-0073150-t002-2" position="float" mimetype="image" xlink:href="info:doi/10.1371/journal.pone.0073150.t002" xlink:type="simple"/>
+<table><colgroup span="1"><col align="left" span="1"/><col align="center" span="1"/><col align="center" span="1"/><col align="center" span="1"/><col align="center" span="1"/><col align="center" span="1"/></colgroup>
+<thead>
+<tr>
+<td align="left" rowspan="1" colspan="1">Library/database</td>
+<td align="left" rowspan="1" colspan="1">Read length (nucleotides)</td>
+<td align="left" rowspan="1" colspan="1">Read ID</td>
+<td align="left" rowspan="1" colspan="1">E value</td>
+<td align="left" rowspan="1" colspan="1">Matches</td>
+<td align="left" rowspan="1" colspan="1">Database entry</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" rowspan="1" colspan="1">Non-destructive extraction, complete database</td>
+<td align="left" rowspan="1" colspan="1">76</td>
+<td align="left" rowspan="1" colspan="1">HRA5KJN01BI264</td>
+<td align="left" rowspan="1" colspan="1">8×10<sup>–19</sup></td>
+<td align="left" rowspan="1" colspan="1">51/51 and 31/31<xref ref-type="table-fn" rid="nt103">a</xref></td>
+<td align="left" rowspan="1" colspan="1"><italic>Bombus hypocrita</italic> mitochondrial cytochrome oxidase subunit I gene</td>
+</tr>
+<tr>
+<td align="left" rowspan="1" colspan="1"/>
+<td align="left" rowspan="1" colspan="1">43</td>
+<td align="left" rowspan="1" colspan="1">HRA5KJN01ANAS1</td>
+<td align="left" rowspan="1" colspan="1">2×10<sup>–6</sup></td>
+<td align="left" rowspan="1" colspan="1">33/34</td>
+<td align="left" rowspan="1" colspan="1"><italic>Burkholderia</italic> sp. genome</td>
+</tr>
+<tr>
+<td align="left" rowspan="1" colspan="1">Non-destructive extraction, Apidae database</td>
+<td align="left" rowspan="1" colspan="1">76</td>
+<td align="left" rowspan="1" colspan="1">HRA5KJN01BI264</td>
+<td align="left" rowspan="1" colspan="1">8×10<sup>–19</sup></td>
+<td align="left" rowspan="1" colspan="1">51/51 and 31/31<xref ref-type="table-fn" rid="nt103">a</xref></td>
+<td align="left" rowspan="1" colspan="1"><italic>Bombus hypocrita</italic> mitochondrial cytochrome oxidase subunit I gene</td>
+</tr>
+<tr>
+<td align="left" rowspan="1" colspan="1">Destructive extraction, complete database</td>
+<td align="left" rowspan="1" colspan="1">459</td>
+<td align="left" rowspan="1" colspan="1">HRA5KJN01BDMRJ</td>
+<td align="left" rowspan="1" colspan="1">5×10<sup>–98</sup></td>
+<td align="left" rowspan="1" colspan="1">385/452</td>
+<td align="left" rowspan="1" colspan="1"><italic>Bradyrhizobium japonicum</italic> genome</td>
+</tr>
+<tr>
+<td align="left" rowspan="1" colspan="1"/>
+<td align="left" rowspan="1" colspan="1">98</td>
+<td align="left" rowspan="1" colspan="1">HRA5KJN01BP4B0</td>
+<td align="left" rowspan="1" colspan="1">3×10<sup>–16</sup></td>
+<td align="left" rowspan="1" colspan="1">59/63</td>
+<td align="left" rowspan="1" colspan="1"><italic>Xanthomonas oryzae</italic>, <italic>X. campestris</italic> genomes</td>
+</tr>
+<tr>
+<td align="left" rowspan="1" colspan="1"/>
+<td align="left" rowspan="1" colspan="1">53</td>
+<td align="left" rowspan="1" colspan="1">HRA5KJN01A8GD4</td>
+<td align="left" rowspan="1" colspan="1">2×10<sup>–15</sup></td>
+<td align="left" rowspan="1" colspan="1">45/45</td>
+<td align="left" rowspan="1" colspan="1"><italic>Gordonia polyisoprenivorans</italic> genome</td>
+</tr>
+<tr>
+<td align="left" rowspan="1" colspan="1"/>
+<td align="left" rowspan="1" colspan="1">178</td>
+<td align="left" rowspan="1" colspan="1">HRA5KJN01AXXA2</td>
+<td align="left" rowspan="1" colspan="1">10<sup>–13</sup></td>
+<td align="left" rowspan="1" colspan="1">49/51<xref ref-type="table-fn" rid="nt104">b</xref></td>
+<td align="left" rowspan="1" colspan="1"><italic>Mesorhizobium loti</italic> genome</td>
+</tr>
+<tr>
+<td align="left" rowspan="1" colspan="1"/>
+<td align="left" rowspan="1" colspan="1">178</td>
+<td align="left" rowspan="1" colspan="1">HRA5KJN01AXXA2</td>
+<td align="left" rowspan="1" colspan="1">10<sup>–13</sup></td>
+<td align="left" rowspan="1" colspan="1">55/59<xref ref-type="table-fn" rid="nt104">b</xref></td>
+<td align="left" rowspan="1" colspan="1"><italic>Thiobacillus denitrificans</italic> genome</td>
+</tr>
+<tr>
+<td align="left" rowspan="1" colspan="1"/>
+<td align="left" rowspan="1" colspan="1">157</td>
+<td align="left" rowspan="1" colspan="1">HRA5KJN01B26IX</td>
+<td align="left" rowspan="1" colspan="1">6×10<sup>–12</sup></td>
+<td align="left" rowspan="1" colspan="1">55/60 or 58/64<xref ref-type="table-fn" rid="nt105">c</xref></td>
+<td align="left" rowspan="1" colspan="1"><italic>Ralstonia solanacearum</italic> genome</td>
+</tr>
+<tr>
+<td align="left" rowspan="1" colspan="1"/>
+<td align="left" rowspan="1" colspan="1">53</td>
+<td align="left" rowspan="1" colspan="1">HRA5KJN01A73N7</td>
+<td align="left" rowspan="1" colspan="1">2×10<sup>–9</sup></td>
+<td align="left" rowspan="1" colspan="1">35/35</td>
+<td align="left" rowspan="1" colspan="1"><italic>Burkholderia</italic> sp. genome</td>
+</tr>
+<tr>
+<td align="left" rowspan="1" colspan="1"/>
+<td align="left" rowspan="1" colspan="1">38</td>
+<td align="left" rowspan="1" colspan="1">HRA5KJN01BZ4HK</td>
+<td align="left" rowspan="1" colspan="1">9×10<sup>–8</sup></td>
+<td align="left" rowspan="1" colspan="1">32/32</td>
+<td align="left" rowspan="1" colspan="1"><italic>Stenotrophomonas maltophilia</italic> genome</td>
+</tr>
+<tr>
+<td align="left" rowspan="1" colspan="1">Destructive extraction, Apidae database</td>
+<td align="left" rowspan="1" colspan="1">45</td>
+<td align="left" rowspan="1" colspan="1">HRA5KJN01A1IJM</td>
+<td align="left" rowspan="1" colspan="1">2×10<sup>–07</sup></td>
+<td align="left" rowspan="1" colspan="1">18/18</td>
+<td align="left" rowspan="1" colspan="1"><italic>Bombus terrestris</italic> mRNA sequence</td>
+</tr>
+<tr>
+<td align="left" rowspan="1" colspan="1"/>
+<td align="left" rowspan="1" colspan="1">516</td>
+<td align="left" rowspan="1" colspan="1">HRA5KJN01BVPD4</td>
+<td align="left" rowspan="1" colspan="1">9×10<sup>–06</sup></td>
+<td align="left" rowspan="1" colspan="1">17/17</td>
+<td align="left" rowspan="1" colspan="1"><italic>Ceratina propinqua</italic> elongation factor 1 alpha gene</td>
+</tr>
+<tr>
+<td align="left" rowspan="1" colspan="1"/>
+<td align="left" rowspan="1" colspan="1">40</td>
+<td align="left" rowspan="1" colspan="1">HRA5KJN01BPOO5</td>
+<td align="left" rowspan="1" colspan="1">8×10<sup>–06</sup></td>
+<td align="left" rowspan="1" colspan="1">16/16</td>
+<td align="left" rowspan="1" colspan="1"><italic>Apis mellifera</italic> proteasome activator complex subunit gene</td>
+</tr>
+<tr>
+<td align="left" rowspan="1" colspan="1"/>
+<td align="left" rowspan="1" colspan="1">46</td>
+<td align="left" rowspan="1" colspan="1">HRA5KJN01ASAM2</td>
+<td align="left" rowspan="1" colspan="1">1×10<sup>–06</sup></td>
+<td align="left" rowspan="1" colspan="1">28/29</td>
+<td align="left" rowspan="1" colspan="1"><italic>Apis mellifera</italic> genome</td>
+</tr>
+</tbody>
+</table>
+</alternatives><table-wrap-foot><fn id="nt102"><label/><p>See <xref ref-type="supplementary-material" rid="pone.0073150.s001">Table S1</xref> for sequence reads.</p></fn><fn id="nt103"><label>a</label><p>Two overlapping segments of this read gave hits to non-contiguous regions of the <italic>Bombus hypocrita</italic> gene.</p></fn><fn id="nt104"><label>b</label><p>The same sequence gave hits with identical E values to both <italic>Mesorhizobium loti</italic> and <italic>Thiobacillus denitrificans</italic>.</p></fn><fn id="nt105"><label>c</label><p>The alignment is slightly different for different strains of <italic>Ralstonia solanacearum.</italic></p></fn></table-wrap-foot></table-wrap>
+<p>Specimen 2, the older of two inclusions, yielded 54 and 1335 sequences from the non-destructive and destructive extracts, respectively, but both of these sets comprised multiple copies of similar sequences, and we assume that they resulted from artefacts generated during library construction.</p>
+</sec><sec id="s4">
+<title>Discussion</title>
+<p>We were unable to obtain any convincing evidence for the preservation of endogenous DNA in either of the two copal inclusions that we studied. All the reads obtained from the two libraries prepared from the older specimen, dated to 10,612±62 cal yr BP, appeared to be artefacts. The younger specimen, which was ‘post-Bomb’ (&lt;60 years in age), gave sequences, but other than one read which partially aligned with a bumble bee mitochondrial DNA sequence, none of these had convincing matches with taxa related to stingless bees.</p>
+<p>We do not believe that our negative results, from two sequencing libraries prepared from four extracts, can be ascribed entirely to technical incompetence. In previous and current projects we have successfully prepared aDNA libraries for next generation sequencing from <italic>Mycobacterium tuberculosis</italic> in human bone <xref ref-type="bibr" rid="pone.0073150-Bouwman1">[32]</xref> and archaeological plant remains <xref ref-type="bibr" rid="pone.0073150-Bunning1">[33]</xref>, and one of us (GF) routinely prepares and sequences libraries for the Junior 454 System from modern samples on a contract basis. The two copal specimens were extracted and sequenced at different times, with approximately six months elapsing between the two experiments. During this period the same personnel used an identical workflow for three separate sequencing runs with DNA prepared from two archaeological bones, obtaining 36,570, 32,271 and 95,655 reads, respectively, the last of these close to the sequencing system's anticipated performance of 100,000 reads for shotgun sequencing of modern DNA. Neither do we believe that the specimen preparation and DNA extraction methods could have resulted in a complete loss of an endogenous DNA fraction that was originally present in the specimen while it was contained in its copal matrix. Release of the insect from the copal simply involved incubating in chloroform, which would not be expected to degrade DNA, and once released the insects were subjected to a standard procedure for DNA extraction that has been shown to be applicable to air-dried specimens <xref ref-type="bibr" rid="pone.0073150-Gilbert1">[4]</xref>, <xref ref-type="bibr" rid="pone.0073150-Thomsen1">[5]</xref>. We therefore conclude that our failure to obtain sequence reads was because the copal specimens contained no preserved DNA.</p>
+<p>With the older specimen the absence of aDNA is incontrovertible because the only reads that we obtained were artefacts. For the younger inclusion it might be possible to argue that the reads derived from highly degraded aDNA from the insect and its microflora at the time of death. Although the vast majority of the reads gave very low significance scores in BLAST searches against the complete nucleotide database as well as a database made up of Apidae sequences, a case could be made for some of these being insect or microfloral in origin. As well as the few reads that gave BLAST matches with a E value &lt;10<sup>–6</sup>, which aligned with sequences from bumble bee (one read) and common environmental bacterial taxa (nine reads), others gave lower significance scores that might be interpreted as poor quality aDNA sequences. For example, one 61-nucleotide read obtained from the non-destructive library could be interpreted as 23 nucleotides of bee DNA (hit to <italic>Apis florea</italic>) followed by 21 nucleotides of insect gut bacterium (hit to <italic>Sebaldella termitidis</italic>). Similar chimeric interpretations could be made for other reads, as many of these contained at least one short segment that aligned with an Apidae sequence. However, in most cases, the Apidae alignment was less than 20 bp, and few were longer than 30 bp, which is hardly the basis for a convincing argument bearing in mind the overall lengths of the sequence reads.</p>
+<p>Our conclusion that DNA is not preserved in insect inclusions in copal contrasts with the reports of successful DNA amplification from dried and pinned museum specimens <xref ref-type="bibr" rid="pone.0073150-Phillips1">[2]</xref>–<xref ref-type="bibr" rid="pone.0073150-Tagliavia1">[6]</xref>. Although one of these papers <xref ref-type="bibr" rid="pone.0073150-Gilbert1">[4]</xref> described failure to retrieve any DNA from their oldest specimen, dated at 94 years, others <xref ref-type="bibr" rid="pone.0073150-Chapco1">[3]</xref>, <xref ref-type="bibr" rid="pone.0073150-Thomsen1">[5]</xref> reported success from museum specimens collected as far back 1820, substantially older than our younger specimen. These previous studies focussed on arthropods and beetles rather than bees, and it is unclear if the insects had been preserved in liquids such as ethyl alcohol or formalin (as is common for entomological samples collected in the field) prior to being pinned and dried. Whether these taxonomic and preservation factors have a significant impact on long-term DNA integrity is unknown.</p>
+<p>DNA degradation is influenced by factors such as oxygen and water content, ambient temperature and time since death of the organism <xref ref-type="bibr" rid="pone.0073150-Lindahl1">[34]</xref>. We have a poor understanding of the physiochemical processes affecting insects preserved in resins and their subsequent diagenetic transformation into fossils in amber, and hence little information on which to base predictions about DNA degradation. Preservation in amber is often referred to as a type of mummification resulting from rapid fixation and dehydration of specimens trapped in the original resin secretion. It would seem likely that diagenetic events, including overburden pressure and heat generated through tectonic processes and orogenesis over millions of years, would minimise the likelihood of DNA preservation in amber specimens. However, the young age of the copal in our study means that it had not been subjected to such extreme processes. Certainly, the preservation and fossilization processes are not uniform for all copal and amber deposits, nor for all inclusions from a single deposit. For example, the recent application of X-ray computed tomography (CT) has shown that in some instances internal organs are preserved in amber specimens 50 million years in age <xref ref-type="bibr" rid="pone.0073150-Pohl1">[35]</xref>, whereas digital dissection of a spider preserved in amber of a similar age revealed nothing substantial preserved internally <xref ref-type="bibr" rid="pone.0073150-Penney7">[36]</xref>. Unfortunately, it is rarely possible to draw any conclusions about the degree of internal preservation using traditional light microscopy. Clearly, the better preserved a copal specimen is internally, then the more likely it is that DNA will survive. A recent study investigating the effects of CT scanning on aDNA recovery from c.100-year-old bird footpads has demonstrated that this technique has negligible impact on DNA integrity <xref ref-type="bibr" rid="pone.0073150-Paredes1">[37]</xref>. Hence, future studies may benefit from identifying specimens with preserved internal morphology prior to attempting aDNA extraction, assuming the X-ray energy levels required to scan the copal are maintained below a threshold at which DNA is damaged.</p>
+<p>Theoretical and empirical data indicate that aDNA fragments might be present in well preserved geological material up to at least 100,000 years in age, and suggest that some material up to one million years might yield sequence data <xref ref-type="bibr" rid="pone.0073150-Hebsgaard1">[38]</xref>. Copal inclusions fall at the lower end of this age range, but according to our results do not contain preserved DNA. This raises further doubts about claims of DNA extraction from fossil insects in amber, many millions of years older than copal. Amber is renowned for its remarkable preservation of insects and other inclusions <xref ref-type="bibr" rid="pone.0073150-Penney8">[39]</xref>, including in some cases at the subcellular level <xref ref-type="bibr" rid="pone.0073150-Koller1">[40]</xref>. Reports of aDNA extraction from Tertiary and Cretaceous ambers <xref ref-type="bibr" rid="pone.0073150-Cano1">[19]</xref>–<xref ref-type="bibr" rid="pone.0073150-DeSalle3">[24]</xref> therefore held some attraction, but proved impossible to replicate independently <xref ref-type="bibr" rid="pone.0073150-Austin1">[25]</xref>, and are now regarded by many as an example of the problems caused by a failure to prevent contamination with modern DNA <xref ref-type="bibr" rid="pone.0073150-Hebsgaard1">[38]</xref>, a challenge that provided difficulties in all areas of aDNA research during the 1990s <xref ref-type="bibr" rid="pone.0073150-Brown1">[26]</xref>. Counter-claims for the existence of aDNA in amber specimens focus on the possibility that the resin provides a protected environment for DNA preservation. Our inability to detect aDNA in copal specimens, despite using sensitive next generation methods, suggest that there is no protected environment in this type of material, and that DNA survival in resin inclusions is no better, and perhaps worse, than that in air-dried museum insects.</p>
+</sec><sec id="s5">
+<title>Supporting Information</title>
+<supplementary-material id="pone.0073150.s001" mimetype="application/msword" xlink:href="info:doi/10.1371/journal.pone.0073150.s001" position="float" xlink:type="simple"><label>Table S1</label><caption>
+<p><bold>Sequence reads.</bold></p>
+<p>(DOC)</p>
+</caption></supplementary-material></sec></body>
+<back>
+<ack>
+<p>We thank Mitzi Demartino for helpful discussions and the NSF–Arizona AMS Facility, Tucson for dating the copal specimens. We also thank two anonymous reviewers whose suggestions about how to present these negative results have greatly improved the paper.</p>
+</ack>
+<ref-list>
+<title>References</title>
+<ref id="pone.0073150-Watts1"><label>1</label>
+<mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Watts</surname><given-names>PC</given-names></name>, <name name-style="western"><surname>Thompson</surname><given-names>DJ</given-names></name>, <name name-style="western"><surname>Allen</surname><given-names>KA</given-names></name>, <name name-style="western"><surname>Kemp</surname><given-names>SJ</given-names></name> (<year>2006</year>) <article-title>How useful is DNA extracted from the legs of archived insects for microsatellite-based population genetic analyses?</article-title> <source>J Insect Conserv</source> <volume>11</volume>: <fpage>195</fpage>–<lpage>198</lpage>.</mixed-citation>
+</ref>
+<ref id="pone.0073150-Phillips1"><label>2</label>
+<mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Phillips</surname><given-names>AJ</given-names></name>, <name name-style="western"><surname>Simon</surname><given-names>C</given-names></name> (<year>1995</year>) <article-title>Simple, efficient, and nondestructive DNA extraction protocol for Arthropods</article-title>. <source>Ann Entomol Soc Am</source> <volume>88</volume>: <fpage>281</fpage>–<lpage>283</lpage>.</mixed-citation>
+</ref>
+<ref id="pone.0073150-Chapco1"><label>3</label>
+<mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Chapco</surname><given-names>W</given-names></name>, <name name-style="western"><surname>Litzenberger</surname><given-names>G</given-names></name> (<year>2004</year>) <article-title>A DNA investigation into the mysterious disappearance of the Rocky Mountain grasshopper, mega-pest of the 1800s</article-title>. <source>Mol Phylogenet Evol</source> <volume>30</volume>: <fpage>810</fpage>–<lpage>814</lpage>.</mixed-citation>
+</ref>
+<ref id="pone.0073150-Gilbert1"><label>4</label>
+<mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Gilbert</surname><given-names>MTP</given-names></name>, <name name-style="western"><surname>Moore</surname><given-names>W</given-names></name>, <name name-style="western"><surname>Melchior</surname><given-names>L</given-names></name>, <name name-style="western"><surname>Worobey</surname><given-names>M</given-names></name> (<year>2007</year>) <article-title>DNA extraction from dry museum beetles without conferring external morphological damage</article-title>. <source>PLoS ONE</source> <volume>2(3)</volume>: <fpage>e272</fpage>.</mixed-citation>
+</ref>
+<ref id="pone.0073150-Thomsen1"><label>5</label>
+<mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Thomsen</surname><given-names>PF</given-names></name>, <name name-style="western"><surname>Elias</surname><given-names>S</given-names></name>, <name name-style="western"><surname>Gilbert</surname><given-names>MTP</given-names></name>, <name name-style="western"><surname>Haile</surname><given-names>J</given-names></name>, <name name-style="western"><surname>Munch</surname><given-names>K</given-names></name>, <etal>et al</etal>. (<year>2009</year>) <article-title>Non-destructive sampling of ancient insect DNA</article-title>. <source>PLoS ONE</source> <volume>4(4)</volume>: <fpage>e5048</fpage>.</mixed-citation>
+</ref>
+<ref id="pone.0073150-Tagliavia1"><label>6</label>
+<mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Tagliavia</surname><given-names>M</given-names></name>, <name name-style="western"><surname>Massa</surname><given-names>B</given-names></name>, <name name-style="western"><surname>Albanese</surname><given-names>I</given-names></name>, <name name-style="western"><surname>Farina</surname><given-names>ML</given-names></name> (<year>2011</year>) <article-title>DNA extraction From Orthoptera museum specimens</article-title>. <source>Anal Lett</source> <volume>44</volume>: <fpage>1058</fpage>–<lpage>1062</lpage>.</mixed-citation>
+</ref>
+<ref id="pone.0073150-Larsen1"><label>7</label>
+<mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Larsen</surname><given-names>TB</given-names></name> (<year>2005</year>) <article-title>Hazards of butterfly collecting – fossil on a pin</article-title>. <source>Entomol Rec J Var</source> <volume>117</volume>: <fpage>109</fpage>–<lpage>111</lpage>.</mixed-citation>
+</ref>
+<ref id="pone.0073150-Ashmole1"><label>8</label>
+<mixed-citation publication-type="book" xlink:type="simple">Ashmole P, Ashmole M (2000) St Helena and Ascension Island: a natural history. Oswestry: Nelson Press. 492 p.</mixed-citation>
+</ref>
+<ref id="pone.0073150-Fox1"><label>9</label>
+<mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Fox</surname><given-names>R</given-names></name>, <name name-style="western"><surname>Warren</surname><given-names>MS</given-names></name>, <name name-style="western"><surname>Brereton</surname><given-names>TM</given-names></name>, <name name-style="western"><surname>Roy</surname><given-names>DE</given-names></name>, <name name-style="western"><surname>Robinson</surname><given-names>A</given-names></name> (<year>2010</year>) <article-title>A new Red List of British butterflies</article-title>. <source>Insect Conserv Diver</source> <volume>4</volume>: <fpage>159</fpage>–<lpage>172</lpage>.</mixed-citation>
+</ref>
+<ref id="pone.0073150-Kothamasi1"><label>10</label>
+<mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Kothamasi</surname><given-names>D</given-names></name>, <name name-style="western"><surname>Kiers</surname><given-names>ET</given-names></name> (<year>2009</year>) <article-title>Emerging conflicts between biodiversity conservation laws and scientific research: the case of the Czech entomologists in India</article-title>. <source>Conserv Biol</source> <volume>23</volume>: <fpage>1328</fpage>–<lpage>1330</lpage>.</mixed-citation>
+</ref>
+<ref id="pone.0073150-Hiyama1"><label>11</label>
+<mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Hiyama</surname><given-names>A</given-names></name>, <name name-style="western"><surname>Nohara</surname><given-names>C</given-names></name>, <name name-style="western"><surname>Kinjo</surname><given-names>S</given-names></name>, <name name-style="western"><surname>Taira</surname><given-names>W</given-names></name>, <name name-style="western"><surname>Gima</surname><given-names>S</given-names></name>, <etal>et al</etal>. (<year>2012</year>) <article-title>The biological impacts of the Fukushima nuclear accident on the pale grass blue butterfly</article-title>. <source>Sci Rep</source> <volume>2</volume>: <fpage>570</fpage>.</mixed-citation>
+</ref>
+<ref id="pone.0073150-Penney1"><label>12</label>
+<mixed-citation publication-type="book" xlink:type="simple">Penney D, editor (2010) Biodiversity of fossils in amber from the major world deposits. Manchester: Siri Scientific Press. 304 p.</mixed-citation>
+</ref>
+<ref id="pone.0073150-Penney2"><label>13</label>
+<mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Penney</surname><given-names>D</given-names></name>, <name name-style="western"><surname>McNeil</surname><given-names>A</given-names></name>, <name name-style="western"><surname>Green</surname><given-names>DI</given-names></name>, <name name-style="western"><surname>Bradley</surname><given-names>R</given-names></name>, <name name-style="western"><surname>Jepson</surname><given-names>JE</given-names></name>, <etal>et al</etal>. (<year>2012</year>) <article-title>Ancient Ephemeroptera-Collembola symbiosis fossilized in amber predicts contemporary phoretic associations</article-title>. <source>PLoS ONE</source> <volume>7(10)</volume>: <fpage>e47651</fpage>.</mixed-citation>
+</ref>
+<ref id="pone.0073150-Penney3"><label>14</label>
+<mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Penney</surname><given-names>D</given-names></name>, <name name-style="western"><surname>Ono</surname><given-names>H</given-names></name>, <name name-style="western"><surname>Selden</surname><given-names>PA</given-names></name> (<year>2005</year>) <article-title>A new synonymy for the Madagascan copal spider fauna (Araneae, Selenopidae)</article-title>. <source>J Afrotrop Zool</source> <volume>2</volume>: <fpage>43</fpage>–<lpage>46</lpage>.</mixed-citation>
+</ref>
+<ref id="pone.0073150-Bosselaers1"><label>15</label>
+<mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Bosselaers</surname><given-names>J</given-names></name>, <name name-style="western"><surname>Dierick</surname><given-names>M</given-names></name>, <name name-style="western"><surname>Cnudde</surname><given-names>V</given-names></name>, <name name-style="western"><surname>Masschaele</surname><given-names>B</given-names></name>, <name name-style="western"><surname>Van Hoorebeke</surname><given-names>L</given-names></name>, <etal>et al</etal>. (<year>2010</year>) <article-title>High-resolution X-ray computed tomography of an extant new <italic>Donuea</italic> (Araneae: Liocranidae) species in Madagascan copal</article-title>. <source>Zootaxa</source> <volume>2427</volume>: <fpage>25</fpage>–<lpage>35</lpage>.</mixed-citation>
+</ref>
+<ref id="pone.0073150-Penney4"><label>16</label>
+<mixed-citation publication-type="other" xlink:type="simple">Penney D, Preziosi RF (2010) On inclusions in subfossil resins (copal). In Penney D, editor. Biodiversity of fossils in amber from the major world deposits. Manchester: Siri Scientific Press. 299–303.</mixed-citation>
+</ref>
+<ref id="pone.0073150-Penney5"><label>17</label>
+<mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Penney</surname><given-names>D</given-names></name>, <name name-style="western"><surname>Green</surname><given-names>DI</given-names></name>, <name name-style="western"><surname>Titchener</surname><given-names>SB</given-names></name>, <name name-style="western"><surname>Titchener</surname><given-names>BG</given-names></name>, <name name-style="western"><surname>Brown</surname><given-names>TA</given-names></name>, <etal>et al</etal>. (<year>2012</year>) <article-title>An unusual palaeobiocoenosis of subfossil spiders in Colombian copal</article-title>. <source>Bull Brit Arachnol Soc</source> <volume>15</volume>: <fpage>241</fpage>–<lpage>244</lpage>.</mixed-citation>
+</ref>
+<ref id="pone.0073150-HinojosaDaz1"><label>18</label>
+<mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Hinojosa-Díaz</surname><given-names>IA</given-names></name>, <name name-style="western"><surname>Engel</surname><given-names>MS</given-names></name> (<year>2007</year>) <article-title>A new fossil orchid bee in Colombian copal (Hymenoptera: Apidae)</article-title>. <source>Amer Mus Novitat</source> <volume>3589</volume>: <fpage>1</fpage>–<lpage>7</lpage>.</mixed-citation>
+</ref>
+<ref id="pone.0073150-Cano1"><label>19</label>
+<mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Cano</surname><given-names>RJ</given-names></name>, <name name-style="western"><surname>Poinar</surname><given-names>HN</given-names></name>, <name name-style="western"><surname>Poinar</surname><given-names>GO</given-names></name> (<year>1992</year>) <article-title>Isolation and partial characterisation of DNA from the bee <italic>Problebeia dominicana</italic> (Apidae: Hymenoptera) in 25–40 million year old amber</article-title>. <source>Med Sci Res</source> <volume>20</volume>: <fpage>249</fpage>–<lpage>251</lpage>.</mixed-citation>
+</ref>
+<ref id="pone.0073150-Cano2"><label>20</label>
+<mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Cano</surname><given-names>RJ</given-names></name>, <name name-style="western"><surname>Poinar</surname><given-names>HN</given-names></name>, <name name-style="western"><surname>Roubik</surname><given-names>DW</given-names></name>, <name name-style="western"><surname>Poinar</surname><given-names>GO</given-names></name> (<year>1992</year>) <article-title>Enzymatic amplification and nucleotide sequencing of portions of the 18S rRNA gene of the bee <italic>Problebeia dominicana</italic> (Apidae: Hymenoptera) isolated from 25–40 million year old Dominican amber</article-title>. <source>Med Sci Res</source> <volume>20</volume>: <fpage>619</fpage>–<lpage>622</lpage>.</mixed-citation>
+</ref>
+<ref id="pone.0073150-DeSalle1"><label>21</label>
+<mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>DeSalle</surname><given-names>R</given-names></name>, <name name-style="western"><surname>Gatesy</surname><given-names>J</given-names></name>, <name name-style="western"><surname>Wheeler</surname><given-names>W</given-names></name>, <name name-style="western"><surname>Grimaldi</surname><given-names>D</given-names></name> (<year>1992</year>) <article-title>DNA sequences from a fossil termite in Oligo-Miocene amber and their phylogenetic implications</article-title>. <source>Science</source> <volume>257</volume>: <fpage>1933</fpage>–<lpage>1936</lpage>.</mixed-citation>
+</ref>
+<ref id="pone.0073150-DeSalle2"><label>22</label>
+<mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>DeSalle</surname><given-names>R</given-names></name>, <name name-style="western"><surname>Barcia</surname><given-names>M</given-names></name>, <name name-style="western"><surname>Wray</surname><given-names>C</given-names></name> (<year>1993</year>) <article-title>PCR jumping in clones of 30-million-year-old DNA fragments from amber preserved termites (<italic>Mastotermes electrodominicus</italic>)</article-title>. <source>Experientia</source> <volume>49</volume>: <fpage>906</fpage>–<lpage>909</lpage>.</mixed-citation>
+</ref>
+<ref id="pone.0073150-Cano3"><label>23</label>
+<mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Cano</surname><given-names>RJ</given-names></name>, <name name-style="western"><surname>Poinar</surname><given-names>HN</given-names></name>, <name name-style="western"><surname>Pieniazek</surname><given-names>NJ</given-names></name>, <name name-style="western"><surname>Acra</surname><given-names>A</given-names></name>, <name name-style="western"><surname>Poinar</surname><given-names>GO</given-names></name> (<year>1993</year>) <article-title>Amplification and sequencing of DNA from a 120–135 million-year-old weevil</article-title>. <source>Nature</source> <volume>363</volume>: <fpage>536</fpage>–<lpage>538</lpage>.</mixed-citation>
+</ref>
+<ref id="pone.0073150-DeSalle3"><label>24</label>
+<mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>DeSalle</surname><given-names>R</given-names></name>, <name name-style="western"><surname>Grimaldi</surname><given-names>D</given-names></name> (<year>1994</year>) <article-title>Very old DNA</article-title>. <source>Curr Opin Genet Dev</source> <volume>4</volume>: <fpage>810</fpage>–<lpage>815</lpage>.</mixed-citation>
+</ref>
+<ref id="pone.0073150-Austin1"><label>25</label>
+<mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Austin</surname><given-names>JJ</given-names></name>, <name name-style="western"><surname>Ross</surname><given-names>AJ</given-names></name>, <name name-style="western"><surname>Smith</surname><given-names>AB</given-names></name>, <name name-style="western"><surname>Fortey</surname><given-names>RA</given-names></name>, <name name-style="western"><surname>Thomas</surname><given-names>RH</given-names></name> (<year>1997</year>) <article-title>Problems of reproducibility – does geologically ancient DNA survive in amber-preserved insects?</article-title> <source>Proc Roy Soc Lond ser B</source> <volume>264</volume>: <fpage>467</fpage>–<lpage>474</lpage>.</mixed-citation>
+</ref>
+<ref id="pone.0073150-Brown1"><label>26</label>
+<mixed-citation publication-type="book" xlink:type="simple">Brown TA, Brown KA (2011) Biomolecular Archaeology: An Introduction. Chichester: Wiley-Blackwell. 312 p.</mixed-citation>
+</ref>
+<ref id="pone.0073150-King1"><label>27</label>
+<mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>King</surname><given-names>GA</given-names></name>, <name name-style="western"><surname>Gilbert</surname><given-names>MTP</given-names></name>, <name name-style="western"><surname>Willerslev</surname><given-names>E</given-names></name>, <name name-style="western"><surname>Collins</surname><given-names>MJ</given-names></name>, <name name-style="western"><surname>Kenward</surname><given-names>H</given-names></name> (<year>2009</year>) <article-title>Recovery of DNA from archaeological remains: first results, problems and potential</article-title>. <source>J Archaeol Sci</source> <volume>36</volume>: <fpage>1179</fpage>–<lpage>1183</lpage>.</mixed-citation>
+</ref>
+<ref id="pone.0073150-Knapp1"><label>28</label>
+<mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Knapp</surname><given-names>M</given-names></name>, <name name-style="western"><surname>Hofreiter</surname><given-names>M</given-names></name> (<year>2010</year>) <article-title>Next generation sequencing of ancient DNA: requirements, strategies and perspectives</article-title>. <source>Genes</source> <volume>1(2)</volume>: <fpage>227</fpage>–<lpage>243</lpage>.</mixed-citation>
+</ref>
+<ref id="pone.0073150-Penney6"><label>29</label>
+<mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Penney</surname><given-names>D</given-names></name>, <name name-style="western"><surname>Wadsworth</surname><given-names>C</given-names></name>, <name name-style="western"><surname>Green</surname><given-names>D</given-names></name>, <name name-style="western"><surname>Kennedy</surname><given-names>S</given-names></name>, <name name-style="western"><surname>Presiozi</surname><given-names>R</given-names></name>, <etal>et al</etal>. (<year>2013</year>) <article-title>Extraction of inclusions from (sub)fossil resins, with description of a new species of stingless bee (Hymenoptera: Apidae: Meliponini) in Quaternary Colombian copal</article-title>. <source>Palaeontol Contrib</source> <volume>7</volume>: <fpage>1</fpage>–<lpage>6</lpage>.</mixed-citation>
+</ref>
+<ref id="pone.0073150-Huson1"><label>30</label>
+<mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Huson</surname><given-names>DH</given-names></name>, <name name-style="western"><surname>Mitra</surname><given-names>S</given-names></name>, <name name-style="western"><surname>Weber</surname><given-names>N</given-names></name>, <name name-style="western"><surname>Ruscheweyh</surname><given-names>H</given-names></name>, <name name-style="western"><surname>Schuster</surname><given-names>SC</given-names></name> (<year>2011</year>) <article-title>Integrative analysis of environmental sequences using MEGAN4</article-title>. <source>Genome Res</source> <volume>21</volume>: <fpage>1552</fpage>–<lpage>1560</lpage>.</mixed-citation>
+</ref>
+<ref id="pone.0073150-Altschul1"><label>31</label>
+<mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Altschul</surname><given-names>S</given-names></name>, <name name-style="western"><surname>Gish</surname><given-names>W</given-names></name>, <name name-style="western"><surname>Miller</surname><given-names>W</given-names></name>, <name name-style="western"><surname>Myers</surname><given-names>EW</given-names></name>, <name name-style="western"><surname>Lipman</surname><given-names>DJ</given-names></name> (<year>1990</year>) <article-title>Basic local alignment search tool</article-title>. <source>J Mol Biol</source> <volume>215</volume>: <fpage>403</fpage>–<lpage>410</lpage>.</mixed-citation>
+</ref>
+<ref id="pone.0073150-Bouwman1"><label>32</label>
+<mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Bouwman</surname><given-names>AS</given-names></name>, <name name-style="western"><surname>Kennedy</surname><given-names>SL</given-names></name>, <name name-style="western"><surname>Muller</surname><given-names>R</given-names></name>, <name name-style="western"><surname>Stephens</surname><given-names>RH</given-names></name>, <name name-style="western"><surname>Holst</surname><given-names>M</given-names></name>, <etal>et al</etal>. (<year>2012</year>) <article-title>The genotype of a historic strain of Mycobacterium tuberculosis</article-title>. <source>Proc Natl Acad Sci USA</source> <volume>109</volume>: <fpage>18511</fpage>–<lpage>18516</lpage>.</mixed-citation>
+</ref>
+<ref id="pone.0073150-Bunning1"><label>33</label>
+<mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Bunning</surname><given-names>SL</given-names></name>, <name name-style="western"><surname>Jones</surname><given-names>G</given-names></name>, <name name-style="western"><surname>Brown</surname><given-names>TA</given-names></name> (<year>2012</year>) <article-title>Next generation sequencing of DNA in 3300-year-old charred cereal grains</article-title>. <source>J Archaeol Sci</source> <volume>39</volume>: <fpage>2780</fpage>–<lpage>2784</lpage>.</mixed-citation>
+</ref>
+<ref id="pone.0073150-Lindahl1"><label>34</label>
+<mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Lindahl</surname><given-names>T</given-names></name> (<year>1991</year>) <article-title>Instability and decay of the primary structure of DNA</article-title>. <source>Nature</source> <volume>362</volume>: <fpage>709</fpage>–<lpage>715</lpage>.</mixed-citation>
+</ref>
+<ref id="pone.0073150-Pohl1"><label>35</label>
+<mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Pohl</surname><given-names>H</given-names></name>, <name name-style="western"><surname>Wipfler</surname><given-names>B</given-names></name>, <name name-style="western"><surname>Grimaldi</surname><given-names>D</given-names></name>, <name name-style="western"><surname>Beckmann</surname><given-names>F</given-names></name>, <name name-style="western"><surname>Beutel</surname><given-names>RG</given-names></name> (<year>2010</year>) <article-title>Reconstructing the anatomy of the 42 million-year-old fossil †<italic>Mengea tertiara</italic> (Insecta, Strepsiptera)</article-title>. <source>Naturwissenschaften</source> <volume>97</volume>: <fpage>855</fpage>–<lpage>859</lpage>.</mixed-citation>
+</ref>
+<ref id="pone.0073150-Penney7"><label>36</label>
+<mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Penney</surname><given-names>D</given-names></name>, <name name-style="western"><surname>Dierick</surname><given-names>M</given-names></name>, <name name-style="western"><surname>Cnudde</surname><given-names>V</given-names></name>, <name name-style="western"><surname>Masschaele</surname><given-names>B</given-names></name>, <name name-style="western"><surname>Vlassenbroeck</surname><given-names>J</given-names></name>, <etal>et al</etal>. (<year>2007</year>) <article-title>First fossil Micropholcommatidae (Araneae), imaged in Eocene Paris amber using X-Ray computed tomography</article-title>. <source>Zootaxa</source> <volume>1623</volume>: <fpage>47</fpage>–<lpage>53</lpage>.</mixed-citation>
+</ref>
+<ref id="pone.0073150-Paredes1"><label>37</label>
+<mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Paredes</surname><given-names>UM</given-names></name>, <name name-style="western"><surname>Prys-Jones</surname><given-names>R</given-names></name>, <name name-style="western"><surname>Adams</surname><given-names>M</given-names></name>, <name name-style="western"><surname>Groombridge</surname><given-names>J</given-names></name>, <name name-style="western"><surname>Kundu</surname><given-names>S</given-names></name>, <etal>et al</etal>. (<year>2012</year>) <article-title>Micro-CT X-rays do not fragment DNA in preserved bird skins</article-title>. <source>J Zool Syst Evol Res</source> <volume>59</volume>: <fpage>247</fpage>–<lpage>250</lpage>.</mixed-citation>
+</ref>
+<ref id="pone.0073150-Hebsgaard1"><label>38</label>
+<mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Hebsgaard</surname><given-names>MB</given-names></name>, <name name-style="western"><surname>Phillips</surname><given-names>MJ</given-names></name>, <name name-style="western"><surname>Willerslev</surname><given-names>E</given-names></name> (<year>2005</year>) <article-title>Geologically ancient DNA: fact or artefact?</article-title> <source>Trends Microbiol</source> <volume>13</volume>: <fpage>212</fpage>–<lpage>220</lpage>.</mixed-citation>
+</ref>
+<ref id="pone.0073150-Penney8"><label>39</label>
+<mixed-citation publication-type="book" xlink:type="simple">Penney D, Green D (2011) Fossils in amber: snapshots of prehistoric forest life. Manchester: Siri Scientific Press. 226 p.</mixed-citation>
+</ref>
+<ref id="pone.0073150-Koller1"><label>40</label>
+<mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Koller</surname><given-names>B</given-names></name>, <name name-style="western"><surname>Schmitt</surname><given-names>JM</given-names></name>, <name name-style="western"><surname>Tischendorf</surname><given-names>G</given-names></name> (<year>2005</year>) <article-title>Cellular fine structures and histochemical reactions in the tissue of a cypress twig preserved in Baltic amber</article-title>. <source>Proc Roy Soc Lond ser B</source> <volume>272</volume>: <fpage>121</fpage>–<lpage>126</lpage>.</mixed-citation>
+</ref>
+</ref-list></back>
+</article>
