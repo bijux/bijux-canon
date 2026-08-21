@@ -8,6 +8,7 @@ from .agent_contract import (
     AgentInputSchema,
     AgentOutputSchema,
 )
+from .causal_trace import CausalDecisionEvent, ResearchCausalTrace
 from .execution_plan import (
     ExecutionPlan,
     PlanningBudget,
@@ -65,6 +66,7 @@ __all__ = [
     "BudgetAction",
     "BudgetDecision",
     "BudgetDimensions",
+    "CausalDecisionEvent",
     "ExecutionPlan",
     "PlanningBudget",
     "ProviderProfile",
@@ -74,6 +76,7 @@ __all__ = [
     "ResearchPlanningInput",
     "ResearchBudgetLedger",
     "ResearchBudgetPolicy",
+    "ResearchCausalTrace",
     "ResearchTool",
     "ResearchToolOperation",
     "ReasonerPort",

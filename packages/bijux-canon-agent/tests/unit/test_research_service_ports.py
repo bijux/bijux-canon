@@ -301,6 +301,35 @@ def test_research_role_machine_executes_one_operation_per_legal_edge() -> None:
     assert result.terminal_outcome == "answered"
     assert len(checkpoints.persisted) == 8
     assert result.checkpoint_artifact_id == checkpoints.persisted[-1].artifact_id
+    assert len(result.causal_events) == 8
+    assert result.causal_trace.event_artifact_ids == tuple(
+        event.artifact_id for event in result.causal_events
+    )
+    assert result.causal_trace.head_artifact_id == result.causal_events[-1].artifact_id
+    for sequence, event in enumerate(result.causal_events):
+        assert event.sequence == sequence
+        assert event.operation_artifact_id == result.operations[sequence].artifact_id
+        assert event.transition_artifact_id == result.transitions[sequence].artifact_id
+        assert event.state_after_artifact_id == result.transitions[sequence].artifact_id
+        assert event.budget_decision_artifact_ids
+        assert event.policy_artifact_ids == (
+            result.tool_policy_artifact_id,
+            result.budget_policy_artifact_id,
+        )
+        assert event.rationale
+    assert result.causal_events[1].tool_decision_artifact_ids == (
+        result.tool_decisions[0].artifact_id,
+    )
+    assert result.causal_events[5].tool_decision_artifact_ids == (
+        result.tool_decisions[1].artifact_id,
+    )
+    assert result.retrieval is not None
+    assert result.causal_events[2].observation_artifact_ids == (
+        result.retrieval.artifact_id,
+    )
+    assert result.causal_events[2].evidence_artifact_ids == (
+        "sha256:" + hashlib.sha256(b"evidence").hexdigest(),
+    )
 
 
 def test_research_role_machine_is_deterministic_and_terminal() -> None:
@@ -373,6 +402,7 @@ def test_research_role_machine_resumes_without_duplicate_tool_calls() -> None:
     assert resumed.terminal_outcome == "answered"
     assert resumed_retriever.requests == []
     assert len(resumed_reasoner.requests) == 1
+    assert len(resumed.causal_events) == 8
     assert len(checkpoints.persisted) == 8
     assert checkpoints.persisted[-1].cancellation_lineage == (
         "sha256:" + "c" * 64,

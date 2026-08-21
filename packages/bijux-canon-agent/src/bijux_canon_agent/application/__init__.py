@@ -22,11 +22,16 @@ from bijux_canon_agent.contracts.research_budget import (
     ResearchBudgetLedger,
     ResearchBudgetPolicy,
 )
+from bijux_canon_agent.contracts.causal_trace import (
+    CausalDecisionEvent,
+    ResearchCausalTrace,
+)
 
 __all__ = [
     "BudgetAction",
     "BudgetDecision",
     "BudgetDimensions",
+    "CausalDecisionEvent",
     "InjectedResearchServices",
     "PolicyEnforcedResearchServices",
     "ResearchExecutionResult",
@@ -34,6 +39,7 @@ __all__ = [
     "ResearchCheckpointPort",
     "ResearchBudgetLedger",
     "ResearchBudgetPolicy",
+    "ResearchCausalTrace",
     "ResearchOperation",
     "ResearchOperationRecord",
     "ResearchRole",

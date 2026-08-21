@@ -16,6 +16,10 @@ from bijux_canon_agent.application.research_tool_gateway import (
     PolicyEnforcedResearchServices,
 )
 from bijux_canon_agent.contracts.execution_plan import ResearchPlanningInput
+from bijux_canon_agent.contracts.causal_trace import (
+    CausalDecisionEvent,
+    ResearchCausalTrace,
+)
 from bijux_canon_agent.contracts.research_ports import (
     ReasoningPortResult,
     RetrievalPortResult,
@@ -162,6 +166,7 @@ class ResearchCheckpoint:
     transitions: tuple[ResearchTransition, ...]
     tool_decisions: tuple[ToolPolicyDecision, ...]
     budget_decisions: tuple[BudgetDecision, ...]
+    causal_events: tuple[CausalDecisionEvent, ...]
     cancellation_lineage: tuple[str, ...]
     failure_lineage: tuple[str, ...]
 
@@ -210,6 +215,8 @@ class ResearchExecutionResult:
     budget_usage: BudgetDimensions
     exhausted_budget_dimensions: tuple[str, ...]
     checkpoint_artifact_id: str
+    causal_events: tuple[CausalDecisionEvent, ...]
+    causal_trace: ResearchCausalTrace
     terminal_outcome: str
 
 
@@ -236,6 +243,16 @@ class ResearchRoleMachine:
         ResearchRole.SYNTHESIZE: ResearchOperation.SYNTHESIZE_ANSWER,
         ResearchRole.VERIFY: ResearchOperation.VERIFY_ANSWER,
         ResearchRole.TERMINATE: ResearchOperation.TERMINATE_RUN,
+    }
+    _RATIONALE: ClassVar[dict[ResearchOperation, str]] = {
+        ResearchOperation.VALIDATE_PLAN: "validate exact declared inputs",
+        ResearchOperation.RETRIEVE_EVIDENCE: "obtain scoped candidate evidence",
+        ResearchOperation.ANALYZE_EVIDENCE: "inspect retrieved observations",
+        ResearchOperation.ASSESS_COUNTEREVIDENCE: "test claims against opposition",
+        ResearchOperation.RESOLVE_EVIDENCE_GAPS: "classify unresolved evidence needs",
+        ResearchOperation.SYNTHESIZE_ANSWER: "produce a bounded evidence synthesis",
+        ResearchOperation.VERIFY_ANSWER: "verify request and artifact bindings",
+        ResearchOperation.TERMINATE_RUN: "commit the declared terminal outcome",
     }
 
     def __init__(
@@ -264,6 +281,7 @@ class ResearchRoleMachine:
         self._cancellation_lineage = cancellation_lineage
         self._failure_lineage = failure_lineage
         self._checkpoint: ResearchCheckpoint | None = None
+        self._causal_events: list[CausalDecisionEvent] = []
         self._role = ResearchRole.PLAN
         self._retrieval: RetrievalPortResult | None = None
         self._reasoning: ReasoningPortResult | None = None
@@ -298,6 +316,11 @@ class ResearchRoleMachine:
         """Return the last state known to have been persisted."""
         return self._checkpoint
 
+    @property
+    def causal_events(self) -> tuple[CausalDecisionEvent, ...]:
+        """Return the ordered cause-and-effect records built so far."""
+        return tuple(self._causal_events)
+
     @classmethod
     def resume(
         cls,
@@ -328,6 +351,7 @@ class ResearchRoleMachine:
         machine._transitions = list(checkpoint.transitions)
         machine._services.restore(checkpoint.tool_decisions)
         machine._budget.restore(checkpoint.budget_decisions)
+        machine._causal_events = list(checkpoint.causal_events)
         machine._checkpoint = checkpoint
         return machine
 
@@ -358,6 +382,8 @@ class ResearchRoleMachine:
         from_role = self._role
         to_role = self._NEXT_ROLE[from_role]
         operation = self._OPERATION[from_role]
+        tool_decision_start = len(self._services.decisions)
+        budget_decision_start = len(self._budget.decisions)
         self.validate_transition(
             from_role=from_role,
             to_role=to_role,
@@ -373,6 +399,14 @@ class ResearchRoleMachine:
         self._operations.append(record)
         self._transitions.append(transition)
         self._role = to_role
+        self._causal_events.append(
+            self._create_causal_event(
+                record=record,
+                transition=transition,
+                tool_decision_start=tool_decision_start,
+                budget_decision_start=budget_decision_start,
+            )
+        )
         checkpoint = self._create_checkpoint()
         self._checkpoint_port.persist(checkpoint)
         self._checkpoint = checkpoint
@@ -390,6 +424,7 @@ class ResearchRoleMachine:
             terminal_outcome = "incomplete"
         else:
             terminal_outcome = self._reasoning.outcome
+        causal_trace = ResearchCausalTrace.create(tuple(self._causal_events))
         payload = {
             "planning_input": self._planning_input.model_dump(mode="json"),
             "retrieval_artifact_id": (
@@ -417,6 +452,7 @@ class ResearchRoleMachine:
             "checkpoint_artifact_id": (
                 None if self._checkpoint is None else self._checkpoint.artifact_id
             ),
+            "causal_trace_artifact_id": causal_trace.artifact_id,
             "terminal_outcome": terminal_outcome,
         }
         if self._checkpoint is None:
@@ -435,6 +471,8 @@ class ResearchRoleMachine:
             budget_usage=self._budget.global_usage,
             exhausted_budget_dimensions=self._budget.exhausted_dimensions,
             checkpoint_artifact_id=self._checkpoint.artifact_id,
+            causal_events=tuple(self._causal_events),
+            causal_trace=causal_trace,
             terminal_outcome=terminal_outcome,
         )
 
@@ -629,6 +667,7 @@ class ResearchRoleMachine:
             transitions=tuple(self._transitions),
             tool_decisions=self._services.decisions,
             budget_decisions=self._budget.decisions,
+            causal_events=tuple(self._causal_events),
             cancellation_lineage=self._cancellation_lineage,
             failure_lineage=self._failure_lineage,
         )
@@ -675,6 +714,9 @@ class ResearchRoleMachine:
             "budget_decision_artifact_ids": [
                 item.artifact_id for item in self._budget.decisions
             ],
+            "causal_event_artifact_ids": [
+                item.artifact_id for item in self._causal_events
+            ],
             "cancellation_lineage": list(self._cancellation_lineage),
             "failure_lineage": list(self._failure_lineage),
         }
@@ -715,6 +757,39 @@ class ResearchRoleMachine:
             )
             if transition.operation_artifact_id != operation.artifact_id:
                 raise ValueError("checkpoint transition is not bound to its operation")
+        if len(checkpoint.causal_events) != len(checkpoint.transitions):
+            raise ValueError("checkpoint causal event and transition counts differ")
+        for sequence, event in enumerate(checkpoint.causal_events):
+            if event.sequence != sequence:
+                raise ValueError("checkpoint causal events are not contiguous")
+            expected_event = CausalDecisionEvent.create(
+                sequence=event.sequence,
+                state_before_artifact_id=event.state_before_artifact_id,
+                role=event.role,
+                operation=event.operation,
+                rationale=event.rationale,
+                observation_artifact_ids=event.observation_artifact_ids,
+                evidence_artifact_ids=event.evidence_artifact_ids,
+                tool_decision_artifact_ids=event.tool_decision_artifact_ids,
+                budget_decision_artifact_ids=event.budget_decision_artifact_ids,
+                policy_artifact_ids=event.policy_artifact_ids,
+                output_artifact_ids=event.output_artifact_ids,
+                operation_artifact_id=event.operation_artifact_id,
+                transition_artifact_id=event.transition_artifact_id,
+                state_after_artifact_id=event.state_after_artifact_id,
+            )
+            if event != expected_event:
+                raise ValueError("checkpoint causal event identity is invalid")
+            if (
+                event.operation_artifact_id
+                != checkpoint.operations[sequence].artifact_id
+            ):
+                raise ValueError("causal event operation dependency is invalid")
+            if (
+                event.transition_artifact_id
+                != checkpoint.transitions[sequence].artifact_id
+            ):
+                raise ValueError("causal event transition dependency is invalid")
         lineage = checkpoint.cancellation_lineage + checkpoint.failure_lineage
         if any(
             len(item) != 71
@@ -759,6 +834,9 @@ class ResearchRoleMachine:
                 "budget_decision_artifact_ids": [
                     item.artifact_id for item in checkpoint.budget_decisions
                 ],
+                "causal_event_artifact_ids": [
+                    item.artifact_id for item in checkpoint.causal_events
+                ],
                 "cancellation_lineage": list(checkpoint.cancellation_lineage),
                 "failure_lineage": list(checkpoint.failure_lineage),
             }
@@ -778,6 +856,70 @@ class ResearchRoleMachine:
         ):
             if current[field] != getattr(checkpoint, field):
                 raise ValueError(f"checkpoint dependency mismatch: {field}")
+
+    def _create_causal_event(
+        self,
+        *,
+        record: ResearchOperationRecord,
+        transition: ResearchTransition,
+        tool_decision_start: int,
+        budget_decision_start: int,
+    ) -> CausalDecisionEvent:
+        state_before = (
+            "sha256:"
+            + hashlib.sha256(
+                _canonical(self._planning_input.model_dump(mode="json"))
+            ).hexdigest()
+            if not self._causal_events
+            else self._transitions[-2].artifact_id
+        )
+        observations: tuple[str, ...] = ()
+        evidence: tuple[str, ...] = ()
+        outputs = [record.artifact_id]
+        if self._retrieval is not None:
+            observations = (self._retrieval.artifact_id,)
+            evidence = tuple(
+                "sha256:" + str(item["source_text_sha256"])
+                for item in self._retrieval.records
+                if "source_text_sha256" in item
+            )
+            if record.operation is ResearchOperation.RETRIEVE_EVIDENCE:
+                outputs.append(self._retrieval.artifact_id)
+        if self._reasoning is not None:
+            evidence = tuple(
+                dict.fromkeys(
+                    evidence
+                    + self._reasoning.evidence_artifact_ids
+                    + self._reasoning.claim_artifact_ids
+                )
+            )
+            if record.operation is ResearchOperation.SYNTHESIZE_ANSWER:
+                outputs.append(self._reasoning.artifact_id)
+        return CausalDecisionEvent.create(
+            sequence=record.sequence,
+            state_before_artifact_id=state_before,
+            role=record.role.value,
+            operation=record.operation.value,
+            rationale=self._RATIONALE[record.operation],
+            observation_artifact_ids=observations,
+            evidence_artifact_ids=evidence,
+            tool_decision_artifact_ids=tuple(
+                item.artifact_id
+                for item in self._services.decisions[tool_decision_start:]
+            ),
+            budget_decision_artifact_ids=tuple(
+                item.artifact_id
+                for item in self._budget.decisions[budget_decision_start:]
+            ),
+            policy_artifact_ids=(
+                self._services.policy.artifact_id,
+                self._budget.policy.artifact_id,
+            ),
+            output_artifact_ids=tuple(outputs),
+            operation_artifact_id=record.artifact_id,
+            transition_artifact_id=transition.artifact_id,
+            state_after_artifact_id=transition.artifact_id,
+        )
 
 
 __all__ = [
