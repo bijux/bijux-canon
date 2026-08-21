@@ -5,5 +5,19 @@
 from __future__ import annotations
 
 from .backend import sqlite_backend
+from .lexical import (
+    LexicalChunk,
+    LexicalIndexCorruptionError,
+    LexicalIndexManifest,
+    LexicalSearchResult,
+    SQLiteLexicalIndex,
+)
 
-__all__ = ["sqlite_backend"]
+__all__ = [
+    "LexicalChunk",
+    "LexicalIndexCorruptionError",
+    "LexicalIndexManifest",
+    "LexicalSearchResult",
+    "SQLiteLexicalIndex",
+    "sqlite_backend",
+]
