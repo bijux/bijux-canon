@@ -5,6 +5,16 @@
 
 from __future__ import annotations
 
+from bijux_canon_runtime.runtime.execution.dag_scheduler import (
+    ArtifactTransitionJournal,
+    DagScheduleResult,
+    DependencyAwareScheduler,
+    SchedulerError,
+    SchedulerPolicy,
+    SchedulerTransition,
+    StepNodeStatus,
+    StepSchedulingConstraint,
+)
 from bijux_canon_runtime.runtime.execution.operation_dispatcher import (
     OperationAdapter,
     OperationDispatcher,
@@ -22,15 +32,23 @@ from bijux_canon_runtime.runtime.execution.service_composition import (
 from bijux_canon_runtime.runtime.execution.step_executor import ExecutionOutcome
 
 __all__ = [
+    "ArtifactTransitionJournal",
+    "DagScheduleResult",
+    "DependencyAwareScheduler",
     "ExecutionOutcome",
     "CanonicalServiceComposition",
     "InstalledServiceCapability",
     "OperationAdapter",
     "OperationDispatcher",
+    "SchedulerError",
+    "SchedulerPolicy",
+    "SchedulerTransition",
     "StepDispatchCancelled",
     "StepDispatchContext",
     "StepDispatchError",
     "StepDispatchResult",
     "StepOutputArtifact",
+    "StepNodeStatus",
+    "StepSchedulingConstraint",
     "compose_canonical_services",
 ]
