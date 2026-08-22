@@ -14,5 +14,5 @@ def final_class(cls: T) -> T:
         _ = (subcls, kwargs)
         raise TypeError(f"{cls.__name__} is final and cannot be subclassed")
 
-    cls.__init_subclass__ = classmethod(__init_subclass__)
+    setattr(cls, "__init_subclass__", classmethod(__init_subclass__))
     return cls

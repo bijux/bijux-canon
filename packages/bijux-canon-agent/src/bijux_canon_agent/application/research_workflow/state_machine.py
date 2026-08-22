@@ -9,7 +9,7 @@ import hashlib
 import json
 from typing import Any, ClassVar, Protocol, cast, runtime_checkable
 
-from pydantic import TypeAdapter  # type: ignore[attr-defined]
+from pydantic import TypeAdapter
 
 from bijux_canon_agent.application.research_services import InjectedResearchServices
 from bijux_canon_agent.application.research_tool_gateway import (
@@ -189,10 +189,7 @@ class ResearchCheckpoint:
     @classmethod
     def from_payload(cls, payload: Mapping[str, Any]) -> ResearchCheckpoint:
         """Restore a typed checkpoint and reject ignored or transformed fields."""
-        restored = cast(
-            ResearchCheckpoint,
-            TypeAdapter(cls).validate_python(dict(payload)),
-        )
+        restored = TypeAdapter(cls).validate_python(dict(payload))
         if restored.to_payload() != dict(payload):
             raise ValueError("checkpoint payload is not exact canonical state")
         return restored

@@ -76,8 +76,6 @@ class DiscoveryRoot:
             raise ValueError("DiscoveryRoot.name must be a stable non-empty name")
         if any(character in self.name for character in ("/", "\\", "\x00")):
             raise ValueError("DiscoveryRoot.name must not contain path separators")
-        if not isinstance(self.path, Path):
-            object.__setattr__(self, "path", Path(self.path))
 
 
 @dataclass(frozen=True, slots=True)
