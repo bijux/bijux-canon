@@ -35,10 +35,16 @@ from bijux_canon_runtime.runtime.persistence.publication import (
     PublicationOutcome,
     PublicationRecoveryError,
 )
+from bijux_canon_runtime.runtime.persistence.reachability import (
+    ArtifactReachabilityReport,
+    ArtifactReachabilityValidator,
+)
 
 __all__ = [
     "ArtifactPayloadStore",
     "ArtifactPublicationCoordinator",
+    "ArtifactReachabilityReport",
+    "ArtifactReachabilityValidator",
     "ArtifactReferenceRecord",
     "AtomicFilesystemArtifactPayloadStore",
     "AttemptStatus",

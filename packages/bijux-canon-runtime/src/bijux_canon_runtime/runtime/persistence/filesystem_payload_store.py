@@ -181,6 +181,24 @@ class AtomicFilesystemArtifactPayloadStore(ArtifactPayloadStore):
             self._fsync_directory(self._staging)
         return removed
 
+    def artifact_ids(self) -> tuple[ArtifactID, ...]:
+        """Inventory immutable object paths without trusting their contents."""
+        identities: list[ArtifactID] = []
+        for prefix in self._objects.iterdir():
+            if prefix.is_symlink() or not prefix.is_dir():
+                continue
+            for entry in prefix.iterdir():
+                if entry.is_symlink() or not entry.is_dir():
+                    continue
+                digest = entry.name
+                if (
+                    len(digest) == 64
+                    and prefix.name == digest[:2]
+                    and all(char in "0123456789abcdef" for char in digest)
+                ):
+                    identities.append(ArtifactID(f"sha256:{digest}"))
+        return tuple(sorted(identities))
+
     def _artifact_directory(self, artifact_id: ArtifactID) -> Path:
         value = str(artifact_id)
         if not value.startswith("sha256:") or len(value) != 71:
