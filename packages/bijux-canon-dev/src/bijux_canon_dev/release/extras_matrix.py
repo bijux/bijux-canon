@@ -531,8 +531,13 @@ def run_extras_matrix(
         for row in targets
         if row.distribution_name == "bijux-canon-agent"
     }
-    if agent_extras and agent_extras.get("extra") != agent_extras.get(
-        "document-readers"
+    agent_extra = agent_extras.get("extra")
+    document_readers = agent_extras.get("document-readers")
+    if agent_extras and (
+        agent_extra is None
+        or document_readers is None
+        or _normalized_requirements(agent_extra)
+        != _normalized_requirements(document_readers)
     ):
         failures.append("agent-document-reader-alias")
     reason_policy = next(

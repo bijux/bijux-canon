@@ -11,6 +11,7 @@ import pytest
 
 from bijux_canon_dev.release.extras_matrix import (
     ExtrasMatrixError,
+    _normalized_requirements,
     run_extras_matrix,
 )
 from bijux_canon_dev.release.python_support_matrix import CommandResult
@@ -205,6 +206,12 @@ def test_matrix_rejects_an_unmapped_capability(tmp_path: Path) -> None:
             capability_modules={},
             runner=_passing_runner,
         )
+
+
+def test_extra_alias_comparison_ignores_its_own_marker_name() -> None:
+    assert _normalized_requirements(
+        ('pypdf<7,>=6; extra == "extra"',)
+    ) == _normalized_requirements(('pypdf<7,>=6; extra == "document-readers"',))
 
 
 def test_matrix_retains_a_failed_install_row(tmp_path: Path) -> None:
