@@ -190,3 +190,11 @@ def test_sqlite_fts5_preserves_declared_phrases_and_rejects_bad_quotes(
         ] == ["chunk-a"]
         with pytest.raises(ValueError, match="unterminated phrase"):
             index.query('"ancient DNA')
+
+
+def test_sqlite_fts5_admits_natural_language_queries(tmp_path: Path) -> None:
+    with SQLiteLexicalIndex.build(tmp_path / "lexical.sqlite", _chunks()) as index:
+        hits = index.query("What evidence do ancient genomes preserve?")
+
+    assert hits[0].chunk.chunk_id == "chunk-b"
+    assert "chunk-c" not in {hit.chunk.chunk_id for hit in hits}

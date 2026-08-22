@@ -141,7 +141,7 @@ def _query_expression(query: str) -> str:
     if not terms:
         raise ValueError("lexical query must not be empty")
     terms.sort()
-    return " AND ".join(terms)
+    return " OR ".join(terms)
 
 
 def _tokenizer_configuration_sha256() -> str:
@@ -150,6 +150,7 @@ def _tokenizer_configuration_sha256() -> str:
             {
                 "implementation": TOKENIZER_IMPLEMENTATION,
                 "query_normalization": "NFKC-casefold-whitespace-v1",
+                "query_term_operator": "or-v1",
                 "sqlite_tokenizer": TOKENIZER,
             }
         )
