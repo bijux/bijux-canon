@@ -15,6 +15,15 @@ def test_ingest_security_subtargets_bootstrap_package_environment() -> None:
     assert "security-deps" in profile
 
 
+def test_index_typing_resolves_package_local_test_namespace() -> None:
+    profile = (REPO_ROOT / "makes" / "packages" / "bijux-canon-index.mk").read_text(
+        encoding="utf-8"
+    )
+
+    assert "MYPY_FLAGS        := --strict --explicit-package-bases" in profile
+    assert "export MYPYPATH   := $(CURDIR)" in profile
+
+
 def test_compat_packages_install_security_tooling_without_stamp_shortcuts() -> None:
     profile = (REPO_ROOT / "makes" / "packages" / "compat-package.mk").read_text(
         encoding="utf-8"
