@@ -55,12 +55,15 @@ class RetrievalEvaluationCase:
     """Frozen qrels and observed scored hits for one query."""
 
     query_id: str
+    input_identity_sha256: str
     qrels: tuple[GradedQrel, ...]
     hits: tuple[RankedRetrievalHit, ...]
 
     def __post_init__(self) -> None:
         if not self.query_id.strip():
             raise ValueError("retrieval evaluation query identity must not be empty")
+        if not _is_sha256(self.input_identity_sha256):
+            raise ValueError("retrieval evaluation input identity must be a SHA-256")
         qrel_ids = tuple(qrel.evidence_id for qrel in self.qrels)
         hit_ids = tuple(hit.evidence_id for hit in self.hits)
         if len(qrel_ids) != len(set(qrel_ids)):
@@ -98,6 +101,9 @@ class QueryRetrievalMetrics:
     """Exact arithmetic and ranked evidence retained for one evaluated query."""
 
     query_id: str
+    input_identity_sha256: str
+    graded_qrels: tuple[GradedQrel, ...]
+    ordered_hits: tuple[RankedRetrievalHit, ...]
     ordered_evidence_ids: tuple[str, ...]
     relevant_evidence_ids: tuple[str, ...]
     retrieved_relevant_at_5: tuple[str, ...]
@@ -280,11 +286,14 @@ class RetrievalMetricEvaluator:
         arithmetic = {
             "dcg_at_10": dcg,
             "first_relevant_rank_at_10": first_relevant,
+            "graded_qrels": [asdict(qrel) for qrel in case.qrels],
             "graded_gains_at_10": gains,
             "ideal_dcg_at_10": ideal_dcg,
             "ideal_graded_gains_at_10": ideal_gains,
+            "input_identity_sha256": case.input_identity_sha256,
             "ndcg_at_10": ndcg,
             "ordered_evidence_ids": ordered_ids,
+            "ordered_hits": [asdict(hit) for hit in ordered_hits],
             "query_id": case.query_id,
             "recall_at_5": recall,
             "recall_at_5_denominator": len(relevant_ids),
@@ -295,6 +304,9 @@ class RetrievalMetricEvaluator:
         }
         return QueryRetrievalMetrics(
             query_id=case.query_id,
+            input_identity_sha256=case.input_identity_sha256,
+            graded_qrels=case.qrels,
+            ordered_hits=ordered_hits,
             ordered_evidence_ids=ordered_ids,
             relevant_evidence_ids=relevant_ids,
             retrieved_relevant_at_5=retrieved_at_5,
@@ -364,6 +376,12 @@ def _sha256(value: object) -> str:
         allow_nan=False,
     ).encode("utf-8")
     return hashlib.sha256(payload).hexdigest()
+
+
+def _is_sha256(value: str) -> bool:
+    return len(value) == 64 and all(
+        character in "0123456789abcdef" for character in value
+    )
 
 
 __all__ = [

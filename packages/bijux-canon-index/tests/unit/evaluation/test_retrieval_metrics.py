@@ -31,6 +31,7 @@ def _case(
 ) -> RetrievalEvaluationCase:
     return RetrievalEvaluationCase(
         query_id=query_id,
+        input_identity_sha256="a" * 64,
         qrels=(
             GradedQrel("evidence-a", 3),
             GradedQrel("evidence-b", 2),
@@ -125,6 +126,7 @@ def test_invalid_denominators_duplicates_and_nonfinite_scores_fail_closed() -> N
     with pytest.raises(ValueError, match="positive qrel"):
         RetrievalEvaluationCase(
             query_id="no-positive-truth",
+            input_identity_sha256="a" * 64,
             qrels=(GradedQrel("negative", 0),),
             hits=(),
         )
@@ -154,6 +156,7 @@ def test_reviewed_ancient_dna_qrels_produce_per_query_evidence() -> None:
     selected = [record for record in records if record["query_id"] == query_id]
     case = RetrievalEvaluationCase(
         query_id=query_id,
+        input_identity_sha256=str(selected[0]["lock_identity_sha256"]),
         qrels=tuple(
             GradedQrel(
                 evidence_id=str(record["chunk"]["chunk_id"]),

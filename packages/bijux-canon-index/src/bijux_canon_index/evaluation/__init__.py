@@ -3,6 +3,13 @@
 
 """Deterministic retrieval evaluation over independently reviewed qrels."""
 
+from bijux_canon_index.evaluation.retrieval_comparison import (
+    RetrievalComparisonReport,
+    RetrievalMode,
+    RetrievalQualityCheck,
+    RetrievalQualityComparator,
+    RetrievalQualityPolicy,
+)
 from bijux_canon_index.evaluation.retrieval_metrics import (
     AggregateRetrievalMetric,
     GradedQrel,
@@ -21,8 +28,13 @@ __all__ = [
     "MetricConfidenceInterval",
     "QueryRetrievalMetrics",
     "RankedRetrievalHit",
+    "RetrievalComparisonReport",
     "RetrievalEvaluationCase",
     "RetrievalEvaluationError",
     "RetrievalEvaluationReport",
     "RetrievalMetricEvaluator",
+    "RetrievalMode",
+    "RetrievalQualityCheck",
+    "RetrievalQualityComparator",
+    "RetrievalQualityPolicy",
 ]
