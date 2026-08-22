@@ -12,6 +12,7 @@ import pytest
 from bijux_canon_dev.release.extras_matrix import (
     ExtrasMatrixError,
     _normalized_requirements,
+    _reader_probe,
     run_extras_matrix,
 )
 from bijux_canon_dev.release.python_support_matrix import CommandResult
@@ -212,6 +213,16 @@ def test_extra_alias_comparison_ignores_its_own_marker_name() -> None:
     assert _normalized_requirements(
         ('pypdf<7,>=6; extra == "extra"',)
     ) == _normalized_requirements(('pypdf<7,>=6; extra == "document-readers"',))
+
+
+def test_reader_probe_requires_explicit_installed_ocr_processing(
+    tmp_path: Path,
+) -> None:
+    probe = _reader_probe(tmp_path)
+
+    assert "processing_profile" in probe
+    assert "processing_method == 'ocr_extraction'" in probe
+    assert "OCR used" in probe
 
 
 def test_matrix_retains_a_failed_install_row(tmp_path: Path) -> None:
