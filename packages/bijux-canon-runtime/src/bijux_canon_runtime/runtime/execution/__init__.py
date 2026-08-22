@@ -15,6 +15,15 @@ from bijux_canon_runtime.runtime.execution.dag_scheduler import (
     StepNodeStatus,
     StepSchedulingConstraint,
 )
+from bijux_canon_runtime.runtime.execution.durable_jobs import (
+    DurableJobError,
+    DurableJobHandler,
+    DurableJobManager,
+    DurableJobRequest,
+    DurableJobSnapshot,
+    JobKind,
+    JobStatus,
+)
 from bijux_canon_runtime.runtime.execution.operation_dispatcher import (
     OperationAdapter,
     OperationDispatcher,
@@ -41,9 +50,16 @@ __all__ = [
     "ArtifactTransitionJournal",
     "DagScheduleResult",
     "DependencyAwareScheduler",
+    "DurableJobError",
+    "DurableJobHandler",
+    "DurableJobManager",
+    "DurableJobRequest",
+    "DurableJobSnapshot",
     "ExecutionOutcome",
     "CanonicalServiceComposition",
     "InstalledServiceCapability",
+    "JobKind",
+    "JobStatus",
     "OperationAdapter",
     "OperationDispatcher",
     "RuntimeErrorRecord",
