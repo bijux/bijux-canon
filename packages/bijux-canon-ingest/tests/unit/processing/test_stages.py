@@ -5,6 +5,12 @@
 
 from __future__ import annotations
 
+from bijux_canon_ingest_strategies import (
+    doc_list_strategy,
+    env_strategy,
+    pipeline_chunk_strategy,
+    raw_doc_strategy,
+)
 from hypothesis import given
 import hypothesis.strategies as st
 
@@ -15,12 +21,6 @@ from bijux_canon_ingest import (
     structural_dedup_chunks,
 )
 from bijux_canon_ingest.core.types import ChunkWithoutEmbedding, RagEnv, RawDoc
-from bijux_canon_ingest_strategies import (
-    doc_list_strategy,
-    env_strategy,
-    pipeline_chunk_strategy,
-    raw_doc_strategy,
-)
 
 
 @given(doc=raw_doc_strategy())

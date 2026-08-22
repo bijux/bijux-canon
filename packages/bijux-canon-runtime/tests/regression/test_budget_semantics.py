@@ -5,6 +5,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
+from bijux_canon_runtime_claim_support import build_claim_statement
 import pytest
 
 from bijux_canon_runtime.application.execute_flow import (
@@ -56,7 +57,6 @@ from bijux_canon_runtime.ontology.public import (
 )
 from bijux_canon_runtime.runtime.budget import ExecutionBudget
 from bijux_canon_runtime.runtime.execution import integration_loaders as integrations
-from bijux_canon_runtime_claim_support import build_claim_statement
 
 pytestmark = pytest.mark.regression
 

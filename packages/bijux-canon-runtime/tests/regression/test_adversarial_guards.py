@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+from bijux_canon_runtime_claim_support import build_claim_statement
 import pytest
 
 from bijux_canon_runtime.application.execute_flow import (
@@ -63,7 +64,6 @@ from bijux_canon_runtime.runtime.artifact_store import InMemoryArtifactStore
 from bijux_canon_runtime.runtime.budget import BudgetState
 from bijux_canon_runtime.runtime.context import ExecutionContext, RunMode
 from bijux_canon_runtime.runtime.execution import integration_loaders as integrations
-from bijux_canon_runtime_claim_support import build_claim_statement
 
 pytestmark = pytest.mark.regression
 

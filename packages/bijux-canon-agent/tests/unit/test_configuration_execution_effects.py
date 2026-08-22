@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 from pathlib import Path
 
+from bijux_canon_agent_trace_support import default_model_metadata
 import pytest
 import requests
 
@@ -32,7 +33,6 @@ from bijux_canon_agent.contracts import (
     plan_sha256,
 )
 from bijux_canon_agent.llm.adapter_factory import build_adapter
-from bijux_canon_agent_trace_support import default_model_metadata
 
 
 def _plan(*, retrieval_mode: str, top_k: int, provider: str) -> ResearchPlanningInput:

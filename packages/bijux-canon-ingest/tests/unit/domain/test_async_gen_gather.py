@@ -7,9 +7,10 @@ import asyncio
 from collections.abc import AsyncIterator
 from dataclasses import dataclass
 
+from bijux_canon_ingest_async_support import collect
+
 from bijux_canon_ingest.domain.effects.asyncio import AsyncGen, async_gen_gather
 from bijux_canon_ingest.result.types import Err, ErrInfo, Ok, Result
-from bijux_canon_ingest_async_support import collect
 
 
 def test_async_gen_gather_yields_all_items() -> None:

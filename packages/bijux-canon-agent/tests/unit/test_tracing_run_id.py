@@ -4,13 +4,14 @@ from datetime import UTC, datetime
 import json
 from pathlib import Path
 
-from bijux_canon_agent.constants import CONTRACT_VERSION
-from bijux_canon_agent.traces import ReplayMetadata, TraceEntry, TraceRecorder
 from bijux_canon_agent_trace_support import (
     build_replay_metadata,
     build_run_fingerprint,
     default_model_metadata,
 )
+
+from bijux_canon_agent.constants import CONTRACT_VERSION
+from bijux_canon_agent.traces import ReplayMetadata, TraceEntry, TraceRecorder
 
 
 def test_run_id_propagates_to_trace_entries_and_final_output(tmp_path: Path) -> None:
