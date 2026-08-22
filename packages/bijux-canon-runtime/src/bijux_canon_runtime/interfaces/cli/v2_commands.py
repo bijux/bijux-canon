@@ -65,6 +65,9 @@ from bijux_canon_runtime.runtime.comparison import (
     RuntimeComparisonPolicy,
 )
 from bijux_canon_runtime.runtime.execution.durable_jobs import DurableJobError
+from bijux_canon_runtime.runtime.execution.application_composition import (
+    compose_runtime_application_services,
+)
 from bijux_canon_runtime.runtime.replay.models import (
     ReplayNetworkPolicy,
     RuntimeReplayPolicy,
@@ -74,6 +77,7 @@ EXIT_INVALID_REQUEST = 2
 EXIT_MISSING_CAPABILITY = 3
 EXIT_OPERATION_FAILED = 4
 EXIT_NOT_READY = 5
+_default_application_services: RuntimeApplicationServicesV2 | None = None
 
 
 def run_v2_command(
@@ -200,11 +204,25 @@ def run_v2_command(
 def _require_services(
     services: RuntimeApplicationServicesV2 | None,
 ) -> RuntimeApplicationServicesV2:
-    if services is None:
+    if services is not None:
+        return services
+    global _default_application_services
+    if _default_application_services is not None:
+        return _default_application_services
+    configuration = resolve_runtime_configuration(environment=os.environ)
+    if configuration.working_root is None:
         raise ApplicationCapabilityError(
-            "Runtime v2 application services are not configured"
+            "BIJUX_CANON_RUNTIME_WORKING_ROOT is required for Runtime v2 operations"
         )
-    return services
+    if configuration.embedding_model_path is None:
+        raise ApplicationCapabilityError(
+            "BIJUX_CANON_RUNTIME_EMBEDDING_MODEL_PATH is required for Runtime v2 operations"
+        )
+    _default_application_services = compose_runtime_application_services(
+        working_root=configuration.working_root.expanduser().resolve(),
+        model_root=configuration.embedding_model_path.expanduser().resolve(),
+    )
+    return _default_application_services
 
 
 def _discover(args: argparse.Namespace) -> int:

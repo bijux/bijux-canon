@@ -115,9 +115,9 @@ class RuntimeRequestPlanner:
         dense = _StepSpec(
             "dense_index",
             DagOperation.DENSE_INDEX,
-            ("embed",),
-            ("index.embedding-matrix.v1",),
-            ("index.dense.v1",),
+            ("embed", "lexical_index"),
+            ("index.embedding-matrix.v1", "index.lexical.v1"),
+            ("index.composite.v1",),
         )
         retrieve_from_existing = _StepSpec(
             "retrieve",
@@ -129,8 +129,8 @@ class RuntimeRequestPlanner:
         retrieve_from_build = _StepSpec(
             "retrieve",
             DagOperation.RETRIEVE,
-            ("dense_index", "lexical_index"),
-            ("index.dense.v1", "index.lexical.v1"),
+            ("dense_index",),
+            ("index.composite.v1",),
             ("index.evidence-set.v1",),
         )
         reason = _StepSpec(

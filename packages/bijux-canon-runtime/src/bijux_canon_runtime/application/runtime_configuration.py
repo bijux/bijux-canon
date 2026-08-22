@@ -49,6 +49,7 @@ class RuntimeConfiguration:
     """Validated behavior-affecting runtime configuration."""
 
     database_path: Path | None
+    embedding_model_path: Path | None
     retrieval_index_path: Path | None
     working_root: Path | None
     strict_determinism: bool
@@ -89,6 +90,9 @@ class RuntimeConfiguration:
         """Return auditable settings without resolving or exposing secret values."""
         return {
             "database_path": str(self.database_path) if self.database_path else None,
+            "embedding_model_path": (
+                str(self.embedding_model_path) if self.embedding_model_path else None
+            ),
             "retrieval_index_path": (
                 str(self.retrieval_index_path) if self.retrieval_index_path else None
             ),
@@ -118,6 +122,7 @@ _BUDGET_FIELDS = (
 )
 _FIELDS = {
     "database_path",
+    "embedding_model_path",
     "retrieval_index_path",
     "working_root",
     "strict_determinism",
@@ -127,6 +132,7 @@ _FIELDS = {
 }
 _CANONICAL_ENVIRONMENT = {
     "database_path": "BIJUX_CANON_RUNTIME_DB_PATH",
+    "embedding_model_path": "BIJUX_CANON_RUNTIME_EMBEDDING_MODEL_PATH",
     "retrieval_index_path": "BIJUX_CANON_RUNTIME_RETRIEVAL_INDEX_PATH",
     "working_root": "BIJUX_CANON_RUNTIME_WORKING_ROOT",
     "strict_determinism": "BIJUX_CANON_RUNTIME_STRICT",
@@ -148,6 +154,7 @@ _LEGACY_ENVIRONMENT = {
 def _normalize_file_values(values: Mapping[str, object]) -> dict[str, object]:
     allowed = {
         "database_path",
+        "embedding_model_path",
         "retrieval_index_path",
         "working_root",
         "strict_determinism",
@@ -211,11 +218,16 @@ def _normalized_value(field_name: str, value: object) -> object:
         return _parse_bool(field_name, value)
     if field_name in _BUDGET_FIELDS:
         return _parse_optional_int(field_name, value)
-    if field_name in {"database_path", "retrieval_index_path", "working_root"}:
+    if field_name in {
+        "database_path",
+        "embedding_model_path",
+        "retrieval_index_path",
+        "working_root",
+    }:
         if value is None:
             return None
         if not isinstance(value, (str, Path)) or not str(value).strip():
-            raise ConfigurationError("database_path must be a non-empty path")
+            raise ConfigurationError(f"{field_name} must be a non-empty path")
         return Path(value)
     if field_name == "provider_api_key_ref":
         if value is None:
@@ -235,6 +247,7 @@ def resolve_runtime_configuration(
     """Resolve and validate configuration with explicit, recorded precedence."""
     values: dict[str, object] = {
         "database_path": None,
+        "embedding_model_path": None,
         "retrieval_index_path": None,
         "working_root": None,
         "strict_determinism": False,
@@ -285,11 +298,15 @@ def resolve_runtime_configuration(
         trace_event_limit=cast(int | None, values["trace_event_limit"]),
     )
     database_path = values["database_path"]
+    embedding_model_path = values["embedding_model_path"]
     retrieval_index_path = values["retrieval_index_path"]
     working_root = values["working_root"]
     provider_api_key = values["provider_api_key_ref"]
     return RuntimeConfiguration(
         database_path=database_path if isinstance(database_path, Path) else None,
+        embedding_model_path=(
+            embedding_model_path if isinstance(embedding_model_path, Path) else None
+        ),
         retrieval_index_path=(
             retrieval_index_path if isinstance(retrieval_index_path, Path) else None
         ),

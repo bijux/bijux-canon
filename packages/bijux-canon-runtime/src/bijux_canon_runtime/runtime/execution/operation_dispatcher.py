@@ -104,14 +104,23 @@ class StepOutputArtifact:
         media_type: str,
         payload: bytes,
         dependencies: tuple[StepOutputArtifact, ...] = (),
+        dependency_artifact_ids: tuple[ArtifactID, ...] = (),
     ) -> StepOutputArtifact:
         """Create an artifact whose identity is bound to its payload bytes."""
+        dependency_ids = tuple(
+            sorted(
+                {
+                    *(item.artifact_id for item in dependencies),
+                    *dependency_artifact_ids,
+                }
+            )
+        )
         addressed = AddressedArtifact.from_bytes(
             payload,
             schema_id=contract_id,
             media_type=media_type,
             producer=f"bijux-canon-runtime:{step.operation.value}",
-            dependencies=tuple(sorted(item.artifact_id for item in dependencies)),
+            dependencies=dependency_ids,
         )
         return cls(
             contract_id=contract_id,
@@ -292,7 +301,12 @@ class OperationDispatcher:
         if len(actual_contracts) != len(artifacts) or actual_contracts != expected_contracts:
             raise StepDispatchError("operation adapter output contracts do not match")
         expected_dependencies = tuple(
-            sorted(item.artifact_id for item in upstream_artifacts)
+            sorted(
+                {
+                    *(item.artifact_id for item in upstream_artifacts),
+                    *_external_input_artifact_ids(step),
+                }
+            )
         )
         for artifact in artifacts:
             artifact.validate()
@@ -302,6 +316,24 @@ class OperationDispatcher:
                 raise StepDispatchError("step artifact producer operation does not match")
             if artifact.artifact.descriptor.dependencies != expected_dependencies:
                 raise StepDispatchError("step artifact dependencies do not match inputs")
+
+
+def _external_input_artifact_ids(step: ConcreteDagStep) -> tuple[ArtifactID, ...]:
+    result: list[ArtifactID] = []
+    contracts = set(step.input_artifact_contract_ids)
+    if (
+        "ingest.corpus-snapshot.v1" in contracts
+        and step.inputs.corpus_id is not None
+        and not step.depends_on
+    ):
+        result.append(step.inputs.corpus_id)
+    if (
+        "index.composite.v1" in contracts
+        and step.inputs.index_id is not None
+        and not step.depends_on
+    ):
+        result.append(step.inputs.index_id)
+    return tuple(result)
 
 
 __all__ = [

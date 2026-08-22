@@ -365,6 +365,27 @@ class RuntimeApplicationServicesV2:
         """Persist cancellation through the same authority used by workers."""
         return self._jobs.cancel(job_id)
 
+    def wait(
+        self,
+        job_id: str,
+        *,
+        timeout_seconds: float | None = None,
+    ) -> DurableJobSnapshot:
+        """Wait on durable worker notification for library-owned lifecycles."""
+
+        return self._jobs.wait(job_id, timeout_seconds=timeout_seconds)
+
+    def close(self) -> None:
+        """Release worker resources after the application boundary is stopped."""
+
+        self._jobs.close()
+
+    def __enter__(self) -> RuntimeApplicationServicesV2:
+        return self
+
+    def __exit__(self, *_exc: object) -> None:
+        self.close()
+
     def _submit(
         self,
         operation: ApplicationOperation,

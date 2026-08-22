@@ -65,6 +65,12 @@ class LocalEmbeddingModel:
         verify_materialized_model(self.model_root, lock)
         self._model = loader(self.model_root, device)
 
+    @property
+    def model_lock_id(self) -> str:
+        """Return the immutable model identity used for every emitted vector."""
+
+        return self.lock.lock_id
+
     def embed(self, texts: Sequence[str]) -> EmbeddedBatch:
         """Embed non-empty canonical texts while preserving caller order."""
 

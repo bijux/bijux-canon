@@ -6,6 +6,7 @@
 from collections.abc import Awaitable, Callable
 from dataclasses import asdict
 import os
+import threading
 from typing import Annotated
 
 from fastapi import Body, Depends, FastAPI, Header, Query, Request, status
@@ -64,6 +65,9 @@ from bijux_canon_runtime.runtime.comparison import (
     RuntimeComparisonPolicy,
 )
 from bijux_canon_runtime.runtime.execution.durable_jobs import DurableJobError
+from bijux_canon_runtime.runtime.execution.application_composition import (
+    compose_runtime_application_services,
+)
 from bijux_canon_runtime.runtime.replay.models import (
     ReplayNetworkPolicy,
     RuntimeReplayPolicy,
@@ -120,14 +124,33 @@ def create_app(
         },
     )
     api.state.application_services = services
+    api.state.application_services_lock = threading.Lock()
     api.state.readiness_service = readiness
 
     def application_services(request: Request) -> RuntimeApplicationServicesV2:
         configured = request.app.state.application_services
         if configured is None:
-            raise ApplicationCapabilityError(
-                "Runtime v2 application services are not configured"
-            )
+            configuration = resolve_runtime_configuration(environment=os.environ)
+            if configuration.working_root is None:
+                raise ApplicationCapabilityError(
+                    "BIJUX_CANON_RUNTIME_WORKING_ROOT is required for Runtime v2 operations"
+                )
+            if configuration.embedding_model_path is None:
+                raise ApplicationCapabilityError(
+                    "BIJUX_CANON_RUNTIME_EMBEDDING_MODEL_PATH is required for Runtime v2 operations"
+                )
+            with request.app.state.application_services_lock:
+                configured = request.app.state.application_services
+                if configured is None:
+                    configured = compose_runtime_application_services(
+                        working_root=(
+                            configuration.working_root.expanduser().resolve()
+                        ),
+                        model_root=(
+                            configuration.embedding_model_path.expanduser().resolve()
+                        ),
+                    )
+                    request.app.state.application_services = configured
         if not isinstance(configured, RuntimeApplicationServicesV2):
             raise TypeError("runtime application service has the wrong version")
         return configured

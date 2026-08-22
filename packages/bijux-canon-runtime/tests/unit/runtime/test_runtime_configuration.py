@@ -24,6 +24,7 @@ def test_configuration_precedence_and_origins_are_explicit() -> None:
             "AGENTIC_FLOWS_DB_PATH": "legacy.duckdb",
             "AGENTIC_FLOWS_STRICT": "0",
             "BIJUX_CANON_RUNTIME_DB_PATH": "canonical.duckdb",
+            "BIJUX_CANON_RUNTIME_EMBEDDING_MODEL_PATH": "models/minilm",
             "BIJUX_CANON_RUNTIME_STRICT": "1",
             "BIJUX_CANON_RUNTIME_STEP_LIMIT": "5",
             "BIJUX_CANON_RUNTIME_RETRIEVAL_INDEX_PATH": "index.msgpack",
@@ -37,6 +38,7 @@ def test_configuration_precedence_and_origins_are_explicit() -> None:
     assert configuration.resource_budget.step_limit == 5
     assert configuration.resource_budget.token_limit == 40
     assert configuration.retrieval_index_path == Path("index.msgpack")
+    assert configuration.embedding_model_path == Path("models/minilm")
     assert configuration.working_root == Path("workspace")
     assert configuration.source_for("database_path") is ConfigurationSource.EXPLICIT
     assert (

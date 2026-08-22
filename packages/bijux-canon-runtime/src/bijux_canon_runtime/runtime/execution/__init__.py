@@ -26,6 +26,13 @@ from bijux_canon_runtime.runtime.execution.durable_jobs import (
     JobKind,
     JobStatus,
 )
+from bijux_canon_runtime.runtime.execution.application_composition import (
+    compose_runtime_application_services,
+)
+from bijux_canon_runtime.runtime.execution.application_executor import (
+    RuntimeFirstExecutionError,
+    RuntimeFirstExecutionService,
+)
 from bijux_canon_runtime.runtime.execution.operation_dispatcher import (
     OperationAdapter,
     OperationDispatcher,
@@ -93,6 +100,8 @@ __all__ = [
     "OperationDispatcher",
     "PersistedInspectionValue",
     "RuntimeInspectionError",
+    "RuntimeFirstExecutionError",
+    "RuntimeFirstExecutionService",
     "RuntimeErrorRecord",
     "RuntimeEventKind",
     "RuntimeEventLedger",
@@ -111,4 +120,5 @@ __all__ = [
     "StepNodeStatus",
     "StepSchedulingConstraint",
     "compose_canonical_services",
+    "compose_runtime_application_services",
 ]
