@@ -27,7 +27,7 @@ def test_duckdb_migrations_apply(tmp_path: Path) -> None:
     rows = connection.execute(
         "SELECT version, checksum FROM schema_migrations ORDER BY version"
     ).fetchall()
-    assert [int(row[0]) for row in rows] == [1, 2, 3, 4, SCHEMA_VERSION]
+    assert [int(row[0]) for row in rows] == [1, 2, 3, 4, 5, SCHEMA_VERSION]
     expected_init = DuckDBExecutionWriteStore._hash_payload(
         (MIGRATIONS_DIR / "001_init.sql").read_text(encoding="utf-8")
     )
@@ -47,11 +47,15 @@ def test_duckdb_migrations_apply(tmp_path: Path) -> None:
             encoding="utf-8"
         )
     )
+    expected_retention = DuckDBExecutionWriteStore._hash_payload(
+        (MIGRATIONS_DIR / "006_retention_history.sql").read_text(encoding="utf-8")
+    )
     assert rows[0][1] == expected_init
     assert rows[1][1] == expected_update
     assert rows[2][1] == expected_slices
     assert rows[3][1] == expected_metadata
     assert rows[4][1] == expected_transactions
+    assert rows[5][1] == expected_retention
     contract_row = connection.execute(
         "SELECT schema_version, schema_hash FROM schema_contract"
     ).fetchone()
@@ -82,6 +86,9 @@ def test_duckdb_migration_updates_prior_schema_contract(tmp_path: Path) -> None:
     store = DuckDBExecutionWriteStore(db_path)
     connection = store._connection
     for table in (
+        "garbage_collection_candidates",
+        "garbage_collection_plans",
+        "artifact_holds",
         "publication_transaction_artifacts",
         "publication_transactions",
         "run_publications",
@@ -100,7 +107,7 @@ def test_duckdb_migration_updates_prior_schema_contract(tmp_path: Path) -> None:
         """
         UPDATE schema_contract
         SET schema_version = 3, schema_hash = 'prior-schema-hash'
-        WHERE schema_version = 5
+        WHERE schema_version = 6
         """
     )
     connection.commit()

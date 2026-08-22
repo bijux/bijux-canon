@@ -39,6 +39,14 @@ from bijux_canon_runtime.runtime.persistence.reachability import (
     ArtifactReachabilityReport,
     ArtifactReachabilityValidator,
 )
+from bijux_canon_runtime.runtime.persistence.retention import (
+    GarbageCollectionCandidate,
+    GarbageCollectionPlan,
+    GarbageCollectionResult,
+    GarbageCollectionSafetyError,
+    RetentionPolicy,
+    SafeGarbageCollector,
+)
 
 __all__ = [
     "ArtifactPayloadStore",
@@ -50,6 +58,10 @@ __all__ = [
     "AttemptStatus",
     "CheckStatus",
     "DuckDBMetadataAuthority",
+    "GarbageCollectionCandidate",
+    "GarbageCollectionPlan",
+    "GarbageCollectionResult",
+    "GarbageCollectionSafetyError",
     "InMemoryArtifactPayloadStore",
     "PayloadBinding",
     "PayloadCollisionError",
@@ -67,4 +79,6 @@ __all__ = [
     "RunPolicyRecord",
     "RunPublicationRecord",
     "RunRevisionRecord",
+    "RetentionPolicy",
+    "SafeGarbageCollector",
 ]

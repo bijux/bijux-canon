@@ -199,6 +199,10 @@ class AtomicFilesystemArtifactPayloadStore(ArtifactPayloadStore):
                     identities.append(ArtifactID(f"sha256:{digest}"))
         return tuple(sorted(identities))
 
+    def artifact_directory(self, artifact_id: ArtifactID) -> Path:
+        """Return the validated directory for one immutable identity."""
+        return self._artifact_directory(artifact_id)
+
     def _artifact_directory(self, artifact_id: ArtifactID) -> Path:
         value = str(artifact_id)
         if not value.startswith("sha256:") or len(value) != 71:
