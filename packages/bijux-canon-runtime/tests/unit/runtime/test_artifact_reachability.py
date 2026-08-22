@@ -16,7 +16,6 @@ from bijux_canon_runtime.runtime.persistence import (
     PublicationItem,
 )
 
-
 _NOW = "2026-08-22T00:00:00+00:00"
 
 

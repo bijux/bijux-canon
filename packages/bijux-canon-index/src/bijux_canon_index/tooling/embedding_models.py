@@ -6,11 +6,11 @@
 from __future__ import annotations
 
 import argparse
+from collections.abc import Sequence
 import importlib.metadata
 import json
-import platform
-from collections.abc import Sequence
 from pathlib import Path
+import platform
 
 from bijux_canon_index.domain.embedding import LOCAL_MINILM_PROFILE, EmbeddingProfile
 from bijux_canon_index.infra.embeddings.model_cache import materialize_model

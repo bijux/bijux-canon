@@ -5,8 +5,8 @@
 from __future__ import annotations
 
 from collections import defaultdict
-from enum import StrEnum
 from collections.abc import Callable
+from enum import StrEnum
 from typing import Literal, Self
 
 from pydantic import field_validator, model_validator

@@ -9,12 +9,12 @@ from dataclasses import replace
 import pytest
 
 from bijux_canon_index.domain.embedding import (
+    LOCAL_MINILM_PROFILE,
     ArtifactDigest,
     CompatibilityOperation,
     EmbeddingModelLock,
     EmbeddingModelMismatchError,
     EmbeddingProfile,
-    LOCAL_MINILM_PROFILE,
 )
 
 

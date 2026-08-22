@@ -15,12 +15,11 @@ import ssl
 import subprocess
 import sys
 import time
-from typing import Any, BinaryIO, IO, cast
+from typing import IO, Any, BinaryIO, cast
 import urllib.error
 import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
-
 
 USER_AGENT = "bijux-canon-corpus-acquisition/1.0 (https://github.com/bijux/bijux-canon)"
 READ_CHUNK_BYTES = 64 * 1024

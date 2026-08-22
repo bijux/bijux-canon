@@ -11,11 +11,6 @@ from bijux_canon_index.interfaces.schemas.models import (
     ExecutionBudgetPayload,
     ExecutionRequestPayload,
     ExplainRequest,
-    IngestRequest,
-    RandomnessProfilePayload,
-    StorageBackendDescriptor,
-    StrictModel,
-    VectorStoreDescriptor,
     HnswParametersPayload,
     IndexActivationRequestPayload,
     IndexBuildLimitsPayload,
@@ -25,8 +20,13 @@ from bijux_canon_index.interfaces.schemas.models import (
     IndexQueryRequestPayload,
     IndexQueryResponse,
     IndexSelectionPayload,
+    IngestRequest,
     MetadataFilterPayload,
+    RandomnessProfilePayload,
+    StorageBackendDescriptor,
+    StrictModel,
     UserMetadataPredicatePayload,
+    VectorStoreDescriptor,
 )
 
 __all__ = [

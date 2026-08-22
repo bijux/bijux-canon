@@ -5,8 +5,8 @@ from __future__ import annotations
 
 import hashlib
 import io
-import zipfile
 from pathlib import Path
+import zipfile
 
 import pytest
 

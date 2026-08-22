@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass
 from datetime import date
-from enum import Enum
+from enum import Enum, StrEnum
 import hashlib
 import json
 from pathlib import Path
@@ -19,7 +19,7 @@ from bijux_canon_index.domain.metadata_filters import (
 )
 
 
-class LexicalCandidateDisposition(str, Enum):
+class LexicalCandidateDisposition(StrEnum):
     """Why one BM25 match was retained or excluded."""
 
     included = "included"
@@ -27,7 +27,7 @@ class LexicalCandidateDisposition(str, Enum):
     excluded_by_limit = "excluded_by_limit"
 
 
-class LexicalCandidateOutcome(str, Enum):
+class LexicalCandidateOutcome(StrEnum):
     """Typed result of one generation-bound lexical candidate request."""
 
     success = "success"

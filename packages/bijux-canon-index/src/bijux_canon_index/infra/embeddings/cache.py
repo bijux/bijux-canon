@@ -5,13 +5,13 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
+from dataclasses import dataclass
 import hashlib
 import json
 import math
-import sqlite3
-from collections.abc import Mapping
-from dataclasses import dataclass
 from pathlib import Path
+import sqlite3
 from typing import Any, Protocol
 
 from bijux_canon_index.core.identity.ids import fingerprint

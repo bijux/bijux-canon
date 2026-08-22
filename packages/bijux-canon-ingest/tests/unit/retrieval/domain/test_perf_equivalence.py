@@ -3,9 +3,9 @@
 
 from __future__ import annotations
 
-import numpy as np
 from hypothesis import given
 from hypothesis import strategies as st
+import numpy as np
 
 from bijux_canon_ingest.fp.validation import VFailure, VSuccess
 from bijux_canon_ingest.retrieval.domain import (

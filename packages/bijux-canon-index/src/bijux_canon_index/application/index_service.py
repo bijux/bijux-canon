@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
-from enum import Enum
+from enum import StrEnum
 import hashlib
 from pathlib import Path
 import tempfile
@@ -33,7 +33,7 @@ from bijux_canon_index.domain.metadata_filters import MetadataFilter
 from bijux_canon_index.infra.adapters.faiss.hnsw import HnswParameters
 
 
-class IndexQueryChannel(str, Enum):
+class IndexQueryChannel(StrEnum):
     """Persistent retrieval channel selected for one query."""
 
     lexical = "sqlite-fts5"
@@ -123,19 +123,21 @@ class IndexService:
     ) -> IndexInspectionReport:
         """Build, admit, optionally activate, and report one coherent generation."""
 
-        with tempfile.TemporaryDirectory(
-            prefix=".generation-building-",
-            dir=self._registry.root,
-        ) as work:
-            with IndexGeneration.build(
+        with (
+            tempfile.TemporaryDirectory(
+                prefix=".generation-building-",
+                dir=self._registry.root,
+            ) as work,
+            IndexGeneration.build(
                 Path(work) / "generation",
                 chunks,
                 snapshot_artifact_id=snapshot_artifact_id,
                 model_lock_artifact_id=model_lock_artifact_id,
                 limits=limits,
                 hnsw_parameters=hnsw_parameters,
-            ) as generation:
-                generation_id = self._registry.admit(generation.path)
+            ) as generation,
+        ):
+            generation_id = self._registry.admit(generation.path)
         if activate:
             self._registry.activate(generation_id)
         return self._registry.inspect(generation_id)
@@ -153,11 +155,12 @@ class IndexService:
     ) -> IndexInspectionReport:
         """Build and admit dense indexes around a completed lexical segment."""
 
-        with tempfile.TemporaryDirectory(
-            prefix=".generation-building-",
-            dir=self._registry.root,
-        ) as work:
-            with IndexGeneration.build_from_lexical(
+        with (
+            tempfile.TemporaryDirectory(
+                prefix=".generation-building-",
+                dir=self._registry.root,
+            ) as work,
+            IndexGeneration.build_from_lexical(
                 Path(work) / "generation",
                 lexical_segment_path,
                 chunks,
@@ -165,8 +168,9 @@ class IndexService:
                 model_lock_artifact_id=model_lock_artifact_id,
                 limits=limits,
                 hnsw_parameters=hnsw_parameters,
-            ) as generation:
-                generation_id = self._registry.admit(generation.path)
+            ) as generation,
+        ):
+            generation_id = self._registry.admit(generation.path)
         if activate:
             self._registry.activate(generation_id)
         return self._registry.inspect(generation_id)

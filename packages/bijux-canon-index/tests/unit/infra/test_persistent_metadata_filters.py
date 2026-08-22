@@ -126,8 +126,8 @@ def test_typed_and_legacy_filters_cannot_be_combined(tmp_path: Path) -> None:
     record = DenseVectorRecord(
         "chunk-a", (1.0, 0.0), _metadata("plos-pone-0256353", target=True)
     )
-    with FaissExactIndex.build(
-        path, (record,), model_lock_artifact_id="model"
-    ) as exact:
-        with pytest.raises(ValueError, match="mutually exclusive"):
-            exact.query((1.0, 0.0), filters={"language": "en"}, metadata_filter=_spec())
+    with (
+        FaissExactIndex.build(path, (record,), model_lock_artifact_id="model") as exact,
+        pytest.raises(ValueError, match="mutually exclusive"),
+    ):
+        exact.query((1.0, 0.0), filters={"language": "en"}, metadata_filter=_spec())

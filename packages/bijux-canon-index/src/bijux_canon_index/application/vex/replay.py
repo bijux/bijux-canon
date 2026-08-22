@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
-from enum import Enum
+from enum import StrEnum
 import math
 from types import MappingProxyType
 from typing import cast
@@ -15,7 +15,7 @@ from typing import cast
 from .artifacts import VexArtifactStore, VexExecutionArtifact, VexStoredArtifact
 
 
-class VexReplayOutcome(str, Enum):
+class VexReplayOutcome(StrEnum):
     """Stable comparison outcome for two persisted execution attempts."""
 
     exact_match = "exact_match"
@@ -24,7 +24,7 @@ class VexReplayOutcome(str, Enum):
     refused = "refused"
 
 
-class VexDriftKind(str, Enum):
+class VexDriftKind(StrEnum):
     """Immutable input drift that makes an attempt ineligible as a replay."""
 
     query_vector = "query_vector"

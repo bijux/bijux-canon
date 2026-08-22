@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass
 import hashlib
 import json
@@ -12,7 +13,6 @@ import os
 from pathlib import Path, PurePosixPath
 import shutil
 import tempfile
-from collections.abc import Iterable
 from typing import Any
 
 from bijux_canon_runtime.model.artifact import (
@@ -121,6 +121,9 @@ class EvidenceBundleVerification:
     complete_payloads: bool
 
 
+_DEFAULT_EVIDENCE_BUNDLE_LIMITS = EvidenceBundleLimits()
+
+
 class EvidenceBundleExporter:
     """Export dependency-complete evidence without mutable source locations."""
 
@@ -128,7 +131,7 @@ class EvidenceBundleExporter:
         self,
         payload_store: AtomicFilesystemArtifactPayloadStore,
         *,
-        limits: EvidenceBundleLimits = EvidenceBundleLimits(),
+        limits: EvidenceBundleLimits = _DEFAULT_EVIDENCE_BUNDLE_LIMITS,
     ) -> None:
         self._payload_store = payload_store
         self._limits = limits
@@ -242,7 +245,7 @@ class EvidenceBundleExporter:
         cls,
         bundle_root: Path,
         *,
-        limits: EvidenceBundleLimits = EvidenceBundleLimits(),
+        limits: EvidenceBundleLimits = _DEFAULT_EVIDENCE_BUNDLE_LIMITS,
     ) -> EvidenceBundleVerification:
         """Verify one bundle offline using only its stable relative manifest."""
         bundle_root = bundle_root.resolve()

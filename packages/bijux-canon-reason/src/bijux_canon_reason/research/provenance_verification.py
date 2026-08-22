@@ -510,7 +510,7 @@ class ReasoningProvenanceVerifier:
         claim_merge: ClaimMergeResult, canonical_ids: set[str]
     ) -> None:
         children: dict[str, set[str]] = {item: set() for item in canonical_ids}
-        indegree = {item: 0 for item in canonical_ids}
+        indegree = dict.fromkeys(canonical_ids, 0)
         for dependency in claim_merge.dependencies:
             parent = dependency.parent_canonical_claim_artifact_id
             child = dependency.child_canonical_claim_artifact_id

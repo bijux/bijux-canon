@@ -9,6 +9,7 @@ from pathlib import Path
 import sys
 
 from bijux_canon_runtime.application.execute_flow import execute_flow
+from bijux_canon_runtime.application.operations import RuntimeApplicationServicesV2
 from bijux_canon_runtime.interfaces.cli.execution_commands import (
     execute_manifest_command_with_runner,
     replay_run,
@@ -22,7 +23,6 @@ from bijux_canon_runtime.interfaces.cli.store_commands import (
     inspect_run,
     validate_db,
 )
-from bijux_canon_runtime.application.operations import RuntimeApplicationServicesV2
 from bijux_canon_runtime.interfaces.cli.v2_commands import run_v2_command
 
 _load_manifest = load_manifest

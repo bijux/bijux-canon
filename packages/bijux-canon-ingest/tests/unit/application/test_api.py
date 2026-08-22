@@ -5,8 +5,8 @@
 
 from __future__ import annotations
 
-import pytest
 from hypothesis import given
+import pytest
 
 from bijux_canon_ingest import (
     DEFAULT_RULES,

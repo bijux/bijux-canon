@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import asdict, dataclass, field
-from enum import Enum
+from enum import Enum, StrEnum
 import hashlib
 import json
 import math
@@ -69,7 +69,7 @@ def _freeze(value: object) -> object:
     return value
 
 
-class RetrievalTraceReplayOutcome(str, Enum):
+class RetrievalTraceReplayOutcome(StrEnum):
     """Whether a replay retained immutable inputs and semantic outputs."""
 
     exact_match = "exact_match"
@@ -77,7 +77,7 @@ class RetrievalTraceReplayOutcome(str, Enum):
     refused = "refused"
 
 
-class RetrievalTraceDriftKind(str, Enum):
+class RetrievalTraceDriftKind(StrEnum):
     """Immutable retrieval input that changed during replay."""
 
     request = "request"

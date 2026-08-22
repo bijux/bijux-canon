@@ -3,8 +3,8 @@
 
 from __future__ import annotations
 
-import re
 from pathlib import Path
+import re
 
 _MARKDOWN_LINK_RE = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
 

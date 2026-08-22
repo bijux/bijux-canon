@@ -5,8 +5,8 @@ from __future__ import annotations
 
 from itertools import islice
 
-import pytest
 from hypothesis import given
+import pytest
 
 from bijux_canon_ingest.tree import (
     flatten,

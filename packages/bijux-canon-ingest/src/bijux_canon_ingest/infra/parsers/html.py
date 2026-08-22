@@ -5,9 +5,9 @@
 
 from __future__ import annotations
 
-import hashlib
 from collections.abc import Iterator
 from dataclasses import dataclass, field
+import hashlib
 from html.parser import HTMLParser
 
 from bijux_canon_ingest.domain.document_extraction import (

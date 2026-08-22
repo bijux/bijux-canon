@@ -5,8 +5,8 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from contextlib import redirect_stderr, redirect_stdout
-from io import StringIO
 import importlib
+from io import StringIO
 import json
 from pathlib import Path
 
@@ -23,8 +23,8 @@ from bijux_canon_runtime.application.problems import (
     runtime_problem,
     runtime_problem_fields,
 )
-from bijux_canon_runtime.interfaces.cli.parser import build_parser
 from bijux_canon_runtime.interfaces.cli import v2_commands
+from bijux_canon_runtime.interfaces.cli.parser import build_parser
 from bijux_canon_runtime.interfaces.cli.v2_commands import run_v2_command
 from bijux_canon_runtime.model.execution.request_plan import RuntimeOperationRequest
 from bijux_canon_runtime.ontology.ids import ArtifactID

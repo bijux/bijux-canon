@@ -8,10 +8,10 @@ from __future__ import annotations
 from collections.abc import Mapping, Sequence
 from dataclasses import asdict, dataclass
 from datetime import date
-from enum import Enum
+from enum import Enum, StrEnum
 import hashlib
-import platform
 from pathlib import Path
+import platform
 from time import perf_counter
 import tracemalloc
 from typing import Protocol, cast
@@ -40,14 +40,14 @@ from bijux_canon_index.infra.embeddings.local_model import EmbeddedBatch
 from .filters import retrieval_filter_capability
 
 
-class DenseCandidateMode(str, Enum):
+class DenseCandidateMode(StrEnum):
     """Dense backend admitted for canonical retrieval."""
 
     exact = "dense-exact"
     ann = "dense-ann"
 
 
-class DenseCandidateOutcome(str, Enum):
+class DenseCandidateOutcome(StrEnum):
     """Typed usability of one persisted dense execution."""
 
     success = "success"

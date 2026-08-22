@@ -3,7 +3,6 @@ from __future__ import annotations
 from collections.abc import Callable
 from pathlib import Path
 
-from bijux_canon_agent_trace_support import default_model_metadata
 import pytest
 
 from bijux_canon_agent.application.workflow_graph.orchestrator import (
@@ -16,6 +15,7 @@ from bijux_canon_agent.contracts.agent_contract import (
     AgentInputSchema,
     AgentOutputSchema,
 )
+from bijux_canon_agent_trace_support import default_model_metadata
 
 
 def _drop_trace_entry(record_fn: Callable, target_node: str) -> Callable:

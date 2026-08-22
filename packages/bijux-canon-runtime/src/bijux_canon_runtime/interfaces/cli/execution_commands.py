@@ -12,13 +12,13 @@ import json
 from pathlib import Path
 import sys
 
-from bijux_canon_runtime.application.execute_flow import (
-    FlowRunResult,
-    execute_flow,
-)
 from bijux_canon_runtime.application.command_service import (
     prepare_execution,
     replay_persisted_run,
+)
+from bijux_canon_runtime.application.execute_flow import (
+    FlowRunResult,
+    execute_flow,
 )
 from bijux_canon_runtime.core.errors import ConfigurationError, classify_failure
 from bijux_canon_runtime.interfaces.cli.manifest_loader import load_manifest

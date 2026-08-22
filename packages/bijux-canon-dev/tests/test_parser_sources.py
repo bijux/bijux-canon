@@ -20,8 +20,8 @@ from bijux_canon_dev.corpus.parser_sources import (
     read_bounded,
     sha256,
     transform_html_article,
-    validate_receipt_identity,
     validate_media,
+    validate_receipt_identity,
     write_exclusive,
 )
 

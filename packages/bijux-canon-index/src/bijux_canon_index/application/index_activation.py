@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterator
 from contextlib import contextmanager
 import fcntl
 import hashlib
@@ -13,7 +14,6 @@ import os
 from pathlib import Path
 import shutil
 import tempfile
-from typing import Iterator
 
 from bijux_canon_index.application.index_audit import (
     IndexCompatibility,

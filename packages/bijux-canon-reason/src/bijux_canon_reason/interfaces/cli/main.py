@@ -65,6 +65,9 @@ FAIL_ON_DIFF_OPTION = typer.Option(
 EVAL_SUITE_OPTION = typer.Option(
     "small", "--suite", help="Eval suite name (placeholder until eval suites land)."
 )
+RESEARCH_INPUT_OPTION = typer.Option(
+    ..., "--input", exists=True, dir_okay=False, help="Research input JSON."
+)
 
 
 def _exit(code: int, msg: str | None = None) -> NoReturn:
@@ -118,9 +121,7 @@ def run(
 @app.command()
 @no_type_check
 def research(
-    input_path: Path = typer.Option(
-        ..., "--input", exists=True, dir_okay=False, help="Research input JSON."
-    ),
+    input_path: Path = RESEARCH_INPUT_OPTION,
     artifacts_dir: Path = ARTIFACTS_DIR_OPTION,
     json_output: bool = typer.Option(
         False, "--json", help="Emit the complete structured command result."

@@ -19,31 +19,6 @@ from bijux_canon_reason.research.assumptions_insufficiency import (
     ResearchDeficiencyStatus,
     create_assumption_candidate,
 )
-from bijux_canon_reason.research.counterevidence import (
-    CounterevidenceError,
-    CounterevidenceErrorCode,
-    CounterevidenceOmission,
-    CounterevidenceOmissionReason,
-    CounterevidencePlan,
-    CounterevidencePolicy,
-    CounterevidenceSearchOutcome,
-    CounterevidenceSearchRecord,
-    CounterevidenceSearchRun,
-    CounterevidenceSearchService,
-    CounterevidenceTarget,
-    create_counterevidence_target,
-)
-from bijux_canon_reason.research.convergence import (
-    ConvergenceDecision,
-    ConvergenceError,
-    ConvergenceErrorCode,
-    ConvergenceObservation,
-    ConvergenceOutcome,
-    ConvergencePolicy,
-    ConvergenceReason,
-    ConvergenceService,
-    create_convergence_observation,
-)
 from bijux_canon_reason.research.claim_merging import (
     CanonicalClaimVariant,
     CanonicalDerivationDependency,
@@ -58,6 +33,31 @@ from bijux_canon_reason.research.claim_merging import (
     SharedEvidenceUse,
     create_mergeable_claim,
 )
+from bijux_canon_reason.research.convergence import (
+    ConvergenceDecision,
+    ConvergenceError,
+    ConvergenceErrorCode,
+    ConvergenceObservation,
+    ConvergenceOutcome,
+    ConvergencePolicy,
+    ConvergenceReason,
+    ConvergenceService,
+    create_convergence_observation,
+)
+from bijux_canon_reason.research.counterevidence import (
+    CounterevidenceError,
+    CounterevidenceErrorCode,
+    CounterevidenceOmission,
+    CounterevidenceOmissionReason,
+    CounterevidencePlan,
+    CounterevidencePolicy,
+    CounterevidenceSearchOutcome,
+    CounterevidenceSearchRecord,
+    CounterevidenceSearchRun,
+    CounterevidenceSearchService,
+    CounterevidenceTarget,
+    create_counterevidence_target,
+)
 from bijux_canon_reason.research.evidence_relations import (
     EvidenceRelationAttachment,
     EvidenceRelationAttachmentService,
@@ -67,23 +67,6 @@ from bijux_canon_reason.research.evidence_relations import (
     RejectedEvidenceRelation,
     RelationClassificationMode,
     RelationRejectionReason,
-)
-from bijux_canon_reason.research.gap_retrieval import (
-    EvidenceChange,
-    GapRetrievalError,
-    GapRetrievalErrorCode,
-    GapRetrievalPolicy,
-    GapRetrievalRecord,
-    GapRetrievalRun,
-    GapRetrievalService,
-    RetrievalBatchStatus,
-    RetrievalEvidenceBatch,
-    RetrievalEvidencePort,
-    RetrievalTargetKind,
-    ScopedRetrievalRequest,
-    create_gap_retrieval_request,
-    create_retrieval_evidence_batch,
-    create_subquestion_retrieval_request,
 )
 from bijux_canon_reason.research.gap_filling import (
     GapFillingCandidate,
@@ -102,18 +85,43 @@ from bijux_canon_reason.research.gap_filling import (
     create_deficiency_gap_candidate,
     create_gap_filling_candidate,
 )
+from bijux_canon_reason.research.gap_retrieval import (
+    EvidenceChange,
+    GapRetrievalError,
+    GapRetrievalErrorCode,
+    GapRetrievalPolicy,
+    GapRetrievalRecord,
+    GapRetrievalRun,
+    GapRetrievalService,
+    RetrievalBatchStatus,
+    RetrievalEvidenceBatch,
+    RetrievalEvidencePort,
+    RetrievalTargetKind,
+    ScopedRetrievalRequest,
+    create_gap_retrieval_request,
+    create_retrieval_evidence_batch,
+    create_subquestion_retrieval_request,
+)
 from bijux_canon_reason.research.graph_synthesis import (
     GraphConfidenceBasis,
     GraphSynthesisError,
     GraphSynthesisErrorCode,
     GraphSynthesisLimitation,
+    ResearchSynthesisOutcome,
     SynthesisClaimSection,
     SynthesisConfidenceLevel,
-    ResearchSynthesisOutcome,
     SynthesizedGraphClaim,
     VerifiedGraphConflict,
     VerifiedGraphSynthesis,
     VerifiedGraphSynthesisService,
+)
+from bijux_canon_reason.research.provenance_verification import (
+    ClaimProvenanceResolution,
+    EvidenceProvenancePath,
+    ReasoningProvenanceError,
+    ReasoningProvenanceErrorCode,
+    ReasoningProvenanceReport,
+    ReasoningProvenanceVerifier,
 )
 from bijux_canon_reason.research.question_decomposition import (
     QuestionDecomposer,
@@ -129,14 +137,6 @@ from bijux_canon_reason.research.question_decomposition import (
     SubquestionDisposition,
     SubquestionStatus,
     create_subquestion_candidate,
-)
-from bijux_canon_reason.research.provenance_verification import (
-    ClaimProvenanceResolution,
-    EvidenceProvenancePath,
-    ReasoningProvenanceError,
-    ReasoningProvenanceErrorCode,
-    ReasoningProvenanceReport,
-    ReasoningProvenanceVerifier,
 )
 from bijux_canon_reason.research.replay_comparison import (
     ReplayedResearchAttempt,

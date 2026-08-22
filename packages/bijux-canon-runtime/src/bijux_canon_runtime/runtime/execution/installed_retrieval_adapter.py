@@ -35,7 +35,6 @@ from bijux_canon_index.domain.metadata_filters import (
     MetadataOperator,
     UserMetadataPredicate,
 )
-
 from bijux_canon_runtime.model.artifact import AddressedArtifact, canonical_json_bytes
 from bijux_canon_runtime.model.execution.request_plan import (
     ConcreteDagStep,

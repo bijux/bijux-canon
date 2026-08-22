@@ -11,8 +11,8 @@ import sys
 import typer
 
 from bijux_canon_index.application.engine import VectorExecutionEngine
-from bijux_canon_index.core.errors import ValidationError
 from bijux_canon_index.application.surface_services import list_execution_runs
+from bijux_canon_index.core.errors import ValidationError
 from bijux_canon_index.interfaces.cli.configuration import (
     build_config as _build_config,
 )

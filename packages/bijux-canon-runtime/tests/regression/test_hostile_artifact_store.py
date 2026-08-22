@@ -3,7 +3,6 @@
 
 from __future__ import annotations
 
-from bijux_canon_runtime_claim_support import build_claim_statement
 import pytest
 
 from bijux_canon_runtime.application.execute_flow import (
@@ -45,6 +44,7 @@ from bijux_canon_runtime.ontology.public import (
 )
 from bijux_canon_runtime.runtime.artifact_store import HostileArtifactStore
 from bijux_canon_runtime.runtime.execution import integration_loaders as integrations
+from bijux_canon_runtime_claim_support import build_claim_statement
 
 pytestmark = pytest.mark.regression
 

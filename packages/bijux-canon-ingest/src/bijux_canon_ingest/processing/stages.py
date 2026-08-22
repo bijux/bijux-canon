@@ -9,9 +9,9 @@ them together with configuration-as-data, taps/probes, and boundary adapters.
 
 from __future__ import annotations
 
-import hashlib
 from collections.abc import Iterable, Iterator
 from dataclasses import dataclass
+import hashlib
 
 from bijux_canon_ingest.core.structural_dedup import structural_dedup_lazy
 from bijux_canon_ingest.core.types import (

@@ -18,7 +18,6 @@ from bijux_canon_index.infra.embeddings.local_model import (
     LocalEmbeddingModel,
 )
 from bijux_canon_index.infra.embeddings.model_cache import load_model_lock
-
 from bijux_canon_runtime.application.operations import (
     ReplayOperationRequest,
     RuntimeApplicationServicesV2,
@@ -43,11 +42,11 @@ from bijux_canon_runtime.runtime.execution.installed_persistence_adapters import
     CanonicalPersistenceOperationAdapter,
     CanonicalPublicationOperationAdapter,
 )
-from bijux_canon_runtime.runtime.execution.installed_retrieval_adapter import (
-    CanonicalRetrievalOperationAdapter,
-)
 from bijux_canon_runtime.runtime.execution.installed_reason_adapter import (
     CanonicalReasonOperationAdapter,
+)
+from bijux_canon_runtime.runtime.execution.installed_retrieval_adapter import (
+    CanonicalRetrievalOperationAdapter,
 )
 from bijux_canon_runtime.runtime.execution.installed_verification_adapter import (
     CanonicalVerificationOperationAdapter,

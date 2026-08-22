@@ -5,10 +5,11 @@ from __future__ import annotations
 
 import argparse
 from collections import Counter
+from collections.abc import Mapping
 import json
 from pathlib import Path
 import sys
-from typing import Any, Mapping
+from typing import Any
 
 from bijux_canon_dev.corpus.acquisition import canonical, sha256
 from bijux_canon_dev.corpus.research_claim_truth import (
@@ -16,7 +17,6 @@ from bijux_canon_dev.corpus.research_claim_truth import (
     validate_claim_truth,
 )
 from bijux_canon_dev.corpus.research_qrels import load_qrels, validate_qrels
-
 
 SCHEMA_VERSION = "bijux.canon.research_evaluation_split.v1"
 CASE_SCHEMA_VERSION = "bijux.canon.research_evaluation_case.v1"
@@ -246,9 +246,9 @@ def validate_split(
         raise RuntimeError("research evaluation cross-product coverage mismatch")
     if split_counts != Counter({"development": 80, "heldout": 40}):
         raise RuntimeError("research evaluation partition count mismatch")
-    if heldout_classes != Counter({name: 10 for name in CLAIM_CLASS_ORDER}):
+    if heldout_classes != Counter(dict.fromkeys(CLAIM_CLASS_ORDER, 10)):
         raise RuntimeError("research evaluation held-out class balance mismatch")
-    if heldout_sources != Counter({source_id: 5 for source_id in observed_source_ids}):
+    if heldout_sources != Counter(dict.fromkeys(observed_source_ids, 5)):
         raise RuntimeError("research evaluation held-out source balance mismatch")
     expected_partitions = {
         split: [case["case_id"] for case in cases if case["split"] == split]

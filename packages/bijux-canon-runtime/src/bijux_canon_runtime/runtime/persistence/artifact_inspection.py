@@ -19,6 +19,7 @@ from bijux_canon_runtime.observability.storage.execution_store import (
     DuckDBExecutionStore,
 )
 from bijux_canon_runtime.ontology.ids import ArtifactID, RunID, TenantID
+from bijux_canon_runtime.runtime.pagination import PageRequest, paginate_collections
 from bijux_canon_runtime.runtime.persistence.filesystem_payload_store import (
     AtomicFilesystemArtifactPayloadStore,
     PayloadCorruptionError,
@@ -27,7 +28,6 @@ from bijux_canon_runtime.runtime.persistence.reachability import (
     ArtifactReachabilityReport,
     ArtifactReachabilityValidator,
 )
-from bijux_canon_runtime.runtime.pagination import PageRequest, paginate_collections
 
 
 @dataclass(frozen=True, slots=True)

@@ -12,7 +12,6 @@ from pathlib import Path
 import tempfile
 
 from bijux_canon_index.application import IndexService
-
 from bijux_canon_runtime.application.runtime_configuration import RuntimeConfiguration
 from bijux_canon_runtime.observability.storage.execution_store import (
     DuckDBExecutionStore,

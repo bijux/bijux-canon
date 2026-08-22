@@ -15,16 +15,20 @@ from fastapi.testclient import TestClient
 import pytest
 
 from bijux_canon_runtime.api.v2 import create_app
-from bijux_canon_runtime.application.operations import RuntimeApplicationServicesV2
-from bijux_canon_runtime.application.operations import ApplicationOperation
+from bijux_canon_runtime.application.operations import (
+    ApplicationOperation,
+    RuntimeApplicationServicesV2,
+)
 from bijux_canon_runtime.interfaces.cli.parser import build_parser
 from bijux_canon_runtime.interfaces.cli.v2_commands import (
     EXIT_MISSING_CAPABILITY,
     run_v2_command,
 )
 from bijux_canon_runtime.ontology.ids import ArtifactID
-from bijux_canon_runtime.runtime.execution.durable_jobs import DurableJobManager
-from bijux_canon_runtime.runtime.execution.durable_jobs import DurableJobError
+from bijux_canon_runtime.runtime.execution.durable_jobs import (
+    DurableJobError,
+    DurableJobManager,
+)
 from bijux_canon_runtime.runtime.inspection import RuntimeRunInspector
 
 pytestmark = pytest.mark.unit

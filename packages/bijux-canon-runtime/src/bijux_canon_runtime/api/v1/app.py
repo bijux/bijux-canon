@@ -94,7 +94,7 @@ def _openapi() -> dict[str, object]:
     return schema
 
 
-setattr(app, "openapi", _openapi)
+app.openapi = _openapi
 
 
 FAILURE_RESPONSES: dict[int | str, dict[str, Any]] = {

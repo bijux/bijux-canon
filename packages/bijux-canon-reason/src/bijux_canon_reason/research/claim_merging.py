@@ -580,7 +580,7 @@ def _assert_acyclic(
     code: ClaimMergeErrorCode,
 ) -> None:
     children: dict[str, set[str]] = {item: set() for item in nodes}
-    indegree = {item: 0 for item in nodes}
+    indegree = dict.fromkeys(nodes, 0)
     for parent, child in set(edges):
         if child not in children[parent]:
             children[parent].add(child)

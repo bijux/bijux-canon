@@ -5,17 +5,17 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 import hashlib
 import json
 import os
+from pathlib import Path
 import shlex
 import shutil
 import sys
 import urllib.parse
 import urllib.request
 import uuid
-from collections.abc import Callable
-from pathlib import Path
 
 from bijux_canon_index.domain.embedding import (
     ArtifactDigest,
@@ -87,12 +87,14 @@ def _fetch_metadata(url: str) -> dict[str, object]:
 
 
 def _fetch_artifact(url: str, destination: Path) -> None:
-    with urllib.request.urlopen(url, timeout=120) as response:
-        with destination.open("xb") as output:
-            while chunk := response.read(1024 * 1024):
-                output.write(chunk)
-            output.flush()
-            os.fsync(output.fileno())
+    with (
+        urllib.request.urlopen(url, timeout=120) as response,
+        destination.open("xb") as output,
+    ):
+        while chunk := response.read(1024 * 1024):
+            output.write(chunk)
+        output.flush()
+        os.fsync(output.fileno())
 
 
 def _fsync_directory(path: Path) -> None:

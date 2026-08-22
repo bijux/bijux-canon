@@ -26,7 +26,6 @@ from bijux_canon_reason.research import (
     CounterevidencePlan,
     CounterevidenceSearchRun,
 )
-
 from bijux_canon_runtime.model.artifact import canonical_json_bytes
 from bijux_canon_runtime.model.execution.request_plan import (
     ConcreteDagStep,

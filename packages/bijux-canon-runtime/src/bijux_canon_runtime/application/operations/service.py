@@ -21,7 +21,6 @@ from bijux_canon_runtime.application.operations.models import (
     ReplayOperationRequest,
     RuntimeApplicationCapability,
 )
-from bijux_canon_runtime.runtime.pagination import PageRequest, paginate_collections
 from bijux_canon_runtime.model.execution.request_plan import (
     RuntimeOperationRequest,
     RuntimeRequestOperation,
@@ -43,6 +42,7 @@ from bijux_canon_runtime.runtime.inspection import (
     RuntimeRunInspection,
     RuntimeRunInspector,
 )
+from bijux_canon_runtime.runtime.pagination import PageRequest, paginate_collections
 
 
 class ApplicationCapabilityError(RuntimeError):

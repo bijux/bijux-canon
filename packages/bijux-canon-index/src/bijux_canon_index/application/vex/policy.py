@@ -6,20 +6,20 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from enum import Enum
+from enum import StrEnum
 import math
 
 from .witnesses import ExactSearchWitness
 
 
-class VexPolicyMode(str, Enum):
+class VexPolicyMode(StrEnum):
     """Whether a violation refuses execution or produces an explicit flag."""
 
     enforce = "enforce"
     report = "report"
 
 
-class VexPolicyStatus(str, Enum):
+class VexPolicyStatus(StrEnum):
     """Stable result of applying a VEX budget."""
 
     admitted = "admitted"
@@ -27,7 +27,7 @@ class VexPolicyStatus(str, Enum):
     refused = "refused"
 
 
-class VexPolicyViolation(str, Enum):
+class VexPolicyViolation(StrEnum):
     """Machine-readable reasons an execution did not meet policy."""
 
     latency_budget_exceeded = "latency_budget_exceeded"

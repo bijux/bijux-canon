@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+import contextlib
 import hashlib
 import json
 from pathlib import Path
@@ -14,7 +15,6 @@ from bijux_canon_index.core.contracts.execution_abi import assert_execution_abi
 from bijux_canon_ingest.application.querying import retrieve
 from bijux_canon_reason.application.run_workflow import run_app
 from bijux_canon_reason.core.types import ProblemSpec, TraceEventKind
-
 from bijux_canon_runtime.core.errors import ConfigurationError, ExecutionFailure
 from bijux_canon_runtime.model.artifact.artifact import Artifact
 from bijux_canon_runtime.model.artifact.reasoning_claim import ReasoningClaim
@@ -93,10 +93,8 @@ class CanonicalAgentAdapterV1:
         artifact_id = hashlib.sha256(content.encode("utf-8")).hexdigest()
         artifact_type = ArtifactType.AGENT_INVOCATION.value
         if declared_outputs:
-            try:
+            with contextlib.suppress(ValueError):
                 artifact_type = ArtifactType(declared_outputs[0]).value
-            except ValueError:
-                pass
         return [
             {
                 "artifact_id": f"agent-{artifact_id}",

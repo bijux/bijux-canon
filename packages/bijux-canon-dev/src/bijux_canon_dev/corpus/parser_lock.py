@@ -4,11 +4,12 @@
 from __future__ import annotations
 
 import argparse
+from collections.abc import Mapping
 from datetime import UTC, datetime
 import json
 from pathlib import Path
 import sys
-from typing import Any, Mapping
+from typing import Any
 
 from bijux_canon_dev.corpus.parser_sources import (
     EXTENSIONS,

@@ -4,12 +4,13 @@
 from __future__ import annotations
 
 import argparse
+from collections.abc import Iterable, Mapping
 from datetime import date
 import json
 from pathlib import Path
 import re
 import sys
-from typing import Any, Iterable, Mapping
+from typing import Any
 import xml.etree.ElementTree as ET
 
 from bijux_canon_dev.corpus.acquisition import canonical, sha256
@@ -17,7 +18,6 @@ from bijux_canon_dev.corpus.research_corpus_lock import (
     read_object,
     validate_lock_document,
 )
-
 
 SCHEMA_VERSION = "bijux.canon.research_locator_truth.v1"
 REVIEW_METHOD = "independent manual inspection of immutable source bytes"

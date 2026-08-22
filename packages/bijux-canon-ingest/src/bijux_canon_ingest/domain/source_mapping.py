@@ -5,9 +5,9 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 import hashlib
 import json
-from dataclasses import dataclass
 from typing import Literal, get_args
 
 from bijux_canon_ingest.domain.document_extraction import SourceLocator

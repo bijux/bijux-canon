@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Mapping
 from dataclasses import asdict, dataclass
-from enum import Enum
+from enum import StrEnum
 import hashlib
 import json
 from pathlib import Path
@@ -39,7 +39,7 @@ from .fusion import RetrievalChannel
 from .lexical import LexicalCandidateBatch, LexicalCandidateOutcome
 
 
-class RetrievalMode(str, Enum):
+class RetrievalMode(StrEnum):
     """Installed retrieval profiles covered by the production contract."""
 
     lexical = "lexical"
@@ -68,7 +68,7 @@ class RetrievalMode(str, Enum):
         return None
 
 
-class RetrievalChannelState(str, Enum):
+class RetrievalChannelState(StrEnum):
     """Observed state of a required retrieval channel."""
 
     available = "available"
@@ -78,7 +78,7 @@ class RetrievalChannelState(str, Enum):
     corrupt = "corrupt"
 
 
-class RetrievalOutcomeStatus(str, Enum):
+class RetrievalOutcomeStatus(StrEnum):
     """Whether evidence may be used by downstream reasoning."""
 
     success = "success"
@@ -88,7 +88,7 @@ class RetrievalOutcomeStatus(str, Enum):
     policy_refused = "policy_refused"
 
 
-class RetrievalIssueKind(str, Enum):
+class RetrievalIssueKind(StrEnum):
     """Stable category for operator and downstream policy decisions."""
 
     insufficiency = "insufficiency"
@@ -97,7 +97,7 @@ class RetrievalIssueKind(str, Enum):
     policy = "policy"
 
 
-class RetrievalIssueCode(str, Enum):
+class RetrievalIssueCode(StrEnum):
     """Stable reasons why a retrieval result cannot be used."""
 
     no_hits = "no_hits"

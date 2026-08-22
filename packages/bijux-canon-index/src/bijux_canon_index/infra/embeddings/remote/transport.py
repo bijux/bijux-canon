@@ -5,9 +5,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 import http.client
 import urllib.parse
-from collections.abc import Mapping
 
 from .contracts import RemoteHTTPResponse, RemoteTimeouts
 

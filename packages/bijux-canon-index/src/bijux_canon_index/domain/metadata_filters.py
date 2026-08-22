@@ -8,7 +8,7 @@ from __future__ import annotations
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from datetime import date
-from enum import Enum
+from enum import StrEnum
 import math
 from types import MappingProxyType
 from typing import TypeAlias
@@ -68,7 +68,7 @@ def validated_metadata(
     return MappingProxyType(dict(sorted(result.items())))
 
 
-class MetadataOperator(str, Enum):
+class MetadataOperator(StrEnum):
     """Supported comparisons for caller-owned metadata fields."""
 
     equal = "equal"
@@ -248,6 +248,7 @@ def _matches_user_predicate(
         return _ordered_compare(actual, expected, greater=True)
     if predicate.operator is MetadataOperator.less_or_equal:
         return _ordered_compare(actual, expected, greater=False)
+    return None
 
 
 def matches_metadata_filter(

@@ -7,8 +7,9 @@ from pathlib import Path
 import subprocess
 import sys
 
-from bijux_canon_reason_e2e_support import run_cli, write_spec
 import pytest
+
+from bijux_canon_reason_e2e_support import run_cli, write_spec
 
 
 def _run_and_get_dir(tmp_path: Path) -> Path:

@@ -163,15 +163,17 @@ def test_invalid_parent_transitions_publish_nothing(
     tmp_path: Path, delta: IndexDelta, message: str
 ) -> None:
     destination = tmp_path / "derived"
-    with _parent(tmp_path / "parent") as parent:
-        with pytest.raises(ValueError, match=message):
-            apply_index_delta(
-                parent,
-                destination,
-                delta,
-                snapshot_artifact_id="sha256:snapshot-b",
-                limits=_limits(),
-            )
+    with (
+        _parent(tmp_path / "parent") as parent,
+        pytest.raises(ValueError, match=message),
+    ):
+        apply_index_delta(
+            parent,
+            destination,
+            delta,
+            snapshot_artifact_id="sha256:snapshot-b",
+            limits=_limits(),
+        )
     assert not destination.exists()
 
 

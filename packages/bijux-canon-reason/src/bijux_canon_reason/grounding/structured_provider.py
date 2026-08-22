@@ -4,12 +4,13 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
 from enum import StrEnum
 import hashlib
 import json
 import time
-from typing import Callable, Protocol
+from typing import Protocol
 from urllib import error, parse, request
 
 from pydantic import ValidationError

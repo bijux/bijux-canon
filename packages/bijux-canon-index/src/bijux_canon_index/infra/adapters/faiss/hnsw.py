@@ -5,35 +5,35 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable, Mapping, Sequence
+from dataclasses import dataclass
 import json
 import math
 import os
-from collections.abc import Iterable, Mapping, Sequence
-from dataclasses import dataclass
 from pathlib import Path
 import sqlite3
 import tempfile
 import threading
 from typing import Any
 
+from bijux_canon_index.domain.metadata_filters import (
+    MetadataFilter,
+    matches_metadata_filter,
+)
 from bijux_canon_index.infra.adapters.faiss.exact import (
     DenseVectorRecord,
     FaissExactIndex,
     MetadataValue,
-    _StoredRecord,
     _canonical_json,
     _normalize_vector,
     _require_runtime,
     _sha256_bytes,
     _sha256_json,
+    _StoredRecord,
     _validated_metadata,
     _vector_sha256,
 )
 from bijux_canon_index.infra.runtime_paths import ensure_parent_dir
-from bijux_canon_index.domain.metadata_filters import (
-    MetadataFilter,
-    matches_metadata_filter,
-)
 
 SCHEMA_VERSION = 1
 BACKEND_ID = "faiss-hnsw"

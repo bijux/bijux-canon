@@ -5,8 +5,8 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
-import hypothesis.strategies as st
 from hypothesis import given, settings
+import hypothesis.strategies as st
 
 from bijux_canon_ingest.result.types import Err, NoneVal, Ok, Option, Result, Some
 

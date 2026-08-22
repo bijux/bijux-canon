@@ -115,18 +115,20 @@ class RuntimeExecutionService:
             )
         )
         lock_path = self._store.root / "run-locks" / f"{run.run_id}.lock"
-        with _process_run_lock(lock_path):
-            with acquire_execution_store_lock(
+        with (
+            _process_run_lock(lock_path),
+            acquire_execution_store_lock(
                 lock_path,
                 timeout_seconds=request.budget.timeout_seconds,
-            ):
-                return self._execute_attempt(
-                    request=request,
-                    plan=plan,
-                    run=run,
-                    source_selection=source_selection,
-                    is_cancelled=is_cancelled,
-                )
+            ),
+        ):
+            return self._execute_attempt(
+                request=request,
+                plan=plan,
+                run=run,
+                source_selection=source_selection,
+                is_cancelled=is_cancelled,
+            )
 
     def _execute_attempt(
         self,

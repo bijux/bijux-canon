@@ -5,8 +5,8 @@
 
 from __future__ import annotations
 
-import contextlib
 from collections.abc import Callable, Iterator, Sequence
+import contextlib
 from contextlib import AbstractContextManager
 from types import TracebackType
 from typing import (

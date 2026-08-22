@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
-from enum import Enum
+from enum import StrEnum
 import hashlib
 import json
 import math
@@ -14,14 +14,14 @@ import math
 from .fusion import FusedCandidate, RrfFusionBatch
 
 
-class DeduplicationKey(str, Enum):
+class DeduplicationKey(StrEnum):
     """Stable lineage identity used to collapse evidence."""
 
     content_hash = "content_hash"
     source_span = "source_span"
 
 
-class EvidenceSelectionDisposition(str, Enum):
+class EvidenceSelectionDisposition(StrEnum):
     """Why a fused candidate was selected or excluded."""
 
     selected = "selected"

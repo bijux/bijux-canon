@@ -13,7 +13,6 @@ from bijux_canon_runtime.runtime.persistence import (
     PayloadCollisionError,
 )
 
-
 _REQUIRED_PAYLOAD_SCHEMAS = (
     "source-derivative",
     "document",

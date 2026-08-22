@@ -30,7 +30,6 @@ from bijux_canon_ingest.application.canonical_ingest import (
     assemble_corpus_snapshot_manifest,
 )
 from bijux_canon_ingest.domain.corpus_snapshot import CorpusSnapshotConfiguration
-
 from bijux_canon_runtime.model.artifact import AddressedArtifact, canonical_json_bytes
 from bijux_canon_runtime.model.execution.request_plan import (
     ConcreteDagStep,

@@ -6,8 +6,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-import pytest
 from fastapi.testclient import TestClient
+import pytest
 
 from bijux_canon_ingest import (
     CanonicalIngestRequest,

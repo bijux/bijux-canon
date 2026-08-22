@@ -17,7 +17,6 @@ from bijux_canon_runtime.runtime.inspection.parsing import (
     required_string,
 )
 
-
 _SEMANTIC_KEYS = {
     "hits": "hits",
     "hit": "hits",

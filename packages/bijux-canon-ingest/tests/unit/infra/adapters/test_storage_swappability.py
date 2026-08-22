@@ -7,8 +7,8 @@ import csv
 import os
 import tempfile
 
-import hypothesis.strategies as st
 from hypothesis import given, settings
+import hypothesis.strategies as st
 
 from bijux_canon_ingest.core.types import RawDoc
 from bijux_canon_ingest.infra.adapters.file_storage import FileStorage

@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Mapping
 from dataclasses import asdict, dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum, StrEnum
 import threading
 
@@ -109,7 +109,7 @@ class RuntimeEventLedger:
         self._store = store
         self._plan = plan
         self._attempt = attempt
-        self._clock = clock or (lambda: datetime.now(timezone.utc))
+        self._clock = clock or (lambda: datetime.now(UTC))
         metadata = {} if execution_metadata is None else dict(execution_metadata)
         self._execution_metadata = _json_value(metadata)
         canonical_json_bytes(self._execution_metadata)

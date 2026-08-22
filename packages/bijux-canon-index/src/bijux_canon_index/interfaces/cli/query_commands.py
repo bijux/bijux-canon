@@ -11,11 +11,11 @@ import sys
 import typer
 
 from bijux_canon_index.application.engine import VectorExecutionEngine
-from bijux_canon_index.core.errors import BijuxError, ValidationError
 from bijux_canon_index.application.surface_services import (
     load_execution_run,
     vector_store_name,
 )
+from bijux_canon_index.core.errors import BijuxError, ValidationError
 from bijux_canon_index.interfaces.cli.configuration import (
     build_config as _build_config,
 )

@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
-from enum import Enum
+from enum import StrEnum
 import hashlib
 import json
 import math
@@ -16,7 +16,7 @@ from .dense import DenseCandidateBatch, DenseCandidateOutcome
 from .lexical import LexicalCandidateBatch, LexicalCandidateOutcome
 
 
-class RetrievalChannel(str, Enum):
+class RetrievalChannel(StrEnum):
     """Canonical channel order used by hybrid retrieval."""
 
     lexical = "lexical"

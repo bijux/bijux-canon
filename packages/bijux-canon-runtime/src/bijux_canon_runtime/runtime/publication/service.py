@@ -70,18 +70,20 @@ class RuntimeRunReceiptPublisher:
         limitations: tuple[str, ...] = (),
     ) -> RuntimeRunPublicationOutcome:
         """Validate and publish one immutable revision after restart."""
-        with self._process_lock:
-            with acquire_execution_store_lock(
+        with (
+            self._process_lock,
+            acquire_execution_store_lock(
                 self._store.root / ".run-publications.lock",
                 timeout_seconds=self._lock_timeout_seconds,
-            ):
-                return self._publish(
-                    run_id=run_id,
-                    selected_attempt_id=selected_attempt_id,
-                    bindings=bindings,
-                    replay=replay,
-                    limitations=limitations,
-                )
+            ),
+        ):
+            return self._publish(
+                run_id=run_id,
+                selected_attempt_id=selected_attempt_id,
+                bindings=bindings,
+                replay=replay,
+                limitations=limitations,
+            )
 
     def _publish(
         self,

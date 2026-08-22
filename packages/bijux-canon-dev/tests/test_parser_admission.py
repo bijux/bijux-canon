@@ -14,7 +14,6 @@ from bijux_canon_dev.corpus.parser_admission import (
     write_admission,
 )
 
-
 REPO_ROOT = Path(__file__).resolve().parents[3]
 PORTFOLIO_ROOT = REPO_ROOT / "examples/document-formats"
 SOURCE_COMMIT = "a" * 40

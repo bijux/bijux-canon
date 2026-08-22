@@ -36,8 +36,8 @@ async def process_files(
 
 def build_trace_from_result(*args: Any, **kwargs: Any) -> tuple[Path, RunTrace]:
     """Build a run trace while preserving helper-level monkeypatch compatibility."""
-    setattr(_result_artifacts_module, "datetime", datetime)
-    setattr(_result_artifacts_module, "uuid", uuid)
+    _result_artifacts_module.datetime = datetime
+    _result_artifacts_module.uuid = uuid
     return _result_artifacts_module.build_trace_from_result(*args, **kwargs)
 
 

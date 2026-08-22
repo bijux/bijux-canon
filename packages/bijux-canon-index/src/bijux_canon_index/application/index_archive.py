@@ -206,12 +206,14 @@ def admit_index_generation_archive(
 
     registry = IndexGenerationRegistry(registry_root)
     archive = IndexGenerationArchive.from_bytes(content)
-    with tempfile.TemporaryDirectory(
-        prefix=".archive-admission-",
-        dir=registry.root,
-    ) as work:
-        with archive.materialize(Path(work) / "generation") as generation:
-            generation_id = registry.admit(generation.path)
+    with (
+        tempfile.TemporaryDirectory(
+            prefix=".archive-admission-",
+            dir=registry.root,
+        ) as work,
+        archive.materialize(Path(work) / "generation") as generation,
+    ):
+        generation_id = registry.admit(generation.path)
     if activate:
         registry.activate(generation_id)
     return registry.inspect(generation_id)

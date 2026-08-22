@@ -14,27 +14,6 @@ from bijux_canon_reason.grounding.abstention import (
     GroundingRequestStatus,
     RejectedGroundingClaim,
 )
-from bijux_canon_reason.grounding.claim_normalization import (
-    AtomicClaim,
-    AtomicClaimNormalizer,
-    AtomicClaimPolarity,
-    ClaimConfidenceBasis,
-    ClaimNormalizationError,
-    ClaimNormalizationErrorCode,
-    ClaimNormalizationOutcome,
-    NormalizedClaimSet,
-)
-from bijux_canon_reason.grounding.context_representation import (
-    ClaimConflictDeclaration,
-    ClaimContextAnnotation,
-    ConflictRelationship,
-    ContextualizedClaimNode,
-    GroundingContextService,
-    NuancedGroundingRepresentation,
-    SourceQualityGrade,
-    create_claim_conflict,
-    create_claim_context,
-)
 from bijux_canon_reason.grounding.citation_linking import (
     CitationLinkingError,
     CitationLinkingErrorCode,
@@ -56,13 +35,42 @@ from bijux_canon_reason.grounding.citation_verification import (
     EvidenceEntailmentAssessment,
     VerifiedAtomicClaim,
 )
-from bijux_canon_reason.grounding.extractive_synthesis import (
-    CredentialFreeSynthesis,
-    CredentialFreeSynthesisPolicy,
-    CredentialFreeSynthesizer,
-    ExtractiveSynthesisPoint,
-    SynthesisOutcome,
-    SynthesisStyle,
+from bijux_canon_reason.grounding.claim_normalization import (
+    AtomicClaim,
+    AtomicClaimNormalizer,
+    AtomicClaimPolarity,
+    ClaimConfidenceBasis,
+    ClaimNormalizationError,
+    ClaimNormalizationErrorCode,
+    ClaimNormalizationOutcome,
+    NormalizedClaimSet,
+)
+from bijux_canon_reason.grounding.context_representation import (
+    ClaimConflictDeclaration,
+    ClaimContextAnnotation,
+    ConflictRelationship,
+    ContextualizedClaimNode,
+    GroundingContextService,
+    NuancedGroundingRepresentation,
+    SourceQualityGrade,
+    create_claim_conflict,
+    create_claim_context,
+)
+from bijux_canon_reason.grounding.evidence_packets import (
+    CitationEvidence,
+    EvidencePacket,
+    EvidencePacketBuilder,
+    EvidencePacketError,
+    EvidencePacketErrorCode,
+    EvidencePacketPolicy,
+    EvidenceSelectionDecision,
+    EvidenceTrust,
+    ImmutableEvidenceLocator,
+    OmissionReason,
+    PacketCompleteness,
+    SelectionDisposition,
+    TokenCounter,
+    UnicodeLexicalTokenCounter,
 )
 from bijux_canon_reason.grounding.execution_persistence import (
     ContentAddressedRagExecutionStore,
@@ -78,6 +86,14 @@ from bijux_canon_reason.grounding.execution_persistence import (
     RagExecutionStageKind,
     create_rag_execution_budget,
     create_rag_execution_failure,
+)
+from bijux_canon_reason.grounding.extractive_synthesis import (
+    CredentialFreeSynthesis,
+    CredentialFreeSynthesisPolicy,
+    CredentialFreeSynthesizer,
+    ExtractiveSynthesisPoint,
+    SynthesisOutcome,
+    SynthesisStyle,
 )
 from bijux_canon_reason.grounding.provider_contracts import (
     CandidateOutcome,
@@ -101,22 +117,6 @@ from bijux_canon_reason.grounding.structured_provider import (
     prompt_artifact_id,
     response_schema,
     response_schema_sha256,
-)
-from bijux_canon_reason.grounding.evidence_packets import (
-    CitationEvidence,
-    EvidencePacket,
-    EvidencePacketBuilder,
-    EvidencePacketError,
-    EvidencePacketErrorCode,
-    EvidencePacketPolicy,
-    EvidenceSelectionDecision,
-    EvidenceTrust,
-    ImmutableEvidenceLocator,
-    OmissionReason,
-    PacketCompleteness,
-    SelectionDisposition,
-    TokenCounter,
-    UnicodeLexicalTokenCounter,
 )
 
 __all__ = [

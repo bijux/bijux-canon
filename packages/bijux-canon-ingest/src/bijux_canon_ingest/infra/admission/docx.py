@@ -5,11 +5,11 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 import io
+from pathlib import PurePosixPath
 import stat
 import zipfile
-from dataclasses import dataclass
-from pathlib import PurePosixPath
 
 from bijux_canon_ingest.domain.source_admission import AdmissionBudgets
 from bijux_canon_ingest.infra.admission.limits import (

@@ -8,7 +8,6 @@ from pathlib import Path
 import subprocess
 import sys
 
-
 RUNTIME_SOURCE = Path(__file__).resolve().parents[3] / "src"
 
 

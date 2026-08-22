@@ -5,9 +5,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable, Iterator
 import csv
 import json
-from collections.abc import Iterable, Iterator
 from pathlib import Path
 
 from bijux_canon_ingest.core.types import Chunk

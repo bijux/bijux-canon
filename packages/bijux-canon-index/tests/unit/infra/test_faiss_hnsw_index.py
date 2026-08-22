@@ -204,11 +204,11 @@ def test_faiss_hnsw_rejects_invalid_parameters_and_witnesses(
             records,
             model_lock_artifact_id="other-model",
         ) as approximate,
+        pytest.raises(ValueError, match="incompatible"),
     ):
-        with pytest.raises(ValueError, match="incompatible"):
-            measure_hnsw_recall(
-                approximate,
-                exact,
-                [records[0].vector],
-                k=5,
-            )
+        measure_hnsw_recall(
+            approximate,
+            exact,
+            [records[0].vector],
+            k=5,
+        )

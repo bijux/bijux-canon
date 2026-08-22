@@ -4,18 +4,18 @@
 from __future__ import annotations
 
 import argparse
+from collections.abc import Mapping
 from datetime import date
 import json
 from pathlib import Path
 import sys
-from typing import Any, Mapping
+from typing import Any
 
 from bijux_canon_dev.corpus.acquisition import canonical, sha256
 from bijux_canon_dev.corpus.research_qrels import (
     load_qrels,
     validate_qrels,
 )
-
 
 SCHEMA_VERSION = "bijux.canon.research_claim_truth.v1"
 REVIEWER_ID = "bijux-corpus-curation-primary"

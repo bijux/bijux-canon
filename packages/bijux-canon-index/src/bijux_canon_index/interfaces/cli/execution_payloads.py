@@ -4,9 +4,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 import json
 from pathlib import Path
-from collections.abc import Callable
 from typing import Any
 
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract

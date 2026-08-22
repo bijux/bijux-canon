@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import asdict, dataclass
-from enum import Enum
+from enum import Enum, StrEnum
 import hashlib
 import json
 
@@ -48,7 +48,7 @@ def _identity(value: object) -> str:
     return f"sha256:{hashlib.sha256(_canonical_json(value)).hexdigest()}"
 
 
-class SubqueryOrigin(str, Enum):
+class SubqueryOrigin(StrEnum):
     """Transparent reason one subquery entered a multi-query plan."""
 
     original = "original"
@@ -56,7 +56,7 @@ class SubqueryOrigin(str, Enum):
     generated_facet = "generated_facet"
 
 
-class SubqueryDisposition(str, Enum):
+class SubqueryDisposition(StrEnum):
     """Whether a proposed query entered the bounded execution plan."""
 
     included = "included"
@@ -64,7 +64,7 @@ class SubqueryDisposition(str, Enum):
     fanout_limit = "fanout_limit"
 
 
-class MultiQueryOutcome(str, Enum):
+class MultiQueryOutcome(StrEnum):
     """Typed sufficiency of one completed multi-query execution."""
 
     success = "success"

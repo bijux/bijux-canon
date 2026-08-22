@@ -16,27 +16,27 @@ from bijux_canon_agent.application.research_tool_gateway import (
     PolicyEnforcedResearchServices,
     ToolPolicyDenied,
 )
-from bijux_canon_agent.contracts.execution_plan import ResearchPlanningInput
+from bijux_canon_agent.contracts.causal_trace import (
+    CausalDecisionEvent,
+    ResearchCausalTrace,
+)
 from bijux_canon_agent.contracts.execution_control import (
     CancellationPort,
     CancellationSignal,
     ResearchFailureKind,
     ResearchFailureRecord,
 )
-from bijux_canon_agent.contracts.causal_trace import (
-    CausalDecisionEvent,
-    ResearchCausalTrace,
-)
-from bijux_canon_agent.contracts.research_ports import (
-    ReasoningPortResult,
-    RetrievalPortResult,
-)
+from bijux_canon_agent.contracts.execution_plan import ResearchPlanningInput
 from bijux_canon_agent.contracts.research_budget import (
     BudgetAction,
     BudgetDecision,
     BudgetDimensions,
     ResearchBudgetLedger,
     ResearchBudgetPolicy,
+)
+from bijux_canon_agent.contracts.research_ports import (
+    ReasoningPortResult,
+    RetrievalPortResult,
 )
 from bijux_canon_agent.contracts.tool_policy import ToolPolicy, ToolPolicyDecision
 

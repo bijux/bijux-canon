@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import asdict, dataclass, fields
 from enum import StrEnum
 import hashlib
 import json
 from types import MappingProxyType
-from typing import Mapping
 
 from bijux_canon_agent.contracts.execution_plan import (
     PlanningBudget,

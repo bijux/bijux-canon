@@ -21,6 +21,11 @@ from bijux_canon_index.interfaces.schemas.index_generations import (
     IndexQueryResponse,
 )
 
+REQUEST_PATH_OPTION = typer.Option(..., "--request", exists=True, dir_okay=False)
+REGISTRY_ROOT_OPTION = typer.Option(None, "--registry-root", file_okay=False)
+GENERATION_ID_OPTION = typer.Option(..., "--generation-id")
+OPTIONAL_GENERATION_ID_OPTION = typer.Option(None, "--generation-id")
+
 
 def register_index_generation_commands(index_app: typer.Typer) -> None:
     """Register persistent generation commands on one transport group."""
@@ -45,8 +50,8 @@ def _fail(error: Exception) -> NoReturn:
 
 def build_generation(
     ctx: typer.Context,
-    request: Path = typer.Option(..., "--request", exists=True, dir_okay=False),
-    registry_root: Path | None = typer.Option(None, "--registry-root", file_okay=False),
+    request: Path = REQUEST_PATH_OPTION,
+    registry_root: Path | None = REGISTRY_ROOT_OPTION,
 ) -> None:
     """Build and admit one coherent immutable generation from a JSON request."""
 
@@ -67,8 +72,8 @@ def build_generation(
 
 def activate_generation(
     ctx: typer.Context,
-    generation_id: str = typer.Option(..., "--generation-id"),
-    registry_root: Path | None = typer.Option(None, "--registry-root", file_okay=False),
+    generation_id: str = GENERATION_ID_OPTION,
+    registry_root: Path | None = REGISTRY_ROOT_OPTION,
 ) -> None:
     """Atomically activate one admitted immutable generation."""
 
@@ -83,8 +88,8 @@ def activate_generation(
 
 def inspect_generation(
     ctx: typer.Context,
-    generation_id: str | None = typer.Option(None, "--generation-id"),
-    registry_root: Path | None = typer.Option(None, "--registry-root", file_okay=False),
+    generation_id: str | None = OPTIONAL_GENERATION_ID_OPTION,
+    registry_root: Path | None = REGISTRY_ROOT_OPTION,
 ) -> None:
     """Inspect one admitted generation without exposing content or secrets."""
 
@@ -99,8 +104,8 @@ def inspect_generation(
 
 def verify_generation(
     ctx: typer.Context,
-    generation_id: str | None = typer.Option(None, "--generation-id"),
-    registry_root: Path | None = typer.Option(None, "--registry-root", file_okay=False),
+    generation_id: str | None = OPTIONAL_GENERATION_ID_OPTION,
+    registry_root: Path | None = REGISTRY_ROOT_OPTION,
 ) -> None:
     """Verify integrity and model compatibility for one admitted generation."""
 
@@ -115,8 +120,8 @@ def verify_generation(
 
 def query_generation(
     ctx: typer.Context,
-    request: Path = typer.Option(..., "--request", exists=True, dir_okay=False),
-    registry_root: Path | None = typer.Option(None, "--registry-root", file_okay=False),
+    request: Path = REQUEST_PATH_OPTION,
+    registry_root: Path | None = REGISTRY_ROOT_OPTION,
 ) -> None:
     """Query one verified immutable generation from a JSON request."""
 

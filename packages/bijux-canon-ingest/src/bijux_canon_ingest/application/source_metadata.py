@@ -5,13 +5,13 @@
 
 from __future__ import annotations
 
-import re
-import unicodedata
 from collections.abc import Iterable, Mapping, Sequence
 from contextlib import suppress
 from dataclasses import dataclass
 from datetime import date, datetime
 from pathlib import PurePosixPath
+import re
+import unicodedata
 from urllib.parse import SplitResult, urlsplit, urlunsplit
 
 from bijux_canon_ingest.domain.source_admission import (

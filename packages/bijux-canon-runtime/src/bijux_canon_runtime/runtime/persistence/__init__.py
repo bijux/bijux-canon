@@ -4,22 +4,18 @@
 """Runtime-owned persistence boundaries."""
 
 from bijux_canon_runtime.runtime.persistence.artifact_inspection import (
-    ArtifactInspectionRecord,
     ArtifactInspectionPage,
+    ArtifactInspectionRecord,
     ArtifactReferenceView,
     ArtifactVerificationRecord,
     LogicalArtifactResolution,
     RuntimeArtifactInspector,
 )
-from bijux_canon_runtime.runtime.persistence.payload_store import (
-    ArtifactPayloadStore,
-    InMemoryArtifactPayloadStore,
-    PayloadBinding,
-    PayloadCollisionError,
-)
-from bijux_canon_runtime.runtime.persistence.filesystem_payload_store import (
-    AtomicFilesystemArtifactPayloadStore,
-    PayloadCorruptionError,
+from bijux_canon_runtime.runtime.persistence.backup_restore import (
+    BackupIntegrityError,
+    RuntimeBackupManager,
+    RuntimeBackupManifest,
+    RuntimeRestoreResult,
 )
 from bijux_canon_runtime.runtime.persistence.evidence_bundle import (
     EvidenceBundleExporter,
@@ -29,11 +25,9 @@ from bijux_canon_runtime.runtime.persistence.evidence_bundle import (
     EvidenceBundleVerification,
     EvidenceRedactionPolicy,
 )
-from bijux_canon_runtime.runtime.persistence.backup_restore import (
-    BackupIntegrityError,
-    RuntimeBackupManager,
-    RuntimeBackupManifest,
-    RuntimeRestoreResult,
+from bijux_canon_runtime.runtime.persistence.filesystem_payload_store import (
+    AtomicFilesystemArtifactPayloadStore,
+    PayloadCorruptionError,
 )
 from bijux_canon_runtime.runtime.persistence.metadata_authority import (
     ArtifactReferenceRecord,
@@ -50,6 +44,12 @@ from bijux_canon_runtime.runtime.persistence.metadata_authority import (
     RunPolicyRecord,
     RunPublicationRecord,
     RunRevisionRecord,
+)
+from bijux_canon_runtime.runtime.persistence.payload_store import (
+    ArtifactPayloadStore,
+    InMemoryArtifactPayloadStore,
+    PayloadBinding,
+    PayloadCollisionError,
 )
 from bijux_canon_runtime.runtime.persistence.publication import (
     ArtifactPublicationCoordinator,

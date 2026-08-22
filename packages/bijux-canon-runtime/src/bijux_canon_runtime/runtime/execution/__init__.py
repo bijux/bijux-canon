@@ -7,6 +7,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
+from bijux_canon_runtime.runtime.execution.application_executor import (
+    RuntimeExecutionService,
+    RuntimeFirstExecutionError,
+    RuntimeFirstExecutionService,
+)
 from bijux_canon_runtime.runtime.execution.dag_scheduler import (
     ArtifactTransitionJournal,
     DagScheduleResult,
@@ -28,11 +33,6 @@ from bijux_canon_runtime.runtime.execution.durable_jobs import (
     JobKind,
     JobStatus,
 )
-from bijux_canon_runtime.runtime.execution.application_executor import (
-    RuntimeExecutionService,
-    RuntimeFirstExecutionError,
-    RuntimeFirstExecutionService,
-)
 from bijux_canon_runtime.runtime.execution.operation_dispatcher import (
     OperationAdapter,
     OperationDispatcher,
@@ -43,17 +43,18 @@ from bijux_canon_runtime.runtime.execution.operation_dispatcher import (
     StepDispatchTimedOut,
     StepOutputArtifact,
 )
-from bijux_canon_runtime.runtime.execution.service_composition import (
-    CanonicalServiceComposition,
-    InstalledServiceCapability,
-    compose_canonical_services,
-)
 from bijux_canon_runtime.runtime.execution.runtime_event_ledger import (
     RuntimeErrorRecord,
     RuntimeEventKind,
     RuntimeEventLedger,
     RuntimeEventRecord,
 )
+from bijux_canon_runtime.runtime.execution.service_composition import (
+    CanonicalServiceComposition,
+    InstalledServiceCapability,
+    compose_canonical_services,
+)
+from bijux_canon_runtime.runtime.execution.step_executor import ExecutionOutcome
 from bijux_canon_runtime.runtime.inspection import (
     InspectedArtifact,
     InspectedAttempt,
@@ -69,7 +70,6 @@ from bijux_canon_runtime.runtime.inspection import (
     RuntimeRunInspection,
     RuntimeRunInspector,
 )
-from bijux_canon_runtime.runtime.execution.step_executor import ExecutionOutcome
 
 if TYPE_CHECKING:
     from bijux_canon_runtime.runtime.execution.application_composition import (

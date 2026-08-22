@@ -12,6 +12,7 @@ from .dense import (
     DenseCandidateService,
     QueryEmbeddingProvider,
 )
+from .filters import RetrievalFilterCapability, retrieval_filter_capability
 from .fusion import (
     FusedCandidate,
     FusionChannelRanking,
@@ -22,7 +23,6 @@ from .fusion import (
     RrfFusionPolicy,
     reciprocal_rank_fusion,
 )
-from .filters import RetrievalFilterCapability, retrieval_filter_capability
 from .lexical import (
     LexicalCandidateBatch,
     LexicalCandidateDecision,
@@ -80,6 +80,17 @@ from .outcomes import (
     dense_channel_result,
     lexical_channel_result,
 )
+from .reranking import (
+    RerankBatch,
+    RerankedCandidate,
+    Reranker,
+    RerankFailurePolicy,
+    RerankOutcome,
+    RerankPolicy,
+    RerankResponse,
+    RerankScore,
+    rerank_candidates,
+)
 from .selection import (
     DeduplicationKey,
     EvidenceDeduplicationPolicy,
@@ -90,17 +101,6 @@ from .selection import (
     EvidenceSelectionDisposition,
     EvidenceSelectionPolicy,
     select_evidence,
-)
-from .reranking import (
-    RerankBatch,
-    RerankFailurePolicy,
-    RerankOutcome,
-    RerankPolicy,
-    RerankResponse,
-    RerankScore,
-    RerankedCandidate,
-    Reranker,
-    rerank_candidates,
 )
 from .traces import (
     RetrievalTraceArtifact,

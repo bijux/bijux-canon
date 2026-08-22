@@ -13,7 +13,6 @@ from typing import Any
 
 from bijux_canon_runtime.ontology.ids import ArtifactID, ContentHash
 
-
 _ARTIFACT_ID = re.compile(r"^sha256:[0-9a-f]{64}$")
 _SCHEMA_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/-]*$")
 _LOGICAL_PART = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")

@@ -4,12 +4,12 @@
 """Embedding model identity and compatibility contracts."""
 
 from .model_lock import (
+    LOCAL_MINILM_PROFILE,
     ArtifactDigest,
     CompatibilityOperation,
     EmbeddingModelLock,
     EmbeddingModelMismatchError,
     EmbeddingProfile,
-    LOCAL_MINILM_PROFILE,
 )
 
 __all__ = [

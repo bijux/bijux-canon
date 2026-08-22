@@ -13,7 +13,6 @@ from bijux_canon_dev.corpus.research_claim_truth import (
     validate_claim_truth,
 )
 
-
 REPO_ROOT = Path(__file__).resolve().parents[3]
 RESEARCH_ROOT = REPO_ROOT / "examples/ancient-dna-research"
 LOCK_PATH = RESEARCH_ROOT / "corpus.lock.json"

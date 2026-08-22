@@ -5,10 +5,10 @@
 
 from __future__ import annotations
 
-import urllib.parse
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from typing import Literal, Protocol
+import urllib.parse
 
 EndpointClass = Literal["public", "private", "local", "mock"]
 FailureCategory = Literal[

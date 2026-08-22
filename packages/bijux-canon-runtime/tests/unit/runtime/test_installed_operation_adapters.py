@@ -16,7 +16,6 @@ pytest.importorskip("faiss")
 
 from bijux_canon_index.application import IndexGenerationArchive, IndexService
 from bijux_canon_index.infra.embeddings.local_model import EmbeddedBatch
-
 from bijux_canon_runtime.application.request_planner import RuntimeRequestPlanner
 from bijux_canon_runtime.model.artifact import AddressedArtifact
 from bijux_canon_runtime.model.execution.request_plan import (
@@ -30,6 +29,12 @@ from bijux_canon_runtime.model.execution.request_plan import (
 )
 from bijux_canon_runtime.ontology.ids import ArtifactID, RequestID
 from bijux_canon_runtime.ontology.public import ReplayMode
+from bijux_canon_runtime.runtime.execution.application_executor import (
+    RuntimeFirstExecutionService,
+)
+from bijux_canon_runtime.runtime.execution.installed_agent_adapter import (
+    CanonicalAgentOperationAdapter,
+)
 from bijux_canon_runtime.runtime.execution.installed_operation_adapters import (
     CanonicalDenseIndexOperationAdapter,
     CanonicalEmbeddingOperationAdapter,
@@ -42,20 +47,14 @@ from bijux_canon_runtime.runtime.execution.installed_persistence_adapters import
     CanonicalPersistenceOperationAdapter,
     CanonicalPublicationOperationAdapter,
 )
-from bijux_canon_runtime.runtime.execution.installed_agent_adapter import (
-    CanonicalAgentOperationAdapter,
+from bijux_canon_runtime.runtime.execution.installed_reason_adapter import (
+    CanonicalReasonOperationAdapter,
 )
 from bijux_canon_runtime.runtime.execution.installed_retrieval_adapter import (
     CanonicalRetrievalOperationAdapter,
 )
-from bijux_canon_runtime.runtime.execution.installed_reason_adapter import (
-    CanonicalReasonOperationAdapter,
-)
 from bijux_canon_runtime.runtime.execution.installed_verification_adapter import (
     CanonicalVerificationOperationAdapter,
-)
-from bijux_canon_runtime.runtime.execution.application_executor import (
-    RuntimeFirstExecutionService,
 )
 from bijux_canon_runtime.runtime.execution.operation_dispatcher import (
     OperationDispatcher,

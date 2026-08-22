@@ -21,7 +21,6 @@ from bijux_canon_reason.grounding import (
     SynthesisOutcome,
 )
 from bijux_canon_reason.grounding.provider_contracts import content_artifact_id
-
 from bijux_canon_runtime.model.artifact import canonical_json_bytes
 from bijux_canon_runtime.model.execution.request_plan import (
     ConcreteDagStep,

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 from typing import Any
+import xml.etree.ElementTree as ET
 
 import pytest
 
@@ -14,8 +15,6 @@ from bijux_canon_dev.corpus.materialization import (
     materialize_record,
     supplementary_links,
 )
-import xml.etree.ElementTree as ET
-
 
 DOI = "10.1371/journal.pone.0021247"
 

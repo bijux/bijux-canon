@@ -5,8 +5,8 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
-import hypothesis.strategies as st
 from hypothesis import given, settings
+import hypothesis.strategies as st
 
 from bijux_canon_ingest.fp.effects.state import State, get, modify, pure, put, run_state
 

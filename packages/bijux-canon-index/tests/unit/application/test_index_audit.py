@@ -13,8 +13,8 @@ pytest.importorskip("faiss")
 
 from bijux_canon_index.application import (
     AdmittedIndexChunk,
-    IndexCompatibility,
     IndexBuildLimits,
+    IndexCompatibility,
     IndexGeneration,
     IndexGenerationIncompatibleError,
     IndexGenerationRegistry,
@@ -73,9 +73,11 @@ def test_audit_closes_every_generation_integrity_surface(tmp_path: Path) -> None
 def test_incompatible_model_profile_is_refused(
     tmp_path: Path, compatibility: IndexCompatibility
 ) -> None:
-    with _build(tmp_path / "generation", "a") as generation:
-        with pytest.raises(IndexGenerationIncompatibleError, match="incompatible"):
-            audit_index_generation(generation.path, compatibility=compatibility)
+    with (
+        _build(tmp_path / "generation", "a") as generation,
+        pytest.raises(IndexGenerationIncompatibleError, match="incompatible"),
+    ):
+        audit_index_generation(generation.path, compatibility=compatibility)
 
 
 def test_registry_refuses_incompatible_generation_before_admission(
@@ -85,9 +87,11 @@ def test_registry_refuses_incompatible_generation_before_admission(
         tmp_path / "registry",
         compatibility=IndexCompatibility("sha256:other-model", 3),
     )
-    with _build(tmp_path / "generation", "a") as generation:
-        with pytest.raises(IndexGenerationIncompatibleError, match="model lock"):
-            registry.admit(generation.path)
+    with (
+        _build(tmp_path / "generation", "a") as generation,
+        pytest.raises(IndexGenerationIncompatibleError, match="model lock"),
+    ):
+        registry.admit(generation.path)
 
     assert list(registry.generations.iterdir()) == []
 

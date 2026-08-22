@@ -19,7 +19,6 @@ from bijux_canon_runtime.runtime.persistence import (
     PublicationRecoveryError,
 )
 
-
 _NOW = "2026-08-22T00:00:00+00:00"
 _LATER = "2026-08-22T00:00:01+00:00"
 

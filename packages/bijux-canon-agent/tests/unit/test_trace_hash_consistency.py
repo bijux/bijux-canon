@@ -11,11 +11,10 @@ from pathlib import Path
 from typing import Any
 import uuid
 
-from bijux_canon_agent_trace_support import default_model_metadata
-
 from bijux_canon_agent.enums import DecisionOutcome
 from bijux_canon_agent.interfaces.cli.helpers import build_trace_from_result
 from bijux_canon_agent.pipeline.termination import ExecutionTerminationReason
+from bijux_canon_agent_trace_support import default_model_metadata
 
 
 class FixedDatetime(real_datetime):  # reuse as base for patched datetime

@@ -16,7 +16,6 @@ from bijux_canon_dev.corpus.parser_lock import (
     write_lock,
 )
 
-
 REPO_ROOT = Path(__file__).resolve().parents[3]
 PORTFOLIO_ROOT = REPO_ROOT / "examples/document-formats"
 

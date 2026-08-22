@@ -5,13 +5,12 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 import hashlib
 import http.client
 import json
 import math
-import socket
 import time
-from collections.abc import Sequence
 
 from .contracts import (
     Clock,
@@ -126,7 +125,7 @@ class RemoteEmbeddingClient:
                     timeouts=self.config.timeouts,
                     max_response_bytes=self.config.max_response_bytes,
                 )
-            except (TimeoutError, socket.timeout) as error:
+            except TimeoutError as error:
                 last_error = RemoteEmbeddingError(
                     "remote embedding request timed out",
                     category="timeout",

@@ -5,8 +5,8 @@
 
 from __future__ import annotations
 
-import re
 from html.parser import HTMLParser
+import re
 from urllib.parse import urlsplit
 from xml.parsers import expat
 

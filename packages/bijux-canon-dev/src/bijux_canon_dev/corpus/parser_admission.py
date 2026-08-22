@@ -4,23 +4,23 @@
 from __future__ import annotations
 
 import argparse
+from collections.abc import Mapping
 import json
 from pathlib import Path
 import re
 import sys
-from typing import Any, Mapping
+from typing import Any
 
+from bijux_canon_dev.corpus.parser_locator_truth import (
+    load_truth,
+    validate_truth,
+)
 from bijux_canon_dev.corpus.parser_lock import (
     build_lock,
     read_json,
     validate_lock_document,
 )
-from bijux_canon_dev.corpus.parser_locator_truth import (
-    load_truth,
-    validate_truth,
-)
 from bijux_canon_dev.corpus.parser_sources import canonical, sha256, write_exclusive
-
 
 SCHEMA_VERSION = "bijux.canon.parser_portfolio_admission.v1"
 COMMIT_SHA = re.compile(r"^[0-9a-f]{40}$")

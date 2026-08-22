@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+import contextlib
 from dataclasses import dataclass
 from datetime import UTC, datetime
 import errno
@@ -40,10 +41,8 @@ _PROCESS_LEASES_LOCK = threading.RLock()
 
 def _reset_leases_after_fork() -> None:
     for held in _PROCESS_LEASES.values():
-        try:
+        with contextlib.suppress(OSError):
             os.close(held.fd)
-        except OSError:
-            pass
     _PROCESS_LEASES.clear()
 
 

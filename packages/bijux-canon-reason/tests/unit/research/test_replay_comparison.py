@@ -4,11 +4,12 @@
 
 from __future__ import annotations
 
-import pytest
 from pydantic import ValidationError
+import pytest
 
 from bijux_canon_reason.grounding.provider_contracts import content_artifact_id
 from bijux_canon_reason.research import (
+    ReplayedResearchAttempt,
     ResearchAttemptComparison,
     ResearchChangeAction,
     ResearchChangeAuthority,
@@ -18,7 +19,6 @@ from bijux_canon_reason.research import (
     ResearchReasoningReplayService,
     ResearchReplayError,
     ResearchReplayErrorCode,
-    ReplayedResearchAttempt,
     create_research_graph_event,
     create_research_reasoning_attempt,
 )

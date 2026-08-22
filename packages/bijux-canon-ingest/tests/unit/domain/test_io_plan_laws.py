@@ -3,8 +3,8 @@
 
 from __future__ import annotations
 
-import hypothesis.strategies as st
 from hypothesis import given, settings
+import hypothesis.strategies as st
 
 from bijux_canon_ingest.domain.effects.io_plan import (
     IOPlan,

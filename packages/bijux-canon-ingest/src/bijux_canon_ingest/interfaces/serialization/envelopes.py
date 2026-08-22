@@ -5,9 +5,9 @@
 
 from __future__ import annotations
 
-import json
 from collections.abc import Callable, Iterable, Iterator
 from dataclasses import dataclass
+import json
 from typing import TYPE_CHECKING, Any, BinaryIO, TypeVar, cast
 
 import msgpack

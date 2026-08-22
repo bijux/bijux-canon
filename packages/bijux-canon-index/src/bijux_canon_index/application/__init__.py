@@ -1,19 +1,5 @@
 """Package exports for application."""
 
-from bijux_canon_index.application.index_generation import (
-    AdmittedIndexChunk,
-    IndexBuildLimits,
-    IndexBuildStageReceipt,
-    IndexBuildStatistics,
-    IndexGeneration,
-    IndexGenerationBuildError,
-    IndexGenerationIntegrityError,
-    IndexGenerationLineage,
-    IndexGenerationManifest,
-    LexicalIndexChunk,
-    LexicalIndexLimits,
-    build_lexical_index_segment,
-)
 from bijux_canon_index.application.index_activation import (
     IndexActivationError,
     IndexGenerationRegistry,
@@ -31,10 +17,19 @@ from bijux_canon_index.application.index_audit import (
     IndexGenerationIncompatibleError,
     audit_index_generation,
 )
-from bijux_canon_index.application.index_mutation import (
-    IndexDelta,
-    IndexMutationReceipt,
-    apply_index_delta,
+from bijux_canon_index.application.index_generation import (
+    AdmittedIndexChunk,
+    IndexBuildLimits,
+    IndexBuildStageReceipt,
+    IndexBuildStatistics,
+    IndexGeneration,
+    IndexGenerationBuildError,
+    IndexGenerationIntegrityError,
+    IndexGenerationLineage,
+    IndexGenerationManifest,
+    LexicalIndexChunk,
+    LexicalIndexLimits,
+    build_lexical_index_segment,
 )
 from bijux_canon_index.application.index_inspection import (
     IndexActivationInspection,
@@ -46,6 +41,11 @@ from bijux_canon_index.application.index_inspection import (
     IndexSegmentInspection,
     inspect_index_generation,
 )
+from bijux_canon_index.application.index_mutation import (
+    IndexDelta,
+    IndexMutationReceipt,
+    apply_index_delta,
+)
 from bijux_canon_index.application.index_service import (
     IndexQueryChannel,
     IndexQueryHit,
@@ -54,6 +54,7 @@ from bijux_canon_index.application.index_service import (
     IndexService,
 )
 from bijux_canon_index.application.retrieval import (
+    ChannelRunner,
     CitationCandidate,
     CitationChannel,
     CitationChannelProvenance,
@@ -66,14 +67,13 @@ from bijux_canon_index.application.retrieval import (
     CitationResolutionErrorCode,
     CitationRetrievalMode,
     CitationSourceMetadata,
-    ChannelRunner,
+    DeduplicationKey,
     DenseCandidate,
     DenseCandidateBatch,
     DenseCandidateCompatibilityError,
     DenseCandidateMode,
     DenseCandidateOutcome,
     DenseCandidateService,
-    DeduplicationKey,
     EvidenceDeduplicationPolicy,
     EvidenceDiversityPolicy,
     EvidenceLineage,
@@ -81,6 +81,7 @@ from bijux_canon_index.application.retrieval import (
     EvidenceSelectionDecision,
     EvidenceSelectionDisposition,
     EvidenceSelectionPolicy,
+    ExactSourceLocator,
     FusedCandidate,
     FusionChannelRanking,
     LexicalCandidateBatch,
@@ -88,7 +89,6 @@ from bijux_canon_index.application.retrieval import (
     LexicalCandidateDisposition,
     LexicalCandidateOutcome,
     LexicalCandidateService,
-    ExactSourceLocator,
     LocatorValue,
     MultiQueryBatch,
     MultiQueryExecutor,
@@ -99,6 +99,14 @@ from bijux_canon_index.application.retrieval import (
     PlannedSubquery,
     QueryEmbeddingProvider,
     RankedChannelCandidate,
+    RerankBatch,
+    RerankedCandidate,
+    Reranker,
+    RerankFailurePolicy,
+    RerankOutcome,
+    RerankPolicy,
+    RerankResponse,
+    RerankScore,
     RetrievalChannel,
     RetrievalChannelResult,
     RetrievalChannelState,
@@ -119,14 +127,6 @@ from bijux_canon_index.application.retrieval import (
     RetrievalTraceReplayInput,
     RetrievalTraceReplayOutcome,
     RetrievalTraceStore,
-    RerankBatch,
-    RerankFailurePolicy,
-    RerankOutcome,
-    RerankPolicy,
-    RerankResponse,
-    RerankScore,
-    RerankedCandidate,
-    Reranker,
     RrfContribution,
     RrfFusionBatch,
     RrfFusionPolicy,
@@ -146,9 +146,9 @@ from bijux_canon_index.application.retrieval import (
     lexical_channel_result,
     plan_subqueries,
     reciprocal_rank_fusion,
-    retrieval_filter_capability,
-    rerank_candidates,
     replay_retrieval_trace,
+    rerank_candidates,
+    retrieval_filter_capability,
     select_evidence,
 )
 from bijux_canon_index.application.vex import (
@@ -157,8 +157,8 @@ from bijux_canon_index.application.vex import (
     VexArtifactStore,
     VexCandidateRecord,
     VexDriftKind,
-    VexExecutionBudget,
     VexExecutionArtifact,
+    VexExecutionBudget,
     VexExecutionObservation,
     VexPolicyDecision,
     VexPolicyMode,

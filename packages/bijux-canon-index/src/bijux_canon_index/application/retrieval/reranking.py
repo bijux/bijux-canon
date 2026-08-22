@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
-from enum import Enum
+from enum import StrEnum
 import hashlib
 import json
 import math
@@ -18,14 +18,14 @@ from typing import Protocol
 from .fusion import FusedCandidate, RrfFusionBatch
 
 
-class RerankFailurePolicy(str, Enum):
+class RerankFailurePolicy(StrEnum):
     """Stable behavior when an optional reranker cannot be used."""
 
     retain_retrieval_order = "retain-retrieval-order"
     refuse = "refuse"
 
 
-class RerankOutcome(str, Enum):
+class RerankOutcome(StrEnum):
     """Typed result of optional reranking."""
 
     disabled = "disabled"

@@ -15,7 +15,6 @@ import xml.etree.ElementTree as ET
 
 from bijux_canon_dev.corpus.acquisition import canonical, validate_jats
 
-
 XLINK_HREF = "{http://www.w3.org/1999/xlink}href"
 MINIMUM_ABSTRACT_CHARACTERS = 100
 MINIMUM_BODY_CHARACTERS = 1_000

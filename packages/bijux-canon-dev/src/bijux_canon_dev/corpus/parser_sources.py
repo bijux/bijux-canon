@@ -24,7 +24,6 @@ import urllib.request
 import xml.etree.ElementTree as ET
 import zipfile
 
-
 USER_AGENT = (
     "bijux-canon-parser-source-acquisition/1.0 "
     "(https://github.com/bijux/bijux-canon; bijan@bijux.io)"

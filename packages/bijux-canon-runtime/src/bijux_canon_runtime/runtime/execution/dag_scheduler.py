@@ -8,7 +8,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import asdict, dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import StrEnum
 import threading
 from time import monotonic, perf_counter_ns
@@ -144,7 +144,7 @@ class ArtifactTransitionJournal:
     ) -> None:
         self._store = store
         self._plan_sha256 = plan_sha256
-        self._clock = clock or (lambda: datetime.now(timezone.utc))
+        self._clock = clock or (lambda: datetime.now(UTC))
         self._records: list[SchedulerTransition] = []
         self._artifact_ids: list[ArtifactID] = []
         self._lock = threading.Lock()

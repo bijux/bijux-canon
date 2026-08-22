@@ -17,7 +17,6 @@ from typing import Any
 import urllib.parse
 import urllib.request
 
-
 USER_AGENT = "bijux-canon-corpus-review/1.0 (https://github.com/bijux/bijux-canon)"
 MAX_RESPONSE_BYTES = 12 * 1024 * 1024
 

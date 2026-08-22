@@ -18,7 +18,6 @@ from typing import Any
 import uuid
 
 from _pytest.monkeypatch import MonkeyPatch
-from bijux_canon_agent_trace_support import default_model_metadata
 import yaml
 
 from bijux_canon_agent.api import create_app
@@ -26,6 +25,7 @@ from bijux_canon_agent.config.defaults import MINIMAL_REFERENCE_CONFIG
 from bijux_canon_agent.enums import DecisionOutcome
 import bijux_canon_agent.interfaces.cli.entrypoint as cli_main
 from bijux_canon_agent.interfaces.cli.helpers import build_trace_from_result
+from bijux_canon_agent_trace_support import default_model_metadata
 
 DEFAULT_HTTP_AGENTS = [
     "file_reader",

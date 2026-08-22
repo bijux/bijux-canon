@@ -53,6 +53,9 @@ class _Manifest:
     attempt: dict[str, object]
 
 
+_DEFAULT_RUNTIME_INSPECTION_LIMITS = RuntimeInspectionLimits()
+
+
 class RuntimeRunInspector:
     """Reconstruct a run from an atomic payload store after process restart."""
 
@@ -60,7 +63,7 @@ class RuntimeRunInspector:
         self,
         store: AtomicFilesystemArtifactPayloadStore,
         *,
-        limits: RuntimeInspectionLimits = RuntimeInspectionLimits(),
+        limits: RuntimeInspectionLimits = _DEFAULT_RUNTIME_INSPECTION_LIMITS,
     ) -> None:
         self._store = store
         self._limits = limits

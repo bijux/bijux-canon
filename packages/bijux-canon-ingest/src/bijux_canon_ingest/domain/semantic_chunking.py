@@ -5,10 +5,10 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 import hashlib
 import json
 import re
-from dataclasses import dataclass
 
 from bijux_canon_ingest.domain.source_mapping import NormalizedSpanMapping
 

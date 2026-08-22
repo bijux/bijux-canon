@@ -5,8 +5,8 @@
 
 from __future__ import annotations
 
-import importlib
 from dataclasses import dataclass
+import importlib
 
 
 @dataclass(frozen=True, slots=True)

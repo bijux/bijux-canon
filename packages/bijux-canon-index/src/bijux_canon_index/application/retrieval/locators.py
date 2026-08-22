@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
-from enum import Enum
+from enum import Enum, StrEnum
 import hashlib
 import json
 import math
@@ -23,7 +23,7 @@ from .reranking import RerankBatch, RerankOutcome
 LocatorValue = str | int
 
 
-class CitationRetrievalMode(str, Enum):
+class CitationRetrievalMode(StrEnum):
     """Retrieval profiles whose channel lineage is preserved in citations."""
 
     lexical = "lexical"
@@ -32,7 +32,7 @@ class CitationRetrievalMode(str, Enum):
     local_hybrid_ann = "local-hybrid-ann"
 
 
-class CitationChannel(str, Enum):
+class CitationChannel(StrEnum):
     """Concrete candidate-producing channels, including dense execution mode."""
 
     lexical = "lexical"
@@ -40,7 +40,7 @@ class CitationChannel(str, Enum):
     dense_ann = "dense-ann"
 
 
-class CitationResolutionErrorCode(str, Enum):
+class CitationResolutionErrorCode(StrEnum):
     """Stable refusal reasons for missing or contradictory citation truth."""
 
     candidate_set_invalid = "candidate_set_invalid"
@@ -593,7 +593,7 @@ class CitationLocatorService:
             )
         allowed = _allowed_channels(retrieval_mode)
         if any(
-            not set(channel.channel for channel in candidate.channels).issubset(allowed)
+            not {channel.channel for channel in candidate.channels}.issubset(allowed)
             for candidate in candidates
         ):
             raise CitationResolutionError(

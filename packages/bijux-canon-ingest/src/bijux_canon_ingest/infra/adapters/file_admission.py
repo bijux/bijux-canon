@@ -5,11 +5,11 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 import hashlib
 import os
 import re
 import stat
-from dataclasses import dataclass
 
 from bijux_canon_ingest.domain.source_admission import (
     AdmissionBudgets,

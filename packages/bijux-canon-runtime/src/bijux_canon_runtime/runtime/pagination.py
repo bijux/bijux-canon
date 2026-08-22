@@ -6,14 +6,13 @@
 from __future__ import annotations
 
 import base64
+from collections.abc import Mapping, Sequence
 from dataclasses import asdict, dataclass, is_dataclass
 from enum import Enum
 import hashlib
 import json
-from typing import Mapping, Sequence
 
 from bijux_canon_runtime.model.artifact import canonical_json_bytes
-
 
 MAX_PAGE_SIZE = 1000
 

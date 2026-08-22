@@ -11,11 +11,11 @@ import sys
 
 import typer
 
-from bijux_canon_index.core.errors import BijuxError, ValidationError
 from bijux_canon_index.application.surface_services import (
     environment_report,
     validate_vector_store,
 )
+from bijux_canon_index.core.errors import BijuxError, ValidationError
 from bijux_canon_index.interfaces.cli.configuration import (
     build_config as _build_config,
 )

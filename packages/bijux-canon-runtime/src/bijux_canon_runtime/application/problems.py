@@ -10,7 +10,6 @@ from enum import StrEnum
 import re
 from typing import TypeAlias
 
-
 RuntimeProblemFields: TypeAlias = dict[str, object]
 
 

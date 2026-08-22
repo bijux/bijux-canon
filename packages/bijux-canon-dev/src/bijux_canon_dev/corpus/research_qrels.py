@@ -5,12 +5,13 @@ from __future__ import annotations
 
 import argparse
 from collections import Counter
+from collections.abc import Mapping
 from datetime import date
 import json
 from pathlib import Path
 import re
 import sys
-from typing import Any, Mapping, TypeGuard
+from typing import Any, TypeGuard
 
 from bijux_canon_dev.corpus.acquisition import canonical, sha256
 from bijux_canon_dev.corpus.research_corpus_lock import (
@@ -19,9 +20,10 @@ from bijux_canon_dev.corpus.research_corpus_lock import (
 )
 from bijux_canon_dev.corpus.research_locator_truth import (
     load_truth as load_locator_truth,
+)
+from bijux_canon_dev.corpus.research_locator_truth import (
     validate_truth as validate_locator_truth,
 )
-
 
 SCHEMA_VERSION = "bijux.canon.research_qrel.v1"
 CHUNK_SCHEMA_VERSION = "bijux.canon.ingest.semantic_chunk.v1"
@@ -265,7 +267,7 @@ def validate_qrels(
         raise RuntimeError("research qrel source coverage mismatch")
     if any(grades != {1, 2, 3} for grades in grades_by_source.values()):
         raise RuntimeError("research qrel grade coverage mismatch")
-    if observed_anchors != Counter({truth_id: 1 for truth_id in locators}):
+    if observed_anchors != Counter(dict.fromkeys(locators, 1)):
         raise RuntimeError("research qrel locator-anchor coverage mismatch")
     if len(snapshot_ids) != 1:
         raise RuntimeError("research qrels do not share one ingest snapshot")

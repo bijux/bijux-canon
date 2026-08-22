@@ -13,11 +13,11 @@ import zipfile
 
 import typer
 
-from bijux_canon_index.core.config import ExecutionConfig
 from bijux_canon_index.application.surface_services import (
     execution_trace_events,
     redact_vector_store_uri,
 )
+from bijux_canon_index.core.config import ExecutionConfig
 
 
 @dataclass(frozen=True)

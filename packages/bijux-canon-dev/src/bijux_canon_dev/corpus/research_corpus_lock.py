@@ -4,15 +4,15 @@
 from __future__ import annotations
 
 import argparse
+from collections.abc import Mapping
 from datetime import UTC, datetime
 import json
 from pathlib import Path, PurePosixPath
 import re
 import sys
-from typing import Any, Mapping
+from typing import Any
 
 from bijux_canon_dev.corpus.acquisition import canonical, sha256, write_exclusive
-
 
 SCHEMA_VERSION = "bijux.canon.research_corpus_lock.v1"
 SHA256 = re.compile(r"^[0-9a-f]{64}$")

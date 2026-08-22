@@ -7,9 +7,9 @@ import dataclasses
 from dataclasses import dataclass
 from typing import Literal, assert_never
 
-import pytest
 from hypothesis import given
 from hypothesis import strategies as st
+import pytest
 
 from bijux_canon_ingest.fp.core import (
     Chunk,

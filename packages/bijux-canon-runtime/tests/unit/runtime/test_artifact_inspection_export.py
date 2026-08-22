@@ -12,6 +12,7 @@ from bijux_canon_runtime.observability.storage.execution_store import (
     DuckDBExecutionWriteStore,
 )
 from bijux_canon_runtime.ontology.ids import ArtifactID
+from bijux_canon_runtime.runtime.pagination import PageRequest
 from bijux_canon_runtime.runtime.persistence import (
     ArtifactPublicationCoordinator,
     AtomicFilesystemArtifactPayloadStore,
@@ -22,7 +23,6 @@ from bijux_canon_runtime.runtime.persistence import (
     PublicationItem,
     RuntimeArtifactInspector,
 )
-from bijux_canon_runtime.runtime.pagination import PageRequest
 
 
 def _workspace(tmp_path: Path, resolved_flow):

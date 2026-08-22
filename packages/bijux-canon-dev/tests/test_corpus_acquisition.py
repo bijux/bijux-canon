@@ -22,7 +22,6 @@ from bijux_canon_dev.corpus.acquisition import (
     write_exclusive,
 )
 
-
 DOI = "10.1371/journal.pone.0021247"
 
 

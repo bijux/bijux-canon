@@ -199,7 +199,7 @@ def _install_openapi_schema(app: FastAPI) -> None:
         app.openapi_schema = schema
         return schema
 
-    setattr(app, "openapi", _openapi)
+    app.openapi = _openapi
 
 
 def _attach_stateful_links(schema: dict[str, object]) -> None:

@@ -7,13 +7,13 @@ from __future__ import annotations
 
 import argparse
 
+from bijux_canon_runtime.interfaces.cli.v2_parser import add_v2_commands
 from bijux_canon_runtime.model.execution.command_modes import (
     DRY_RUN_COMMAND,
     PLAN_COMMAND,
     RUN_COMMAND,
     UNSAFE_RUN_COMMAND,
 )
-from bijux_canon_runtime.interfaces.cli.v2_parser import add_v2_commands
 
 
 def build_parser(*, prog_name: str) -> argparse.ArgumentParser:

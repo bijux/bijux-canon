@@ -3,8 +3,8 @@
 
 from __future__ import annotations
 
-import sqlite3
 from pathlib import Path
+import sqlite3
 
 import pytest
 
@@ -53,9 +53,11 @@ def test_sqlite_embedding_cache_detects_content_corruption(tmp_path: Path) -> No
             ("[0.8,0.6]", key),
         )
 
-    with SQLiteEmbeddingCache(path, expected_dimension=2) as cache:
-        with pytest.raises(EmbeddingCacheCorruptionError, match="entry is corrupt"):
-            cache.get(key)
+    with (
+        SQLiteEmbeddingCache(path, expected_dimension=2) as cache,
+        pytest.raises(EmbeddingCacheCorruptionError, match="entry is corrupt"),
+    ):
+        cache.get(key)
 
 
 def test_sqlite_embedding_cache_rolls_back_failed_publication(

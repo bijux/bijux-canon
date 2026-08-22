@@ -5,13 +5,13 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterator
 import hashlib
 import json
 import os
 from pathlib import Path
 import shutil
 import tempfile
-from collections.abc import Iterator
 from typing import Any
 
 from bijux_canon_runtime.model.artifact import (

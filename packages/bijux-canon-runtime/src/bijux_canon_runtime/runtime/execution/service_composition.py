@@ -26,7 +26,6 @@ from bijux_canon_ingest.application.corpus_snapshot import build_corpus_snapshot
 from bijux_canon_ingest.domain.corpus_snapshot import CorpusSnapshot
 from bijux_canon_reason.application.run_workflow import run_app
 from bijux_canon_reason.core.system_contract import assert_system_contract
-
 from bijux_canon_runtime.core.package_versions import distribution_version
 from bijux_canon_runtime.model.execution.request_plan import DagOperation
 from bijux_canon_runtime.runtime.execution.canonical_adapters import (

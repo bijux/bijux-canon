@@ -4,15 +4,15 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterator
 from contextlib import contextmanager
 import hashlib
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
 from threading import Thread
-from typing import Iterator
 
-import pytest
 from pydantic import ValidationError
+import pytest
 
 from bijux_canon_reason.grounding import (
     CandidateOutcome,

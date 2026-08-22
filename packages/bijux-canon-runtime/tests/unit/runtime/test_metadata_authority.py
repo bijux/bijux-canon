@@ -27,7 +27,6 @@ from bijux_canon_runtime.runtime.persistence import (
     RunRevisionRecord,
 )
 
-
 _NOW = "2026-08-22T00:00:00+00:00"
 
 
@@ -202,17 +201,19 @@ def test_payload_metadata_is_idempotent_and_conflicts_fail_closed(
 
 
 def test_failed_attempt_requires_immutable_failure_payload(tmp_path: Path) -> None:
-    with DuckDBMetadataAuthority(tmp_path / "runtime.duckdb") as authority:
-        with pytest.raises(MetadataIntegrityError, match="failure artifact"):
-            authority.record_attempt(
-                RunAttemptRecord(
-                    tenant_id=TenantID("tenant-a"),
-                    run_id=RunID("run-a"),
-                    attempt_id="attempt-a",
-                    step_index=0,
-                    attempt_number=1,
-                    status=AttemptStatus.FAILED,
-                    started_at=_NOW,
-                    finished_at=_NOW,
-                )
+    with (
+        DuckDBMetadataAuthority(tmp_path / "runtime.duckdb") as authority,
+        pytest.raises(MetadataIntegrityError, match="failure artifact"),
+    ):
+        authority.record_attempt(
+            RunAttemptRecord(
+                tenant_id=TenantID("tenant-a"),
+                run_id=RunID("run-a"),
+                attempt_id="attempt-a",
+                step_index=0,
+                attempt_number=1,
+                status=AttemptStatus.FAILED,
+                started_at=_NOW,
+                finished_at=_NOW,
             )
+        )

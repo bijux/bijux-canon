@@ -6,12 +6,12 @@ from __future__ import annotations
 
 import hashlib
 
-import pytest
 from pydantic import ValidationError
+import pytest
 
 from bijux_canon_reason.grounding import (
-    CitationIntegrityStatus,
     CitationEvidence,
+    CitationIntegrityStatus,
     ConflictRelationship,
     EvidencePacketBuilder,
     EvidencePacketPolicy,
@@ -25,6 +25,7 @@ from bijux_canon_reason.research import (
     AssumptionInsufficiencyDelta,
     AssumptionStatus,
     CanonicalDerivationDependency,
+    ClaimMergingService,
     ConvergenceService,
     EvidenceRelationAttachment,
     EvidenceRelationKind,
@@ -36,6 +37,10 @@ from bijux_canon_reason.research import (
     GraphSynthesisError,
     GraphSynthesisErrorCode,
     InsufficiencyOutcome,
+    ReasoningProvenanceError,
+    ReasoningProvenanceErrorCode,
+    ReasoningProvenanceReport,
+    ReasoningProvenanceVerifier,
     RelationClassificationMode,
     ResearchDeficiency,
     ResearchDeficiencyKind,
@@ -45,11 +50,6 @@ from bijux_canon_reason.research import (
     SynthesisConfidenceLevel,
     VerifiedGraphSynthesis,
     VerifiedGraphSynthesisService,
-    ClaimMergingService,
-    ReasoningProvenanceError,
-    ReasoningProvenanceErrorCode,
-    ReasoningProvenanceReport,
-    ReasoningProvenanceVerifier,
     create_convergence_observation,
     create_mergeable_claim,
 )

@@ -17,7 +17,6 @@ from bijux_canon_index.infra.embeddings.registry import (
 )
 from bijux_canon_index.infra.plugins.contract import PluginContract
 
-
 CONTRACT = PluginContract(
     determinism="deterministic_exact", randomness_sources=(), approximation=False
 )

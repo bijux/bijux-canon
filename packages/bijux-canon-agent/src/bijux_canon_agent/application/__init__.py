@@ -6,21 +6,14 @@ from bijux_canon_agent.application.research_tool_gateway import (
     ToolPolicyDenied,
 )
 from bijux_canon_agent.application.research_workflow import (
-    ResearchExecutionResult,
     ResearchCheckpoint,
     ResearchCheckpointPort,
+    ResearchExecutionResult,
     ResearchOperation,
     ResearchOperationRecord,
     ResearchRole,
     ResearchRoleMachine,
     ResearchTransition,
-)
-from bijux_canon_agent.contracts.research_budget import (
-    BudgetAction,
-    BudgetDecision,
-    BudgetDimensions,
-    ResearchBudgetLedger,
-    ResearchBudgetPolicy,
 )
 from bijux_canon_agent.contracts.causal_trace import (
     CausalDecisionEvent,
@@ -31,6 +24,13 @@ from bijux_canon_agent.contracts.execution_control import (
     CancellationSignal,
     ResearchFailureKind,
     ResearchFailureRecord,
+)
+from bijux_canon_agent.contracts.research_budget import (
+    BudgetAction,
+    BudgetDecision,
+    BudgetDimensions,
+    ResearchBudgetLedger,
+    ResearchBudgetPolicy,
 )
 
 __all__ = [
