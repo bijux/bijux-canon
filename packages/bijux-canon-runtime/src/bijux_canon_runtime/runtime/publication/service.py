@@ -8,6 +8,8 @@ from __future__ import annotations
 from dataclasses import asdict
 import hashlib
 import json
+from pathlib import Path
+import threading
 
 from bijux_canon_runtime.model.artifact import AddressedArtifact, canonical_json_bytes
 from bijux_canon_runtime.observability.storage.execution_store_lock import (
@@ -33,6 +35,13 @@ from bijux_canon_runtime.runtime.publication.models import (
 
 _RECEIPT_SCHEMA = "bijux.runtime.run-publication-receipt.v1"
 _PRODUCER = "bijux-canon-runtime:run-receipt"
+_PROCESS_LOCKS: dict[Path, threading.Lock] = {}
+_PROCESS_LOCKS_GUARD = threading.Lock()
+
+
+def _process_lock(path: Path) -> threading.Lock:
+    with _PROCESS_LOCKS_GUARD:
+        return _PROCESS_LOCKS.setdefault(path.resolve(), threading.Lock())
 
 
 class RuntimeRunReceiptPublisher:
@@ -49,6 +58,9 @@ class RuntimeRunReceiptPublisher:
         self._store = store
         self._inspector = RuntimeRunInspector(store)
         self._lock_timeout_seconds = lock_timeout_seconds
+        self._process_lock = _process_lock(
+            self._store.root / ".run-publications.lock"
+        )
 
     def publish(
         self,
@@ -60,17 +72,18 @@ class RuntimeRunReceiptPublisher:
         limitations: tuple[str, ...] = (),
     ) -> RuntimeRunPublicationOutcome:
         """Validate and publish one immutable revision after restart."""
-        with acquire_execution_store_lock(
-            self._store.root / ".run-publications.lock",
-            timeout_seconds=self._lock_timeout_seconds,
-        ):
-            return self._publish(
-                run_id=run_id,
-                selected_attempt_id=selected_attempt_id,
-                bindings=bindings,
-                replay=replay,
-                limitations=limitations,
-            )
+        with self._process_lock:
+            with acquire_execution_store_lock(
+                self._store.root / ".run-publications.lock",
+                timeout_seconds=self._lock_timeout_seconds,
+            ):
+                return self._publish(
+                    run_id=run_id,
+                    selected_attempt_id=selected_attempt_id,
+                    bindings=bindings,
+                    replay=replay,
+                    limitations=limitations,
+                )
 
     def _publish(
         self,
