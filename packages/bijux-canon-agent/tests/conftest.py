@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import builtins
 from collections.abc import Generator
+import hashlib
 import os
 from pathlib import Path
 import subprocess
@@ -172,12 +173,18 @@ def enforce_git_clean() -> Generator[None, None, None]:
 
 @pytest.fixture
 def test_artifacts_dir(request) -> Path:
-    safe_name = (
-        request.node.nodeid.replace("::", "__").replace("/", "_").replace("\\", "_")
+    node_name = request.node.name.split("[", 1)[0]
+    safe_name = "".join(
+        character if character.isalnum() or character in {"-", "_"} else "_"
+        for character in node_name
+    )[:32]
+    node_digest = hashlib.sha256(request.node.nodeid.encode("utf-8")).hexdigest()[:16]
+    return Path(
+        tempfile.mkdtemp(
+            prefix=f"{safe_name}-{node_digest}-",
+            dir=ALLOWED_ARTIFACTS_ROOT,
+        )
     )
-    target = ALLOWED_ARTIFACTS_ROOT / safe_name
-    target.mkdir(parents=True, exist_ok=True)
-    return target
 
 
 @pytest.fixture
