@@ -6,7 +6,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, Any
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi import Path as FastPath
@@ -71,7 +71,7 @@ def register_run_routes(
         artifacts_dir=artifacts_dir,
         max_request_bytes=max_request_bytes,
     )
-    guard_responses = {
+    guard_responses: dict[int | str, dict[str, Any]] = {
         401: {
             "description": "Authentication failed for the requested endpoint.",
             "model": ErrorDetail,

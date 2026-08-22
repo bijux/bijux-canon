@@ -4,11 +4,17 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
 
 from bijux_canon_reason.core.fingerprints import stable_id
-from bijux_canon_reason.core.types import EvidenceRef, JsonValue, ToolCall, ToolResult
+from bijux_canon_reason.core.types import (
+    EvidenceRef,
+    JsonValue,
+    ToolCall,
+    ToolRequest,
+    ToolResult,
+)
 from bijux_canon_reason.execution.evidence_records import write_evidence_record
 from bijux_canon_reason.execution.runtime import ExecutionRuntime
 
@@ -33,7 +39,7 @@ class ToolDispatchResult:
 def dispatch_tool_requests(
     *,
     node_id: str,
-    tool_requests: list[object],
+    tool_requests: Sequence[ToolRequest],
     runtime: ExecutionRuntime,
     push_event: Callable[[dict[str, object]], None],
 ) -> ToolDispatchResult:

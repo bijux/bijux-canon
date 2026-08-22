@@ -211,7 +211,7 @@ class BM25Retriever:
             self._load_index()
         if self._index is None or self._docs is None:
             raise RuntimeError("BM25Retriever not initialized")
-        return cast(ChunkedBM25Index, self._index), self._docs
+        return self._index, self._docs
 
     def _build_retrieval_provenance(
         self, index: ChunkedBM25Index

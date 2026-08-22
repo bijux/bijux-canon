@@ -340,7 +340,7 @@ class ResearchReasoningReplayService:
                 ResearchReplayErrorCode.empty_attempt_chain,
                 "research replay requires at least one immutable attempt",
             )
-        replayed = []
+        replayed: list[ReplayedResearchAttempt] = []
         claims: set[str] = set()
         evidence: set[str] = set()
         decisions: set[str] = set()
@@ -398,7 +398,7 @@ class ResearchReasoningReplayService:
                 ResearchReplayErrorCode.nonadjacent_comparison,
                 "research comparison requires a baseline and its direct child",
             )
-        changes = {
+        changes: dict[str, tuple[str, ...]] = {
             "added_input_artifact_ids": _added(
                 baseline.research_input_artifact_ids,
                 current.research_input_artifact_ids,
@@ -438,7 +438,7 @@ class ResearchReasoningReplayService:
             )
             for target in changes[key]
         }
-        attributions = []
+        attributions: list[ResearchChangeAttribution] = []
         for event in current_attempt.events:
             surface, action = _event_effect(event.kind)
             key = (surface, action, event.target_artifact_id)
@@ -454,7 +454,7 @@ class ResearchReasoningReplayService:
                     ResearchReplayErrorCode.authority_provenance_mismatch,
                     "changed graph state lacks exact authority provenance",
                 )
-            payload = {
+            attribution_payload = {
                 "surface": surface.value,
                 "action": action.value,
                 "target_artifact_id": event.target_artifact_id,
@@ -464,7 +464,7 @@ class ResearchReasoningReplayService:
             }
             attributions.append(
                 ResearchChangeAttribution(
-                    artifact_id=content_artifact_id(payload),
+                    artifact_id=content_artifact_id(attribution_payload),
                     surface=surface,
                     action=action,
                     target_artifact_id=event.target_artifact_id,
@@ -484,7 +484,7 @@ class ResearchReasoningReplayService:
         ordered_attributions = tuple(
             sorted(attributions, key=lambda item: item.artifact_id)
         )
-        payload = {
+        comparison_payload: dict[str, object] = {
             "schema_version": "bijux.canon.reason.research_attempt_comparison.v1",
             "baseline_attempt_artifact_id": baseline.attempt_artifact_id,
             "current_attempt_artifact_id": current.attempt_artifact_id,
@@ -497,14 +497,21 @@ class ResearchReasoningReplayService:
             "identical_graph_state": not expected,
         }
         return ResearchAttemptComparison(
-            artifact_id=content_artifact_id(payload),
+            artifact_id=content_artifact_id(comparison_payload),
             baseline_attempt_artifact_id=baseline.attempt_artifact_id,
             current_attempt_artifact_id=current.attempt_artifact_id,
             baseline_state_artifact_id=baseline.state_artifact_id,
             current_state_artifact_id=current.state_artifact_id,
+            added_input_artifact_ids=changes["added_input_artifact_ids"],
+            removed_input_artifact_ids=changes["removed_input_artifact_ids"],
+            added_claim_artifact_ids=changes["added_claim_artifact_ids"],
+            removed_claim_artifact_ids=changes["removed_claim_artifact_ids"],
+            added_evidence_artifact_ids=changes["added_evidence_artifact_ids"],
+            removed_evidence_artifact_ids=changes["removed_evidence_artifact_ids"],
+            added_decision_artifact_ids=changes["added_decision_artifact_ids"],
+            removed_decision_artifact_ids=changes["removed_decision_artifact_ids"],
             attributions=ordered_attributions,
             identical_graph_state=not expected,
-            **changes,
         )
 
     @staticmethod
@@ -552,7 +559,7 @@ def create_research_graph_event(
         if authority is ResearchChangeAuthority.provider_mediated
         else None
     )
-    payload = {
+    payload: dict[str, object] = {
         "sequence": sequence,
         "previous_event_artifact_id": previous_event_artifact_id,
         "kind": kind.value,
@@ -723,7 +730,19 @@ def _replayed_attempt(
         "provider_mediated_event_artifact_ids": provider_ids,
         "state_artifact_id": state_id,
     }
-    return ReplayedResearchAttempt(artifact_id=content_artifact_id(payload), **payload)
+    return ReplayedResearchAttempt(
+        artifact_id=content_artifact_id(payload),
+        attempt_artifact_id=attempt.artifact_id,
+        parent_attempt_artifact_id=attempt.parent_attempt_artifact_id,
+        research_input_artifact_ids=attempt.research_input_artifact_ids,
+        event_artifact_ids=event_ids,
+        claim_artifact_ids=claim_ids,
+        evidence_artifact_ids=evidence_ids,
+        decision_artifact_ids=decision_ids,
+        deterministic_event_artifact_ids=deterministic_ids,
+        provider_mediated_event_artifact_ids=provider_ids,
+        state_artifact_id=state_id,
+    )
 
 
 def _added(baseline: tuple[str, ...], current: tuple[str, ...]) -> tuple[str, ...]:

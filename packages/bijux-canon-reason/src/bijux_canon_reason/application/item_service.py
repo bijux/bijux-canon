@@ -7,6 +7,7 @@ from __future__ import annotations
 from contextlib import closing
 from pathlib import Path
 import sqlite3
+from typing import cast
 import uuid
 
 
@@ -147,19 +148,21 @@ class ItemService:
     def _read_item_row(
         conn: sqlite3.Connection, *, item_id: int
     ) -> sqlite3.Row | None:
-        return conn.execute(
+        row = conn.execute(
             "SELECT id, name, description, deleted FROM items WHERE id = ?",
             (item_id,),
         ).fetchone()
+        return cast(sqlite3.Row | None, row)
 
     @staticmethod
     def _read_item_by_name(
         conn: sqlite3.Connection, *, item_name: str
     ) -> sqlite3.Row | None:
-        return conn.execute(
+        row = conn.execute(
             "SELECT id, name, description, deleted FROM items WHERE name = ?",
             (item_name,),
         ).fetchone()
+        return cast(sqlite3.Row | None, row)
 
     def _read_active_item(
         self, conn: sqlite3.Connection, *, item_id: int
@@ -191,6 +194,8 @@ class ItemService:
             "INSERT INTO items (name, description, deleted) VALUES (?, ?, 0)",
             (item_name, description),
         ).lastrowid
+        if item_id is None:
+            raise ItemRequestError("item creation did not return an identity")
         return self._read_active_item(conn, item_id=int(item_id))
 
     def _upsert_item(

@@ -14,7 +14,15 @@ from bijux_canon_reason.application.run_artifacts import (
     RunBuilder,
     RunInputs,
 )
-from bijux_canon_reason.core.types import Claim, EvidenceRef, ProblemSpec, SupportKind
+from bijux_canon_reason.core.types import (
+    Claim,
+    ClaimEmittedEvent,
+    EvidenceRef,
+    EvidenceRegisteredEvent,
+    ProblemSpec,
+    StepFinishedEvent,
+    SupportKind,
+)
 from bijux_canon_reason.verification.types import Severity
 
 
@@ -169,10 +177,12 @@ def _case_metrics(arts: RunArtifacts) -> EvalCaseMetrics:
     evidence_by_id = {
         event.evidence.id: event.evidence
         for event in trace.events
-        if event.kind == "evidence_registered"
+        if isinstance(event, EvidenceRegisteredEvent)
     }
     evidence_count = len(evidence_by_id)
-    claims = [event.claim for event in trace.events if event.kind == "claim_emitted"]
+    claims = [
+        event.claim for event in trace.events if isinstance(event, ClaimEmittedEvent)
+    ]
     exact_support_counts = [
         support_count
         for claim in claims
@@ -194,7 +204,7 @@ def _case_metrics(arts: RunArtifacts) -> EvalCaseMetrics:
     insufficient = any(
         event.output.type == "insufficient_evidence"
         for event in trace.events
-        if event.kind == "step_finished"
+        if isinstance(event, StepFinishedEvent)
     )
     taxonomy: dict[str, int] = {}
     for check in verify_report.checks:
@@ -316,7 +326,22 @@ def _average_metric(rows: list[dict[str, object]], key: str) -> float:
     """Handle average metric."""
     if not rows:
         return 0.0
-    return sum(float(row.get(key, 0.0)) for row in rows) / len(rows)
+    values = (_metric_value(row.get(key, 0.0)) for row in rows)
+    return sum(values, start=0.0) / len(rows)
+
+
+def _metric_value(value: object) -> float:
+    """Coerce an admitted JSON metric to a finite numeric value."""
+    if isinstance(value, bool):
+        return 0.0
+    if isinstance(value, int | float):
+        return float(value)
+    if isinstance(value, str):
+        try:
+            return float(value)
+        except ValueError:
+            return 0.0
+    return 0.0
 
 
 def _aggregate_taxonomy(rows: list[dict[str, object]]) -> dict[str, int]:

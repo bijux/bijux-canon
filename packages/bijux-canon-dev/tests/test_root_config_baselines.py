@@ -200,7 +200,7 @@ def test_root_mypy_configuration_matches_shared_python_baseline() -> None:
     configured_files = {
         entry.strip() for entry in root_mypy["files"].split(",") if entry.strip()
     }
-    assert configured_files == _package_roots("src") | _package_roots("tests")
+    assert configured_files == _package_roots("src")
 
     configured_paths = {
         entry.strip() for entry in root_mypy["mypy_path"].split(":") if entry.strip()

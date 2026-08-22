@@ -91,6 +91,8 @@ def _build_derive_output(
         evidence=ranked_evidence,
         max_citations=_resolve_max_citations(spec=spec, min_supports=min_supports),
     )
+    if derivation.result_sha256 is None:
+        raise RuntimeError("reasoning derivation did not produce a result identity")
     claim = _build_derived_claim(derivation)
     _record_derivation(
         state=state,

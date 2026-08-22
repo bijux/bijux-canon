@@ -28,6 +28,7 @@ from bijux_canon_reason.research.convergence import ConvergenceDecision
 from bijux_canon_reason.research.evidence_relations import (
     EvidenceRelationAttachment,
     EvidenceRelationKind,
+    EvidenceRelationTrace,
     GraphEvidenceRelation,
 )
 from bijux_canon_reason.research.graph_synthesis import (
@@ -262,8 +263,10 @@ class ReasoningProvenanceVerifier:
                     f"claim {claim_id} is orphaned from canonical graph state",
                 ) from error
 
-        relations_by_canonical = defaultdict(list)
-        traces_by_relation = {}
+        relations_by_canonical: defaultdict[str, list[GraphEvidenceRelation]] = (
+            defaultdict(list)
+        )
+        traces_by_relation: dict[str, EvidenceRelationTrace] = {}
         for trace in evidence_relations.traces:
             if trace.relation_artifact_id in traces_by_relation:
                 raise ReasoningProvenanceError(
@@ -278,10 +281,10 @@ class ReasoningProvenanceVerifier:
                     ReasoningProvenanceErrorCode.unadmitted_evidence,
                     "a graph relation references evidence outside the admitted packet",
                 )
-            trace = traces_by_relation.get(relation.artifact_id)
+            relation_trace = traces_by_relation.get(relation.artifact_id)
             if (
-                trace is None
-                or trace.citation_evidence_artifact_id
+                relation_trace is None
+                or relation_trace.citation_evidence_artifact_id
                 != relation.evidence_artifact_id
             ):
                 raise ReasoningProvenanceError(
@@ -319,7 +322,7 @@ class ReasoningProvenanceVerifier:
             for relation in relations:
                 evidence = evidence_by_id[relation.evidence_artifact_id]
                 trace = traces_by_relation[relation.artifact_id]
-                payload = {
+                path_payload = {
                     "synthesized_claim_artifact_id": claim.artifact_id,
                     "canonical_claim_artifact_id": claim.canonical_claim_artifact_id,
                     "source_claim_artifact_id": relation.claim_artifact_id,
@@ -334,7 +337,7 @@ class ReasoningProvenanceVerifier:
                     "relation": relation.relation.value,
                 }
                 path = EvidenceProvenancePath(
-                    artifact_id=content_artifact_id(payload),
+                    artifact_id=content_artifact_id(path_payload),
                     synthesized_claim_artifact_id=claim.artifact_id,
                     canonical_claim_artifact_id=claim.canonical_claim_artifact_id,
                     source_claim_artifact_id=relation.claim_artifact_id,
@@ -386,7 +389,7 @@ class ReasoningProvenanceVerifier:
         verified_evidence_ids = tuple(
             sorted({item.evidence_artifact_id for item in ordered_paths})
         )
-        payload = {
+        report_payload: dict[str, object] = {
             "schema_version": "bijux.canon.reason.reasoning_provenance_report.v1",
             "synthesis_artifact_id": synthesis.artifact_id,
             "graph_artifact_id": synthesis.graph_artifact_id,
@@ -405,7 +408,7 @@ class ReasoningProvenanceVerifier:
             "synthesis_outcome": synthesis.outcome.value,
         }
         return ReasoningProvenanceReport(
-            artifact_id=content_artifact_id(payload),
+            artifact_id=content_artifact_id(report_payload),
             synthesis_artifact_id=synthesis.artifact_id,
             graph_artifact_id=synthesis.graph_artifact_id,
             evidence_packet_artifact_id=evidence_packet.artifact_id,
@@ -497,7 +500,7 @@ class ReasoningProvenanceVerifier:
     def _verify_dependencies(
         claim_merge: ClaimMergeResult, canonical_ids: set[str]
     ) -> None:
-        children = {item: set() for item in canonical_ids}
+        children: dict[str, set[str]] = {item: set() for item in canonical_ids}
         indegree = {item: 0 for item in canonical_ids}
         for dependency in claim_merge.dependencies:
             parent = dependency.parent_canonical_claim_artifact_id

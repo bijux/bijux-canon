@@ -21,6 +21,8 @@ from bijux_canon_reason.execution.tool_runtime import (
     ToolRegistry,
 )
 
+RuntimeMode = Literal["live", "frozen"]
+
 
 class ToolExecutor(Protocol):
     """Represents tool executor."""
@@ -39,11 +41,20 @@ class ToolExecutor(Protocol):
 class ExecutionRuntime(Protocol):
     """Represents execution runtime."""
 
-    seed: int
-    tools: ToolExecutor
-    runtime_kind: str
-    mode: Literal["live", "frozen"]
-    artifacts_dir: Path | None
+    @property
+    def seed(self) -> int: ...
+
+    @property
+    def tools(self) -> ToolExecutor: ...
+
+    @property
+    def runtime_kind(self) -> str: ...
+
+    @property
+    def mode(self) -> RuntimeMode: ...
+
+    @property
+    def artifacts_dir(self) -> Path | None: ...
 
     @property
     def descriptor(self) -> RuntimeDescriptor:
@@ -59,7 +70,7 @@ class Runtime:
     seed: int
     tools: ToolRegistry | FrozenToolRegistry
     runtime_kind: str
-    mode: Literal["live", "frozen"]
+    mode: RuntimeMode
     artifacts_dir: Path | None
 
     @property
@@ -127,7 +138,7 @@ class Runtime:
         recorded_results: Mapping[str, ToolResult],
         artifacts_dir: Path | None = None,
         descriptors: list[ToolDescriptor] | None = None,
-        mode: Literal["live", "frozen"] = "frozen",
+        mode: RuntimeMode = "frozen",
         runtime_kind: str = "ReplayRuntime",
     ) -> Runtime:
         """Handle frozen."""

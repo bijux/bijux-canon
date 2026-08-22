@@ -17,7 +17,7 @@ import re
 import ssl
 import sys
 import time
-from typing import Any, BinaryIO
+from typing import Any, BinaryIO, cast
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -560,7 +560,7 @@ def acquire_record(record: Mapping[str, Any], *, output_root: Path) -> dict[str,
             )
         validate_media(record, body)
         write_exclusive(source_path, source_bytes)
-        return receipt
+        return cast(dict[str, Any], receipt)
     response_body, transport = fetch(record)
     body = apply_transformations(record, response_body)
     inspection = validate_media(record, body)

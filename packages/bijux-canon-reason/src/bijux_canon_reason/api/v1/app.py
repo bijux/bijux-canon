@@ -154,10 +154,7 @@ def _install_guard_middleware(app: FastAPI, request_guard: RequestGuard) -> None
         """Handle guard middleware."""
         try:
             request_guard(request)
-            response = await call_next(request)
-            if isinstance(response, Response):
-                return response
-            return JSONResponse(status_code=200, content=str(response))
+            return await call_next(request)
         except HTTPException as exc:  # pragma: no cover - exercised via tests
             return JSONResponse(
                 status_code=exc.status_code,
@@ -202,7 +199,7 @@ def _install_openapi_schema(app: FastAPI) -> None:
         app.openapi_schema = schema
         return schema
 
-    app.openapi = _openapi
+    setattr(app, "openapi", _openapi)
 
 
 def _attach_stateful_links(schema: dict[str, object]) -> None:

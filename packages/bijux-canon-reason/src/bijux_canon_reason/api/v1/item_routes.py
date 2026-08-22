@@ -6,6 +6,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from pathlib import Path
+from typing import Any
 
 from fastapi import FastAPI, HTTPException, Query, Request, Response
 from fastapi import Path as FastPath
@@ -57,7 +58,7 @@ def register_item_routes(
 ) -> None:
     """Register item routes."""
     service = ItemService(Path(app.state.db_path))
-    guard_responses = {
+    guard_responses: dict[int | str, dict[str, Any]] = {
         401: {
             "description": "Authentication failed for the requested endpoint.",
             "model": ErrorDetail,
@@ -237,8 +238,8 @@ def register_item_routes(
     )
     def update_item(
         request: Request,
+        payload: ItemUpdate,
         item_id: int = FastPath(ge=1, le=MAX_ITEM_ID),
-        payload: ItemUpdate = ...,
     ) -> dict[str, object]:
         """Handle update item."""
         guard_request(request)

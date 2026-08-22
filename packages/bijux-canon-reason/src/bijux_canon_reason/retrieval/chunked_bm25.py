@@ -15,6 +15,7 @@ from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 import hashlib
 import json
+import math
 from pathlib import Path
 
 from bijux_canon_reason.core.fingerprints import canonical_dumps, fingerprint_bytes
@@ -244,6 +245,7 @@ def build_or_load_index(
         max_docs=max_docs,
     )
     if cached is not None:
+        assert index_path is not None
         return cached, corpus_sha, _sha256_path(index_path)
 
     docs = load_corpus_jsonl_stream(
@@ -276,8 +278,6 @@ def _score_document(
     b: float,
 ) -> float:
     """Handle score document."""
-    import math
-
     document_length = len(document_tokens)
     denom_norm = k1 * (1.0 - b + b * (document_length / avgdl))
     score = 0.0
@@ -289,7 +289,6 @@ def _score_document(
             term=term,
             document_frequency=document_frequency,
             doc_count=doc_count,
-            math_module=math,
         )
         if idf == 0.0:
             continue
@@ -306,13 +305,12 @@ def _inverse_document_frequency(
     term: str,
     document_frequency: Counter[str],
     doc_count: int,
-    math_module: object,
 ) -> float:
     """Handle inverse document frequency."""
     matches = document_frequency.get(term, 0)
     if matches == 0:
         return 0.0
-    return float(math_module.log(1.0 + (doc_count - matches + 0.5) / (matches + 0.5)))
+    return float(math.log(1.0 + (doc_count - matches + 0.5) / (matches + 0.5)))
 
 
 def _chunk_json(chunk: Chunk) -> dict[str, object]:
@@ -331,7 +329,9 @@ def _chunk_json(chunk: Chunk) -> dict[str, object]:
 
 def _chunk_from_json(chunk_payload: object) -> Chunk:
     """Handle chunk from JSON."""
-    chunk_obj = dict(chunk_payload)
+    if not isinstance(chunk_payload, dict):
+        raise ValueError("index chunk payload must be an object")
+    chunk_obj = chunk_payload
     return Chunk(
         doc_id=str(chunk_obj["doc_id"]),
         doc_sha256=str(chunk_obj["doc_sha256"]),

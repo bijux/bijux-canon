@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import TypeAlias
+from typing import TypeAlias, cast
 
 from bijux_canon_reason.application.run_artifacts import RunBuilder, RunInputs
 from bijux_canon_reason.core.types import Plan, ProblemSpec
@@ -110,7 +110,7 @@ class RunService:
     @staticmethod
     def _unwrap_canonical_document(raw: object) -> JsonDocument:
         if isinstance(raw, dict) and "data" in raw and "canonical_version" in raw:
-            return raw["data"]
+            return cast(JsonDocument, raw["data"])
         if isinstance(raw, (dict, list, str, int, float, bool)) or raw is None:
             return raw
         return str(raw)

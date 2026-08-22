@@ -5,7 +5,7 @@
 from __future__ import annotations
 
 from bijux_canon_reason.core.types import JsonValue, Trace, TraceEvent
-from bijux_canon_reason.execution.runtime import Runtime
+from bijux_canon_reason.execution.runtime import ExecutionRuntime
 from bijux_canon_reason.execution.step_execution import ExecutionState
 
 
@@ -14,7 +14,7 @@ def build_trace_result(
     spec_id: str,
     plan_id: str,
     events: list[TraceEvent],
-    runtime: Runtime,
+    runtime: ExecutionRuntime,
     state: ExecutionState,
     min_supports: int,
 ) -> Trace:

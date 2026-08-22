@@ -10,6 +10,7 @@ from pydantic import TypeAdapter
 
 from bijux_canon_reason.core.invariants import validate_plan
 from bijux_canon_reason.core.types import (
+    DeriveOutput,
     Plan,
     PlanNode,
     ProblemSpec,
@@ -195,7 +196,7 @@ def _execute_node(
         state=state,
         min_supports=min_supports,
     )
-    if node.kind == "derive" and getattr(out, "claim_ids", None):
+    if isinstance(out, DeriveOutput) and out.claim_ids:
         claim_id = out.claim_ids[0]
         event_log.append(
             {

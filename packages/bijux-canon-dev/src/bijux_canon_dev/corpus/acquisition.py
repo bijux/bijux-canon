@@ -15,7 +15,7 @@ import ssl
 import subprocess
 import sys
 import time
-from typing import Any, BinaryIO, IO
+from typing import Any, BinaryIO, IO, cast
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -70,7 +70,7 @@ def jats_media(record: Mapping[str, Any]) -> Mapping[str, Any]:
         raise ValueError(
             f"source has no unique reviewed JATS media: {record['source_id']}"
         )
-    return matches[0]
+    return cast(Mapping[str, Any], matches[0])
 
 
 def validate_request_url(url: str, policy: Mapping[str, Any]) -> None:
@@ -317,7 +317,7 @@ def acquire_record(
         if len(body) != existing["byte_count"] or sha256(body) != existing["sha256"]:
             raise RuntimeError("existing acquired bytes do not match their receipt")
         validate_jats(body, doi=record["doi"])
-        return existing
+        return cast(dict[str, Any], existing)
 
     body, transport = fetch_jats(record)
     core = acquisition_core(record, body=body, corpus_root=corpus_root)
@@ -336,7 +336,7 @@ def acquire_record(
             raise RuntimeError(
                 "stable source returned bytes inconsistent with its receipt"
             )
-        return existing
+        return cast(dict[str, Any], existing)
     write_exclusive(
         receipt_path,
         json.dumps(receipt, ensure_ascii=False, indent=2, sort_keys=True).encode()
