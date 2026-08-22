@@ -60,10 +60,12 @@ ten held-out cases per claim class, records query/evidence/conflict/negative/
 format/difficulty strata, prohibits tuning use of held-out labels, and hashes
 every case and the complete split.
 
-`evaluation-cases.jsonl` is the canonical line-oriented projection of those 120
-cases for review, sharding, and evaluation execution. It is regenerated from
-the validated split with `--cases-output`; byte drift from `split.json` fails
-the repository test suite.
+`evaluation-cases.jsonl` is the canonical line-oriented execution inventory for
+those 120 cases. Every row joins the frozen split to its reviewed question,
+single-source corpus scope, source filter, answerability decision, and combined
+retrieval/claim rationale without consulting system output. It is regenerated
+from the validated split, qrels, and claim truth with `--cases-output`; byte
+drift fails the repository test suite.
 
 Validate the frozen case construction, strata, partition isolation, and hashes
 with:

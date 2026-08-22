@@ -16,6 +16,8 @@ from bijux_canon_dev.corpus.research_evaluation_split import (
     validate_split,
     write_evaluation_cases,
 )
+from bijux_canon_dev.corpus.research_claim_truth import load_claim_truth
+from bijux_canon_dev.corpus.research_qrels import load_qrels
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 RESEARCH_ROOT = REPO_ROOT / "examples/ancient-dna-research"
@@ -66,7 +68,12 @@ def test_evaluation_cases_jsonl_is_exact_canonical_split_projection(
 ) -> None:
     output = tmp_path / "evaluation-cases.jsonl"
 
-    write_evaluation_cases(_document(), output)
+    write_evaluation_cases(
+        _document(),
+        output,
+        qrels=tuple(load_qrels(QRELS_PATH)),
+        claims=tuple(load_claim_truth(CLAIM_TRUTH_PATH)),
+    )
 
     assert (
         output.read_bytes()
@@ -77,6 +84,15 @@ def test_evaluation_cases_jsonl_is_exact_canonical_split_projection(
     assert [item["case_id"] for item in records] == [
         f"adna-case-{ordinal:03d}" for ordinal in range(1, 121)
     ]
+    assert all(item["question"].strip() for item in records)
+    assert all(item["corpus_scope"]["source_ids"] for item in records)
+    assert all(item["filters"]["source_id"] == item["source_id"] for item in records)
+    assert {item["answerability"] for item in records} == {
+        "answerable",
+        "must-abstain",
+    }
+    assert all(item["rationale"].startswith("Retrieval:") for item in records)
+    assert all(item["system_output_consulted"] is False for item in records)
 
 
 def test_heldout_labels_cannot_be_enabled_for_tuning() -> None:

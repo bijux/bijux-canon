@@ -59,12 +59,54 @@ def load_split(path: Path) -> dict[str, Any]:
     return value
 
 
-def write_evaluation_cases(document: Mapping[str, Any], path: Path) -> None:
-    """Write the frozen case inventory as canonical reviewable JSON Lines."""
+def evaluation_case_records(
+    document: Mapping[str, Any],
+    qrels: tuple[dict[str, Any], ...],
+    claims: tuple[dict[str, Any], ...],
+) -> tuple[dict[str, Any], ...]:
+    """Join every frozen case to its reviewed question and scope contract."""
     cases = document.get("cases")
     if not isinstance(cases, list) or len(cases) != 120:
         raise RuntimeError("research evaluation split must contain exactly 120 cases")
-    path.write_bytes(b"".join(canonical(case) + b"\n" for case in cases))
+    qrels_by_id = {item["qrel_id"]: item for item in qrels}
+    claims_by_id = {item["truth_id"]: item for item in claims}
+    records = []
+    for case in cases:
+        qrel = qrels_by_id[case["qrel_id"]]
+        claim = claims_by_id[case["claim_truth_id"]]
+        answerable = (
+            claim["claim_class"] in {"expected", "optional"}
+            and case["labels"]["citation_relation"] == "supports"
+        )
+        record = {
+            **case,
+            "question": qrel["query"],
+            "corpus_scope": {
+                "source_ids": [case["source_id"]],
+                "lock_identity_sha256": qrel["lock_identity_sha256"],
+            },
+            "filters": {"source_id": case["source_id"]},
+            "answerability": "answerable" if answerable else "must-abstain",
+            "rationale": (
+                f"Retrieval: {qrel['rationale']} Claim: {claim['rationale']}"
+            ),
+            "system_output_consulted": False,
+        }
+        record["record_identity_sha256"] = sha256(canonical(record))
+        records.append(record)
+    return tuple(records)
+
+
+def write_evaluation_cases(
+    document: Mapping[str, Any],
+    path: Path,
+    *,
+    qrels: tuple[dict[str, Any], ...],
+    claims: tuple[dict[str, Any], ...],
+) -> None:
+    """Write the frozen case inventory as canonical reviewable JSON Lines."""
+    records = evaluation_case_records(document, qrels, claims)
+    path.write_bytes(b"".join(canonical(case) + b"\n" for case in records))
 
 
 def _relation(qrel: Mapping[str, Any], claim: Mapping[str, Any]) -> str:
@@ -311,7 +353,12 @@ def main() -> None:
         split_path=args.split,
     )
     if args.cases_output is not None:
-        write_evaluation_cases(load_split(args.split), args.cases_output)
+        write_evaluation_cases(
+            load_split(args.split),
+            args.cases_output,
+            qrels=tuple(load_qrels(args.qrels)),
+            claims=tuple(load_claim_truth(args.claim_truth)),
+        )
     json.dump(result, sys.stdout, indent=2, sort_keys=True)
     sys.stdout.write("\n")
 
