@@ -3,6 +3,13 @@
 
 """Runtime-owned persistence boundaries."""
 
+from bijux_canon_runtime.runtime.persistence.artifact_inspection import (
+    ArtifactInspectionRecord,
+    ArtifactReferenceView,
+    ArtifactVerificationRecord,
+    LogicalArtifactResolution,
+    RuntimeArtifactInspector,
+)
 from bijux_canon_runtime.runtime.persistence.payload_store import (
     ArtifactPayloadStore,
     InMemoryArtifactPayloadStore,
@@ -12,6 +19,13 @@ from bijux_canon_runtime.runtime.persistence.payload_store import (
 from bijux_canon_runtime.runtime.persistence.filesystem_payload_store import (
     AtomicFilesystemArtifactPayloadStore,
     PayloadCorruptionError,
+)
+from bijux_canon_runtime.runtime.persistence.evidence_bundle import (
+    EvidenceBundleExporter,
+    EvidenceBundleIntegrityError,
+    EvidenceBundleManifest,
+    EvidenceBundleVerification,
+    EvidenceRedactionPolicy,
 )
 from bijux_canon_runtime.runtime.persistence.backup_restore import (
     BackupIntegrityError,
@@ -55,21 +69,30 @@ from bijux_canon_runtime.runtime.persistence.retention import (
 )
 
 __all__ = [
+    "ArtifactInspectionRecord",
     "ArtifactPayloadStore",
     "ArtifactPublicationCoordinator",
     "ArtifactReachabilityReport",
     "ArtifactReachabilityValidator",
     "ArtifactReferenceRecord",
+    "ArtifactReferenceView",
+    "ArtifactVerificationRecord",
     "AtomicFilesystemArtifactPayloadStore",
     "AttemptStatus",
     "BackupIntegrityError",
     "CheckStatus",
     "DuckDBMetadataAuthority",
+    "EvidenceBundleExporter",
+    "EvidenceBundleIntegrityError",
+    "EvidenceBundleManifest",
+    "EvidenceBundleVerification",
+    "EvidenceRedactionPolicy",
     "GarbageCollectionCandidate",
     "GarbageCollectionPlan",
     "GarbageCollectionResult",
     "GarbageCollectionSafetyError",
     "InMemoryArtifactPayloadStore",
+    "LogicalArtifactResolution",
     "PayloadBinding",
     "PayloadCollisionError",
     "PayloadCorruptionError",
@@ -89,6 +112,7 @@ __all__ = [
     "RuntimeBackupManager",
     "RuntimeBackupManifest",
     "RuntimeRestoreResult",
+    "RuntimeArtifactInspector",
     "RetentionPolicy",
     "SafeGarbageCollector",
 ]
