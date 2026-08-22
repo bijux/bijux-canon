@@ -81,13 +81,19 @@ class _RecoveryAdapter:
                 self.source_steps,
                 self.store,
             ).execute(step, upstream, context)
-        if source.status is InspectedStepStatus.RUNNING:
+        if source.status in {
+            InspectedStepStatus.RUNNING,
+            InspectedStepStatus.FAILED,
+        }:
             if self.reconciliation_adapter is None:
                 raise RuntimeRecoveryError(
                     f"started step requires an idempotent reconciler: {step.step_id}"
                 )
             return self.reconciliation_adapter.execute(step, upstream, context)
-        if source.status is not InspectedStepStatus.PLANNED:
+        if source.status not in {
+            InspectedStepStatus.PLANNED,
+            InspectedStepStatus.SKIPPED,
+        }:
             raise RuntimeRecoveryError(
                 f"source step cannot be recovered from {source.status.value}"
             )
@@ -128,13 +134,22 @@ class RuntimeRecoveryService:
             return self._reuse_existing(source, existing)
         if current.selected_attempt_id != source_attempt_id:
             raise RuntimeRecoveryError("recovery must supersede the latest attempt")
-        if source.status is not InspectedRunStatus.RUNNING:
-            raise RuntimeRecoveryError("recovery requires an incomplete running attempt")
+        if source.status not in {
+            InspectedRunStatus.RUNNING,
+            InspectedRunStatus.FAILED,
+        }:
+            raise RuntimeRecoveryError(
+                "recovery requires an interrupted or failed attempt"
+            )
         reconciliation = dict(reconciliation_adapters or {})
+        ambiguous_statuses = {
+            InspectedStepStatus.RUNNING,
+            InspectedStepStatus.FAILED,
+        }
         ambiguous = {
             step.operation
             for step in source.steps
-            if step.status is InspectedStepStatus.RUNNING
+            if step.status in ambiguous_statuses
         }
         missing = ambiguous.difference(item.value for item in reconciliation)
         if missing:
@@ -160,7 +175,7 @@ class RuntimeRecoveryService:
                 "ambiguous_step_ids": [
                     step.step_id
                     for step in source.steps
-                    if step.status is InspectedStepStatus.RUNNING
+                    if step.status in ambiguous_statuses
                 ]
             },
         )
@@ -200,10 +215,14 @@ class RuntimeRecoveryService:
                         for step in source.steps
                         for artifact_id in step.output_artifact_ids
                     ],
+                    "source_failure_event_artifact_ids": [
+                        str(failure.event_artifact_id)
+                        for failure in source.failures
+                    ],
                     "ambiguous_step_ids": [
                         step.step_id
                         for step in source.steps
-                        if step.status is InspectedStepStatus.RUNNING
+                        if step.status in ambiguous_statuses
                     ],
                 }
             },
@@ -276,7 +295,9 @@ def _recovered_steps(
     dispositions = {
         InspectedStepStatus.COMPLETED: RecoveryStepDisposition.REUSED,
         InspectedStepStatus.RUNNING: RecoveryStepDisposition.RECONCILED,
+        InspectedStepStatus.FAILED: RecoveryStepDisposition.RECONCILED,
         InspectedStepStatus.PLANNED: RecoveryStepDisposition.EXECUTED,
+        InspectedStepStatus.SKIPPED: RecoveryStepDisposition.EXECUTED,
     }
     return tuple(
         RecoveredStep(
