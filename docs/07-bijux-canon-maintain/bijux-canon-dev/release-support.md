@@ -87,6 +87,31 @@ Package profiles may add release-specific checks before or after the common
 build. Inspect the selected package’s `release-dry` behavior rather than
 assuming all distributions have identical evidence.
 
+## Supported Python Verification
+
+The installed `bijux-canon-python-support` command treats package metadata as
+the support authority. It refuses classifier drift between packages, a
+`requires-python` contradiction, missing or duplicate wheels, mixed package
+versions, malformed wheel metadata, and unsafe archive paths. It then installs
+the exact repository-and-package wheel family under every advertised Python
+minor, runs the package-manager consistency check, imports every shipped module
+from the isolated `site-packages`, and loads every console entry point.
+
+```bash
+bijux-canon-python-support \
+  --repo-root . \
+  --wheel-dir artifacts/release/wheels \
+  --environment-root artifacts/release/python-support/environments \
+  --output artifacts/release/python-support/result.json
+```
+
+The command requires a clean checkout so the recorded full source commit names
+the exact tested tree. Wheel inputs, environments, caches, command logs, and the
+JSON result must stay under `artifacts/`; they are run evidence, not product
+source. The local result records its platform explicitly. Multi-platform
+enforcement remains a remote-runner responsibility and must not be inferred
+from a single local pass.
+
 ## Local Publication Is Safe by Default
 
 ```bash

@@ -39,6 +39,7 @@ bijux_canon_dev/
 | `docs.repository_docs_catalog` | repository package catalog and documentation model | generated reference inputs used by the public site |
 | `quality.deptry_scan` | shared Deptry policy and package metadata | package-specific merged dependency scan configuration and exit status |
 | `security.pip_audit_gate` | pip-audit JSON and strict/ignore policy | normalized vulnerability table and gate status |
+| `release.python_support_matrix` | workspace metadata and one complete wheel set | isolated installed-package results for every advertised Python version |
 | `release.version_resolver` | package metadata and Git history | static, Hatch VCS, or matching-tag version |
 | `release.publication_guard` | resolved version and optional dist directory | prerelease/local-version policy and artifact-version agreement |
 | `sbom.requirements_writer` | package dependencies and optional development group | deduplicated prod or dev requirements with local workspace references |
@@ -97,6 +98,16 @@ Version resolution proceeds from an explicit project version, to `hatch
 version`, to the latest matching Git tag, then returns `0.0.0` when no source
 resolves. The publication guard refuses unresolved, prerelease, local/dirty, or
 artifact-mismatched versions unless the relevant exception is explicit.
+
+The Python support matrix derives its interpreter rows from every package's
+classifiers, checks those rows against `requires-python`, and requires exactly
+one wheel for the repository distribution and every configured package. Each
+row installs that immutable wheel set into an isolated environment, checks
+dependency metadata, imports every wheel-owned module from `site-packages`, and
+loads every declared console entry point. The JSON outcome binds the source
+commit, package metadata, lock file, wheel hashes, commands, and failures. It
+refuses output, wheel, and environment paths outside the ignored `artifacts/`
+tree.
 
 The SBOM requirements writer produces separate production and development
 inputs. Local workspace dependencies become absolute `file:` requirements so

@@ -40,10 +40,11 @@ would destroy the diagnostic boundary.
 ## Distribution posture
 
 `bijux-canon-dev` is an internal workspace support package. It is deliberately
-excluded from the repository's public release package set and registers no
-general-purpose console script. Maintainers invoke its focused modules through
-documented Make targets and workflow commands. Its VCS-derived version supports
-workspace builds; it is not a promise of an end-user product release.
+excluded from the repository's public release package set. Its installed
+maintenance commands verify supply-chain bindings and the complete supported
+Python wheel matrix; generated reports and isolated environments belong under
+the repository `artifacts/` tree. Its VCS-derived version supports workspace
+builds; it is not a promise of an end-user product release.
 
 ## System Integration Evidence
 
