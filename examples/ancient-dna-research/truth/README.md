@@ -52,3 +52,23 @@ python -m bijux_canon_dev.corpus.research_claim_truth \
   --qrels examples/ancient-dna-research/truth/qrels.jsonl \
   --claim-truth examples/ancient-dna-research/truth/claim-truth.jsonl
 ```
+
+`split.json` freezes the complete same-source cross-product of 30 graded qrel
+judgments and four atomic claim classes into exactly 120 reviewed evaluation
+cases. The partition contains 80 development and 40 held-out cases, balances
+ten held-out cases per claim class, records query/evidence/conflict/negative/
+format/difficulty strata, prohibits tuning use of held-out labels, and hashes
+every case and the complete split.
+
+Validate the frozen case construction, strata, partition isolation, and hashes
+with:
+
+```console
+python -m bijux_canon_dev.corpus.research_evaluation_split \
+  --lock examples/ancient-dna-research/corpus.lock.json \
+  --research-root examples/ancient-dna-research \
+  --locator-truth examples/ancient-dna-research/truth/locator-truth.jsonl \
+  --qrels examples/ancient-dna-research/truth/qrels.jsonl \
+  --claim-truth examples/ancient-dna-research/truth/claim-truth.jsonl \
+  --split examples/ancient-dna-research/truth/split.json
+```
