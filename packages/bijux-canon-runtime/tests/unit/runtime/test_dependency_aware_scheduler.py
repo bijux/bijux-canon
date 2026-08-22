@@ -5,11 +5,12 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass, field
 import json
 from pathlib import Path
 import threading
-from time import sleep
+from time import monotonic, sleep
 
 from bijux_canon_runtime.application.request_planner import RuntimeRequestPlanner
 from bijux_canon_runtime.model.execution.request_plan import (
@@ -165,6 +166,9 @@ def _run(
     fail_embed: bool = False,
     shared_write_key: bool = False,
     record_events: bool = False,
+    is_cancelled: Callable[[], bool] | None = None,
+    deadline_monotonic: float | None = None,
+    monotonic_clock: Callable[[], float] = monotonic,
 ) -> tuple[
     DagScheduleResult,
     _ConcurrencyProbe,
@@ -219,7 +223,12 @@ def _run(
         ),
         journal=journal,
         events=events,
-    ).run(plan)
+    ).run(
+        plan,
+        is_cancelled=is_cancelled,
+        deadline_monotonic=deadline_monotonic,
+        monotonic_clock=monotonic_clock,
+    )
     reopened = AtomicFilesystemArtifactPayloadStore(tmp_path / "artifacts")
     for artifact_id in result.transition_artifact_ids:
         reopened.load(artifact_id)
@@ -313,3 +322,44 @@ def test_scheduler_persists_complete_success_and_failure_events(
         success_store.load(artifact_id)
     for artifact_id in failure_events.artifact_ids:
         failure_store.load(artifact_id)
+
+
+def test_scheduler_cancels_queued_nodes_without_dispatching(
+    tmp_path: Path,
+) -> None:
+    result, probe, events, _ = _run(
+        tmp_path,
+        record_events=True,
+        is_cancelled=lambda: True,
+    )
+    assert events is not None
+
+    assert set(dict(result.statuses).values()) == {StepNodeStatus.CANCELLED}
+    assert probe.calls == 0
+    assert (
+        tuple(record.event_kind for record in events.records).count(
+            RuntimeEventKind.CANCELLED
+        )
+        == 3
+    )
+
+
+def test_scheduler_classifies_expired_deadline_separately_from_cancellation(
+    tmp_path: Path,
+) -> None:
+    result, probe, events, _ = _run(
+        tmp_path,
+        record_events=True,
+        deadline_monotonic=9.0,
+        monotonic_clock=lambda: 10.0,
+    )
+    assert events is not None
+
+    assert set(dict(result.statuses).values()) == {StepNodeStatus.TIMED_OUT}
+    assert probe.calls == 0
+    assert (
+        tuple(record.event_kind for record in events.records).count(
+            RuntimeEventKind.TIMED_OUT
+        )
+        == 3
+    )
