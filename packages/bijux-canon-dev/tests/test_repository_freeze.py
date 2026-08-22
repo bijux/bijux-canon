@@ -69,9 +69,14 @@ def test_freeze_contains_selected_tree_and_reachable_history(tmp_path: Path) -> 
     assert manifest["tracked_entry_count"] == 2
     assert manifest["git_history"]["scope"] == ("commit-and-all-reachable-ancestors")
     assert _git(repository, "bundle", "verify", str(bundle))
-    assert _git(repository, "bundle", "list-heads", str(bundle)) == (
-        f"{first_commit} refs/heads/frozen"
-    )
+    assert set(_git(repository, "bundle", "list-heads", str(bundle)).splitlines()) == {
+        f"{first_commit} HEAD",
+        f"{first_commit} refs/heads/frozen",
+    }
+    checkout = tmp_path / "checkout"
+    _git(tmp_path, "clone", "--quiet", str(bundle), str(checkout))
+    assert _git(checkout, "rev-parse", "HEAD") == first_commit
+    assert (checkout / "tracked.txt").read_text(encoding="utf-8") == "first\n"
 
     first_archive_sha256 = hashlib.sha256(output.read_bytes()).hexdigest()
     repeated_output = freeze_repository(repository, "HEAD~1")

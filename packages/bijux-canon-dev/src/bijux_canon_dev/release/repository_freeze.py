@@ -85,13 +85,14 @@ def _create_history_bundle(
         str(repository),
         f"{commit}:refs/heads/frozen",
     )
+    _run_git(history_repository, "symbolic-ref", "HEAD", "refs/heads/frozen")
     bundle = workspace / "git-history.bundle"
     _run_git(
         history_repository,
         "bundle",
         "create",
         str(bundle),
-        "refs/heads/frozen",
+        "--all",
     )
     _run_git(repository, "bundle", "verify", str(bundle))
     return bundle
