@@ -201,6 +201,7 @@ class ConcreteStepInputs:
     provider: str | None = None
     output_policy: RuntimeOutputPolicy | None = None
     replay_attempt_id: str | None = None
+    source_attempt_id: str | None = None
 
 
 @dataclass(frozen=True, slots=True)

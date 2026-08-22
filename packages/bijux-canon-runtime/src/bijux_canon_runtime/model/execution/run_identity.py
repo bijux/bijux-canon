@@ -211,6 +211,24 @@ class ExecutionAttemptIdentity:
         )
 
     @classmethod
+    def retry_persisted(
+        cls,
+        *,
+        request_id: RequestID,
+        source: ExecutionAttemptIdentity,
+        process_id: str,
+    ) -> ExecutionAttemptIdentity:
+        """Create a recovery retry from a validated persisted attempt."""
+        return cls._derive_from_run_id(
+            run_id=source.run_id,
+            request_id=request_id,
+            attempt_number=source.attempt_number + 1,
+            relation=AttemptRelation.RETRY,
+            source=source,
+            process_id=process_id,
+        )
+
+    @classmethod
     def _derive(
         cls,
         *,

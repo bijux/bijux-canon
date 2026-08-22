@@ -240,6 +240,7 @@ class RuntimeRequestPlanner:
             replay_mode=request.replay_mode,
             scope=request.scope,
             replay_attempt_id=request.replay_attempt_id,
+            source_attempt_id=request.replay_attempt_id,
         )
         if operation is DagOperation.INGEST:
             return replace(

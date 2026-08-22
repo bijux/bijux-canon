@@ -22,6 +22,7 @@ from bijux_canon_runtime.model.execution.request_plan import (
     RuntimeRequestPlan,
 )
 from bijux_canon_runtime.ontology.ids import ArtifactID, RequestID
+from bijux_canon_runtime.ontology.public import ReplayMode
 from bijux_canon_runtime.runtime.inspection import (
     RuntimeInspectionError,
     RuntimeRunInspection,
@@ -52,6 +53,30 @@ def reconstruct_replay_plan(
     policy: RuntimeReplayPolicy,
 ) -> ReconstructedReplayPlan:
     """Rebuild the exact source DAG with replay-bound immutable inputs."""
+    return reconstruct_linked_plan(
+        inspection,
+        request_id=request_id,
+        replay_mode=policy.replay_mode,
+        linkage_kind="replay",
+        execution_policy={
+            "network_policy": policy.network_policy.value,
+            "provider_allowlist": list(policy.provider_allowlist),
+            "tolerance": asdict(policy.tolerance),
+        },
+    )
+
+
+def reconstruct_linked_plan(
+    inspection: RuntimeRunInspection,
+    *,
+    request_id: RequestID,
+    replay_mode: ReplayMode,
+    linkage_kind: str,
+    execution_policy: dict[str, object],
+) -> ReconstructedReplayPlan:
+    """Clone an inspected DAG for a linked replay or recovery attempt."""
+    if linkage_kind not in {"replay", "recovery"}:
+        raise ValueError("linked plan kind must be replay or recovery")
     manifest = _selected_manifest(inspection)
     source_plan = required_object(manifest, "plan")
     steps = tuple(
@@ -59,20 +84,20 @@ def reconstruct_replay_plan(
             required_dict(item, "plan step"),
             request_id=request_id,
             source_attempt_id=inspection.selected_attempt_id,
-            policy=policy,
+            replay_mode=replay_mode,
+            linkage_kind=linkage_kind,
         )
         for item in required_list(source_plan, "steps")
     )
     source_request_sha256 = required_string(source_plan, "request_sha256")
     request_payload = {
-        "network_policy": policy.network_policy.value,
-        "provider_allowlist": list(policy.provider_allowlist),
-        "replay_mode": policy.replay_mode.value,
+        "execution_policy": execution_policy,
+        "linkage_kind": linkage_kind,
+        "replay_mode": replay_mode.value,
         "request_id": str(request_id),
-        "schema_version": "bijux.runtime.replay-request.v1",
+        "schema_version": f"bijux.runtime.{linkage_kind}-request.v1",
         "source_attempt_id": inspection.selected_attempt_id,
         "source_request_sha256": source_request_sha256,
-        "tolerance": asdict(policy.tolerance),
     }
     request_sha256 = hashlib.sha256(canonical_json_bytes(request_payload)).hexdigest()
     plan_payload = {
@@ -122,7 +147,8 @@ def _reconstruct_step(
     *,
     request_id: RequestID,
     source_attempt_id: str,
-    policy: RuntimeReplayPolicy,
+    replay_mode: ReplayMode,
+    linkage_kind: str,
 ) -> ConcreteDagStep:
     inputs = required_object(record, "inputs")
     budget_record = required_object(inputs, "budget")
@@ -154,7 +180,7 @@ def _reconstruct_step(
                     budget_record, "max_provider_tokens"
                 ),
             ),
-            replay_mode=policy.replay_mode,
+            replay_mode=replay_mode,
             scope=required_string(inputs, "scope"),
             query=optional_string(inputs, "query"),
             source_directory=optional_string(inputs, "source_directory"),
@@ -191,7 +217,10 @@ def _reconstruct_step(
                     ),
                 )
             ),
-            replay_attempt_id=source_attempt_id,
+            replay_attempt_id=(
+                source_attempt_id if linkage_kind == "replay" else None
+            ),
+            source_attempt_id=source_attempt_id,
         ),
     )
 
@@ -250,4 +279,8 @@ def _json_value(value: object) -> object:
     return value
 
 
-__all__ = ["ReconstructedReplayPlan", "reconstruct_replay_plan"]
+__all__ = [
+    "ReconstructedReplayPlan",
+    "reconstruct_linked_plan",
+    "reconstruct_replay_plan",
+]

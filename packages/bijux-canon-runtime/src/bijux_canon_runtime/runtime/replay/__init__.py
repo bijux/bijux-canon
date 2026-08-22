@@ -14,6 +14,7 @@ from bijux_canon_runtime.runtime.replay.models import (
 )
 from bijux_canon_runtime.runtime.replay.plan_reconstruction import (
     ReconstructedReplayPlan,
+    reconstruct_linked_plan,
     reconstruct_replay_plan,
 )
 from bijux_canon_runtime.runtime.replay.service import RuntimeReplayService
@@ -28,5 +29,6 @@ __all__ = [
     "RuntimeReplayOutcome",
     "RuntimeReplayPolicy",
     "RuntimeReplayService",
+    "reconstruct_linked_plan",
     "reconstruct_replay_plan",
 ]

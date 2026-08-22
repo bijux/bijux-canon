@@ -101,6 +101,7 @@ class RuntimeEventLedger:
         attempt: ExecutionAttemptIdentity,
         clock: Callable[[], datetime] | None = None,
         execution_metadata: Mapping[str, object] | None = None,
+        manifest_dependencies: tuple[ArtifactID, ...] = (),
     ) -> None:
         if plan.request_id != attempt.request_id:
             raise ValueError("event ledger plan and attempt identities do not match")
@@ -125,6 +126,7 @@ class RuntimeEventLedger:
             },
             schema_id="bijux.runtime.execution-manifest.v1",
             producer="bijux-canon-runtime:event-ledger",
+            dependencies=tuple(sorted(set(manifest_dependencies))),
         )
         self._store.put(manifest)
         self._manifest_artifact_id = manifest.descriptor.artifact_id
