@@ -4,16 +4,17 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-dev-docs
-last_reviewed: 2026-07-22
+last_reviewed: 2026-08-22
 ---
 
 # SBOM and Supply Chain
 
-Bijux Canon generates separate CycloneDX inventories for production and
-development dependencies of each package. `bijux-canon-dev` prepares the
-requirements inputs; shared Make logic invokes pip-audit, names the artifacts,
-and can validate them with the CycloneDX CLI; release workflows stage available
-SBOMs beside package assets.
+Bijux Canon has two related CycloneDX surfaces. Package Make targets generate
+production and development dependency inventories. The installed
+`bijux-canon-supply-chain` command scans every release wheel or OCI archive and
+binds its SBOM to the artifact, source commit, governing locks, builder identity,
+and an in-toto/SLSA provenance statement. Generated files remain beneath
+`artifacts/`; the generator and verifier live in `bijux-canon-dev`.
 
 ```mermaid
 flowchart LR
@@ -25,7 +26,9 @@ flowchart LR
     dev --> audit
     audit --> sboms[Production and development CDX JSON]
     sboms --> validate[CycloneDX validation]
-    sboms --> release[Optional release attachment]
+    validate --> bind[Artifact and lock digest binding]
+    bind --> attest[in-toto / SLSA statement]
+    attest --> release[Release attachment]
 ```
 
 ## Requirement Inputs
@@ -69,11 +72,10 @@ build the package. Never publish one scope under the other’s name.
 ## Generation and Validation Are Separate
 
 The `sbom` target cleans prior SBOM output, generates both scopes, and writes a
-component-count summary. Current generation commands tolerate pip-audit
-failure with `|| true`, and the summary is best-effort. Therefore:
-
-> `make sbom` records an attempted generation; it does not by itself prove that
-> both documents exist or satisfy CycloneDX validation.
+component-count summary. Pip-audit failures remain fatal and vulnerability
+ignore IDs are rejected. Generation and structural validation are still
+separate decisions: `make sbom` must produce both expected documents, while
+`sbom-validate` proves that the retained JSON satisfies CycloneDX validation.
 
 Use the separate validator for an acceptance claim:
 
@@ -114,12 +116,41 @@ rung actually claimed:
 | inventory is structurally valid | successful `cyclonedx validate` result for the exact bytes | that every dependency is safe or complete |
 | vulnerability policy accepted the resolution | audit report, strict gate policy, and gate verdict | artifact provenance or build reproducibility |
 | SBOM was staged with a release candidate | stable staged name, workflow run, source SHA, and package version | publication at a registry or release page |
-| published SBOM describes a released artifact | destination identity, SBOM digest, wheel/sdist or image digest, and common tagged source | signature, attestation, or runtime safety |
+| published SBOM describes a released artifact | destination identity, SBOM digest, wheel/sdist or image digest, and common tagged source | trusted signature or runtime safety |
+| local provenance binds the release candidate | successful `bijux-canon-supply-chain` verification of artifact, SBOM, source, locks, builder, and in-toto subject | trusted remote builder or key custody |
 
-The repository currently provides generation, validation, audit policy, and
-optional release staging as separate surfaces. It does not provide signing or
-a build-provenance attestation. Consumers needing those guarantees must add a
-separate trusted control rather than infer them from CycloneDX presence.
+The repository provides generation, validation, audit policy, artifact binding,
+and unsigned local build-provenance attestations as separate surfaces. It does
+not provide a trusted remote builder or signature. Consumers needing those
+guarantees must add a trusted signing control and verify the exact attestation
+bytes rather than infer trust from CycloneDX presence.
+
+## Artifact-Bound Manifest
+
+Run the installed tool from a clean source tree after the complete release
+candidate set has been built:
+
+```bash
+bijux-canon-supply-chain \
+  --repo-root "$PWD" \
+  --wheel-dir artifacts/release/dist \
+  --output-dir artifacts/release/supply-chain \
+  --manifest artifacts/release/supply-chain.json \
+  --lock uv.lock \
+  --lock pyproject.toml
+```
+
+Every wheel in `--wheel-dir` is scanned. Each generated CycloneDX document must
+be structurally valid and contain identified components. The manifest records
+SHA-256 and byte length for the artifact, SHA-256 for the SBOM and attestation,
+the full source commit, lock identities, builder identity, and a relative path
+for each retained output. Verification recomputes all digests and checks the
+in-toto subject plus SLSA source, SBOM, lock, and builder fields.
+
+Use one `--oci-image` argument per OCI archive. If a tracked Dockerfile or
+Containerfile exists but no OCI archive is supplied, the command fails instead
+of reporting empty OCI coverage. Unsafe wheel members, dirty source, missing
+locks, duplicate names, and any binding mismatch also fail closed.
 
 ## Vulnerability Policy
 
@@ -159,9 +190,10 @@ describes. Confirm:
 - vulnerability exceptions and audit date are available;
 - the release asset bytes and registry identity are preserved.
 
-The current SBOM path provides dependency inventory and component counts. It
-does not sign artifacts, attest the build environment, prove source
-reproducibility, or establish runtime safety. Those claims require separate
+The package SBOM path provides dependency inventory and component counts. The
+artifact-bound path adds local source, lock, builder, and attestation identity.
+Neither path signs artifacts, proves reproducible builds, establishes a trusted
+remote builder, or establishes runtime safety. Those claims require separate
 controls and evidence.
 
 ## Failure Routing

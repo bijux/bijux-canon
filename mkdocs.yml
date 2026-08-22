@@ -52,6 +52,8 @@ nav:
           - Contributor Workflows: 01-bijux-canon/operations/contributor-workflows.md
           - Automation Surfaces: 01-bijux-canon/operations/automation-surfaces.md
           - Artifact Governance: 01-bijux-canon/operations/artifact-governance.md
+          - Production Threat Model: 01-bijux-canon/operations/threat-model.md
+          - Security Evidence and Incident Response: 01-bijux-canon/operations/security-response.md
           - Review Expectations: 01-bijux-canon/operations/review-expectations.md
           - Change Management: 01-bijux-canon/operations/change-management.md
   - bijux-canon-ingest:

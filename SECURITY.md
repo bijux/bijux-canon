@@ -57,6 +57,11 @@ After a report is received, we will:
 4. prepare or plan remediation
 5. coordinate disclosure when it is responsible to do so
 
+Maintainers follow the repository's
+[Security Evidence and Incident Response](docs/01-bijux-canon/operations/security-response.md)
+runbook to preserve exact identities, contain the affected boundary, reproduce
+with focused product checks, verify remediation, and record residual risk.
+
 ## Response Targets
 
 Best-effort targets:
