@@ -19,6 +19,9 @@ from bijux_canon_reason.evaluation import (
     CitationIntegrityFailureCode,
     CitationIntegrityOwner,
     CitationIntegrityReport,
+    CitationQualityEvaluator,
+    CitationQualityFailureCode,
+    CitationQualityReport,
     CitationTruthLabel,
     CitationTruthRelation,
     ClaimTruthClass,
@@ -257,3 +260,148 @@ def test_no_citation_output_is_explicit_and_report_identity_fails_closed() -> No
     drifted["artifact_id"] = "sha256:" + "0" * 64
     with pytest.raises(ValidationError, match="identity"):
         CitationIntegrityReport.model_validate(drifted)
+
+
+def test_reviewed_claim_span_relation_earns_precision_and_recall_credit() -> None:
+    case = _case()
+    output = _output(case, _citation(case))
+    integrity = CitationIntegrityEvaluator().evaluate(
+        case=case,
+        output=output,
+        source_payloads=_sources(case),
+    )
+
+    report = CitationQualityEvaluator().evaluate(
+        case=case,
+        output=output,
+        integrity=integrity,
+    )
+    restarted = CitationQualityReport.model_validate_json(report.model_dump_json())
+
+    assert restarted == report
+    assert report.passed
+    assert report.precision.numerator == report.precision.denominator == 1
+    assert report.precision.value == 1.0
+    assert report.recall.numerator == report.recall.denominator == 1
+    assert report.recall.value == 1.0
+    assert report.failures == ()
+
+
+def test_attached_citation_gets_no_credit_without_reviewed_claim_relation() -> None:
+    case = _case()
+    citation = _citation(case)
+    unrelated_claim = SystemClaim(
+        claim_id="unreviewed-system-claim",
+        statement="An unreviewed claim cannot inherit truth from citation presence.",
+        disposition=SystemClaimDisposition.asserted,
+        citation_ids=(citation.citation_id,),
+    )
+    output = SystemOutput(
+        output_id="unreviewed-output",
+        case_id=case.case_id,
+        runtime_run_id="runtime-run",
+        runtime_attempt_id="runtime-attempt",
+        answer=unrelated_claim.statement,
+        disposition=SystemAnswerDisposition.answered,
+        claims=(unrelated_claim,),
+        citations=(citation,),
+        trace_identity_sha256="d" * 64,
+    )
+    integrity = CitationIntegrityEvaluator().evaluate(
+        case=case,
+        output=output,
+        source_payloads=_sources(case),
+    )
+
+    report = CitationQualityEvaluator().evaluate(
+        case=case,
+        output=output,
+        integrity=integrity,
+    )
+
+    assert integrity.passed
+    assert not report.passed
+    assert report.precision.numerator == 0
+    assert report.precision.denominator == 1
+    assert report.recall.numerator == 0
+    assert report.recall.denominator == 1
+    assert {failure.code for failure in report.failures} == {
+        CitationQualityFailureCode.claim_not_in_truth,
+        CitationQualityFailureCode.expected_relation_missing,
+    }
+
+
+def test_empty_citations_keep_zero_precision_denominator_and_expected_recall() -> None:
+    case = _case()
+    output = SystemOutput(
+        output_id="empty-citation-output",
+        case_id=case.case_id,
+        runtime_run_id="runtime-run",
+        runtime_attempt_id="runtime-attempt",
+        answer="",
+        disposition=SystemAnswerDisposition.abstained,
+        abstention_reason="No answer was produced.",
+        trace_identity_sha256="c" * 64,
+    )
+    integrity = CitationIntegrityEvaluator().evaluate(
+        case=case,
+        output=output,
+        source_payloads={},
+    )
+
+    report = CitationQualityEvaluator().evaluate(
+        case=case,
+        output=output,
+        integrity=integrity,
+    )
+
+    assert not report.passed
+    assert report.precision.denominator == 0
+    assert report.precision.value == 0.0
+    assert report.precision.confidence_interval.lower == 0.0
+    assert report.precision.confidence_interval.upper == 1.0
+    assert report.recall.denominator == 1
+    assert report.recall.value == 0.0
+
+
+def test_duplicate_emission_does_not_multiply_reviewed_relation_credit() -> None:
+    case = _case()
+    citation = _citation(case)
+    claims = tuple(
+        SystemClaim(
+            claim_id=f"system-claim-{index}",
+            statement=case.claims[0].statement,
+            disposition=SystemClaimDisposition.asserted,
+            citation_ids=(citation.citation_id,),
+        )
+        for index in range(2)
+    )
+    output = SystemOutput(
+        output_id="duplicate-relation-output",
+        case_id=case.case_id,
+        runtime_run_id="runtime-run",
+        runtime_attempt_id="runtime-attempt",
+        answer=case.claims[0].statement,
+        disposition=SystemAnswerDisposition.answered,
+        claims=claims,
+        citations=(citation,),
+        trace_identity_sha256="b" * 64,
+    )
+    integrity = CitationIntegrityEvaluator().evaluate(
+        case=case,
+        output=output,
+        source_payloads=_sources(case),
+    )
+
+    report = CitationQualityEvaluator().evaluate(
+        case=case,
+        output=output,
+        integrity=integrity,
+    )
+
+    assert report.precision.numerator == 1
+    assert report.precision.denominator == 2
+    assert report.recall.numerator == report.recall.denominator == 1
+    assert [failure.code for failure in report.failures] == [
+        CitationQualityFailureCode.duplicate_reviewed_relation
+    ]

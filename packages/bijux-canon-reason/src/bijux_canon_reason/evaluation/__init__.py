@@ -25,6 +25,14 @@ from bijux_canon_reason.evaluation.citation_metrics import (
     CitationIntegrityOwner,
     CitationIntegrityReport,
 )
+from bijux_canon_reason.evaluation.citation_quality import (
+    CitationQualityEvaluationError,
+    CitationQualityEvaluator,
+    CitationQualityFailure,
+    CitationQualityFailureCode,
+    CitationQualityMetric,
+    CitationQualityReport,
+)
 from bijux_canon_reason.evaluation.metrics import (
     ConfidenceInterval,
     EvaluationCaseOutcome,
@@ -87,6 +95,12 @@ __all__ = [
     "CitationIntegrityOutcome",
     "CitationIntegrityOwner",
     "CitationIntegrityReport",
+    "CitationQualityEvaluationError",
+    "CitationQualityEvaluator",
+    "CitationQualityFailure",
+    "CitationQualityFailureCode",
+    "CitationQualityMetric",
+    "CitationQualityReport",
     "ClaimTruthClass",
     "ConfidenceInterval",
     "ConflictExpectation",
