@@ -109,6 +109,26 @@ def test_evaluation_cases_jsonl_is_exact_canonical_split_projection(
         )
         assert sha256(locator["exact_text"].encode()) == locator["exact_text_sha256"]
         assert item["qrels"][0]["adjudication"]["system_ranking_consulted"] is False
+    assert {item["claim_truth"]["claim_class"] for item in records} == {
+        "expected",
+        "optional",
+        "opposed",
+        "forbidden",
+    }
+    for item in records:
+        truth = item["claim_truth"]
+        citation = truth["citation"]
+        assert truth["claim_truth_id"] == item["claim_truth_id"]
+        assert citation["character_end"] > citation["character_start"]
+        assert sha256(citation["exact_text"].encode()) == citation["exact_text_sha256"]
+        assert (
+            item["conflict_expectation"]["conflict_expected"]
+            == item["labels"]["conflict"]
+        )
+        assert (
+            item["abstention_expectation"]["abstention_expected"]
+            == item["labels"]["abstention_expected"]
+        )
 
 
 def test_heldout_labels_cannot_be_enabled_for_tuning() -> None:

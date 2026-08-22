@@ -67,8 +67,11 @@ retrieval/claim rationale without consulting system output. Applicable cases
 embed their graded qrel, exact content-hashed chunk span, and adjudication
 lineage. Negative cases retain an explicit empty-qrel disposition rather than
 silently disappearing from metric denominators. The file is regenerated from
-the validated split, qrels, and claim truth with `--cases-output`; byte drift
-fails the repository test suite.
+silently disappearing from metric denominators. Each row also embeds its atomic
+claim class, exact claim-citation relation and span, conflict expectation, and
+abstention outcome. The file is regenerated from the validated split, qrels,
+and claim truth with `--cases-output`; byte drift fails the repository test
+suite.
 
 Validate the frozen case construction, strata, partition isolation, and hashes
 with:

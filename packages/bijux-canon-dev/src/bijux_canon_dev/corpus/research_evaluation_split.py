@@ -107,6 +107,29 @@ def evaluation_case_records(
                 }
             ]
         )
+        claim_truth = {
+            "claim_truth_id": claim["truth_id"],
+            "statement": claim["claim"],
+            "claim_class": claim["claim_class"],
+            "expected_in_answer": claim["expected_in_answer"],
+            "verdict": claim["verdict"],
+            "citation_relation": claim["evidence_relation"],
+            "citation": {
+                "qrel_id": claim["evidence"]["qrel_id"],
+                "chunk_id": claim["evidence"]["chunk_id"],
+                "source_sha256": claim["evidence"]["source_sha256"],
+                "character_start": claim["evidence"]["character_start"],
+                "character_end": claim["evidence"]["character_end"],
+                "exact_text": claim["evidence"]["exact_text"],
+                "exact_text_sha256": claim["evidence"]["exact_text_sha256"],
+            },
+            "rationale": claim["rationale"],
+            "review": {
+                "reviewer_id": claim["reviewer_id"],
+                "reviewed_on": claim["reviewed_on"],
+                "review_method": claim["review_method"],
+            },
+        }
         record = {
             **case,
             "question": qrel["query"],
@@ -121,6 +144,23 @@ def evaluation_case_records(
             ),
             "qrel_disposition": ("explicit-empty-negative" if negative else "reviewed"),
             "qrels": reviewed_qrels,
+            "claim_truth": claim_truth,
+            "conflict_expectation": {
+                "conflict_expected": case["labels"]["conflict"],
+                "rationale": (
+                    "reviewed opposing claim must remain explicit"
+                    if case["labels"]["conflict"]
+                    else "no reviewed conflict is expected for this case"
+                ),
+            },
+            "abstention_expectation": {
+                "abstention_expected": claim["abstention_expected"],
+                "expected_disposition": (
+                    "abstained"
+                    if claim["abstention_expected"]
+                    else "answered-or-qualified"
+                ),
+            },
             "system_output_consulted": False,
         }
         record["record_identity_sha256"] = sha256(canonical(record))
