@@ -149,9 +149,13 @@ doc = [
     "myst-parser>=3.0.0,<6.0.0"
 ]
 extra = [
-    "python-docx>=1.1.0,<2.0.0",  # For DOCX support
-    "lxml>=5.3.0,<7.0.0",         # For XML support
-    "openpyxl>=3.1.0,<4.0.0"      # For Excel support (future)
+    "pandas>=2.0.3,<4.0",
+    "pypdf>=6.15.0,<7.0",
+    "pdfminer.six>=20221105,<20260108",
+    "pytesseract>=0.3.10,<0.4",
+    "python-docx>=1.1.0,<2.0.0",
+    "PyMuPDF>=1.23.0,<2.0",
+    "Pillow>=10.0,<13.0",
 ]
 profiling = [
     "memory-profiler>=0.61.0,<0.62.0",
@@ -165,6 +169,7 @@ document_readers = [
     "pytesseract>=0.3.10,<0.4",
     "python-docx>=1.1.0,<2.0.0",
     "PyMuPDF>=1.23.0,<2.0",
+    "Pillow>=10.0,<13.0",
 ]
 
 [project.scripts]

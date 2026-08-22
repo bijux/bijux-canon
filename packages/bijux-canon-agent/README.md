@@ -127,6 +127,13 @@ Treat the base package as the canonical orchestration surface. CLI, HTTP,
 provider, and template integrations are package-owned extensions that must stay
 subordinate to the trace and workflow contract, not the other way around.
 
+Install `bijux-canon-agent[document_readers]` to enable the optional CSV, PDF,
+OCR, image, and DOCX readers. The extra installs pandas, pypdf, pdfminer.six,
+pytesseract, PyMuPDF, Pillow, and python-docx; the operating system must also
+provide the Tesseract executable for OCR. `bijux-canon-agent[extra]` is retained
+as a compatibility alias for that same dependency set. Neither extra advertises
+Excel support.
+
 The package root deliberately exports only `API_VERSION`. It is not a facade
 for pipeline classes, provider clients, or role implementations. Integrate
 through the documented application, pipeline, interface, and trace modules so

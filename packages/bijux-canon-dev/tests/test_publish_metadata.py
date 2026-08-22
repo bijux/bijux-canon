@@ -6,6 +6,9 @@ import sys
 import tomllib
 from typing import Any, TypedDict, cast
 
+from packaging.requirements import Requirement
+from packaging.utils import canonicalize_name
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 
@@ -271,6 +274,49 @@ def test_http_surface_packages_declare_only_owned_http_dependencies() -> None:
     api_dependencies = set(optional_dependencies.get("api", []))
     assert "fastapi>=0.128,<1.0" in api_dependencies
     assert "starlette>=1.3.1,<2.0" in api_dependencies
+
+
+def test_advertised_extras_install_owned_capabilities() -> None:
+    empty_extras: list[str] = []
+    for pyproject_path in _package_pyprojects():
+        project = _project_table(pyproject_path)
+        extras = cast(
+            dict[str, list[str]], project.get("optional-dependencies", {})
+        )
+        empty_extras.extend(
+            f"{pyproject_path.parent.name}[{extra_name}]"
+            for extra_name, dependencies in extras.items()
+            if not dependencies
+        )
+    assert not empty_extras, "advertised empty extras: " + ", ".join(empty_extras)
+
+    agent_project = _project_table(
+        _package_path("bijux-canon-agent") / "pyproject.toml"
+    )
+    agent_extras = cast(
+        dict[str, list[str]], agent_project["optional-dependencies"]
+    )
+    document_readers = {
+        canonicalize_name(Requirement(dependency).name)
+        for dependency in agent_extras["document_readers"]
+    }
+    compatibility_alias = {
+        canonicalize_name(Requirement(dependency).name)
+        for dependency in agent_extras["extra"]
+    }
+
+    assert compatibility_alias == document_readers
+    assert {"pillow", "pymupdf", "pytesseract"} <= document_readers
+    assert "openpyxl" not in document_readers
+    assert "lxml" not in document_readers
+
+    reason_project = _project_table(
+        _package_path("bijux-canon-reason") / "pyproject.toml"
+    )
+    reason_extras = cast(
+        dict[str, list[str]], reason_project["optional-dependencies"]
+    )
+    assert "llm" not in reason_extras
 
 
 def test_workspace_packages_use_shared_repository_release_tags() -> None:

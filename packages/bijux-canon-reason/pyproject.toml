@@ -54,9 +54,6 @@ api = [
 bench = [
   "pytest-benchmark>=5.0.0,<6.0",
 ]
-llm = [
-  # intentionally empty to keep core free of LLM deps; add as needed per project
-]
 dev = [
   "types-PyYAML>=6.0.12,<7.0",
   "types-orjson>=3.6.0,<4.0",

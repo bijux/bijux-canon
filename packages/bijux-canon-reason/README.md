@@ -169,6 +169,12 @@ prepared and retrieved evidence without taking ownership of source
 normalization or vector ranking. Agent may coordinate several reasoning calls;
 runtime decides whether the resulting whole run is acceptable and durable.
 
+Structured provider synthesis is part of the base installation and uses the
+standard-library HTTP client against an OpenAI-compatible endpoint. There is no
+provider SDK extra to install. Credential-free workflows do not resolve provider
+credentials; a credential is requested lazily only when that provider path is
+selected.
+
 Downstream consumers should preserve the run manifest and exact support
 references. Rebuilding a citation from display text loses the byte-level
 contract that verification and replay depend on.
