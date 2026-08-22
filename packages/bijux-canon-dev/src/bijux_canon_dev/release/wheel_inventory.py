@@ -47,7 +47,7 @@ class PackagePolicy:
     distribution_name: str
     requires_python: str
     dependencies: tuple[str, ...]
-    dynamic_dependency_name: str | None
+    dynamic_dependency_names: tuple[str, ...]
     optional_dependencies: tuple[tuple[str, tuple[str, ...]], ...]
     scripts: tuple[tuple[str, str], ...]
     license_text: str | None
@@ -169,7 +169,7 @@ def _package_policy(
         )
     dependencies = _string_list(project.get("dependencies", []), field="dependencies")
     dynamic = set(_string_list(project.get("dynamic", []), field="project.dynamic"))
-    dynamic_dependency_name: str | None = None
+    dynamic_dependency_names: tuple[str, ...] = ()
     if "dependencies" in dynamic:
         tool = _mapping(data.get("tool", {}), field="tool")
         hatch = _mapping(tool.get("hatch", {}), field="tool.hatch")
@@ -179,11 +179,31 @@ def _package_policy(
             hooks.get("custom", {}), field="tool.hatch.metadata.hooks.custom"
         )
         canonical_name = custom.get("canonical-name")
-        if not isinstance(canonical_name, str) or not canonical_name:
-            raise WheelInventoryError(
-                "dynamic dependencies require a custom canonical-name owner"
+        same_version = custom.get("same-version-dependencies")
+        external = custom.get("external-dependencies", [])
+        if canonical_name is not None:
+            if not isinstance(canonical_name, str) or not canonical_name:
+                raise WheelInventoryError(
+                    "dynamic canonical-name must identify one distribution"
+                )
+            if same_version is not None or external:
+                raise WheelInventoryError(
+                    "dynamic dependency hook modes cannot be combined"
+                )
+            dynamic_dependency_names = (canonical_name,)
+        else:
+            dynamic_dependency_names = _string_list(
+                same_version,
+                field="tool.hatch.metadata.hooks.custom.same-version-dependencies",
             )
-        dynamic_dependency_name = canonical_name
+            dependencies = _string_list(
+                external,
+                field="tool.hatch.metadata.hooks.custom.external-dependencies",
+            )
+            if not dynamic_dependency_names:
+                raise WheelInventoryError(
+                    "dynamic dependencies require same-version dependencies"
+                )
     optional_raw = _mapping(
         project.get("optional-dependencies", {}), field="optional-dependencies"
     )
@@ -217,7 +237,7 @@ def _package_policy(
         distribution_name=name,
         requires_python=requires_python,
         dependencies=dependencies,
-        dynamic_dependency_name=dynamic_dependency_name,
+        dynamic_dependency_names=dynamic_dependency_names,
         optional_dependencies=optional_dependencies,
         scripts=tuple(sorted(cast(dict[str, str], scripts_raw).items())),
         license_text=license_text,
@@ -331,8 +351,7 @@ def _expected_requirements(
     policy: PackagePolicy, *, version: str
 ) -> Counter[tuple[object, ...]]:
     values = list(policy.dependencies)
-    if policy.dynamic_dependency_name is not None:
-        values.append(f"{policy.dynamic_dependency_name}=={version}")
+    values.extend(f"{name}=={version}" for name in policy.dynamic_dependency_names)
     for extra, requirements in policy.optional_dependencies:
         for value in requirements:
             parsed = Requirement(value)

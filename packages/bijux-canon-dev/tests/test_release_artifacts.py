@@ -110,6 +110,14 @@ def test_public_release_packages_ship_source_and_release_docs() -> None:
     )
 
 
+def test_runtime_sdist_ships_its_dependency_metadata_hook() -> None:
+    runtime = _pyproject_data("bijux-canon-runtime")
+    sdist = runtime["tool"]["hatch"]["build"]["targets"]["sdist"]
+
+    assert "dependencies" in runtime["project"]["dynamic"]
+    assert "hatch_build.py" in sdist["include"]
+
+
 def test_public_release_packages_let_metadata_own_legal_artifacts() -> None:
     workspace = _workspace_metadata()
     failures: list[str] = []

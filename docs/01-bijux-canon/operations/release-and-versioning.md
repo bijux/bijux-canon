@@ -50,6 +50,12 @@ Compatibility distributions share the release line but retain their own wheel
 metadata and import or command contract. Their purpose is continuity, not a
 second implementation.
 
+The runtime wheel also requires agent, ingest, reason, and index at exactly the
+runtime version. Publication follows the dependency tiers declared by the root
+package catalog: canonical leaf packages first; runtime and leaf aliases next;
+and the two runtime aliases last. Exact pins deliberately turn a partial or
+mixed family into a resolver conflict instead of an untested installation.
+
 ## Release Evidence
 
 The common publication path resolves the version, applies publication policy,

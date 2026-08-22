@@ -72,6 +72,25 @@ public_release_packages = [
   "compat-bijux-rar",
   "compat-bijux-vex",
 ]
+release_publication_tiers = [
+  [
+    "bijux-canon-agent",
+    "bijux-canon-ingest",
+    "bijux-canon-reason",
+    "bijux-canon-index",
+  ],
+  [
+    "bijux-canon-runtime",
+    "compat-bijux-agent",
+    "compat-bijux-rag",
+    "compat-bijux-rar",
+    "compat-bijux-vex",
+  ],
+  [
+    "compat-bijux-canon",
+    "compat-agentic-flows",
+  ],
+]
 badge_packages = [
   "bijux-canon-runtime",
   "compat-bijux-canon",

@@ -236,14 +236,25 @@ def test_public_release_packages_are_aligned_to_public_release_version() -> None
     )
 
 
-def test_runtime_workspace_dependencies_accept_local_release_previews() -> None:
-    project = _project_table(_package_path("bijux-canon-runtime") / "pyproject.toml")
-    dependencies = set(cast(list[str], project.get("dependencies", [])))
+def test_runtime_build_metadata_binds_canonical_peers_to_its_version() -> None:
+    pyproject = _package_path("bijux-canon-runtime") / "pyproject.toml"
+    data = tomllib.loads(pyproject.read_text(encoding="utf-8"))
+    project = cast(dict[str, Any], data["project"])
+    custom = data["tool"]["hatch"]["metadata"]["hooks"]["custom"]
 
-    assert "bijux-canon-agent>=0.3.9.dev0,<0.4.0" in dependencies
-    assert "bijux-canon-ingest>=0.3.9.dev0,<0.4.0" in dependencies
-    assert "bijux-canon-reason>=0.3.9.dev0,<0.4.0" in dependencies
-    assert "bijux-canon-index>=0.3.9.dev0,<0.4.0" in dependencies
+    assert "dependencies" in project["dynamic"]
+    assert "dependencies" not in project
+    assert custom["same-version-dependencies"] == [
+        "bijux-canon-agent",
+        "bijux-canon-ingest",
+        "bijux-canon-reason",
+        "bijux-canon-index",
+    ]
+    assert custom["external-dependencies"] == [
+        "bijux-cli>=0.3.6,<0.4.0",
+        "duckdb>=1.1.3,<2.0.0",
+        "pydantic>=2.0.2,<3.0.0",
+    ]
 
 
 def test_http_surface_packages_declare_only_owned_http_dependencies() -> None:
