@@ -33,6 +33,7 @@ version = "1.2.3"
 requires-python = ">=3.11,<4"
 classifiers = [
 {classifier_lines}
+  "Operating System :: OS Independent",
 ]
 """
 
@@ -47,6 +48,10 @@ def _repository(tmp_path: Path) -> Path:
 name = "workspace-repository"
 version = "1.2.3"
 requires-python = ">=3.11,<4"
+
+[tool.bijux_canon]
+primary_packages = ["example"]
+compat_packages = []
 
 [tool.bijux_canon.package_dirs]
 example = "packages/example"
@@ -101,6 +106,7 @@ def test_workspace_support_is_derived_from_every_package_classifier(
 
     assert support.python_versions == PYTHON_VERSIONS
     assert support.distribution_names == ("example", "workspace-repository")
+    assert support.package_classes == (("example", "canonical"),)
 
 
 def test_workspace_support_rejects_classifier_drift(tmp_path: Path) -> None:
@@ -113,13 +119,45 @@ def test_workspace_support_rejects_classifier_drift(tmp_path: Path) -> None:
     )
     root_pyproject = root / "pyproject.toml"
     root_pyproject.write_text(
-        root_pyproject.read_text(encoding="utf-8") + 'second = "packages/second"\n',
+        root_pyproject.read_text(encoding="utf-8").replace(
+            'primary_packages = ["example"]',
+            'primary_packages = ["example", "second"]',
+        )
+        + 'second = "packages/second"\n',
         encoding="utf-8",
     )
 
     with pytest.raises(
         PythonSupportVerificationError, match="classifier sets disagree"
     ):
+        inspect_workspace(root)
+
+
+def test_workspace_support_rejects_ambiguous_package_class(tmp_path: Path) -> None:
+    root = _repository(tmp_path)
+    root_pyproject = root / "pyproject.toml"
+    root_pyproject.write_text(
+        root_pyproject.read_text(encoding="utf-8").replace(
+            "compat_packages = []", 'compat_packages = ["example"]'
+        ),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(PythonSupportVerificationError, match="must partition"):
+        inspect_workspace(root)
+
+
+def test_workspace_support_requires_platform_promise(tmp_path: Path) -> None:
+    root = _repository(tmp_path)
+    package_pyproject = root / "packages" / "example" / "pyproject.toml"
+    package_pyproject.write_text(
+        package_pyproject.read_text(encoding="utf-8").replace(
+            '  "Operating System :: OS Independent",\n', ""
+        ),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(PythonSupportVerificationError, match="platform promise"):
         inspect_workspace(root)
 
 
@@ -182,6 +220,14 @@ def test_matrix_runs_every_declared_version_and_retains_evidence(
     assert evidence["distribution_count"] == 2
     assert evidence["import_count"] == 1
     assert evidence["console_script_count"] == 1
+    assert [
+        item["combination_id"] for item in evidence["package_python_combinations"]
+    ] == [
+        "example--py311",
+        "example--py312",
+        "example--py313",
+        "example--py314",
+    ]
     assert len(commands) == len(PYTHON_VERSIONS) * 4
     assert (
         json.loads(output.read_text(encoding="utf-8"))["source_commit"] == SOURCE_COMMIT

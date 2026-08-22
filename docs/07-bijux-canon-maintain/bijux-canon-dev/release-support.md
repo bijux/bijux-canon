@@ -92,10 +92,13 @@ assuming all distributions have identical evidence.
 The installed `bijux-canon-python-support` command treats package metadata as
 the support authority. It refuses classifier drift between packages, a
 `requires-python` contradiction, missing or duplicate wheels, mixed package
-versions, malformed wheel metadata, and unsafe archive paths. It then installs
-the exact repository-and-package wheel family under every advertised Python
-minor, runs the package-manager consistency check, imports every shipped module
-from the isolated `site-packages`, and loads every console entry point.
+versions, malformed wheel metadata, unsafe archive paths, an incomplete
+canonical/compatibility partition, or a missing platform promise. It then
+installs the exact repository-and-package wheel family under every advertised
+Python minor, runs the package-manager consistency check, imports every shipped
+module from the isolated `site-packages`, and loads every console entry point.
+The result carries a distinct status for all 48 package and interpreter
+combinations.
 
 ```bash
 bijux-canon-python-support \

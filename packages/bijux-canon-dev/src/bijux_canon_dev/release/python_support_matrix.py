@@ -35,6 +35,7 @@ class WorkspaceSupport:
     python_versions: tuple[str, ...]
     distribution_names: tuple[str, ...]
     pyproject_paths: tuple[Path, ...]
+    package_classes: tuple[tuple[str, str], ...]
 
 
 @dataclass(frozen=True)
@@ -103,9 +104,34 @@ def inspect_workspace(repo_root: Path) -> WorkspaceSupport:
         raise PythonSupportVerificationError(
             "tool.bijux_canon.package_dirs must declare the workspace packages"
         )
+    primary_packages = workspace.get("primary_packages")
+    compatibility_packages = workspace.get("compat_packages")
+    if not isinstance(primary_packages, list) or not all(
+        isinstance(value, str) for value in primary_packages
+    ):
+        raise PythonSupportVerificationError(
+            "tool.bijux_canon.primary_packages must be a string list"
+        )
+    if not isinstance(compatibility_packages, list) or not all(
+        isinstance(value, str) for value in compatibility_packages
+    ):
+        raise PythonSupportVerificationError(
+            "tool.bijux_canon.compat_packages must be a string list"
+        )
+    primary_set = set(primary_packages)
+    compatibility_set = set(compatibility_packages)
+    package_keys = set(package_dirs)
+    if (
+        primary_set & compatibility_set
+        or primary_set | compatibility_set != package_keys
+    ):
+        raise PythonSupportVerificationError(
+            "primary and compatibility package inventories must partition package_dirs"
+        )
 
     pyprojects = [root_pyproject]
-    for value in package_dirs.values():
+    package_class_by_path: dict[Path, str] = {}
+    for package_key, value in package_dirs.items():
         if not isinstance(value, str):
             raise PythonSupportVerificationError(
                 "workspace package path must be a string"
@@ -118,9 +144,13 @@ def inspect_workspace(repo_root: Path) -> WorkspaceSupport:
                 f"workspace package escapes repository: {value}"
             ) from exc
         pyprojects.append(path)
+        package_class_by_path[path] = (
+            "canonical" if package_key in primary_set else "compatibility"
+        )
 
     distribution_names: list[str] = []
     declared_version_sets: dict[Path, tuple[str, ...]] = {}
+    package_classes: list[tuple[str, str]] = []
     projects: list[tuple[Path, Mapping[str, object]]] = []
     for path in pyprojects:
         data = _load_pyproject(path)
@@ -142,6 +172,12 @@ def inspect_workspace(repo_root: Path) -> WorkspaceSupport:
                     f"no minor Python classifiers declared in {path}"
                 )
             declared_version_sets[path] = versions
+            classifiers = project.get("classifiers", [])
+            if "Operating System :: OS Independent" not in classifiers:
+                raise PythonSupportVerificationError(
+                    f"package does not declare its platform promise in {path}"
+                )
+            package_classes.append((name, package_class_by_path[path]))
 
     distinct_version_sets = set(declared_version_sets.values())
     if len(distinct_version_sets) != 1:
@@ -172,6 +208,9 @@ def inspect_workspace(repo_root: Path) -> WorkspaceSupport:
         python_versions=python_versions,
         distribution_names=tuple(sorted(distribution_names, key=canonicalize_name)),
         pyproject_paths=tuple(pyprojects),
+        package_classes=tuple(
+            sorted(package_classes, key=lambda item: canonicalize_name(item[0]))
+        ),
     )
 
 
@@ -509,6 +548,22 @@ def run_python_support_matrix(
                 "console_scripts": list(record.console_scripts),
             }
             for record in records
+        ],
+        "package_python_combinations": [
+            {
+                "combination_id": (
+                    f"{distribution_name}--py{python_version.replace('.', '')}"
+                ),
+                "distribution_name": distribution_name,
+                "package_class": package_class,
+                "platform_promise": "os-independent",
+                "python_version": python_version,
+                "status": next(
+                    row["status"] for row in results if row["python"] == python_version
+                ),
+            }
+            for distribution_name, package_class in support.package_classes
+            for python_version in support.python_versions
         ],
         "version_results": results,
         "limitations": [

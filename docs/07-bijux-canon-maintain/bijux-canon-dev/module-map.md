@@ -101,13 +101,15 @@ artifact-mismatched versions unless the relevant exception is explicit.
 
 The Python support matrix derives its interpreter rows from every package's
 classifiers, checks those rows against `requires-python`, and requires exactly
-one wheel for the repository distribution and every configured package. Each
-row installs that immutable wheel set into an isolated environment, checks
+one wheel for the repository distribution and every configured package. The
+primary and compatibility inventories must partition the package set, and each
+package must make its OS-independent platform promise explicit. Each row
+installs that immutable wheel set into an isolated environment, checks
 dependency metadata, imports every wheel-owned module from `site-packages`, and
-loads every declared console entry point. The JSON outcome binds the source
-commit, package metadata, lock file, wheel hashes, commands, and failures. It
-refuses output, wheel, and environment paths outside the ignored `artifacts/`
-tree.
+loads every declared console entry point. The JSON outcome binds all 48 package
+and Python combinations to the source commit, package metadata, lock file,
+wheel hashes, commands, and failures. It refuses output, wheel, and environment
+paths outside the ignored `artifacts/` tree.
 
 The SBOM requirements writer produces separate production and development
 inputs. Local workspace dependencies become absolute `file:` requirements so
