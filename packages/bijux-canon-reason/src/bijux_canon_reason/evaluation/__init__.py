@@ -16,6 +16,15 @@ from bijux_canon_reason.evaluation.annotation import (
     AnnotationWorkflowError,
     IndependentAnnotationWorkflow,
 )
+from bijux_canon_reason.evaluation.citation_metrics import (
+    CitationIntegrityEvaluationError,
+    CitationIntegrityEvaluator,
+    CitationIntegrityFailure,
+    CitationIntegrityFailureCode,
+    CitationIntegrityOutcome,
+    CitationIntegrityOwner,
+    CitationIntegrityReport,
+)
 from bijux_canon_reason.evaluation.metrics import (
     ConfidenceInterval,
     EvaluationCaseOutcome,
@@ -71,6 +80,13 @@ __all__ = [
     "AtomicClaimTruth",
     "CitationTruthLabel",
     "CitationTruthRelation",
+    "CitationIntegrityEvaluationError",
+    "CitationIntegrityEvaluator",
+    "CitationIntegrityFailure",
+    "CitationIntegrityFailureCode",
+    "CitationIntegrityOutcome",
+    "CitationIntegrityOwner",
+    "CitationIntegrityReport",
     "ClaimTruthClass",
     "ConfidenceInterval",
     "ConflictExpectation",
