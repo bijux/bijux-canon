@@ -105,16 +105,32 @@ def run_v2_command(
     except ValidationError as exc:
         _failure(
             "invalid-request",
-            "Correct the JSON request using the v2 schema.",
+            "Correct the fields identified by the v2 request schema.",
             exc.errors()[0]["type"] if exc.errors() else type(exc).__name__,
         )
         return EXIT_INVALID_REQUEST
-    except (ValueError, OSError, json.JSONDecodeError) as exc:
+    except ValueError as exc:
+        _failure(
+            "invalid-request",
+            "Correct the request without changing its idempotency key.",
+            str(exc),
+        )
+        return EXIT_INVALID_REQUEST
+    except (OSError, json.JSONDecodeError) as exc:
         _failure("invalid-request", "Correct the command input.", str(exc))
         return EXIT_INVALID_REQUEST
-    except (KeyError, DurableJobError) as exc:
+    except KeyError as exc:
         _failure(
-            "not-found-or-conflict", "Inspect the supplied durable identity.", str(exc)
+            "not-found",
+            "Use an identity returned by this configured Runtime store.",
+            str(exc),
+        )
+        return EXIT_OPERATION_FAILED
+    except DurableJobError as exc:
+        _failure(
+            "conflict",
+            "Inspect the existing job before retrying.",
+            str(exc),
         )
         return EXIT_OPERATION_FAILED
     except ApplicationCapabilityError as exc:
@@ -125,13 +141,6 @@ def run_v2_command(
         )
         return EXIT_MISSING_CAPABILITY
     except RuntimeError as exc:
-        if services is None:
-            _failure(
-                "missing-capability",
-                "Configure the v2 application service composition.",
-                str(exc),
-            )
-            return EXIT_MISSING_CAPABILITY
         _failure("operation-failed", "Inspect persisted evidence and retry.", str(exc))
         return EXIT_OPERATION_FAILED
 
@@ -140,7 +149,9 @@ def _require_services(
     services: RuntimeApplicationServicesV2 | None,
 ) -> RuntimeApplicationServicesV2:
     if services is None:
-        raise RuntimeError("Runtime v2 application services are not configured")
+        raise ApplicationCapabilityError(
+            "Runtime v2 application services are not configured"
+        )
     return services
 
 

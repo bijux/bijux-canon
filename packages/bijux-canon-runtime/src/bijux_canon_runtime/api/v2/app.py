@@ -33,6 +33,7 @@ from bijux_canon_runtime.api.v2.schemas import (
     RunRequest,
 )
 from bijux_canon_runtime.application.operations import (
+    ApplicationCapabilityError,
     ReplayOperationRequest,
     RuntimeApplicationServicesV2,
 )
@@ -58,6 +59,7 @@ PROBLEM_RESPONSES = {
     404: {"model": ProblemDetail, "description": "Resource not found."},
     406: {"model": ProblemDetail, "description": "Unsupported API version."},
     409: {"model": ProblemDetail, "description": "Immutable state conflict."},
+    500: {"model": ProblemDetail, "description": "Application operation failed."},
     503: {"model": ProblemDetail, "description": "Application service unavailable."},
 }
 
@@ -111,7 +113,9 @@ def create_app(
     def application_services(request: Request) -> RuntimeApplicationServicesV2:
         configured = request.app.state.application_services
         if configured is None:
-            raise RuntimeError("runtime application services are not configured")
+            raise ApplicationCapabilityError(
+                "runtime application services are not configured"
+            )
         if not isinstance(configured, RuntimeApplicationServicesV2):
             raise TypeError("runtime application service has the wrong version")
         return configured
@@ -184,13 +188,24 @@ def create_app(
             cause=str(exc),
         )
 
-    @api.exception_handler(RuntimeError)
-    def unavailable(_: Request, exc: RuntimeError) -> JSONResponse:
+    @api.exception_handler(ApplicationCapabilityError)
+    def unavailable(_: Request, exc: ApplicationCapabilityError) -> JSONResponse:
         return _problem(
             status_code=503,
             code="missing-capability",
             title="Runtime application service is unavailable",
             remediation="Configure the v2 application service composition.",
+            retryable=True,
+            cause=str(exc),
+        )
+
+    @api.exception_handler(RuntimeError)
+    def operation_failed(_: Request, exc: RuntimeError) -> JSONResponse:
+        return _problem(
+            status_code=500,
+            code="operation-failed",
+            title="Runtime application operation failed",
+            remediation="Inspect persisted evidence and retry.",
             retryable=True,
             cause=str(exc),
         )

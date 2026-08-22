@@ -23,6 +23,7 @@ from bijux_canon_runtime.interfaces.cli.v2_commands import (
 )
 from bijux_canon_runtime.ontology.ids import ArtifactID
 from bijux_canon_runtime.runtime.execution.durable_jobs import DurableJobManager
+from bijux_canon_runtime.runtime.execution.durable_jobs import DurableJobError
 from bijux_canon_runtime.runtime.inspection import RuntimeRunInspector
 
 pytestmark = pytest.mark.unit
@@ -187,3 +188,46 @@ def test_invalid_resource_identity_has_equivalent_transport_error() -> None:
     assert cli_problem["code"] == http_problem["code"] == "invalid-request"
     assert cli_problem["retryable"] is http_problem["retryable"] is False
     assert cli_problem["cause"] == http_problem["cause"]
+
+
+@pytest.mark.parametrize(
+    ("error", "exit_code", "status_code", "code", "retryable"),
+    [
+        (KeyError("missing corpus"), 4, 404, "not-found", False),
+        (DurableJobError("immutable conflict"), 4, 409, "conflict", False),
+        (RuntimeError("execution failed"), 4, 500, "operation-failed", True),
+    ],
+)
+def test_application_failures_have_equivalent_transport_errors(
+    error: Exception,
+    exit_code: int,
+    status_code: int,
+    code: str,
+    retryable: bool,
+) -> None:
+    def fail(_: ArtifactID) -> Mapping[str, object]:
+        raise error
+
+    services = RuntimeApplicationServicesV2(
+        jobs=cast(DurableJobManager, object()),
+        inspector=cast(RuntimeRunInspector, object()),
+        corpus_inspector=fail,
+    )
+    args = build_parser(prog_name="bijux-canon-runtime").parse_args(
+        ["v2", "corpus-inspect", str(_CORPUS_ID)]
+    )
+    stderr = StringIO()
+    with redirect_stderr(stderr):
+        assert run_v2_command(args, services=services) == exit_code
+    cli_problem = json.loads(stderr.getvalue())
+
+    response = TestClient(create_app(services), raise_server_exceptions=False).get(
+        f"/api/v2/corpora/{_CORPUS_ID}", headers={"Bijux-API-Version": "v2"}
+    )
+
+    assert response.status_code == status_code
+    http_problem = response.json()
+    for field in ("code", "retryable", "remediation", "cause"):
+        assert cli_problem[field] == http_problem[field]
+    assert cli_problem["code"] == code
+    assert cli_problem["retryable"] is retryable
