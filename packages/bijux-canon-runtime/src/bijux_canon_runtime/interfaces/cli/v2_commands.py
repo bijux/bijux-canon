@@ -44,6 +44,11 @@ from bijux_canon_runtime.application.operations import (
     ReplayOperationRequest,
     RuntimeApplicationServicesV2,
 )
+from bijux_canon_runtime.application.problems import (
+    RuntimeProblemCode,
+    runtime_problem,
+    runtime_problem_fields,
+)
 from bijux_canon_runtime.application.readiness import (
     RuntimeReadinessService,
     runtime_liveness,
@@ -78,6 +83,7 @@ def run_v2_command(
     readiness_service: RuntimeReadinessService | None = None,
 ) -> int:
     """Execute one parsed v2 command and emit exactly one JSON document."""
+    correlation_id, run_id = _problem_context(args)
     try:
         if args.v2_command == "discover":
             return _discover(args)
@@ -135,44 +141,59 @@ def run_v2_command(
         raise ValueError(f"unsupported v2 command: {args.v2_command}")
     except ValidationError as exc:
         _failure(
-            "invalid-request",
-            "Correct the fields identified by the v2 request schema.",
-            exc.errors()[0]["type"] if exc.errors() else type(exc).__name__,
+            RuntimeProblemCode.INVALID_REQUEST,
+            correlation_id=correlation_id,
+            run_id=run_id,
+            cause=exc.errors()[0]["type"] if exc.errors() else type(exc).__name__,
         )
         return EXIT_INVALID_REQUEST
     except ValueError as exc:
         _failure(
-            "invalid-request",
-            "Correct the request without changing its idempotency key.",
-            str(exc),
+            RuntimeProblemCode.INVALID_REQUEST,
+            correlation_id=correlation_id,
+            run_id=run_id,
+            cause=exc,
         )
         return EXIT_INVALID_REQUEST
     except (OSError, json.JSONDecodeError) as exc:
-        _failure("invalid-request", "Correct the command input.", str(exc))
+        _failure(
+            RuntimeProblemCode.INVALID_REQUEST,
+            correlation_id=correlation_id,
+            run_id=run_id,
+            cause=exc,
+        )
         return EXIT_INVALID_REQUEST
     except KeyError as exc:
         _failure(
-            "not-found",
-            "Use an identity returned by this configured Runtime store.",
-            str(exc),
+            RuntimeProblemCode.NOT_FOUND,
+            correlation_id=correlation_id,
+            run_id=run_id,
+            cause=exc,
         )
         return EXIT_OPERATION_FAILED
     except DurableJobError as exc:
         _failure(
-            "conflict",
-            "Inspect the existing job before retrying.",
-            str(exc),
+            RuntimeProblemCode.CONFLICT,
+            correlation_id=correlation_id,
+            run_id=run_id,
+            cause=exc,
         )
         return EXIT_OPERATION_FAILED
     except ApplicationCapabilityError as exc:
         _failure(
-            "missing-capability",
-            "Configure the v2 application service composition.",
-            str(exc),
+            RuntimeProblemCode.MISSING_CAPABILITY,
+            correlation_id=correlation_id,
+            run_id=run_id,
+            cause=exc,
         )
         return EXIT_MISSING_CAPABILITY
     except RuntimeError as exc:
-        _failure("operation-failed", "Inspect persisted evidence and retry.", str(exc))
+        _failure(
+            RuntimeProblemCode.OPERATION_FAILED,
+            correlation_id=correlation_id,
+            run_id=run_id,
+            cause=exc,
+        )
         return EXIT_OPERATION_FAILED
 
 
@@ -353,6 +374,33 @@ def _load_model(path: Path, model_type):
     return model_type.model_validate(payload)
 
 
+def _problem_context(args: argparse.Namespace) -> tuple[str | None, str | None]:
+    correlation_id = getattr(args, "correlation_id", None)
+    run_id = getattr(args, "run_id", None)
+    request_path = getattr(args, "request", None)
+    if not isinstance(request_path, str):
+        return correlation_id, run_id
+    try:
+        path = Path(request_path)
+        if path.stat().st_size > 1_048_576:
+            return correlation_id, run_id
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return correlation_id, run_id
+    if not isinstance(payload, dict):
+        return correlation_id, run_id
+    context = payload.get("context")
+    if correlation_id is None and isinstance(context, dict):
+        candidate = context.get("correlation_id")
+        if isinstance(candidate, str):
+            correlation_id = candidate
+    if run_id is None:
+        candidate = payload.get("baseline_run_id")
+        if isinstance(candidate, str):
+            run_id = candidate
+    return correlation_id, run_id
+
+
 def _write(value: object) -> None:
     print(json.dumps(_normalize(value), sort_keys=True, separators=(",", ":")))
 
@@ -369,20 +417,28 @@ def _normalize(value: object) -> object:
     return value
 
 
-def _failure(code: str, remediation: str, cause: str) -> None:
-    payload = {
-        "cause": cause,
-        "code": code,
-        "remediation": remediation,
-        "retryable": code in {"missing-capability", "operation-failed"},
-        "schema_version": "bijux.runtime.cli-problem.v2",
-    }
+def _failure(
+    code: RuntimeProblemCode,
+    *,
+    correlation_id: str | None,
+    run_id: str | None,
+    cause: object | None,
+) -> None:
+    payload = runtime_problem_fields(
+        runtime_problem(
+            code,
+            correlation_id=correlation_id,
+            run_id=run_id,
+            cause=cause,
+        )
+    )
     print(json.dumps(payload, sort_keys=True, separators=(",", ":")), file=sys.stderr)
 
 
 __all__ = [
     "EXIT_INVALID_REQUEST",
     "EXIT_MISSING_CAPABILITY",
+    "EXIT_NOT_READY",
     "EXIT_OPERATION_FAILED",
     "run_v2_command",
 ]

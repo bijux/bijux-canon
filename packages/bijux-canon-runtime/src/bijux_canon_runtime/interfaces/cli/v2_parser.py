@@ -16,6 +16,10 @@ def add_v2_commands(
         "v2",
         help="Typed local-first corpus, index, reasoning, and Runtime operations.",
     )
+    v2.add_argument(
+        "--correlation-id",
+        help="Stable caller correlation identity included in typed failures.",
+    )
     commands = v2.add_subparsers(dest="v2_command", required=True)
 
     discover = commands.add_parser("discover", help="Discover immutable local sources.")

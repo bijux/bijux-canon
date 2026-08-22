@@ -44,6 +44,11 @@ from bijux_canon_runtime.application.readiness import (
     RuntimeReadinessService,
     runtime_liveness,
 )
+from bijux_canon_runtime.application.problems import (
+    RuntimeProblemCode,
+    runtime_problem,
+    runtime_problem_fields,
+)
 from bijux_canon_runtime.application.runtime_configuration import (
     resolve_runtime_configuration,
 )
@@ -77,27 +82,21 @@ PROBLEM_RESPONSES = {
 
 def _problem(
     *,
-    status_code: int,
-    code: str,
-    title: str,
-    remediation: str,
-    correlation_id: str = "correlation-unavailable",
-    retryable: bool = False,
-    cause: str | None = None,
+    code: RuntimeProblemCode,
+    correlation_id: str | None = None,
+    run_id: str | None = None,
+    cause: object | None = None,
     headers: dict[str, str] | None = None,
 ) -> JSONResponse:
-    payload = ProblemDetail(
-        type=f"https://bijux.org/problems/runtime/{code}",
-        title=title,
-        status=status_code,
-        code=code,
+    problem = runtime_problem(
+        code,
         correlation_id=correlation_id,
-        retryable=retryable,
-        remediation=remediation,
+        run_id=run_id,
         cause=cause,
     )
+    payload = ProblemDetail.model_validate(runtime_problem_fields(problem))
     return JSONResponse(
-        status_code=status_code,
+        status_code=problem.status,
         content=payload.model_dump(mode="json"),
         media_type="application/problem+json",
         headers=headers,
@@ -127,18 +126,26 @@ def create_app(
         configured = request.app.state.application_services
         if configured is None:
             raise ApplicationCapabilityError(
-                "runtime application services are not configured"
+                "Runtime v2 application services are not configured"
             )
         if not isinstance(configured, RuntimeApplicationServicesV2):
             raise TypeError("runtime application service has the wrong version")
         return configured
 
-    def require_version(
+    async def require_version(
+        request: Request,
         bijux_api_version: Annotated[
             str | None,
             Header(alias="Bijux-API-Version"),
         ] = None,
+        correlation_id: Annotated[
+            str | None,
+            Header(alias="X-Correlation-ID", pattern=r"^[A-Za-z0-9._:-]{1,200}$"),
+        ] = None,
     ) -> None:
+        request.state.correlation_id = correlation_id or await _body_correlation_id(
+            request
+        )
         if bijux_api_version != SUPPORTED_VERSION:
             raise _UnsupportedVersion
 
@@ -163,74 +170,64 @@ def create_app(
         return response
 
     @api.exception_handler(_UnsupportedVersion)
-    def unsupported_version(_: Request, __: _UnsupportedVersion) -> JSONResponse:
+    def unsupported_version(request: Request, __: _UnsupportedVersion) -> JSONResponse:
         return _problem(
-            status_code=406,
-            code="unsupported-version",
-            title="Unsupported API version",
-            remediation="Send Bijux-API-Version: v2.",
+            code=RuntimeProblemCode.UNSUPPORTED_VERSION,
+            correlation_id=_correlation_id(request),
             headers={"Bijux-API-Supported-Versions": SUPPORTED_VERSION},
         )
 
     @api.exception_handler(RequestValidationError)
-    def invalid_request(_: Request, exc: RequestValidationError) -> JSONResponse:
+    def invalid_request(request: Request, exc: RequestValidationError) -> JSONResponse:
         return _problem(
-            status_code=400,
-            code="invalid-request",
-            title="Request validation failed",
-            remediation="Correct the fields identified by the v2 request schema.",
+            code=RuntimeProblemCode.INVALID_REQUEST,
+            correlation_id=_correlation_id(request),
+            run_id=request.path_params.get("run_id"),
             cause=exc.errors()[0]["type"] if exc.errors() else None,
         )
 
     @api.exception_handler(KeyError)
-    def not_found(_: Request, exc: KeyError) -> JSONResponse:
+    def not_found(request: Request, exc: KeyError) -> JSONResponse:
         return _problem(
-            status_code=404,
-            code="not-found",
-            title="Runtime resource not found",
-            remediation="Use an identity returned by this configured Runtime store.",
+            code=RuntimeProblemCode.NOT_FOUND,
+            correlation_id=_correlation_id(request),
+            run_id=request.path_params.get("run_id"),
             cause=str(exc),
         )
 
     @api.exception_handler(ValueError)
-    def invalid_value(_: Request, exc: ValueError) -> JSONResponse:
+    def invalid_value(request: Request, exc: ValueError) -> JSONResponse:
         return _problem(
-            status_code=400,
-            code="invalid-request",
-            title="Application request is invalid",
-            remediation="Correct the request without changing its idempotency key.",
+            code=RuntimeProblemCode.INVALID_REQUEST,
+            correlation_id=_correlation_id(request),
+            run_id=request.path_params.get("run_id"),
             cause=str(exc),
         )
 
     @api.exception_handler(DurableJobError)
-    def job_conflict(_: Request, exc: DurableJobError) -> JSONResponse:
+    def job_conflict(request: Request, exc: DurableJobError) -> JSONResponse:
         return _problem(
-            status_code=409,
-            code="conflict",
-            title="Durable job state conflicts with the request",
-            remediation="Inspect the existing job before retrying.",
+            code=RuntimeProblemCode.CONFLICT,
+            correlation_id=_correlation_id(request),
+            run_id=request.path_params.get("run_id"),
             cause=str(exc),
         )
 
     @api.exception_handler(ApplicationCapabilityError)
-    def unavailable(_: Request, exc: ApplicationCapabilityError) -> JSONResponse:
+    def unavailable(request: Request, exc: ApplicationCapabilityError) -> JSONResponse:
         return _problem(
-            status_code=503,
-            code="missing-capability",
-            title="Runtime application service is unavailable",
-            remediation="Configure the v2 application service composition.",
-            retryable=True,
+            code=RuntimeProblemCode.MISSING_CAPABILITY,
+            correlation_id=_correlation_id(request),
+            run_id=request.path_params.get("run_id"),
             cause=str(exc),
         )
 
     @api.exception_handler(RuntimeError)
-    def operation_failed(_: Request, exc: RuntimeError) -> JSONResponse:
+    def operation_failed(request: Request, exc: RuntimeError) -> JSONResponse:
         return _problem(
-            status_code=500,
-            code="operation-failed",
-            title="Runtime application operation failed",
-            remediation="Inspect persisted evidence and retry.",
-            retryable=True,
+            code=RuntimeProblemCode.OPERATION_FAILED,
+            correlation_id=_correlation_id(request),
+            run_id=request.path_params.get("run_id"),
             cause=str(exc),
         )
 
@@ -524,6 +521,35 @@ def create_app(
 
 class _UnsupportedVersion(Exception):
     pass
+
+
+def _correlation_id(request: Request) -> str | None:
+    value = getattr(request.state, "correlation_id", None)
+    if isinstance(value, str):
+        return value
+    header = request.headers.get("X-Correlation-ID")
+    return header if isinstance(header, str) else None
+
+
+async def _body_correlation_id(request: Request) -> str | None:
+    raw_length = request.headers.get("content-length")
+    try:
+        length = int(raw_length) if raw_length is not None else None
+    except ValueError:
+        return None
+    if length is None or not 0 < length <= 1_048_576:
+        return None
+    try:
+        payload = await request.json()
+    except (UnicodeDecodeError, ValueError):
+        return None
+    if not isinstance(payload, dict):
+        return None
+    context = payload.get("context")
+    if not isinstance(context, dict):
+        return None
+    correlation_id = context.get("correlation_id")
+    return correlation_id if isinstance(correlation_id, str) else None
 
 
 def _retrieval_request(

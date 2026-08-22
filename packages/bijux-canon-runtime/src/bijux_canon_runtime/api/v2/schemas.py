@@ -9,6 +9,8 @@ from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from bijux_canon_runtime.application.problems import RuntimeProblemCode
+
 ArtifactIdentity = Annotated[str, Field(pattern=r"^sha256:[0-9a-f]{64}$")]
 StableIdentity = Annotated[str, Field(min_length=1, max_length=200)]
 Cursor = Annotated[str, Field(min_length=1, max_length=4096)]
@@ -305,14 +307,16 @@ class IndexInspectionResponse(StrictModel):
 class ProblemDetail(StrictModel):
     """Safe RFC 9457-style failure shared by every v2 route."""
 
+    schema_version: Literal["bijux.runtime.problem.v2"]
     type: str
     title: str
     status: int
-    code: str
+    code: RuntimeProblemCode
     correlation_id: str
+    run_id: str | None
     retryable: bool
     remediation: str
-    cause: str | None = None
+    cause: str | None
 
 
 __all__ = [

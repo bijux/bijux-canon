@@ -808,8 +808,7 @@
             "title": "Cause"
           },
           "code": {
-            "title": "Code",
-            "type": "string"
+            "$ref": "#/components/schemas/RuntimeProblemCode"
           },
           "correlation_id": {
             "title": "Correlation Id",
@@ -822,6 +821,22 @@
           "retryable": {
             "title": "Retryable",
             "type": "boolean"
+          },
+          "run_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Run Id"
+          },
+          "schema_version": {
+            "const": "bijux.runtime.problem.v2",
+            "title": "Schema Version",
+            "type": "string"
           },
           "status": {
             "title": "Status",
@@ -837,13 +852,16 @@
           }
         },
         "required": [
+          "schema_version",
           "type",
           "title",
           "status",
           "code",
           "correlation_id",
+          "run_id",
           "retryable",
-          "remediation"
+          "remediation",
+          "cause"
         ],
         "title": "ProblemDetail",
         "type": "object"
@@ -1283,6 +1301,19 @@
         "title": "RunRequest",
         "type": "object"
       },
+      "RuntimeProblemCode": {
+        "description": "Stable machine-readable application failure codes.",
+        "enum": [
+          "invalid-request",
+          "not-found",
+          "unsupported-version",
+          "conflict",
+          "operation-failed",
+          "missing-capability"
+        ],
+        "title": "RuntimeProblemCode",
+        "type": "string"
+      },
       "ValidationError": {
         "properties": {
           "ctx": {
@@ -1369,6 +1400,23 @@
                 }
               ],
               "title": "Bijux-Api-Version"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Correlation-ID",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^[A-Za-z0-9._:-]{1,200}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Correlation-Id"
             }
           }
         ],
@@ -1485,6 +1533,23 @@
                 }
               ],
               "title": "Bijux-Api-Version"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Correlation-ID",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^[A-Za-z0-9._:-]{1,200}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Correlation-Id"
             }
           }
         ],
@@ -1613,6 +1678,23 @@
               ],
               "title": "Bijux-Api-Version"
             }
+          },
+          {
+            "in": "header",
+            "name": "X-Correlation-ID",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^[A-Za-z0-9._:-]{1,200}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Correlation-Id"
+            }
           }
         ],
         "requestBody": {
@@ -1738,6 +1820,23 @@
               ],
               "title": "Bijux-Api-Version"
             }
+          },
+          {
+            "in": "header",
+            "name": "X-Correlation-ID",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^[A-Za-z0-9._:-]{1,200}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Correlation-Id"
+            }
           }
         ],
         "responses": {
@@ -1854,6 +1953,23 @@
                 }
               ],
               "title": "Bijux-Api-Version"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Correlation-ID",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^[A-Za-z0-9._:-]{1,200}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Correlation-Id"
             }
           }
         ],
@@ -2027,6 +2143,23 @@
               ],
               "title": "Bijux-Api-Version"
             }
+          },
+          {
+            "in": "header",
+            "name": "X-Correlation-ID",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^[A-Za-z0-9._:-]{1,200}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Correlation-Id"
+            }
           }
         ],
         "responses": {
@@ -2141,6 +2274,23 @@
                 }
               ],
               "title": "Bijux-Api-Version"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Correlation-ID",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^[A-Za-z0-9._:-]{1,200}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Correlation-Id"
             }
           }
         ],
@@ -2268,6 +2418,23 @@
               ],
               "title": "Bijux-Api-Version"
             }
+          },
+          {
+            "in": "header",
+            "name": "X-Correlation-ID",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^[A-Za-z0-9._:-]{1,200}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Correlation-Id"
+            }
           }
         ],
         "requestBody": {
@@ -2393,6 +2560,23 @@
               ],
               "title": "Bijux-Api-Version"
             }
+          },
+          {
+            "in": "header",
+            "name": "X-Correlation-ID",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^[A-Za-z0-9._:-]{1,200}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Correlation-Id"
+            }
           }
         ],
         "responses": {
@@ -2499,6 +2683,23 @@
               ],
               "title": "Bijux-Api-Version"
             }
+          },
+          {
+            "in": "header",
+            "name": "X-Correlation-ID",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^[A-Za-z0-9._:-]{1,200}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Correlation-Id"
+            }
           }
         ],
         "responses": {
@@ -2544,6 +2745,23 @@
                 }
               ],
               "title": "Bijux-Api-Version"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Correlation-ID",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^[A-Za-z0-9._:-]{1,200}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Correlation-Id"
             }
           }
         ],
@@ -2611,6 +2829,23 @@
                 }
               ],
               "title": "Bijux-Api-Version"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Correlation-ID",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^[A-Za-z0-9._:-]{1,200}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Correlation-Id"
             }
           }
         ],
@@ -2739,6 +2974,23 @@
               ],
               "title": "Bijux-Api-Version"
             }
+          },
+          {
+            "in": "header",
+            "name": "X-Correlation-ID",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^[A-Za-z0-9._:-]{1,200}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Correlation-Id"
+            }
           }
         ],
         "requestBody": {
@@ -2865,6 +3117,23 @@
                 }
               ],
               "title": "Bijux-Api-Version"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Correlation-ID",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^[A-Za-z0-9._:-]{1,200}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Correlation-Id"
             }
           }
         ],
@@ -3054,6 +3323,23 @@
               ],
               "title": "Bijux-Api-Version"
             }
+          },
+          {
+            "in": "header",
+            "name": "X-Correlation-ID",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^[A-Za-z0-9._:-]{1,200}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Correlation-Id"
+            }
           }
         ],
         "responses": {
@@ -3181,6 +3467,23 @@
                 }
               ],
               "title": "Bijux-Api-Version"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Correlation-ID",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^[A-Za-z0-9._:-]{1,200}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Correlation-Id"
             }
           }
         ],

@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from contextlib import redirect_stderr, redirect_stdout
 from io import StringIO
 import json
@@ -15,6 +16,11 @@ from bijux_canon_runtime.api.v2 import create_app
 from bijux_canon_runtime.application.operations import (
     ReplayOperationRequest,
     RuntimeApplicationServicesV2,
+)
+from bijux_canon_runtime.application.problems import (
+    RuntimeProblemCode,
+    runtime_problem,
+    runtime_problem_fields,
 )
 from bijux_canon_runtime.interfaces.cli.parser import build_parser
 from bijux_canon_runtime.interfaces.cli.v2_commands import run_v2_command
@@ -221,13 +227,23 @@ class _RecordingServices(RuntimeApplicationServicesV2):
         }
 
 
-def _write_request(tmp_path: Path, name: str, payload: dict[str, object]) -> Path:
+class _FailingInspectionServices(_RecordingServices):
+    def __init__(self, failure: Exception) -> None:
+        super().__init__()
+        self._failure = failure
+
+    def inspect(self, run_id: str, *, attempt_id: str | None = None):
+        del run_id, attempt_id
+        raise self._failure
+
+
+def _write_request(tmp_path: Path, name: str, payload: Mapping[str, object]) -> Path:
     path = tmp_path / f"{name}.json"
     path.write_text(json.dumps(payload), encoding="utf-8")
     return path
 
 
-def _cli(service: _RecordingServices, argv: list[str]):
+def _cli(service: RuntimeApplicationServicesV2 | None, argv: list[str]):
     args = build_parser(prog_name="bijux-canon-runtime").parse_args(["v2", *argv])
     stdout, stderr = StringIO(), StringIO()
     with redirect_stdout(stdout), redirect_stderr(stderr):
@@ -594,5 +610,110 @@ def test_invalid_body_has_compatible_errors(tmp_path: Path) -> None:
     http_problem = response.json()
 
     assert cli_code == 2 and response.status_code == 400
-    for field in ("code", "retryable", "remediation", "cause"):
-        assert cli_problem[field] == http_problem[field]
+    assert cli_problem == http_problem
+
+
+@pytest.mark.parametrize(
+    ("failure", "expected_code", "expected_status", "expected_exit"),
+    [
+        (KeyError("token=private-value at /srv/private/run.json"), "not-found", 404, 4),
+        (
+            RuntimeError("authorization=private-value at /srv/private/run.json"),
+            "operation-failed",
+            500,
+            4,
+        ),
+    ],
+)
+def test_problem_fields_are_identical_across_library_cli_http_and_observability(
+    failure: Exception,
+    expected_code: str,
+    expected_status: int,
+    expected_exit: int,
+) -> None:
+    correlation_id = "correlation-problem-parity"
+    cli_code, cli_problem = _cli(
+        _FailingInspectionServices(failure),
+        ["--correlation-id", correlation_id, "inspect", _RUN_ID],
+    )
+    response = TestClient(create_app(_FailingInspectionServices(failure))).get(
+        f"/api/v2/runs/{_RUN_ID}",
+        headers={
+            "Bijux-API-Version": "v2",
+            "X-Correlation-ID": correlation_id,
+        },
+    )
+    library_fields = runtime_problem_fields(
+        runtime_problem(
+            RuntimeProblemCode(expected_code),
+            correlation_id=correlation_id,
+            run_id=_RUN_ID,
+            cause=failure,
+        )
+    )
+
+    assert cli_code == expected_exit and response.status_code == expected_status
+    assert cli_problem == response.json() == library_fields
+    assert cli_problem["schema_version"] == "bijux.runtime.problem.v2"
+    assert cli_problem["correlation_id"] == correlation_id
+    assert cli_problem["run_id"] == _RUN_ID
+    assert "private-value" not in cli_problem["cause"]
+    assert "/srv/private" not in cli_problem["cause"]
+    assert "<redacted>" in cli_problem["cause"]
+    assert "<path>" in cli_problem["cause"]
+
+
+def test_unsupported_version_is_a_typed_safe_problem() -> None:
+    response = TestClient(create_app(_RecordingServices())).get(
+        f"/api/v2/runs/{_RUN_ID}",
+        headers={"X-Correlation-ID": "correlation-version"},
+    )
+
+    assert response.status_code == 406
+    assert response.headers["Bijux-API-Supported-Versions"] == "v2"
+    assert response.json() == runtime_problem_fields(
+        runtime_problem(
+            RuntimeProblemCode.UNSUPPORTED_VERSION,
+            correlation_id="correlation-version",
+        )
+    )
+
+
+def test_request_context_correlation_survives_missing_composition(
+    tmp_path: Path,
+) -> None:
+    payload = _request_payloads(tmp_path)["run"]
+    request_path = _write_request(tmp_path, "missing-composition", payload)
+    cli_code, cli_problem = _cli(
+        None,
+        ["run", "--request", str(request_path), "--idempotency-key", _IDEMPOTENCY_KEY],
+    )
+    response = TestClient(create_app()).post(
+        "/api/v2/runs",
+        headers={
+            "Bijux-API-Version": "v2",
+            "Idempotency-Key": _IDEMPOTENCY_KEY,
+        },
+        json=payload,
+    )
+
+    assert cli_code == 3 and response.status_code == 503
+    assert cli_problem == response.json()
+    assert cli_problem["correlation_id"] == "correlation-run"
+
+
+def test_problem_fields_bound_unsafe_identifiers_and_cause() -> None:
+    fields = runtime_problem_fields(
+        runtime_problem(
+            RuntimeProblemCode.OPERATION_FAILED,
+            correlation_id="invalid identity",
+            run_id="invalid/run",
+            cause="password=private " + "x" * 1_000,
+        )
+    )
+
+    assert fields["correlation_id"] == "correlation-unavailable"
+    assert fields["run_id"] == "run-unavailable"
+    assert isinstance(fields["cause"], str)
+    assert len(fields["cause"]) == 500
+    assert "private" not in fields["cause"]

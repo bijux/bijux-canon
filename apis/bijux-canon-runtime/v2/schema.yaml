@@ -600,8 +600,7 @@ components:
           - type: 'null'
           title: Cause
         code:
-          title: Code
-          type: string
+          $ref: '#/components/schemas/RuntimeProblemCode'
         correlation_id:
           title: Correlation Id
           type: string
@@ -611,6 +610,15 @@ components:
         retryable:
           title: Retryable
           type: boolean
+        run_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Run Id
+        schema_version:
+          const: bijux.runtime.problem.v2
+          title: Schema Version
+          type: string
         status:
           title: Status
           type: integer
@@ -621,13 +629,16 @@ components:
           title: Type
           type: string
       required:
+      - schema_version
       - type
       - title
       - status
       - code
       - correlation_id
+      - run_id
       - retryable
       - remediation
+      - cause
       title: ProblemDetail
       type: object
     ReadinessCheckResponse:
@@ -957,6 +968,17 @@ components:
       - execution_profile
       title: RunRequest
       type: object
+    RuntimeProblemCode:
+      description: Stable machine-readable application failure codes.
+      enum:
+      - invalid-request
+      - not-found
+      - unsupported-version
+      - conflict
+      - operation-failed
+      - missing-capability
+      title: RuntimeProblemCode
+      type: string
     ValidationError:
       properties:
         ctx:
@@ -1015,6 +1037,15 @@ paths:
           - type: string
           - type: 'null'
           title: Bijux-Api-Version
+      - in: header
+        name: X-Correlation-ID
+        required: false
+        schema:
+          anyOf:
+          - pattern: ^[A-Za-z0-9._:-]{1,200}$
+            type: string
+          - type: 'null'
+          title: X-Correlation-Id
       requestBody:
         content:
           application/json:
@@ -1083,6 +1114,15 @@ paths:
           - type: string
           - type: 'null'
           title: Bijux-Api-Version
+      - in: header
+        name: X-Correlation-ID
+        required: false
+        schema:
+          anyOf:
+          - pattern: ^[A-Za-z0-9._:-]{1,200}$
+            type: string
+          - type: 'null'
+          title: X-Correlation-Id
       requestBody:
         content:
           application/json:
@@ -1159,6 +1199,15 @@ paths:
           - type: string
           - type: 'null'
           title: Bijux-Api-Version
+      - in: header
+        name: X-Correlation-ID
+        required: false
+        schema:
+          anyOf:
+          - pattern: ^[A-Za-z0-9._:-]{1,200}$
+            type: string
+          - type: 'null'
+          title: X-Correlation-Id
       requestBody:
         content:
           application/json:
@@ -1233,6 +1282,15 @@ paths:
           - type: string
           - type: 'null'
           title: Bijux-Api-Version
+      - in: header
+        name: X-Correlation-ID
+        required: false
+        schema:
+          anyOf:
+          - pattern: ^[A-Za-z0-9._:-]{1,200}$
+            type: string
+          - type: 'null'
+          title: X-Correlation-Id
       responses:
         '200':
           content:
@@ -1303,6 +1361,15 @@ paths:
           - type: string
           - type: 'null'
           title: Bijux-Api-Version
+      - in: header
+        name: X-Correlation-ID
+        required: false
+        schema:
+          anyOf:
+          - pattern: ^[A-Za-z0-9._:-]{1,200}$
+            type: string
+          - type: 'null'
+          title: X-Correlation-Id
       requestBody:
         content:
           application/json:
@@ -1405,6 +1472,15 @@ paths:
           - type: string
           - type: 'null'
           title: Bijux-Api-Version
+      - in: header
+        name: X-Correlation-ID
+        required: false
+        schema:
+          anyOf:
+          - pattern: ^[A-Za-z0-9._:-]{1,200}$
+            type: string
+          - type: 'null'
+          title: X-Correlation-Id
       responses:
         '200':
           content:
@@ -1473,6 +1549,15 @@ paths:
           - type: string
           - type: 'null'
           title: Bijux-Api-Version
+      - in: header
+        name: X-Correlation-ID
+        required: false
+        schema:
+          anyOf:
+          - pattern: ^[A-Za-z0-9._:-]{1,200}$
+            type: string
+          - type: 'null'
+          title: X-Correlation-Id
       responses:
         '200':
           content:
@@ -1549,6 +1634,15 @@ paths:
           - type: string
           - type: 'null'
           title: Bijux-Api-Version
+      - in: header
+        name: X-Correlation-ID
+        required: false
+        schema:
+          anyOf:
+          - pattern: ^[A-Za-z0-9._:-]{1,200}$
+            type: string
+          - type: 'null'
+          title: X-Correlation-Id
       requestBody:
         content:
           application/json:
@@ -1623,6 +1717,15 @@ paths:
           - type: string
           - type: 'null'
           title: Bijux-Api-Version
+      - in: header
+        name: X-Correlation-ID
+        required: false
+        schema:
+          anyOf:
+          - pattern: ^[A-Za-z0-9._:-]{1,200}$
+            type: string
+          - type: 'null'
+          title: X-Correlation-Id
       responses:
         '200':
           content:
@@ -1685,6 +1788,15 @@ paths:
           - type: string
           - type: 'null'
           title: Bijux-Api-Version
+      - in: header
+        name: X-Correlation-ID
+        required: false
+        schema:
+          anyOf:
+          - pattern: ^[A-Za-z0-9._:-]{1,200}$
+            type: string
+          - type: 'null'
+          title: X-Correlation-Id
       responses:
         '200':
           content:
@@ -1711,6 +1823,15 @@ paths:
           - type: string
           - type: 'null'
           title: Bijux-Api-Version
+      - in: header
+        name: X-Correlation-ID
+        required: false
+        schema:
+          anyOf:
+          - pattern: ^[A-Za-z0-9._:-]{1,200}$
+            type: string
+          - type: 'null'
+          title: X-Correlation-Id
       responses:
         '200':
           content:
@@ -1751,6 +1872,15 @@ paths:
           - type: string
           - type: 'null'
           title: Bijux-Api-Version
+      - in: header
+        name: X-Correlation-ID
+        required: false
+        schema:
+          anyOf:
+          - pattern: ^[A-Za-z0-9._:-]{1,200}$
+            type: string
+          - type: 'null'
+          title: X-Correlation-Id
       requestBody:
         content:
           application/json:
@@ -1827,6 +1957,15 @@ paths:
           - type: string
           - type: 'null'
           title: Bijux-Api-Version
+      - in: header
+        name: X-Correlation-ID
+        required: false
+        schema:
+          anyOf:
+          - pattern: ^[A-Za-z0-9._:-]{1,200}$
+            type: string
+          - type: 'null'
+          title: X-Correlation-Id
       requestBody:
         content:
           application/json:
@@ -1903,6 +2042,15 @@ paths:
           - type: string
           - type: 'null'
           title: Bijux-Api-Version
+      - in: header
+        name: X-Correlation-ID
+        required: false
+        schema:
+          anyOf:
+          - pattern: ^[A-Za-z0-9._:-]{1,200}$
+            type: string
+          - type: 'null'
+          title: X-Correlation-Id
       requestBody:
         content:
           application/json:
@@ -2013,6 +2161,15 @@ paths:
           - type: string
           - type: 'null'
           title: Bijux-Api-Version
+      - in: header
+        name: X-Correlation-ID
+        required: false
+        schema:
+          anyOf:
+          - pattern: ^[A-Za-z0-9._:-]{1,200}$
+            type: string
+          - type: 'null'
+          title: X-Correlation-Id
       responses:
         '200':
           content:
@@ -2091,6 +2248,15 @@ paths:
           - type: string
           - type: 'null'
           title: Bijux-Api-Version
+      - in: header
+        name: X-Correlation-ID
+        required: false
+        schema:
+          anyOf:
+          - pattern: ^[A-Za-z0-9._:-]{1,200}$
+            type: string
+          - type: 'null'
+          title: X-Correlation-Id
       requestBody:
         content:
           application/json:
