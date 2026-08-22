@@ -157,7 +157,7 @@ def _inspector(
     *,
     target: InstallTarget,
     versions: Mapping[str, str],
-    repo_root: Path,
+    source_roots: Sequence[Path],
 ) -> str:
     assets = {name: list(patterns) for name, patterns in target.required_assets}
     return "\n".join(
@@ -173,9 +173,9 @@ def _inspector(
             f"candidate_versions = {dict(versions)!r}",
             f"import_names = {target.import_names!r}",
             f"required_assets = {assets!r}",
-            f"repo_root = Path({str(repo_root)!r}).resolve()",
+            f"source_roots = tuple(Path(value).resolve() for value in {tuple(map(str, source_roots))!r})",
             "purelib = Path(sysconfig.get_paths()['purelib']).resolve()",
-            "assert all(Path(value or '.').resolve() != repo_root for value in sys.path)",
+            "assert all(not any(Path(value or '.').resolve().is_relative_to(root) for root in source_roots) for value in sys.path)",
             "installed_candidates = {}",
             "for name, expected_version in candidate_versions.items():",
             "    try:",
@@ -191,7 +191,7 @@ def _inspector(
             "    module = importlib.import_module(name)",
             "    origin = Path(module.__file__).resolve()",
             "    assert origin.is_relative_to(purelib), (name, origin, purelib)",
-            "    assert not origin.is_relative_to(repo_root), (name, origin, repo_root)",
+            "    assert not any(origin.is_relative_to(root) for root in source_roots), (name, origin, source_roots)",
             "    module_origins[name] = str(origin)",
             "entry_points = {}",
             "data_files = {}",
@@ -252,6 +252,11 @@ def run_installation_matrix(
     support = inspect_workspace(repo_root)
     records = inspect_wheels(wheel_dir, support.distribution_names)
     policies = inspect_workspace_policy(repo_root)
+    source_roots = tuple(
+        (policy.pyproject_path.parent / "src").resolve()
+        for policy in policies
+        if policy.package_key is not None
+    )
     targets = _targets(records, policies)
     versions = {record.distribution_name: record.version for record in records}
     record_by_name = {
@@ -311,7 +316,11 @@ def run_installation_matrix(
                 str(python),
                 "-I",
                 "-c",
-                _inspector(target=target, versions=versions, repo_root=repo_root),
+                _inspector(
+                    target=target,
+                    versions=versions,
+                    source_roots=source_roots,
+                ),
             ],
             *[
                 [str(_script_path(target_root, script)), "--help"]

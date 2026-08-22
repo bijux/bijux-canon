@@ -148,6 +148,9 @@ def test_matrix_installs_each_wheel_and_complete_family(tmp_path: Path) -> None:
     assert len(commands) == 14
     assert any("--constraint" in command for command in commands)
     assert any(command[-1] == "--help" for command in commands)
+    inspector = next(command[-1] for command in commands if "-I" in command)
+    assert "packages/example/src" in inspector
+    assert "source_roots" in inspector
     constraints = root / str(evidence["constraint_file"])
     assert constraints.read_text(encoding="utf-8") == (
         "example==1.2.3\nworkspace-repository==1.2.3\n"
