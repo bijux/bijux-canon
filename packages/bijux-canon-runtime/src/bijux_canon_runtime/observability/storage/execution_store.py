@@ -82,7 +82,7 @@ from bijux_canon_runtime.ontology.public import (
     ReplayMode,
 )
 
-SCHEMA_VERSION = 3
+SCHEMA_VERSION = 4
 DEFAULT_MIGRATIONS_DIR = default_migrations_dir()
 DEFAULT_SCHEMA_CONTRACT_PATH = default_schema_contract_path()
 DEFAULT_SCHEMA_HASH_PATH = default_schema_hash_path()
@@ -1351,6 +1351,22 @@ class DuckDBExecutionStore:
             self._connection.commit()
             return
         stored_version, stored_hash = int(row[0]), row[1]
+        if stored_version < latest_version:
+            self._connection.execute(
+                """
+                UPDATE schema_contract
+                SET schema_version = ?, schema_hash = ?, applied_at = ?
+                WHERE schema_version = ?
+                """,
+                (
+                    latest_version,
+                    contract_hash,
+                    datetime.now(tz=UTC).isoformat(),
+                    stored_version,
+                ),
+            )
+            self._connection.commit()
+            return
         if stored_version != latest_version:
             raise RuntimeError(
                 "Database schema version does not match code contract version."
