@@ -30,7 +30,7 @@ def run_cli(cmd: list[str], *, check: bool = True) -> subprocess.CompletedProces
     full_cmd = cmd
     if not cmd or cmd[0] != sys.executable:
         full_cmd = [sys.executable, "-m", "bijux_canon_reason", *cmd]
-    return subprocess.run(  # noqa: S603
+    return subprocess.run(
         full_cmd,
         text=True,
         capture_output=True,

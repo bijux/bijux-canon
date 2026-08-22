@@ -23,9 +23,7 @@ def run_cli() -> Any:
             os.pathsep + env["PYTHONPATH"] if "PYTHONPATH" in env else ""
         )
         env["PYTHONDONTWRITEBYTECODE"] = "1"
-        return subprocess.run(  # noqa: S603
-            cmd, text=True, capture_output=True, check=check, env=env
-        )
+        return subprocess.run(cmd, text=True, capture_output=True, check=check, env=env)
 
     return _run
 

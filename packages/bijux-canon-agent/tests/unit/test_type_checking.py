@@ -39,7 +39,7 @@ def test_pipeline_mypy_has_no_regressions() -> None:
     cache_dir = repo_root / "artifacts" / "bijux-canon-agent" / "test" / ".mypy_cache"
     cache_dir.mkdir(parents=True, exist_ok=True)
     mypy_python = _resolve_mypy_python(package_root)
-    completed = subprocess.run(  # noqa: S603 - executes local mypy for regression coverage
+    completed = subprocess.run(
         [
             mypy_python,
             "-m",

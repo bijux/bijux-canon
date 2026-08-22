@@ -6,7 +6,6 @@
 from __future__ import annotations
 
 import asyncio
-import warnings
 from collections.abc import Awaitable, Callable
 from contextlib import AbstractAsyncContextManager
 from dataclasses import dataclass
@@ -14,6 +13,7 @@ from random import Random
 from time import monotonic
 from types import TracebackType
 from typing import Protocol, TypeAlias, TypeVar
+import warnings
 
 from bijux_canon_ingest.result.types import Err, ErrInfo, Ok, Result, make_errinfo
 
@@ -94,7 +94,7 @@ class ResilienceEnv:
             await asyncio.sleep(seconds)
 
         return ResilienceEnv(
-            rng=Random(),  # noqa: S311 - retry jitter does not require crypto entropy
+            rng=Random(),
             sleep=_sleep,
             clock=SystemClock(),
         )
@@ -110,7 +110,7 @@ def make_test_resilience_env(
         await asyncio.sleep(0)
 
     return ResilienceEnv(
-        rng=Random(seed),  # noqa: S311 - deterministic test backoff generator
+        rng=Random(seed),
         sleep=sleep or _noop_sleep,
         clock=clock or FakeClock(),
     )

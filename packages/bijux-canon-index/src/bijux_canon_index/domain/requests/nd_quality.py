@@ -105,7 +105,7 @@ def should_run_witness(rate: float, seed: int | None) -> bool:
         return False
     if rate >= 1:
         return True
-    rng = random.Random(seed)  # noqa: S311  # nosec B311 - deterministic witness sampling
+    rng = random.Random(seed)
     return rng.random() < rate
 
 

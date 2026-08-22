@@ -172,5 +172,4 @@ markers = [
 ]
 
 [tool.bandit]
-skips = ["B404", "B311"]
 exclude_dirs = [".venv", "tests", "artifacts", ".pytest_cache", ".ruff_cache"]

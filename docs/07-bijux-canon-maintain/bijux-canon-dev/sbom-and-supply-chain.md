@@ -112,7 +112,7 @@ rung actually claimed:
 | dependency input was prepared | package metadata plus generated production or development requirements | successful dependency resolution |
 | inventory was generated | nonempty CycloneDX JSON plus pip-audit completion record | structural validity or vulnerability acceptance |
 | inventory is structurally valid | successful `cyclonedx validate` result for the exact bytes | that every dependency is safe or complete |
-| vulnerability policy accepted the resolution | audit report, ignore policy, and gate verdict | artifact provenance or build reproducibility |
+| vulnerability policy accepted the resolution | audit report, strict gate policy, and gate verdict | artifact provenance or build reproducibility |
 | SBOM was staged with a release candidate | stable staged name, workflow run, source SHA, and package version | publication at a registry or release page |
 | published SBOM describes a released artifact | destination identity, SBOM digest, wheel/sdist or image digest, and common tagged source | signature, attestation, or runtime safety |
 
@@ -121,13 +121,12 @@ optional release staging as separate surfaces. It does not provide signing or
 a build-provenance attestation. Consumers needing those guarantees must add a
 separate trusted control rather than infer them from CycloneDX presence.
 
-## Vulnerability Ignores
+## Vulnerability Policy
 
-SBOM generation passes the configured vulnerability ignore IDs to pip-audit.
-An ignored advisory is excluded from the audit decision; it is not evidence
-that the dependency is patched or that the issue is non-exploitable. Review
-package-specific ignore sets alongside the security gate and remove entries
-when their applicability ends.
+SBOM generation rejects vulnerability ignore IDs and preserves pip-audit’s
+nonzero result. A vulnerable component therefore fails generation instead of
+producing an apparently acceptable inventory. Resolve the dependency before
+staging release evidence.
 
 Supply-chain inventory and vulnerability policy remain separate claims. An
 SBOM can be structurally valid while describing a vulnerable component, and a

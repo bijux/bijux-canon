@@ -13,7 +13,6 @@ from bijux_canon_dev.corpus.parser_locator_truth import (
     validate_truth,
 )
 
-
 REPO_ROOT = Path(__file__).resolve().parents[3]
 PORTFOLIO_ROOT = REPO_ROOT / "examples/document-formats"
 TRUTH_PATH = PORTFOLIO_ROOT / "locator-truth.jsonl"
@@ -46,7 +45,7 @@ def test_real_truth_covers_every_required_source_and_role() -> None:
         "record_count": 34,
         "source_count": 7,
         "truth_set_sha256": (
-            "9a3324044c06999eb9c235d252e75267f56cc1d6ab9ed1d9942df76fef540294"
+            "5e53de286b1cb29ff51685fafa406396f8996a8c604b9a3b7d5d98e1e0c1b8ed"
         ),
     }
     assert len({record["truth_id"] for record in records}) == 34
@@ -101,7 +100,7 @@ def test_pdf_truth_is_page_and_extractor_bound() -> None:
         "reference",
     }
     assert all(
-        record["locator"]["extractor"] == "pypdf-6.14.2-page-extract-text"
+        record["locator"]["extractor"] == "pypdf-6.15.0-page-extract-text"
         for record in pdf_records
     )
 

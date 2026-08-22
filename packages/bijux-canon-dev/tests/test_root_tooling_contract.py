@@ -32,7 +32,6 @@ def test_root_pyproject_declares_shared_quality_tooling() -> None:
 
     assert interrogate == {"fail-under": 32, "color": True}
     assert bandit == {
-        "skips": ["B404", "B311"],
         "exclude_dirs": [
             ".venv",
             "tests",
@@ -41,6 +40,28 @@ def test_root_pyproject_declares_shared_quality_tooling() -> None:
             ".ruff_cache",
         ],
     }
+
+
+def test_security_tooling_has_no_ungoverned_suppressions() -> None:
+    security_make = (REPO_ROOT / "makes" / "bijux-py" / "ci" / "security.mk").read_text(
+        encoding="utf-8"
+    )
+    sbom_make = (REPO_ROOT / "makes" / "bijux-py" / "ci" / "sbom.mk").read_text(
+        encoding="utf-8"
+    )
+
+    assert "SECURITY_IGNORE_IDS           ?=\n" in security_make
+    assert "SECURITY_BANDIT_SKIP_IDS      ?=\n" in security_make
+    assert "Ungoverned dependency vulnerability suppressions are forbidden" in (
+        security_make
+    )
+    assert "Ungoverned Bandit suppressions are forbidden" in security_make
+    assert "Bandit is mandatory; SKIP_BANDIT must remain 0" in security_make
+    assert "Dependency vulnerability auditing is mandatory and strict" in security_make
+    assert "SBOM_IGNORE_IDS          ?=\n" in sbom_make
+    assert "Ungoverned SBOM vulnerability suppressions are forbidden" in sbom_make
+    assert '--output "$(SBOM_PROD_FILE)" || true' not in sbom_make
+    assert '--output "$(SBOM_DEV_FILE)" || true' not in sbom_make
 
 
 def test_root_pyproject_uses_only_the_shared_dev_group() -> None:

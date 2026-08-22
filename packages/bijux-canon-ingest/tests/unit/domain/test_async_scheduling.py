@@ -38,7 +38,7 @@ def test_token_bucket_never_exceeds_policy(tps: float, burst: int, n: int) -> No
         env = ResilienceEnv(
             clock=clock,
             sleep=fake_sleep,
-            rng=Random(0),  # noqa: S311 - deterministic test fixture
+            rng=Random(0),
         )
 
         src = async_gen_from_list(list(range(n)))

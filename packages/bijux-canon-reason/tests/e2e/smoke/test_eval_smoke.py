@@ -16,7 +16,7 @@ def _run(cmd: list[str], *, cwd: Path) -> subprocess.CompletedProcess[str]:
     env["PYTHONPATH"] = str(repo_root / "src") + (
         os.pathsep + env["PYTHONPATH"] if "PYTHONPATH" in env else ""
     )
-    return subprocess.run(  # noqa: S603
+    return subprocess.run(
         cmd,
         text=True,
         capture_output=True,

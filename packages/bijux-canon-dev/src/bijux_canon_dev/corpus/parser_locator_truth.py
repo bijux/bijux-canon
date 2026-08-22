@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+from collections.abc import Iterable, Mapping
 from dataclasses import dataclass, field
 from datetime import date
 from html.parser import HTMLParser
@@ -11,7 +12,7 @@ import json
 from pathlib import Path
 import re
 import sys
-from typing import Any, Iterable, Mapping
+from typing import Any
 import xml.etree.ElementTree as ET
 from zipfile import ZipFile
 
@@ -20,7 +21,6 @@ from bijux_canon_dev.corpus.parser_lock import (
     validate_lock_document,
 )
 from bijux_canon_dev.corpus.parser_sources import canonical, load_portfolio, sha256
-
 
 SCHEMA_VERSION = "bijux.canon.parser_locator_truth.v1"
 REVIEW_METHOD = "independent manual inspection of immutable source bytes"
@@ -257,7 +257,7 @@ def verify_pdf_locator(record: Mapping[str, Any], page_count: int) -> None:
     end = locator.get("text_end")
     exact_text = record["exact_text"]
     if (
-        locator.get("extractor") != "pypdf-6.14.2-page-extract-text"
+        locator.get("extractor") != "pypdf-6.15.0-page-extract-text"
         or not isinstance(page, int)
         or not 1 <= page <= page_count
         or not isinstance(start, int)
@@ -305,7 +305,7 @@ def validate_truth(
         locked = locked_sources[source_id]
         normalization = {
             "jats": "collapse-unicode-whitespace-v1",
-            "pdf-digital": "pypdf-6.14.2-page-extract-text",
+            "pdf-digital": "pypdf-6.15.0-page-extract-text",
             "html": "collapse-unicode-whitespace-v1",
             "markdown": "source-lines-with-lf-join-v1",
             "text": "source-lines-with-lf-join-v1",

@@ -26,7 +26,7 @@ def _credential_free_environment() -> dict[str, str]:
 
 
 def _assert_help(command: list[str]) -> None:
-    result = subprocess.run(  # noqa: S603 - executes package CLI under test
+    result = subprocess.run(
         command,
         check=False,
         capture_output=True,
@@ -48,7 +48,7 @@ def test_cli_help_commands() -> None:
 
 
 def test_cli_run_requires_provider_credentials(tmp_path: Path) -> None:
-    result = subprocess.run(  # noqa: S603 - executes package CLI under test
+    result = subprocess.run(
         [
             *_base_command(),
             "run",

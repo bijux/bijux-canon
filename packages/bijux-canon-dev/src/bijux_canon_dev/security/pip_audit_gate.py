@@ -80,14 +80,17 @@ def format_table(rows: list[tuple[str, str, str, str]]) -> str:
 def main() -> int:
     """Run the command-line entry point."""
     if IGNORE_IDS:
-        print(f"INFO: ignoring IDs and aliases: {' '.join(sorted(IGNORE_IDS))}")
+        print(
+            "ERROR: ungoverned dependency vulnerability suppressions are forbidden: "
+            + " ".join(sorted(IGNORE_IDS))
+        )
+        return 2
 
     dependencies = load_report(REPORT_PATH)
     if not dependencies:
         print("OK: no dependencies in report (or empty after parsing).")
         return 0
 
-    ignored_count = 0
     remaining: list[tuple[str, str, str, str]] = []
 
     for dependency in dependencies:
@@ -98,9 +101,6 @@ def main() -> int:
             continue
         for vulnerability in vulnerabilities:
             ids = vulnerability_ids(vulnerability)
-            if ids & IGNORE_IDS:
-                ignored_count += 1
-                continue
             fix_versions = vulnerability.get("fix_versions") or []
             if not isinstance(fix_versions, list):
                 fix_versions = []
@@ -113,18 +113,13 @@ def main() -> int:
                 )
             )
 
-    if ignored_count:
-        print(
-            f"INFO: {ignored_count} vulnerability instance(s) matched ignore list and were skipped."
-        )
-
     if not remaining:
-        print("OK: 0 vulnerabilities remain after ignores.")
+        print("OK: 0 vulnerabilities found.")
         return 0
 
     remaining.sort(key=lambda row: (row[0], row[2], row[1]))
     print(
-        f"FAIL: {len(remaining)} vulnerability instance(s) remain after ignores.\n{format_table(remaining)}"
+        f"FAIL: {len(remaining)} vulnerability instance(s) found.\n{format_table(remaining)}"
     )
     if IS_STRICT:
         print(f"STRICT: failing due to remaining vulnerabilities. See {REPORT_PATH}")

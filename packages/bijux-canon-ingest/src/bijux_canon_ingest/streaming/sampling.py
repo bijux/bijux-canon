@@ -5,9 +5,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable, Iterable, Iterator
 import hashlib
 import random
-from collections.abc import Callable, Iterable, Iterator
 from typing import TypeVar
 
 from .types import Transform
@@ -22,7 +22,7 @@ def make_sampler_bernoulli(rate: float, *, seed: int = 0) -> Transform[T, T]:
         raise ValueError("rate must be in [0.0, 1.0]")
 
     def stage(items: Iterable[T]) -> Iterator[T]:
-        rng = random.Random(seed)  # noqa: S311 - deterministic sampling, not crypto
+        rng = random.Random(seed)
         for item in items:
             if rng.random() < rate:
                 yield item
