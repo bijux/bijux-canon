@@ -25,9 +25,16 @@ ROOT_ARTIFACT_LINKS = {
     ".tox": "artifacts/root/tox",
 }
 ROOT_FORBIDDEN_CACHE_PATHS = (
+    ".mypy_cache",
     ".pytest_cache",
     ".ruff_cache",
 )
+FORBIDDEN_CACHE_NAMES = {
+    "__pycache__",
+    ".mypy_cache",
+    ".pytest_cache",
+    ".ruff_cache",
+}
 
 
 def _workspace_metadata() -> dict[str, Any]:
@@ -164,3 +171,15 @@ def test_repository_root_keeps_non_artifact_caches_out_of_tree() -> None:
     assert not stray_configs_artifacts.exists()
     for path_name in ROOT_FORBIDDEN_CACHE_PATHS:
         assert not (REPO_ROOT / path_name).exists()
+
+    tree_caches = sorted(
+        path.relative_to(REPO_ROOT)
+        for root in (
+            REPO_ROOT / ".bijux",
+            REPO_ROOT / "configs",
+            REPO_ROOT / "packages",
+        )
+        for path in root.rglob("*")
+        if path.is_dir() and path.name in FORBIDDEN_CACHE_NAMES
+    )
+    assert tree_caches == []
