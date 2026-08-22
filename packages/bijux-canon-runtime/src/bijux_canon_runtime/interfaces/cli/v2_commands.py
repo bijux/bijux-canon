@@ -39,11 +39,12 @@ from bijux_canon_runtime.api.v2.schemas import (
     RunRequest,
 )
 from bijux_canon_runtime.application.operations import (
+    ApplicationCapabilityError,
     ReplayOperationRequest,
     RuntimeApplicationServicesV2,
 )
 from bijux_canon_runtime.model.execution.request_plan import RuntimeRequestOperation
-from bijux_canon_runtime.ontology.ids import RequestID
+from bijux_canon_runtime.ontology.ids import ArtifactID, RequestID
 from bijux_canon_runtime.ontology.public import ReplayMode
 from bijux_canon_runtime.runtime.comparison import (
     ComparisonDimension,
@@ -72,6 +73,12 @@ def run_v2_command(
         service = _require_services(services)
         if args.v2_command in {"ingest", "index", "retrieve", "ask", "research", "run"}:
             return _submit(args, service)
+        if args.v2_command == "corpus-inspect":
+            _write(json_value(service.inspect_corpus(ArtifactID(args.corpus_id))))
+            return 0
+        if args.v2_command == "index-inspect":
+            _write(json_value(service.inspect_index(ArtifactID(args.index_id))))
+            return 0
         if args.v2_command == "status":
             _write(job_status(service.status(args.job_id)).model_dump(mode="json"))
             return 0
@@ -110,11 +117,18 @@ def run_v2_command(
             "not-found-or-conflict", "Inspect the supplied durable identity.", str(exc)
         )
         return EXIT_OPERATION_FAILED
+    except ApplicationCapabilityError as exc:
+        _failure(
+            "missing-capability",
+            "Configure the v2 application service composition.",
+            str(exc),
+        )
+        return EXIT_MISSING_CAPABILITY
     except RuntimeError as exc:
         if services is None:
             _failure(
                 "missing-capability",
-                "Configure installed Runtime v2 application services.",
+                "Configure the v2 application service composition.",
                 str(exc),
             )
             return EXIT_MISSING_CAPABILITY
@@ -238,11 +252,20 @@ def _inspect(args: argparse.Namespace, service: RuntimeApplicationServicesV2) ->
     assert isinstance(value, dict)
     if args.offset < 0 or not 1 <= args.limit <= 1000:
         raise ValueError("inspection offset and limit are outside supported bounds")
+    has_more = any(
+        isinstance(value.get(field), list)
+        and len(cast(list[object], value[field])) > args.offset + args.limit
+        for field in ("steps", "artifacts", "events")
+    )
     for field in ("steps", "artifacts", "events"):
         records = value.get(field)
         if isinstance(records, list):
             value[field] = records[args.offset : args.offset + args.limit]
-    value["page"] = {"limit": args.limit, "offset": args.offset}
+    value["page"] = {
+        "limit": args.limit,
+        "next_offset": args.offset + args.limit if has_more else None,
+        "offset": args.offset,
+    }
     _write(value)
     return 0
 

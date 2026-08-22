@@ -4,8 +4,10 @@
 """Public v2 library surface for shared Runtime application operations."""
 
 from bijux_canon_runtime.application.operations import (
+    ApplicationCapabilityError,
     ApplicationOperation,
     ReplayOperationExecutor,
+    ResourceInspectionExecutor,
     ReplayOperationRequest,
     RuntimeApplicationCapability,
     RuntimeApplicationServicesV2,
@@ -26,9 +28,11 @@ from bijux_canon_runtime.model.execution.request_plan import (
 )
 
 __all__ = [
+    "ApplicationCapabilityError",
     "ApplicationOperation",
     "ExecutionProfile",
     "ReplayOperationExecutor",
+    "ResourceInspectionExecutor",
     "ReplayOperationRequest",
     "RetrievalFilters",
     "RuntimeApplicationCapability",

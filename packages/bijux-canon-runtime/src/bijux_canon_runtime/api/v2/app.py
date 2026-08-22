@@ -21,6 +21,8 @@ from bijux_canon_runtime.api.v2.schemas import (
     BuildIndexRequest,
     CancelRequest,
     CompareRequest,
+    CorpusInspectionResponse,
+    IndexInspectionResponse,
     JobResultResponse,
     JobStatusResponse,
     PrepareCorpusRequest,
@@ -38,7 +40,7 @@ from bijux_canon_runtime.model.execution.request_plan import (
     RuntimeOperationRequest,
     RuntimeRequestOperation,
 )
-from bijux_canon_runtime.ontology.ids import RequestID
+from bijux_canon_runtime.ontology.ids import ArtifactID, RequestID
 from bijux_canon_runtime.ontology.public import ReplayMode
 from bijux_canon_runtime.runtime.comparison import (
     ComparisonDimension,
@@ -243,6 +245,34 @@ def create_app(
             corpus_id=body.corpus_id,
         )
         return job_status(service.index(request, idempotency_key=idempotency_key))
+
+    @api.get(
+        "/api/v2/corpora/{corpus_id}",
+        response_model=CorpusInspectionResponse,
+        responses=PROBLEM_RESPONSES,
+    )
+    def inspect_corpus(
+        corpus_id: str,
+        _: Version,
+        service: Services,
+    ) -> CorpusInspectionResponse:
+        return CorpusInspectionResponse.model_validate(
+            service.inspect_corpus(ArtifactID(corpus_id))
+        )
+
+    @api.get(
+        "/api/v2/indexes/{index_id}",
+        response_model=IndexInspectionResponse,
+        responses=PROBLEM_RESPONSES,
+    )
+    def inspect_index(
+        index_id: str,
+        _: Version,
+        service: Services,
+    ) -> IndexInspectionResponse:
+        return IndexInspectionResponse.model_validate(
+            service.inspect_index(ArtifactID(index_id))
+        )
 
     @api.post(
         "/api/v2/retrievals",

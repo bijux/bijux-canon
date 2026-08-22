@@ -16,7 +16,9 @@ class ApplicationOperation(StrEnum):
     """Stable operations exposed identically to library and transports."""
 
     CORPUS = "corpus.prepare"
+    CORPUS_INSPECT = "corpus.inspect"
     INDEX = "index.build"
+    INDEX_INSPECT = "index.inspect"
     RETRIEVE = "retrieve"
     ASK = "ask"
     RESEARCH = "research"

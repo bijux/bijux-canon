@@ -34,6 +34,16 @@ def add_v2_commands(
         command.add_argument("--request", required=True)
         command.add_argument("--idempotency-key", required=True)
 
+    corpus_inspect = commands.add_parser(
+        "corpus-inspect", help="Inspect an immutable corpus snapshot."
+    )
+    corpus_inspect.add_argument("corpus_id")
+
+    index_inspect = commands.add_parser(
+        "index-inspect", help="Inspect an immutable index generation."
+    )
+    index_inspect.add_argument("index_id")
+
     status = commands.add_parser("status", help="Inspect durable job state.")
     status.add_argument("job_id")
 

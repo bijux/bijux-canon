@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Mapping
+import re
 from typing import Protocol
 
 from bijux_canon_runtime.application.operations.codec import (
@@ -23,6 +24,7 @@ from bijux_canon_runtime.model.execution.request_plan import (
     RuntimeOperationRequest,
     RuntimeRequestOperation,
 )
+from bijux_canon_runtime.ontology.ids import ArtifactID
 from bijux_canon_runtime.runtime.comparison import (
     RuntimeComparisonPolicy,
     RuntimeComparisonResult,
@@ -39,6 +41,10 @@ from bijux_canon_runtime.runtime.inspection import (
     RuntimeRunInspection,
     RuntimeRunInspector,
 )
+
+
+class ApplicationCapabilityError(RuntimeError):
+    """A configured application composition lacks a required owner capability."""
 
 
 class RuntimeOperationExecutor(Protocol):
@@ -63,6 +69,20 @@ class ReplayOperationExecutor(Protocol):
     ) -> Mapping[str, object]:
         """Return transport-neutral JSON-compatible replay metadata."""
         ...
+
+
+class ResourceInspectionExecutor(Protocol):
+    """Inspect one immutable corpus or index through its owning service."""
+
+    def __call__(self, artifact_id: ArtifactID) -> Mapping[str, object]:
+        """Return transport-neutral, JSON-compatible inspection metadata."""
+        ...
+
+
+def _validated_artifact_id(artifact_id: ArtifactID) -> ArtifactID:
+    if re.fullmatch(r"sha256:[0-9a-f]{64}", str(artifact_id)) is None:
+        raise ValueError("resource inspection requires a SHA-256 artifact identity")
+    return artifact_id
 
 
 def build_runtime_job_handlers(
@@ -125,10 +145,14 @@ class RuntimeApplicationServicesV2:
         jobs: DurableJobManager,
         inspector: RuntimeRunInspector,
         comparison: RuntimeComparisonService | None = None,
+        corpus_inspector: ResourceInspectionExecutor | None = None,
+        index_inspector: ResourceInspectionExecutor | None = None,
     ) -> None:
         self._jobs = jobs
         self._inspector = inspector
         self._comparison = comparison or RuntimeComparisonService(inspector)
+        self._corpus_inspector = corpus_inspector
+        self._index_inspector = index_inspector
 
     def corpus(
         self,
@@ -139,6 +163,14 @@ class RuntimeApplicationServicesV2:
         """Submit immutable corpus preparation work."""
         return self._submit(ApplicationOperation.CORPUS, request, idempotency_key)
 
+    def inspect_corpus(self, corpus_id: ArtifactID) -> Mapping[str, object]:
+        """Inspect one immutable corpus through the configured ingest owner."""
+        if self._corpus_inspector is None:
+            raise ApplicationCapabilityError(
+                "corpus inspection capability is not configured"
+            )
+        return self._corpus_inspector(_validated_artifact_id(corpus_id))
+
     def index(
         self,
         request: RuntimeOperationRequest,
@@ -147,6 +179,14 @@ class RuntimeApplicationServicesV2:
     ) -> DurableJobSnapshot:
         """Submit persistent index construction work."""
         return self._submit(ApplicationOperation.INDEX, request, idempotency_key)
+
+    def inspect_index(self, index_id: ArtifactID) -> Mapping[str, object]:
+        """Inspect one immutable index through the configured index owner."""
+        if self._index_inspector is None:
+            raise ApplicationCapabilityError(
+                "index inspection capability is not configured"
+            )
+        return self._index_inspector(_validated_artifact_id(index_id))
 
     def retrieve(
         self,
@@ -262,7 +302,9 @@ class RuntimeApplicationServicesV2:
 
 
 __all__ = [
+    "ApplicationCapabilityError",
     "ReplayOperationExecutor",
+    "ResourceInspectionExecutor",
     "RuntimeApplicationServicesV2",
     "RuntimeOperationExecutor",
     "build_runtime_job_handlers",

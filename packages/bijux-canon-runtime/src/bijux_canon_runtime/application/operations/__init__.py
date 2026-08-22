@@ -15,15 +15,19 @@ from bijux_canon_runtime.application.operations.models import (
     RuntimeApplicationCapability,
 )
 from bijux_canon_runtime.application.operations.service import (
+    ApplicationCapabilityError,
     ReplayOperationExecutor,
+    ResourceInspectionExecutor,
     RuntimeApplicationServicesV2,
     RuntimeOperationExecutor,
     build_runtime_job_handlers,
 )
 
 __all__ = [
+    "ApplicationCapabilityError",
     "ApplicationOperation",
     "ReplayOperationExecutor",
+    "ResourceInspectionExecutor",
     "ReplayOperationRequest",
     "RuntimeApplicationCapability",
     "RuntimeApplicationServicesV2",

@@ -276,6 +276,46 @@
         "title": "CompareRequest",
         "type": "object"
       },
+      "CorpusInspectionResponse": {
+        "additionalProperties": false,
+        "description": "Verified immutable corpus publication metadata.",
+        "properties": {
+          "byte_length": {
+            "minimum": 1.0,
+            "title": "Byte Length",
+            "type": "integer"
+          },
+          "canonical_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Canonical Sha256",
+            "type": "string"
+          },
+          "generation_name": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Generation Name",
+            "type": "string"
+          },
+          "schema_version": {
+            "const": "bijux.canon.ingest.corpus_publication.v1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "snapshot_id": {
+            "pattern": "^sha256:[0-9a-f]{64}$",
+            "title": "Snapshot Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "schema_version",
+          "snapshot_id",
+          "canonical_sha256",
+          "byte_length",
+          "generation_name"
+        ],
+        "title": "CorpusInspectionResponse",
+        "type": "object"
+      },
       "Filters": {
         "additionalProperties": false,
         "description": "Immutable retrieval filters.",
@@ -311,6 +351,115 @@
           }
         },
         "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "IndexInspectionResponse": {
+        "additionalProperties": false,
+        "description": "Content-safe immutable index generation metadata.",
+        "properties": {
+          "activation": {
+            "additionalProperties": true,
+            "title": "Activation",
+            "type": "object"
+          },
+          "chunk_count": {
+            "minimum": 1.0,
+            "title": "Chunk Count",
+            "type": "integer"
+          },
+          "chunk_set_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Chunk Set Sha256",
+            "type": "string"
+          },
+          "compatibility": {
+            "additionalProperties": true,
+            "title": "Compatibility",
+            "type": "object"
+          },
+          "dimension": {
+            "minimum": 1.0,
+            "title": "Dimension",
+            "type": "integer"
+          },
+          "filters": {
+            "additionalProperties": true,
+            "title": "Filters",
+            "type": "object"
+          },
+          "generation_id": {
+            "pattern": "^sha256:[0-9a-f]{64}$",
+            "title": "Generation Id",
+            "type": "string"
+          },
+          "integrity": {
+            "additionalProperties": true,
+            "title": "Integrity",
+            "type": "object"
+          },
+          "lineage": {
+            "additionalProperties": true,
+            "title": "Lineage",
+            "type": "object"
+          },
+          "metadata_bytes": {
+            "minimum": 0.0,
+            "title": "Metadata Bytes",
+            "type": "integer"
+          },
+          "model_lock_artifact_id": {
+            "pattern": "^sha256:[0-9a-f]{64}$",
+            "title": "Model Lock Artifact Id",
+            "type": "string"
+          },
+          "schema_version": {
+            "const": "bijux.canon.index.inspection.v1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "segments": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Segments",
+            "type": "array"
+          },
+          "snapshot_artifact_id": {
+            "pattern": "^sha256:[0-9a-f]{64}$",
+            "title": "Snapshot Artifact Id",
+            "type": "string"
+          },
+          "text_bytes": {
+            "minimum": 0.0,
+            "title": "Text Bytes",
+            "type": "integer"
+          },
+          "vector_bytes": {
+            "minimum": 0.0,
+            "title": "Vector Bytes",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "schema_version",
+          "generation_id",
+          "snapshot_artifact_id",
+          "model_lock_artifact_id",
+          "chunk_set_sha256",
+          "chunk_count",
+          "dimension",
+          "text_bytes",
+          "vector_bytes",
+          "metadata_bytes",
+          "segments",
+          "filters",
+          "lineage",
+          "integrity",
+          "activation",
+          "compatibility"
+        ],
+        "title": "IndexInspectionResponse",
         "type": "object"
       },
       "JobResultResponse": {
@@ -1299,6 +1448,111 @@
         "summary": "Prepare Corpus"
       }
     },
+    "/api/v2/corpora/{corpus_id}": {
+      "get": {
+        "operationId": "inspect_corpus_api_v2_corpora__corpus_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "corpus_id",
+            "required": true,
+            "schema": {
+              "title": "Corpus Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Bijux-API-Version",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Bijux-Api-Version"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CorpusInspectionResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Invalid typed request."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Resource not found."
+          },
+          "406": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Unsupported API version."
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Immutable state conflict."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Application service unavailable."
+          }
+        },
+        "summary": "Inspect Corpus"
+      }
+    },
     "/api/v2/indexes/build": {
       "post": {
         "operationId": "build_index_api_v2_indexes_build_post",
@@ -1414,6 +1668,111 @@
           }
         },
         "summary": "Build Index"
+      }
+    },
+    "/api/v2/indexes/{index_id}": {
+      "get": {
+        "operationId": "inspect_index_api_v2_indexes__index_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "index_id",
+            "required": true,
+            "schema": {
+              "title": "Index Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Bijux-API-Version",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Bijux-Api-Version"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IndexInspectionResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Invalid typed request."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Resource not found."
+          },
+          "406": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Unsupported API version."
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Immutable state conflict."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Application service unavailable."
+          }
+        },
+        "summary": "Inspect Index"
       }
     },
     "/api/v2/jobs/{job_id}": {

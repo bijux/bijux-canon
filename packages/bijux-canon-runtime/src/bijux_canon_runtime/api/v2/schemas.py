@@ -209,6 +209,37 @@ class JobResultResponse(StrictModel):
     result: dict[str, object]
 
 
+class CorpusInspectionResponse(StrictModel):
+    """Verified immutable corpus publication metadata."""
+
+    schema_version: Literal["bijux.canon.ingest.corpus_publication.v1"]
+    snapshot_id: ArtifactIdentity
+    canonical_sha256: Annotated[str, Field(pattern=r"^[0-9a-f]{64}$")]
+    byte_length: Annotated[int, Field(ge=1)]
+    generation_name: Annotated[str, Field(pattern=r"^[0-9a-f]{64}$")]
+
+
+class IndexInspectionResponse(StrictModel):
+    """Content-safe immutable index generation metadata."""
+
+    schema_version: Literal["bijux.canon.index.inspection.v1"]
+    generation_id: ArtifactIdentity
+    snapshot_artifact_id: ArtifactIdentity
+    model_lock_artifact_id: ArtifactIdentity
+    chunk_set_sha256: Annotated[str, Field(pattern=r"^[0-9a-f]{64}$")]
+    chunk_count: Annotated[int, Field(ge=1)]
+    dimension: Annotated[int, Field(ge=1)]
+    text_bytes: Annotated[int, Field(ge=0)]
+    vector_bytes: Annotated[int, Field(ge=0)]
+    metadata_bytes: Annotated[int, Field(ge=0)]
+    segments: tuple[dict[str, object], ...]
+    filters: dict[str, object]
+    lineage: dict[str, object]
+    integrity: dict[str, object]
+    activation: dict[str, object]
+    compatibility: dict[str, object]
+
+
 class ProblemDetail(StrictModel):
     """Safe RFC 9457-style failure shared by every v2 route."""
 
@@ -227,6 +258,8 @@ __all__ = [
     "BuildIndexRequest",
     "CancelRequest",
     "CompareRequest",
+    "CorpusInspectionResponse",
+    "IndexInspectionResponse",
     "JobResultResponse",
     "JobStatusResponse",
     "PrepareCorpusRequest",
