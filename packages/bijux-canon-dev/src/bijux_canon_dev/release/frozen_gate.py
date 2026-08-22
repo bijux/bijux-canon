@@ -241,7 +241,9 @@ def launch_frozen_gate(
     commit_count = int(_git_text(repository, "rev-list", "--count", commit))
     identity = f"{commit_count}-{commit[:8]}"
     artifact_root = repository / "artifacts" / "frozen" / identity / gate
-    source = artifact_root / "repository"
+    # Workspace-aware Make gates resolve the current repository by its slug
+    # beneath the checkout parent, so preserve that shape in every frozen run.
+    source = artifact_root / repository.name
     console_log = artifact_root / "console.log"
     metadata_file = artifact_root / "launch.json"
     pid_file = artifact_root / "process.pid"

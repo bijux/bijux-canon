@@ -67,6 +67,8 @@ def test_frozen_gate_runs_selected_tracked_revision_in_background(
     status_file = Path(launch.status_file)
     assert _wait_for_status(status_file) == 0
     source = Path(launch.repository)
+    assert source.name == repository.name
+    assert source.parent == Path(launch.artifact_root)
     assert _git(source, "rev-parse", "HEAD") == first_commit
     assert (source / "artifacts/outcome.txt").read_text() == "frozen gate passed\n"
     assert not (source / "ignored.txt").exists()
