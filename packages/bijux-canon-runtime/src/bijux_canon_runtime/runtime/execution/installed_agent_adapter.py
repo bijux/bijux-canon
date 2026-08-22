@@ -88,6 +88,7 @@ class _IndexCounterevidencePort:
         *,
         step: ConcreteDagStep,
         retrieval: CanonicalRetrievalOperationAdapter,
+        store: ArtifactPayloadStore,
         index_artifact_id: ArtifactID,
         generation_id: str,
         filters: RetrievalFilters,
@@ -95,11 +96,13 @@ class _IndexCounterevidencePort:
     ) -> None:
         self._step = step
         self._retrieval = retrieval
+        self._store = store
         self._index_artifact_id = index_artifact_id
         self._generation_id = generation_id
         self._filters = filters
         self._context = context
         self.outputs: list[dict[str, object]] = []
+        self.output_artifact_ids: list[ArtifactID] = []
 
     def retrieve(self, request: ScopedRetrievalRequest):
         self._context.raise_if_stopped()
@@ -136,7 +139,9 @@ class _IndexCounterevidencePort:
                 refusal_code="runtime_retrieval_refused",
             )
         record = _json_object(output.artifact, "index.evidence-set.v1")
+        self._store.put(output.artifact)
         self.outputs.append(record)
+        self.output_artifact_ids.append(output.artifact_id)
         raw_hits = record.get("hits")
         if not isinstance(raw_hits, list):
             raise StepDispatchError("counterevidence retrieval hits are invalid")
@@ -297,6 +302,7 @@ class CanonicalAgentOperationAdapter:
         embedding: CanonicalEmbeddingService,
         vex_store_root: Path,
     ) -> None:
+        self._store = store
         self._retrieval = CanonicalRetrievalOperationAdapter(
             store=store,
             index=index,
@@ -338,6 +344,7 @@ class CanonicalAgentOperationAdapter:
         port = _IndexCounterevidencePort(
             step=step,
             retrieval=self._retrieval,
+            store=self._store,
             index_artifact_id=index_artifact_id,
             generation_id=generation_id,
             filters=filters,
@@ -434,6 +441,9 @@ class CanonicalAgentOperationAdapter:
                 "causal_trace": _json_value(asdict(causal_trace)),
                 "claim_graph_artifact_id": graph_id,
                 "counterevidence_plan": counter_plan.model_dump(mode="json"),
+                "counterevidence_retrieval_artifact_ids": [
+                    str(artifact_id) for artifact_id in port.output_artifact_ids
+                ],
                 "counterevidence_retrievals": port.outputs,
                 "counterevidence_run": (
                     None if counter_run is None else counter_run.model_dump(mode="json")

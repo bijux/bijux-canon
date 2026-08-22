@@ -18,6 +18,7 @@ from bijux_canon_index.application import IndexGenerationArchive, IndexService
 from bijux_canon_index.infra.embeddings.local_model import EmbeddedBatch
 
 from bijux_canon_runtime.application.request_planner import RuntimeRequestPlanner
+from bijux_canon_runtime.model.artifact import AddressedArtifact
 from bijux_canon_runtime.model.execution.request_plan import (
     DagOperation,
     ExecutionProfile,
@@ -36,6 +37,10 @@ from bijux_canon_runtime.runtime.execution.installed_operation_adapters import (
     CanonicalLexicalIndexOperationAdapter,
     CanonicalSnapshotOperationAdapter,
 )
+from bijux_canon_runtime.runtime.execution.installed_persistence_adapters import (
+    CanonicalPersistenceOperationAdapter,
+    CanonicalPublicationOperationAdapter,
+)
 from bijux_canon_runtime.runtime.execution.installed_agent_adapter import (
     CanonicalAgentOperationAdapter,
 )
@@ -44,6 +49,9 @@ from bijux_canon_runtime.runtime.execution.installed_retrieval_adapter import (
 )
 from bijux_canon_runtime.runtime.execution.installed_reason_adapter import (
     CanonicalReasonOperationAdapter,
+)
+from bijux_canon_runtime.runtime.execution.installed_verification_adapter import (
+    CanonicalVerificationOperationAdapter,
 )
 from bijux_canon_runtime.runtime.execution.application_executor import (
     RuntimeFirstExecutionService,
@@ -302,6 +310,30 @@ def test_installed_ingest_and_index_adapters_persist_restartable_payloads(
     ]
     assert claim_graph["citation_verification"]["integrity_verified_links"] == 1
 
+    tampered_claim_graph = dict(claim_graph)
+    tampered_claim_graph["answer"] = "An answer that is not bound to the synthesis."
+    tampered_reason = StepOutputArtifact(
+        contract_id="reason.claim-graph.v1",
+        producer_step_id="reason",
+        producer_operation=DagOperation.REASON,
+        artifact=AddressedArtifact.from_json(
+            tampered_claim_graph,
+            schema_id="reason.claim-graph.v1",
+            producer="bijux-canon-runtime:reason",
+            dependencies=reason.artifacts[0].artifact.descriptor.dependencies,
+        ),
+    )
+    verification_step = next(
+        step
+        for step in planner.plan(ask_request).steps
+        if step.operation is DagOperation.VERIFY
+    )
+    with pytest.raises(StepDispatchError, match="differs from its synthesis"):
+        OperationDispatcher((CanonicalVerificationOperationAdapter(),)).dispatch(
+            verification_step,
+            (tampered_reason,),
+        )
+
     research_request = replace(
         ask_request,
         request_id=RequestID("request-research"),
@@ -339,10 +371,96 @@ def test_installed_ingest_and_index_adapters_persist_restartable_payloads(
         "candidate_evidence_found"
     )
     assert research_trace["opposition_candidates"]
+    assert len(research_trace["counterevidence_retrieval_artifact_ids"]) == 1
     assert "require relation classification" in research_trace["insufficiencies"][0]
     assert len(research_trace["causal_events"]) == 4
     assert research_trace["causal_trace"]["head_artifact_id"] == (
         research_trace["causal_events"][-1]["artifact_id"]
+    )
+
+    linked_dispatcher = OperationDispatcher(
+        (
+            CanonicalRetrievalOperationAdapter(
+                store=store,
+                index=index_service,
+                embedding=_Embedding(),
+                vex_store_root=tmp_path / "runtime" / "vex",
+            ),
+            CanonicalReasonOperationAdapter(),
+            CanonicalAgentOperationAdapter(
+                store=store,
+                index=index_service,
+                embedding=_Embedding(),
+                vex_store_root=tmp_path / "runtime" / "vex",
+            ),
+            CanonicalVerificationOperationAdapter(),
+            CanonicalPersistenceOperationAdapter(store=store),
+            CanonicalPublicationOperationAdapter(),
+        )
+    )
+    linked = RuntimeFirstExecutionService(
+        store=store,
+        dispatcher=linked_dispatcher,
+        process_id="installed-linked-research-test",
+    ).execute(research_request, lambda: False)
+    linked_inspection = RuntimeRunInspector(store).inspect(str(linked["run_id"]))
+    assert linked["status"] == "completed"
+    assert [item.step_id for item in linked_inspection.steps] == [
+        "retrieve",
+        "reason",
+        "agent",
+        "verify",
+        "persist",
+        "publish",
+    ]
+    linked_terminal_ids = linked["terminal_artifact_ids"]
+    assert isinstance(linked_terminal_ids, list) and len(linked_terminal_ids) == 1
+    publication = json.loads(
+        store.load(ArtifactID(linked_terminal_ids[0])).canonical_bytes
+    )
+    assert publication["status"] == "published-local"
+    manifest_artifact = store.load(ArtifactID(publication["manifest_artifact_id"]))
+    manifest = json.loads(manifest_artifact.canonical_bytes)
+    assert manifest["status"] == "persisted"
+    assert manifest["artifact_count"] >= 10
+    assert any(
+        item["schema_id"] == "agent.research-trace.v1"
+        for item in manifest["artifacts"]
+    )
+    assert any(
+        item["schema_id"] == "index.evidence-set.v1"
+        for item in manifest["artifacts"]
+    )
+
+    linked_ask = RuntimeFirstExecutionService(
+        store=store,
+        dispatcher=linked_dispatcher,
+        process_id="installed-linked-ask-test",
+    ).execute(
+        replace(ask_request, request_id=RequestID("request-linked-ask")),
+        lambda: False,
+    )
+    linked_ask_inspection = RuntimeRunInspector(store).inspect(
+        str(linked_ask["run_id"])
+    )
+    assert [item.step_id for item in linked_ask_inspection.steps] == [
+        "retrieve",
+        "reason",
+        "verify",
+        "persist",
+        "publish",
+    ]
+    linked_ask_terminal_ids = linked_ask["terminal_artifact_ids"]
+    assert isinstance(linked_ask_terminal_ids, list)
+    ask_publication = json.loads(
+        store.load(ArtifactID(linked_ask_terminal_ids[0])).canonical_bytes
+    )
+    ask_manifest = json.loads(
+        store.load(ArtifactID(ask_publication["manifest_artifact_id"])).canonical_bytes
+    )
+    assert any(
+        item["schema_id"] == "reason.claim-graph.v1"
+        for item in ask_manifest["artifacts"]
     )
 
     offline_request = replace(
