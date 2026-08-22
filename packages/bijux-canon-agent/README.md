@@ -89,11 +89,11 @@ bijux-canon-agent run report.txt \
 bijux-canon-agent replay <trace.json>
 ```
 
-The current entrypoint loads the environment and requires
-`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `HUGGINGFACE_API_KEY`, and
-`DEEPSEEK_API_KEY` **before** it parses the command. This means help, dry-run,
-and replay also require those four variables today. That behavior is a known
-operational constraint; it does not mean each run contacts all four providers.
+Help, replay, dry-run, and local execution do not require provider credentials.
+Remote adapters resolve only the selected provider's credential when a request
+is executed. Keep credentials in the provider's environment variable rather
+than serializable configuration; missing credentials fail the selected request
+without exposing the variable name or secret value.
 
 ## HTTP Contract
 

@@ -10,7 +10,7 @@ from pathlib import Path
 import sys
 
 from bijux_canon_agent.application.execution_service import create_agent_pipeline
-from bijux_canon_agent.config.env import load_environment, validate_keys
+from bijux_canon_agent.config.env import load_environment
 from bijux_canon_agent.interfaces.cli.helpers import (
     handle_replay,
     load_config,
@@ -39,11 +39,6 @@ async def main() -> None:
         return
 
     load_environment()
-    try:
-        validate_keys()
-    except RuntimeError as exc:
-        print(f"API key validation failed: {exc}", file=sys.stderr)
-        sys.exit(1)
 
     bootstrap_logger = create_bootstrap_logger()
     config = load_config(args.config, bootstrap_logger)
@@ -113,13 +108,11 @@ async def main() -> None:
             "Bijux Agent pipeline completed successfully",
             extra={"context": {"result": result}},
         )
-        if len(files) == 1 and result["successful"]:
-            print(
-                json.dumps(
-                    result["successful"][0]["result"], indent=2, ensure_ascii=False
-                )
-            )
         primary_success = result["successful"][0] if result["successful"] else None
+        if len(files) == 1 and primary_success and "result" in primary_success:
+            print(
+                json.dumps(primary_success["result"], indent=2, ensure_ascii=False)
+            )
         final_artifact = write_final_artifacts(
             success_entry=primary_success,
             results=result,
