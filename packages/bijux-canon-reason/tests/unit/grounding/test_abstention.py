@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 import hashlib
 import json
 
@@ -15,7 +16,9 @@ from bijux_canon_reason.grounding import (
     CalibratedAbstentionPolicy,
     CitationEvidence,
     CitationSourceDescriptor,
+    CitationVerificationReport,
     ClaimCitationLinker,
+    ClaimCitationSet,
     CredentialFreeSynthesizer,
     DeterministicCitationVerifier,
     EntailmentVerdict,
@@ -28,6 +31,7 @@ from bijux_canon_reason.grounding import (
     GroundingRequestStatus,
     ImmutableEvidenceLocator,
     JsonHttpResponse,
+    NormalizedClaimSet,
     OpenAICompatibleStructuredSynthesizer,
     StructuredProviderConfiguration,
 )
@@ -42,7 +46,7 @@ def _artifact(value: str) -> str:
 
 
 class _Transport:
-    def __init__(self, candidate: dict[str, object]) -> None:
+    def __init__(self, candidate: Mapping[str, object]) -> None:
         self._candidate = candidate
 
     def post_json(
@@ -69,7 +73,9 @@ class _Transport:
         return JsonHttpResponse(200, json.dumps(envelope).encode(), 1, "request")
 
 
-def _pipeline(pairs: tuple[tuple[str, str], ...]):
+def _pipeline(
+    pairs: tuple[tuple[str, str], ...],
+) -> tuple[NormalizedClaimSet, ClaimCitationSet, CitationVerificationReport]:
     evidence_items = []
     sources = []
     candidate_claims = []
@@ -157,7 +163,9 @@ def _pipeline(pairs: tuple[tuple[str, str], ...]):
     return claims, citations, report
 
 
-def _empty_pipeline():
+def _empty_pipeline() -> tuple[
+    NormalizedClaimSet, ClaimCitationSet, CitationVerificationReport
+]:
     packet = EvidencePacketBuilder(
         EvidencePacketPolicy(
             token_budget=10,

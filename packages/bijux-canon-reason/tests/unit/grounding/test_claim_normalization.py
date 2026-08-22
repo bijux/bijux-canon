@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 import hashlib
 import json
 
@@ -19,6 +20,7 @@ from bijux_canon_reason.grounding import (
     ClaimNormalizationErrorCode,
     ClaimNormalizationOutcome,
     CredentialFreeSynthesizer,
+    EvidencePacket,
     EvidencePacketBuilder,
     EvidencePacketPolicy,
     ImmutableEvidenceLocator,
@@ -26,6 +28,7 @@ from bijux_canon_reason.grounding import (
     NormalizedClaimSet,
     OpenAICompatibleStructuredSynthesizer,
     StructuredProviderConfiguration,
+    StructuredProviderSynthesis,
 )
 
 
@@ -37,7 +40,7 @@ def _artifact(value: str) -> str:
     return f"sha256:{_sha(value)}"
 
 
-def _packet(*, empty: bool = False):
+def _packet(*, empty: bool = False) -> tuple[EvidencePacket, CitationEvidence]:
     text = "Ancient DNA fragments were shorter; the control remained unchanged."
     evidence = CitationEvidence(
         artifact_id=_artifact("evidence"),
@@ -78,7 +81,7 @@ def _packet(*, empty: bool = False):
 
 
 class _Transport:
-    def __init__(self, candidate: dict[str, object]) -> None:
+    def __init__(self, candidate: Mapping[str, object]) -> None:
         self.candidate = candidate
 
     def post_json(
@@ -105,7 +108,9 @@ class _Transport:
         return JsonHttpResponse(200, json.dumps(envelope).encode(), 1, "request")
 
 
-def _provider_result(statement: str, answer: str):
+def _provider_result(
+    statement: str, answer: str
+) -> tuple[StructuredProviderSynthesis, CitationEvidence]:
     packet, evidence = _packet()
     candidate = {
         "schema_version": "bijux.canon.reason.provider_synthesis_candidate.v1",

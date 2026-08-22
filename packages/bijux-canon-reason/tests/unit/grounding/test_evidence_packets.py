@@ -75,7 +75,7 @@ def _builder(**changes: int) -> EvidencePacketBuilder:
         "max_per_section": 2,
     }
     values.update(changes)
-    return EvidencePacketBuilder(EvidencePacketPolicy(**values))
+    return EvidencePacketBuilder(EvidencePacketPolicy.model_validate(values))
 
 
 def _build(

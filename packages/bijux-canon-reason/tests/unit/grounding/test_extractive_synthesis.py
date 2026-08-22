@@ -14,6 +14,7 @@ from bijux_canon_reason.grounding import (
     CredentialFreeSynthesis,
     CredentialFreeSynthesisPolicy,
     CredentialFreeSynthesizer,
+    EvidencePacket,
     EvidencePacketBuilder,
     EvidencePacketPolicy,
     ImmutableEvidenceLocator,
@@ -54,7 +55,7 @@ def _evidence(name: str, text: str, *, rank: int = 1) -> CitationEvidence:
     )
 
 
-def _packet(*evidence: CitationEvidence):
+def _packet(*evidence: CitationEvidence) -> EvidencePacket:
     return EvidencePacketBuilder(
         EvidencePacketPolicy(
             token_budget=500,

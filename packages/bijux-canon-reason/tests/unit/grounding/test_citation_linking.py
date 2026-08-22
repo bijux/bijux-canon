@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 import hashlib
 import json
 
@@ -20,10 +21,12 @@ from bijux_canon_reason.grounding import (
     ClaimCitationRole,
     ClaimCitationSet,
     CredentialFreeSynthesizer,
+    EvidencePacket,
     EvidencePacketBuilder,
     EvidencePacketPolicy,
     ImmutableEvidenceLocator,
     JsonHttpResponse,
+    NormalizedClaimSet,
     OpenAICompatibleStructuredSynthesizer,
     StructuredProviderConfiguration,
 )
@@ -37,7 +40,9 @@ def _artifact(value: str) -> str:
     return f"sha256:{_sha(value)}"
 
 
-def _packet(*, empty: bool = False):
+def _packet(
+    *, empty: bool = False
+) -> tuple[EvidencePacket, CitationEvidence, CitationSourceDescriptor]:
     exact_text = "Ancient DNA fragments were shorter than the source controls."
     source_content = "Complete immutable source content."
     evidence = CitationEvidence(
@@ -86,7 +91,7 @@ def _packet(*, empty: bool = False):
 
 
 class _Transport:
-    def __init__(self, candidate: dict[str, object]) -> None:
+    def __init__(self, candidate: Mapping[str, object]) -> None:
         self._candidate = candidate
 
     def post_json(
@@ -113,7 +118,11 @@ class _Transport:
         return JsonHttpResponse(200, json.dumps(envelope).encode(), 1, "request")
 
 
-def _provider_claims(polarity: str = "supports"):
+def _provider_claims(
+    polarity: str = "supports",
+) -> tuple[
+    NormalizedClaimSet, EvidencePacket, CitationEvidence, CitationSourceDescriptor
+]:
     packet, evidence, source = _packet()
     statement = "The admitted study reports shorter ancient DNA fragments."
     candidate = {

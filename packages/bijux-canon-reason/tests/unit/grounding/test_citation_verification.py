@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 import hashlib
 import json
 
@@ -21,6 +22,7 @@ from bijux_canon_reason.grounding import (
     CitationVerificationPolicy,
     CitationVerificationReport,
     ClaimCitationLinker,
+    ClaimCitationSet,
     CredentialFreeSynthesizer,
     DeterministicCitationVerifier,
     EntailmentVerdict,
@@ -28,6 +30,7 @@ from bijux_canon_reason.grounding import (
     EvidencePacketPolicy,
     ImmutableEvidenceLocator,
     JsonHttpResponse,
+    NormalizedClaimSet,
     OpenAICompatibleStructuredSynthesizer,
     StructuredProviderConfiguration,
 )
@@ -42,7 +45,7 @@ def _artifact(value: str) -> str:
 
 
 class _Transport:
-    def __init__(self, candidate: dict[str, object]) -> None:
+    def __init__(self, candidate: Mapping[str, object]) -> None:
         self._candidate = candidate
 
     def post_json(
@@ -74,7 +77,7 @@ def _verification(
     evidence_text: str,
     *,
     polarity: str = "supports",
-):
+) -> tuple[CitationVerificationReport, NormalizedClaimSet, ClaimCitationSet]:
     source_content = f"Immutable source containing: {evidence_text}"
     evidence = CitationEvidence(
         artifact_id=_artifact(f"evidence:{evidence_text}"),

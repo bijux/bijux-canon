@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 import hashlib
 import json
 
@@ -14,7 +15,10 @@ from bijux_canon_reason.grounding import (
     AtomicClaimNormalizer,
     CitationEvidence,
     CitationSourceDescriptor,
+    CitationVerificationReport,
     ClaimCitationLinker,
+    ClaimCitationSet,
+    ClaimContextAnnotation,
     ConflictRelationship,
     DeterministicCitationVerifier,
     EvidencePacketBuilder,
@@ -22,6 +26,7 @@ from bijux_canon_reason.grounding import (
     GroundingContextService,
     ImmutableEvidenceLocator,
     JsonHttpResponse,
+    NormalizedClaimSet,
     NuancedGroundingRepresentation,
     OpenAICompatibleStructuredSynthesizer,
     SourceQualityGrade,
@@ -40,7 +45,7 @@ def _artifact(value: str) -> str:
 
 
 class _Transport:
-    def __init__(self, candidate: dict[str, object]) -> None:
+    def __init__(self, candidate: Mapping[str, object]) -> None:
         self.candidate = candidate
 
     def post_json(
@@ -67,7 +72,14 @@ class _Transport:
         return JsonHttpResponse(200, json.dumps(envelope).encode(), 1, "request")
 
 
-def _pipeline(statements: tuple[str, ...]):
+def _pipeline(
+    statements: tuple[str, ...],
+) -> tuple[
+    NormalizedClaimSet,
+    ClaimCitationSet,
+    CitationVerificationReport,
+    tuple[ClaimContextAnnotation, ...],
+]:
     evidence_items = []
     sources = []
     candidate_claims = []

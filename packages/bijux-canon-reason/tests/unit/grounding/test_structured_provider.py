@@ -4,7 +4,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 from contextlib import contextmanager
 import hashlib
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -17,6 +17,7 @@ import pytest
 from bijux_canon_reason.grounding import (
     CandidateOutcome,
     CitationEvidence,
+    EvidencePacket,
     EvidencePacketBuilder,
     EvidencePacketPolicy,
     ImmutableEvidenceLocator,
@@ -42,7 +43,7 @@ def _artifact(value: str) -> str:
     return f"sha256:{_sha(value)}"
 
 
-def _packet():
+def _packet() -> tuple[EvidencePacket, CitationEvidence]:
     text = "The admitted study reports a source-scoped ancient DNA observation."
     evidence = CitationEvidence(
         artifact_id=_artifact("evidence"),
@@ -153,7 +154,7 @@ class QueueTransport:
 def _provider(
     transport: QueueTransport,
     *,
-    credential=lambda: "test-secret",
+    credential: Callable[[], str] = lambda: "test-secret",
     policy: StructuredProviderPolicy | None = None,
 ) -> OpenAICompatibleStructuredSynthesizer:
     return OpenAICompatibleStructuredSynthesizer(
@@ -245,7 +246,9 @@ def test_invalid_candidate_is_repaired_once() -> None:
         ProviderAttemptKind.repair,
     )
     assert result.attempts[0].validation_error_codes == ("candidate_schema_invalid",)
-    assert len(transport.requests[1][2]["messages"]) == 4
+    messages = transport.requests[1][2]["messages"]
+    assert isinstance(messages, list)
+    assert len(messages) == 4
 
 
 def test_unknown_citation_is_repaired_before_acceptance() -> None:
@@ -447,5 +450,9 @@ def test_standard_transport_against_deterministic_local_mock_server() -> None:
 
     assert result.candidate.outcome is CandidateOutcome.answered
     assert server.authorization == ["Bearer server-secret"]
-    assert server.requests[0]["response_format"]["json_schema"]["strict"] is True
+    response_format = server.requests[0]["response_format"]
+    assert isinstance(response_format, dict)
+    json_schema = response_format["json_schema"]
+    assert isinstance(json_schema, dict)
+    assert json_schema["strict"] is True
     assert "server-secret" not in result.model_dump_json()

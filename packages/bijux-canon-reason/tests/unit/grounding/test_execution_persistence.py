@@ -12,7 +12,9 @@ import pytest
 
 from bijux_canon_reason.grounding import (
     ContentAddressedRagExecutionStore,
+    RagExecutionBudget,
     RagExecutionBundle,
+    RagExecutionFailure,
     RagExecutionMode,
     RagExecutionPersistenceError,
     RagExecutionPersistenceErrorCode,
@@ -27,7 +29,9 @@ def _artifact(value: str) -> str:
     return "sha256:" + hashlib.sha256(value.encode()).hexdigest()
 
 
-def _stage_payloads():
+def _stage_payloads() -> tuple[
+    tuple[RagExecutionStageKind, str, dict[str, object]], ...
+]:
     return tuple(
         (kind, _artifact(kind.value), {"kind": kind.value, "value": "inspectable"})
         for kind in (
@@ -43,7 +47,7 @@ def _stage_payloads():
     )
 
 
-def _budget(*, evidence_tokens_observed: int = 40):
+def _budget(*, evidence_tokens_observed: int = 40) -> RagExecutionBudget:
     return create_rag_execution_budget(
         evidence_token_limit=100,
         evidence_tokens_observed=evidence_tokens_observed,
@@ -56,7 +60,11 @@ def _budget(*, evidence_tokens_observed: int = 40):
     )
 
 
-def _bundle(*, failures=(), known_secrets=()):
+def _bundle(
+    *,
+    failures: tuple[RagExecutionFailure, ...] = (),
+    known_secrets: tuple[str, ...] = (),
+) -> RagExecutionBundle:
     return RagExecutionRecorder().record(
         mode=RagExecutionMode.structured_provider,
         question="What do the admitted sources report?",
