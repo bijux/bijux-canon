@@ -11,6 +11,7 @@ from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from enum import StrEnum
 import threading
+from time import perf_counter_ns
 
 from bijux_canon_runtime.model.artifact import AddressedArtifact
 from bijux_canon_runtime.model.execution.request_plan import (
@@ -24,6 +25,10 @@ from bijux_canon_runtime.runtime.execution.operation_dispatcher import (
     StepDispatchContext,
     StepDispatchResult,
     StepOutputArtifact,
+)
+from bijux_canon_runtime.runtime.execution.runtime_event_ledger import (
+    RuntimeEventKind,
+    RuntimeEventLedger,
 )
 from bijux_canon_runtime.runtime.persistence.payload_store import ArtifactPayloadStore
 
@@ -248,10 +253,12 @@ class DependencyAwareScheduler:
         dispatcher: OperationDispatcher,
         policy: SchedulerPolicy,
         journal: ArtifactTransitionJournal,
+        events: RuntimeEventLedger | None = None,
     ) -> None:
         self._dispatcher = dispatcher
         self._policy = policy
         self._journal = journal
+        self._events = events
 
     def run(
         self,
@@ -262,6 +269,8 @@ class DependencyAwareScheduler:
         """Run the plan until every node is terminal or cancellation wins."""
         if plan.plan_sha256 != self._journal.plan_sha256:
             raise SchedulerError("scheduler journal belongs to another plan")
+        if self._events is not None and plan.plan_sha256 != self._events.plan_sha256:
+            raise SchedulerError("scheduler event ledger belongs to another plan")
         constraints = {item.step_id: item for item in self._policy.constraints}
         step_ids = {step.step_id for step in plan.steps}
         if set(constraints) != step_ids:
@@ -277,6 +286,11 @@ class DependencyAwareScheduler:
                 from_status=None,
                 to_status=StepNodeStatus.QUEUED,
             )
+            if self._events is not None:
+                self._events.record(
+                    step=step,
+                    event_kind=RuntimeEventKind.PLANNED,
+                )
 
         with ThreadPoolExecutor(max_workers=self._policy.max_workers) as executor:
             while any(status is StepNodeStatus.QUEUED for status in statuses.values()):
@@ -296,6 +310,15 @@ class DependencyAwareScheduler:
                             from_status=StepNodeStatus.QUEUED,
                             to_status=StepNodeStatus.CANCELLED,
                         )
+                        if self._events is not None:
+                            self._events.record(
+                                step=step,
+                                event_kind=RuntimeEventKind.CANCELLED,
+                                duration_ms=0.0,
+                                error=StepDispatchCancelled(
+                                    "execution cancelled before dispatch"
+                                ),
+                            )
                     break
                 ready = [
                     step
@@ -309,6 +332,8 @@ class DependencyAwareScheduler:
                     raise SchedulerError("queued nodes have no satisfiable dependencies")
                 wave = self._select_wave(ready, constraints)
                 futures = {}
+                started_ns: dict[str, int] = {}
+                upstream_by_step: dict[str, tuple[StepOutputArtifact, ...]] = {}
                 for step in wave:
                     statuses[step.step_id] = StepNodeStatus.RUNNING
                     self._journal.append(
@@ -321,6 +346,14 @@ class DependencyAwareScheduler:
                         for dependency in step.depends_on
                         for artifact in outputs[dependency]
                     )
+                    upstream_by_step[step.step_id] = upstream
+                    if self._events is not None:
+                        self._events.record(
+                            step=step,
+                            event_kind=RuntimeEventKind.STARTED,
+                            inputs=upstream,
+                        )
+                    started_ns[step.step_id] = perf_counter_ns()
                     futures[step.step_id] = executor.submit(
                         self._dispatcher.dispatch,
                         step,
@@ -329,6 +362,9 @@ class DependencyAwareScheduler:
                     )
                 for step in wave:
                     future = futures[step.step_id]
+                    duration_ms = (
+                        perf_counter_ns() - started_ns[step.step_id]
+                    ) / 1_000_000
                     try:
                         result = future.result()
                     except StepDispatchCancelled as exc:
@@ -340,6 +376,13 @@ class DependencyAwareScheduler:
                             to_status=StepNodeStatus.CANCELLED,
                             failure=exc,
                         )
+                        if self._events is not None:
+                            self._events.record(
+                                step=step,
+                                event_kind=RuntimeEventKind.CANCELLED,
+                                duration_ms=duration_ms,
+                                error=exc,
+                            )
                     except Exception as exc:
                         statuses[step.step_id] = StepNodeStatus.FAILED
                         failures[step.step_id] = str(exc)
@@ -349,6 +392,13 @@ class DependencyAwareScheduler:
                             to_status=StepNodeStatus.FAILED,
                             failure=exc,
                         )
+                        if self._events is not None:
+                            self._events.record(
+                                step=step,
+                                event_kind=RuntimeEventKind.FAILED,
+                                duration_ms=duration_ms,
+                                error=exc,
+                            )
                     else:
                         statuses[step.step_id] = StepNodeStatus.SUCCEEDED
                         outputs[step.step_id] = result.artifacts
@@ -358,6 +408,22 @@ class DependencyAwareScheduler:
                             from_status=StepNodeStatus.RUNNING,
                             to_status=StepNodeStatus.SUCCEEDED,
                         )
+                        if self._events is not None:
+                            self._events.record(
+                                step=step,
+                                event_kind=RuntimeEventKind.COMPLETED,
+                                inputs=upstream_by_step[step.step_id],
+                                outputs=result.artifacts,
+                                duration_ms=duration_ms,
+                            )
+                            if step.operation.value == "publish":
+                                self._events.record(
+                                    step=step,
+                                    event_kind=RuntimeEventKind.PUBLISHED,
+                                    inputs=upstream_by_step[step.step_id],
+                                    outputs=result.artifacts,
+                                    duration_ms=0.0,
+                                )
 
         return DagScheduleResult(
             plan_sha256=plan.plan_sha256,
@@ -408,6 +474,13 @@ class DependencyAwareScheduler:
                         to_status=StepNodeStatus.BLOCKED,
                         failure=failure,
                     )
+                    if self._events is not None:
+                        self._events.record(
+                            step=step,
+                            event_kind=RuntimeEventKind.SKIPPED,
+                            duration_ms=0.0,
+                            error=failure,
+                        )
                     changed = True
 
     def _select_wave(

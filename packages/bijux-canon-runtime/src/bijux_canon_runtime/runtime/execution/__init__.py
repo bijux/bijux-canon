@@ -29,6 +29,12 @@ from bijux_canon_runtime.runtime.execution.service_composition import (
     InstalledServiceCapability,
     compose_canonical_services,
 )
+from bijux_canon_runtime.runtime.execution.runtime_event_ledger import (
+    RuntimeErrorRecord,
+    RuntimeEventKind,
+    RuntimeEventLedger,
+    RuntimeEventRecord,
+)
 from bijux_canon_runtime.runtime.execution.step_executor import ExecutionOutcome
 
 __all__ = [
@@ -40,6 +46,10 @@ __all__ = [
     "InstalledServiceCapability",
     "OperationAdapter",
     "OperationDispatcher",
+    "RuntimeErrorRecord",
+    "RuntimeEventKind",
+    "RuntimeEventLedger",
+    "RuntimeEventRecord",
     "SchedulerError",
     "SchedulerPolicy",
     "SchedulerTransition",
