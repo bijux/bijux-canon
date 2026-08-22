@@ -14,8 +14,8 @@ from bijux_canon_ingest.application.canonical_ingest import (
     CanonicalIngestError,
     CanonicalIngestRequest,
     CanonicalIngestRuntime,
+    CorpusSnapshotConfiguration,
 )
-from bijux_canon_ingest.domain.corpus_snapshot import CorpusSnapshotConfiguration
 
 
 def _parser() -> argparse.ArgumentParser:

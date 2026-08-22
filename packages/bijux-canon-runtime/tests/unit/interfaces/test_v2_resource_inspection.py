@@ -8,6 +8,7 @@ from collections.abc import Mapping
 from contextlib import redirect_stderr, redirect_stdout
 from io import StringIO
 import json
+from pathlib import Path
 from typing import cast
 
 from fastapi.testclient import TestClient
@@ -114,6 +115,26 @@ def test_library_cli_and_http_publish_the_same_operation_inventory() -> None:
     assert "discover" in cli_commands
     for _, (method, path) in _OPERATION_SURFACES.values():
         assert method in openapi["paths"][path]
+
+
+def test_discover_command_uses_the_ingest_application_boundary(
+    tmp_path: Path,
+) -> None:
+    (tmp_path / "evidence.txt").write_text(
+        "Ancient DNA evidence.\n",
+        encoding="utf-8",
+    )
+    args = build_parser(prog_name="bijux-canon-runtime").parse_args(
+        ["v2", "discover", str(tmp_path), "--root-name", "research"]
+    )
+    stdout = StringIO()
+
+    with redirect_stdout(stdout):
+        assert run_v2_command(args, services=None) == 0
+
+    payload = json.loads(stdout.getvalue())
+    assert payload["schema_version"] == "bijux.canon.ingest.discovery.v1"
+    assert payload["sources"][0]["relative_path"] == "evidence.txt"
 
 
 @pytest.mark.parametrize(

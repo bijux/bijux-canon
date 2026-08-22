@@ -12,15 +12,12 @@ import json
 import os
 from pathlib import Path
 import sys
-from typing import cast
 
 from pydantic import ValidationError
 
-from bijux_canon_ingest.application.source_discovery import discover_sources
-from bijux_canon_ingest.domain.source_discovery import (
-    DiscoveryPolicy,
-    DiscoveryRoot,
-    SymlinkPolicy,
+from bijux_canon_ingest.application.source_discovery import (
+    SourceDiscoveryRequest,
+    discover_source_directory,
 )
 
 from bijux_canon_runtime.api.v2.conversion import (
@@ -243,16 +240,17 @@ def _close_default_services(service: RuntimeApplicationServicesV2) -> None:
 
 def _discover(args: argparse.Namespace) -> int:
     directory = Path(args.directory).resolve()
-    result = discover_sources(
-        DiscoveryPolicy(
-            roots=(DiscoveryRoot(args.root_name, directory),),
+    outcome = discover_source_directory(
+        SourceDiscoveryRequest(
+            root_name=args.root_name,
+            directory=directory,
             include=tuple(args.include) or ("**/*",),
             exclude=tuple(args.exclude),
-            symlink_policy=cast(SymlinkPolicy, args.symlink_policy),
+            symlink_policy=args.symlink_policy,
         )
     )
-    _write(result.manifest())
-    return 0 if result.complete else EXIT_OPERATION_FAILED
+    _write(outcome.manifest)
+    return 0 if outcome.complete else EXIT_OPERATION_FAILED
 
 
 def _submit(

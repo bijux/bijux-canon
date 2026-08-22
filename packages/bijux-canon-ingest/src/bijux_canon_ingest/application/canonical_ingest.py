@@ -303,6 +303,7 @@ __all__ = [
     "CanonicalIngestResult",
     "CanonicalIngestRuntime",
     "CanonicalCorpusPreparation",
+    "CorpusSnapshotConfiguration",
     "assemble_corpus_snapshot_manifest",
     "ingest_corpus",
     "prepare_corpus",
