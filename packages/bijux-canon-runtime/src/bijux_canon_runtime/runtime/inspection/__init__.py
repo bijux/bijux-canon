@@ -15,6 +15,7 @@ from bijux_canon_runtime.runtime.inspection.models import (
     InspectedStepStatus,
     PersistedInspectionValue,
     RuntimeInspectionError,
+    RuntimeInspectionLimits,
     RuntimeRunInspection,
 )
 from bijux_canon_runtime.runtime.inspection.run_inspector import RuntimeRunInspector
@@ -31,6 +32,7 @@ __all__ = [
     "InspectedStepStatus",
     "PersistedInspectionValue",
     "RuntimeInspectionError",
+    "RuntimeInspectionLimits",
     "RuntimeRunInspection",
     "RuntimeRunInspector",
 ]

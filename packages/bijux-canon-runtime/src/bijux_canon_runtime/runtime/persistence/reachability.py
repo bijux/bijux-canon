@@ -64,10 +64,16 @@ class ArtifactReachabilityValidator:
         database_path: Path,
         payload_store: AtomicFilesystemArtifactPayloadStore,
         lock_timeout_seconds: float = 5.0,
+        max_artifacts: int = 100_000,
+        max_dependency_edges: int = 1_000_000,
     ) -> None:
+        if max_artifacts < 1 or max_dependency_edges < 1:
+            raise ValueError("artifact reachability limits must be positive")
         self._database_path = database_path
         self._payload_store = payload_store
         self._lock_timeout_seconds = lock_timeout_seconds
+        self._max_artifacts = max_artifacts
+        self._max_dependency_edges = max_dependency_edges
 
     def validate(self) -> ArtifactReachabilityReport:
         """Verify the whole graph and return stable, non-destructive findings."""
@@ -93,28 +99,45 @@ class ArtifactReachabilityValidator:
                     "metadata schema is missing required tables: "
                     + ", ".join(sorted(missing_tables))
                 )
-            roots = self._root_ids(connection)
-            dependencies = self._dependencies(connection)
+            roots = self._root_ids(connection, limit=self._max_artifacts)
+            dependencies = self._dependencies(
+                connection,
+                limit=self._max_dependency_edges,
+            )
             metadata_ids = {
                 ArtifactID(row[0])
-                for row in connection.execute(
-                    "SELECT artifact_id FROM artifact_payloads"
-                ).fetchall()
+                for row in self._bounded_rows(
+                    connection,
+                    "SELECT artifact_id FROM artifact_payloads",
+                    limit=self._max_artifacts,
+                    collection="artifact metadata",
+                )
             }
             superseded_targets = {
                 ArtifactID(row[0])
-                for row in connection.execute(
+                for row in self._bounded_rows(
+                    connection,
                     """
                     SELECT DISTINCT target_artifact_id FROM artifact_references
                     WHERE reference_state = 'superseded'
-                    """
-                ).fetchall()
+                    """,
+                    limit=self._max_artifacts,
+                    collection="superseded artifacts",
+                )
             }
         finally:
             store.close()
 
-        reachable = self._transitive_closure(roots, dependencies)
-        stored = set(self._payload_store.artifact_ids())
+        reachable = self._transitive_closure(
+            roots,
+            dependencies,
+            limit=self._max_artifacts,
+        )
+        stored: set[ArtifactID] = set()
+        for artifact_id in self._payload_store.iter_artifact_ids():
+            if len(stored) >= self._max_artifacts:
+                raise ValueError("stored artifact inventory exceeds its limit")
+            stored.add(artifact_id)
         missing = reachable - stored
         corrupt = {
             artifact_id for artifact_id in stored if self._is_corrupt(artifact_id)
@@ -169,7 +192,11 @@ class ArtifactReachabilityValidator:
         ).encode("utf-8")
 
     @staticmethod
-    def _root_ids(connection: duckdb.DuckDBPyConnection) -> set[ArtifactID]:
+    def _root_ids(
+        connection: duckdb.DuckDBPyConnection,
+        *,
+        limit: int,
+    ) -> set[ArtifactID]:
         queries = (
             "SELECT target_artifact_id FROM artifact_references WHERE reference_state = 'active'",
             "SELECT payload_artifact_id FROM run_revisions",
@@ -182,31 +209,43 @@ class ArtifactReachabilityValidator:
         )
         roots: set[ArtifactID] = set()
         for query in queries:
-            roots.update(
-                ArtifactID(row[0]) for row in connection.execute(query).fetchall()
-            )
+            cursor = connection.execute(query)
+            while rows := cursor.fetchmany(1000):
+                roots.update(ArtifactID(row[0]) for row in rows)
+                if len(roots) > limit:
+                    raise ValueError("artifact reachability roots exceed their limit")
         return roots
 
     @staticmethod
     def _dependencies(
         connection: duckdb.DuckDBPyConnection,
+        *,
+        limit: int,
     ) -> dict[ArtifactID, set[ArtifactID]]:
         graph: dict[ArtifactID, set[ArtifactID]] = {}
-        for artifact_id, dependency_id in connection.execute(
+        cursor = connection.execute(
             """
             SELECT artifact_id, dependency_artifact_id
             FROM artifact_payload_dependencies
             """
-        ).fetchall():
-            graph.setdefault(ArtifactID(artifact_id), set()).add(
-                ArtifactID(dependency_id)
-            )
+        )
+        edge_count = 0
+        while rows := cursor.fetchmany(1000):
+            edge_count += len(rows)
+            if edge_count > limit:
+                raise ValueError("artifact dependency graph exceeds its edge limit")
+            for artifact_id, dependency_id in rows:
+                graph.setdefault(ArtifactID(artifact_id), set()).add(
+                    ArtifactID(dependency_id)
+                )
         return graph
 
     @staticmethod
     def _transitive_closure(
         roots: set[ArtifactID],
         dependencies: dict[ArtifactID, set[ArtifactID]],
+        *,
+        limit: int,
     ) -> set[ArtifactID]:
         reachable: set[ArtifactID] = set()
         pending = list(roots)
@@ -214,9 +253,24 @@ class ArtifactReachabilityValidator:
             current = pending.pop()
             if current in reachable:
                 continue
+            if len(reachable) >= limit:
+                raise ValueError("reachable artifact closure exceeds its limit")
             reachable.add(current)
             pending.extend(dependencies.get(current, ()))
         return reachable
+
+    @staticmethod
+    def _bounded_rows(
+        connection: duckdb.DuckDBPyConnection,
+        query: str,
+        *,
+        limit: int,
+        collection: str,
+    ) -> list[tuple[object, ...]]:
+        rows = connection.execute(f"{query} LIMIT ?", [limit + 1]).fetchall()
+        if len(rows) > limit:
+            raise ValueError(f"{collection} exceed their configured limit")
+        return rows
 
     def _is_corrupt(self, artifact_id: ArtifactID) -> bool:
         try:

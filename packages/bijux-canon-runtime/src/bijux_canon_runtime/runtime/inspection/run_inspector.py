@@ -17,6 +17,7 @@ from bijux_canon_runtime.runtime.inspection.models import (
     InspectedFailure,
     PersistedInspectionValue,
     RuntimeInspectionError,
+    RuntimeInspectionLimits,
     RuntimeRunInspection,
 )
 from bijux_canon_runtime.runtime.inspection.parsing import (
@@ -55,8 +56,14 @@ class _Manifest:
 class RuntimeRunInspector:
     """Reconstruct a run from an atomic payload store after process restart."""
 
-    def __init__(self, store: AtomicFilesystemArtifactPayloadStore) -> None:
+    def __init__(
+        self,
+        store: AtomicFilesystemArtifactPayloadStore,
+        *,
+        limits: RuntimeInspectionLimits = RuntimeInspectionLimits(),
+    ) -> None:
         self._store = store
+        self._limits = limits
 
     def inspect(
         self,
@@ -67,7 +74,7 @@ class RuntimeRunInspector:
         """Resolve and validate one persisted attempt plus all run lineage."""
         if not run_id.strip():
             raise ValueError("inspection run identity must not be empty")
-        inventory = self._inventory()
+        inventory = self._control_inventory()
         manifests = self._manifests(inventory, run_id)
         if not manifests:
             raise KeyError(f"persisted Runtime run not found: {run_id}")
@@ -158,13 +165,36 @@ class RuntimeRunInspector:
             failures=failures,
         )
 
-    def _inventory(self) -> tuple[tuple[ArtifactID, AddressedArtifact], ...]:
+    def _control_inventory(
+        self,
+    ) -> tuple[tuple[ArtifactID, AddressedArtifact], ...]:
         inventory: list[tuple[ArtifactID, AddressedArtifact]] = []
-        for artifact_id in self._store.artifact_ids():
+        loaded_bytes = 0
+        for index, artifact_id in enumerate(
+            self._store.iter_artifact_ids(), start=1
+        ):
+            if index > self._limits.max_inventory_artifacts:
+                raise RuntimeInspectionError(
+                    "artifact inventory exceeds the configured inspection limit"
+                )
             try:
-                inventory.append((artifact_id, self._store.load(artifact_id)))
+                artifact = self._store.load(artifact_id)
             except (KeyError, PayloadCorruptionError, ValueError):
                 continue
+            if artifact.descriptor.schema_id not in {
+                "bijux.runtime.execution-manifest.v1",
+                "bijux.runtime.execution-event.v1",
+            }:
+                continue
+            inventory.append((artifact_id, artifact))
+            loaded_bytes += artifact.descriptor.size_bytes
+            if (
+                len(inventory) > self._limits.max_control_artifacts
+                or loaded_bytes > self._limits.max_loaded_payload_bytes
+            ):
+                raise RuntimeInspectionError(
+                    "Runtime control artifacts exceed configured inspection limits"
+                )
         return tuple(inventory)
 
     def _manifests(
@@ -257,6 +287,7 @@ class RuntimeRunInspector:
             *(item for event in events for item in event.output_artifact_ids),
         }
         loaded: dict[ArtifactID, AddressedArtifact] = {}
+        loaded_bytes = 0
         while pending:
             artifact_id = pending.pop()
             if artifact_id in loaded:
@@ -268,6 +299,14 @@ class RuntimeRunInspector:
                     f"run references an unavailable artifact: {artifact_id}"
                 ) from exc
             loaded[artifact_id] = artifact
+            loaded_bytes += artifact.descriptor.size_bytes
+            if (
+                len(loaded) > self._limits.max_related_artifacts
+                or loaded_bytes > self._limits.max_loaded_payload_bytes
+            ):
+                raise RuntimeInspectionError(
+                    "run lineage exceeds configured inspection limits"
+                )
             pending.update(artifact.descriptor.dependencies)
         return tuple(loaded[item] for item in sorted(loaded))
 

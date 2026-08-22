@@ -49,7 +49,11 @@ class RuntimeComparisonPolicy:
     max_duration_ratio: float = 5.0
 
     def __post_init__(self) -> None:
-        if not self.dimensions or len(set(self.dimensions)) != len(self.dimensions):
+        if (
+            not self.dimensions
+            or len(self.dimensions) > len(ComparisonDimension)
+            or len(set(self.dimensions)) != len(self.dimensions)
+        ):
             raise ValueError("comparison dimensions must be nonempty and unique")
         if len(set(self.expected_differences)) != len(self.expected_differences):
             raise ValueError("expected comparison dimensions must be unique")

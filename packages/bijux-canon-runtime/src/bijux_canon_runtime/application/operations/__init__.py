@@ -22,10 +22,12 @@ from bijux_canon_runtime.application.operations.service import (
     RuntimeOperationExecutor,
     build_runtime_job_handlers,
 )
+from bijux_canon_runtime.runtime.pagination import PageRequest
 
 __all__ = [
     "ApplicationCapabilityError",
     "ApplicationOperation",
+    "PageRequest",
     "ReplayOperationExecutor",
     "ResourceInspectionExecutor",
     "ReplayOperationRequest",

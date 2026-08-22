@@ -12,6 +12,7 @@ import os
 from pathlib import Path, PurePosixPath
 import shutil
 import tempfile
+from collections.abc import Iterable
 from typing import Any
 
 from bijux_canon_runtime.model.artifact import (
@@ -27,6 +28,27 @@ from bijux_canon_runtime.runtime.persistence.filesystem_payload_store import (
 
 class EvidenceBundleIntegrityError(ValueError):
     """Raised when an exported bundle is incomplete, altered, or unsafe."""
+
+
+@dataclass(frozen=True, slots=True)
+class EvidenceBundleLimits:
+    """Hard export and verification bounds for one evidence bundle."""
+
+    max_artifacts: int = 10_000
+    max_bundle_bytes: int = 1024 * 1024 * 1024
+    max_artifact_bytes: int = 256 * 1024 * 1024
+    max_manifest_bytes: int = 64 * 1024 * 1024
+    stream_chunk_bytes: int = 1024 * 1024
+
+    def __post_init__(self) -> None:
+        if min(
+            self.max_artifacts,
+            self.max_bundle_bytes,
+            self.max_artifact_bytes,
+            self.max_manifest_bytes,
+            self.stream_chunk_bytes,
+        ) < 1:
+            raise ValueError("evidence bundle limits must be positive")
 
 
 @dataclass(frozen=True, slots=True)
@@ -99,8 +121,14 @@ class EvidenceBundleVerification:
 class EvidenceBundleExporter:
     """Export dependency-complete evidence without mutable source locations."""
 
-    def __init__(self, payload_store: AtomicFilesystemArtifactPayloadStore) -> None:
+    def __init__(
+        self,
+        payload_store: AtomicFilesystemArtifactPayloadStore,
+        *,
+        limits: EvidenceBundleLimits = EvidenceBundleLimits(),
+    ) -> None:
         self._payload_store = payload_store
+        self._limits = limits
 
     def export(
         self,
@@ -125,37 +153,40 @@ class EvidenceBundleExporter:
             )
         )
         try:
-            artifacts = self._dependency_closure(roots)
+            artifacts = self._dependency_closure(roots, redaction_policy)
             entries: list[dict[str, object]] = []
             redacted: list[ArtifactID] = []
             for artifact_id in sorted(artifacts):
-                artifact = artifacts[artifact_id]
+                descriptor = artifacts[artifact_id]
                 digest = str(artifact_id).removeprefix("sha256:")
                 relative_root = PurePosixPath("objects", "sha256", digest[:2], digest)
                 object_root = staged.joinpath(*relative_root.parts)
                 object_root.mkdir(parents=True)
                 descriptor_bytes = canonical_json_bytes(
-                    self._descriptor_record(artifact.descriptor)
+                    self._descriptor_record(descriptor)
                 )
                 descriptor_file = relative_root / "descriptor.json"
                 self._write_durable(object_root / "descriptor.json", descriptor_bytes)
-                is_redacted = redaction_policy.redacts(artifact)
+                is_redacted = redaction_policy.redacts_descriptor(descriptor)
                 payload_file: str | None = None
                 disposition = "redacted" if is_redacted else "included"
                 if is_redacted:
                     redacted.append(artifact_id)
                 else:
                     payload_file = str(relative_root / "payload")
-                    self._write_durable(
+                    self._write_stream_durable(
                         object_root / "payload",
-                        artifact.canonical_bytes,
+                        self._payload_store.iter_payload(
+                            artifact_id,
+                            chunk_bytes=self._limits.stream_chunk_bytes,
+                        ),
                     )
                 self._fsync_directory(object_root)
                 entries.append(
                     {
                         "artifact_id": str(artifact_id),
                         "dependencies": [
-                            str(item) for item in artifact.descriptor.dependencies
+                            str(item) for item in descriptor.dependencies
                         ],
                         "descriptor_file": str(descriptor_file),
                         "descriptor_sha256": hashlib.sha256(
@@ -163,8 +194,8 @@ class EvidenceBundleExporter:
                         ).hexdigest(),
                         "payload_disposition": disposition,
                         "payload_file": payload_file,
-                        "payload_sha256": str(artifact.descriptor.payload_sha256),
-                        "size_bytes": artifact.descriptor.size_bytes,
+                        "payload_sha256": str(descriptor.payload_sha256),
+                        "size_bytes": descriptor.size_bytes,
                     }
                 )
             unsigned: dict[str, object] = {
@@ -181,7 +212,7 @@ class EvidenceBundleExporter:
                 + b"\n",
             )
             self._fsync_tree(staged)
-            staged_verification = self.verify_export(staged)
+            staged_verification = self.verify_export(staged, limits=self._limits)
             if (
                 not staged_verification.valid
                 or staged_verification.bundle_sha256 != bundle_hash
@@ -202,19 +233,25 @@ class EvidenceBundleExporter:
             redacted_artifact_ids=tuple(sorted(redacted)),
             redaction_policy_id=redaction_policy.policy_id,
         )
-        verified = self.verify_export(destination)
+        verified = self.verify_export(destination, limits=self._limits)
         if not verified.valid or verified.bundle_sha256 != manifest.bundle_sha256:
             raise EvidenceBundleIntegrityError("exported evidence bundle is invalid")
         return manifest
 
     @classmethod
-    def verify_export(cls, bundle_root: Path) -> EvidenceBundleVerification:
+    def verify_export(
+        cls,
+        bundle_root: Path,
+        *,
+        limits: EvidenceBundleLimits = EvidenceBundleLimits(),
+    ) -> EvidenceBundleVerification:
         """Verify one bundle offline using only its stable relative manifest."""
         bundle_root = bundle_root.resolve()
         try:
-            record = json.loads(
-                (bundle_root / "manifest.json").read_text(encoding="utf-8")
-            )
+            manifest_path = bundle_root / "manifest.json"
+            if manifest_path.stat().st_size > limits.max_manifest_bytes:
+                raise ValueError("evidence bundle manifest exceeds its byte limit")
+            record = json.loads(manifest_path.read_text(encoding="utf-8"))
             if not isinstance(record, dict):
                 raise ValueError("manifest must be an object")
             bundle_hash = record.pop("bundle_sha256")
@@ -254,11 +291,14 @@ class EvidenceBundleExporter:
             roots = record["root_artifact_ids"]
             if not isinstance(entries, list) or not isinstance(roots, list):
                 raise ValueError("manifest artifact collections are invalid")
+            if len(entries) > limits.max_artifacts:
+                raise ValueError("evidence bundle exceeds its artifact limit")
             expected_files = {"manifest.json"}
             artifact_ids: set[str] = set()
             dependency_ids: set[str] = set()
             included = 0
             redacted = 0
+            included_bytes = 0
             for entry in entries:
                 if not isinstance(entry, dict):
                     raise ValueError("artifact entry must be an object")
@@ -286,6 +326,8 @@ class EvidenceBundleExporter:
                     entry["descriptor_file"],
                 )
                 expected_files.add(str(descriptor_path.relative_to(bundle_root)))
+                if descriptor_path.stat().st_size > limits.max_manifest_bytes:
+                    raise ValueError("artifact descriptor exceeds its byte limit")
                 descriptor_bytes = descriptor_path.read_bytes()
                 if hashlib.sha256(descriptor_bytes).hexdigest() != entry.get(
                     "descriptor_sha256"
@@ -304,14 +346,19 @@ class EvidenceBundleExporter:
                         entry["payload_file"],
                     )
                     expected_files.add(str(payload_path.relative_to(bundle_root)))
-                    payload = payload_path.read_bytes()
-                    artifact = AddressedArtifact(
-                        descriptor=descriptor,
-                        canonical_bytes=payload,
+                    if descriptor.size_bytes > limits.max_artifact_bytes:
+                        raise ValueError("artifact payload exceeds its byte limit")
+                    included_bytes += descriptor.size_bytes
+                    if included_bytes > limits.max_bundle_bytes:
+                        raise ValueError("bundle payloads exceed their byte limit")
+                    cls._verify_payload_file(
+                        payload_path,
+                        descriptor,
+                        chunk_bytes=limits.stream_chunk_bytes,
                     )
-                    if artifact.descriptor.size_bytes != entry.get("size_bytes"):
+                    if descriptor.size_bytes != entry.get("size_bytes"):
                         raise ValueError("artifact size does not match manifest")
-                    if str(artifact.descriptor.payload_sha256) != entry.get(
+                    if str(descriptor.payload_sha256) != entry.get(
                         "payload_sha256"
                     ):
                         raise ValueError("artifact payload checksum does not match")
@@ -326,11 +373,14 @@ class EvidenceBundleExporter:
                 raise ValueError("bundle root is absent from artifact closure")
             if not dependency_ids.issubset(artifact_ids):
                 raise ValueError("bundle dependency closure is incomplete")
-            actual_files = {
-                str(path.relative_to(bundle_root))
-                for path in bundle_root.rglob("*")
-                if path.is_file()
-            }
+            actual_files: set[str] = set()
+            max_files = limits.max_artifacts * 2 + 1
+            for path in bundle_root.rglob("*"):
+                if not path.is_file():
+                    continue
+                if len(actual_files) >= max_files:
+                    raise ValueError("bundle file inventory exceeds its limit")
+                actual_files.add(str(path.relative_to(bundle_root)))
             if actual_files != expected_files:
                 raise ValueError("bundle file inventory does not match manifest")
         except (
@@ -354,17 +404,53 @@ class EvidenceBundleExporter:
     def _dependency_closure(
         self,
         roots: tuple[ArtifactID, ...],
-    ) -> dict[ArtifactID, AddressedArtifact]:
-        artifacts: dict[ArtifactID, AddressedArtifact] = {}
+        redaction_policy: EvidenceRedactionPolicy,
+    ) -> dict[ArtifactID, ImmutableArtifactDescriptor]:
+        artifacts: dict[ArtifactID, ImmutableArtifactDescriptor] = {}
         pending = list(roots)
+        included_bytes = 0
         while pending:
             artifact_id = pending.pop()
             if artifact_id in artifacts:
                 continue
-            artifact = self._payload_store.load(artifact_id)
-            artifacts[artifact_id] = artifact
-            pending.extend(artifact.descriptor.dependencies)
+            descriptor = self._payload_store.load_descriptor(artifact_id)
+            if len(artifacts) >= self._limits.max_artifacts:
+                raise ValueError("evidence bundle exceeds its artifact limit")
+            if not redaction_policy.redacts_descriptor(descriptor):
+                if descriptor.size_bytes > self._limits.max_artifact_bytes:
+                    raise ValueError("artifact payload exceeds its byte limit")
+                included_bytes += descriptor.size_bytes
+                if included_bytes > self._limits.max_bundle_bytes:
+                    raise ValueError("bundle payloads exceed their byte limit")
+            artifacts[artifact_id] = descriptor
+            pending.extend(descriptor.dependencies)
         return artifacts
+
+    @staticmethod
+    def _verify_payload_file(
+        path: Path,
+        descriptor: ImmutableArtifactDescriptor,
+        *,
+        chunk_bytes: int,
+    ) -> None:
+        payload_hash = hashlib.sha256()
+        identity_hash = hashlib.sha256()
+        identity_hash.update(descriptor.schema_id.encode("utf-8"))
+        identity_hash.update(b"\0")
+        identity_hash.update(descriptor.media_type.encode("ascii"))
+        identity_hash.update(b"\0")
+        size_bytes = 0
+        with path.open("rb") as stream:
+            while chunk := stream.read(chunk_bytes):
+                size_bytes += len(chunk)
+                payload_hash.update(chunk)
+                identity_hash.update(chunk)
+        if (
+            size_bytes != descriptor.size_bytes
+            or payload_hash.hexdigest() != str(descriptor.payload_sha256)
+            or "sha256:" + identity_hash.hexdigest() != str(descriptor.artifact_id)
+        ):
+            raise ValueError("artifact payload identity does not match descriptor")
 
     @staticmethod
     def _safe_bundle_path(bundle_root: Path, value: Any) -> Path:
@@ -423,6 +509,14 @@ class EvidenceBundleExporter:
             os.fsync(stream.fileno())
 
     @staticmethod
+    def _write_stream_durable(path: Path, chunks: Iterable[bytes]) -> None:
+        with path.open("xb") as stream:
+            for chunk in chunks:
+                stream.write(chunk)
+            stream.flush()
+            os.fsync(stream.fileno())
+
+    @staticmethod
     def _fsync_directory(path: Path) -> None:
         descriptor = os.open(path, os.O_RDONLY)
         try:
@@ -444,6 +538,7 @@ class EvidenceBundleExporter:
 __all__ = [
     "EvidenceBundleExporter",
     "EvidenceBundleIntegrityError",
+    "EvidenceBundleLimits",
     "EvidenceBundleManifest",
     "EvidenceBundleVerification",
     "EvidenceRedactionPolicy",

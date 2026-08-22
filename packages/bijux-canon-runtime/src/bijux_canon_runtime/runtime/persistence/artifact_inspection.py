@@ -27,6 +27,7 @@ from bijux_canon_runtime.runtime.persistence.reachability import (
     ArtifactReachabilityReport,
     ArtifactReachabilityValidator,
 )
+from bijux_canon_runtime.runtime.pagination import PageRequest, paginate_collections
 
 
 @dataclass(frozen=True, slots=True)
@@ -80,6 +81,15 @@ class LogicalArtifactResolution:
     target: ArtifactVerificationRecord
 
 
+@dataclass(frozen=True, slots=True)
+class ArtifactInspectionPage:
+    """One bounded immutable artifact inventory page."""
+
+    schema_version: str
+    artifacts: tuple[ArtifactInspectionRecord, ...]
+    page: dict[str, object]
+
+
 class RuntimeArtifactInspector:
     """List, resolve, and verify artifacts under a shared snapshot lease."""
 
@@ -89,36 +99,73 @@ class RuntimeArtifactInspector:
         database_path: Path,
         payload_store: AtomicFilesystemArtifactPayloadStore,
         lock_timeout_seconds: float = 5.0,
+        max_inventory_artifacts: int = 100_000,
     ) -> None:
+        if max_inventory_artifacts < 1:
+            raise ValueError("artifact inventory limit must be positive")
         self._database_path = database_path
         self._payload_store = payload_store
         self._lock_timeout_seconds = lock_timeout_seconds
+        self._max_inventory_artifacts = max_inventory_artifacts
 
     def list_artifacts(self) -> tuple[ArtifactInspectionRecord, ...]:
-        """Return the complete stored and referenced inventory in stable order."""
+        """Return a small complete inventory or require explicit pagination."""
+        page = self.list_artifacts_page(PageRequest(limit=1000))
+        if page.page["next_cursor"] is not None:
+            raise ValueError("complete artifact listing exceeds 1000; use pagination")
+        return page.artifacts
+
+    def list_artifacts_page(self, page: PageRequest) -> ArtifactInspectionPage:
+        """Return one stable, bounded page of stored and referenced artifacts."""
         store = self._read_store()
         try:
             report = ArtifactReachabilityValidator(
                 database_path=self._database_path,
                 payload_store=self._payload_store,
                 lock_timeout_seconds=self._lock_timeout_seconds,
+                max_artifacts=self._max_inventory_artifacts,
             ).validate()
-            reference_map = self._references(store._connection)
-            identities = set(self._payload_store.artifact_ids())
-            identities.update(report.missing_artifact_ids)
-            identities.update(
-                ArtifactID(row[0])
-                for row in store._connection.execute(
-                    "SELECT artifact_id FROM artifact_payloads"
-                ).fetchall()
+            reference_map = self._references(
+                store._connection,
+                max_references=self._max_inventory_artifacts,
             )
-            return tuple(
+            identities: set[ArtifactID] = set()
+            for index, artifact_id in enumerate(
+                self._payload_store.iter_artifact_ids(), start=1
+            ):
+                if index > self._max_inventory_artifacts:
+                    raise ValueError("artifact inventory exceeds its configured limit")
+                identities.add(artifact_id)
+            identities.update(report.missing_artifact_ids)
+            identities.update(report.orphan_artifact_ids)
+            identities.update(report.reachable_artifact_ids)
+            identities.update(report.superseded_artifact_ids)
+            ordered = tuple(sorted(identities))
+            if len(ordered) > self._max_inventory_artifacts:
+                raise ValueError("artifact inventory exceeds its configured limit")
+            pagination = paginate_collections(
+                {"artifacts": ordered},
+                collection_fields=("artifacts",),
+                resource_identity={"report_sha256": report.report_sha256},
+                request=page,
+            )
+            metadata = pagination["page"]
+            assert isinstance(metadata, dict)
+            offset = metadata["offset"]
+            assert isinstance(offset, int)
+            selected = ordered[offset : offset + page.limit]
+            records = tuple(
                 self._inspection_record(
                     artifact_id,
                     report=report,
                     references=reference_map.get(artifact_id, ()),
                 )
-                for artifact_id in sorted(identities)
+                for artifact_id in selected
+            )
+            return ArtifactInspectionPage(
+                schema_version="bijux.runtime.artifact-inspection-page.v1",
+                artifacts=records,
+                page=metadata,
             )
         finally:
             store.close()
@@ -267,6 +314,8 @@ class RuntimeArtifactInspector:
     @staticmethod
     def _references(
         connection: duckdb.DuckDBPyConnection,
+        *,
+        max_references: int,
     ) -> dict[ArtifactID, tuple[ArtifactReferenceView, ...]]:
         grouped: dict[ArtifactID, list[ArtifactReferenceView]] = {}
         rows = connection.execute(
@@ -275,8 +324,12 @@ class RuntimeArtifactInspector:
                    target_artifact_id, reference_state
             FROM artifact_references
             ORDER BY tenant_id, run_id, logical_artifact_id, revision
-            """
+            LIMIT ?
+            """,
+            [max_references + 1],
         ).fetchall()
+        if len(rows) > max_references:
+            raise ValueError("artifact references exceed their configured limit")
         for tenant_id, run_id, logical_id, revision, target_id, state in rows:
             grouped.setdefault(ArtifactID(target_id), []).append(
                 ArtifactReferenceView(
@@ -306,6 +359,7 @@ class RuntimeArtifactInspector:
 
 __all__ = [
     "ArtifactInspectionRecord",
+    "ArtifactInspectionPage",
     "ArtifactReferenceView",
     "ArtifactVerificationRecord",
     "LogicalArtifactResolution",

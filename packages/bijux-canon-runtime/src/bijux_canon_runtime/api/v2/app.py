@@ -13,7 +13,6 @@ from starlette.responses import Response
 
 from bijux_canon_runtime.api.v2.conversion import (
     job_status,
-    json_value,
     operation_request,
 )
 from bijux_canon_runtime.api.v2.schemas import (
@@ -37,6 +36,7 @@ from bijux_canon_runtime.application.operations import (
     ReplayOperationRequest,
     RuntimeApplicationServicesV2,
 )
+from bijux_canon_runtime.runtime.pagination import PageRequest
 from bijux_canon_runtime.model.execution.request_plan import (
     RuntimeOperationRequest,
     RuntimeRequestOperation,
@@ -284,9 +284,15 @@ def create_app(
         index_id: str,
         _: Version,
         service: Services,
+        cursor: str | None = Query(default=None, min_length=1, max_length=4096),
+        offset: Annotated[int | None, Query(ge=0)] = None,
+        limit: Annotated[int, Query(ge=1, le=1000)] = 100,
     ) -> IndexInspectionResponse:
         return IndexInspectionResponse.model_validate(
-            service.inspect_index(ArtifactID(index_id))
+            service.inspect_index_page(
+                ArtifactID(index_id),
+                page=PageRequest(limit=limit, cursor=cursor, offset=offset),
+            )
         )
 
     @api.post(
@@ -435,12 +441,17 @@ def create_app(
         _: Version,
         service: Services,
         attempt_id: str | None = Query(default=None),
-        offset: Annotated[int, Query(ge=0)] = 0,
+        cursor: str | None = Query(default=None, min_length=1, max_length=4096),
+        offset: Annotated[int | None, Query(ge=0)] = None,
         limit: Annotated[int, Query(ge=1, le=1000)] = 100,
     ) -> dict[str, object]:
-        inspection = json_value(service.inspect(run_id, attempt_id=attempt_id))
-        assert isinstance(inspection, dict)
-        return _paginate_inspection(inspection, offset=offset, limit=limit)
+        return dict(
+            service.inspect_page(
+                run_id,
+                attempt_id=attempt_id,
+                page=PageRequest(limit=limit, cursor=cursor, offset=offset),
+            )
+        )
 
     @api.post("/api/v2/comparisons", responses=PROBLEM_RESPONSES)
     def compare(
@@ -459,14 +470,13 @@ def create_app(
                 if item in body.dimensions
             ),
         )
-        return json_value(
-            service.compare(
-                baseline_run_id=body.baseline_run_id,
-                baseline_attempt_id=body.baseline_attempt_id,
-                candidate_run_id=body.candidate_run_id,
-                candidate_attempt_id=body.candidate_attempt_id,
-                policy=policy,
-            )
+        return service.compare_page(
+            baseline_run_id=body.baseline_run_id,
+            baseline_attempt_id=body.baseline_attempt_id,
+            candidate_run_id=body.candidate_run_id,
+            candidate_attempt_id=body.candidate_attempt_id,
+            page=PageRequest(limit=body.limit, cursor=body.cursor),
+            policy=policy,
         )
 
     return api
@@ -510,33 +520,6 @@ def _answer_request(
         top_k=body.top_k,
         answer_policy=body.answer_policy,
     )
-
-
-def _paginate_inspection(
-    inspection: dict[str, object],
-    *,
-    offset: int,
-    limit: int,
-) -> dict[str, object]:
-    result = dict(inspection)
-    for field in ("steps", "artifacts", "events"):
-        values = result.get(field)
-        if isinstance(values, list):
-            result[field] = values[offset : offset + limit]
-    result["page"] = {
-        "limit": limit,
-        "next_offset": offset + limit if _has_more(inspection, offset, limit) else None,
-        "offset": offset,
-    }
-    return result
-
-
-def _has_more(inspection: dict[str, object], offset: int, limit: int) -> bool:
-    for field in ("steps", "artifacts", "events"):
-        values = inspection.get(field)
-        if isinstance(values, list) and len(values) > offset + limit:
-            return True
-    return False
 
 
 app = create_app()

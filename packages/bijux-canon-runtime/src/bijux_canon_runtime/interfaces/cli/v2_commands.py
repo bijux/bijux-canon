@@ -43,6 +43,7 @@ from bijux_canon_runtime.application.operations import (
     ReplayOperationRequest,
     RuntimeApplicationServicesV2,
 )
+from bijux_canon_runtime.runtime.pagination import PageRequest
 from bijux_canon_runtime.model.execution.request_plan import RuntimeRequestOperation
 from bijux_canon_runtime.ontology.ids import ArtifactID, RequestID
 from bijux_canon_runtime.ontology.public import ReplayMode
@@ -77,7 +78,16 @@ def run_v2_command(
             _write(json_value(service.inspect_corpus(ArtifactID(args.corpus_id))))
             return 0
         if args.v2_command == "index-inspect":
-            _write(json_value(service.inspect_index(ArtifactID(args.index_id))))
+            _write(
+                service.inspect_index_page(
+                    ArtifactID(args.index_id),
+                    page=PageRequest(
+                        limit=args.limit,
+                        cursor=args.cursor,
+                        offset=args.offset,
+                    ),
+                )
+            )
             return 0
         if args.v2_command == "status":
             _write(job_status(service.status(args.job_id)).model_dump(mode="json"))
@@ -259,25 +269,17 @@ def _answer(body: AskRequest, operation: RuntimeRequestOperation):
 
 
 def _inspect(args: argparse.Namespace, service: RuntimeApplicationServicesV2) -> int:
-    value = json_value(service.inspect(args.run_id, attempt_id=args.attempt_id))
-    assert isinstance(value, dict)
-    if args.offset < 0 or not 1 <= args.limit <= 1000:
-        raise ValueError("inspection offset and limit are outside supported bounds")
-    has_more = any(
-        isinstance(value.get(field), list)
-        and len(cast(list[object], value[field])) > args.offset + args.limit
-        for field in ("steps", "artifacts", "events")
+    _write(
+        service.inspect_page(
+            args.run_id,
+            attempt_id=args.attempt_id,
+            page=PageRequest(
+                limit=args.limit,
+                cursor=args.cursor,
+                offset=args.offset,
+            ),
+        )
     )
-    for field in ("steps", "artifacts", "events"):
-        records = value.get(field)
-        if isinstance(records, list):
-            value[field] = records[args.offset : args.offset + args.limit]
-    value["page"] = {
-        "limit": args.limit,
-        "next_offset": args.offset + args.limit if has_more else None,
-        "offset": args.offset,
-    }
-    _write(value)
     return 0
 
 
@@ -306,11 +308,12 @@ def _replay(args: argparse.Namespace, service: RuntimeApplicationServicesV2) -> 
 def _compare(args: argparse.Namespace, service: RuntimeApplicationServicesV2) -> int:
     body = _load_model(Path(args.request), CompareRequest)
     dimensions = tuple(ComparisonDimension(item) for item in body.dimensions)
-    result = service.compare(
+    result = service.compare_page(
         baseline_run_id=body.baseline_run_id,
         baseline_attempt_id=body.baseline_attempt_id,
         candidate_run_id=body.candidate_run_id,
         candidate_attempt_id=body.candidate_attempt_id,
+        page=PageRequest(limit=body.limit, cursor=body.cursor),
         policy=RuntimeComparisonPolicy(
             dimensions=dimensions,
             expected_differences=tuple(

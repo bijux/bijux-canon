@@ -243,6 +243,19 @@
           "context": {
             "$ref": "#/components/schemas/RequestContext"
           },
+          "cursor": {
+            "anyOf": [
+              {
+                "maxLength": 4096,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cursor"
+          },
           "dimensions": {
             "items": {
               "enum": [
@@ -261,8 +274,17 @@
               ],
               "type": "string"
             },
+            "maxItems": 12,
+            "minItems": 1,
             "title": "Dimensions",
             "type": "array"
+          },
+          "limit": {
+            "default": 100,
+            "maximum": 1000.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "type": "integer"
           }
         },
         "required": [
@@ -316,6 +338,60 @@
         "title": "CorpusInspectionResponse",
         "type": "object"
       },
+      "CursorPageResponse": {
+        "additionalProperties": false,
+        "description": "Stable page metadata bound to one immutable response snapshot.",
+        "properties": {
+          "limit": {
+            "maximum": 1000.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          },
+          "next_offset": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Offset"
+          },
+          "offset": {
+            "minimum": 0.0,
+            "title": "Offset",
+            "type": "integer"
+          },
+          "snapshot_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Snapshot Sha256",
+            "type": "string"
+          }
+        },
+        "required": [
+          "limit",
+          "next_cursor",
+          "next_offset",
+          "offset",
+          "snapshot_sha256"
+        ],
+        "title": "CursorPageResponse",
+        "type": "object"
+      },
       "Filters": {
         "additionalProperties": false,
         "description": "Immutable retrieval filters.",
@@ -325,6 +401,7 @@
             "items": {
               "type": "string"
             },
+            "maxItems": 1000,
             "title": "Document Ids",
             "type": "array"
           },
@@ -333,6 +410,7 @@
             "items": {
               "type": "string"
             },
+            "maxItems": 1000,
             "title": "Source Uris",
             "type": "array"
           }
@@ -413,6 +491,9 @@
             "title": "Model Lock Artifact Id",
             "type": "string"
           },
+          "page": {
+            "$ref": "#/components/schemas/CursorPageResponse"
+          },
           "schema_version": {
             "const": "bijux.canon.index.inspection.v1",
             "title": "Schema Version",
@@ -459,7 +540,8 @@
           "lineage",
           "integrity",
           "activation",
-          "compatibility"
+          "compatibility",
+          "page"
         ],
         "title": "IndexInspectionResponse",
         "type": "object"
@@ -1736,6 +1818,53 @@
             }
           },
           {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 4096,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Offset"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 100,
+              "maximum": 1000,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
             "in": "header",
             "name": "Bijux-API-Version",
             "required": false,
@@ -2615,13 +2744,37 @@
           },
           {
             "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 4096,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "in": "query",
             "name": "offset",
             "required": false,
             "schema": {
-              "default": 0,
-              "minimum": 0,
-              "title": "Offset",
-              "type": "integer"
+              "anyOf": [
+                {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Offset"
             }
           },
           {

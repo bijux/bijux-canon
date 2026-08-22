@@ -82,6 +82,8 @@ class RetrievalFilters:
             raise ValueError("retrieval document filters must be unique")
         if len(set(self.source_uris)) != len(self.source_uris):
             raise ValueError("retrieval source filters must be unique")
+        if len(self.document_ids) > 1000 or len(self.source_uris) > 1000:
+            raise ValueError("retrieval filter collections must not exceed 1000 items")
 
 
 @dataclass(frozen=True, slots=True)

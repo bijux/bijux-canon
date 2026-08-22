@@ -181,7 +181,10 @@ class _RecordingServices(RuntimeApplicationServicesV2):
         return {
             "baseline_run_id": kwargs["baseline_run_id"],
             "candidate_run_id": kwargs["candidate_run_id"],
-            "differences": [],
+            "comparison_sha256": "f" * 64,
+            "differences": [
+                {"dimension": f"dimension-{index}"} for index in range(4)
+            ],
             "equivalent": True,
             "schema_version": "bijux.runtime.comparison.v1",
         }
@@ -211,7 +214,7 @@ class _RecordingServices(RuntimeApplicationServicesV2):
             "metadata_bytes": 10,
             "model_lock_artifact_id": "model-lock-local",
             "schema_version": "bijux.canon.index.inspection.v1",
-            "segments": [],
+            "segments": [{"name": f"segment-{index}"} for index in range(4)],
             "snapshot_artifact_id": "snapshot-lineage-local",
             "text_bytes": 20,
             "vector_bytes": 30,
@@ -389,8 +392,94 @@ def test_inspect_pagination_is_identical() -> None:
 
     assert cli_code == 0 and response.status_code == 200
     assert cli_payload == response.json()
-    assert cli_payload["page"] == {"limit": 2, "next_offset": 3, "offset": 1}
+    assert cli_payload["page"]["limit"] == 2
+    assert cli_payload["page"]["next_offset"] == 3
+    assert cli_payload["page"]["offset"] == 1
+    assert cli_payload["page"]["next_cursor"]
+    assert len(cli_payload["page"]["snapshot_sha256"]) == 64
     assert cli_service.calls == http_service.calls
+
+
+def test_inspect_cursor_continuation_is_identical() -> None:
+    first_service = _RecordingServices()
+    first_code, first_payload = _cli(
+        first_service,
+        ["inspect", _RUN_ID, "--limit", "2"],
+    )
+    cursor = first_payload["page"]["next_cursor"]
+    assert first_code == 0 and isinstance(cursor, str)
+
+    cli_service = _RecordingServices()
+    cli_code, cli_payload = _cli(
+        cli_service,
+        ["inspect", _RUN_ID, "--limit", "2", "--cursor", cursor],
+    )
+    http_service = _RecordingServices()
+    response = TestClient(create_app(http_service)).get(
+        f"/api/v2/runs/{_RUN_ID}",
+        headers={"Bijux-API-Version": "v2"},
+        params={"cursor": cursor, "limit": 2},
+    )
+
+    assert cli_code == 0 and response.status_code == 200
+    assert cli_payload == response.json()
+    assert cli_payload["page"]["offset"] == 2
+    assert cli_payload["page"]["next_cursor"] is None
+    assert cli_service.calls == http_service.calls
+
+
+def test_tampered_inspection_cursor_has_equivalent_transport_error() -> None:
+    first_code, first_payload = _cli(
+        _RecordingServices(),
+        ["inspect", _RUN_ID, "--limit", "2"],
+    )
+    cursor = first_payload["page"]["next_cursor"]
+    assert first_code == 0 and isinstance(cursor, str)
+    tampered = cursor[:-1] + ("A" if cursor[-1] != "A" else "B")
+
+    cli_code, cli_problem = _cli(
+        _RecordingServices(),
+        ["inspect", _RUN_ID, "--limit", "2", "--cursor", tampered],
+    )
+    response = TestClient(create_app(_RecordingServices())).get(
+        f"/api/v2/runs/{_RUN_ID}",
+        headers={"Bijux-API-Version": "v2"},
+        params={"cursor": tampered, "limit": 2},
+    )
+
+    assert cli_code == 2 and response.status_code == 400
+    assert cli_problem["code"] == response.json()["code"] == "invalid-request"
+    assert cli_problem["cause"] == response.json()["cause"]
+
+
+def test_index_cursor_continuation_is_identical() -> None:
+    first_service = _RecordingServices()
+    first_code, first_payload = _cli(
+        first_service,
+        ["index-inspect", _INDEX_ID, "--limit", "2"],
+    )
+    cursor = first_payload["page"]["next_cursor"]
+    assert first_code == 0 and isinstance(cursor, str)
+
+    cli_service = _RecordingServices()
+    cli_code, cli_payload = _cli(
+        cli_service,
+        ["index-inspect", _INDEX_ID, "--limit", "2", "--cursor", cursor],
+    )
+    http_service = _RecordingServices()
+    response = TestClient(create_app(http_service)).get(
+        f"/api/v2/indexes/{_INDEX_ID}",
+        headers={"Bijux-API-Version": "v2"},
+        params={"cursor": cursor, "limit": 2},
+    )
+
+    assert cli_code == 0 and response.status_code == 200
+    assert cli_payload == response.json()
+    assert cli_payload["segments"] == [
+        {"name": "segment-2"},
+        {"name": "segment-3"},
+    ]
+    assert cli_payload["page"]["offset"] == 2
 
 
 def test_compare_has_identical_policy_and_response(tmp_path: Path) -> None:
@@ -416,6 +505,44 @@ def test_compare_has_identical_policy_and_response(tmp_path: Path) -> None:
 
     assert cli_code == 0 and response.status_code == 200
     assert cli_payload == response.json()
+    assert cli_service.calls == http_service.calls
+
+
+def test_compare_cursor_continuation_is_identical(tmp_path: Path) -> None:
+    payload = {
+        "baseline_attempt_id": _ATTEMPT_ID,
+        "baseline_run_id": _RUN_ID,
+        "candidate_attempt_id": "attempt_v1_candidate",
+        "candidate_run_id": "run_v1_candidate",
+        "context": _context("compare-page"),
+        "dimensions": ["dag", "retrieval", "timing", "policy"],
+        "limit": 2,
+    }
+    first_path = _write_request(tmp_path, "compare-first", payload)
+    first_code, first_payload = _cli(
+        _RecordingServices(), ["compare", "--request", str(first_path)]
+    )
+    cursor = first_payload["page"]["next_cursor"]
+    assert first_code == 0 and isinstance(cursor, str)
+    continued = {**payload, "cursor": cursor}
+    continued_path = _write_request(tmp_path, "compare-continued", continued)
+
+    cli_service = _RecordingServices()
+    cli_code, cli_payload = _cli(
+        cli_service, ["compare", "--request", str(continued_path)]
+    )
+    http_service = _RecordingServices()
+    response = TestClient(create_app(http_service)).post(
+        "/api/v2/comparisons",
+        headers={"Bijux-API-Version": "v2"},
+        json=continued,
+    )
+
+    assert cli_code == 0 and response.status_code == 200
+    assert cli_payload == response.json()
+    assert cli_payload["page"]["offset"] == 2
+    assert len(cli_payload["differences"]) == 2
+    assert cli_payload["page"]["next_cursor"] is None
     assert cli_service.calls == http_service.calls
 
 

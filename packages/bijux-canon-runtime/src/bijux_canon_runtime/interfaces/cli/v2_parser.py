@@ -43,6 +43,9 @@ def add_v2_commands(
         "index-inspect", help="Inspect an immutable index generation."
     )
     index_inspect.add_argument("index_id")
+    index_inspect.add_argument("--cursor")
+    index_inspect.add_argument("--offset", type=int)
+    index_inspect.add_argument("--limit", type=int, default=100)
 
     status = commands.add_parser("status", help="Inspect durable job state.")
     status.add_argument("job_id")
@@ -53,7 +56,8 @@ def add_v2_commands(
     inspect = commands.add_parser("inspect", help="Inspect a persisted Runtime run.")
     inspect.add_argument("run_id")
     inspect.add_argument("--attempt-id")
-    inspect.add_argument("--offset", type=int, default=0)
+    inspect.add_argument("--cursor")
+    inspect.add_argument("--offset", type=int)
     inspect.add_argument("--limit", type=int, default=100)
 
     replay = commands.add_parser("replay", help="Submit a linked replay attempt.")

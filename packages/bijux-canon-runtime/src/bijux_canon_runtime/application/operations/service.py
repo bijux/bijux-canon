@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Mapping
+from dataclasses import fields, is_dataclass
 import re
 from typing import Protocol
 
@@ -20,6 +21,7 @@ from bijux_canon_runtime.application.operations.models import (
     ReplayOperationRequest,
     RuntimeApplicationCapability,
 )
+from bijux_canon_runtime.runtime.pagination import PageRequest, paginate_collections
 from bijux_canon_runtime.model.execution.request_plan import (
     RuntimeOperationRequest,
     RuntimeRequestOperation,
@@ -188,6 +190,22 @@ class RuntimeApplicationServicesV2:
             )
         return self._index_inspector(_validated_artifact_id(index_id))
 
+    def inspect_index_page(
+        self,
+        index_id: ArtifactID,
+        *,
+        page: PageRequest,
+    ) -> Mapping[str, object]:
+        """Inspect a bounded page of immutable index segment metadata."""
+        validated = _validated_artifact_id(index_id)
+        inspection = self.inspect_index(validated)
+        return paginate_collections(
+            inspection,
+            collection_fields=("segments",),
+            resource_identity={"index_id": str(validated)},
+            request=page,
+        )
+
     def retrieve(
         self,
         request: RuntimeOperationRequest,
@@ -250,6 +268,43 @@ class RuntimeApplicationServicesV2:
         """Inspect a persisted run without relying on live process state."""
         return self._inspector.inspect(run_id, attempt_id=attempt_id)
 
+    def inspect_page(
+        self,
+        run_id: str,
+        *,
+        attempt_id: str | None = None,
+        page: PageRequest,
+    ) -> Mapping[str, object]:
+        """Inspect bounded collections with a cursor tied to immutable run state."""
+        inspection = self.inspect(run_id, attempt_id=attempt_id)
+        record = _record(inspection)
+        return paginate_collections(
+            record,
+            collection_fields=(
+                "entry_step_ids",
+                "terminal_step_ids",
+                "attempts",
+                "steps",
+                "events",
+                "artifacts",
+                "queries",
+                "hits",
+                "claims",
+                "citations",
+                "tool_calls",
+                "provider_calls",
+                "budgets",
+                "checks",
+                "failures",
+            ),
+            resource_identity={
+                "attempt_id": record.get("selected_attempt_id"),
+                "plan_sha256": record.get("plan_sha256"),
+                "run_id": record.get("run_id"),
+            },
+            request=page,
+        )
+
     def compare(
         self,
         *,
@@ -266,6 +321,36 @@ class RuntimeApplicationServicesV2:
             candidate_run_id=candidate_run_id,
             candidate_attempt_id=candidate_attempt_id,
             policy=policy,
+        )
+
+    def compare_page(
+        self,
+        *,
+        baseline_run_id: str,
+        baseline_attempt_id: str,
+        candidate_run_id: str,
+        candidate_attempt_id: str,
+        page: PageRequest,
+        policy: RuntimeComparisonPolicy | None = None,
+    ) -> Mapping[str, object]:
+        """Compare attempts with a bounded, snapshot-bound difference page."""
+        comparison = self.compare(
+            baseline_run_id=baseline_run_id,
+            baseline_attempt_id=baseline_attempt_id,
+            candidate_run_id=candidate_run_id,
+            candidate_attempt_id=candidate_attempt_id,
+            policy=policy,
+        )
+        record = _record(comparison)
+        return paginate_collections(
+            record,
+            collection_fields=("differences",),
+            resource_identity={
+                "comparison_sha256": record.get("comparison_sha256"),
+                "baseline_run_id": baseline_run_id,
+                "candidate_run_id": candidate_run_id,
+            },
+            request=page,
         )
 
     def status(self, job_id: str) -> DurableJobSnapshot:
@@ -299,6 +384,14 @@ class RuntimeApplicationServicesV2:
                 timeout_seconds=request.budget.timeout_seconds,
             )
         )
+
+
+def _record(value: object) -> dict[str, object]:
+    if isinstance(value, Mapping):
+        return {str(key): item for key, item in value.items()}
+    if is_dataclass(value) and not isinstance(value, type):
+        return {field.name: getattr(value, field.name) for field in fields(value)}
+    raise TypeError("application response must be a dataclass or mapping")
 
 
 __all__ = [

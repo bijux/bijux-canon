@@ -17,10 +17,12 @@ from bijux_canon_runtime.runtime.persistence import (
     AtomicFilesystemArtifactPayloadStore,
     EvidenceBundleExporter,
     EvidenceBundleIntegrityError,
+    EvidenceBundleLimits,
     EvidenceRedactionPolicy,
     PublicationItem,
     RuntimeArtifactInspector,
 )
+from bijux_canon_runtime.runtime.pagination import PageRequest
 
 
 def _workspace(tmp_path: Path, resolved_flow):
@@ -100,6 +102,34 @@ def test_inspector_lists_resolves_and_verifies_without_storage_paths(
     missing = inspector.verify(ArtifactID("sha256:" + "f" * 64))
     assert not missing.valid
     assert missing.failure == "KeyError"
+
+
+def test_artifact_inventory_uses_snapshot_bound_cursor_pages(
+    tmp_path: Path,
+    resolved_flow,
+) -> None:
+    database, payload_store, _run_id, *_ = _workspace(tmp_path, resolved_flow)
+    inspector = RuntimeArtifactInspector(
+        database_path=database,
+        payload_store=payload_store,
+    )
+
+    first = inspector.list_artifacts_page(PageRequest(limit=2))
+    cursor = first.page["next_cursor"]
+    assert len(first.artifacts) == 2
+    assert isinstance(cursor, str)
+
+    second = inspector.list_artifacts_page(PageRequest(limit=2, cursor=cursor))
+    assert len(second.artifacts) == 1
+    assert second.page["offset"] == 2
+    assert second.page["next_cursor"] is None
+    assert first.page["snapshot_sha256"] == second.page["snapshot_sha256"]
+    assert {item.artifact_id for item in (*first.artifacts, *second.artifacts)} == set(
+        payload_store.artifact_ids()
+    )
+
+    with pytest.raises(ValueError, match="cursor is invalid"):
+        inspector.list_artifacts_page(PageRequest(limit=2, cursor=cursor + "x"))
 
 
 def test_export_is_deterministic_dependency_complete_and_policy_redacted(
@@ -198,6 +228,59 @@ def test_export_requires_new_destination(tmp_path: Path, resolved_flow) -> None:
             destination=destination,
             redaction_policy=EvidenceRedactionPolicy(policy_id="include-all"),
         )
+
+
+@pytest.mark.parametrize(
+    "limits",
+    [
+        EvidenceBundleLimits(max_artifacts=2),
+        EvidenceBundleLimits(max_bundle_bytes=1),
+        EvidenceBundleLimits(max_artifact_bytes=1),
+    ],
+)
+def test_export_fails_before_publication_when_a_hard_limit_is_exceeded(
+    tmp_path: Path,
+    resolved_flow,
+    limits: EvidenceBundleLimits,
+) -> None:
+    _database, payload_store, _run_id, _source, _restricted, answer = _workspace(
+        tmp_path, resolved_flow
+    )
+    destination = tmp_path / "bounded-bundle"
+
+    with pytest.raises(ValueError, match="exceed"):
+        EvidenceBundleExporter(payload_store, limits=limits).export(
+            root_artifact_ids=(answer.descriptor.artifact_id,),
+            destination=destination,
+            redaction_policy=EvidenceRedactionPolicy(policy_id="include-all"),
+        )
+
+    assert not destination.exists()
+
+
+def test_export_streams_payloads_without_materializing_store_objects(
+    tmp_path: Path,
+    resolved_flow,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _database, payload_store, _run_id, _source, _restricted, answer = _workspace(
+        tmp_path, resolved_flow
+    )
+
+    def reject_load(_artifact_id: ArtifactID):
+        raise AssertionError("streamed export must not call load")
+
+    monkeypatch.setattr(payload_store, "load", reject_load)
+    manifest = EvidenceBundleExporter(
+        payload_store,
+        limits=EvidenceBundleLimits(stream_chunk_bytes=7),
+    ).export(
+        root_artifact_ids=(answer.descriptor.artifact_id,),
+        destination=tmp_path / "streamed-bundle",
+        redaction_policy=EvidenceRedactionPolicy(policy_id="include-all"),
+    )
+
+    assert len(manifest.artifact_ids) == 3
 
 
 def test_export_verification_rejects_mutable_absolute_paths(

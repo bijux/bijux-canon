@@ -11,6 +11,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 ArtifactIdentity = Annotated[str, Field(pattern=r"^sha256:[0-9a-f]{64}$")]
 StableIdentity = Annotated[str, Field(min_length=1, max_length=200)]
+Cursor = Annotated[str, Field(min_length=1, max_length=4096)]
 
 
 class StrictModel(BaseModel):
@@ -40,8 +41,8 @@ class Budget(StrictModel):
 class Filters(StrictModel):
     """Immutable retrieval filters."""
 
-    document_ids: tuple[str, ...] = ()
-    source_uris: tuple[str, ...] = ()
+    document_ids: Annotated[tuple[str, ...], Field(max_length=1000)] = ()
+    source_uris: Annotated[tuple[str, ...], Field(max_length=1000)] = ()
 
 
 class AnswerPolicy(StrictModel):
@@ -151,23 +152,28 @@ class CompareRequest(StrictModel):
     baseline_attempt_id: StableIdentity
     candidate_run_id: StableIdentity
     candidate_attempt_id: StableIdentity
-    dimensions: tuple[
-        Literal[
-            "dag",
-            "configuration",
-            "corpus",
-            "index",
-            "model",
-            "retrieval",
-            "claims",
-            "citations",
-            "provider-calls",
-            "timing",
-            "policy",
-            "outcome",
+    dimensions: Annotated[
+        tuple[
+            Literal[
+                "dag",
+                "configuration",
+                "corpus",
+                "index",
+                "model",
+                "retrieval",
+                "claims",
+                "citations",
+                "provider-calls",
+                "timing",
+                "policy",
+                "outcome",
+            ],
+            ...,
         ],
-        ...,
+        Field(min_length=1, max_length=12),
     ]
+    cursor: Cursor | None = None
+    limit: Annotated[int, Field(ge=1, le=1000)] = 100
 
 
 class CancelRequest(StrictModel):
@@ -209,6 +215,16 @@ class JobResultResponse(StrictModel):
     result: dict[str, object]
 
 
+class CursorPageResponse(StrictModel):
+    """Stable page metadata bound to one immutable response snapshot."""
+
+    limit: Annotated[int, Field(ge=1, le=1000)]
+    next_cursor: str | None
+    next_offset: Annotated[int | None, Field(ge=0)]
+    offset: Annotated[int, Field(ge=0)]
+    snapshot_sha256: Annotated[str, Field(pattern=r"^[0-9a-f]{64}$")]
+
+
 class CorpusInspectionResponse(StrictModel):
     """Verified immutable corpus publication metadata."""
 
@@ -238,6 +254,7 @@ class IndexInspectionResponse(StrictModel):
     integrity: dict[str, object]
     activation: dict[str, object]
     compatibility: dict[str, object]
+    page: CursorPageResponse
 
 
 class ProblemDetail(StrictModel):
@@ -259,6 +276,7 @@ __all__ = [
     "CancelRequest",
     "CompareRequest",
     "CorpusInspectionResponse",
+    "CursorPageResponse",
     "IndexInspectionResponse",
     "JobResultResponse",
     "JobStatusResponse",

@@ -15,6 +15,25 @@ class RuntimeInspectionError(RuntimeError):
     """Persisted Runtime state is missing, ambiguous, or internally invalid."""
 
 
+@dataclass(frozen=True, slots=True)
+class RuntimeInspectionLimits:
+    """Hard memory and cardinality limits for restart-safe inspection."""
+
+    max_inventory_artifacts: int = 100_000
+    max_control_artifacts: int = 20_000
+    max_related_artifacts: int = 20_000
+    max_loaded_payload_bytes: int = 512 * 1024 * 1024
+
+    def __post_init__(self) -> None:
+        if min(
+            self.max_inventory_artifacts,
+            self.max_control_artifacts,
+            self.max_related_artifacts,
+            self.max_loaded_payload_bytes,
+        ) < 1:
+            raise ValueError("Runtime inspection limits must be positive")
+
+
 class InspectedRunStatus(StrEnum):
     """Status derived exclusively from persisted step events."""
 
@@ -185,5 +204,6 @@ __all__ = [
     "InspectedStepStatus",
     "PersistedInspectionValue",
     "RuntimeInspectionError",
+    "RuntimeInspectionLimits",
     "RuntimeRunInspection",
 ]

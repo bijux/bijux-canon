@@ -11,6 +11,7 @@ import os
 from pathlib import Path
 import shutil
 import tempfile
+from collections.abc import Iterator
 from typing import Any
 
 from bijux_canon_runtime.model.artifact import (
@@ -104,19 +105,9 @@ class AtomicFilesystemArtifactPayloadStore(ArtifactPayloadStore):
         self._require_identical_existing(verified)
 
     def load(self, artifact_id: ArtifactID) -> AddressedArtifact:
+        descriptor = self.load_descriptor(artifact_id)
         directory = self._artifact_directory(artifact_id)
-        if not directory.is_dir():
-            raise KeyError(f"Artifact payload not found: {artifact_id}")
         try:
-            descriptor_bytes = (directory / "descriptor.json").read_bytes()
-            expected_descriptor_hash = (
-                directory / "descriptor.sha256"
-            ).read_text(encoding="ascii").strip()
-            actual_descriptor_hash = hashlib.sha256(descriptor_bytes).hexdigest()
-            if expected_descriptor_hash != actual_descriptor_hash:
-                raise ValueError("artifact descriptor checksum does not match")
-            descriptor_record = json.loads(descriptor_bytes)
-            descriptor = self._descriptor_from_record(descriptor_record)
             payload = (directory / "payload").read_bytes()
             artifact = AddressedArtifact(
                 descriptor=descriptor,
@@ -131,6 +122,68 @@ class AtomicFilesystemArtifactPayloadStore(ArtifactPayloadStore):
                 f"Artifact path identity does not match descriptor: {artifact_id}"
             )
         return artifact
+
+    def load_descriptor(
+        self, artifact_id: ArtifactID
+    ) -> ImmutableArtifactDescriptor:
+        """Load and validate immutable metadata without materializing payload bytes."""
+        directory = self._artifact_directory(artifact_id)
+        if not directory.is_dir():
+            raise KeyError(f"Artifact payload not found: {artifact_id}")
+        try:
+            descriptor_bytes = (directory / "descriptor.json").read_bytes()
+            expected_descriptor_hash = (
+                directory / "descriptor.sha256"
+            ).read_text(encoding="ascii").strip()
+            if hashlib.sha256(descriptor_bytes).hexdigest() != expected_descriptor_hash:
+                raise ValueError("artifact descriptor checksum does not match")
+            descriptor = self._descriptor_from_record(json.loads(descriptor_bytes))
+        except (OSError, TypeError, ValueError, json.JSONDecodeError) as exc:
+            raise PayloadCorruptionError(
+                f"Artifact descriptor failed validation: {artifact_id}"
+            ) from exc
+        if descriptor.artifact_id != artifact_id:
+            raise PayloadCorruptionError(
+                f"Artifact path identity does not match descriptor: {artifact_id}"
+            )
+        return descriptor
+
+    def iter_payload(
+        self,
+        artifact_id: ArtifactID,
+        *,
+        chunk_bytes: int = 1024 * 1024,
+    ) -> Iterator[bytes]:
+        """Stream payload bytes and fail closed if final content identity differs."""
+        if chunk_bytes < 1:
+            raise ValueError("payload stream chunk size must be positive")
+        descriptor = self.load_descriptor(artifact_id)
+        payload_hash = hashlib.sha256()
+        identity_hash = hashlib.sha256()
+        identity_hash.update(descriptor.schema_id.encode("utf-8"))
+        identity_hash.update(b"\0")
+        identity_hash.update(descriptor.media_type.encode("ascii"))
+        identity_hash.update(b"\0")
+        size_bytes = 0
+        try:
+            with (self._artifact_directory(artifact_id) / "payload").open("rb") as stream:
+                while chunk := stream.read(chunk_bytes):
+                    size_bytes += len(chunk)
+                    payload_hash.update(chunk)
+                    identity_hash.update(chunk)
+                    yield chunk
+        except OSError as exc:
+            raise PayloadCorruptionError(
+                f"Artifact payload failed validation: {artifact_id}"
+            ) from exc
+        if (
+            size_bytes != descriptor.size_bytes
+            or payload_hash.hexdigest() != str(descriptor.payload_sha256)
+            or "sha256:" + identity_hash.hexdigest() != str(descriptor.artifact_id)
+        ):
+            raise PayloadCorruptionError(
+                f"Artifact payload failed validation: {artifact_id}"
+            )
 
     def bind(
         self,
@@ -207,11 +260,14 @@ class AtomicFilesystemArtifactPayloadStore(ArtifactPayloadStore):
 
     def artifact_ids(self) -> tuple[ArtifactID, ...]:
         """Inventory immutable object paths without trusting their contents."""
-        identities: list[ArtifactID] = []
-        for prefix in self._objects.iterdir():
+        return tuple(self.iter_artifact_ids())
+
+    def iter_artifact_ids(self) -> Iterator[ArtifactID]:
+        """Yield immutable object identities in stable order without a full list."""
+        for prefix in sorted(self._objects.iterdir()):
             if prefix.is_symlink() or not prefix.is_dir():
                 continue
-            for entry in prefix.iterdir():
+            for entry in sorted(prefix.iterdir()):
                 if entry.is_symlink() or not entry.is_dir():
                     continue
                 digest = entry.name
@@ -220,8 +276,7 @@ class AtomicFilesystemArtifactPayloadStore(ArtifactPayloadStore):
                     and prefix.name == digest[:2]
                     and all(char in "0123456789abcdef" for char in digest)
                 ):
-                    identities.append(ArtifactID(f"sha256:{digest}"))
-        return tuple(sorted(identities))
+                    yield ArtifactID(f"sha256:{digest}")
 
     def artifact_directory(self, artifact_id: ArtifactID) -> Path:
         """Return the validated directory for one immutable identity."""

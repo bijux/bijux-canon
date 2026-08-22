@@ -5,6 +5,7 @@
 
 from bijux_canon_runtime.runtime.persistence.artifact_inspection import (
     ArtifactInspectionRecord,
+    ArtifactInspectionPage,
     ArtifactReferenceView,
     ArtifactVerificationRecord,
     LogicalArtifactResolution,
@@ -23,6 +24,7 @@ from bijux_canon_runtime.runtime.persistence.filesystem_payload_store import (
 from bijux_canon_runtime.runtime.persistence.evidence_bundle import (
     EvidenceBundleExporter,
     EvidenceBundleIntegrityError,
+    EvidenceBundleLimits,
     EvidenceBundleManifest,
     EvidenceBundleVerification,
     EvidenceRedactionPolicy,
@@ -70,6 +72,7 @@ from bijux_canon_runtime.runtime.persistence.retention import (
 
 __all__ = [
     "ArtifactInspectionRecord",
+    "ArtifactInspectionPage",
     "ArtifactPayloadStore",
     "ArtifactPublicationCoordinator",
     "ArtifactReachabilityReport",
@@ -84,6 +87,7 @@ __all__ = [
     "DuckDBMetadataAuthority",
     "EvidenceBundleExporter",
     "EvidenceBundleIntegrityError",
+    "EvidenceBundleLimits",
     "EvidenceBundleManifest",
     "EvidenceBundleVerification",
     "EvidenceRedactionPolicy",
