@@ -204,7 +204,7 @@ def _indexable_chunks(snapshot: dict[str, object]) -> tuple[_IndexableChunk, ...
                 section_paths = raw_chunk.get("section_paths")
                 if isinstance(section_paths, list) and section_paths:
                     first = section_paths[0]
-                    if isinstance(first, list) and all(
+                    if isinstance(first, list) and first and all(
                         isinstance(item, str) and item for item in first
                     ):
                         index_metadata["section"] = " / ".join(first)

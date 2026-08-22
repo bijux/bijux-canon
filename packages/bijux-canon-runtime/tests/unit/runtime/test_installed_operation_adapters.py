@@ -36,6 +36,7 @@ from bijux_canon_runtime.runtime.execution.installed_operation_adapters import (
     CanonicalIngestOperationAdapter,
     CanonicalLexicalIndexOperationAdapter,
     CanonicalSnapshotOperationAdapter,
+    _indexable_chunks,
 )
 from bijux_canon_runtime.runtime.execution.installed_persistence_adapters import (
     CanonicalPersistenceOperationAdapter,
@@ -97,6 +98,38 @@ def _budget() -> RuntimeRequestBudget:
         timeout_seconds=30.0,
         max_artifact_bytes=10_000_000,
     )
+
+
+def test_indexable_chunks_omit_empty_jats_section_paths() -> None:
+    text = "Ancient DNA evidence"
+    snapshot = {
+        "documents": [
+            {
+                "document_id": "sha256:" + "a" * 64,
+                "metadata": {
+                    "format_id": "jats",
+                    "relative_path": "article.xml",
+                    "source_content_sha256": "b" * 64,
+                },
+                "chunks": [
+                    {
+                        "chunk_id": "sha256:" + "c" * 64,
+                        "chunk_index": 0,
+                        "normalized_text": text,
+                        "normalized_text_sha256": hashlib.sha256(
+                            text.encode("utf-8")
+                        ).hexdigest(),
+                        "section_paths": [[]],
+                    }
+                ],
+            }
+        ]
+    }
+
+    chunks = _indexable_chunks(snapshot)
+
+    assert chunks[0].metadata["format"] == "jats"
+    assert "section" not in chunks[0].metadata
 
 
 def test_installed_ingest_and_index_adapters_persist_restartable_payloads(
