@@ -19,7 +19,7 @@
   ],
   "records": [
     {
-      "schema_version": "2.0.0", "artifact_type": "bijux.canon.runtime.dag", "artifact_id": "sha256:c38be42bfa4d58fab84ef0836327000fd5a5a1ba7695cba2fbfd9a1e18284455", "run_key": "sha256:c274eed5ca583b19f079abfead64014b6daf6c9d96853f9c02f2ebf5dda85330", "sequence": 0,
+      "schema_version": "2.0.0", "artifact_type": "bijux.canon.runtime.dag", "artifact_id": "sha256:a1418c6b30e0e33a92e35fb339dabc14d561f017aa992536eff788e2d86f233d", "run_key": "sha256:61ff1b9ec3d100a6e4e7dfa417839eb721a0ed7c0ad225d372afac062d2ad10a", "sequence": 0,
       "source_commit": "05f0f1484d28ca1769bffa7b87096caa981401da",
       "entry_node_ids": ["ingest"],
       "terminal_node_ids": ["publish"],
@@ -51,15 +51,15 @@
       ]
     },
     {
-      "schema_version": "2.0.0", "artifact_type": "bijux.canon.runtime.policy", "artifact_id": "sha256:85b5bc38c39dc0555c5dc9ae5fe6fa50895f43b89bde9f31b40e4342f4696003", "run_key": "sha256:c274eed5ca583b19f079abfead64014b6daf6c9d96853f9c02f2ebf5dda85330", "sequence": 1,
+      "schema_version": "2.0.0", "artifact_type": "bijux.canon.runtime.policy", "artifact_id": "sha256:0c88fdd7781b22d6c5e330301948d5ee689121fc3e3f681c0ce23af84e020c9b", "run_key": "sha256:61ff1b9ec3d100a6e4e7dfa417839eb721a0ed7c0ad225d372afac062d2ad10a", "sequence": 1,
       "retry": {"max_attempts": 2, "backoff": "none"},
       "cancellation": {"mode": "cooperative", "checkpoint_required": true},
       "replay": {"mode": "strict", "environment_match_required": true},
       "publication": {"require_exact_replay": true, "required_check_ids": ["artifact_integrity", "citation_grounding", "replay_equivalence"]}
     },
     {
-      "schema_version": "2.0.0", "artifact_type": "bijux.canon.runtime.job", "artifact_id": "sha256:c4aab4daf3851403fdb55665d603bbad4837ce55e1a4f7c99cee7153ef6da013", "run_key": "sha256:c274eed5ca583b19f079abfead64014b6daf6c9d96853f9c02f2ebf5dda85330", "sequence": 2,
-      "dag_artifact_id": "sha256:c38be42bfa4d58fab84ef0836327000fd5a5a1ba7695cba2fbfd9a1e18284455", "policy_artifact_id": "sha256:85b5bc38c39dc0555c5dc9ae5fe6fa50895f43b89bde9f31b40e4342f4696003",
+      "schema_version": "2.0.0", "artifact_type": "bijux.canon.runtime.job", "artifact_id": "sha256:af20b62ebda4f13e245be58d1c97b947a4a2db3b755095cf6a7e039976334d2e", "run_key": "sha256:61ff1b9ec3d100a6e4e7dfa417839eb721a0ed7c0ad225d372afac062d2ad10a", "sequence": 2,
+      "dag_artifact_id": "sha256:a1418c6b30e0e33a92e35fb339dabc14d561f017aa992536eff788e2d86f233d", "policy_artifact_id": "sha256:0c88fdd7781b22d6c5e330301948d5ee689121fc3e3f681c0ce23af84e020c9b",
       "input_artifact_ids": [
         "sha256:0baea209d67d992101eee0fa7007d798a02285918822ec774c7a9dc8e7e18a91",
         "sha256:251bd65e22ba7c6d780bac18d6073be26b1470dfc1b05f8a470879d9762bc9e6",
@@ -70,47 +70,47 @@
       "mode": "original", "status": "completed", "started_at": "2026-08-21T06:20:00Z", "completed_at": "2026-08-21T06:20:06Z"
     },
     {
-      "schema_version": "2.0.0", "artifact_type": "bijux.canon.runtime.step_attempt", "artifact_id": "sha256:b584263685bcfefd597a8c6f706bb4124528b9145b4038e21a264bc7626c81ed", "run_key": "sha256:c274eed5ca583b19f079abfead64014b6daf6c9d96853f9c02f2ebf5dda85330", "sequence": 3,
-      "job_artifact_id": "sha256:c4aab4daf3851403fdb55665d603bbad4837ce55e1a4f7c99cee7153ef6da013", "node_id": "reason", "attempt_number": 1, "status": "succeeded",
+      "schema_version": "2.0.0", "artifact_type": "bijux.canon.runtime.step_attempt", "artifact_id": "sha256:8590acd05c9e678b85f474eaa8ebea5571d4159de049c3baf56066919f0e4ffc", "run_key": "sha256:61ff1b9ec3d100a6e4e7dfa417839eb721a0ed7c0ad225d372afac062d2ad10a", "sequence": 3,
+      "job_artifact_id": "sha256:af20b62ebda4f13e245be58d1c97b947a4a2db3b755095cf6a7e039976334d2e", "node_id": "reason", "attempt_number": 1, "status": "succeeded",
       "input_artifact_ids": ["sha256:251bd65e22ba7c6d780bac18d6073be26b1470dfc1b05f8a470879d9762bc9e6", "sha256:2eef888d1ee254ad9dbe750f37790e3f1a3cc05dd9455d0c4a4981583176ae86"],
       "output_payload_sha256": "84b612ef50a9399391569be6ca277c1d6c2cc5dab3d27d03df74e8973a325c15", "started_at": "2026-08-21T06:20:02Z", "completed_at": "2026-08-21T06:20:06Z"
     },
     {
-      "schema_version": "2.0.0", "artifact_type": "bijux.canon.runtime.artifact", "artifact_id": "sha256:5ce78a4a5bc93d3d714faa99ece3819beca617495619f65f9e9feb74b1e0dde2", "run_key": "sha256:c274eed5ca583b19f079abfead64014b6daf6c9d96853f9c02f2ebf5dda85330", "sequence": 4,
-      "job_artifact_id": "sha256:c4aab4daf3851403fdb55665d603bbad4837ce55e1a4f7c99cee7153ef6da013", "producer_attempt_artifact_id": "sha256:b584263685bcfefd597a8c6f706bb4124528b9145b4038e21a264bc7626c81ed", "kind": "result", "media_type": "text/plain; charset=utf-8",
+      "schema_version": "2.0.0", "artifact_type": "bijux.canon.runtime.artifact", "artifact_id": "sha256:d560288cbfbe23cc2e02813151a02b0fc6dbb40775ce7644eb5077dd382b58b2", "run_key": "sha256:61ff1b9ec3d100a6e4e7dfa417839eb721a0ed7c0ad225d372afac062d2ad10a", "sequence": 4,
+      "job_artifact_id": "sha256:af20b62ebda4f13e245be58d1c97b947a4a2db3b755095cf6a7e039976334d2e", "producer_attempt_artifact_id": "sha256:8590acd05c9e678b85f474eaa8ebea5571d4159de049c3baf56066919f0e4ffc", "kind": "result", "media_type": "text/plain; charset=utf-8",
       "payload_sha256": "84b612ef50a9399391569be6ca277c1d6c2cc5dab3d27d03df74e8973a325c15", "size_bytes": 35,
       "storage_uri": "cas://sha256/84b612ef50a9399391569be6ca277c1d6c2cc5dab3d27d03df74e8973a325c15"
     },
     {
-      "schema_version": "2.0.0", "artifact_type": "bijux.canon.runtime.event", "artifact_id": "sha256:632918e57d3a4c0ba3e5108eaaf123a86798518eaf1e282361fc93c37e08002e", "run_key": "sha256:c274eed5ca583b19f079abfead64014b6daf6c9d96853f9c02f2ebf5dda85330", "sequence": 5,
-      "job_artifact_id": "sha256:c4aab4daf3851403fdb55665d603bbad4837ce55e1a4f7c99cee7153ef6da013", "event_index": 0, "event_type": "job_completed", "subject_artifact_id": "sha256:5ce78a4a5bc93d3d714faa99ece3819beca617495619f65f9e9feb74b1e0dde2", "predecessor_event_artifact_ids": [],
+      "schema_version": "2.0.0", "artifact_type": "bijux.canon.runtime.event", "artifact_id": "sha256:f4bb4d4d19f5d40446fdd0dbfc5248f20d7535151a1916aa42a8b7674628b05a", "run_key": "sha256:61ff1b9ec3d100a6e4e7dfa417839eb721a0ed7c0ad225d372afac062d2ad10a", "sequence": 5,
+      "job_artifact_id": "sha256:af20b62ebda4f13e245be58d1c97b947a4a2db3b755095cf6a7e039976334d2e", "event_index": 0, "event_type": "job_completed", "subject_artifact_id": "sha256:d560288cbfbe23cc2e02813151a02b0fc6dbb40775ce7644eb5077dd382b58b2", "predecessor_event_artifact_ids": [],
       "payload_sha256": "1660a9dc0a53fd88e3f3ea235b21f297f09e7bdd1a0b2eae4787976363f5a432", "recorded_at": "2026-08-21T06:20:06Z"
     },
     {
-      "schema_version": "2.0.0", "artifact_type": "bijux.canon.runtime.inspection", "artifact_id": "sha256:ddd0c86c2f4f4bfbb5cec599b5d3e315be1031611c1563584b6f7db888cb0f24", "run_key": "sha256:c274eed5ca583b19f079abfead64014b6daf6c9d96853f9c02f2ebf5dda85330", "sequence": 6,
-      "job_artifact_id": "sha256:c4aab4daf3851403fdb55665d603bbad4837ce55e1a4f7c99cee7153ef6da013", "artifact_ids": ["sha256:5ce78a4a5bc93d3d714faa99ece3819beca617495619f65f9e9feb74b1e0dde2"], "event_artifact_ids": ["sha256:632918e57d3a4c0ba3e5108eaaf123a86798518eaf1e282361fc93c37e08002e"],
+      "schema_version": "2.0.0", "artifact_type": "bijux.canon.runtime.inspection", "artifact_id": "sha256:9ef9c8220bea61b65aa64d125a313d91fdc197837a5fdff59fcd4162706311de", "run_key": "sha256:61ff1b9ec3d100a6e4e7dfa417839eb721a0ed7c0ad225d372afac062d2ad10a", "sequence": 6,
+      "job_artifact_id": "sha256:af20b62ebda4f13e245be58d1c97b947a4a2db3b755095cf6a7e039976334d2e", "artifact_ids": ["sha256:d560288cbfbe23cc2e02813151a02b0fc6dbb40775ce7644eb5077dd382b58b2"], "event_artifact_ids": ["sha256:f4bb4d4d19f5d40446fdd0dbfc5248f20d7535151a1916aa42a8b7674628b05a"],
       "reachable_count": 2, "missing_count": 0, "corrupt_count": 0, "outcome": "passed", "inspected_at": "2026-08-21T06:20:07Z"
     },
     {
-      "schema_version": "2.0.0", "artifact_type": "bijux.canon.runtime.cancellation", "artifact_id": "sha256:b8771608649480d084f35f3f461022b824f444e9ef0f5b35d61af2f70baf3790", "run_key": "sha256:c274eed5ca583b19f079abfead64014b6daf6c9d96853f9c02f2ebf5dda85330", "sequence": 7,
-      "job_artifact_id": "sha256:c4aab4daf3851403fdb55665d603bbad4837ce55e1a4f7c99cee7153ef6da013", "policy_artifact_id": "sha256:85b5bc38c39dc0555c5dc9ae5fe6fa50895f43b89bde9f31b40e4342f4696003", "requested_at": "2026-08-21T06:20:07Z",
+      "schema_version": "2.0.0", "artifact_type": "bijux.canon.runtime.cancellation", "artifact_id": "sha256:26331d09c01be920a19a989301c6155a72623f6acde930b9dfcb9f45bed44606", "run_key": "sha256:61ff1b9ec3d100a6e4e7dfa417839eb721a0ed7c0ad225d372afac062d2ad10a", "sequence": 7,
+      "job_artifact_id": "sha256:af20b62ebda4f13e245be58d1c97b947a4a2db3b755095cf6a7e039976334d2e", "policy_artifact_id": "sha256:0c88fdd7781b22d6c5e330301948d5ee689121fc3e3f681c0ce23af84e020c9b", "requested_at": "2026-08-21T06:20:07Z",
       "outcome": "refused_terminal", "reason": "The completed job is immutable.", "checkpoint_artifact_id": null
     },
     {
-      "schema_version": "2.0.0", "artifact_type": "bijux.canon.runtime.replay", "artifact_id": "sha256:72bedd5df8948a55c4d3f94e1434f8243e634b466e042991758316f347408c61", "run_key": "sha256:c274eed5ca583b19f079abfead64014b6daf6c9d96853f9c02f2ebf5dda85330", "sequence": 8,
-      "job_artifact_id": "sha256:c4aab4daf3851403fdb55665d603bbad4837ce55e1a4f7c99cee7153ef6da013", "policy_artifact_id": "sha256:85b5bc38c39dc0555c5dc9ae5fe6fa50895f43b89bde9f31b40e4342f4696003", "mode": "strict", "environment_sha256": "32476ca3a83a34c73c82b07ad371c72176cd5c9414630c1f690789e8b7823f78",
+      "schema_version": "2.0.0", "artifact_type": "bijux.canon.runtime.replay", "artifact_id": "sha256:ba84252a6f9ec1da5bb17b5e7ab5ca38c8a5436856fa97fe22615b036bf8e42d", "run_key": "sha256:61ff1b9ec3d100a6e4e7dfa417839eb721a0ed7c0ad225d372afac062d2ad10a", "sequence": 8,
+      "job_artifact_id": "sha256:af20b62ebda4f13e245be58d1c97b947a4a2db3b755095cf6a7e039976334d2e", "policy_artifact_id": "sha256:0c88fdd7781b22d6c5e330301948d5ee689121fc3e3f681c0ce23af84e020c9b", "mode": "strict", "environment_sha256": "32476ca3a83a34c73c82b07ad371c72176cd5c9414630c1f690789e8b7823f78",
       "expected_output_sha256": "84b612ef50a9399391569be6ca277c1d6c2cc5dab3d27d03df74e8973a325c15", "observed_output_sha256": "84b612ef50a9399391569be6ca277c1d6c2cc5dab3d27d03df74e8973a325c15",
       "exact": true, "replayed_at": "2026-08-21T06:20:08Z"
     },
     {
-      "schema_version": "2.0.0", "artifact_type": "bijux.canon.runtime.comparison", "artifact_id": "sha256:c53b17009914834f3547e727997cf43200dd9e1f7c55c54275213d820c529441", "run_key": "sha256:c274eed5ca583b19f079abfead64014b6daf6c9d96853f9c02f2ebf5dda85330", "sequence": 9,
-      "job_artifact_id": "sha256:c4aab4daf3851403fdb55665d603bbad4837ce55e1a4f7c99cee7153ef6da013", "replay_artifact_id": "sha256:72bedd5df8948a55c4d3f94e1434f8243e634b466e042991758316f347408c61",
+      "schema_version": "2.0.0", "artifact_type": "bijux.canon.runtime.comparison", "artifact_id": "sha256:cf2e0fe559575f6ce72a31f728158fcd8736b0fbba77bd9802a350787641f5d0", "run_key": "sha256:61ff1b9ec3d100a6e4e7dfa417839eb721a0ed7c0ad225d372afac062d2ad10a", "sequence": 9,
+      "job_artifact_id": "sha256:af20b62ebda4f13e245be58d1c97b947a4a2db3b755095cf6a7e039976334d2e", "replay_artifact_id": "sha256:ba84252a6f9ec1da5bb17b5e7ab5ca38c8a5436856fa97fe22615b036bf8e42d",
       "dimensions": {"outputs_equal": true, "events_equal": true, "policy_equal": true, "environment_equal": true}, "equivalent": true
     },
     {
-      "schema_version": "2.0.0", "artifact_type": "bijux.canon.runtime.publication_receipt", "artifact_id": "sha256:698d6fb346ac22949d1f469371a651c0061b21ac7cfa0a6f1fad87481293799e", "run_key": "sha256:c274eed5ca583b19f079abfead64014b6daf6c9d96853f9c02f2ebf5dda85330", "sequence": 10,
-      "job_artifact_id": "sha256:c4aab4daf3851403fdb55665d603bbad4837ce55e1a4f7c99cee7153ef6da013", "dag_artifact_id": "sha256:c38be42bfa4d58fab84ef0836327000fd5a5a1ba7695cba2fbfd9a1e18284455", "policy_artifact_id": "sha256:85b5bc38c39dc0555c5dc9ae5fe6fa50895f43b89bde9f31b40e4342f4696003", "selected_attempt_artifact_id": "sha256:b584263685bcfefd597a8c6f706bb4124528b9145b4038e21a264bc7626c81ed",
-      "artifact_manifest_ids": ["sha256:5ce78a4a5bc93d3d714faa99ece3819beca617495619f65f9e9feb74b1e0dde2"], "event_artifact_ids": ["sha256:632918e57d3a4c0ba3e5108eaaf123a86798518eaf1e282361fc93c37e08002e"], "inspection_artifact_id": "sha256:ddd0c86c2f4f4bfbb5cec599b5d3e315be1031611c1563584b6f7db888cb0f24", "cancellation_artifact_id": "sha256:b8771608649480d084f35f3f461022b824f444e9ef0f5b35d61af2f70baf3790", "replay_artifact_id": "sha256:72bedd5df8948a55c4d3f94e1434f8243e634b466e042991758316f347408c61", "comparison_artifact_id": "sha256:c53b17009914834f3547e727997cf43200dd9e1f7c55c54275213d820c529441",
+      "schema_version": "2.0.0", "artifact_type": "bijux.canon.runtime.publication_receipt", "artifact_id": "sha256:f9a7e3a836a65b4f98da5a2463206e3a8671be592665fa386cd2948a34112f06", "run_key": "sha256:61ff1b9ec3d100a6e4e7dfa417839eb721a0ed7c0ad225d372afac062d2ad10a", "sequence": 10,
+      "job_artifact_id": "sha256:af20b62ebda4f13e245be58d1c97b947a4a2db3b755095cf6a7e039976334d2e", "dag_artifact_id": "sha256:a1418c6b30e0e33a92e35fb339dabc14d561f017aa992536eff788e2d86f233d", "policy_artifact_id": "sha256:0c88fdd7781b22d6c5e330301948d5ee689121fc3e3f681c0ce23af84e020c9b", "selected_attempt_artifact_id": "sha256:8590acd05c9e678b85f474eaa8ebea5571d4159de049c3baf56066919f0e4ffc",
+      "artifact_manifest_ids": ["sha256:d560288cbfbe23cc2e02813151a02b0fc6dbb40775ce7644eb5077dd382b58b2"], "event_artifact_ids": ["sha256:f4bb4d4d19f5d40446fdd0dbfc5248f20d7535151a1916aa42a8b7674628b05a"], "inspection_artifact_id": "sha256:9ef9c8220bea61b65aa64d125a313d91fdc197837a5fdff59fcd4162706311de", "cancellation_artifact_id": "sha256:26331d09c01be920a19a989301c6155a72623f6acde930b9dfcb9f45bed44606", "replay_artifact_id": "sha256:ba84252a6f9ec1da5bb17b5e7ab5ca38c8a5436856fa97fe22615b036bf8e42d", "comparison_artifact_id": "sha256:cf2e0fe559575f6ce72a31f728158fcd8736b0fbba77bd9802a350787641f5d0",
       "source_commit": "05f0f1484d28ca1769bffa7b87096caa981401da", "corpus_artifact_id": "sha256:0baea209d67d992101eee0fa7007d798a02285918822ec774c7a9dc8e7e18a91", "index_artifact_id": "sha256:55ef70ded9947f316a7a114b859c2023d8be06cecd947fda4f7d22e55afd8be1", "model_artifact_id": "sha256:c10a4ea4c56dc30cb6c216a8d14bae14e67ae4b2d9cf8cc4c95cf95eb9e68f0b", "configuration_sha256": "8d617b88a48e4dd836385667b5dc1e6709c288528a96eb76cb0b5719d4bafb58",
       "checks": [
         {"check_id": "artifact_integrity", "outcome": "passed", "evidence_sha256": "2a90af62f87be0e20134694aae86dd4a5a211374dd825e7cdde19e7214846f55"},
@@ -118,7 +118,7 @@
         {"check_id": "replay_equivalence", "outcome": "passed", "evidence_sha256": "1238b0bb5d1fc903b3a7a2ad875ee267176fae6f5d334c9cca2c23e956cda63d"}
       ],
       "limitations": ["Evaluation covers the admitted FASTQ reference case."],
-      "stable_citation": "bijux-canon://runs/sha256:c274eed5ca583b19f079abfead64014b6daf6c9d96853f9c02f2ebf5dda85330", "published_at": "2026-08-21T06:20:09Z"
+      "stable_citation": "bijux-canon://runs/sha256:61ff1b9ec3d100a6e4e7dfa417839eb721a0ed7c0ad225d372afac062d2ad10a", "published_at": "2026-08-21T06:20:09Z"
     }
   ]
 }
