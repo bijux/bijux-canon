@@ -35,7 +35,7 @@ from bijux_canon_runtime.api.v1.schemas import (
     ReadyResponse,
     ReplayRequest,
 )
-from bijux_canon_runtime.application.readiness import runtime_store_is_ready
+from bijux_canon_runtime.application.readiness import RuntimeReadinessService
 from bijux_canon_runtime.application.runtime_configuration import (
     resolve_runtime_configuration,
 )
@@ -175,7 +175,7 @@ def handle_starlette_http_exception(
 @app.get("/api/v1/health", response_model=HealthResponse, tags=["Health"])
 def health() -> HealthResponse:
     """Provide a lightweight liveness signal for health checks."""
-    # /health = process alive; /ready = storage writable.
+    # /health = process alive; /ready = complete Runtime dependencies.
     return HealthResponse(status="ok")
 
 
@@ -202,13 +202,16 @@ def health() -> HealthResponse:
     tags=["Health"],
 )
 def ready() -> JSONResponse:
-    """Provide a readiness signal without performing deep dependency checks."""
+    """Preserve the v1 boolean shape over the canonical deep readiness check."""
     configuration = resolve_runtime_configuration(environment=os.environ)
-    if configuration.database_path is None:
-        return JSONResponse(status_code=503, content={"ready": False})
-    if not runtime_store_is_ready(configuration.database_path):
-        return JSONResponse(status_code=503, content={"ready": False})
-    return JSONResponse(content={"ready": True})
+    report = RuntimeReadinessService(
+        configuration,
+        environment=os.environ,
+    ).evaluate()
+    return JSONResponse(
+        status_code=200 if report.ready else 503,
+        content={"ready": report.ready},
+    )
 
 
 @app.post(

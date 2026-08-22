@@ -9,6 +9,7 @@ import argparse
 from dataclasses import asdict
 from enum import Enum
 import json
+import os
 from pathlib import Path
 import sys
 from typing import cast
@@ -43,6 +44,13 @@ from bijux_canon_runtime.application.operations import (
     ReplayOperationRequest,
     RuntimeApplicationServicesV2,
 )
+from bijux_canon_runtime.application.readiness import (
+    RuntimeReadinessService,
+    runtime_liveness,
+)
+from bijux_canon_runtime.application.runtime_configuration import (
+    resolve_runtime_configuration,
+)
 from bijux_canon_runtime.runtime.pagination import PageRequest
 from bijux_canon_runtime.model.execution.request_plan import RuntimeRequestOperation
 from bijux_canon_runtime.ontology.ids import ArtifactID, RequestID
@@ -60,17 +68,30 @@ from bijux_canon_runtime.runtime.replay.models import (
 EXIT_INVALID_REQUEST = 2
 EXIT_MISSING_CAPABILITY = 3
 EXIT_OPERATION_FAILED = 4
+EXIT_NOT_READY = 5
 
 
 def run_v2_command(
     args: argparse.Namespace,
     *,
     services: RuntimeApplicationServicesV2 | None,
+    readiness_service: RuntimeReadinessService | None = None,
 ) -> int:
     """Execute one parsed v2 command and emit exactly one JSON document."""
     try:
         if args.v2_command == "discover":
             return _discover(args)
+        if args.v2_command == "live":
+            _write(runtime_liveness())
+            return 0
+        if args.v2_command == "ready":
+            readiness = readiness_service or RuntimeReadinessService(
+                resolve_runtime_configuration(environment=os.environ),
+                environment=os.environ,
+            )
+            report = readiness.evaluate()
+            _write(report)
+            return 0 if report.ready else EXIT_NOT_READY
         service = _require_services(services)
         if args.v2_command in {"ingest", "index", "retrieve", "ask", "research", "run"}:
             return _submit(args, service)

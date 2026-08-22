@@ -29,6 +29,9 @@ def add_v2_commands(
         default="reject",
     )
 
+    commands.add_parser("live", help="Report dependency-free process liveness.")
+    commands.add_parser("ready", help="Verify deep Runtime readiness.")
+
     for name in ("ingest", "index", "retrieve", "ask", "research", "run"):
         command = commands.add_parser(name, help=f"Submit the typed {name} operation.")
         command.add_argument("--request", required=True)

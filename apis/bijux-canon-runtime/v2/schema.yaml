@@ -536,6 +536,28 @@ components:
       - cancellation_uri
       title: JobStatusResponse
       type: object
+    LivenessResponse:
+      additionalProperties: false
+      description: Dependency-free process liveness.
+      properties:
+        live:
+          const: true
+          title: Live
+          type: boolean
+        schema_version:
+          const: bijux.runtime.liveness.v1
+          title: Schema Version
+          type: string
+        status:
+          const: ok
+          title: Status
+          type: string
+      required:
+      - schema_version
+      - live
+      - status
+      title: LivenessResponse
+      type: object
     PrepareCorpusRequest:
       additionalProperties: false
       description: Prepare a corpus from one explicit local directory.
@@ -607,6 +629,95 @@ components:
       - retryable
       - remediation
       title: ProblemDetail
+      type: object
+    ReadinessCheckResponse:
+      additionalProperties: false
+      description: One safe typed dependency verdict.
+      properties:
+        name:
+          enum:
+          - schema-migrations
+          - artifact-store
+          - active-generation
+          - model-configuration
+          - provider-configuration
+          - writable-state
+          title: Name
+          type: string
+        ready:
+          title: Ready
+          type: boolean
+        reason:
+          anyOf:
+          - enum:
+            - database-not-configured
+            - schema-unavailable
+            - artifact-store-not-configured
+            - artifact-store-unavailable
+            - index-not-configured
+            - active-generation-unavailable
+            - model-configuration-unavailable
+            - provider-configuration-unavailable
+            - state-not-writable
+            type: string
+          - type: 'null'
+          title: Reason
+        remediation:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Remediation
+      required:
+      - name
+      - ready
+      - reason
+      - remediation
+      title: ReadinessCheckResponse
+      type: object
+    ReadinessResponse:
+      additionalProperties: false
+      description: Conjunctive deep readiness with typed degraded reasons.
+      properties:
+        checks:
+          items:
+            $ref: '#/components/schemas/ReadinessCheckResponse'
+          title: Checks
+          type: array
+        ready:
+          title: Ready
+          type: boolean
+        reasons:
+          items:
+            enum:
+            - database-not-configured
+            - schema-unavailable
+            - artifact-store-not-configured
+            - artifact-store-unavailable
+            - index-not-configured
+            - active-generation-unavailable
+            - model-configuration-unavailable
+            - provider-configuration-unavailable
+            - state-not-writable
+            type: string
+          title: Reasons
+          type: array
+        schema_version:
+          const: bijux.runtime.readiness.v1
+          title: Schema Version
+          type: string
+        status:
+          enum:
+          - ready
+          - degraded
+          title: Status
+          type: string
+      required:
+      - schema_version
+      - ready
+      - status
+      - checks
+      - reasons
+      title: ReadinessResponse
       type: object
     ReplayRequest:
       additionalProperties: false
@@ -1562,6 +1673,64 @@ paths:
                 $ref: '#/components/schemas/ProblemDetail'
           description: Application service unavailable.
       summary: Job Result
+  /api/v2/live:
+    get:
+      operationId: live_api_v2_live_get
+      parameters:
+      - in: header
+        name: Bijux-API-Version
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Bijux-Api-Version
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LivenessResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Live
+  /api/v2/ready:
+    get:
+      operationId: ready_api_v2_ready_get
+      parameters:
+      - in: header
+        name: Bijux-API-Version
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Bijux-Api-Version
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadinessResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadinessResponse'
+          description: Degraded.
+      summary: Ready
   /api/v2/research:
     post:
       operationId: research_api_v2_research_post

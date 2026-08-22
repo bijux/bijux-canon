@@ -12,6 +12,17 @@ from pydantic import BaseModel, ConfigDict, Field
 ArtifactIdentity = Annotated[str, Field(pattern=r"^sha256:[0-9a-f]{64}$")]
 StableIdentity = Annotated[str, Field(min_length=1, max_length=200)]
 Cursor = Annotated[str, Field(min_length=1, max_length=4096)]
+ReadinessReasonValue = Literal[
+    "database-not-configured",
+    "schema-unavailable",
+    "artifact-store-not-configured",
+    "artifact-store-unavailable",
+    "index-not-configured",
+    "active-generation-unavailable",
+    "model-configuration-unavailable",
+    "provider-configuration-unavailable",
+    "state-not-writable",
+]
 
 
 class StrictModel(BaseModel):
@@ -225,6 +236,40 @@ class CursorPageResponse(StrictModel):
     snapshot_sha256: Annotated[str, Field(pattern=r"^[0-9a-f]{64}$")]
 
 
+class LivenessResponse(StrictModel):
+    """Dependency-free process liveness."""
+
+    schema_version: Literal["bijux.runtime.liveness.v1"]
+    live: Literal[True]
+    status: Literal["ok"]
+
+
+class ReadinessCheckResponse(StrictModel):
+    """One safe typed dependency verdict."""
+
+    name: Literal[
+        "schema-migrations",
+        "artifact-store",
+        "active-generation",
+        "model-configuration",
+        "provider-configuration",
+        "writable-state",
+    ]
+    ready: bool
+    reason: ReadinessReasonValue | None
+    remediation: str | None
+
+
+class ReadinessResponse(StrictModel):
+    """Conjunctive deep readiness with typed degraded reasons."""
+
+    schema_version: Literal["bijux.runtime.readiness.v1"]
+    ready: bool
+    status: Literal["ready", "degraded"]
+    checks: tuple[ReadinessCheckResponse, ...]
+    reasons: tuple[ReadinessReasonValue, ...]
+
+
 class CorpusInspectionResponse(StrictModel):
     """Verified immutable corpus publication metadata."""
 
@@ -280,8 +325,11 @@ __all__ = [
     "IndexInspectionResponse",
     "JobResultResponse",
     "JobStatusResponse",
+    "LivenessResponse",
     "PrepareCorpusRequest",
     "ProblemDetail",
+    "ReadinessCheckResponse",
+    "ReadinessResponse",
     "ReplayRequest",
     "ResearchRequest",
     "RetrieveRequest",

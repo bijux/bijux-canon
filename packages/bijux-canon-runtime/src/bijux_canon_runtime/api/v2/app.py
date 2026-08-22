@@ -4,6 +4,8 @@
 """Thin FastAPI v2 adapter over the shared Runtime application service."""
 
 from collections.abc import Awaitable, Callable
+from dataclasses import asdict
+import os
 from typing import Annotated
 
 from fastapi import Body, Depends, FastAPI, Header, Query, Request, status
@@ -24,8 +26,10 @@ from bijux_canon_runtime.api.v2.schemas import (
     IndexInspectionResponse,
     JobResultResponse,
     JobStatusResponse,
+    LivenessResponse,
     PrepareCorpusRequest,
     ProblemDetail,
+    ReadinessResponse,
     ReplayRequest,
     ResearchRequest,
     RetrieveRequest,
@@ -35,6 +39,13 @@ from bijux_canon_runtime.application.operations import (
     ApplicationCapabilityError,
     ReplayOperationRequest,
     RuntimeApplicationServicesV2,
+)
+from bijux_canon_runtime.application.readiness import (
+    RuntimeReadinessService,
+    runtime_liveness,
+)
+from bijux_canon_runtime.application.runtime_configuration import (
+    resolve_runtime_configuration,
 )
 from bijux_canon_runtime.runtime.pagination import PageRequest
 from bijux_canon_runtime.model.execution.request_plan import (
@@ -95,6 +106,7 @@ def _problem(
 
 def create_app(
     services: RuntimeApplicationServicesV2 | None = None,
+    readiness: RuntimeReadinessService | None = None,
 ) -> FastAPI:
     """Create an isolated v2 adapter with explicit application composition."""
     api = FastAPI(
@@ -109,6 +121,7 @@ def create_app(
         },
     )
     api.state.application_services = services
+    api.state.readiness_service = readiness
 
     def application_services(request: Request) -> RuntimeApplicationServicesV2:
         configured = request.app.state.application_services
@@ -128,6 +141,17 @@ def create_app(
     ) -> None:
         if bijux_api_version != SUPPORTED_VERSION:
             raise _UnsupportedVersion
+
+    def readiness_service(request: Request) -> RuntimeReadinessService:
+        configured = request.app.state.readiness_service
+        if configured is not None:
+            if not isinstance(configured, RuntimeReadinessService):
+                raise TypeError("runtime readiness service has the wrong version")
+            return configured
+        return RuntimeReadinessService(
+            resolve_runtime_configuration(environment=os.environ),
+            environment=os.environ,
+        )
 
     @api.middleware("http")
     async def supported_version_header(
@@ -212,6 +236,22 @@ def create_app(
 
     Version = Annotated[None, Depends(require_version)]
     Services = Annotated[RuntimeApplicationServicesV2, Depends(application_services)]
+    Readiness = Annotated[RuntimeReadinessService, Depends(readiness_service)]
+
+    @api.get("/api/v2/live", response_model=LivenessResponse)
+    def live(_: Version) -> LivenessResponse:
+        return LivenessResponse.model_validate(asdict(runtime_liveness()))
+
+    @api.get(
+        "/api/v2/ready",
+        response_model=ReadinessResponse,
+        responses={503: {"model": ReadinessResponse, "description": "Degraded."}},
+    )
+    def ready(_: Version, readiness_service: Readiness) -> JSONResponse:
+        report = readiness_service.evaluate()
+        payload = ReadinessResponse.model_validate(asdict(report)).model_dump(mode="json")
+        return JSONResponse(status_code=200 if report.ready else 503, content=payload)
+
     Idempotency = Annotated[
         str,
         Header(alias="Idempotency-Key", min_length=16, max_length=200),
