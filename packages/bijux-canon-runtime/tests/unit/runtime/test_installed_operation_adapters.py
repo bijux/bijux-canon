@@ -19,9 +19,11 @@ from bijux_canon_index.infra.embeddings.local_model import EmbeddedBatch
 
 from bijux_canon_runtime.application.request_planner import RuntimeRequestPlanner
 from bijux_canon_runtime.model.execution.request_plan import (
+    DagOperation,
     ExecutionProfile,
     RetrievalFilters,
     RuntimeOperationRequest,
+    RuntimeOutputPolicy,
     RuntimeRequestBudget,
     RuntimeRequestOperation,
 )
@@ -37,11 +39,16 @@ from bijux_canon_runtime.runtime.execution.installed_operation_adapters import (
 from bijux_canon_runtime.runtime.execution.installed_retrieval_adapter import (
     CanonicalRetrievalOperationAdapter,
 )
+from bijux_canon_runtime.runtime.execution.installed_reason_adapter import (
+    CanonicalReasonOperationAdapter,
+)
 from bijux_canon_runtime.runtime.execution.application_executor import (
     RuntimeFirstExecutionService,
 )
 from bijux_canon_runtime.runtime.execution.operation_dispatcher import (
     OperationDispatcher,
+    StepDispatchError,
+    StepOutputArtifact,
 )
 from bijux_canon_runtime.runtime.inspection import RuntimeRunInspector
 from bijux_canon_runtime.runtime.persistence import (
@@ -249,6 +256,49 @@ def test_installed_ingest_and_index_adapters_persist_restartable_payloads(
     assert hit["mapping_ids"]
     assert hit["channels"]
 
+    ask_request = RuntimeOperationRequest(
+        request_id=RequestID("request-ask"),
+        operation=RuntimeRequestOperation.ASK,
+        execution_profile=ExecutionProfile.LOCAL_HYBRID_ANN,
+        budget=_budget(),
+        replay_mode=ReplayMode.STRICT,
+        scope="local",
+        query="What evidence do ancient genomes preserve?",
+        index_id=composite.artifact_id,
+        top_k=1,
+        provider="local-recorded",
+        output_policy=RuntimeOutputPolicy(
+            require_citations=True,
+            permit_insufficient_answer=True,
+            publish=True,
+        ),
+    )
+    reason_step = next(
+        step
+        for step in planner.plan(ask_request).steps
+        if step.operation is DagOperation.REASON
+    )
+    reason_upstream = StepOutputArtifact(
+        contract_id="index.evidence-set.v1",
+        producer_step_id="retrieve",
+        producer_operation=DagOperation.RETRIEVE,
+        artifact=evidence_artifact,
+    )
+    reason = OperationDispatcher((CanonicalReasonOperationAdapter(),)).dispatch(
+        reason_step,
+        (reason_upstream,),
+    )
+    claim_graph = json.loads(reason.artifacts[0].payload)
+    assert claim_graph["status"] == "partial"
+    assert "Ancient genomes preserve" in claim_graph["answer"]
+    assert claim_graph["evidence_packet"]["selected"][0]["exact_text"].startswith(
+        "# Ancient DNA"
+    )
+    assert claim_graph["citations"]["links"][0]["exact_text_sha256"] == hit[
+        "content_sha256"
+    ]
+    assert claim_graph["citation_verification"]["integrity_verified_links"] == 1
+
     offline_request = replace(
         retrieval_request,
         request_id=RequestID("request-retrieve-filtered"),
@@ -271,6 +321,39 @@ def test_installed_ingest_and_index_adapters_persist_restartable_payloads(
     assert offline["hits"] == []
     assert offline["retrieval"]["dense"] is None
     assert offline["vex_execution"] is None
+
+    offline_upstream = StepOutputArtifact(
+        contract_id="index.evidence-set.v1",
+        producer_step_id="retrieve",
+        producer_operation=DagOperation.RETRIEVE,
+        artifact=offline_result.artifacts[0].artifact,
+    )
+    strict_request = replace(
+        ask_request,
+        request_id=RequestID("request-ask-strict"),
+        output_policy=RuntimeOutputPolicy(
+            require_citations=True,
+            permit_insufficient_answer=False,
+            publish=True,
+        ),
+    )
+    strict_step = next(
+        step
+        for step in planner.plan(strict_request).steps
+        if step.operation is DagOperation.REASON
+    )
+    with pytest.raises(StepDispatchError, match="insufficient evidence"):
+        OperationDispatcher((CanonicalReasonOperationAdapter(),)).dispatch(
+            strict_step,
+            (offline_upstream,),
+        )
+
+    external_step = replace(reason_step, inputs=replace(reason_step.inputs, provider="remote"))
+    with pytest.raises(StepDispatchError, match="configured credentials"):
+        OperationDispatcher((CanonicalReasonOperationAdapter(),)).dispatch(
+            external_step,
+            (reason_upstream,),
+        )
 
     replay = RuntimeReplayService(store).replay(
         run_id=str(retry["run_id"]),

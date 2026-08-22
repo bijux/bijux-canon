@@ -36,6 +36,9 @@ from bijux_canon_runtime.runtime.execution.installed_operation_adapters import (
 from bijux_canon_runtime.runtime.execution.installed_retrieval_adapter import (
     CanonicalRetrievalOperationAdapter,
 )
+from bijux_canon_runtime.runtime.execution.installed_reason_adapter import (
+    CanonicalReasonOperationAdapter,
+)
 from bijux_canon_runtime.runtime.execution.operation_dispatcher import (
     OperationDispatcher,
 )
@@ -105,6 +108,7 @@ def compose_runtime_application_services(
                 embedding=embedding,
                 vex_store_root=working_root / "vex",
             ),
+            CanonicalReasonOperationAdapter(),
         )
     )
     execution = RuntimeExecutionService(
