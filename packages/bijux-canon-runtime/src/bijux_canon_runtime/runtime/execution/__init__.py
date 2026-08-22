@@ -5,6 +5,8 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, Any
+
 from bijux_canon_runtime.runtime.execution.dag_scheduler import (
     ArtifactTransitionJournal,
     DagScheduleResult,
@@ -25,9 +27,6 @@ from bijux_canon_runtime.runtime.execution.durable_jobs import (
     DurableJobTimedOut,
     JobKind,
     JobStatus,
-)
-from bijux_canon_runtime.runtime.execution.application_composition import (
-    compose_runtime_application_services,
 )
 from bijux_canon_runtime.runtime.execution.application_executor import (
     RuntimeExecutionService,
@@ -71,6 +70,11 @@ from bijux_canon_runtime.runtime.inspection import (
     RuntimeRunInspector,
 )
 from bijux_canon_runtime.runtime.execution.step_executor import ExecutionOutcome
+
+if TYPE_CHECKING:
+    from bijux_canon_runtime.runtime.execution.application_composition import (
+        compose_runtime_application_services,
+    )
 
 __all__ = [
     "ArtifactTransitionJournal",
@@ -124,3 +128,22 @@ __all__ = [
     "compose_canonical_services",
     "compose_runtime_application_services",
 ]
+
+
+def __getattr__(name: str) -> Any:
+    """Load the application composition root only when explicitly requested."""
+
+    if name == "compose_runtime_application_services":
+        from bijux_canon_runtime.runtime.execution.application_composition import (
+            compose_runtime_application_services,
+        )
+
+        globals()[name] = compose_runtime_application_services
+        return compose_runtime_application_services
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+
+def __dir__() -> list[str]:
+    """Include the lazy composition root in interactive discovery."""
+
+    return sorted(set(globals()) | set(__all__))
