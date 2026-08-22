@@ -63,10 +63,10 @@ def test_evidence_hash_failure_detected(tmp_path: Path) -> None:
                 kind=TraceEventKind.step_finished,
                 step_id=plan.nodes[0].id,
                 output=VerifyOutput(
-                    kind="verify",
+                    type="verify",
                     validated_claim_ids=[],
                     rejected_claim_ids=[],
-                    insufficient_support=[],
+                    missing_support_claim_ids=[],
                 ),
             ),
         ],

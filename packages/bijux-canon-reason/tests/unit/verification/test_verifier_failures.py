@@ -22,6 +22,7 @@ from bijux_canon_reason.core.types import (
     SupportKind,
     SupportRef,
     Trace,
+    TraceEvent,
     TraceEventKind,
 )
 from bijux_canon_reason.verification.verifier import verify_trace
@@ -62,7 +63,7 @@ def test_verifier_fails_on_hash_mismatch(tmp_path: Path) -> None:
             )
         ],
     )
-    events = [
+    events: list[TraceEvent] = [
         StepStartedEvent(
             idx=0, kind=TraceEventKind.step_started, step_id=plan.nodes[0].id
         ),
@@ -77,7 +78,7 @@ def test_verifier_fails_on_hash_mismatch(tmp_path: Path) -> None:
             idx=3,
             kind=TraceEventKind.step_finished,
             step_id=plan.nodes[0].id,
-            output=DeriveOutput(kind="derive", emitted_claim_ids=[claim.id]),
+            output=DeriveOutput(type="derive", claim_ids=[claim.id]),
         ),
     ]
     trace = Trace(spec_id=plan.spec_id, plan_id=plan.id, events=events, metadata={})
@@ -119,7 +120,7 @@ def test_verifier_rejects_span_out_of_bounds(tmp_path: Path) -> None:
             )
         ],
     )
-    events = [
+    events: list[TraceEvent] = [
         EvidenceRegisteredEvent(
             idx=0,
             kind=TraceEventKind.evidence_registered,
