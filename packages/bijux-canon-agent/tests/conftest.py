@@ -57,8 +57,17 @@ def _assert_within_allowed(path: Path) -> None:
     )
 
 
+def _is_agent_test(request: pytest.FixtureRequest) -> bool:
+    test_path = Path(str(request.node.path)).resolve()
+    return test_path == PACKAGE_ROOT or PACKAGE_ROOT in test_path.parents
+
+
 @pytest.fixture(autouse=True)
-def enforce_artifact_boundary():
+def enforce_artifact_boundary(request: pytest.FixtureRequest):
+    if not _is_agent_test(request):
+        yield
+        return
+
     ALLOWED_ARTIFACTS_ROOT.mkdir(parents=True, exist_ok=True)
 
     mp = MonkeyPatch()
@@ -172,7 +181,13 @@ def enforce_git_clean() -> Generator[None, None, None]:
 
 
 @pytest.fixture
-def test_artifacts_dir(request) -> Path:
+def test_artifacts_dir(
+    request: pytest.FixtureRequest,
+    tmp_path_factory: pytest.TempPathFactory,
+) -> Path:
+    if not _is_agent_test(request):
+        return tmp_path_factory.mktemp("external-package")
+
     node_name = request.node.name.split("[", 1)[0]
     safe_name = "".join(
         character if character.isalnum() or character in {"-", "_"} else "_"
