@@ -295,13 +295,18 @@ def validate_artifact_contracts(
             raise RuntimeInspectionError("step output artifact contract is invalid")
         if (
             step.depends_on
-            and step.status
-            in {
-                InspectedStepStatus.RUNNING,
-                InspectedStepStatus.COMPLETED,
-                InspectedStepStatus.FAILED,
-                InspectedStepStatus.TIMED_OUT,
-            }
+            and (
+                step.status
+                in {
+                    InspectedStepStatus.RUNNING,
+                    InspectedStepStatus.COMPLETED,
+                    InspectedStepStatus.FAILED,
+                }
+                or (
+                    step.status is InspectedStepStatus.TIMED_OUT
+                    and bool(step.input_artifact_ids)
+                )
+            )
             and {item.schema_id for item in inputs} != set(step.input_contract_ids)
         ):
             raise RuntimeInspectionError("step input artifact contract is invalid")
