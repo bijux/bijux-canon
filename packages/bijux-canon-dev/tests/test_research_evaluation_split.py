@@ -93,6 +93,22 @@ def test_evaluation_cases_jsonl_is_exact_canonical_split_projection(
     }
     assert all(item["rationale"].startswith("Retrieval:") for item in records)
     assert all(item["system_output_consulted"] is False for item in records)
+    negative = [item for item in records if item["labels"]["negative"]]
+    nonnegative = [item for item in records if not item["labels"]["negative"]]
+    assert negative and nonnegative
+    assert all(
+        item["qrel_disposition"] == "explicit-empty-negative" for item in negative
+    )
+    assert all(item["qrels"] == [] for item in negative)
+    assert all(item["qrel_disposition"] == "reviewed" for item in nonnegative)
+    assert all(len(item["qrels"]) == 1 for item in nonnegative)
+    for item in nonnegative:
+        locator = item["qrels"][0]["locator"]
+        assert locator["character_end"] - locator["character_start"] == len(
+            locator["exact_text"]
+        )
+        assert sha256(locator["exact_text"].encode()) == locator["exact_text_sha256"]
+        assert item["qrels"][0]["adjudication"]["system_ranking_consulted"] is False
 
 
 def test_heldout_labels_cannot_be_enabled_for_tuning() -> None:

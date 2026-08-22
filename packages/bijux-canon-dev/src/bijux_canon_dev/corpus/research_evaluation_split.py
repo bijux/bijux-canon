@@ -78,6 +78,35 @@ def evaluation_case_records(
             claim["claim_class"] in {"expected", "optional"}
             and case["labels"]["citation_relation"] == "supports"
         )
+        negative = bool(case["labels"]["negative"])
+        reviewed_qrels = (
+            []
+            if negative
+            else [
+                {
+                    "qrel_id": qrel["qrel_id"],
+                    "relevance_grade": qrel["relevance_grade"],
+                    "locator": {
+                        "source_id": qrel["source_id"],
+                        "source_sha256": qrel["source_sha256"],
+                        "chunk_id": qrel["chunk"]["chunk_id"],
+                        "character_start": 0,
+                        "character_end": len(qrel["chunk"]["normalized_text"]),
+                        "exact_text": qrel["chunk"]["normalized_text"],
+                        "exact_text_sha256": qrel["chunk"]["normalized_text_sha256"],
+                        "anchor_truth_ids": qrel["anchor_truth_ids"],
+                    },
+                    "adjudication": {
+                        "status": qrel["adjudication_status"],
+                        "adjudicator_id": qrel["adjudicator_id"],
+                        "reviewed_on": qrel["reviewed_on"],
+                        "review_method": qrel["review_method"],
+                        "label_origin": qrel["label_origin"],
+                        "system_ranking_consulted": qrel["system_ranking_consulted"],
+                    },
+                }
+            ]
+        )
         record = {
             **case,
             "question": qrel["query"],
@@ -90,6 +119,8 @@ def evaluation_case_records(
             "rationale": (
                 f"Retrieval: {qrel['rationale']} Claim: {claim['rationale']}"
             ),
+            "qrel_disposition": ("explicit-empty-negative" if negative else "reviewed"),
+            "qrels": reviewed_qrels,
             "system_output_consulted": False,
         }
         record["record_identity_sha256"] = sha256(canonical(record))

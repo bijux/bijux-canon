@@ -63,9 +63,12 @@ every case and the complete split.
 `evaluation-cases.jsonl` is the canonical line-oriented execution inventory for
 those 120 cases. Every row joins the frozen split to its reviewed question,
 single-source corpus scope, source filter, answerability decision, and combined
-retrieval/claim rationale without consulting system output. It is regenerated
-from the validated split, qrels, and claim truth with `--cases-output`; byte
-drift fails the repository test suite.
+retrieval/claim rationale without consulting system output. Applicable cases
+embed their graded qrel, exact content-hashed chunk span, and adjudication
+lineage. Negative cases retain an explicit empty-qrel disposition rather than
+silently disappearing from metric denominators. The file is regenerated from
+the validated split, qrels, and claim truth with `--cases-output`; byte drift
+fails the repository test suite.
 
 Validate the frozen case construction, strata, partition isolation, and hashes
 with:
