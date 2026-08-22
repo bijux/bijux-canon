@@ -8,6 +8,7 @@ from __future__ import annotations
 from collections.abc import Awaitable, Callable
 import os
 from pathlib import Path
+from typing import Any
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
@@ -33,10 +34,36 @@ RequestGuard = Callable[[Request], None]
 NextHandler = Callable[[Request], Awaitable[Response]]
 
 
+class _ReasonFastAPI(FastAPI):
+    """FastAPI application with an owned deterministic OpenAPI contract."""
+
+    def openapi(self) -> dict[str, Any]:
+        """Return the reasoning schema with its stateful response links."""
+        if self.openapi_schema is not None:
+            return self.openapi_schema
+
+        schema = get_openapi(
+            title=self.title,
+            version=self.version,
+            openapi_version=self.openapi_version,
+            summary=self.summary,
+            description=self.description,
+            routes=self.routes,
+            tags=self.openapi_tags,
+            servers=self.servers,
+            contact=self.contact,
+            license_info=self.license_info,
+        )
+        _attach_stateful_links(schema)
+        schema["security"] = []
+        self.openapi_schema = schema
+        return schema
+
+
 def create_app(*, artifacts_dir: Path | None = None) -> FastAPI:
     """Create app."""
     artifacts_root = artifacts_dir or Path("artifacts/bijux-canon-reason")
-    app = FastAPI(
+    app = _ReasonFastAPI(
         title="bijux-canon-reason API",
         summary="Deterministic item and run management for the reasoning runtime.",
         description=(
@@ -113,7 +140,6 @@ def create_app(*, artifacts_dir: Path | None = None) -> FastAPI:
         guard_request=request_guard,
         max_request_bytes=MAX_REQUEST_BYTES,
     )
-    _install_openapi_schema(app)
     return app
 
 
@@ -174,35 +200,7 @@ def _install_validation_handler(app: FastAPI) -> None:
         return JSONResponse(status_code=422, content={"detail": "invalid request"})
 
 
-def _install_openapi_schema(app: FastAPI) -> None:
-    """Install OpenAPI schema."""
-
-    def _openapi() -> dict[str, object]:
-        """Handle OpenAPI."""
-        if app.openapi_schema is not None:
-            return app.openapi_schema
-
-        schema = get_openapi(
-            title=app.title,
-            version=app.version,
-            openapi_version=app.openapi_version,
-            summary=app.summary,
-            description=app.description,
-            routes=app.routes,
-            tags=app.openapi_tags,
-            servers=app.servers,
-            contact=app.contact,
-            license_info=app.license_info,
-        )
-        _attach_stateful_links(schema)
-        schema["security"] = []
-        app.openapi_schema = schema
-        return schema
-
-    app.openapi = _openapi
-
-
-def _attach_stateful_links(schema: dict[str, object]) -> None:
+def _attach_stateful_links(schema: dict[str, Any]) -> None:
     """Attach OpenAPI links that let contract runners follow created resources."""
     _attach_links(
         schema,
@@ -255,7 +253,7 @@ def _attach_stateful_links(schema: dict[str, object]) -> None:
 
 
 def _attach_links(
-    schema: dict[str, object],
+    schema: dict[str, Any],
     *,
     path: str,
     method: str,
