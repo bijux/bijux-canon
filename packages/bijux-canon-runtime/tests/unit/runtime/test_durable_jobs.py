@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Mapping
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 import threading
 from time import sleep
@@ -13,6 +14,7 @@ from time import sleep
 import pytest
 
 from bijux_canon_runtime.runtime.execution.durable_jobs import (
+    DurableJobCapacityError,
     DurableJobError,
     DurableJobManager,
     DurableJobRequest,
@@ -210,3 +212,110 @@ def test_job_deadline_is_classified_separately_from_failure(
         assert completed.error_message == (
             "durable job deadline exceeded after partial evidence"
         )
+
+
+def test_job_queue_and_request_payload_admission_are_bounded(tmp_path: Path) -> None:
+    started = threading.Event()
+    release = threading.Event()
+
+    def handler(
+        request: DurableJobRequest,
+        _is_cancelled: Callable[[], bool],
+    ) -> Mapping[str, object]:
+        started.set()
+        if not release.wait(timeout=2.0):
+            raise TimeoutError("test did not release the worker")
+        return {"completed": request.idempotency_key}
+
+    manager = DurableJobManager(
+        tmp_path / "jobs.sqlite3",
+        handlers=_handlers(handler),
+        max_workers=1,
+        max_pending_jobs=2,
+        max_request_bytes=64,
+    )
+    try:
+        first = manager.submit(_request("capacity-running"))
+        assert started.wait(timeout=2.0)
+        second = manager.submit(_request("capacity-queued"))
+
+        with pytest.raises(DurableJobCapacityError, match="max_pending_jobs=2"):
+            manager.submit(_request("capacity-refused"))
+        with pytest.raises(DurableJobCapacityError, match="max_request_bytes=64"):
+            manager.submit(
+                DurableJobRequest(
+                    kind=JobKind.RUN,
+                    idempotency_key="oversized-request",
+                    payload={"value": "x" * 80},
+                )
+            )
+
+        release.set()
+        assert (
+            manager.wait(first.job_id, timeout_seconds=2.0).status
+            is JobStatus.SUCCEEDED
+        )
+        assert (
+            manager.wait(second.job_id, timeout_seconds=2.0).status
+            is JobStatus.SUCCEEDED
+        )
+    finally:
+        release.set()
+        manager.close()
+
+
+def test_oversized_job_result_is_a_typed_terminal_failure(tmp_path: Path) -> None:
+    def handler(
+        _request: DurableJobRequest,
+        _is_cancelled: Callable[[], bool],
+    ) -> Mapping[str, object]:
+        return {"value": "x" * 80}
+
+    with DurableJobManager(
+        tmp_path / "jobs.sqlite3",
+        handlers=_handlers(handler),
+        max_result_bytes=64,
+    ) as manager:
+        submitted = manager.submit(_request("oversized-result"))
+        completed = manager.wait(submitted.job_id, timeout_seconds=2.0)
+
+    assert completed.status is JobStatus.FAILED
+    assert completed.error_type == "DurableJobCapacityError"
+    assert completed.error_message == "durable job result exceeds max_result_bytes=64"
+    assert completed.result is None
+
+
+def test_concurrent_idempotent_submission_admits_one_job_transition(
+    tmp_path: Path,
+) -> None:
+    release = threading.Event()
+
+    def handler(
+        request: DurableJobRequest,
+        _is_cancelled: Callable[[], bool],
+    ) -> Mapping[str, object]:
+        if not release.wait(timeout=2.0):
+            raise TimeoutError("test did not release the worker")
+        return {"completed": request.idempotency_key}
+
+    request = _request("concurrent-idempotency")
+    manager = DurableJobManager(
+        tmp_path / "jobs.sqlite3",
+        handlers=_handlers(handler),
+        max_workers=1,
+        max_pending_jobs=2,
+    )
+    try:
+        with ThreadPoolExecutor(max_workers=8) as callers:
+            snapshots = tuple(
+                callers.map(lambda _index: manager.submit(request), range(8))
+            )
+        release.set()
+        completed = manager.wait(request.job_id, timeout_seconds=2.0)
+    finally:
+        release.set()
+        manager.close()
+
+    assert {snapshot.job_id for snapshot in snapshots} == {request.job_id}
+    assert completed.status is JobStatus.SUCCEEDED
+    assert completed.attempt_count == 1

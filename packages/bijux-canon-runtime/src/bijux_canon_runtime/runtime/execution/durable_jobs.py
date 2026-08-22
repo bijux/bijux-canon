@@ -19,9 +19,15 @@ from typing import Protocol
 
 from bijux_canon_runtime.model.artifact import canonical_json_bytes
 
+MAX_DURABLE_JOB_REQUEST_BYTES = 1_000_000
+
 
 class DurableJobError(RuntimeError):
     """A durable job request or state transition is invalid."""
+
+
+class DurableJobCapacityError(DurableJobError):
+    """A durable job would exceed an explicit queue or payload bound."""
 
 
 class DurableJobCancelled(DurableJobError):
@@ -81,6 +87,10 @@ class DurableJobRequest:
         if self.timeout_seconds is not None and self.timeout_seconds <= 0:
             raise ValueError("job execution timeout must be positive")
         encoded = canonical_json_bytes(dict(self.payload))
+        if len(encoded) > MAX_DURABLE_JOB_REQUEST_BYTES:
+            raise DurableJobCapacityError(
+                "job request exceeds the absolute payload byte limit"
+            )
         payload = json.loads(encoded)
         if not isinstance(payload, dict):
             raise TypeError("job payload must be a JSON object")
@@ -168,11 +178,20 @@ class DurableJobManager:
         *,
         handlers: Mapping[JobKind, DurableJobHandler],
         max_workers: int = 4,
+        max_pending_jobs: int = 128,
+        max_request_bytes: int = MAX_DURABLE_JOB_REQUEST_BYTES,
+        max_result_bytes: int = 1_000_000,
     ) -> None:
         if not database_path.is_absolute():
             raise ValueError("durable job database path must be absolute")
         if max_workers < 1:
             raise ValueError("durable job worker count must be positive")
+        if min(max_pending_jobs, max_request_bytes, max_result_bytes) < 1:
+            raise ValueError("durable job capacity limits must be positive")
+        if max_request_bytes > MAX_DURABLE_JOB_REQUEST_BYTES:
+            raise ValueError(
+                "durable job request limit exceeds the absolute payload byte limit"
+            )
         missing = set(JobKind).difference(handlers)
         if missing:
             raise ValueError(
@@ -182,6 +201,9 @@ class DurableJobManager:
         self._path = database_path
         self._path.parent.mkdir(parents=True, exist_ok=True)
         self._handlers = dict(handlers)
+        self._max_pending_jobs = max_pending_jobs
+        self._max_request_bytes = max_request_bytes
+        self._max_result_bytes = max_result_bytes
         self._executor = ThreadPoolExecutor(max_workers=max_workers)
         self._condition = threading.Condition()
         self._scheduled: set[str] = set()
@@ -193,6 +215,10 @@ class DurableJobManager:
         """Commit a queued job and return its stable ID before execution finishes."""
         self._ensure_open()
         payload_json = request.payload_json
+        if len(payload_json.encode("utf-8")) > self._max_request_bytes:
+            raise DurableJobCapacityError(
+                f"job request exceeds max_request_bytes={self._max_request_bytes}"
+            )
         with self._connect() as connection:
             connection.execute("BEGIN IMMEDIATE")
             existing = connection.execute(
@@ -220,6 +246,16 @@ class DurableJobManager:
                 if not snapshot.status.terminal:
                     self._schedule(request.job_id)
                 return snapshot
+            pending_count = connection.execute(
+                "SELECT count(*) FROM runtime_jobs "
+                "WHERE status IN ('queued', 'running')"
+            ).fetchone()[0]
+            if pending_count >= self._max_pending_jobs:
+                connection.execute("ROLLBACK")
+                raise DurableJobCapacityError(
+                    "durable job capacity exhausted: "
+                    f"max_pending_jobs={self._max_pending_jobs}"
+                )
             submitted_at = _now()
             deadline_at = (
                 None
@@ -506,6 +542,11 @@ class DurableJobManager:
                     "SELECT job_id FROM runtime_jobs WHERE status = 'queued' ORDER BY submitted_at, job_id"
                 ).fetchall()
             ]
+            if len(job_ids) > self._max_pending_jobs:
+                connection.execute("ROLLBACK")
+                raise DurableJobCapacityError(
+                    "durable recovery exceeds configured pending job capacity"
+                )
             connection.execute("COMMIT")
         for job_id in job_ids:
             self._schedule(job_id)
@@ -525,7 +566,12 @@ class DurableJobManager:
             handler = self._handlers[request.kind]
             try:
                 result = dict(handler(request, lambda: self._stop_requested(job_id)))
-                canonical_json_bytes(result)
+                encoded_result = canonical_json_bytes(result)
+                if len(encoded_result) > self._max_result_bytes:
+                    raise DurableJobCapacityError(
+                        "durable job result exceeds "
+                        f"max_result_bytes={self._max_result_bytes}"
+                    )
             except Exception as exc:
                 self._finish_failed(job_id, exc)
             else:
@@ -715,6 +761,7 @@ class DurableJobManager:
 
 
 __all__ = [
+    "DurableJobCapacityError",
     "DurableJobCancelled",
     "DurableJobError",
     "DurableJobHandler",
