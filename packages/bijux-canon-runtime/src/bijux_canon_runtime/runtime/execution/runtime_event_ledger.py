@@ -5,13 +5,13 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from enum import Enum, StrEnum
 import threading
 
-from bijux_canon_runtime.model.artifact import AddressedArtifact
+from bijux_canon_runtime.model.artifact import AddressedArtifact, canonical_json_bytes
 from bijux_canon_runtime.model.execution.request_plan import (
     ConcreteDagStep,
     RuntimeRequestPlan,
@@ -100,6 +100,7 @@ class RuntimeEventLedger:
         plan: RuntimeRequestPlan,
         attempt: ExecutionAttemptIdentity,
         clock: Callable[[], datetime] | None = None,
+        execution_metadata: Mapping[str, object] | None = None,
     ) -> None:
         if plan.request_id != attempt.request_id:
             raise ValueError("event ledger plan and attempt identities do not match")
@@ -107,12 +108,16 @@ class RuntimeEventLedger:
         self._plan = plan
         self._attempt = attempt
         self._clock = clock or (lambda: datetime.now(timezone.utc))
+        metadata = {} if execution_metadata is None else dict(execution_metadata)
+        self._execution_metadata = _json_value(metadata)
+        canonical_json_bytes(self._execution_metadata)
         self._records: list[RuntimeEventRecord] = []
         self._artifact_ids: list[ArtifactID] = []
         self._lock = threading.Lock()
         manifest = AddressedArtifact.from_json(
             {
                 "attempt": _json_value(asdict(attempt)),
+                "execution_metadata": self._execution_metadata,
                 "plan": _json_value(asdict(plan)),
                 "request_id": str(attempt.request_id),
                 "run_id": str(attempt.run_id),
@@ -166,6 +171,7 @@ class RuntimeEventLedger:
             ),
             "replay_mode": step.inputs.replay_mode.value,
             "scope": step.inputs.scope,
+            "execution_metadata": self._execution_metadata,
         }
         with self._lock:
             for output in outputs:

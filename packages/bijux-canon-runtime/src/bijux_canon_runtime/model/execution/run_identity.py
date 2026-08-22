@@ -193,10 +193,48 @@ class ExecutionAttemptIdentity:
         )
 
     @classmethod
+    def replay_persisted(
+        cls,
+        *,
+        request_id: RequestID,
+        source: ExecutionAttemptIdentity,
+        process_id: str,
+    ) -> ExecutionAttemptIdentity:
+        """Create a replay from a validated persisted attempt identity."""
+        return cls._derive_from_run_id(
+            run_id=source.run_id,
+            request_id=request_id,
+            attempt_number=source.attempt_number + 1,
+            relation=AttemptRelation.REPLAY,
+            source=source,
+            process_id=process_id,
+        )
+
+    @classmethod
     def _derive(
         cls,
         *,
         run: SemanticRunIdentity,
+        request_id: RequestID,
+        attempt_number: int,
+        relation: AttemptRelation,
+        source: ExecutionAttemptIdentity | None,
+        process_id: str,
+    ) -> ExecutionAttemptIdentity:
+        return cls._derive_from_run_id(
+            run_id=run.run_id,
+            request_id=request_id,
+            attempt_number=attempt_number,
+            relation=relation,
+            source=source,
+            process_id=process_id,
+        )
+
+    @classmethod
+    def _derive_from_run_id(
+        cls,
+        *,
+        run_id: RunID,
         request_id: RequestID,
         attempt_number: int,
         relation: AttemptRelation,
@@ -211,7 +249,7 @@ class ExecutionAttemptIdentity:
         else:
             if source is None:
                 raise ValueError("retry and replay require a source attempt")
-            if source.run_id != run.run_id:
+            if source.run_id != run_id:
                 raise ValueError("attempt lineage must preserve semantic run identity")
             if attempt_number != source.attempt_number + 1:
                 raise ValueError("attempt lineage number must be contiguous")
@@ -220,7 +258,7 @@ class ExecutionAttemptIdentity:
             "attempt_number": attempt_number,
             "relation": relation.value,
             "request_id": str(request_id),
-            "run_id": str(run.run_id),
+            "run_id": str(run_id),
             "schema_version": "bijux.runtime.execution-attempt.v1",
             "source_attempt_id": source_attempt_id,
         }
@@ -237,7 +275,7 @@ class ExecutionAttemptIdentity:
         )
         return cls(
             attempt_id=attempt_id,
-            run_id=run.run_id,
+            run_id=run_id,
             request_id=request_id,
             attempt_number=attempt_number,
             relation=relation,
