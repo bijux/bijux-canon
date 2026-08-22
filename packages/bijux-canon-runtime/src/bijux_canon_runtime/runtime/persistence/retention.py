@@ -22,6 +22,7 @@ from bijux_canon_runtime.runtime.persistence.filesystem_payload_store import (
 )
 from bijux_canon_runtime.runtime.persistence.reachability import (
     ArtifactReachabilityReport,
+    ArtifactReachabilityValidator,
 )
 
 
@@ -143,6 +144,14 @@ class SafeGarbageCollector:
             )
         store = DuckDBExecutionStore(self._database_path)
         try:
+            current = ArtifactReachabilityValidator(
+                database_path=self._database_path,
+                payload_store=self._payload_store,
+            ).validate()
+            if current.report_sha256 != report.report_sha256:
+                raise GarbageCollectionSafetyError(
+                    "reachability changed before collection planning"
+                )
             held = set(policy.held_artifact_ids)
             held.update(
                 ArtifactID(row[0])
@@ -183,7 +192,8 @@ class SafeGarbageCollector:
                 sort_keys=True,
                 separators=(",", ":"),
             )
-            unsigned = {
+            schema_version = "bijux.runtime.garbage-collection-plan.v1"
+            unsigned: dict[str, object] = {
                 "candidates": [
                     {
                         "artifact_id": str(item.artifact_id),
@@ -197,7 +207,7 @@ class SafeGarbageCollector:
                 "plan_id": plan_id,
                 "policy_json": policy_json,
                 "reachability_sha256": report.report_sha256,
-                "schema_version": "bijux.runtime.garbage-collection-plan.v1",
+                "schema_version": schema_version,
             }
             plan_hash = hashlib.sha256(
                 json.dumps(unsigned, sort_keys=True, separators=(",", ":")).encode(
@@ -205,7 +215,7 @@ class SafeGarbageCollector:
                 )
             ).hexdigest()
             plan = GarbageCollectionPlan(
-                schema_version=unsigned["schema_version"],
+                schema_version=schema_version,
                 plan_id=plan_id,
                 reachability_sha256=report.report_sha256,
                 policy_json=policy_json,
@@ -238,47 +248,71 @@ class SafeGarbageCollector:
             raise GarbageCollectionSafetyError(
                 "backup root must be outside the active CAS"
             )
-        backup = AtomicFilesystemArtifactPayloadStore(backup_path)
-        moved: list[tuple[Path, Path]] = []
+        store = DuckDBExecutionStore(self._database_path)
         try:
-            for artifact_id in plan.eligible_artifact_ids:
-                source = self._payload_store.artifact_directory(artifact_id)
-                digest = str(artifact_id).removeprefix("sha256:")
-                quarantine = (
-                    self._payload_store.root
-                    / "quarantine"
-                    / plan.plan_id
-                    / digest[:2]
-                    / digest
+            current = ArtifactReachabilityValidator(
+                database_path=self._database_path,
+                payload_store=self._payload_store,
+            ).validate()
+            if current.report_sha256 != plan.reachability_sha256:
+                raise GarbageCollectionSafetyError(
+                    "reachability changed after collection planning"
                 )
-                if not source.exists() and quarantine.exists():
-                    backup.load(artifact_id)
-                    moved.append((source, quarantine))
-                    continue
-                if not source.exists() or quarantine.exists():
-                    raise GarbageCollectionSafetyError(
-                        "collection candidate has ambiguous active state"
+            active_holds = {
+                ArtifactID(row[0])
+                for row in store._connection.execute(
+                    "SELECT artifact_id FROM artifact_holds WHERE released_at IS NULL"
+                ).fetchall()
+            }
+            if active_holds.intersection(plan.eligible_artifact_ids):
+                raise GarbageCollectionSafetyError(
+                    "collection candidate acquired an active hold"
+                )
+            backup = AtomicFilesystemArtifactPayloadStore(backup_path)
+            moved: list[tuple[Path, Path]] = []
+            try:
+                for artifact_id in plan.eligible_artifact_ids:
+                    source = self._payload_store.artifact_directory(artifact_id)
+                    digest = str(artifact_id).removeprefix("sha256:")
+                    quarantine = (
+                        self._payload_store.root
+                        / "quarantine"
+                        / plan.plan_id
+                        / digest[:2]
+                        / digest
                     )
-                artifact = self._payload_store.load(artifact_id)
-                backup.put(artifact)
-                if backup.load(artifact_id) != artifact:
-                    raise GarbageCollectionSafetyError("backup verification failed")
-                quarantine.parent.mkdir(parents=True, exist_ok=True)
-                os.rename(source, quarantine)
-                moved.append((source, quarantine))
-        except Exception:
-            for source, quarantine in reversed(moved):
-                source.parent.mkdir(parents=True, exist_ok=True)
-                os.rename(quarantine, source)
-            raise
-        self._set_status(
-            plan,
-            expected="planned",
-            status="applied",
-            timestamp_column="applied_at",
-            timestamp=applied_at,
-            backup_root=str(backup_path),
-        )
+                    if not source.exists() and quarantine.exists():
+                        backup.load(artifact_id)
+                        moved.append((source, quarantine))
+                        continue
+                    if not source.exists() or quarantine.exists():
+                        raise GarbageCollectionSafetyError(
+                            "collection candidate has ambiguous active state"
+                        )
+                    artifact = self._payload_store.load(artifact_id)
+                    backup.put(artifact)
+                    if backup.load(artifact_id) != artifact:
+                        raise GarbageCollectionSafetyError(
+                            "backup verification failed"
+                        )
+                    quarantine.parent.mkdir(parents=True, exist_ok=True)
+                    os.rename(source, quarantine)
+                    moved.append((source, quarantine))
+            except Exception:
+                for source, quarantine in reversed(moved):
+                    source.parent.mkdir(parents=True, exist_ok=True)
+                    os.rename(quarantine, source)
+                raise
+            self._set_status(
+                plan,
+                expected="planned",
+                status="applied",
+                timestamp_column="applied_at",
+                timestamp=applied_at,
+                backup_root=str(backup_path),
+            )
+        finally:
+            store.close()
         return GarbageCollectionResult(
             plan_id=plan.plan_id,
             status="applied",

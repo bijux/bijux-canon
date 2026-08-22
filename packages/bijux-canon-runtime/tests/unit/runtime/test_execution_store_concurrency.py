@@ -22,6 +22,7 @@ from bijux_canon_runtime.observability.storage.execution_store import (
 from bijux_canon_runtime.ontology.ids import RunID, TenantID
 from bijux_canon_runtime.runtime.persistence import (
     ArtifactPublicationCoordinator,
+    ArtifactReachabilityValidator,
     AtomicFilesystemArtifactPayloadStore,
     PublicationItem,
 )
@@ -42,6 +43,13 @@ def _crash_writer(database: str, ready: Any) -> None:
     ready.set()
     assert store._lease is not None
     os._exit(17)
+
+
+def _hold_writer(database: str, ready: Any, release: Any) -> None:
+    store = DuckDBExecutionStore(Path(database), lock_timeout_seconds=1.0)
+    ready.set()
+    release.wait(5.0)
+    store.close()
 
 
 def _publish_same_intent(
@@ -151,6 +159,32 @@ def test_local_reader_to_writer_upgrade_fails_explicitly(tmp_path: Path) -> None
         DuckDBExecutionStore(database, lock_timeout_seconds=0.1)
 
     reader._store.close()
+
+
+def test_reachability_reader_obeys_writer_lease(tmp_path: Path) -> None:
+    database = tmp_path / "runtime.duckdb"
+    seed = DuckDBExecutionStore(database)
+    seed.close()
+    context = multiprocessing.get_context("spawn")
+    ready = context.Event()
+    release = context.Event()
+    writer = context.Process(
+        target=_hold_writer,
+        args=(str(database), ready, release),
+    )
+    writer.start()
+    assert ready.wait(3.0)
+
+    with pytest.raises(ExecutionStoreLockTimeout):
+        ArtifactReachabilityValidator(
+            database_path=database,
+            payload_store=AtomicFilesystemArtifactPayloadStore(tmp_path / "cas"),
+            lock_timeout_seconds=0.1,
+        ).validate()
+
+    release.set()
+    writer.join(3.0)
+    assert writer.exitcode == 0
 
 
 def test_multiprocess_publication_has_one_atomic_activation(

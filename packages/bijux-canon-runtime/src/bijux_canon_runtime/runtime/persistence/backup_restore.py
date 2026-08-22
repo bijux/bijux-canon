@@ -85,14 +85,6 @@ class RuntimeBackupManager:
             manifest = self.load_manifest(generation)
             self._validate_generation(generation, manifest)
             return generation, manifest
-        report = ArtifactReachabilityValidator(
-            database_path=self._database_path,
-            payload_store=self._payload_store,
-        ).validate()
-        if not report.integrity_ok:
-            raise BackupIntegrityError(
-                "backup requires an integrity-clean reachable set"
-            )
         staging_root = destination / "staging"
         staging_root.mkdir(parents=True, exist_ok=True)
         staged = Path(
@@ -103,6 +95,14 @@ class RuntimeBackupManager:
         try:
             store = DuckDBExecutionStore(self._database_path)
             try:
+                report = ArtifactReachabilityValidator(
+                    database_path=self._database_path,
+                    payload_store=self._payload_store,
+                ).validate()
+                if not report.integrity_ok:
+                    raise BackupIntegrityError(
+                        "backup requires an integrity-clean reachable set"
+                    )
                 store._connection.execute("CHECKPOINT")
                 shutil.copy2(self._database_path, staged / "runtime.duckdb")
                 backup_cas = AtomicFilesystemArtifactPayloadStore(staged / "cas")
@@ -115,7 +115,7 @@ class RuntimeBackupManager:
                     payload_hashes.append(str(artifact.descriptor.payload_sha256))
             finally:
                 store.close()
-            unsigned = {
+            unsigned: dict[str, object] = {
                 "artifact_ids": [str(item) for item in report.reachable_artifact_ids],
                 "artifact_payload_sha256": payload_hashes,
                 "backup_id": backup_id,

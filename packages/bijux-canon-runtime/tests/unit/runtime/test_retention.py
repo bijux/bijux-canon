@@ -193,3 +193,35 @@ def test_collection_rejects_tampered_plan(tmp_path: Path, resolved_flow) -> None
             backup_root=tmp_path / "backup",
             applied_at=_NOW,
         )
+
+
+def test_collection_rejects_hold_added_after_planning(
+    tmp_path: Path,
+    resolved_flow,
+) -> None:
+    db_path, store, report, _superseded, _active, orphan = _workspace(
+        tmp_path, resolved_flow
+    )
+    collector = SafeGarbageCollector(database_path=db_path, payload_store=store)
+    plan = collector.plan(
+        plan_id="collect-orphan",
+        report=report,
+        policy=RetentionPolicy(),
+        created_at=_NOW,
+    )
+    collector.add_hold(
+        hold_id="late-legal-hold",
+        artifact_id=orphan.descriptor.artifact_id,
+        reason="preserve after review",
+        created_at=_NOW,
+    )
+
+    with pytest.raises(GarbageCollectionSafetyError, match="active hold"):
+        collector.apply(
+            plan,
+            confirmation=f"apply:{plan.plan_sha256}",
+            backup_root=tmp_path / "backup",
+            applied_at=_NOW,
+        )
+
+    assert store.load(orphan.descriptor.artifact_id) == orphan

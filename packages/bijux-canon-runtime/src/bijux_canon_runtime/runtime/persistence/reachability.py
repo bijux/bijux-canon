@@ -12,6 +12,9 @@ from pathlib import Path
 
 import duckdb
 
+from bijux_canon_runtime.observability.storage.execution_store import (
+    DuckDBExecutionStore,
+)
 from bijux_canon_runtime.ontology.ids import ArtifactID
 from bijux_canon_runtime.runtime.persistence.filesystem_payload_store import (
     AtomicFilesystemArtifactPayloadStore,
@@ -60,13 +63,20 @@ class ArtifactReachabilityValidator:
         *,
         database_path: Path,
         payload_store: AtomicFilesystemArtifactPayloadStore,
+        lock_timeout_seconds: float = 5.0,
     ) -> None:
         self._database_path = database_path
         self._payload_store = payload_store
+        self._lock_timeout_seconds = lock_timeout_seconds
 
     def validate(self) -> ArtifactReachabilityReport:
         """Verify the whole graph and return stable, non-destructive findings."""
-        connection = duckdb.connect(str(self._database_path), read_only=True)
+        store = DuckDBExecutionStore(
+            self._database_path,
+            read_only=True,
+            lock_timeout_seconds=self._lock_timeout_seconds,
+        )
+        connection = store._connection
         try:
             tables = {
                 row[0]
@@ -101,7 +111,7 @@ class ArtifactReachabilityValidator:
                 ).fetchall()
             }
         finally:
-            connection.close()
+            store.close()
 
         reachable = self._transitive_closure(roots, dependencies)
         stored = set(self._payload_store.artifact_ids())
@@ -114,14 +124,21 @@ class ArtifactReachabilityValidator:
         orphan = valid_stored - reachable - superseded
         # Metadata with no admitted path is also orphaned even if its blob is absent.
         orphan |= (metadata_ids - reachable - superseded_targets) - missing
-        report_fields = {
-            "schema_version": "bijux.runtime.reachability.v1",
-            "root_artifact_ids": sorted(str(item) for item in roots),
-            "reachable_artifact_ids": sorted(str(item) for item in reachable),
-            "orphan_artifact_ids": sorted(str(item) for item in orphan),
-            "missing_artifact_ids": sorted(str(item) for item in missing),
-            "corrupt_artifact_ids": sorted(str(item) for item in corrupt),
-            "superseded_artifact_ids": sorted(str(item) for item in superseded),
+        schema_version = "bijux.runtime.reachability.v1"
+        root_ids = tuple(sorted(roots))
+        reachable_ids = tuple(sorted(reachable))
+        orphan_ids = tuple(sorted(orphan))
+        missing_ids = tuple(sorted(missing))
+        corrupt_ids = tuple(sorted(corrupt))
+        superseded_ids = tuple(sorted(superseded))
+        report_fields: dict[str, object] = {
+            "schema_version": schema_version,
+            "root_artifact_ids": [str(item) for item in root_ids],
+            "reachable_artifact_ids": [str(item) for item in reachable_ids],
+            "orphan_artifact_ids": [str(item) for item in orphan_ids],
+            "missing_artifact_ids": [str(item) for item in missing_ids],
+            "corrupt_artifact_ids": [str(item) for item in corrupt_ids],
+            "superseded_artifact_ids": [str(item) for item in superseded_ids],
         }
         report_hash = hashlib.sha256(
             json.dumps(
@@ -131,25 +148,13 @@ class ArtifactReachabilityValidator:
             ).encode("utf-8")
         ).hexdigest()
         return ArtifactReachabilityReport(
-            schema_version=report_fields["schema_version"],
-            root_artifact_ids=tuple(
-                ArtifactID(item) for item in report_fields["root_artifact_ids"]
-            ),
-            reachable_artifact_ids=tuple(
-                ArtifactID(item) for item in report_fields["reachable_artifact_ids"]
-            ),
-            orphan_artifact_ids=tuple(
-                ArtifactID(item) for item in report_fields["orphan_artifact_ids"]
-            ),
-            missing_artifact_ids=tuple(
-                ArtifactID(item) for item in report_fields["missing_artifact_ids"]
-            ),
-            corrupt_artifact_ids=tuple(
-                ArtifactID(item) for item in report_fields["corrupt_artifact_ids"]
-            ),
-            superseded_artifact_ids=tuple(
-                ArtifactID(item) for item in report_fields["superseded_artifact_ids"]
-            ),
+            schema_version=schema_version,
+            root_artifact_ids=root_ids,
+            reachable_artifact_ids=reachable_ids,
+            orphan_artifact_ids=orphan_ids,
+            missing_artifact_ids=missing_ids,
+            corrupt_artifact_ids=corrupt_ids,
+            superseded_artifact_ids=superseded_ids,
             report_sha256=report_hash,
         )
 
