@@ -54,8 +54,8 @@ def _assessment(
         "evidence_negated": False,
         "rationale_code": f"verified_{verdict.value}",
     }
-    return EvidenceEntailmentAssessment(
-        artifact_id=content_artifact_id(payload), **payload
+    return EvidenceEntailmentAssessment.model_validate(
+        {"artifact_id": content_artifact_id(payload), **payload}
     )
 
 
@@ -71,7 +71,9 @@ def _verified_claim(
         "verdict": verdict.value,
         "assessments": tuple(item.model_dump(mode="json") for item in assessments),
     }
-    return VerifiedAtomicClaim(artifact_id=content_artifact_id(payload), **payload)
+    return VerifiedAtomicClaim.model_validate(
+        {"artifact_id": content_artifact_id(payload), **payload}
+    )
 
 
 def _report() -> CitationVerificationReport:
@@ -131,8 +133,8 @@ def _report() -> CitationVerificationReport:
         "integrity_total_links": 5,
         "claims": tuple(item.model_dump(mode="json") for item in claims),
     }
-    return CitationVerificationReport(
-        artifact_id=content_artifact_id(payload), **payload
+    return CitationVerificationReport.model_validate(
+        {"artifact_id": content_artifact_id(payload), **payload}
     )
 
 
@@ -202,8 +204,8 @@ def test_no_claims_report_produces_an_empty_attachment() -> None:
         "integrity_total_links": 0,
         "claims": (),
     }
-    report = CitationVerificationReport(
-        artifact_id=content_artifact_id(payload), **payload
+    report = CitationVerificationReport.model_validate(
+        {"artifact_id": content_artifact_id(payload), **payload}
     )
 
     attachment = EvidenceRelationAttachmentService().attach(

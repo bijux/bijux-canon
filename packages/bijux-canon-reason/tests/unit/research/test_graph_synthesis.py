@@ -12,7 +12,10 @@ import pytest
 from bijux_canon_reason.grounding import (
     CitationEvidence,
     CitationIntegrityStatus,
+    ClaimConflictDeclaration,
+    ClaimContextAnnotation,
     ConflictRelationship,
+    EvidencePacket,
     EvidencePacketBuilder,
     EvidencePacketPolicy,
     ImmutableEvidenceLocator,
@@ -25,7 +28,9 @@ from bijux_canon_reason.research import (
     AssumptionInsufficiencyDelta,
     AssumptionStatus,
     CanonicalDerivationDependency,
+    ClaimMergeResult,
     ClaimMergingService,
+    ConvergenceDecision,
     ConvergenceService,
     EvidenceRelationAttachment,
     EvidenceRelationKind,
@@ -73,7 +78,9 @@ def _relation(
         "strength": 1.0,
         "rationale": f"deterministic {kind.value} verdict",
     }
-    return GraphEvidenceRelation(artifact_id=content_artifact_id(payload), **payload)
+    return GraphEvidenceRelation.model_validate(
+        {"artifact_id": content_artifact_id(payload), **payload}
+    )
 
 
 def _attachment(
@@ -94,8 +101,8 @@ def _attachment(
             "classification_mode": RelationClassificationMode.deterministic_verification.value,
         }
         traces.append(
-            EvidenceRelationTrace(
-                artifact_id=content_artifact_id(trace_payload), **trace_payload
+            EvidenceRelationTrace.model_validate(
+                {"artifact_id": content_artifact_id(trace_payload), **trace_payload}
             )
         )
     payload = {
@@ -125,7 +132,9 @@ def _assumption(claim_id: str) -> GraphAssumption:
         "status": AssumptionStatus.declared.value,
         "impact": "high",
     }
-    return GraphAssumption(artifact_id=content_artifact_id(payload), **payload)
+    return GraphAssumption.model_validate(
+        {"artifact_id": content_artifact_id(payload), **payload}
+    )
 
 
 def _insufficiency(claim_id: str, *, sufficient: bool) -> GraphInsufficiency:
@@ -142,7 +151,9 @@ def _insufficiency(claim_id: str, *, sufficient: bool) -> GraphInsufficiency:
         "observed_supports": 2 if sufficient else 1,
         "missing_information": () if sufficient else ("one independent replication",),
     }
-    return GraphInsufficiency(artifact_id=content_artifact_id(payload), **payload)
+    return GraphInsufficiency.model_validate(
+        {"artifact_id": content_artifact_id(payload), **payload}
+    )
 
 
 def _deficiency(graph_id: str, claim_id: str) -> ResearchDeficiency:
@@ -158,7 +169,9 @@ def _deficiency(graph_id: str, claim_id: str) -> ResearchDeficiency:
         "status": ResearchDeficiencyStatus.open.value,
         "priority": 90,
     }
-    return ResearchDeficiency(artifact_id=content_artifact_id(payload), **payload)
+    return ResearchDeficiency.model_validate(
+        {"artifact_id": content_artifact_id(payload), **payload}
+    )
 
 
 def _delta(
@@ -189,7 +202,7 @@ def _delta(
     )
 
 
-def _merge(graph_id: str, *, empty: bool = False):
+def _merge(graph_id: str, *, empty: bool = False) -> ClaimMergeResult:
     if empty:
         return ClaimMergingService().merge(graph_artifact_id=graph_id, claims=())
     claims = tuple(
@@ -205,46 +218,52 @@ def _merge(graph_id: str, *, empty: bool = False):
     return ClaimMergingService().merge(graph_artifact_id=graph_id, claims=claims)
 
 
-def _convergence(graph_id: str, *, outcome: str = "converged"):
-    kwargs = {
-        "iteration": 1,
-        "graph_artifact_id": graph_id,
-        "coverage": 1.0,
-        "verified_answerable_claims": 2,
-        "required_claims": 2,
-        "blocking_gap_count": 0,
-        "new_evidence_count": 1,
-        "marginal_evidence_value": 0.2,
-        "cumulative_tool_calls": 2,
-        "cumulative_tokens": 100,
-        "cumulative_elapsed_ms": 20,
-        "explicit_insufficiency": False,
-        "cancellation_requested": False,
-    }
+def _convergence(graph_id: str, *, outcome: str = "converged") -> ConvergenceDecision:
+    coverage = 1.0
+    verified_answerable_claims = 2
+    blocking_gap_count = 0
+    explicit_insufficiency = False
+    cancellation_requested = False
     if outcome == "continue":
-        kwargs.update(
-            coverage=0.5,
-            verified_answerable_claims=1,
-            blocking_gap_count=1,
-        )
+        coverage = 0.5
+        verified_answerable_claims = 1
+        blocking_gap_count = 1
     elif outcome == "insufficient":
-        kwargs.update(
-            coverage=0.5,
-            verified_answerable_claims=1,
-            blocking_gap_count=1,
-            explicit_insufficiency=True,
-        )
+        coverage = 0.5
+        verified_answerable_claims = 1
+        blocking_gap_count = 1
+        explicit_insufficiency = True
     elif outcome == "cancelled":
-        kwargs.update(
-            coverage=0.5,
-            verified_answerable_claims=1,
-            blocking_gap_count=1,
-            cancellation_requested=True,
-        )
-    return ConvergenceService().evaluate((create_convergence_observation(**kwargs),))
+        coverage = 0.5
+        verified_answerable_claims = 1
+        blocking_gap_count = 1
+        cancellation_requested = True
+    observation = create_convergence_observation(
+        iteration=1,
+        graph_artifact_id=graph_id,
+        coverage=coverage,
+        verified_answerable_claims=verified_answerable_claims,
+        required_claims=2,
+        blocking_gap_count=blocking_gap_count,
+        new_evidence_count=1,
+        marginal_evidence_value=0.2,
+        cumulative_tool_calls=2,
+        cumulative_tokens=100,
+        cumulative_elapsed_ms=20,
+        explicit_insufficiency=explicit_insufficiency,
+        cancellation_requested=cancellation_requested,
+    )
+    return ConvergenceService().evaluate((observation,))
 
 
-def _rich_inputs():
+def _rich_inputs() -> tuple[
+    str,
+    ClaimMergeResult,
+    EvidenceRelationAttachment,
+    AssumptionInsufficiencyDelta,
+    ClaimContextAnnotation,
+    ClaimConflictDeclaration,
+]:
     graph_id = _id("graph")
     merge = _merge(graph_id)
     source_1, source_2 = (item.source_claim_artifact_id for item in merge.mappings)
@@ -294,7 +313,7 @@ def _rich_inputs():
     return graph_id, merge, attachment, delta, context, conflict
 
 
-def _packet(evidence_ids: tuple[str, ...]):
+def _packet(evidence_ids: tuple[str, ...]) -> EvidencePacket:
     candidates = []
     for ordinal, evidence_id in enumerate(evidence_ids, start=1):
         text = f"Exact admitted evidence text {ordinal}."
@@ -338,7 +357,14 @@ def _packet(evidence_ids: tuple[str, ...]):
     )
 
 
-def _verified_bundle():
+def _verified_bundle() -> tuple[
+    VerifiedGraphSynthesis,
+    EvidencePacket,
+    ClaimMergeResult,
+    EvidenceRelationAttachment,
+    AssumptionInsufficiencyDelta,
+    ConvergenceDecision,
+]:
     graph_id, merge, attachment, delta, context, conflict = _rich_inputs()
     convergence = _convergence(graph_id, outcome="insufficient")
     synthesis = VerifiedGraphSynthesisService().synthesize(
@@ -477,7 +503,9 @@ def test_terminal_graph_without_supported_claims_is_insufficient() -> None:
         ("cancelled", GraphSynthesisErrorCode.research_cancelled),
     ],
 )
-def test_rejects_nonterminal_and_cancelled_research(terminal: str, code) -> None:
+def test_rejects_nonterminal_and_cancelled_research(
+    terminal: str, code: GraphSynthesisErrorCode
+) -> None:
     graph_id = _id(f"{terminal}-graph")
     merge = _merge(graph_id, empty=True)
     attachment = _attachment(graph_id, ())
@@ -587,7 +615,9 @@ def test_confidence_rejects_asserted_score_or_level() -> None:
     }
 
     with pytest.raises(ValidationError, match="confidence must be derived"):
-        GraphConfidenceBasis(artifact_id=content_artifact_id(payload), **payload)
+        GraphConfidenceBasis.model_validate(
+            {"artifact_id": content_artifact_id(payload), **payload}
+        )
 
 
 def test_verifies_every_final_claim_to_exact_admitted_evidence() -> None:

@@ -13,6 +13,7 @@ import pytest
 from bijux_canon_reason.grounding import EvidenceGap, EvidenceGapCode
 from bijux_canon_reason.grounding.provider_contracts import content_artifact_id
 from bijux_canon_reason.research import (
+    AssumptionCandidate,
     AssumptionImpact,
     AssumptionInsufficiencyService,
     ClaimSourceCoverage,
@@ -43,8 +44,8 @@ def _support_attachment(graph_id: str, claim_id: str) -> EvidenceRelationAttachm
         "strength": 1.0,
         "rationale": "verified_direct_support",
     }
-    relation = GraphEvidenceRelation(
-        artifact_id=content_artifact_id(relation_payload), **relation_payload
+    relation = GraphEvidenceRelation.model_validate(
+        {"artifact_id": content_artifact_id(relation_payload), **relation_payload}
     )
     trace_payload = {
         "relation_artifact_id": relation.artifact_id,
@@ -57,8 +58,8 @@ def _support_attachment(graph_id: str, claim_id: str) -> EvidenceRelationAttachm
         "provider_provenance_artifact_id": None,
         "classification_mode": RelationClassificationMode.deterministic_verification.value,
     }
-    trace = EvidenceRelationTrace(
-        artifact_id=content_artifact_id(trace_payload), **trace_payload
+    trace = EvidenceRelationTrace.model_validate(
+        {"artifact_id": content_artifact_id(trace_payload), **trace_payload}
     )
     attachment_payload = {
         "schema_version": "bijux.canon.reason.evidence_relation_attachment.v1",
@@ -85,7 +86,9 @@ def _gap(code: EvidenceGapCode, claim_id: str | None, suffix: str) -> EvidenceGa
         "detail": f"Observed {code.value} condition {suffix}.",
         "required_action": f"Resolve {code.value} condition {suffix}.",
     }
-    return EvidenceGap(artifact_id=content_artifact_id(payload), **payload)
+    return EvidenceGap.model_validate(
+        {"artifact_id": content_artifact_id(payload), **payload}
+    )
 
 
 def test_materializes_every_required_deficiency_and_support_boundary() -> None:
@@ -188,9 +191,11 @@ def test_rejects_unknown_claim_references(field: str) -> None:
     graph_id = _artifact("8")
     claim_id = _artifact("1")
     unknown = _artifact("2")
-    kwargs: dict[str, object] = {}
+    assumptions: tuple[AssumptionCandidate, ...] = ()
+    evidence_gaps: tuple[EvidenceGap, ...] = ()
+    source_coverage: tuple[ClaimSourceCoverage, ...] = ()
     if field == "claim":
-        kwargs["assumptions"] = (
+        assumptions = (
             create_assumption_candidate(
                 claim_artifact_id=unknown,
                 statement="An unknown premise.",
@@ -198,11 +203,9 @@ def test_rejects_unknown_claim_references(field: str) -> None:
             ),
         )
     elif field == "gap":
-        kwargs["evidence_gaps"] = (
-            _gap(EvidenceGapCode.insufficient_evidence, unknown, "x"),
-        )
+        evidence_gaps = (_gap(EvidenceGapCode.insufficient_evidence, unknown, "x"),)
     elif field == "coverage":
-        kwargs["source_coverage"] = (
+        source_coverage = (
             ClaimSourceCoverage(
                 claim_artifact_id=unknown,
                 source_artifact_ids=(_artifact("a"),),
@@ -218,7 +221,9 @@ def test_rejects_unknown_claim_references(field: str) -> None:
             claim_artifact_ids=(claim_id,),
             relation_attachment=attachment,
             minimum_supports=1,
-            **kwargs,
+            assumptions=assumptions,
+            evidence_gaps=evidence_gaps,
+            source_coverage=source_coverage,
         )
 
 
