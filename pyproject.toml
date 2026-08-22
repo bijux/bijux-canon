@@ -22,7 +22,7 @@ dev = [
   "bijux-canon",
   "bijux-canon-agent[dev]",
   "bijux-canon-dev[dev]",
-  "bijux-canon-index[dev]",
+  "bijux-canon-index[dev,embeddings,nd,vdb]",
   "bijux-canon-ingest[dev]",
   "bijux-canon-reason[dev]",
   "bijux-canon-runtime[dev]",

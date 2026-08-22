@@ -98,7 +98,6 @@
     "runners": []
   },
   "nd": {
-    "default_runner": "reference",
     "health": {
       "status": "closed",
       "failures": 0,
