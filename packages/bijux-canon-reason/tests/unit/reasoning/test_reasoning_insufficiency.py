@@ -13,6 +13,7 @@ from bijux_canon_reason.core.types import (
     StepSpec,
     StepStartedEvent,
     Trace,
+    TraceEvent,
     TraceEventKind,
     UnderstandOutput,
     VerifyOutput,
@@ -22,7 +23,12 @@ from bijux_canon_reason.verification.verifier import verify_trace
 
 def test_insufficient_evidence_allowed() -> None:
     spec = ProblemSpec(description="q", constraints={}, expected={})
-    n_understand = PlanNode(kind="understand", dependencies=[], parameters={})
+    n_understand = PlanNode(
+        kind="understand",
+        dependencies=[],
+        step=StepSpec(kind="understand"),
+        parameters={},
+    )
     n_gather = PlanNode(
         kind="gather", dependencies=[n_understand.id], step=StepSpec(kind="gather")
     )
@@ -39,7 +45,7 @@ def test_insufficient_evidence_allowed() -> None:
         spec_id=spec.id, nodes=[n_understand, n_gather, n_derive, n_verify, n_finalize]
     ).with_content_id()
 
-    events = [
+    events: list[TraceEvent] = [
         StepStartedEvent(
             idx=0, kind=TraceEventKind.step_started, step_id=n_understand.id
         ),

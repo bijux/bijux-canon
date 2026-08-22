@@ -28,6 +28,7 @@ from bijux_canon_reason.core.types import (
     ToolResult,
     ToolReturnedEvent,
     Trace,
+    TraceEvent,
     TraceEventKind,
     UnderstandOutput,
     VerifyOutput,
@@ -94,7 +95,7 @@ def test_reasoning_trace_hash_mismatch_fails(tmp_path: Path) -> None:
         structured={"reasoner": {}, "result_sha256": "0" * 64},
     )
 
-    events = [
+    events: list[TraceEvent] = [
         StepStartedEvent(
             idx=0, kind=TraceEventKind.step_started, step_id=plan_nodes[0].id
         ),
@@ -103,7 +104,7 @@ def test_reasoning_trace_hash_mismatch_fails(tmp_path: Path) -> None:
             kind=TraceEventKind.step_finished,
             step_id=plan_nodes[0].id,
             output=UnderstandOutput(
-                kind="understand", normalized_question="q", assumptions=[]
+                type="understand", normalized_question="q", assumptions=[]
             ),
         ),
         StepStartedEvent(
@@ -113,13 +114,13 @@ def test_reasoning_trace_hash_mismatch_fails(tmp_path: Path) -> None:
             idx=3,
             kind=TraceEventKind.tool_called,
             step_id=plan_nodes[1].id,
-            tool_call=call,
+            call=call,
         ),
         ToolReturnedEvent(
             idx=4,
             kind=TraceEventKind.tool_returned,
             step_id=plan_nodes[1].id,
-            tool_result=tres,
+            result=tres,
         ),
         EvidenceRegisteredEvent(
             idx=5,
@@ -131,7 +132,7 @@ def test_reasoning_trace_hash_mismatch_fails(tmp_path: Path) -> None:
             idx=6,
             kind=TraceEventKind.step_finished,
             step_id=plan_nodes[1].id,
-            output=GatherOutput(kind="gather", evidence_refs=[ev_ref.id]),
+            output=GatherOutput(type="gather", evidence_ids=[ev_ref.id]),
         ),
         StepStartedEvent(
             idx=7, kind=TraceEventKind.step_started, step_id=plan_nodes[2].id
@@ -141,7 +142,7 @@ def test_reasoning_trace_hash_mismatch_fails(tmp_path: Path) -> None:
             idx=9,
             kind=TraceEventKind.step_finished,
             step_id=plan_nodes[2].id,
-            output=DeriveOutput(kind="derive", emitted_claim_ids=[claim.id]),
+            output=DeriveOutput(type="derive", claim_ids=[claim.id]),
         ),
         StepStartedEvent(
             idx=10, kind=TraceEventKind.step_started, step_id=plan_nodes[3].id
@@ -151,10 +152,10 @@ def test_reasoning_trace_hash_mismatch_fails(tmp_path: Path) -> None:
             kind=TraceEventKind.step_finished,
             step_id=plan_nodes[3].id,
             output=VerifyOutput(
-                kind="verify",
+                type="verify",
                 validated_claim_ids=[],
                 rejected_claim_ids=[],
-                insufficient_support=[],
+                missing_support_claim_ids=[],
             ),
         ),
         StepStartedEvent(
@@ -165,7 +166,7 @@ def test_reasoning_trace_hash_mismatch_fails(tmp_path: Path) -> None:
             kind=TraceEventKind.step_finished,
             step_id=plan_nodes[4].id,
             output=FinalizeOutput(
-                kind="finalize",
+                type="finalize",
                 final_claim_ids=[claim.id],
                 final_answer=claim.statement,
                 uncertainty=None,
