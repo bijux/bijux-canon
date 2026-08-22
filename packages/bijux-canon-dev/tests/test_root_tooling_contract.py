@@ -83,6 +83,27 @@ def test_root_checks_preserve_the_locked_shared_environment() -> None:
     assert "LINT_PRE_TARGETS=" in root_make
 
 
+def test_root_pytest_environment_keeps_generated_state_under_artifacts() -> None:
+    root_environment = (REPO_ROOT / "makes" / "bijux-py" / "root" / "env.mk").read_text(
+        encoding="utf-8"
+    )
+    package_dispatch = (
+        REPO_ROOT / "makes" / "bijux-py" / "root" / "package-dispatch.mk"
+    ).read_text(encoding="utf-8")
+    pytest_configuration = (REPO_ROOT / "configs" / "pytest.ini").read_text(
+        encoding="utf-8"
+    )
+
+    assert "ROOT_PYCACHE_DIR ?= $(ROOT_ARTIFACTS_DIR)/pycache" in root_environment
+    assert "export PYTHONDONTWRITEBYTECODE := 1" in root_environment
+    assert (
+        "export PYTHONPYCACHEPREFIX := $(abspath $(ROOT_PYCACHE_DIR))"
+        in root_environment
+    )
+    assert "artifacts/$(1)/pycache" in package_dispatch
+    assert "cache_dir = ../artifacts/root/pytest-cache" in pytest_configuration
+
+
 def test_root_pyproject_uses_only_the_shared_dev_group() -> None:
     dependency_groups = _as_dict(_root_pyproject()["dependency-groups"])
     assert set(dependency_groups) == {"dev"}
