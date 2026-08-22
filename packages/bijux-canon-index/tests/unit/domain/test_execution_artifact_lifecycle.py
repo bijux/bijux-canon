@@ -52,7 +52,7 @@ def test_rebuild_rejects_contract_change() -> None:
         lifecycle.rebuild(state, different)
 
 
-def test_ledger_retention_limits(monkeypatch) -> None:
+def test_ledger_retention_limits(monkeypatch: pytest.MonkeyPatch) -> None:
     art = _artifact()
     from bijux_canon_index.infra.adapters.memory.backend import (
         MemoryExecutionLedger,

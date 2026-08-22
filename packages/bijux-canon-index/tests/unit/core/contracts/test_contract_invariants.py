@@ -21,7 +21,7 @@ from bijux_canon_index.core.types import (
 
 
 @pytest.fixture()
-def artifact():
+def artifact() -> ExecutionArtifact:
     return ExecutionArtifact(
         artifact_id="a",
         corpus_fingerprint="c",
@@ -33,7 +33,7 @@ def artifact():
 
 
 @pytest.fixture()
-def request_det():
+def request_det() -> ExecutionRequest:
     return ExecutionRequest(
         request_id="r",
         text=None,
@@ -45,13 +45,17 @@ def request_det():
     )
 
 
-def test_execution_contract_invariant_passes(artifact, request_det) -> None:
+def test_execution_contract_invariant_passes(
+    artifact: ExecutionArtifact, request_det: ExecutionRequest
+) -> None:
     inv = invariant_execution_contract_match(artifact, request_det)
     assert inv.predicate() is True
     assert_invariants([inv])
 
 
-def test_execution_contract_invariant_fails(artifact, request_det) -> None:
+def test_execution_contract_invariant_fails(
+    artifact: ExecutionArtifact, request_det: ExecutionRequest
+) -> None:
     nd_req = ExecutionRequest(
         request_id="r2",
         text=None,
@@ -80,7 +84,7 @@ def test_randomness_invariant_requires_budget() -> None:
         )
 
 
-def test_provenance_invariant_placeholder(artifact) -> None:
+def test_provenance_invariant_placeholder(artifact: ExecutionArtifact) -> None:
     inv = invariant_provenance_required(artifact)
     assert inv.invariant_id == "INV-040"
     assert_invariants([inv])

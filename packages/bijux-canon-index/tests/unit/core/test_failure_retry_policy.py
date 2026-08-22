@@ -4,6 +4,8 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
+from typing import Never
+
 import pytest
 
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
@@ -29,7 +31,7 @@ def test_retry_policy_respects_retryable() -> None:
     retryable = mark_retryable(err)
     calls = {"n": 0}
 
-    def flaky():
+    def flaky() -> str:
         calls["n"] += 1
         if calls["n"] < 2:
             raise retryable
@@ -44,7 +46,7 @@ def test_retry_policy_respects_retryable() -> None:
 def test_retry_policy_obeys_contract() -> None:
     calls = {"n": 0}
 
-    def flaky():
+    def flaky() -> Never:
         calls["n"] += 1
         raise ValidationError(message="retry")
 

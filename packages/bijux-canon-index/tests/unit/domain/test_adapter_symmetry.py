@@ -12,7 +12,7 @@ from bijux_canon_index.infra.adapters.pgvector.backend import pgvector_backend
 from bijux_canon_index.infra.adapters.sqlite.backend import sqlite_backend
 
 
-def _public_methods(obj):
+def _public_methods(obj: object) -> set[str]:
     return {m for m in dir(obj) if not m.startswith("_")}
 
 

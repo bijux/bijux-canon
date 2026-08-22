@@ -25,10 +25,13 @@ from bijux_canon_index.core.types import (
     ExecutionRequest,
 )
 from bijux_canon_index.domain.requests.execution_plan import build_execution_plan
-from bijux_canon_index.infra.adapters.memory.backend import memory_backend
+from bijux_canon_index.infra.adapters.memory.backend import (
+    MemoryFixture,
+    memory_backend,
+)
 
 
-def _prepare_artifact(backend):
+def _prepare_artifact(backend: MemoryFixture) -> ExecutionArtifact:
     art = ExecutionArtifact(
         artifact_id="art",
         corpus_fingerprint="corp",

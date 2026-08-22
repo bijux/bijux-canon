@@ -14,8 +14,8 @@ from bijux_canon_index.interfaces.schemas.validators import (
 )
 
 
-def _payload(**overrides):
-    base = {
+def _payload(**overrides: object) -> SimpleNamespace:
+    base: dict[str, object] = {
         "execution_contract": ExecutionContract.DETERMINISTIC,
         "execution_mode": ExecutionMode.STRICT,
         "execution_intent": ExecutionIntent.EXACT_VALIDATION,

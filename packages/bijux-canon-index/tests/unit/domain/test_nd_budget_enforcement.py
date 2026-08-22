@@ -21,12 +21,15 @@ from bijux_canon_index.domain.requests.request_execution import (
     start_execution_session,
 )
 from bijux_canon_index.infra.adapters.ann_hnsw import HnswAnnRunner
-from bijux_canon_index.infra.adapters.memory.backend import memory_backend
+from bijux_canon_index.infra.adapters.memory.backend import (
+    MemoryFixture,
+    memory_backend,
+)
 
 pytest.importorskip("hnswlib")
 
 
-def _setup_backend():
+def _setup_backend() -> MemoryFixture:
     backend = memory_backend()
     with backend.tx_factory() as tx:
         doc = Document(document_id="d", text="hello")
@@ -65,7 +68,9 @@ def _setup_backend():
         ),
     ],
 )
-def test_nd_budget_enforced(budget, nd_settings) -> None:
+def test_nd_budget_enforced(
+    budget: ExecutionBudget, nd_settings: NDSettings | None
+) -> None:
     backend = _setup_backend()
     ann = HnswAnnRunner(backend.stores.vectors)
     ann.build_index(
@@ -85,8 +90,10 @@ def test_nd_budget_enforced(budget, nd_settings) -> None:
         execution_budget=budget,
         nd_settings=nd_settings,
     )
+    artifact = backend.stores.ledger.get_artifact("art")
+    assert artifact is not None
     session = start_execution_session(
-        backend.stores.ledger.get_artifact("art"),
+        artifact,
         request,
         backend.stores,
         ann_runner=ann,

@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import importlib
 import inspect
+from types import ModuleType
 
 EXPECTED = {
     "bijux_canon_index.core.types.base": {
@@ -79,7 +80,7 @@ EXPECTED = {
 }
 
 
-def _public_names(module):
+def _public_names(module: ModuleType) -> set[str]:
     names: set[str] = set()
     for name, obj in inspect.getmembers(module):
         if name.startswith("_"):
