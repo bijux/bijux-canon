@@ -346,10 +346,15 @@ def _compare(
         and (ratio is None or ratio <= policy.tolerance.max_duration_ratio)
     )
     completed = replay.status is InspectedRunStatus.COMPLETED
+    semantics_accepted = completed and dag_equal
+    timing_accepted = (
+        within_tolerance
+        or policy.network_policy is not ReplayNetworkPolicy.PERMITTED
+    )
     if policy.replay_mode is ReplayMode.STRICT:
-        accepted = completed and dag_equal and exact and within_tolerance
+        accepted = semantics_accepted and exact and timing_accepted
     elif policy.replay_mode is ReplayMode.BOUNDED:
-        accepted = completed and dag_equal and deterministic and within_tolerance
+        accepted = semantics_accepted and deterministic and timing_accepted
     else:
         accepted = completed
     return RuntimeReplayComparison(

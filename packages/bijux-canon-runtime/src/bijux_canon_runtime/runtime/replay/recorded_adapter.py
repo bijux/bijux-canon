@@ -15,6 +15,7 @@ from bijux_canon_runtime.runtime.execution.operation_dispatcher import (
     StepDispatchContext,
     StepDispatchError,
     StepOutputArtifact,
+    resolved_input_artifact_ids,
 )
 from bijux_canon_runtime.runtime.inspection import InspectedDagStep
 from bijux_canon_runtime.runtime.persistence.payload_store import ArtifactPayloadStore
@@ -52,8 +53,9 @@ class RecordedReplayAdapter:
         )
         if not outputs:
             raise StepDispatchError("recorded replay step has no successful outputs")
-        expected_dependencies = tuple(
-            sorted(item.artifact_id for item in upstream_artifacts)
+        expected_dependencies = resolved_input_artifact_ids(
+            step,
+            upstream_artifacts,
         )
         if any(
             item.artifact.descriptor.dependencies != expected_dependencies

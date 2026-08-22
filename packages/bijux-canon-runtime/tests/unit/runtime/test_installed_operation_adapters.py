@@ -41,6 +41,12 @@ from bijux_canon_runtime.runtime.inspection import RuntimeRunInspector
 from bijux_canon_runtime.runtime.persistence import (
     AtomicFilesystemArtifactPayloadStore,
 )
+from bijux_canon_runtime.runtime.replay import (
+    ReplayNetworkPolicy,
+    ReplayTolerance,
+    RuntimeReplayPolicy,
+    RuntimeReplayService,
+)
 
 
 class _Embedding:
@@ -185,3 +191,22 @@ def test_installed_ingest_and_index_adapters_persist_restartable_payloads(
     assert [attempt.attempt_number for attempt in retried_inspection.attempts] == [1, 2]
     assert retried_inspection.attempts[-1].relation == "retry"
     assert retried_inspection.attempts[-1].source_attempt_id == execution["attempt_id"]
+
+    replay = RuntimeReplayService(store).replay(
+        run_id=str(retry["run_id"]),
+        source_attempt_id=str(retry["attempt_id"]),
+        request_id=RequestID("request-index-replay"),
+        process_id="installed-adapter-replay",
+        policy=RuntimeReplayPolicy(
+            replay_mode=ReplayMode.STRICT,
+            network_policy=ReplayNetworkPolicy.RECORDED_ONLY,
+            tolerance=ReplayTolerance(
+                max_duration_delta_ms=0.0,
+                max_duration_ratio=1.0,
+            ),
+        ),
+    )
+    assert replay.replay.status.value == "completed"
+    assert replay.comparison.exact_artifact_identities is True
+    assert replay.comparison.duration_within_tolerance is False
+    assert replay.comparison.accepted is True

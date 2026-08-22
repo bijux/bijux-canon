@@ -300,13 +300,9 @@ class OperationDispatcher:
         actual_contracts = {item.contract_id for item in artifacts}
         if len(actual_contracts) != len(artifacts) or actual_contracts != expected_contracts:
             raise StepDispatchError("operation adapter output contracts do not match")
-        expected_dependencies = tuple(
-            sorted(
-                {
-                    *(item.artifact_id for item in upstream_artifacts),
-                    *_external_input_artifact_ids(step),
-                }
-            )
+        expected_dependencies = resolved_input_artifact_ids(
+            step,
+            upstream_artifacts,
         )
         for artifact in artifacts:
             artifact.validate()
@@ -336,6 +332,21 @@ def _external_input_artifact_ids(step: ConcreteDagStep) -> tuple[ArtifactID, ...
     return tuple(result)
 
 
+def resolved_input_artifact_ids(
+    step: ConcreteDagStep,
+    upstream_artifacts: tuple[StepOutputArtifact, ...],
+) -> tuple[ArtifactID, ...]:
+    """Resolve upstream and external immutable inputs for one concrete step."""
+    return tuple(
+        sorted(
+            {
+                *(item.artifact_id for item in upstream_artifacts),
+                *_external_input_artifact_ids(step),
+            }
+        )
+    )
+
+
 __all__ = [
     "OperationAdapter",
     "OperationDispatcher",
@@ -345,4 +356,5 @@ __all__ = [
     "StepDispatchError",
     "StepDispatchResult",
     "StepOutputArtifact",
+    "resolved_input_artifact_ids",
 ]
