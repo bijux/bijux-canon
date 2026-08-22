@@ -47,16 +47,13 @@
   "vector_stores": [
     {
       "name": "faiss",
-      "available": false,
       "supports_exact": true,
       "supports_ann": true,
       "delete_supported": true,
       "filtering_supported": false,
       "deterministic_exact": true,
       "experimental": true,
-      "consistency": "read_after_write",
-      "version": null,
-      "notes": "faiss-cpu not installed"
+      "consistency": "read_after_write"
     },
     {
       "name": "memory",
@@ -66,36 +63,33 @@
       "delete_supported": true,
       "filtering_supported": false,
       "deterministic_exact": true,
-      "experimental": false,
+      "experimental": true,
       "consistency": "read_after_write",
       "version": null,
-      "notes": "no-op adapter; uses local vector source"
+      "notes": "real ephemeral exact store; excluded from production profiles"
     },
     {
       "name": "qdrant",
-      "available": false,
       "supports_exact": true,
       "supports_ann": true,
       "delete_supported": true,
       "filtering_supported": true,
       "deterministic_exact": false,
       "experimental": true,
-      "consistency": "eventual",
-      "version": null,
-      "notes": "qdrant-client not installed"
+      "consistency": "eventual"
     },
     {
       "name": "sqlite",
       "available": true,
-      "supports_exact": true,
+      "supports_exact": false,
       "supports_ann": false,
-      "delete_supported": true,
+      "delete_supported": false,
       "filtering_supported": false,
-      "deterministic_exact": true,
-      "experimental": false,
-      "consistency": "read_after_write",
+      "deterministic_exact": false,
+      "experimental": true,
+      "consistency": null,
       "version": null,
-      "notes": "alias for local storage (no-op adapter)"
+      "notes": "excluded alias; use the persistent SQLite FTS5 generation API"
     }
   ],
   "plugins": {
@@ -110,9 +104,6 @@
       "failures": 0,
       "open_until": 0.0,
       "cooldown_s": 30
-    },
-    "notes": [
-      "hnswlib not installed; using reference ANN runner"
-    ]
+    }
   }
 }

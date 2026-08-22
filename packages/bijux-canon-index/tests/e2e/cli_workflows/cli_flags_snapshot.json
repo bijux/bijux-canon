@@ -842,6 +842,125 @@
     ]
   },
   {
+    "command": "index",
+    "params": []
+  },
+  {
+    "command": "index activate",
+    "params": [
+      {
+        "default": null,
+        "name": "generation_id",
+        "opts": [
+          "--generation-id"
+        ],
+        "param_type": "option",
+        "required": true
+      },
+      {
+        "default": null,
+        "name": "registry_root",
+        "opts": [
+          "--registry-root"
+        ],
+        "param_type": "option",
+        "required": false
+      }
+    ]
+  },
+  {
+    "command": "index build",
+    "params": [
+      {
+        "default": null,
+        "name": "registry_root",
+        "opts": [
+          "--registry-root"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "request",
+        "opts": [
+          "--request"
+        ],
+        "param_type": "option",
+        "required": true
+      }
+    ]
+  },
+  {
+    "command": "index inspect",
+    "params": [
+      {
+        "default": null,
+        "name": "generation_id",
+        "opts": [
+          "--generation-id"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "registry_root",
+        "opts": [
+          "--registry-root"
+        ],
+        "param_type": "option",
+        "required": false
+      }
+    ]
+  },
+  {
+    "command": "index query",
+    "params": [
+      {
+        "default": null,
+        "name": "registry_root",
+        "opts": [
+          "--registry-root"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "request",
+        "opts": [
+          "--request"
+        ],
+        "param_type": "option",
+        "required": true
+      }
+    ]
+  },
+  {
+    "command": "index verify",
+    "params": [
+      {
+        "default": null,
+        "name": "generation_id",
+        "opts": [
+          "--generation-id"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "registry_root",
+        "opts": [
+          "--registry-root"
+        ],
+        "param_type": "option",
+        "required": false
+      }
+    ]
+  },
+  {
     "command": "ingest",
     "params": [
       {
