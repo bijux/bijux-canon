@@ -1,0 +1,306 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright © 2026 Bijan Mousavi
+
+"""Paired one-pass RAG and bounded-research utility evaluation."""
+
+from __future__ import annotations
+
+import hashlib
+from typing import Annotated, Self
+
+from pydantic import Field, StringConstraints, field_validator, model_validator
+
+from bijux_canon_reason.core.models.base import StableModel
+from bijux_canon_reason.evaluation.claim_faithfulness import ClaimFaithfulnessReport
+from bijux_canon_reason.grounding.provider_contracts import (
+    content_artifact_id,
+    require_artifact_id,
+)
+
+Sha256 = Annotated[str, StringConstraints(pattern=r"^[0-9a-f]{64}$")]
+_COUNTEREVIDENCE_RECALL_MINIMUM = 0.90
+_EXPECTED_CLAIM_GAIN_MINIMUM = 0.05
+_UNSUPPORTED_RATE_DELTA_MAXIMUM = 0.0
+
+
+class PairedResearchCase(StableModel):
+    """Identical-input RAG/RAR outputs plus bounded execution observations."""
+
+    case_id: str
+    input_identity_sha256: Sha256
+    rag_faithfulness: ClaimFaithfulnessReport
+    rar_faithfulness: ClaimFaithfulnessReport
+    expected_counterevidence_qrel_ids: tuple[str, ...] = Field(min_length=1)
+    rar_counterevidence_qrel_ids: tuple[str, ...]
+    rag_cost_usd: float = Field(ge=0.0)
+    rar_cost_usd: float = Field(ge=0.0)
+    rag_latency_ms: int = Field(ge=0)
+    rar_latency_ms: int = Field(ge=0)
+    rar_iterations: int = Field(gt=0)
+    rar_convergence_reason: str
+
+    @model_validator(mode="after")
+    def _validate_pair(self) -> Self:
+        reports = (self.rag_faithfulness, self.rar_faithfulness)
+        if any(report.case_id != self.case_id for report in reports):
+            raise ValueError("paired faithfulness reports belong to another case")
+        if reports[0].system_output_id == reports[1].system_output_id:
+            raise ValueError("paired RAG and RAR outputs must be distinct")
+        if len(set(self.expected_counterevidence_qrel_ids)) != len(
+            self.expected_counterevidence_qrel_ids
+        ):
+            raise ValueError("expected counterevidence qrel IDs must be unique")
+        if len(set(self.rar_counterevidence_qrel_ids)) != len(
+            self.rar_counterevidence_qrel_ids
+        ):
+            raise ValueError("retrieved counterevidence qrel IDs must be unique")
+        if not self.rar_convergence_reason.strip():
+            raise ValueError("RAR convergence reason must not be empty")
+        return self
+
+
+class ResearchUtilityCaseOutcome(StableModel):
+    """Per-case paired quality, cost, latency, and convergence values."""
+
+    case_id: str
+    counterevidence_found: int
+    counterevidence_expected: int
+    rag_expected_claim_recall: float
+    rar_expected_claim_recall: float
+    rag_unsupported_claim_rate: float
+    rar_unsupported_claim_rate: float
+    rag_cost_usd: float
+    rar_cost_usd: float
+    rag_latency_ms: int
+    rar_latency_ms: int
+    rar_iterations: int
+    rar_convergence_reason: str
+
+
+class ResearchUtilityMetric(StableModel):
+    """One exact paired research-utility threshold."""
+
+    metric_id: str
+    value: float
+    threshold: float
+    lower_is_better: bool
+    formula: str
+    passed: bool
+
+    @model_validator(mode="after")
+    def _validate_threshold(self) -> Self:
+        expected = (
+            self.value <= self.threshold
+            if self.lower_is_better
+            else self.value >= self.threshold
+        )
+        if self.passed != expected:
+            raise ValueError("research utility threshold status is inconsistent")
+        return self
+
+
+class ResearchUtilityReport(StableModel):
+    """Content-addressed paired utility result for the frozen research subset."""
+
+    schema_version: str = "bijux.canon.evaluation.research-utility.v1"
+    artifact_id: str
+    input_identity_sha256: str
+    outcomes: tuple[ResearchUtilityCaseOutcome, ...]
+    counterevidence_recall: ResearchUtilityMetric
+    expected_claim_recall_gain: ResearchUtilityMetric
+    unsupported_claim_rate_delta: ResearchUtilityMetric
+    rag_total_cost_usd: float
+    rar_total_cost_usd: float
+    rag_total_latency_ms: int
+    rar_total_latency_ms: int
+    rar_total_iterations: int
+    passed: bool
+
+    @field_validator("artifact_id")
+    @classmethod
+    def _validate_artifact_id(cls, value: str) -> str:
+        return require_artifact_id(value)
+
+    @model_validator(mode="after")
+    def _validate_report(self) -> Self:
+        if not self.outcomes or len({item.case_id for item in self.outcomes}) != len(
+            self.outcomes
+        ):
+            raise ValueError("research utility outcomes must be nonempty and unique")
+        metrics = (
+            self.counterevidence_recall,
+            self.expected_claim_recall_gain,
+            self.unsupported_claim_rate_delta,
+        )
+        if tuple(item.metric_id for item in metrics) != (
+            "rar-counterevidence-recall",
+            "rar-expected-claim-gain",
+            "rar-unsupported-rate-delta",
+        ):
+            raise ValueError("research utility dimensions are incomplete")
+        if self.passed != all(metric.passed for metric in metrics):
+            raise ValueError("research utility report status is inconsistent")
+        payload = self.model_dump(mode="json", exclude={"artifact_id"})
+        if self.artifact_id != content_artifact_id(payload):
+            raise ValueError("research utility report identity does not match")
+        return self
+
+
+class ResearchUtilityEvaluationError(ValueError):
+    """Paired research cases are empty or duplicate a case identity."""
+
+
+class ResearchUtilityEvaluator:
+    """Compare bounded research with one-pass RAG on identical cases."""
+
+    def evaluate(self, cases: tuple[PairedResearchCase, ...]) -> ResearchUtilityReport:
+        """Compute paired gains while retaining every case and resource observation."""
+        if not cases:
+            raise ResearchUtilityEvaluationError("research utility requires cases")
+        if len({item.case_id for item in cases}) != len(cases):
+            raise ResearchUtilityEvaluationError(
+                "research utility case IDs must be unique"
+            )
+        outcomes = tuple(_outcome(item) for item in cases)
+        found = sum(item.counterevidence_found for item in outcomes)
+        expected = sum(item.counterevidence_expected for item in outcomes)
+        counter_recall = found / expected
+        rag_expected = _expected_recall(cases, rar=False)
+        rar_expected = _expected_recall(cases, rar=True)
+        expected_gain = rar_expected - rag_expected
+        rag_unsupported = _unsupported_rate(cases, rar=False)
+        rar_unsupported = _unsupported_rate(cases, rar=True)
+        unsupported_delta = rar_unsupported - rag_unsupported
+        metrics = (
+            _metric(
+                "rar-counterevidence-recall",
+                counter_recall,
+                _COUNTEREVIDENCE_RECALL_MINIMUM,
+                False,
+                "distinct reviewed counterevidence qrels found by RAR / all reviewed counterevidence qrels",
+            ),
+            _metric(
+                "rar-expected-claim-gain",
+                expected_gain,
+                _EXPECTED_CLAIM_GAIN_MINIMUM,
+                False,
+                "RAR expected-claim recall minus paired RAG expected-claim recall",
+            ),
+            _metric(
+                "rar-unsupported-rate-delta",
+                unsupported_delta,
+                _UNSUPPORTED_RATE_DELTA_MAXIMUM,
+                True,
+                "RAR unsupported-claim rate minus paired RAG unsupported-claim rate",
+            ),
+        )
+        input_identity = hashlib.sha256(
+            "\n".join(
+                f"{item.case_id}:{item.input_identity_sha256}"
+                for item in sorted(cases, key=lambda candidate: candidate.case_id)
+            ).encode("utf-8")
+        ).hexdigest()
+        rag_total_cost = sum(item.rag_cost_usd for item in cases)
+        rar_total_cost = sum(item.rar_cost_usd for item in cases)
+        rag_total_latency = sum(item.rag_latency_ms for item in cases)
+        rar_total_latency = sum(item.rar_latency_ms for item in cases)
+        rar_total_iterations = sum(item.rar_iterations for item in cases)
+        passed = all(metric.passed for metric in metrics)
+        payload = {
+            "schema_version": "bijux.canon.evaluation.research-utility.v1",
+            "input_identity_sha256": input_identity,
+            "outcomes": tuple(item.model_dump(mode="json") for item in outcomes),
+            "counterevidence_recall": metrics[0].model_dump(mode="json"),
+            "expected_claim_recall_gain": metrics[1].model_dump(mode="json"),
+            "unsupported_claim_rate_delta": metrics[2].model_dump(mode="json"),
+            "rag_total_cost_usd": rag_total_cost,
+            "rar_total_cost_usd": rar_total_cost,
+            "rag_total_latency_ms": rag_total_latency,
+            "rar_total_latency_ms": rar_total_latency,
+            "rar_total_iterations": rar_total_iterations,
+            "passed": passed,
+        }
+        return ResearchUtilityReport(
+            artifact_id=content_artifact_id(payload),
+            input_identity_sha256=input_identity,
+            outcomes=outcomes,
+            counterevidence_recall=metrics[0],
+            expected_claim_recall_gain=metrics[1],
+            unsupported_claim_rate_delta=metrics[2],
+            rag_total_cost_usd=rag_total_cost,
+            rar_total_cost_usd=rar_total_cost,
+            rag_total_latency_ms=rag_total_latency,
+            rar_total_latency_ms=rar_total_latency,
+            rar_total_iterations=rar_total_iterations,
+            passed=passed,
+        )
+
+
+def _outcome(item: PairedResearchCase) -> ResearchUtilityCaseOutcome:
+    expected = set(item.expected_counterevidence_qrel_ids)
+    found = expected.intersection(item.rar_counterevidence_qrel_ids)
+    return ResearchUtilityCaseOutcome(
+        case_id=item.case_id,
+        counterevidence_found=len(found),
+        counterevidence_expected=len(expected),
+        rag_expected_claim_recall=item.rag_faithfulness.expected_claim_recall.value,
+        rar_expected_claim_recall=item.rar_faithfulness.expected_claim_recall.value,
+        rag_unsupported_claim_rate=(
+            1.0 - item.rag_faithfulness.supported_claim_coverage.value
+        ),
+        rar_unsupported_claim_rate=(
+            1.0 - item.rar_faithfulness.supported_claim_coverage.value
+        ),
+        rag_cost_usd=item.rag_cost_usd,
+        rar_cost_usd=item.rar_cost_usd,
+        rag_latency_ms=item.rag_latency_ms,
+        rar_latency_ms=item.rar_latency_ms,
+        rar_iterations=item.rar_iterations,
+        rar_convergence_reason=item.rar_convergence_reason,
+    )
+
+
+def _expected_recall(cases: tuple[PairedResearchCase, ...], *, rar: bool) -> float:
+    reports = tuple(
+        item.rar_faithfulness if rar else item.rag_faithfulness for item in cases
+    )
+    numerator = sum(item.expected_claim_recall.numerator for item in reports)
+    denominator = sum(item.expected_claim_recall.denominator for item in reports)
+    return 1.0 if denominator == 0 else numerator / denominator
+
+
+def _unsupported_rate(cases: tuple[PairedResearchCase, ...], *, rar: bool) -> float:
+    reports = tuple(
+        item.rar_faithfulness if rar else item.rag_faithfulness for item in cases
+    )
+    supported = sum(item.supported_claim_coverage.numerator for item in reports)
+    claims = sum(item.supported_claim_coverage.denominator for item in reports)
+    return 0.0 if claims == 0 else (claims - supported) / claims
+
+
+def _metric(
+    metric_id: str,
+    value: float,
+    threshold: float,
+    lower_is_better: bool,
+    formula: str,
+) -> ResearchUtilityMetric:
+    passed = value <= threshold if lower_is_better else value >= threshold
+    return ResearchUtilityMetric(
+        metric_id=metric_id,
+        value=value,
+        threshold=threshold,
+        lower_is_better=lower_is_better,
+        formula=formula,
+        passed=passed,
+    )
+
+
+__all__ = [
+    "PairedResearchCase",
+    "ResearchUtilityCaseOutcome",
+    "ResearchUtilityEvaluationError",
+    "ResearchUtilityEvaluator",
+    "ResearchUtilityMetric",
+    "ResearchUtilityReport",
+]

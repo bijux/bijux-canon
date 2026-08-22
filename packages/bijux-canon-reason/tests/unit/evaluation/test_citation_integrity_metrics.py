@@ -38,7 +38,10 @@ from bijux_canon_reason.evaluation import (
     EvaluationQuery,
     EvaluationSplit,
     ExactEvidenceLocator,
+    PairedResearchCase,
     QrelJudgment,
+    ResearchUtilityEvaluator,
+    ResearchUtilityReport,
     SystemAnswerDisposition,
     SystemCitation,
     SystemClaim,
@@ -656,3 +659,110 @@ def test_safety_suite_refuses_missing_negative_strata() -> None:
         AbstentionSafetyEvaluator().evaluate(
             (_safety_input(AbstentionSafetyCaseKind.unanswerable),)
         )
+
+
+def _faithfulness(
+    case: EvaluationCaseTruth,
+    output: SystemOutput,
+    sources: dict[str, bytes],
+) -> ClaimFaithfulnessReport:
+    integrity = CitationIntegrityEvaluator().evaluate(
+        case=case,
+        output=output,
+        source_payloads=sources,
+    )
+    return ClaimFaithfulnessEvaluator().evaluate(
+        case=case,
+        output=output,
+        integrity=integrity,
+    )
+
+
+def test_bounded_research_reports_paired_quality_cost_latency_and_convergence() -> None:
+    case = _case()
+    rag_output = SystemOutput(
+        output_id="one-pass-output",
+        case_id=case.case_id,
+        runtime_run_id="rag-run",
+        runtime_attempt_id="rag-attempt",
+        answer="",
+        disposition=SystemAnswerDisposition.abstained,
+        abstention_reason="One-pass retrieval did not establish the expected claim.",
+        trace_identity_sha256="8" * 64,
+    )
+    rar_output = _output(case, _citation(case)).model_copy(
+        update={"output_id": "bounded-research-output"}
+    )
+    paired = PairedResearchCase(
+        case_id=case.case_id,
+        input_identity_sha256="7" * 64,
+        rag_faithfulness=_faithfulness(case, rag_output, {}),
+        rar_faithfulness=_faithfulness(case, rar_output, _sources(case)),
+        expected_counterevidence_qrel_ids=(case.qrels[0].qrel_id,),
+        rar_counterevidence_qrel_ids=(case.qrels[0].qrel_id,),
+        rag_cost_usd=0.01,
+        rar_cost_usd=0.03,
+        rag_latency_ms=10,
+        rar_latency_ms=30,
+        rar_iterations=2,
+        rar_convergence_reason="expected claim and counterevidence coverage stabilized",
+    )
+
+    report = ResearchUtilityEvaluator().evaluate((paired,))
+    restarted = ResearchUtilityReport.model_validate_json(report.model_dump_json())
+
+    assert restarted == report
+    assert report.passed
+    assert report.counterevidence_recall.value == 1.0
+    assert report.expected_claim_recall_gain.value == 1.0
+    assert report.unsupported_claim_rate_delta.value == 0.0
+    assert report.rag_total_cost_usd == 0.01
+    assert report.rar_total_latency_ms == 30
+    assert report.rar_total_iterations == 2
+
+
+def test_bounded_research_failure_keeps_pair_and_negative_deltas() -> None:
+    case = _case()
+    rag_output = _output(case, _citation(case)).model_copy(
+        update={"output_id": "supported-one-pass-output"}
+    )
+    citation = _citation(case)
+    unsupported_claim = SystemClaim(
+        claim_id="unsupported-research-claim",
+        statement="Bounded research invented an unreviewed conclusion.",
+        disposition=SystemClaimDisposition.asserted,
+        citation_ids=(citation.citation_id,),
+    )
+    rar_output = SystemOutput(
+        output_id="regressed-research-output",
+        case_id=case.case_id,
+        runtime_run_id="rar-run",
+        runtime_attempt_id="rar-attempt",
+        answer=unsupported_claim.statement,
+        disposition=SystemAnswerDisposition.answered,
+        claims=(unsupported_claim,),
+        citations=(citation,),
+        trace_identity_sha256="6" * 64,
+    )
+    paired = PairedResearchCase(
+        case_id=case.case_id,
+        input_identity_sha256="5" * 64,
+        rag_faithfulness=_faithfulness(case, rag_output, _sources(case)),
+        rar_faithfulness=_faithfulness(case, rar_output, _sources(case)),
+        expected_counterevidence_qrel_ids=(case.qrels[0].qrel_id,),
+        rar_counterevidence_qrel_ids=(),
+        rag_cost_usd=0.01,
+        rar_cost_usd=0.04,
+        rag_latency_ms=10,
+        rar_latency_ms=40,
+        rar_iterations=3,
+        rar_convergence_reason="budget exhausted before evidence coverage",
+    )
+
+    report = ResearchUtilityEvaluator().evaluate((paired,))
+
+    assert not report.passed
+    assert report.counterevidence_recall.value == 0.0
+    assert report.expected_claim_recall_gain.value == -1.0
+    assert report.unsupported_claim_rate_delta.value == 1.0
+    assert len(report.outcomes) == 1

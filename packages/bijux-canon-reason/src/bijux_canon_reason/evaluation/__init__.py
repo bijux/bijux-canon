@@ -80,6 +80,14 @@ from bijux_canon_reason.evaluation.reviews import (
     ReviewSubjectKind,
     ReviewVerdict,
 )
+from bijux_canon_reason.evaluation.research_utility import (
+    PairedResearchCase,
+    ResearchUtilityCaseOutcome,
+    ResearchUtilityEvaluationError,
+    ResearchUtilityEvaluator,
+    ResearchUtilityMetric,
+    ResearchUtilityReport,
+)
 from bijux_canon_reason.evaluation.schema_catalog import (
     EVALUATION_SCHEMA_CATALOG_VERSION,
     evaluation_json_schemas,
@@ -159,10 +167,16 @@ __all__ = [
     "IndependentAnnotationWorkflow",
     "MetricDirection",
     "MetricObservation",
+    "PairedResearchCase",
     "QrelJudgment",
     "ReviewerDecision",
     "ReviewSubjectKind",
     "ReviewVerdict",
+    "ResearchUtilityCaseOutcome",
+    "ResearchUtilityEvaluationError",
+    "ResearchUtilityEvaluator",
+    "ResearchUtilityMetric",
+    "ResearchUtilityReport",
     "RetentionKind",
     "RetentionOutcome",
     "RetentionTruthItem",
