@@ -13,6 +13,11 @@ from pathlib import Path
 import tempfile
 
 from bijux_canon_index.application.index_activation import IndexGenerationRegistry
+from bijux_canon_index.application.index_archive import (
+    IndexGenerationArchive,
+    admit_index_generation_archive,
+    export_index_generation,
+)
 from bijux_canon_index.application.index_audit import IndexCompatibility
 from bijux_canon_index.application.index_generation import (
     AdmittedIndexChunk,
@@ -171,6 +176,25 @@ class IndexService:
 
         self._registry.activate(generation_id)
         return self._registry.inspect(generation_id)
+
+    def export(self, generation_id: str) -> IndexGenerationArchive:
+        """Return a portable archive containing the complete generation payload."""
+
+        return export_index_generation(self.registry_root, generation_id)
+
+    def admit_archive(
+        self,
+        content: bytes,
+        *,
+        activate: bool = False,
+    ) -> IndexInspectionReport:
+        """Verify and admit a complete generation from portable canonical bytes."""
+
+        return admit_index_generation_archive(
+            self.registry_root,
+            content,
+            activate=activate,
+        )
 
     def inspect(self, generation_id: str | None = None) -> IndexInspectionReport:
         """Return a content-safe report for one admitted generation."""

@@ -18,6 +18,13 @@ from bijux_canon_index.application.index_activation import (
     IndexActivationError,
     IndexGenerationRegistry,
 )
+from bijux_canon_index.application.index_archive import (
+    ARCHIVE_SCHEMA_VERSION,
+    IndexGenerationArchive,
+    IndexGenerationArchiveFile,
+    admit_index_generation_archive,
+    export_index_generation,
+)
 from bijux_canon_index.application.index_audit import (
     IndexCompatibility,
     IndexGenerationAuditReport,
@@ -169,6 +176,7 @@ from bijux_canon_index.application.vex import (
 )
 
 __all__ = [
+    "ARCHIVE_SCHEMA_VERSION",
     "AdmittedIndexChunk",
     "CitationCandidate",
     "CitationChannel",
@@ -223,6 +231,8 @@ __all__ = [
     "IndexBuildStageReceipt",
     "IndexBuildStatistics",
     "IndexGeneration",
+    "IndexGenerationArchive",
+    "IndexGenerationArchiveFile",
     "IndexGenerationAuditReport",
     "IndexGenerationBuildError",
     "IndexGenerationIntegrityError",
@@ -305,9 +315,11 @@ __all__ = [
     "compare_retrieval_traces",
     "dense_channel_result",
     "execute_multi_query",
+    "export_index_generation",
     "lexical_channel_result",
     "plan_subqueries",
     "apply_index_delta",
+    "admit_index_generation_archive",
     "audit_index_generation",
     "build_lexical_index_segment",
     "build_exact_search_witness",
