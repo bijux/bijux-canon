@@ -81,6 +81,8 @@ def test_root_checks_preserve_the_locked_shared_environment() -> None:
     assert "PACKAGE_BOOTSTRAP_TARGETS=" in root_make
     assert "PACKAGE_INSTALL_TARGETS=" in root_make
     assert "LINT_PRE_TARGETS=" in root_make
+    assert "ROOT_GENERATED_VERSION_PATTERN := */src/*/_build_version.py" in root_make
+    assert '-path "$(ROOT_GENERATED_VERSION_PATTERN)" -type f -delete' in root_make
 
 
 def test_root_pyproject_uses_only_the_shared_dev_group() -> None:
