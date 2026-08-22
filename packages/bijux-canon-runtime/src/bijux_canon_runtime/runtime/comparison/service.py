@@ -188,6 +188,7 @@ def _configuration(inspection: RuntimeRunInspection) -> object:
         inputs = dict(required_object(step, "inputs"))
         inputs.pop("request_id", None)
         inputs.pop("replay_attempt_id", None)
+        inputs.pop("source_attempt_id", None)
         result.append(
             {
                 "inputs": inputs,

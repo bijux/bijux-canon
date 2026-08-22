@@ -30,6 +30,10 @@ from bijux_canon_runtime.model.execution.request_plan import (
 )
 from bijux_canon_runtime.ontology.ids import ArtifactID, RequestID
 from bijux_canon_runtime.ontology.public import ReplayMode
+from bijux_canon_runtime.runtime.comparison import (
+    ComparisonDimension,
+    RuntimeComparisonService,
+)
 from bijux_canon_runtime.runtime.execution.application_executor import (
     RuntimeFirstExecutionService,
 )
@@ -660,6 +664,26 @@ def _verify_replay(indexed: _IndexedRuntime) -> None:
     assert replay.comparison.exact_artifact_identities is True
     assert replay.comparison.duration_within_tolerance is False
     assert replay.comparison.accepted is True
+
+    comparison_service = RuntimeComparisonService(RuntimeRunInspector(store))
+    comparison = comparison_service.compare(
+        baseline_run_id=str(retry["run_id"]),
+        baseline_attempt_id=str(retry["attempt_id"]),
+        candidate_run_id=str(retry["run_id"]),
+        candidate_attempt_id=replay.replay.selected_attempt_id,
+    )
+    repeated = comparison_service.compare(
+        baseline_run_id=str(retry["run_id"]),
+        baseline_attempt_id=str(retry["attempt_id"]),
+        candidate_run_id=str(retry["run_id"]),
+        candidate_attempt_id=replay.replay.selected_attempt_id,
+    )
+
+    assert comparison.equivalent is True
+    assert tuple(item.dimension for item in comparison.differences) == tuple(
+        ComparisonDimension
+    )
+    assert comparison.comparison_sha256 == repeated.comparison_sha256
 
 
 def test_installed_ingest_and_index_adapters_persist_restartable_payloads(
