@@ -5,7 +5,8 @@
 
 from __future__ import annotations
 
-from dataclasses import replace
+from collections.abc import Mapping
+from dataclasses import dataclass, replace
 import hashlib
 import json
 from pathlib import Path
@@ -92,6 +93,25 @@ class _UnexpectedEmbedding:
         raise AssertionError("offline lexical retrieval must not embed the query")
 
 
+@dataclass(frozen=True, slots=True)
+class _IndexedRuntime:
+    tmp_path: Path
+    planner: RuntimeRequestPlanner
+    store: AtomicFilesystemArtifactPayloadStore
+    index_service: IndexService
+    composite: StepOutputArtifact
+    retry: Mapping[str, object]
+
+
+@dataclass(frozen=True, slots=True)
+class _GroundedRuntime:
+    indexed: _IndexedRuntime
+    retrieval_request: RuntimeOperationRequest
+    ask_request: RuntimeOperationRequest
+    reason_upstream: StepOutputArtifact
+    reason_artifact: StepOutputArtifact
+
+
 def _budget() -> RuntimeRequestBudget:
     return RuntimeRequestBudget(
         timeout_seconds=30.0,
@@ -131,9 +151,7 @@ def test_indexable_chunks_omit_empty_jats_section_paths() -> None:
     assert "section" not in chunks[0].metadata
 
 
-def test_installed_ingest_and_index_adapters_persist_restartable_payloads(
-    tmp_path: Path,
-) -> None:
+def _build_indexed_runtime(tmp_path: Path) -> _IndexedRuntime:
     source = tmp_path / "papers"
     source.mkdir()
     (source / "evidence.md").write_text(
@@ -256,6 +274,23 @@ def test_installed_ingest_and_index_adapters_persist_restartable_payloads(
     assert retried_inspection.attempts[-1].relation == "retry"
     assert retried_inspection.attempts[-1].source_attempt_id == execution["attempt_id"]
 
+    return _IndexedRuntime(
+        tmp_path=tmp_path,
+        planner=planner,
+        store=store,
+        index_service=index_service,
+        composite=composite,
+        retry=retry,
+    )
+
+
+def _retrieve_and_reason(indexed: _IndexedRuntime) -> _GroundedRuntime:
+    tmp_path = indexed.tmp_path
+    planner = indexed.planner
+    store = indexed.store
+    index_service = indexed.index_service
+    composite = indexed.composite
+
     retrieval_request = RuntimeOperationRequest(
         request_id=RequestID("request-retrieve"),
         operation=RuntimeRequestOperation.RETRIEVE,
@@ -343,6 +378,25 @@ def test_installed_ingest_and_index_adapters_persist_restartable_payloads(
     )
     assert claim_graph["citation_verification"]["integrity_verified_links"] == 1
 
+    return _GroundedRuntime(
+        indexed=indexed,
+        retrieval_request=retrieval_request,
+        ask_request=ask_request,
+        reason_upstream=reason_upstream,
+        reason_artifact=reason.artifacts[0],
+    )
+
+
+def _verify_reason_and_agent(grounded: _GroundedRuntime) -> None:
+    indexed = grounded.indexed
+    tmp_path = indexed.tmp_path
+    planner = indexed.planner
+    store = indexed.store
+    index_service = indexed.index_service
+    ask_request = grounded.ask_request
+    reason_artifact = grounded.reason_artifact
+    claim_graph = json.loads(reason_artifact.payload)
+
     tampered_claim_graph = dict(claim_graph)
     tampered_claim_graph["answer"] = "An answer that is not bound to the synthesis."
     tampered_reason = StepOutputArtifact(
@@ -353,7 +407,7 @@ def test_installed_ingest_and_index_adapters_persist_restartable_payloads(
             tampered_claim_graph,
             schema_id="reason.claim-graph.v1",
             producer="bijux-canon-runtime:reason",
-            dependencies=reason.artifacts[0].artifact.descriptor.dependencies,
+            dependencies=reason_artifact.artifact.descriptor.dependencies,
         ),
     )
     verification_step = next(
@@ -381,7 +435,7 @@ def test_installed_ingest_and_index_adapters_persist_restartable_payloads(
         contract_id="reason.claim-graph.v1",
         producer_step_id="reason",
         producer_operation=DagOperation.REASON,
-        artifact=reason.artifacts[0].artifact,
+        artifact=reason_artifact.artifact,
     )
     research = OperationDispatcher(
         (
@@ -411,6 +465,19 @@ def test_installed_ingest_and_index_adapters_persist_restartable_payloads(
     assert (
         research_trace["causal_trace"]["head_artifact_id"]
         == (research_trace["causal_events"][-1]["artifact_id"])
+    )
+
+
+def _verify_linked_runs(grounded: _GroundedRuntime) -> None:
+    indexed = grounded.indexed
+    tmp_path = indexed.tmp_path
+    store = indexed.store
+    index_service = indexed.index_service
+    ask_request = grounded.ask_request
+    research_request = replace(
+        ask_request,
+        request_id=RequestID("request-research"),
+        operation=RuntimeRequestOperation.RESEARCH,
     )
 
     linked_dispatcher = OperationDispatcher(
@@ -496,6 +563,22 @@ def test_installed_ingest_and_index_adapters_persist_restartable_payloads(
         for item in ask_manifest["artifacts"]
     )
 
+
+def _verify_offline_boundaries(grounded: _GroundedRuntime) -> None:
+    indexed = grounded.indexed
+    tmp_path = indexed.tmp_path
+    planner = indexed.planner
+    store = indexed.store
+    index_service = indexed.index_service
+    retrieval_request = grounded.retrieval_request
+    ask_request = grounded.ask_request
+    reason_step = next(
+        step
+        for step in planner.plan(ask_request).steps
+        if step.operation is DagOperation.REASON
+    )
+    reason_upstream = grounded.reason_upstream
+
     offline_request = replace(
         retrieval_request,
         request_id=RequestID("request-retrieve-filtered"),
@@ -554,6 +637,11 @@ def test_installed_ingest_and_index_adapters_persist_restartable_payloads(
             (reason_upstream,),
         )
 
+
+def _verify_replay(indexed: _IndexedRuntime) -> None:
+    store = indexed.store
+    retry = indexed.retry
+
     replay = RuntimeReplayService(store).replay(
         run_id=str(retry["run_id"]),
         source_attempt_id=str(retry["attempt_id"]),
@@ -572,3 +660,15 @@ def test_installed_ingest_and_index_adapters_persist_restartable_payloads(
     assert replay.comparison.exact_artifact_identities is True
     assert replay.comparison.duration_within_tolerance is False
     assert replay.comparison.accepted is True
+
+
+def test_installed_ingest_and_index_adapters_persist_restartable_payloads(
+    tmp_path: Path,
+) -> None:
+    indexed = _build_indexed_runtime(tmp_path)
+    grounded = _retrieve_and_reason(indexed)
+
+    _verify_reason_and_agent(grounded)
+    _verify_linked_runs(grounded)
+    _verify_offline_boundaries(grounded)
+    _verify_replay(indexed)
