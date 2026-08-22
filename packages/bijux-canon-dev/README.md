@@ -42,10 +42,10 @@ would destroy the diagnostic boundary.
 `bijux-canon-dev` is an internal workspace support package. It is deliberately
 excluded from the repository's public release package set. Its installed
 maintenance commands verify supply-chain bindings, wheel metadata and contents,
-and the complete supported Python wheel matrix; generated reports and isolated
-environments belong under the repository `artifacts/` tree. Its VCS-derived
-version supports workspace builds; it is not a promise of an end-user product
-release.
+clean isolated installs, and the complete supported Python wheel matrix;
+generated reports and isolated environments belong under the repository
+`artifacts/` tree. Its VCS-derived version supports workspace builds; it is not
+a promise of an end-user product release.
 
 ## System Integration Evidence
 

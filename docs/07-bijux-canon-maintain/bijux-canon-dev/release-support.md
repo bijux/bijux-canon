@@ -112,6 +112,30 @@ cache, and result must remain under `artifacts/`; the validator and its tests
 remain in `bijux-canon-dev` so the same release contract survives disposal of a
 particular run's evidence.
 
+## Clean Installation Verification
+
+The installed `bijux-canon-installation-matrix` command creates a clean
+environment for every wheel and one additional environment for the complete
+exact family. Candidate constraints bind any sibling distribution selected by
+dependency resolution to the same wheel version. Each row runs the package
+manager consistency check, imports modules with Python isolation enabled,
+loads all installed entry points, resolves declared runtime data from
+`site-packages`, and invokes each console command's help surface. Imports or
+data that resolve into the repository source tree fail the row.
+
+```bash
+bijux-canon-installation-matrix \
+  --repo-root . \
+  --wheel-dir artifacts/release/wheels \
+  --environment-root artifacts/release/installations \
+  --output artifacts/release/install-matrix.json
+```
+
+The result retains every environment-creation, installation, consistency,
+inspection, and command outcome. Cross-platform and cross-Python coverage is
+composed with the supported Python matrix; one local installation run does not
+imply those remote runner results.
+
 ## Supported Python Verification
 
 The installed `bijux-canon-python-support` command treats package metadata as
