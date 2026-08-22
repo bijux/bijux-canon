@@ -42,8 +42,8 @@ def _request() -> ResearchApplicationInput:
         "traces": (),
         "rejected": (),
     }
-    attachment = EvidenceRelationAttachment(
-        artifact_id=content_artifact_id(attachment_payload), **attachment_payload
+    attachment = EvidenceRelationAttachment.model_validate(
+        {"artifact_id": content_artifact_id(attachment_payload), **attachment_payload}
     )
     delta_payload = {
         "schema_version": "bijux.canon.reason.assumption_insufficiency_delta.v1",
@@ -53,8 +53,8 @@ def _request() -> ResearchApplicationInput:
         "insufficiencies": (),
         "deficiencies": (),
     }
-    delta = AssumptionInsufficiencyDelta(
-        artifact_id=content_artifact_id(delta_payload), **delta_payload
+    delta = AssumptionInsufficiencyDelta.model_validate(
+        {"artifact_id": content_artifact_id(delta_payload), **delta_payload}
     )
     convergence = ConvergenceService().evaluate(
         (

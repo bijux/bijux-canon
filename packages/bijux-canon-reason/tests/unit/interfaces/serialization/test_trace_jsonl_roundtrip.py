@@ -21,6 +21,7 @@ from bijux_canon_reason.core.types import (
     StepSpec,
     StepStartedEvent,
     Trace,
+    TraceEvent,
     TraceEventKind,
 )
 from bijux_canon_reason.interfaces.serialization.json_canonical import (
@@ -45,20 +46,20 @@ def test_trace_jsonl_roundtrip_is_stable(tmp_path: Path) -> None:
         structured={"x": 1},
         status=ClaimStatus.proposed,
         confidence=1.0,
-        support_refs=[],
+        supports=[],
     )
 
     assert claim.id is not None
     cid = claim.id
 
-    events = [
+    events: list[TraceEvent] = [
         StepStartedEvent(idx=0, kind=TraceEventKind.step_started, step_id=n1.id),
         ClaimEmittedEvent(idx=1, kind=TraceEventKind.claim_emitted, claim=claim),
         StepFinishedEvent(
             idx=2,
             kind=TraceEventKind.step_finished,
             step_id=n1.id,
-            output=DeriveOutput(kind="derive", emitted_claim_ids=[cid]),
+            output=DeriveOutput(type="derive", claim_ids=[cid]),
         ),
     ]
 

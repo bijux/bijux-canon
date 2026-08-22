@@ -11,6 +11,7 @@ from bijux_canon_reason.core.types import (
     ClaimEmittedEvent,
     ClaimStatus,
     ClaimType,
+    DeriveOutput,
     EvidenceRef,
     EvidenceRegisteredEvent,
     Plan,
@@ -25,6 +26,7 @@ from bijux_canon_reason.core.types import (
     ToolResult,
     ToolReturnedEvent,
     Trace,
+    TraceEvent,
 )
 from bijux_canon_reason.interfaces.serialization.trace_jsonl import write_trace_jsonl
 from bijux_canon_reason.verification.verifier import verify_trace
@@ -69,14 +71,16 @@ def _fake_trace(schema_version: int = 1) -> tuple[Trace, Plan]:
         ],
         claim_type=ClaimType.derived,
     )
-    events = [
+    events: list[TraceEvent] = [
         StepStartedEvent(idx=0, step_id="s1"),
         ToolCalledEvent(idx=1, step_id="s1", call=call),
         ToolReturnedEvent(idx=2, step_id="s1", result=res),
         EvidenceRegisteredEvent(idx=3, step_id="s1", evidence=ev),
         ClaimEmittedEvent(idx=4, step_id="s1", claim=claim),
         StepFinishedEvent(
-            idx=5, step_id="s1", output={"kind": "derive", "claim_ids": ["c1"]}
+            idx=5,
+            step_id="s1",
+            output=DeriveOutput(type="derive", claim_ids=["c1"]),
         ),
     ]
     return Trace(

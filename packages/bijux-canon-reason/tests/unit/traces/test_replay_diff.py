@@ -15,6 +15,7 @@ from bijux_canon_reason.core.types import (
     StepSpec,
     StepStartedEvent,
     Trace,
+    TraceEvent,
     TraceEventKind,
 )
 from bijux_canon_reason.traces.replay import diff_traces
@@ -36,19 +37,19 @@ def test_diff_traces_detects_first_mismatch() -> None:
         structured={"ok": True},
         status=ClaimStatus.proposed,
         confidence=1.0,
-        support_refs=[],
+        supports=[],
     )
     assert claim.id is not None
     base_cid = claim.id
 
-    base_events = [
+    base_events: list[TraceEvent] = [
         StepStartedEvent(idx=0, kind=TraceEventKind.step_started, step_id=step.id),
         ClaimEmittedEvent(idx=1, kind=TraceEventKind.claim_emitted, claim=claim),
         StepFinishedEvent(
             idx=2,
             kind=TraceEventKind.step_finished,
             step_id=step.id,
-            output=DeriveOutput(kind="derive", emitted_claim_ids=[base_cid]),
+            output=DeriveOutput(type="derive", claim_ids=[base_cid]),
         ),
     ]
 
@@ -66,7 +67,7 @@ def test_diff_traces_detects_first_mismatch() -> None:
             structured={"ok": False},
             status=ClaimStatus.proposed,
             confidence=1.0,
-            support_refs=[],
+            supports=[],
         ),
     )
     t2 = Trace(

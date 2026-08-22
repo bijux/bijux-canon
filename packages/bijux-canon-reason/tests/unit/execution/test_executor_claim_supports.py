@@ -11,6 +11,7 @@ from bijux_canon_reason.core.types import (
     ClaimType,
     PlanNode,
     ProblemSpec,
+    StepSpec,
     SupportKind,
     SupportRef,
     TraceEventKind,
@@ -96,7 +97,7 @@ def test_verification_rejects_support_presence_without_exact_digest() -> None:
     )
 
     output = build_step_output(
-        node=PlanNode(kind="verify"),
+        node=PlanNode(kind="verify", step=StepSpec(kind="verify")),
         spec=ProblemSpec(description="Question"),
         state=state,
         min_supports=1,
