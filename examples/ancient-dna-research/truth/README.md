@@ -35,3 +35,20 @@ python -m bijux_canon_dev.corpus.research_qrels \
   --locator-truth examples/ancient-dna-research/truth/locator-truth.jsonl \
   --qrels examples/ancient-dna-research/truth/qrels.jsonl
 ```
+
+`claim-truth.jsonl` defines one atomic expected, optional, opposed, and
+forbidden claim for every locked article. Supported claims bind to exact
+supporting spans; opposed and forbidden claims bind to exact opposing or
+limiting spans and require abstention. Every citation resolves through a
+validated qrel chunk rather than a detached text copy.
+
+Validate claim classes, abstention policy, and exact citation spans with:
+
+```console
+python -m bijux_canon_dev.corpus.research_claim_truth \
+  --lock examples/ancient-dna-research/corpus.lock.json \
+  --research-root examples/ancient-dna-research \
+  --locator-truth examples/ancient-dna-research/truth/locator-truth.jsonl \
+  --qrels examples/ancient-dna-research/truth/qrels.jsonl \
+  --claim-truth examples/ancient-dna-research/truth/claim-truth.jsonl
+```
