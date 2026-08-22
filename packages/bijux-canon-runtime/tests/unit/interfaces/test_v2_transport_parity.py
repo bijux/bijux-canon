@@ -1,0 +1,471 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright © 2026 Bijan Mousavi
+
+from __future__ import annotations
+
+from contextlib import redirect_stderr, redirect_stdout
+from io import StringIO
+import json
+from pathlib import Path
+
+from fastapi.testclient import TestClient
+import pytest
+
+from bijux_canon_runtime.api.v2 import create_app
+from bijux_canon_runtime.application.operations import (
+    ReplayOperationRequest,
+    RuntimeApplicationServicesV2,
+)
+from bijux_canon_runtime.interfaces.cli.parser import build_parser
+from bijux_canon_runtime.interfaces.cli.v2_commands import run_v2_command
+from bijux_canon_runtime.model.execution.request_plan import RuntimeOperationRequest
+from bijux_canon_runtime.ontology.ids import ArtifactID
+from bijux_canon_runtime.runtime.execution.durable_jobs import (
+    DurableJobSnapshot,
+    JobKind,
+    JobStatus,
+)
+
+pytestmark = pytest.mark.unit
+
+_CORPUS_ID = "sha256:" + "a" * 64
+_INDEX_ID = "sha256:" + "b" * 64
+_RUN_ID = "run_v1_parity"
+_ATTEMPT_ID = "attempt_v1_parity"
+_IDEMPOTENCY_KEY = "transport-parity-key-0001"
+
+
+def _context(name: str) -> dict[str, object]:
+    return {
+        "contract_version": "v2",
+        "correlation_id": f"correlation-{name}",
+        "replay_mode": "strict",
+        "request_id": f"request-{name}",
+    }
+
+
+def _budget() -> dict[str, object]:
+    return {"max_artifact_bytes": 1_000_000, "timeout_seconds": 30}
+
+
+def _answer_policy() -> dict[str, object]:
+    return {
+        "permit_insufficient_answer": True,
+        "provider": "local-recorded",
+        "publish": True,
+        "require_citations": True,
+    }
+
+
+def _request_payloads(tmp_path: Path) -> dict[str, dict[str, object]]:
+    common = {
+        "budget": _budget(),
+        "execution_profile": "local-hybrid-exact",
+        "scope": "ancient-dna",
+    }
+    retrieval = {
+        **common,
+        "filters": {"document_ids": [], "source_uris": []},
+        "index_id": _INDEX_ID,
+        "query": "What evidence supports steppe ancestry?",
+        "top_k": 5,
+    }
+    answer = {
+        **retrieval,
+        "answer_policy": _answer_policy(),
+        "corpus_id": _CORPUS_ID,
+    }
+    return {
+        "ask": {**answer, "context": _context("ask")},
+        "index": {**common, "context": _context("index"), "corpus_id": _CORPUS_ID},
+        "ingest": {
+            **common,
+            "context": _context("ingest"),
+            "source_directory": str(tmp_path.resolve()),
+        },
+        "research": {**answer, "context": _context("research")},
+        "retrieve": {**retrieval, "context": _context("retrieve")},
+        "run": {
+            **common,
+            "answer_policy": _answer_policy(),
+            "context": _context("run"),
+            "corpus_id": _CORPUS_ID,
+            "filters": {"document_ids": [], "source_uris": []},
+            "query": "What evidence supports steppe ancestry?",
+            "top_k": 5,
+        },
+    }
+
+
+def _snapshot(kind: JobKind, *, cancelled: bool = False) -> DurableJobSnapshot:
+    return DurableJobSnapshot(
+        job_id="job_v1_transport_parity",
+        kind=kind,
+        idempotency_key=_IDEMPOTENCY_KEY,
+        request_sha256="c" * 64,
+        status=JobStatus.CANCELLED if cancelled else JobStatus.QUEUED,
+        cancel_requested=cancelled,
+        attempt_count=0,
+        submitted_at="2026-08-22T00:00:00+00:00",
+        started_at=None,
+        finished_at="2026-08-22T00:00:01+00:00" if cancelled else None,
+        deadline_at="2026-08-22T00:00:30+00:00",
+        timeout_seconds=30,
+        result=None,
+        error_type=None,
+        error_message=None,
+    )
+
+
+class _RecordingServices(RuntimeApplicationServicesV2):
+    def __init__(self) -> None:
+        self.calls: list[object] = []
+
+    def _submit(self, name: str, request: RuntimeOperationRequest, key: str):
+        self.calls.append((name, request, key))
+        return _snapshot(JobKind.RUN)
+
+    def corpus(self, request: RuntimeOperationRequest, *, idempotency_key: str):
+        return self._submit("corpus.prepare", request, idempotency_key)
+
+    def index(self, request: RuntimeOperationRequest, *, idempotency_key: str):
+        return self._submit("index.build", request, idempotency_key)
+
+    def retrieve(self, request: RuntimeOperationRequest, *, idempotency_key: str):
+        return self._submit("retrieve", request, idempotency_key)
+
+    def ask(self, request: RuntimeOperationRequest, *, idempotency_key: str):
+        return self._submit("ask", request, idempotency_key)
+
+    def research(self, request: RuntimeOperationRequest, *, idempotency_key: str):
+        return self._submit("research", request, idempotency_key)
+
+    def run(self, request: RuntimeOperationRequest, *, idempotency_key: str):
+        return self._submit("run", request, idempotency_key)
+
+    def replay(
+        self,
+        request: ReplayOperationRequest,
+        *,
+        idempotency_key: str,
+        timeout_seconds: float | None = None,
+    ):
+        self.calls.append(("replay", request, idempotency_key, timeout_seconds))
+        return _snapshot(JobKind.REPLAY)
+
+    def status(self, job_id: str):
+        self.calls.append(("status", job_id))
+        return _snapshot(JobKind.RUN)
+
+    def result(self, job_id: str):
+        self.calls.append(("result", job_id))
+        return {"artifact_id": _INDEX_ID, "status": "complete"}
+
+    def cancel(self, job_id: str):
+        self.calls.append(("cancel", job_id))
+        return _snapshot(JobKind.RUN, cancelled=True)
+
+    def inspect(self, run_id: str, *, attempt_id: str | None = None):
+        self.calls.append(("inspect", run_id, attempt_id))
+        values = [{"sequence": index} for index in range(4)]
+        return {
+            "artifacts": values,
+            "events": values,
+            "run_id": run_id,
+            "selected_attempt_id": attempt_id,
+            "steps": values,
+        }
+
+    def compare(self, **kwargs):
+        self.calls.append(("compare", kwargs))
+        return {
+            "baseline_run_id": kwargs["baseline_run_id"],
+            "candidate_run_id": kwargs["candidate_run_id"],
+            "differences": [],
+            "equivalent": True,
+            "schema_version": "bijux.runtime.comparison.v1",
+        }
+
+    def inspect_corpus(self, corpus_id: ArtifactID):
+        self.calls.append(("corpus.inspect", corpus_id))
+        return {
+            "byte_length": 100,
+            "canonical_sha256": "d" * 64,
+            "generation_name": "a" * 64,
+            "schema_version": "bijux.canon.ingest.corpus_publication.v1",
+            "snapshot_id": str(corpus_id),
+        }
+
+    def inspect_index(self, index_id: ArtifactID):
+        self.calls.append(("index.inspect", index_id))
+        return {
+            "activation": {"active": True},
+            "chunk_count": 345,
+            "chunk_set_sha256": "e" * 64,
+            "compatibility": {"status": "not_requested"},
+            "dimension": 384,
+            "filters": {"applied_at_query_time": True},
+            "generation_id": str(index_id),
+            "integrity": {"status": "verified"},
+            "lineage": {"parent_generation_id": None},
+            "metadata_bytes": 10,
+            "model_lock_artifact_id": "model-lock-local",
+            "schema_version": "bijux.canon.index.inspection.v1",
+            "segments": [],
+            "snapshot_artifact_id": "snapshot-lineage-local",
+            "text_bytes": 20,
+            "vector_bytes": 30,
+        }
+
+
+def _write_request(tmp_path: Path, name: str, payload: dict[str, object]) -> Path:
+    path = tmp_path / f"{name}.json"
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    return path
+
+
+def _cli(service: _RecordingServices, argv: list[str]):
+    args = build_parser(prog_name="bijux-canon-runtime").parse_args(["v2", *argv])
+    stdout, stderr = StringIO(), StringIO()
+    with redirect_stdout(stdout), redirect_stderr(stderr):
+        code = run_v2_command(args, services=service)
+    document = stdout.getvalue() or stderr.getvalue()
+    return code, json.loads(document)
+
+
+@pytest.mark.parametrize(
+    ("command", "route"),
+    [
+        ("ingest", "/api/v2/corpora/prepare"),
+        ("index", "/api/v2/indexes/build"),
+        ("retrieve", "/api/v2/retrievals"),
+        ("ask", "/api/v2/answers"),
+        ("research", "/api/v2/research"),
+        ("run", "/api/v2/runs"),
+    ],
+)
+def test_create_operations_have_identical_requests_and_responses(
+    tmp_path: Path,
+    command: str,
+    route: str,
+) -> None:
+    payload = _request_payloads(tmp_path)[command]
+    request_path = _write_request(tmp_path, command, payload)
+    cli_service = _RecordingServices()
+    cli_code, cli_payload = _cli(
+        cli_service,
+        [
+            command,
+            "--request",
+            str(request_path),
+            "--idempotency-key",
+            _IDEMPOTENCY_KEY,
+        ],
+    )
+    http_service = _RecordingServices()
+    response = TestClient(create_app(http_service)).post(
+        route,
+        headers={
+            "Bijux-API-Version": "v2",
+            "Idempotency-Key": _IDEMPOTENCY_KEY,
+        },
+        json=payload,
+    )
+
+    assert cli_code == 0 and response.status_code == 202
+    assert cli_payload == response.json()
+    assert cli_service.calls == http_service.calls
+
+
+def test_replay_has_identical_request_and_response(tmp_path: Path) -> None:
+    payload = {
+        "context": _context("replay"),
+        "network_policy": "recorded-only",
+        "process_id": "transport-parity",
+        "provider_allowlist": [],
+        "source_attempt_id": _ATTEMPT_ID,
+        "timeout_seconds": 30,
+    }
+    request_path = _write_request(tmp_path, "replay", payload)
+    cli_service = _RecordingServices()
+    cli_code, cli_payload = _cli(
+        cli_service,
+        [
+            "replay",
+            _RUN_ID,
+            "--request",
+            str(request_path),
+            "--idempotency-key",
+            _IDEMPOTENCY_KEY,
+        ],
+    )
+    http_service = _RecordingServices()
+    response = TestClient(create_app(http_service)).post(
+        f"/api/v2/runs/{_RUN_ID}/replays",
+        headers={
+            "Bijux-API-Version": "v2",
+            "Idempotency-Key": _IDEMPOTENCY_KEY,
+        },
+        json=payload,
+    )
+
+    assert cli_code == 0 and response.status_code == 202
+    assert cli_payload == response.json()
+    assert cli_service.calls == http_service.calls
+
+
+@pytest.mark.parametrize(
+    ("command", "argument", "method", "route"),
+    [
+        (
+            "status",
+            "job_v1_transport_parity",
+            "get",
+            "/api/v2/jobs/job_v1_transport_parity",
+        ),
+        ("corpus-inspect", _CORPUS_ID, "get", f"/api/v2/corpora/{_CORPUS_ID}"),
+        ("index-inspect", _INDEX_ID, "get", f"/api/v2/indexes/{_INDEX_ID}"),
+    ],
+)
+def test_read_operations_have_identical_responses(
+    command: str,
+    argument: str,
+    method: str,
+    route: str,
+) -> None:
+    cli_service = _RecordingServices()
+    cli_code, cli_payload = _cli(cli_service, [command, argument])
+    http_service = _RecordingServices()
+    response = TestClient(create_app(http_service)).request(
+        method, route, headers={"Bijux-API-Version": "v2"}
+    )
+
+    assert cli_code == 0 and response.status_code == 200
+    assert cli_payload == response.json()
+    assert cli_service.calls == http_service.calls
+
+
+def test_result_marks_transport_metadata_without_changing_result() -> None:
+    cli_service = _RecordingServices()
+    cli_code, cli_payload = _cli(cli_service, ["result", "job_v1_transport_parity"])
+    http_service = _RecordingServices()
+    response = TestClient(create_app(http_service)).get(
+        "/api/v2/jobs/job_v1_transport_parity/result",
+        headers={"Bijux-API-Version": "v2"},
+    )
+    http_payload = response.json()
+
+    assert cli_code == 0 and response.status_code == 200
+    assert cli_payload["schema_version"] == "bijux.runtime.cli-job-result.v2"
+    assert http_payload["schema_version"] == "bijux.runtime.http-job-result.v2"
+    assert {**cli_payload, "schema_version": None} == {
+        **http_payload,
+        "schema_version": None,
+    }
+    assert cli_service.calls == http_service.calls
+
+
+def test_inspect_pagination_is_identical() -> None:
+    cli_service = _RecordingServices()
+    cli_code, cli_payload = _cli(
+        cli_service,
+        [
+            "inspect",
+            _RUN_ID,
+            "--attempt-id",
+            _ATTEMPT_ID,
+            "--offset",
+            "1",
+            "--limit",
+            "2",
+        ],
+    )
+    http_service = _RecordingServices()
+    response = TestClient(create_app(http_service)).get(
+        f"/api/v2/runs/{_RUN_ID}",
+        headers={"Bijux-API-Version": "v2"},
+        params={"attempt_id": _ATTEMPT_ID, "limit": 2, "offset": 1},
+    )
+
+    assert cli_code == 0 and response.status_code == 200
+    assert cli_payload == response.json()
+    assert cli_payload["page"] == {"limit": 2, "next_offset": 3, "offset": 1}
+    assert cli_service.calls == http_service.calls
+
+
+def test_compare_has_identical_policy_and_response(tmp_path: Path) -> None:
+    payload = {
+        "baseline_attempt_id": _ATTEMPT_ID,
+        "baseline_run_id": _RUN_ID,
+        "candidate_attempt_id": "attempt_v1_candidate",
+        "candidate_run_id": "run_v1_candidate",
+        "context": _context("compare"),
+        "dimensions": ["dag", "retrieval", "timing", "policy"],
+    }
+    request_path = _write_request(tmp_path, "compare", payload)
+    cli_service = _RecordingServices()
+    cli_code, cli_payload = _cli(
+        cli_service, ["compare", "--request", str(request_path)]
+    )
+    http_service = _RecordingServices()
+    response = TestClient(create_app(http_service)).post(
+        "/api/v2/comparisons",
+        headers={"Bijux-API-Version": "v2"},
+        json=payload,
+    )
+
+    assert cli_code == 0 and response.status_code == 200
+    assert cli_payload == response.json()
+    assert cli_service.calls == http_service.calls
+
+
+def test_cancel_has_identical_request_and_response(tmp_path: Path) -> None:
+    payload = {"context": _context("cancel"), "reason": "operator request"}
+    request_path = _write_request(tmp_path, "cancel", payload)
+    cli_service = _RecordingServices()
+    cli_code, cli_payload = _cli(
+        cli_service,
+        [
+            "cancel",
+            "job_v1_transport_parity",
+            "--request",
+            str(request_path),
+            "--idempotency-key",
+            _IDEMPOTENCY_KEY,
+        ],
+    )
+    http_service = _RecordingServices()
+    response = TestClient(create_app(http_service)).post(
+        "/api/v2/jobs/job_v1_transport_parity/cancellation",
+        headers={
+            "Bijux-API-Version": "v2",
+            "Idempotency-Key": _IDEMPOTENCY_KEY,
+        },
+        json=payload,
+    )
+
+    assert cli_code == 0 and response.status_code == 202
+    assert cli_payload == response.json()
+    assert cli_service.calls == http_service.calls
+
+
+def test_invalid_body_has_compatible_errors(tmp_path: Path) -> None:
+    payload = {"unknown": True}
+    request_path = _write_request(tmp_path, "invalid", payload)
+    cli_code, cli_problem = _cli(
+        _RecordingServices(),
+        ["run", "--request", str(request_path), "--idempotency-key", _IDEMPOTENCY_KEY],
+    )
+    response = TestClient(create_app(_RecordingServices())).post(
+        "/api/v2/runs",
+        headers={
+            "Bijux-API-Version": "v2",
+            "Idempotency-Key": _IDEMPOTENCY_KEY,
+        },
+        json=payload,
+    )
+    http_problem = response.json()
+
+    assert cli_code == 2 and response.status_code == 400
+    for field in ("code", "retryable", "remediation", "cause"):
+        assert cli_problem[field] == http_problem[field]
