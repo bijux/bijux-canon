@@ -380,6 +380,7 @@ class DependencyAwareScheduler:
                             self._events.record(
                                 step=step,
                                 event_kind=RuntimeEventKind.CANCELLED,
+                                inputs=upstream_by_step[step.step_id],
                                 duration_ms=duration_ms,
                                 error=exc,
                             )
@@ -396,6 +397,7 @@ class DependencyAwareScheduler:
                             self._events.record(
                                 step=step,
                                 event_kind=RuntimeEventKind.FAILED,
+                                inputs=upstream_by_step[step.step_id],
                                 duration_ms=duration_ms,
                                 error=exc,
                             )

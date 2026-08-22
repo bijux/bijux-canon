@@ -110,6 +110,19 @@ class RuntimeEventLedger:
         self._records: list[RuntimeEventRecord] = []
         self._artifact_ids: list[ArtifactID] = []
         self._lock = threading.Lock()
+        manifest = AddressedArtifact.from_json(
+            {
+                "attempt": _json_value(asdict(attempt)),
+                "plan": _json_value(asdict(plan)),
+                "request_id": str(attempt.request_id),
+                "run_id": str(attempt.run_id),
+                "schema_version": "bijux.runtime.execution-manifest.v1",
+            },
+            schema_id="bijux.runtime.execution-manifest.v1",
+            producer="bijux-canon-runtime:event-ledger",
+        )
+        self._store.put(manifest)
+        self._manifest_artifact_id = manifest.descriptor.artifact_id
 
     @property
     def plan_sha256(self) -> str:
@@ -125,6 +138,11 @@ class RuntimeEventLedger:
     def artifact_ids(self) -> tuple[ArtifactID, ...]:
         """Return the immutable event artifact chain."""
         return tuple(self._artifact_ids)
+
+    @property
+    def manifest_artifact_id(self) -> ArtifactID:
+        """Return the immutable plan and attempt manifest for inspection."""
+        return self._manifest_artifact_id
 
     def record(
         self,
@@ -150,6 +168,8 @@ class RuntimeEventLedger:
             "scope": step.inputs.scope,
         }
         with self._lock:
+            for output in outputs:
+                self._store.put(output.artifact)
             record = RuntimeEventRecord(
                 sequence=len(self._records),
                 event_kind=event_kind,
@@ -184,7 +204,17 @@ class RuntimeEventLedger:
                 _json_value(asdict(record)),
                 schema_id="bijux.runtime.execution-event.v1",
                 producer="bijux-canon-runtime:event-ledger",
-                dependencies=(self._artifact_ids[-1],) if self._artifact_ids else (),
+                dependencies=tuple(
+                    sorted(
+                        {
+                            self._artifact_ids[-1]
+                            if self._artifact_ids
+                            else self._manifest_artifact_id,
+                            *(item.artifact_id for item in inputs),
+                            *(item.artifact_id for item in outputs),
+                        }
+                    )
+                ),
             )
             self._store.put(artifact)
             self._records.append(record)
