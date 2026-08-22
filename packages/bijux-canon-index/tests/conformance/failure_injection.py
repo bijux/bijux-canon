@@ -4,12 +4,14 @@ from __future__ import annotations
 
 import pytest
 
+from bijux_canon_index.core.errors import AtomicityViolationError
 from bijux_canon_index.core.types import Document
-from tests.conformance.suite import default_backends, parametrize_backends
+
+from .suite import BackendCase, default_backends, parametrize_backends
 
 
 @parametrize_backends(default_backends())
-def test_mid_tx_failure_rolls_back(backend_case) -> None:
+def test_mid_tx_failure_rolls_back(backend_case: BackendCase) -> None:
     fixture = backend_case.factory()
     doc = Document(document_id="fail-doc", text="temp")
     with pytest.raises(RuntimeError), fixture.tx_factory() as tx:
@@ -19,21 +21,24 @@ def test_mid_tx_failure_rolls_back(backend_case) -> None:
 
 
 @parametrize_backends(default_backends())
-def test_double_commit_is_idempotent(backend_case) -> None:
+def test_double_commit_is_rejected(backend_case: BackendCase) -> None:
     fixture = backend_case.factory()
     doc = Document(document_id="double", text="ok")
     tx = fixture.tx_factory()
+    tx.__enter__()
     fixture.stores.vectors.put_document(tx, doc)
     tx.commit()
-    tx.commit()  # should be no-op
+    with pytest.raises(AtomicityViolationError):
+        tx.commit()
     assert fixture.stores.vectors.get_document(doc.document_id) == doc
 
 
 @parametrize_backends(default_backends())
-def test_abort_after_stage_discards_changes(backend_case) -> None:
+def test_abort_after_stage_discards_changes(backend_case: BackendCase) -> None:
     fixture = backend_case.factory()
     doc = Document(document_id="abort-doc", text="temp")
     tx = fixture.tx_factory()
+    tx.__enter__()
     fixture.stores.vectors.put_document(tx, doc)
     tx.abort()
     assert fixture.stores.vectors.get_document(doc.document_id) is None

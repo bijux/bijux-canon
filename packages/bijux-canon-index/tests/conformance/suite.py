@@ -7,7 +7,9 @@ from __future__ import annotations
 
 from collections.abc import Callable, Iterable
 from pathlib import Path
-from typing import Any, NamedTuple, cast
+from typing import NamedTuple, cast
+
+import pytest
 
 from bijux_canon_index.contracts.authz import Authz
 from bijux_canon_index.contracts.resources import ExecutionResources
@@ -26,9 +28,7 @@ class BackendCase(NamedTuple):
     factory: Callable[[], ConformanceFixture]
 
 
-def parametrize_backends(backends: Iterable[BackendCase]) -> Any:
-    import pytest
-
+def parametrize_backends(backends: Iterable[BackendCase]) -> pytest.MarkDecorator:
     ids = [case.name for case in backends]
     return pytest.mark.parametrize("backend_case", backends, ids=ids)
 
