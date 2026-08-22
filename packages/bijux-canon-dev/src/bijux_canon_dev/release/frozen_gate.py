@@ -19,12 +19,20 @@ class FrozenGateError(RuntimeError):
     """A frozen gate could not be prepared or launched safely."""
 
 
+TOX_COMMAND = (
+    "uv",
+    "tool",
+    "run",
+    "--from",
+    "tox>=4.11,<5",
+    "--with",
+    "tox-gh-actions>=3.1,<4",
+    "tox",
+)
+
 GATE_COMMANDS: dict[str, tuple[tuple[str, ...], ...]] = {
     "test-all": (("make", "--no-print-directory", "test-all"),),
-    "tox": (
-        ("make", "--no-print-directory", "root-check-env"),
-        ("artifacts/root/check-venv/bin/python", "-m", "tox"),
-    ),
+    "tox": (TOX_COMMAND,),
     "ci-github": (
         (
             "make",
@@ -34,8 +42,7 @@ GATE_COMMANDS: dict[str, tuple[tuple[str, ...], ...]] = {
             "check-make-layout",
             "help",
         ),
-        ("make", "--no-print-directory", "root-check-env"),
-        ("artifacts/root/check-venv/bin/python", "-m", "tox"),
+        TOX_COMMAND,
     ),
 }
 

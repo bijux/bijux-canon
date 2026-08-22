@@ -83,14 +83,25 @@ def test_frozen_gate_runs_selected_tracked_revision_in_background(
 def test_frozen_gate_defines_independent_complete_gate_commands() -> None:
     assert set(GATE_COMMANDS) == {"ci-github", "test-all", "tox"}
     assert GATE_COMMANDS["test-all"][-1][-1] == "test-all"
-    assert GATE_COMMANDS["tox"][-1][-2:] == ("-m", "tox")
+    assert GATE_COMMANDS["tox"] == (
+        (
+            "uv",
+            "tool",
+            "run",
+            "--from",
+            "tox>=4.11,<5",
+            "--with",
+            "tox-gh-actions>=3.1,<4",
+            "tox",
+        ),
+    )
     assert GATE_COMMANDS["ci-github"][0][-4:] == (
         "check-shared-bijux-py",
         "check-config-layout",
         "check-make-layout",
         "help",
     )
-    assert GATE_COMMANDS["ci-github"][-1][-2:] == ("-m", "tox")
+    assert GATE_COMMANDS["ci-github"][-1] == GATE_COMMANDS["tox"][-1]
 
 
 def test_frozen_gates_can_overlap_without_sharing_worktrees(
