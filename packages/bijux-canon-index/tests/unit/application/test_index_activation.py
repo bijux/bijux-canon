@@ -17,6 +17,7 @@ from bijux_canon_index.application import (
     IndexActivationError,
     IndexBuildLimits,
     IndexGeneration,
+    IndexGenerationIntegrityError,
     IndexGenerationRegistry,
 )
 from bijux_canon_index.infra.adapters.faiss.hnsw import HnswParameters
@@ -67,7 +68,9 @@ def test_partial_generation_is_never_admitted_or_activated(tmp_path: Path) -> No
     partial.mkdir()
     (partial / "lexical.sqlite").write_bytes(b"partial")
 
-    with pytest.raises(FileNotFoundError):
+    with pytest.raises(
+        IndexGenerationIntegrityError, match="generation manifest is unavailable"
+    ):
         registry.admit(partial)
     with pytest.raises((FileNotFoundError, IndexActivationError)):
         registry.activate("sha256:" + "0" * 64)
