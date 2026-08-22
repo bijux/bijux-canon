@@ -171,6 +171,54 @@ def test_missing_prepared_blob_aborts_recovery(tmp_path: Path, resolved_flow) ->
     connection.close()
 
 
+def test_corrupt_candidate_retains_last_good_publication_and_forensic_state(
+    tmp_path: Path, resolved_flow
+) -> None:
+    coordinator, payload_root, db_path, tenant_id, run_id = _coordinator(
+        tmp_path, resolved_flow
+    )
+    coordinator.publish(
+        tenant_id=tenant_id,
+        run_id=run_id,
+        transaction_id="publish-good",
+        items=(_item("last good", revision=0),),
+        created_at=_NOW,
+        completed_at=_LATER,
+    )
+    candidate = _item("tampered candidate", revision=1)
+    coordinator.prepare(
+        tenant_id=tenant_id,
+        run_id=run_id,
+        transaction_id="publish-corrupt",
+        items=(candidate,),
+        created_at=_LATER,
+    )
+    digest = str(candidate.artifact.descriptor.artifact_id).removeprefix("sha256:")
+    payload_path = payload_root / "objects" / "sha256" / digest[:2] / digest / "payload"
+    payload_path.write_bytes(b"modified candidate bytes")
+
+    with pytest.raises(PublicationRecoveryError, match="durable payload validation"):
+        coordinator.commit(
+            tenant_id=tenant_id,
+            run_id=run_id,
+            transaction_id="publish-corrupt",
+            completed_at=_LATER,
+        )
+
+    connection = duckdb.connect(str(db_path), read_only=True)
+    assert connection.execute(
+        "SELECT revision, reference_state FROM artifact_references ORDER BY revision"
+    ).fetchall() == [(0, "active")]
+    assert connection.execute(
+        "SELECT transaction_id, status, failure_reason "
+        "FROM publication_transactions ORDER BY transaction_id"
+    ).fetchall() == [
+        ("publish-corrupt", "aborted", "durable payload unavailable or invalid"),
+        ("publish-good", "committed", None),
+    ]
+    connection.close()
+
+
 def test_logical_activation_advances_once_without_split_brain(
     tmp_path: Path,
     resolved_flow,

@@ -123,3 +123,28 @@ def test_failed_pointer_replacement_preserves_previous_activation(
         registry.activate(second_id)
 
     assert registry.active_generation_id() == first_id
+
+
+def test_corrupt_candidate_retains_last_good_queryable_generation(
+    tmp_path: Path,
+) -> None:
+    registry = IndexGenerationRegistry(tmp_path / "registry")
+    with _build(tmp_path / "first", "a") as first:
+        first_id = registry.admit(first.path)
+    registry.activate(first_id)
+    with _build(tmp_path / "candidate", "b") as candidate:
+        candidate_path = candidate.path
+    segment = candidate_path / "dense-exact.sqlite"
+    with segment.open("r+b") as handle:
+        handle.seek(-1, 2)
+        original = handle.read(1)
+        handle.seek(-1, 2)
+        handle.write(bytes([original[0] ^ 0xFF]))
+
+    with pytest.raises(IndexGenerationIntegrityError, match="segment hash mismatch"):
+        registry.admit(candidate_path)
+
+    assert registry.active_generation_id() == first_id
+    with registry.open_active() as active:
+        assert active.manifest.generation_id == first_id
+        assert active.lexical.query("ancient DNA")
