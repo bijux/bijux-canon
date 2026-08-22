@@ -254,6 +254,39 @@ def test_source_metadata_locator_disagreement_fails_closed() -> None:
     assert caught.value.code is CitationLinkingErrorCode.source_identity_mismatch
 
 
+def test_local_content_addressed_source_urn_is_admitted() -> None:
+    source_hash = _sha("local source")
+
+    source = CitationSourceDescriptor.create(
+        source_id="local-source",
+        title="Local source",
+        canonical_uri=f"urn:bijux:source:{source_hash}",
+        doi=None,
+        source_content_sha256=source_hash,
+    )
+
+    assert source.canonical_uri == f"urn:bijux:source:{source_hash}"
+
+
+@pytest.mark.parametrize(
+    "value",
+    (
+        "file:///private/research/source.pdf",
+        "urn:other:source:" + "a" * 64,
+        "urn:bijux:source:not-a-sha",
+    ),
+)
+def test_nonportable_local_source_uri_is_rejected(value: str) -> None:
+    with pytest.raises(ValidationError, match="source URI"):
+        CitationSourceDescriptor.create(
+            source_id="local-source",
+            title="Local source",
+            canonical_uri=value,
+            doi=None,
+            source_content_sha256=_sha("local source"),
+        )
+
+
 def test_claim_citation_set_rejects_identity_drift() -> None:
     claims, packet, _, source = _provider_claims()
     result = ClaimCitationLinker().link(

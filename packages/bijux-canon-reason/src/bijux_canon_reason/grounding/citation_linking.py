@@ -113,8 +113,20 @@ class CitationSourceDescriptor(StableModel):
     @classmethod
     def _validate_uri(cls, value: str) -> str:
         parsed = urlparse(value)
-        if parsed.scheme not in {"http", "https"} or not parsed.netloc:
-            raise ValueError("citation source URI must be absolute HTTP(S)")
+        is_network_source = parsed.scheme in {"http", "https"} and bool(parsed.netloc)
+        is_local_content_source = (
+            parsed.scheme == "urn"
+            and parsed.path.startswith("bijux:source:")
+            and len(parsed.path.removeprefix("bijux:source:")) == 64
+            and all(
+                character in "0123456789abcdef"
+                for character in parsed.path.removeprefix("bijux:source:")
+            )
+        )
+        if not (is_network_source or is_local_content_source):
+            raise ValueError(
+                "citation source URI must be absolute HTTP(S) or a Bijux source URN"
+            )
         if parsed.username or parsed.password:
             raise ValueError("citation source URI must not contain credentials")
         return value
