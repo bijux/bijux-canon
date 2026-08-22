@@ -268,10 +268,13 @@ class CanonicalReasonOperationAdapter:
                 "evidence_set_artifact_id": str(
                     retrieval_artifact.descriptor.artifact_id
                 ),
+                "generation_id": evidence_set.get("generation_id"),
+                "index_artifact_id": evidence_set.get("index_artifact_id"),
                 "mode": "credential-free-rag-v1",
                 "provider": step.inputs.provider,
                 "query": step.inputs.query,
                 "schema_version": "bijux.canon.reason.claim_graph.v1",
+                "retrieval_filters": evidence_set.get("filters"),
                 "sources": [source.model_dump(mode="json") for source in sources],
                 "status": synthesis.outcome.value,
                 "synthesis": synthesis.model_dump(mode="json"),

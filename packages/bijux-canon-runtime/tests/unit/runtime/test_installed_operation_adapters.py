@@ -36,6 +36,9 @@ from bijux_canon_runtime.runtime.execution.installed_operation_adapters import (
     CanonicalLexicalIndexOperationAdapter,
     CanonicalSnapshotOperationAdapter,
 )
+from bijux_canon_runtime.runtime.execution.installed_agent_adapter import (
+    CanonicalAgentOperationAdapter,
+)
 from bijux_canon_runtime.runtime.execution.installed_retrieval_adapter import (
     CanonicalRetrievalOperationAdapter,
 )
@@ -298,6 +301,49 @@ def test_installed_ingest_and_index_adapters_persist_restartable_payloads(
         "content_sha256"
     ]
     assert claim_graph["citation_verification"]["integrity_verified_links"] == 1
+
+    research_request = replace(
+        ask_request,
+        request_id=RequestID("request-research"),
+        operation=RuntimeRequestOperation.RESEARCH,
+    )
+    agent_step = next(
+        step
+        for step in planner.plan(research_request).steps
+        if step.operation is DagOperation.AGENT
+    )
+    agent_upstream = StepOutputArtifact(
+        contract_id="reason.claim-graph.v1",
+        producer_step_id="reason",
+        producer_operation=DagOperation.REASON,
+        artifact=reason.artifacts[0].artifact,
+    )
+    research = OperationDispatcher(
+        (
+            CanonicalAgentOperationAdapter(
+                store=store,
+                index=index_service,
+                embedding=_Embedding(),
+                vex_store_root=tmp_path / "runtime" / "vex",
+            ),
+        )
+    ).dispatch(agent_step, (agent_upstream,))
+    research_trace = json.loads(research.artifacts[0].payload)
+    assert research_trace["status"] == "budget_exhausted"
+    assert research_trace["termination"]["stop"] is True
+    assert research_trace["counterevidence_plan"]["requests"]
+    assert "contradictory evidence" in research_trace["counterevidence_plan"][
+        "requests"
+    ][0]["query_text"]
+    assert research_trace["counterevidence_run"]["records"][0]["outcome"] == (
+        "candidate_evidence_found"
+    )
+    assert research_trace["opposition_candidates"]
+    assert "require relation classification" in research_trace["insufficiencies"][0]
+    assert len(research_trace["causal_events"]) == 4
+    assert research_trace["causal_trace"]["head_artifact_id"] == (
+        research_trace["causal_events"][-1]["artifact_id"]
+    )
 
     offline_request = replace(
         retrieval_request,

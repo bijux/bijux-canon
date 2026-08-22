@@ -26,6 +26,9 @@ from bijux_canon_runtime.runtime.execution.application_executor import (
     RuntimeExecutionService,
 )
 from bijux_canon_runtime.runtime.execution.durable_jobs import DurableJobManager
+from bijux_canon_runtime.runtime.execution.installed_agent_adapter import (
+    CanonicalAgentOperationAdapter,
+)
 from bijux_canon_runtime.runtime.execution.installed_operation_adapters import (
     CanonicalDenseIndexOperationAdapter,
     CanonicalEmbeddingOperationAdapter,
@@ -109,6 +112,12 @@ def compose_runtime_application_services(
                 vex_store_root=working_root / "vex",
             ),
             CanonicalReasonOperationAdapter(),
+            CanonicalAgentOperationAdapter(
+                store=store,
+                index=index,
+                embedding=embedding,
+                vex_store_root=working_root / "vex",
+            ),
         )
     )
     execution = RuntimeExecutionService(

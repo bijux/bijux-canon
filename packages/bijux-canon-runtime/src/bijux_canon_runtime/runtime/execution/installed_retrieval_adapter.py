@@ -322,6 +322,18 @@ class CanonicalRetrievalOperationAdapter:
             _json_value(
                 {
                     "content_trust": "untrusted-source-text",
+                    "filters": {
+                        "document_ids": list(
+                            ()
+                            if step.inputs.filters is None
+                            else step.inputs.filters.document_ids
+                        ),
+                        "source_uris": list(
+                            ()
+                            if step.inputs.filters is None
+                            else step.inputs.filters.source_uris
+                        ),
+                    },
                     "generation_id": inspection.generation_id,
                     "hits": [asdict(hit) for hit in resolution.hits],
                     "index_artifact_id": str(index_artifact.descriptor.artifact_id),
