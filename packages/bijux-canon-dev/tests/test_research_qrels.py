@@ -45,9 +45,9 @@ def test_qrels_cover_every_source_anchor_and_relevance_grade() -> None:
     assert result["qrel_count"] == 30
     by_source: dict[str, set[int]] = {}
     for record in records:
-        by_source.setdefault(str(record["source_id"]), set()).add(
-            int(record["relevance_grade"])
-        )
+        relevance_grade = record["relevance_grade"]
+        assert isinstance(relevance_grade, int)
+        by_source.setdefault(str(record["source_id"]), set()).add(relevance_grade)
     assert set(map(frozenset, by_source.values())) == {frozenset({1, 2, 3})}
 
 

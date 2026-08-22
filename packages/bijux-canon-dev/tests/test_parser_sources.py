@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from email.message import Message
 from io import BytesIO
 import json
 from pathlib import Path
@@ -133,9 +134,9 @@ def test_http_retry_is_bounded_for_transient_errors(
         nonlocal attempts
         attempts += 1
         if attempts < 3:
-            raise HTTPError(
-                "https://example.test", 429, "retry", {"Retry-After": "0"}, None
-            )
+            headers = Message()
+            headers["Retry-After"] = "0"
+            raise HTTPError("https://example.test", 429, "retry", headers, None)
         return terminal
 
     monkeypatch.setattr("urllib.request.urlopen", fake_open)

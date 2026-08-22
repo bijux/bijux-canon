@@ -40,15 +40,19 @@ def test_real_portfolio_is_fully_admitted_with_explicit_scope() -> None:
         "flagship_research_corpus": False,
         "scientific_claims_admitted": False,
     }
-    assert set(document["checks"].values()) == {"passed"}
-    assert all(source["state"] == "admitted" for source in document["sources"])
+    checks = document["checks"]
+    assert isinstance(checks, dict)
+    assert set(checks.values()) == {"passed"}
+    sources = document["sources"]
+    assert isinstance(sources, list)
+    assert all(source["state"] == "admitted" for source in sources)
 
 
 def test_ocr_specimen_is_admitted_only_as_typed_refusal() -> None:
     document = _admission()
-    source = next(
-        item for item in document["sources"] if item["format_id"] == "ocr-required"
-    )
+    sources = document["sources"]
+    assert isinstance(sources, list)
+    source = next(item for item in sources if item["format_id"] == "ocr-required")
     assert source["qualification_outcome"] == "ocr-required"
     assert source["disposition"] == "verified_ocr_refusal"
     assert source["truth_roles"] == ["ocr-required-outcome"]
@@ -76,7 +80,9 @@ def test_admission_rejects_noncanonical_source_identity() -> None:
 
 def test_admission_identity_rejects_scope_tampering() -> None:
     document = deepcopy(_admission())
-    document["portfolio_scope"]["flagship_research_corpus"] = True
+    portfolio_scope = document["portfolio_scope"]
+    assert isinstance(portfolio_scope, dict)
+    portfolio_scope["flagship_research_corpus"] = True
     document["admission_identity_sha256"] = admission_identity(document)
     with pytest.raises(RuntimeError, match="scope drift"):
         validate_admission_document(document)

@@ -1,13 +1,16 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
+
+import pytest
 
 from bijux_canon_dev.security import pip_audit_gate
 
 
 def test_gate_rejects_ungoverned_ignore_ids(
-    monkeypatch,
-    capsys,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
 ) -> None:
     monkeypatch.setattr(pip_audit_gate, "IGNORE_IDS", {"PYSEC-2099-1"})
 
@@ -15,7 +18,11 @@ def test_gate_rejects_ungoverned_ignore_ids(
     assert "ungoverned dependency vulnerability suppressions" in capsys.readouterr().out
 
 
-def test_gate_fails_a_vulnerable_dependency(tmp_path, monkeypatch, capsys) -> None:
+def test_gate_fails_a_vulnerable_dependency(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
     report = tmp_path / "pip-audit.json"
     report.write_text(
         json.dumps(
@@ -48,9 +55,9 @@ def test_gate_fails_a_vulnerable_dependency(tmp_path, monkeypatch, capsys) -> No
 
 
 def test_gate_accepts_a_report_without_vulnerabilities(
-    tmp_path,
-    monkeypatch,
-    capsys,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
 ) -> None:
     report = tmp_path / "pip-audit.json"
     report.write_text(

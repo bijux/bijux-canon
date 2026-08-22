@@ -99,10 +99,10 @@ def test_pdf_truth_is_page_and_extractor_bound() -> None:
         "body-paragraph",
         "reference",
     }
-    assert all(
-        record["locator"]["extractor"] == "pypdf-6.15.0-page-extract-text"
-        for record in pdf_records
-    )
+    for record in pdf_records:
+        locator = record["locator"]
+        assert isinstance(locator, dict)
+        assert locator["extractor"] == "pypdf-6.15.0-page-extract-text"
 
 
 def test_ocr_truth_is_typed_refusal_without_invented_text() -> None:

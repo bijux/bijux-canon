@@ -60,7 +60,11 @@ def test_lock_write_is_byte_stable_across_restart(tmp_path: Path) -> None:
 def test_lock_identity_rejects_metadata_tampering() -> None:
     document = _real_lock()
     tampered = deepcopy(document)
-    tampered["sources"][0]["attribution"] = "changed"
+    sources = tampered["sources"]
+    assert isinstance(sources, list)
+    source = sources[0]
+    assert isinstance(source, dict)
+    source["attribution"] = "changed"
     with pytest.raises(RuntimeError, match="identity mismatch"):
         validate_lock_document(tampered)
 
@@ -78,6 +82,7 @@ def test_builder_rejects_media_byte_drift(tmp_path: Path) -> None:
 def test_transformed_html_contains_no_excluded_interface_material() -> None:
     document = _real_lock()
     sources = document["sources"]
+    assert isinstance(sources, list)
     html = next(source for source in sources if source["format_id"] == "html")
     assert html["transformations"] == ["extract-licensed-plos-article-html-v1"]
     body = (PORTFOLIO_ROOT / html["local_path"]).read_bytes().lower()
