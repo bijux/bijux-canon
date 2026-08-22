@@ -58,9 +58,7 @@ class RuntimeRunReceiptPublisher:
         self._store = store
         self._inspector = RuntimeRunInspector(store)
         self._lock_timeout_seconds = lock_timeout_seconds
-        self._process_lock = _process_lock(
-            self._store.root / ".run-publications.lock"
-        )
+        self._process_lock = _process_lock(self._store.root / ".run-publications.lock")
 
     def publish(
         self,
@@ -137,9 +135,7 @@ class RuntimeRunReceiptPublisher:
         previous_receipt_id = (
             None
             if not existing
-            else max(existing, key=lambda item: self._integer(item[1], "revision"))[
-                0
-            ]
+            else max(existing, key=lambda item: self._integer(item[1], "revision"))[0]
         )
         publication_id = self._publication_id(
             run_id=run_id,
@@ -164,7 +160,11 @@ class RuntimeRunReceiptPublisher:
             sorted(
                 {
                     *(item.artifact_id for item in inspection.artifacts),
-                    *((previous_receipt_id,) if previous_receipt_id is not None else ()),
+                    *(
+                        (previous_receipt_id,)
+                        if previous_receipt_id is not None
+                        else ()
+                    ),
                 }
             )
         )
@@ -195,9 +195,7 @@ class RuntimeRunReceiptPublisher:
         artifacts = [
             {
                 "artifact_id": str(item.artifact_id),
-                "dependencies": [
-                    str(value) for value in item.dependency_artifact_ids
-                ],
+                "dependencies": [str(value) for value in item.dependency_artifact_ids],
                 "media_type": item.media_type,
                 "payload_sha256": item.payload_sha256,
                 "producer": item.producer,
@@ -229,13 +227,9 @@ class RuntimeRunReceiptPublisher:
             "artifact_manifest_sha256": hashlib.sha256(
                 canonical_json_bytes(artifacts)
             ).hexdigest(),
-            "bindings": {
-                key: str(value) for key, value in asdict(bindings).items()
-            },
+            "bindings": {key: str(value) for key, value in asdict(bindings).items()},
             "checks": checks,
-            "checks_sha256": hashlib.sha256(
-                canonical_json_bytes(checks)
-            ).hexdigest(),
+            "checks_sha256": hashlib.sha256(canonical_json_bytes(checks)).hexdigest(),
             "limitations": list(limitations),
             "plan_sha256": inspection.plan_sha256,
             "replay": {

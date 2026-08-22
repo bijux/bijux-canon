@@ -101,7 +101,9 @@ class ToolGrant:
             raise ValueError("tool grant max_calls must not be negative")
         if self.timeout_ms < 1:
             raise ValueError("tool grant timeout_ms must be positive")
-        normalized_roots = tuple(_normalize_root(root) for root in self.filesystem_roots)
+        normalized_roots = tuple(
+            _normalize_root(root) for root in self.filesystem_roots
+        )
         if len(normalized_roots) != len(set(normalized_roots)):
             raise ValueError("tool grant filesystem roots must be unique")
         object.__setattr__(self, "filesystem_roots", normalized_roots)
@@ -145,13 +147,17 @@ class ToolInvocation:
                 raise ValueError(f"tool invocation {name} must not be empty")
         for name in ("plan_sha256", "request_sha256"):
             value = str(getattr(self, name))
-            if len(value) != 64 or any(char not in "0123456789abcdef" for char in value):
+            if len(value) != 64 or any(
+                char not in "0123456789abcdef" for char in value
+            ):
                 raise ValueError(f"tool invocation {name} must be a SHA-256 digest")
         if not self.scope or len(self.scope) != len(set(self.scope)):
             raise ValueError("tool invocation scope must be nonempty and unique")
         if self.timeout_ms < 1:
             raise ValueError("tool invocation timeout_ms must be positive")
-        normalized_paths = tuple(_normalize_path(path) for path in self.filesystem_paths)
+        normalized_paths = tuple(
+            _normalize_path(path) for path in self.filesystem_paths
+        )
         if len(normalized_paths) != len(set(normalized_paths)):
             raise ValueError("tool invocation filesystem paths must be unique")
         object.__setattr__(self, "filesystem_paths", normalized_paths)

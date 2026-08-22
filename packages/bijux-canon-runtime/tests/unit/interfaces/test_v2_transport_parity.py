@@ -191,9 +191,7 @@ class _RecordingServices(RuntimeApplicationServicesV2):
             "baseline_run_id": kwargs["baseline_run_id"],
             "candidate_run_id": kwargs["candidate_run_id"],
             "comparison_sha256": "f" * 64,
-            "differences": [
-                {"dimension": f"dimension-{index}"} for index in range(4)
-            ],
+            "differences": [{"dimension": f"dimension-{index}"} for index in range(4)],
             "equivalent": True,
             "schema_version": "bijux.runtime.comparison.v1",
         }
@@ -307,7 +305,9 @@ def test_process_owned_cli_services_finish_before_return(
     closed: list[bool] = []
     monkeypatch.setattr(v2_commands, "_require_services", lambda _: service)
     monkeypatch.setattr(service, "close", lambda: closed.append(True))
-    request_path = _write_request(tmp_path, "index", _request_payloads(tmp_path)["index"])
+    request_path = _write_request(
+        tmp_path, "index", _request_payloads(tmp_path)["index"]
+    )
 
     code, _ = _cli(
         None,

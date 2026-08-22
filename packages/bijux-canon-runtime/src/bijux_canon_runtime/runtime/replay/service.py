@@ -92,12 +92,12 @@ class RuntimeReplayService:
                 policy=policy,
             )
         if current.selected_attempt_id != source_attempt_id:
-            raise RuntimeReplayError("a replay must extend the latest persisted attempt")
+            raise RuntimeReplayError(
+                "a replay must extend the latest persisted attempt"
+            )
         source_identity = _attempt_identity(
             next(
-                item
-                for item in source.attempts
-                if item.attempt_id == source_attempt_id
+                item for item in source.attempts if item.attempt_id == source_attempt_id
             ),
             run_id=run_id,
         )
@@ -341,15 +341,13 @@ def _compare(
         ratio = max(source_duration, replay_duration) / min(
             source_duration, replay_duration
         )
-    within_tolerance = (
-        delta <= policy.tolerance.max_duration_delta_ms
-        and (ratio is None or ratio <= policy.tolerance.max_duration_ratio)
+    within_tolerance = delta <= policy.tolerance.max_duration_delta_ms and (
+        ratio is None or ratio <= policy.tolerance.max_duration_ratio
     )
     completed = replay.status is InspectedRunStatus.COMPLETED
     semantics_accepted = completed and dag_equal
     timing_accepted = (
-        within_tolerance
-        or policy.network_policy is not ReplayNetworkPolicy.PERMITTED
+        within_tolerance or policy.network_policy is not ReplayNetworkPolicy.PERMITTED
     )
     if policy.replay_mode is ReplayMode.STRICT:
         accepted = semantics_accepted and exact and timing_accepted

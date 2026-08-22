@@ -51,9 +51,7 @@ class RuntimeRequestPlanner:
             for spec in specs
         )
         step_ids = {step.step_id for step in steps}
-        depended_on = {
-            dependency for step in steps for dependency in step.depends_on
-        }
+        depended_on = {dependency for step in steps for dependency in step.depends_on}
         entry_ids = tuple(step.step_id for step in steps if not step.depends_on)
         terminal_ids = tuple(
             step.step_id for step in steps if step.step_id not in depended_on
@@ -286,14 +284,10 @@ class RuntimeRequestPlanner:
     def _step_record(step: ConcreteDagStep) -> dict[str, object]:
         return {
             "depends_on": list(step.depends_on),
-            "input_artifact_contract_ids": list(
-                step.input_artifact_contract_ids
-            ),
+            "input_artifact_contract_ids": list(step.input_artifact_contract_ids),
             "inputs": asdict(step.inputs),
             "operation": step.operation.value,
-            "output_artifact_contract_ids": list(
-                step.output_artifact_contract_ids
-            ),
+            "output_artifact_contract_ids": list(step.output_artifact_contract_ids),
             "step_id": step.step_id,
         }
 
@@ -338,8 +332,7 @@ class RuntimeRequestPlanner:
             ready = {
                 step.step_id
                 for step in plan.steps
-                if step.step_id in remaining
-                and set(step.depends_on).issubset(resolved)
+                if step.step_id in remaining and set(step.depends_on).issubset(resolved)
             }
             if not ready:
                 raise ValueError("request plan contains a dependency cycle")

@@ -124,7 +124,9 @@ class ResearchApplicationRecord(StableModel):
         if self.comparison.baseline_attempt_artifact_id != self.attempts[0].artifact_id:
             raise ValueError("comparison baseline does not match the root attempt")
         if self.comparison.current_attempt_artifact_id != self.attempts[1].artifact_id:
-            raise ValueError("comparison current attempt does not match the child attempt")
+            raise ValueError(
+                "comparison current attempt does not match the child attempt"
+            )
         return self
 
 
@@ -353,7 +355,9 @@ class ResearchApplicationService:
             authority_artifact_id=provenance.artifact_id,
         )
         child = create_research_reasoning_attempt(
-            research_input_artifact_ids=tuple(sorted((*input_ids, provenance.artifact_id))),
+            research_input_artifact_ids=tuple(
+                sorted((*input_ids, provenance.artifact_id))
+            ),
             events=child_events,
             parent_attempt_artifact_id=root.artifact_id,
             base_state_artifact_id=root_replay.state_artifact_id,
@@ -415,9 +419,7 @@ def _events(
         events.append(
             create_research_graph_event(
                 sequence=sequence,
-                previous_event_artifact_id=(
-                    events[-1].artifact_id if events else None
-                ),
+                previous_event_artifact_id=(events[-1].artifact_id if events else None),
                 kind=kind,
                 target_artifact_id=target,
                 authority=ResearchChangeAuthority.deterministic,

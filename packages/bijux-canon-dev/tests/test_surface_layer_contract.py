@@ -102,6 +102,4 @@ def test_transport_controllers_delegate_domain_behavior() -> None:
                     violations.append(
                         f"{path.relative_to(REPO_ROOT)}:{node.lineno}: {constructor}()"
                     )
-    assert not violations, "transport-owned domain behavior:\n" + "\n".join(
-        violations
-    )
+    assert not violations, "transport-owned domain behavior:\n" + "\n".join(violations)

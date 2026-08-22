@@ -58,9 +58,7 @@ def _build(path: Path) -> IndexGeneration:
         snapshot_artifact_id="sha256:corpus-snapshot",
         model_lock_artifact_id="sha256:model-lock",
         limits=_limits(),
-        hnsw_parameters=HnswParameters(
-            m=2, ef_construction=8, ef_search=8, seed=13
-        ),
+        hnsw_parameters=HnswParameters(m=2, ef_construction=8, ef_search=8, seed=13),
     )
 
 

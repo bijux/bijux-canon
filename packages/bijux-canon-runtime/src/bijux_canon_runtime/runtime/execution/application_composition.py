@@ -13,7 +13,10 @@ from pathlib import Path
 import threading
 
 from bijux_canon_index.application import IndexGenerationArchive, IndexService
-from bijux_canon_index.infra.embeddings.local_model import EmbeddedBatch, LocalEmbeddingModel
+from bijux_canon_index.infra.embeddings.local_model import (
+    EmbeddedBatch,
+    LocalEmbeddingModel,
+)
 from bijux_canon_index.infra.embeddings.model_cache import load_model_lock
 
 from bijux_canon_runtime.application.operations import (
@@ -158,9 +161,7 @@ def compose_runtime_application_services(
         )
         return {
             "accepted": outcome.comparison.accepted,
-            "exact_artifact_identities": (
-                outcome.comparison.exact_artifact_identities
-            ),
+            "exact_artifact_identities": (outcome.comparison.exact_artifact_identities),
             "replay_attempt_id": outcome.replay.selected_attempt_id,
             "reused": outcome.reused,
             "run_id": outcome.replay.run_id,
@@ -191,9 +192,7 @@ def compose_runtime_application_services(
             raise ValueError("corpus snapshot identity is invalid")
         return {
             "byte_length": len(artifact.canonical_bytes),
-            "canonical_sha256": hashlib.sha256(
-                artifact.canonical_bytes
-            ).hexdigest(),
+            "canonical_sha256": hashlib.sha256(artifact.canonical_bytes).hexdigest(),
             "generation_name": snapshot_id.removeprefix("sha256:"),
             "schema_version": "bijux.canon.ingest.corpus_publication.v1",
             "snapshot_id": snapshot_id,

@@ -8,7 +8,10 @@ from __future__ import annotations
 import json
 
 from bijux_canon_runtime.model.artifact import AddressedArtifact, canonical_json_bytes
-from bijux_canon_runtime.model.execution.request_plan import ConcreteDagStep, DagOperation
+from bijux_canon_runtime.model.execution.request_plan import (
+    ConcreteDagStep,
+    DagOperation,
+)
 from bijux_canon_runtime.ontology.ids import ArtifactID
 from bijux_canon_runtime.runtime.execution.installed_operation_adapters import (
     _bounded_output,
@@ -128,16 +131,17 @@ class CanonicalPersistenceOperationAdapter:
         try:
             subject = self._store.load(subject_id)
         except (KeyError, ValueError) as error:
-            raise StepDispatchError("verified subject is unavailable in Runtime CAS") from error
-        if (
-            subject.descriptor.schema_id
-            != _required_string(receipt.get("subject_contract_id"), "subject_contract_id")
-            or str(subject.descriptor.payload_sha256)
-            != _required_string(
-                receipt.get("subject_payload_sha256"), "subject_payload_sha256"
-            )
+            raise StepDispatchError(
+                "verified subject is unavailable in Runtime CAS"
+            ) from error
+        if subject.descriptor.schema_id != _required_string(
+            receipt.get("subject_contract_id"), "subject_contract_id"
+        ) or str(subject.descriptor.payload_sha256) != _required_string(
+            receipt.get("subject_payload_sha256"), "subject_payload_sha256"
         ):
-            raise StepDispatchError("verification receipt does not match stored subject")
+            raise StepDispatchError(
+                "verification receipt does not match stored subject"
+            )
         owned_artifacts = _subject_owned_artifacts(self._store, subject)
         lineage = _lineage(
             self._store,
@@ -194,9 +198,7 @@ class CanonicalPublicationOperationAdapter:
             raise StepDispatchError("publication requires a persisted run manifest")
         payload = canonical_json_bytes(
             {
-                "manifest_artifact_id": str(
-                    manifest_artifact.descriptor.artifact_id
-                ),
+                "manifest_artifact_id": str(manifest_artifact.descriptor.artifact_id),
                 "publication_surface": "runtime-cas",
                 "schema_version": "bijux.canon.runtime.publication_receipt.v1",
                 "status": (

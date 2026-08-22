@@ -31,7 +31,9 @@ def test_benchmark_baseline_matrix_present() -> None:
 
     values = _values(payload)
     assert None not in values
-    assert not any(isinstance(value, str) and "todo" in value.lower() for value in values)
+    assert not any(
+        isinstance(value, str) and "todo" in value.lower() for value in values
+    )
 
     statuses = {entry["backend"]: entry["status"] for entry in backends}
     assert statuses == {

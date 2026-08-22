@@ -40,9 +40,7 @@ def validated_metadata(
             raise ValueError("index metadata keys must be non-empty strings")
         if isinstance(value, list | tuple):
             if key in _RESERVED_FIELDS - {"tags"}:
-                raise ValueError(
-                    f"governed metadata field {key!r} requires a string"
-                )
+                raise ValueError(f"governed metadata field {key!r} requires a string")
             if any(not isinstance(item, str) or not item for item in value):
                 raise ValueError(
                     "index metadata collections must contain non-empty strings"
@@ -169,7 +167,9 @@ class MetadataFilter:
             and self.date_from > self.date_to
         ):
             raise ValueError("metadata date range is reversed")
-        if any(not isinstance(predicate, UserMetadataPredicate) for predicate in self.user):
+        if any(
+            not isinstance(predicate, UserMetadataPredicate) for predicate in self.user
+        ):
             raise ValueError("user filters must be typed metadata predicates")
 
 
@@ -241,7 +241,9 @@ def _matches_user_predicate(
     if predicate.operator is MetadataOperator.contains:
         if isinstance(actual, tuple):
             return expected in actual
-        return isinstance(actual, str) and isinstance(expected, str) and expected in actual
+        return (
+            isinstance(actual, str) and isinstance(expected, str) and expected in actual
+        )
     if predicate.operator is MetadataOperator.greater_or_equal:
         return _ordered_compare(actual, expected, greater=True)
     if predicate.operator is MetadataOperator.less_or_equal:
@@ -265,9 +267,7 @@ def matches_metadata_filter(
         all(_matches_choices(metadata, key, values) for key, values in choices)
         and _matches_date(metadata, spec)
         and _matches_tags(metadata, spec.tags)
-        and all(
-            _matches_user_predicate(metadata, predicate) for predicate in spec.user
-        )
+        and all(_matches_user_predicate(metadata, predicate) for predicate in spec.user)
     )
 
 

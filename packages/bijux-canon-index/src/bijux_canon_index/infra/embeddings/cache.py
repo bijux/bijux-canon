@@ -120,7 +120,9 @@ class SQLiteEmbeddingCache:
             self._conn.execute("PRAGMA synchronous=FULL")
             result = self._conn.execute("PRAGMA quick_check").fetchone()
             if result != ("ok",):
-                raise EmbeddingCacheCorruptionError("embedding cache database is corrupt")
+                raise EmbeddingCacheCorruptionError(
+                    "embedding cache database is corrupt"
+                )
             self._initialize_schema()
         except sqlite3.DatabaseError as error:
             raise EmbeddingCacheCorruptionError(
@@ -191,7 +193,9 @@ class SQLiteEmbeddingCache:
             vector_json, metadata_json, dimension, vector_sha256, entry_sha256 = row
             vector_value = json.loads(vector_json)
             metadata_value = json.loads(metadata_json)
-            if not isinstance(vector_value, list) or not isinstance(metadata_value, dict):
+            if not isinstance(vector_value, list) or not isinstance(
+                metadata_value, dict
+            ):
                 raise TypeError
             vector = tuple(float(value) for value in vector_value)
             metadata = {
@@ -281,7 +285,9 @@ def cache_key(model_id: str, text: str, config_hash: str) -> str:
     """Bind complete canonical text to its model and configuration identities."""
 
     if not model_id or not config_hash:
-        raise ValueError("embedding cache identity must include model and configuration")
+        raise ValueError(
+            "embedding cache identity must include model and configuration"
+        )
     digest = fingerprint(
         {
             "canonical_text": text,
@@ -314,7 +320,9 @@ def embedding_config_hash(
 def metadata_as_dict(meta: Mapping[str, Any]) -> dict[str, str | None]:
     """Canonicalize arbitrary provider metadata for persistence."""
 
-    return {str(key): None if value is None else str(value) for key, value in meta.items()}
+    return {
+        str(key): None if value is None else str(value) for key, value in meta.items()
+    }
 
 
 __all__ = [

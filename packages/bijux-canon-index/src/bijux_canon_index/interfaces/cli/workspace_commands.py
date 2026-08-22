@@ -83,9 +83,7 @@ def audit(
         raw_vector_store_caps if isinstance(raw_vector_store_caps, dict) else {}
     )
     raw_execution_caps = caps.get("execution")
-    execution_caps = (
-        raw_execution_caps if isinstance(raw_execution_caps, dict) else {}
-    )
+    execution_caps = raw_execution_caps if isinstance(raw_execution_caps, dict) else {}
     payload = {
         "determinism_guarantees": {
             "exact": "bit-identical when deterministic contract is used",

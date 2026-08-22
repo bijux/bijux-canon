@@ -171,7 +171,9 @@ def _citation_inputs(
                 )
             )
     except ValidationError as error:
-        raise StepDispatchError("retrieval evidence violates Reason contracts") from error
+        raise StepDispatchError(
+            "retrieval evidence violates Reason contracts"
+        ) from error
     return tuple(evidence), tuple(sources[key] for key in sorted(sources))
 
 

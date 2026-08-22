@@ -290,8 +290,7 @@ def build_execution_context(
         artifact_store=artifact_store
         or execution_config.artifact_store
         or InMemoryArtifactStore(),
-        payload_store=execution_config.payload_store
-        or InMemoryArtifactPayloadStore(),
+        payload_store=execution_config.payload_store or InMemoryArtifactPayloadStore(),
         trace_recorder=start_state.trace_recorder,
         mode=execution_config.mode,
         verification_policy=execution_config.verification_policy,

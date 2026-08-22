@@ -99,8 +99,9 @@ class ExecutionContext:
 
         dependencies = tuple(
             sorted(
-                self.payload_store.binding(parent, tenant_id=self.tenant_id)
-                .target_artifact_id
+                self.payload_store.binding(
+                    parent, tenant_id=self.tenant_id
+                ).target_artifact_id
                 for parent in parent_artifacts
             )
         )

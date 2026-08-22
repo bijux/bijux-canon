@@ -18,7 +18,10 @@ from bijux_canon_reason.core.types import (
 )
 from bijux_canon_reason.execution.executor import ExecutionPolicy, execute_plan
 from bijux_canon_reason.execution.runtime import ExecutionRuntime, Runtime
-from bijux_canon_reason.execution.step_execution import ExecutionState, build_step_output
+from bijux_canon_reason.execution.step_execution import (
+    ExecutionState,
+    build_step_output,
+)
 from bijux_canon_reason.planning.planner import plan_problem
 
 

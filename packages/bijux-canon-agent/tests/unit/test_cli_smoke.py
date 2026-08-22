@@ -49,7 +49,9 @@ def test_cli_help_commands() -> None:
 
 
 def test_cli_replay_needs_no_provider_credentials(tmp_path: Path) -> None:
-    trace = Path(__file__).parents[2] / "examples" / "golden" / "trace" / "run_trace.json"
+    trace = (
+        Path(__file__).parents[2] / "examples" / "golden" / "trace" / "run_trace.json"
+    )
     result = subprocess.run(
         [*_base_command(), "replay", str(trace)],
         check=False,

@@ -116,12 +116,15 @@ class IndexBuildLimits:
     max_metadata_bytes: int
 
     def __post_init__(self) -> None:
-        if min(
-            self.max_chunks,
-            self.max_text_bytes,
-            self.max_vector_bytes,
-            self.max_metadata_bytes,
-        ) <= 0:
+        if (
+            min(
+                self.max_chunks,
+                self.max_text_bytes,
+                self.max_vector_bytes,
+                self.max_metadata_bytes,
+            )
+            <= 0
+        ):
             raise ValueError("all index build limits must be positive")
 
 
@@ -515,8 +518,7 @@ class IndexGeneration:
             for stage, backend_manifest in backend_manifests.items():
                 receipt = receipts[stage]
                 if (
-                    backend_manifest.generation_id
-                    != receipt.segment_generation_id
+                    backend_manifest.generation_id != receipt.segment_generation_id
                     or backend_manifest.chunk_set_sha256 != receipt.chunk_set_sha256
                     or receipt.chunk_set_sha256 != manifest.chunk_set_sha256
                 ):
@@ -524,8 +526,7 @@ class IndexGeneration:
                         f"index generation {stage} receipt does not match its segment"
                     )
             if (
-                exact.manifest.model_lock_artifact_id
-                != manifest.model_lock_artifact_id
+                exact.manifest.model_lock_artifact_id != manifest.model_lock_artifact_id
                 or hnsw.manifest.model_lock_artifact_id
                 != manifest.model_lock_artifact_id
             ):

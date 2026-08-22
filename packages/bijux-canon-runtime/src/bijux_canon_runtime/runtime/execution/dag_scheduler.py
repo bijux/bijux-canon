@@ -82,8 +82,7 @@ class SchedulerPolicy:
         if len(step_ids) != len(set(step_ids)):
             raise ValueError("scheduler constraints must have unique step identities")
         if any(
-            item.resource_units > self.max_resource_units
-            for item in self.constraints
+            item.resource_units > self.max_resource_units for item in self.constraints
         ):
             raise ValueError("step resource demand exceeds scheduler capacity")
 
@@ -359,7 +358,9 @@ class DependencyAwareScheduler:
                     )
                 ]
                 if not ready:
-                    raise SchedulerError("queued nodes have no satisfiable dependencies")
+                    raise SchedulerError(
+                        "queued nodes have no satisfiable dependencies"
+                    )
                 wave = self._select_wave(ready, constraints)
                 futures = {}
                 started_ns: dict[str, int] = {}
@@ -480,11 +481,11 @@ class DependencyAwareScheduler:
 
         return DagScheduleResult(
             plan_sha256=plan.plan_sha256,
-            statuses=tuple((step.step_id, statuses[step.step_id]) for step in plan.steps),
+            statuses=tuple(
+                (step.step_id, statuses[step.step_id]) for step in plan.steps
+            ),
             dispatch_results=tuple(
-                results[step.step_id]
-                for step in plan.steps
-                if step.step_id in results
+                results[step.step_id] for step in plan.steps if step.step_id in results
             ),
             failures=tuple(
                 (step.step_id, failures[step.step_id])

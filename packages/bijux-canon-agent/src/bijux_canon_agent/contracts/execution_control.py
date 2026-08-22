@@ -24,9 +24,7 @@ class CancellationSignal:
     request_artifact_id: str | None
 
     @classmethod
-    def active(
-        cls, *, reason: str, request_artifact_id: str
-    ) -> CancellationSignal:
+    def active(cls, *, reason: str, request_artifact_id: str) -> CancellationSignal:
         if not reason.strip():
             raise ValueError("cancellation reason must not be empty")
         if len(request_artifact_id) != 71 or not request_artifact_id.startswith(

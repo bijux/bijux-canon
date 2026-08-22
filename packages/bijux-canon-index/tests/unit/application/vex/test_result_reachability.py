@@ -90,9 +90,7 @@ def test_every_vex_result_resolves_once_and_remains_inspectable_after_restart(
         snapshot_artifact_id="sha256:snapshot",
         model_lock_artifact_id="sha256:model-lock",
         limits=IndexBuildLimits(10, 10_000, 10_000, 10_000),
-        hnsw_parameters=HnswParameters(
-            m=2, ef_construction=8, ef_search=8, seed=17
-        ),
+        hnsw_parameters=HnswParameters(m=2, ef_construction=8, ef_search=8, seed=17),
         activate=True,
     )
     request = IndexQueryRequest(

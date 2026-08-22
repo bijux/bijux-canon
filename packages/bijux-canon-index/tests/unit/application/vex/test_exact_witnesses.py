@@ -100,9 +100,7 @@ def test_exact_witness_identity_changes_with_filter_and_refuses_lexical(
 ) -> None:
     service = _service(tmp_path / "registry")
     unfiltered = service.exact_witness(_request())
-    filtered = service.exact_witness(
-        _request(MetadataFilter(source_ids=("paper-b",)))
-    )
+    filtered = service.exact_witness(_request(MetadataFilter(source_ids=("paper-b",))))
 
     assert filtered.witness_id != unfiltered.witness_id
     assert [candidate.chunk_id for candidate in filtered.candidates] == ["chunk-b"]

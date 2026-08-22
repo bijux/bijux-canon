@@ -204,8 +204,10 @@ def _indexable_chunks(snapshot: dict[str, object]) -> tuple[_IndexableChunk, ...
                 section_paths = raw_chunk.get("section_paths")
                 if isinstance(section_paths, list) and section_paths:
                     first = section_paths[0]
-                    if isinstance(first, list) and first and all(
-                        isinstance(item, str) and item for item in first
+                    if (
+                        isinstance(first, list)
+                        and first
+                        and all(isinstance(item, str) and item for item in first)
                     ):
                         index_metadata["section"] = " / ".join(first)
                 result.append(
@@ -248,7 +250,9 @@ class CanonicalIngestOperationAdapter:
         root_name = source.name or "corpus"
         corpus_name = root_name.casefold()
         if re.fullmatch(r"[a-z0-9][a-z0-9._-]{0,127}", corpus_name) is None:
-            corpus_name = f"corpus-{hashlib.sha256(root_name.encode()).hexdigest()[:16]}"
+            corpus_name = (
+                f"corpus-{hashlib.sha256(root_name.encode()).hexdigest()[:16]}"
+            )
         preparation = self._runtime.prepare(
             CanonicalIngestRequest(
                 root_path=source,
@@ -352,9 +356,7 @@ class CanonicalEmbeddingOperationAdapter:
                 "dimension": len(batch.vectors[0]),
                 "model_lock_artifact_id": batch.model_lock_id,
                 "schema_version": "bijux.canon.index.embedding_matrix.v1",
-                "snapshot_artifact_id": str(
-                    snapshot_artifact.descriptor.artifact_id
-                ),
+                "snapshot_artifact_id": str(snapshot_artifact.descriptor.artifact_id),
                 "snapshot_id": snapshot["snapshot_id"],
             }
         )
@@ -421,7 +423,9 @@ class CanonicalLexicalIndexOperationAdapter:
                 ),
                 limits=LexicalIndexLimits(
                     max_chunks=len(chunks),
-                    max_text_bytes=sum(len(item.text.encode("utf-8")) for item in chunks),
+                    max_text_bytes=sum(
+                        len(item.text.encode("utf-8")) for item in chunks
+                    ),
                     max_metadata_bytes=step.inputs.budget.max_artifact_bytes,
                 ),
             )
@@ -495,7 +499,9 @@ class CanonicalDenseIndexOperationAdapter:
                 model_lock_artifact_id=model_lock_id,
                 limits=IndexBuildLimits(
                     max_chunks=len(chunks),
-                    max_text_bytes=sum(len(item.text.encode("utf-8")) for item in chunks),
+                    max_text_bytes=sum(
+                        len(item.text.encode("utf-8")) for item in chunks
+                    ),
                     max_vector_bytes=sum(len(item.vector) * 4 for item in chunks),
                     max_metadata_bytes=step.inputs.budget.max_artifact_bytes,
                 ),

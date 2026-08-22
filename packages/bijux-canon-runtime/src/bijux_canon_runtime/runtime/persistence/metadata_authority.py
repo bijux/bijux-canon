@@ -199,7 +199,10 @@ class DuckDBMetadataAuthority:
             required=False,
         )
         if existing is not None:
-            if existing.intent_hash != intent_hash or existing.intent_json != intent_json:
+            if (
+                existing.intent_hash != intent_hash
+                or existing.intent_json != intent_json
+            ):
                 raise MetadataIntegrityError(
                     "publication transaction identity has conflicting intent"
                 )
@@ -213,8 +216,12 @@ class DuckDBMetadataAuthority:
                 ) VALUES (?, ?, ?, ?, ?, 'prepared', NULL, ?, NULL)
                 """,
                 (
-                    str(tenant_id), str(run_id), transaction_id,
-                    intent_hash, intent_json, created_at,
+                    str(tenant_id),
+                    str(run_id),
+                    transaction_id,
+                    intent_hash,
+                    intent_json,
+                    created_at,
                 ),
             )
         except duckdb.Error as exc:
@@ -297,9 +304,12 @@ class DuckDBMetadataAuthority:
                     ) VALUES (?, ?, ?, ?, ?, ?)
                     """,
                     (
-                        str(current.tenant_id), str(current.run_id),
-                        current.transaction_id, reference.logical_artifact_id,
-                        reference.revision, str(reference.target_artifact_id),
+                        str(current.tenant_id),
+                        str(current.run_id),
+                        current.transaction_id,
+                        reference.logical_artifact_id,
+                        reference.revision,
+                        str(reference.target_artifact_id),
                     ),
                 )
             self._connection.execute(
@@ -310,7 +320,9 @@ class DuckDBMetadataAuthority:
                   AND status = 'prepared'
                 """,
                 (
-                    completed_at, str(current.tenant_id), str(current.run_id),
+                    completed_at,
+                    str(current.tenant_id),
+                    str(current.run_id),
                     current.transaction_id,
                 ),
             )
@@ -346,8 +358,11 @@ class DuckDBMetadataAuthority:
               AND status = 'prepared'
             """,
             (
-                failure_reason, completed_at, str(transaction.tenant_id),
-                str(transaction.run_id), transaction.transaction_id,
+                failure_reason,
+                completed_at,
+                str(transaction.tenant_id),
+                str(transaction.run_id),
+                transaction.transaction_id,
             ),
         )
         record = self.publication_transaction(
@@ -436,8 +451,12 @@ class DuckDBMetadataAuthority:
         self._insert_record(
             table="run_revisions",
             columns=(
-                "tenant_id", "run_id", "revision", "state_hash",
-                "payload_artifact_id", "created_at",
+                "tenant_id",
+                "run_id",
+                "revision",
+                "state_hash",
+                "payload_artifact_id",
+                "created_at",
             ),
             key_columns=("tenant_id", "run_id", "revision"),
             values=astuple(record),
@@ -447,8 +466,12 @@ class DuckDBMetadataAuthority:
         self._insert_record(
             table="run_dags",
             columns=(
-                "tenant_id", "run_id", "dag_version", "dag_hash",
-                "payload_artifact_id", "created_at",
+                "tenant_id",
+                "run_id",
+                "dag_version",
+                "dag_hash",
+                "payload_artifact_id",
+                "created_at",
             ),
             key_columns=("tenant_id", "run_id", "dag_version"),
             values=astuple(record),
@@ -464,8 +487,14 @@ class DuckDBMetadataAuthority:
         self._insert_record(
             table="run_attempts",
             columns=(
-                "tenant_id", "run_id", "attempt_id", "step_index",
-                "attempt_number", "status", "started_at", "finished_at",
+                "tenant_id",
+                "run_id",
+                "attempt_id",
+                "step_index",
+                "attempt_number",
+                "status",
+                "started_at",
+                "finished_at",
                 "failure_artifact_id",
             ),
             key_columns=("tenant_id", "run_id", "attempt_id"),
@@ -476,11 +505,19 @@ class DuckDBMetadataAuthority:
         self._insert_record(
             table="artifact_references",
             columns=(
-                "tenant_id", "run_id", "logical_artifact_id", "revision",
-                "target_artifact_id", "reference_state", "created_at",
+                "tenant_id",
+                "run_id",
+                "logical_artifact_id",
+                "revision",
+                "target_artifact_id",
+                "reference_state",
+                "created_at",
             ),
             key_columns=(
-                "tenant_id", "run_id", "logical_artifact_id", "revision",
+                "tenant_id",
+                "run_id",
+                "logical_artifact_id",
+                "revision",
             ),
             values=astuple(record),
         )
@@ -489,8 +526,12 @@ class DuckDBMetadataAuthority:
         self._insert_record(
             table="run_policies",
             columns=(
-                "tenant_id", "run_id", "policy_kind", "policy_id",
-                "payload_artifact_id", "created_at",
+                "tenant_id",
+                "run_id",
+                "policy_kind",
+                "policy_id",
+                "payload_artifact_id",
+                "created_at",
             ),
             key_columns=("tenant_id", "run_id", "policy_kind", "policy_id"),
             values=astuple(record),
@@ -500,8 +541,12 @@ class DuckDBMetadataAuthority:
         self._insert_record(
             table="run_checks",
             columns=(
-                "tenant_id", "run_id", "check_id", "status",
-                "evidence_artifact_id", "checked_at",
+                "tenant_id",
+                "run_id",
+                "check_id",
+                "status",
+                "evidence_artifact_id",
+                "checked_at",
             ),
             key_columns=("tenant_id", "run_id", "check_id"),
             values=astuple(record),
@@ -513,10 +558,16 @@ class DuckDBMetadataAuthority:
         self._insert_record(
             table="run_publications",
             columns=(
-                "tenant_id", "run_id", "publication_id", "revision",
-                "publication_state", "selected_attempt_id",
-                "manifest_artifact_id", "receipt_artifact_id",
-                "stable_citation", "created_at",
+                "tenant_id",
+                "run_id",
+                "publication_id",
+                "revision",
+                "publication_state",
+                "selected_attempt_id",
+                "manifest_artifact_id",
+                "receipt_artifact_id",
+                "stable_citation",
+                "created_at",
             ),
             key_columns=("tenant_id", "run_id", "publication_id", "revision"),
             values=astuple(record),
@@ -565,8 +616,10 @@ class DuckDBMetadataAuthority:
               AND logical_artifact_id = ? AND revision = ?
             """,
             (
-                str(reference.tenant_id), str(reference.run_id),
-                reference.logical_artifact_id, reference.revision,
+                str(reference.tenant_id),
+                str(reference.run_id),
+                reference.logical_artifact_id,
+                reference.revision,
             ),
         ).fetchone()
         expected = (
@@ -590,7 +643,8 @@ class DuckDBMetadataAuthority:
             ORDER BY revision DESC
             """,
             (
-                str(reference.tenant_id), str(reference.run_id),
+                str(reference.tenant_id),
+                str(reference.run_id),
                 reference.logical_artifact_id,
             ),
         ).fetchall()
@@ -609,8 +663,10 @@ class DuckDBMetadataAuthority:
                   AND logical_artifact_id = ? AND revision = ?
                 """,
                 (
-                    str(reference.tenant_id), str(reference.run_id),
-                    reference.logical_artifact_id, active_revision,
+                    str(reference.tenant_id),
+                    str(reference.run_id),
+                    reference.logical_artifact_id,
+                    active_revision,
                 ),
             )
         elif reference.revision != 0:
@@ -625,9 +681,12 @@ class DuckDBMetadataAuthority:
             ) VALUES (?, ?, ?, ?, ?, 'active', ?)
             """,
             (
-                str(reference.tenant_id), str(reference.run_id),
-                reference.logical_artifact_id, reference.revision,
-                str(reference.target_artifact_id), reference.created_at,
+                str(reference.tenant_id),
+                str(reference.run_id),
+                reference.logical_artifact_id,
+                reference.revision,
+                str(reference.target_artifact_id),
+                reference.created_at,
             ),
         )
 
@@ -645,7 +704,8 @@ class DuckDBMetadataAuthority:
                 WHERE tenant_id = ? AND run_id = ? AND transaction_id = ?
                 """,
                 (
-                    str(transaction.tenant_id), str(transaction.run_id),
+                    str(transaction.tenant_id),
+                    str(transaction.run_id),
                     transaction.transaction_id,
                 ),
             ).fetchall()
@@ -672,7 +732,9 @@ class DuckDBMetadataAuthority:
         values: tuple[Any, ...],
     ) -> None:
         normalized = tuple(
-            item.value if isinstance(item, StrEnum) else str(item)
+            item.value
+            if isinstance(item, StrEnum)
+            else str(item)
             if isinstance(item, str)
             else item
             for item in values

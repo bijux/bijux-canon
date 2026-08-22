@@ -151,9 +151,7 @@ class RuntimeRecoveryService:
             InspectedStepStatus.TIMED_OUT,
         }
         ambiguous = {
-            step.operation
-            for step in source.steps
-            if step.status in ambiguous_statuses
+            step.operation for step in source.steps if step.status in ambiguous_statuses
         }
         missing = ambiguous.difference(item.value for item in reconciliation)
         if missing:
@@ -161,7 +159,9 @@ class RuntimeRecoveryService:
                 "started operations require reconcilers: " + ", ".join(sorted(missing))
             )
         source_identity = _attempt_identity(
-            next(item for item in source.attempts if item.attempt_id == source_attempt_id),
+            next(
+                item for item in source.attempts if item.attempt_id == source_attempt_id
+            ),
             run_id,
         )
         retry = ExecutionAttemptIdentity.retry_persisted(
@@ -217,17 +217,14 @@ class RuntimeRecoveryService:
             execution_metadata={
                 "recovery": {
                     "source_attempt_id": source_attempt_id,
-                    "source_event_head_artifact_id": str(
-                        source.events[-1].artifact_id
-                    ),
+                    "source_event_head_artifact_id": str(source.events[-1].artifact_id),
                     "source_output_artifact_ids": [
                         str(artifact_id)
                         for step in source.steps
                         for artifact_id in step.output_artifact_ids
                     ],
                     "source_failure_event_artifact_ids": [
-                        str(failure.event_artifact_id)
-                        for failure in source.failures
+                        str(failure.event_artifact_id) for failure in source.failures
                     ],
                     "ambiguous_step_ids": [
                         step.step_id
@@ -286,7 +283,9 @@ class RuntimeRecoveryService:
         )
 
 
-def _attempt_identity(attempt: InspectedAttempt, run_id: str) -> ExecutionAttemptIdentity:
+def _attempt_identity(
+    attempt: InspectedAttempt, run_id: str
+) -> ExecutionAttemptIdentity:
     return ExecutionAttemptIdentity(
         attempt.attempt_id,
         RunID(run_id),

@@ -101,9 +101,7 @@ class ResearchCausalTrace:
     head_artifact_id: str
 
     @classmethod
-    def create(
-        cls, events: tuple[CausalDecisionEvent, ...]
-    ) -> ResearchCausalTrace:
+    def create(cls, events: tuple[CausalDecisionEvent, ...]) -> ResearchCausalTrace:
         if not events:
             raise ValueError("causal trace requires at least one event")
         if tuple(event.sequence for event in events) != tuple(range(len(events))):

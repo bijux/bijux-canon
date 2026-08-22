@@ -78,16 +78,17 @@ class ArtifactPublicationCoordinator:
         """Durably publish all blobs, then record their exact activation intent."""
         if not transaction_id.strip() or not items:
             raise ValueError("publication transaction and items must not be empty")
-        identities = {
-            (item.logical_artifact_id, item.revision) for item in items
-        }
+        identities = {(item.logical_artifact_id, item.revision) for item in items}
         if len(identities) != len(items):
             raise ValueError("publication logical revisions must be unique")
         for item in items:
             for dependency in item.artifact.descriptor.dependencies:
                 self._payload_store.load(dependency)
             self._payload_store.put(item.artifact)
-            if self._payload_store.load(item.artifact.descriptor.artifact_id) != item.artifact:
+            if (
+                self._payload_store.load(item.artifact.descriptor.artifact_id)
+                != item.artifact
+            ):
                 raise PublicationRecoveryError(
                     "durable payload validation changed published content"
                 )
@@ -236,7 +237,9 @@ class ArtifactPublicationCoordinator:
                 raise ValueError("publication intent shape is invalid")
             return tuple(self._item_from_record(item) for item in intent["items"])
         except (KeyError, TypeError, ValueError, json.JSONDecodeError) as exc:
-            raise PublicationRecoveryError("publication intent cannot be decoded") from exc
+            raise PublicationRecoveryError(
+                "publication intent cannot be decoded"
+            ) from exc
 
     def _item_from_record(self, record: Any) -> PublicationItem:
         if not isinstance(record, dict):
@@ -291,9 +294,7 @@ class ArtifactPublicationCoordinator:
             transaction_id=transaction.transaction_id,
             status=transaction.status,
             intent_hash=transaction.intent_hash,
-            artifact_ids=tuple(
-                item.artifact.descriptor.artifact_id for item in items
-            ),
+            artifact_ids=tuple(item.artifact.descriptor.artifact_id for item in items),
         )
 
 

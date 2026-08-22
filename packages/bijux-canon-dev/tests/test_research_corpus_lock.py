@@ -29,7 +29,9 @@ def test_tracked_research_corpus_lock_resolves_all_exact_source_bytes() -> None:
     validate_lock_document(document, research_root=RESEARCH_ROOT)
     assert document["source_count"] == 8
     assert document["total_bytes"] == 1_056_810
-    assert all(source["offline_redistribution"]["permitted"] for source in document["sources"])
+    assert all(
+        source["offline_redistribution"]["permitted"] for source in document["sources"]
+    )
     assert all(source["retrieved_at"].endswith("Z") for source in document["sources"])
 
 
@@ -120,9 +122,7 @@ def _synthetic_source(tmp_path: Path) -> tuple[Path, Path, Path]:
         {
             "source_id": source_id,
             "source_record_identity_sha256": "a" * 64,
-            "acquisition_receipt_identity_sha256": receipt[
-                "receipt_identity_sha256"
-            ],
+            "acquisition_receipt_identity_sha256": receipt["receipt_identity_sha256"],
             "sha256": sha256(body),
         }
     ]

@@ -98,7 +98,9 @@ def tune_ann(
             )
         )
         vectors = list(engine.stores.vectors.list_vectors())
-        queries = [tuple(query.tolist()) for query in dataset.queries[: max(1, samples)]]
+        queries = [
+            tuple(query.tolist()) for query in dataset.queries[: max(1, samples)]
+        ]
     if not vectors:
         raise ValidationError(message="No vectors available for tuning")
     if not queries:

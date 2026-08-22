@@ -146,7 +146,8 @@ def inspect_xml(
             or not parsed.path.casefold().endswith(".dtd")
         ):
             raise AdmissionFailure(
-                "unsafe_markup", "XML document type does not reference an approved JATS DTD"
+                "unsafe_markup",
+                "XML document type does not reference an approved JATS DTD",
             )
         if public_id is not None and not public_id.startswith("-//NLM//DTD "):
             raise AdmissionFailure(

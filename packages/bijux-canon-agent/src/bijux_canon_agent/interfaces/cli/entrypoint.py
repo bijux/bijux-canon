@@ -110,9 +110,7 @@ async def main() -> None:
         )
         primary_success = result["successful"][0] if result["successful"] else None
         if len(files) == 1 and primary_success and "result" in primary_success:
-            print(
-                json.dumps(primary_success["result"], indent=2, ensure_ascii=False)
-            )
+            print(json.dumps(primary_success["result"], indent=2, ensure_ascii=False))
         final_artifact = write_final_artifacts(
             success_entry=primary_success,
             results=result,

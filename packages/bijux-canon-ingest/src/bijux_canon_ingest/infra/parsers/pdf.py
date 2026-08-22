@@ -50,7 +50,9 @@ def _metadata(reader: PdfReader) -> PdfDocumentMetadata:
     )
 
 
-def parse_pdf_content(content: bytes, *, source_content_sha256: str) -> ParsedPdfDocument:
+def parse_pdf_content(
+    content: bytes, *, source_content_sha256: str
+) -> ParsedPdfDocument:
     """Extract exact ordered page text from already-admitted PDF bytes."""
 
     if hashlib.sha256(content).hexdigest() != source_content_sha256:
@@ -102,7 +104,8 @@ def parse_pdf_content(content: bytes, *, source_content_sha256: str) -> ParsedPd
         raise DocumentParseError("malformed_document", "PDF has no pages")
     if all(page.extraction_method == "ocr-required" for page in pages):
         raise DocumentParseError(
-            "ocr_required", "PDF contains no extractable digital text; OCR was not performed"
+            "ocr_required",
+            "PDF contains no extractable digital text; OCR was not performed",
         )
     return ParsedPdfDocument(
         source_content_sha256=source_content_sha256,

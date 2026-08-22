@@ -138,7 +138,9 @@ def _cursor_offset(cursor: str | None, snapshot_sha256: str) -> int:
         ):
             raise ValueError
     except (UnicodeEncodeError, ValueError, TypeError, json.JSONDecodeError) as exc:
-        raise ValueError("page cursor is invalid or belongs to another snapshot") from exc
+        raise ValueError(
+            "page cursor is invalid or belongs to another snapshot"
+        ) from exc
     return offset
 
 

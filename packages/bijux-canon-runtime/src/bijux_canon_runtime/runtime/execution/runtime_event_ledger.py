@@ -195,18 +195,14 @@ class RuntimeEventLedger:
                 input_artifact_ids=tuple(str(item.artifact_id) for item in inputs),
                 output_artifact_ids=tuple(str(item.artifact_id) for item in outputs),
                 check_ids=(
-                    tuple(
-                        f"artifact-contract:{item.contract_id}" for item in outputs
-                    )
+                    tuple(f"artifact-contract:{item.contract_id}" for item in outputs)
                     if event_kind
                     in {RuntimeEventKind.COMPLETED, RuntimeEventKind.PUBLISHED}
                     else ()
                 ),
                 policy=policy,
                 error=(
-                    None
-                    if error is None
-                    else RuntimeErrorRecord.from_exception(error)
+                    None if error is None else RuntimeErrorRecord.from_exception(error)
                 ),
             )
             artifact = AddressedArtifact.from_json(

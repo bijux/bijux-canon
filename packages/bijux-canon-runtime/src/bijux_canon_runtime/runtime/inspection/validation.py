@@ -130,9 +130,10 @@ def validate_plan(plan: dict[str, object]) -> None:
     actual_terminals = tuple(
         step_id for step_id in step_ids if step_id not in depended_on
     )
-    if required_strings(plan, "entry_step_ids") != actual_entries or required_strings(
-        plan, "terminal_step_ids"
-    ) != actual_terminals:
+    if (
+        required_strings(plan, "entry_step_ids") != actual_entries
+        or required_strings(plan, "terminal_step_ids") != actual_terminals
+    ):
         raise RuntimeInspectionError("persisted Runtime DAG boundaries are invalid")
     resolved: set[str] = set()
     remaining = set(step_ids)
@@ -140,9 +141,7 @@ def validate_plan(plan: dict[str, object]) -> None:
         ready = {
             step_id
             for step_id in remaining
-            if set(required_strings(by_id[step_id], "depends_on")).issubset(
-                resolved
-            )
+            if set(required_strings(by_id[step_id], "depends_on")).issubset(resolved)
         }
         if not ready:
             raise RuntimeInspectionError("persisted Runtime plan is cyclic")
@@ -154,9 +153,7 @@ def validate_plan(plan: dict[str, object]) -> None:
             if dependency is None:
                 raise RuntimeInspectionError("persisted Runtime DAG edge is unresolved")
             inputs = set(required_strings(step, "input_artifact_contract_ids"))
-            outputs = set(
-                required_strings(dependency, "output_artifact_contract_ids")
-            )
+            outputs = set(required_strings(dependency, "output_artifact_contract_ids"))
             if not inputs.intersection(outputs):
                 raise RuntimeInspectionError(
                     f"persisted Runtime DAG edge into {step_id} has no contract"
@@ -236,7 +233,10 @@ def build_steps(
         step = required_dict(raw_step, "plan step")
         step_id = required_string(step, "step_id")
         step_events = by_step.get(step_id, [])
-        if not step_events or step_events[0].event_kind is not InspectedEventKind.PLANNED:
+        if (
+            not step_events
+            or step_events[0].event_kind is not InspectedEventKind.PLANNED
+        ):
             raise RuntimeInspectionError("plan step has no initial planned event")
         operation = required_string(step, "operation")
         input_contracts = required_strings(step, "input_artifact_contract_ids")

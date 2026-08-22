@@ -24,7 +24,9 @@ def _raise_transport_error(error: Exception) -> NoReturn:
     if isinstance(error, ValueError):
         raise HTTPException(status_code=422, detail=str(error)) from error
     if isinstance(error, FileNotFoundError):
-        raise HTTPException(status_code=404, detail="index generation not found") from error
+        raise HTTPException(
+            status_code=404, detail="index generation not found"
+        ) from error
     if isinstance(error, RuntimeError):
         raise HTTPException(status_code=409, detail=str(error)) from error
     raise HTTPException(status_code=500, detail="internal error") from error

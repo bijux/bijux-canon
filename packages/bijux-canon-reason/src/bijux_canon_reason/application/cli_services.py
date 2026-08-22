@@ -118,8 +118,7 @@ def execute_replay_command(trace_path: Path) -> ReplayCommandResult:
     payload["diff"] = payload["diff_summary"]
     return ReplayCommandResult(
         payload=payload,
-        mismatch=result.original_trace_fingerprint
-        != result.replayed_trace_fingerprint,
+        mismatch=result.original_trace_fingerprint != result.replayed_trace_fingerprint,
     )
 
 
@@ -164,7 +163,9 @@ def execute_inspect_research_command(
     *, research_id: str, artifacts_dir: Path
 ) -> ResearchCommandResult:
     """Inspect the complete typed record through the shared service."""
-    record = ResearchApplicationService(artifacts_dir=artifacts_dir).inspect(research_id)
+    record = ResearchApplicationService(artifacts_dir=artifacts_dir).inspect(
+        research_id
+    )
     return ResearchCommandResult(
         payload=record.model_dump(mode="json"), research_id=record.research_id
     )

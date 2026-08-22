@@ -64,7 +64,9 @@ def key_for_provider(provider: str) -> str:
         raise KeyError(f"Unknown provider: {provider}")
     value = os.getenv(spec.env_var)
     if not value:
-        raise RuntimeError(f"Credential for selected provider {provider} is not configured")
+        raise RuntimeError(
+            f"Credential for selected provider {provider} is not configured"
+        )
     return value
 
 

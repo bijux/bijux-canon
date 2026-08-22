@@ -217,9 +217,7 @@ def _reconstruct_step(
                     ),
                 )
             ),
-            replay_attempt_id=(
-                source_attempt_id if linkage_kind == "replay" else None
-            ),
+            replay_attempt_id=(source_attempt_id if linkage_kind == "replay" else None),
             source_attempt_id=source_attempt_id,
         ),
     )
@@ -236,9 +234,7 @@ def _step_record(step: ConcreteDagStep) -> dict[str, object]:
     }
 
 
-def _optional_artifact_id(
-    record: dict[str, object], key: str
-) -> ArtifactID | None:
+def _optional_artifact_id(record: dict[str, object], key: str) -> ArtifactID | None:
     value = optional_string(record, key)
     return None if value is None else ArtifactID(value)
 

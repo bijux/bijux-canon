@@ -292,9 +292,7 @@ class SafeGarbageCollector:
                     artifact = self._payload_store.load(artifact_id)
                     backup.put(artifact)
                     if backup.load(artifact_id) != artifact:
-                        raise GarbageCollectionSafetyError(
-                            "backup verification failed"
-                        )
+                        raise GarbageCollectionSafetyError("backup verification failed")
                     quarantine.parent.mkdir(parents=True, exist_ok=True)
                     os.rename(source, quarantine)
                     moved.append((source, quarantine))

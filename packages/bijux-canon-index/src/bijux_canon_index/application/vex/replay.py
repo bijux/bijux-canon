@@ -308,7 +308,9 @@ def replay_vex_execution(
 
     original = store.load(original_artifact_id)
     replay_input = VexReplayInput(
-        request=cast(Mapping[str, object], _freeze(_mapping(original.record, "request"))),
+        request=cast(
+            Mapping[str, object], _freeze(_mapping(original.record, "request"))
+        ),
         normalized_vector_sha256=str(original.record["normalized_vector_sha256"]),
         plan=cast(Mapping[str, object], _freeze(_mapping(original.record, "plan"))),
     )

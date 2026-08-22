@@ -18,7 +18,9 @@ def json_object(artifact: AddressedArtifact) -> dict[str, object]:
     try:
         return required_dict(json.loads(artifact.canonical_bytes), "artifact payload")
     except json.JSONDecodeError as exc:
-        raise RuntimeInspectionError("Runtime metadata artifact is invalid JSON") from exc
+        raise RuntimeInspectionError(
+            "Runtime metadata artifact is invalid JSON"
+        ) from exc
 
 
 def required_dict(value: object, description: str) -> dict[str, object]:

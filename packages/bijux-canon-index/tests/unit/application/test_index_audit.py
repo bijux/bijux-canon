@@ -65,7 +65,10 @@ def test_audit_closes_every_generation_integrity_surface(tmp_path: Path) -> None
 
 @pytest.mark.parametrize(
     "compatibility",
-    [IndexCompatibility("sha256:other-model", 3), IndexCompatibility("sha256:model", 4)],
+    [
+        IndexCompatibility("sha256:other-model", 3),
+        IndexCompatibility("sha256:model", 4),
+    ],
 )
 def test_incompatible_model_profile_is_refused(
     tmp_path: Path, compatibility: IndexCompatibility

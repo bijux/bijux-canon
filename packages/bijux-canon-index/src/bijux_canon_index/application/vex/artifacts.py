@@ -124,7 +124,9 @@ class VexExecutionArtifact:
             self.plan,
         )
         object.__setattr__(self, "execution_id", f"sha256:{_sha256_json(identity)}")
-        object.__setattr__(self, "artifact_id", f"sha256:{_sha256_json(self.payload())}")
+        object.__setattr__(
+            self, "artifact_id", f"sha256:{_sha256_json(self.payload())}"
+        )
 
     def payload(self) -> dict[str, object]:
         """Return canonical artifact content, excluding its derived artifact ID."""
@@ -176,7 +178,9 @@ class VexArtifactStore:
         destination.parent.mkdir(parents=True, exist_ok=True)
         if destination.exists():
             if destination.read_bytes() != raw:
-                raise ValueError("VEX artifact content address is occupied by other bytes")
+                raise ValueError(
+                    "VEX artifact content address is occupied by other bytes"
+                )
             return self.load(artifact.artifact_id)
         descriptor, temporary_name = tempfile.mkstemp(
             prefix=f".{destination.name}.",
@@ -232,7 +236,9 @@ class VexArtifactStore:
         )
         expected_execution_id = f"sha256:{_sha256_json(execution_identity)}"
         if record.get("execution_id") != expected_execution_id:
-            raise ValueError("VEX execution identity does not match its immutable inputs")
+            raise ValueError(
+                "VEX execution identity does not match its immutable inputs"
+            )
         hashes = record.get("component_hashes")
         if not isinstance(hashes, dict):
             raise ValueError("VEX artifact component hashes are missing")

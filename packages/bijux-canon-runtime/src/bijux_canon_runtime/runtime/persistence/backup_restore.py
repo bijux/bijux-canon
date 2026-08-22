@@ -177,7 +177,9 @@ class RuntimeBackupManager:
                     "SELECT max(version) FROM schema_migrations"
                 ).fetchone()
                 if schema_row is None or schema_row[0] is None:
-                    raise BackupIntegrityError("restored database has no schema version")
+                    raise BackupIntegrityError(
+                        "restored database has no schema version"
+                    )
                 schema_version = int(schema_row[0])
             finally:
                 database.close()
@@ -242,7 +244,9 @@ class RuntimeBackupManager:
         manifest: RuntimeBackupManifest,
     ) -> None:
         if cls._hash_file(generation / "runtime.duckdb") != manifest.database_sha256:
-            raise BackupIntegrityError("existing backup database checksum does not match")
+            raise BackupIntegrityError(
+                "existing backup database checksum does not match"
+            )
         payload_store = AtomicFilesystemArtifactPayloadStore(generation / "cas")
         for artifact_id, payload_hash in zip(
             manifest.artifact_ids,
@@ -251,7 +255,9 @@ class RuntimeBackupManager:
         ):
             artifact = payload_store.load(artifact_id)
             if str(artifact.descriptor.payload_sha256) != payload_hash:
-                raise BackupIntegrityError("existing backup payload checksum does not match")
+                raise BackupIntegrityError(
+                    "existing backup payload checksum does not match"
+                )
 
     @staticmethod
     def _canonical_bytes(record: dict[str, object]) -> bytes:

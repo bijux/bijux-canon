@@ -61,10 +61,7 @@ def audit_index_generation(
                 "index generation chunk mappings are not fully reachable"
             )
         if compatibility is not None:
-            if (
-                manifest.model_lock_artifact_id
-                != compatibility.model_lock_artifact_id
-            ):
+            if manifest.model_lock_artifact_id != compatibility.model_lock_artifact_id:
                 raise IndexGenerationIncompatibleError(
                     "index generation model lock is incompatible"
                 )

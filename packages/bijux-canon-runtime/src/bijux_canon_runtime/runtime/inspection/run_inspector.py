@@ -170,9 +170,7 @@ class RuntimeRunInspector:
     ) -> tuple[tuple[ArtifactID, AddressedArtifact], ...]:
         inventory: list[tuple[ArtifactID, AddressedArtifact]] = []
         loaded_bytes = 0
-        for index, artifact_id in enumerate(
-            self._store.iter_artifact_ids(), start=1
-        ):
+        for index, artifact_id in enumerate(self._store.iter_artifact_ids(), start=1):
             if index > self._limits.max_inventory_artifacts:
                 raise RuntimeInspectionError(
                     "artifact inventory exceeds the configured inspection limit"
@@ -211,7 +209,9 @@ class RuntimeRunInspector:
             if payload.get("run_id") != run_id:
                 continue
             if payload.get("schema_version") != artifact.descriptor.schema_id:
-                raise RuntimeInspectionError("execution manifest schema is inconsistent")
+                raise RuntimeInspectionError(
+                    "execution manifest schema is inconsistent"
+                )
             plan = required_object(payload, "plan")
             attempt = required_object(payload, "attempt")
             attempt_id = required_string(attempt, "attempt_id")
@@ -256,7 +256,10 @@ class RuntimeRunInspector:
             if artifact.descriptor.schema_id != "bijux.runtime.execution-event.v1":
                 continue
             payload = json_object(artifact)
-            if payload.get("run_id") != run_id or payload.get("attempt_id") != attempt_id:
+            if (
+                payload.get("run_id") != run_id
+                or payload.get("attempt_id") != attempt_id
+            ):
                 continue
             if payload.get("request_id") != request_id:
                 raise RuntimeInspectionError("event request identity is inconsistent")

@@ -38,9 +38,7 @@ class RetrievalRequest(BaseModel):
     index_generation: Annotated[str, Field(min_length=1)]
     scope: tuple[Annotated[str, Field(min_length=1)], ...] = Field(min_length=1)
     top_k: int = Field(..., ge=1, le=1000)
-    retrieval_mode: Literal[
-        "lexical", "dense_exact", "dense_approximate", "hybrid"
-    ]
+    retrieval_mode: Literal["lexical", "dense_exact", "dense_approximate", "hybrid"]
     constraints: Mapping[str, Any]
     filters: list[str] = Field(default_factory=list)
     metadata: Mapping[str, str] = Field(default_factory=dict)

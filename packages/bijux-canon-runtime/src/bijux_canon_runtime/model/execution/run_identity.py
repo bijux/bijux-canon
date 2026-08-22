@@ -19,9 +19,7 @@ from bijux_canon_runtime.model.execution.request_plan import (
 from bijux_canon_runtime.ontology.ids import ArtifactID, RequestID, RunID
 
 _ARTIFACT_ID = re.compile(r"sha256:[0-9a-f]{64}")
-_IDENTITY = re.compile(
-    r"(?:run|attempt|retry|replay|publication)_v1_[0-9a-f]{64}"
-)
+_IDENTITY = re.compile(r"(?:run|attempt|retry|replay|publication)_v1_[0-9a-f]{64}")
 
 
 def _identity(prefix: str, payload: object) -> str:
@@ -57,7 +55,9 @@ class SemanticRunInputs:
         if self.top_k is not None and not 1 <= self.top_k <= 1000:
             raise ValueError("semantic run top_k must be between 1 and 1000")
         if self.corpus_artifact_id is None and self.index_artifact_id is None:
-            raise ValueError("semantic run requires a resolved corpus or index artifact")
+            raise ValueError(
+                "semantic run requires a resolved corpus or index artifact"
+            )
 
     def identity_payload(self) -> dict[str, object]:
         """Return execution-independent canonical semantics for hashing."""
@@ -329,13 +329,9 @@ class ExecutionAttemptIdentity:
                 raise ValueError("initial attempt must not contain lineage")
         elif self.source_attempt_id != self.supersedes_attempt_id:
             raise ValueError("derived attempt must explicitly supersede its source")
-        if (self.retry_id is not None) != (
-            self.relation is AttemptRelation.RETRY
-        ):
+        if (self.retry_id is not None) != (self.relation is AttemptRelation.RETRY):
             raise ValueError("retry identity does not match attempt relation")
-        if (self.replay_id is not None) != (
-            self.relation is AttemptRelation.REPLAY
-        ):
+        if (self.replay_id is not None) != (self.relation is AttemptRelation.REPLAY):
             raise ValueError("replay identity does not match attempt relation")
         lineage_payload = {
             "attempt_number": self.attempt_number,

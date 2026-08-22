@@ -70,7 +70,9 @@ class IndexGenerationArchive:
 
     def __post_init__(self) -> None:
         if tuple(item.name for item in self.files) != _FILE_NAMES:
-            raise ValueError("index archive must contain every generation file in order")
+            raise ValueError(
+                "index archive must contain every generation file in order"
+            )
         if not self.generation_id.startswith("sha256:"):
             raise ValueError("index archive generation identity is invalid")
 

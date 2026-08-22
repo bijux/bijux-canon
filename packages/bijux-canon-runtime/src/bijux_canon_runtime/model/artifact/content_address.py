@@ -82,7 +82,9 @@ class ImmutableArtifactDescriptor:
             raise ValueError("immutable artifact_id must be a SHA-256 artifact ID")
         if not _SCHEMA_ID.fullmatch(self.schema_id):
             raise ValueError("schema_id has an invalid format")
-        if "/" not in self.media_type or any(char.isspace() for char in self.media_type):
+        if "/" not in self.media_type or any(
+            char.isspace() for char in self.media_type
+        ):
             raise ValueError("media_type must be a concrete MIME type")
         if self.size_bytes < 0:
             raise ValueError("artifact size must not be negative")
@@ -116,7 +118,9 @@ class AddressedArtifact:
             dependencies=self.descriptor.dependencies,
         )
         if expected != self.descriptor:
-            raise ValueError("artifact descriptor does not match canonical payload bytes")
+            raise ValueError(
+                "artifact descriptor does not match canonical payload bytes"
+            )
 
     @classmethod
     def from_json(
@@ -209,7 +213,9 @@ class LogicalArtifactReference:
         target_artifact_id: ArtifactID,
     ) -> LogicalArtifactReference:
         if not _LOGICAL_PART.fullmatch(namespace) or not _LOGICAL_PART.fullmatch(name):
-            raise ValueError("logical reference namespace and name must be stable names")
+            raise ValueError(
+                "logical reference namespace and name must be stable names"
+            )
         if revision < 0:
             raise ValueError("logical reference revision must not be negative")
         if not _ARTIFACT_ID.fullmatch(str(target_artifact_id)):

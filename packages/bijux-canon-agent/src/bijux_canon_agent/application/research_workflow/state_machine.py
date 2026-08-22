@@ -475,9 +475,7 @@ class ResearchRoleMachine:
                 None if self._reasoning is None else self._reasoning.artifact_id
             ),
             "operation_artifact_ids": [item.artifact_id for item in self._operations],
-            "transition_artifact_ids": [
-                item.artifact_id for item in self._transitions
-            ],
+            "transition_artifact_ids": [item.artifact_id for item in self._transitions],
             "tool_policy_artifact_id": self._services.policy.artifact_id,
             "tool_decision_artifact_ids": [
                 item.artifact_id for item in self._services.decisions
@@ -487,9 +485,7 @@ class ResearchRoleMachine:
                 item.artifact_id for item in self._budget.decisions
             ],
             "budget_usage": self._budget.global_usage.payload(),
-            "exhausted_budget_dimensions": list(
-                self._budget.exhausted_dimensions
-            ),
+            "exhausted_budget_dimensions": list(self._budget.exhausted_dimensions),
             "checkpoint_artifact_id": (
                 None if self._checkpoint is None else self._checkpoint.artifact_id
             ),
@@ -585,9 +581,7 @@ class ResearchRoleMachine:
                 payload={
                     "budget_decision_artifact_id": start_decision.artifact_id,
                     "status": "budget_exhausted",
-                    "exhausted_dimensions": list(
-                        start_decision.exhausted_dimensions
-                    ),
+                    "exhausted_dimensions": list(start_decision.exhausted_dimensions),
                 },
             )
         if operation is ResearchOperation.VALIDATE_PLAN:
@@ -618,7 +612,9 @@ class ResearchRoleMachine:
             payload = {
                 "retrieval_artifact_id": retrieval.artifact_id,
                 "assessment": (
-                    "inspect_for_opposition" if retrieval.records else "evidence_missing"
+                    "inspect_for_opposition"
+                    if retrieval.records
+                    else "evidence_missing"
                 ),
             }
         elif operation is ResearchOperation.RESOLVE_EVIDENCE_GAPS:
@@ -664,9 +660,7 @@ class ResearchRoleMachine:
             operation is ResearchOperation.RETRIEVE_EVIDENCE
             and self._retrieval is not None
         ):
-            output_bytes += len(
-                _canonical(self._retrieval.model_dump(mode="json"))
-            )
+            output_bytes += len(_canonical(self._retrieval.model_dump(mode="json")))
         if (
             operation is ResearchOperation.SYNTHESIZE_ANSWER
             and self._reasoning is not None
@@ -734,9 +728,7 @@ class ResearchRoleMachine:
         return ResearchCheckpoint(
             artifact_id=_artifact_id(payload),
             sequence=len(self._transitions) - 1,
-            previous_checkpoint_artifact_id=payload[
-                "previous_checkpoint_artifact_id"
-            ],
+            previous_checkpoint_artifact_id=payload["previous_checkpoint_artifact_id"],
             planning_input_sha256=payload["planning_input_sha256"],
             tool_policy_artifact_id=self._services.policy.artifact_id,
             budget_policy_artifact_id=self._budget.policy.artifact_id,
@@ -768,14 +760,10 @@ class ResearchRoleMachine:
             "tool_policy_artifact_id": self._services.policy.artifact_id,
             "budget_policy_artifact_id": self._budget.policy.artifact_id,
             "retriever_descriptor_sha256": hashlib.sha256(
-                _canonical(
-                    self._services.retriever_descriptor.model_dump(mode="json")
-                )
+                _canonical(self._services.retriever_descriptor.model_dump(mode="json"))
             ).hexdigest(),
             "reasoner_descriptor_sha256": hashlib.sha256(
-                _canonical(
-                    self._services.reasoner_descriptor.model_dump(mode="json")
-                )
+                _canonical(self._services.reasoner_descriptor.model_dump(mode="json"))
             ).hexdigest(),
             "role": self._role.value,
             "retrieval": (
@@ -789,9 +777,7 @@ class ResearchRoleMachine:
                 else self._reasoning.model_dump(mode="json")
             ),
             "operation_artifact_ids": [item.artifact_id for item in self._operations],
-            "transition_artifact_ids": [
-                item.artifact_id for item in self._transitions
-            ],
+            "transition_artifact_ids": [item.artifact_id for item in self._transitions],
             "tool_decision_artifact_ids": [
                 item.artifact_id for item in self._services.decisions
             ],
@@ -820,7 +806,10 @@ class ResearchRoleMachine:
             raise ValueError("checkpoint sequence does not match transitions")
         if len(checkpoint.operations) != len(checkpoint.transitions):
             raise ValueError("checkpoint operation and transition counts differ")
-        if checkpoint.transitions and checkpoint.transitions[-1].to_role is not checkpoint.role:
+        if (
+            checkpoint.transitions
+            and checkpoint.transitions[-1].to_role is not checkpoint.role
+        ):
             raise ValueError("checkpoint role does not match the transition head")
         for sequence, (operation, transition) in enumerate(
             zip(checkpoint.operations, checkpoint.transitions, strict=True)
@@ -902,9 +891,7 @@ class ResearchRoleMachine:
                 kind=failure.kind,
                 retryable=failure.retryable,
                 exception_type=failure.exception_type,
-                partial_evidence_artifact_ids=(
-                    failure.partial_evidence_artifact_ids
-                ),
+                partial_evidence_artifact_ids=(failure.partial_evidence_artifact_ids),
             )
             if failure != expected_failure:
                 raise ValueError("checkpoint failure identity is invalid")
@@ -925,9 +912,7 @@ class ResearchRoleMachine:
                 "planning_input_sha256": checkpoint.planning_input_sha256,
                 "tool_policy_artifact_id": checkpoint.tool_policy_artifact_id,
                 "budget_policy_artifact_id": checkpoint.budget_policy_artifact_id,
-                "retriever_descriptor_sha256": (
-                    checkpoint.retriever_descriptor_sha256
-                ),
+                "retriever_descriptor_sha256": (checkpoint.retriever_descriptor_sha256),
                 "reasoner_descriptor_sha256": checkpoint.reasoner_descriptor_sha256,
                 "role": checkpoint.role.value,
                 "retrieval": (
@@ -969,9 +954,7 @@ class ResearchRoleMachine:
         ):
             raise ValueError("checkpoint content identity is invalid")
         current = self._checkpoint_payload(
-            previous_checkpoint_artifact_id=(
-                checkpoint.previous_checkpoint_artifact_id
-            )
+            previous_checkpoint_artifact_id=(checkpoint.previous_checkpoint_artifact_id)
         )
         for field in (
             "planning_input_sha256",

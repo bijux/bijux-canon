@@ -105,9 +105,7 @@ class RuntimeReadinessService:
         checks.append(self._model_check(generation))
         checks.append(self._provider_check())
         checks.append(self._writable_state_check(artifact_store))
-        reasons = tuple(
-            check.reason for check in checks if check.reason is not None
-        )
+        reasons = tuple(check.reason for check in checks if check.reason is not None)
         ready = not reasons
         return ReadinessReport(
             schema_version="bijux.runtime.readiness.v1",

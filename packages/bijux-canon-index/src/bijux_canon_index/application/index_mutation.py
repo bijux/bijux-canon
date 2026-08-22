@@ -87,9 +87,7 @@ class IndexDelta:
         payload = {
             "additions": [_chunk_payload(chunk) for chunk in self.additions],
             "deletions": list(self.deletions),
-            "modifications": [
-                _chunk_payload(chunk) for chunk in self.modifications
-            ],
+            "modifications": [_chunk_payload(chunk) for chunk in self.modifications],
             "schema_version": "bijux.canon.index.delta.v1",
             "tombstones": list(self.tombstones),
         }
@@ -136,7 +134,9 @@ def apply_index_delta(
     if existing & set(additions):
         raise ValueError("index delta additions already exist in the parent generation")
     if not set(modifications).issubset(existing):
-        raise ValueError("index delta modifications must exist in the parent generation")
+        raise ValueError(
+            "index delta modifications must exist in the parent generation"
+        )
     if not removals.issubset(existing):
         raise ValueError("index delta removals must exist in the parent generation")
     for chunk_id in removals:

@@ -338,9 +338,10 @@ def test_installed_ingest_and_index_adapters_persist_restartable_payloads(
     assert claim_graph["evidence_packet"]["selected"][0]["exact_text"].startswith(
         "# Ancient DNA"
     )
-    assert claim_graph["citations"]["links"][0]["exact_text_sha256"] == hit[
-        "content_sha256"
-    ]
+    assert (
+        claim_graph["citations"]["links"][0]["exact_text_sha256"]
+        == hit["content_sha256"]
+    )
     assert claim_graph["citation_verification"]["integrity_verified_links"] == 1
 
     tampered_claim_graph = dict(claim_graph)
@@ -397,9 +398,10 @@ def test_installed_ingest_and_index_adapters_persist_restartable_payloads(
     assert research_trace["status"] == "budget_exhausted"
     assert research_trace["termination"]["stop"] is True
     assert research_trace["counterevidence_plan"]["requests"]
-    assert "contradictory evidence" in research_trace["counterevidence_plan"][
-        "requests"
-    ][0]["query_text"]
+    assert (
+        "contradictory evidence"
+        in research_trace["counterevidence_plan"]["requests"][0]["query_text"]
+    )
     assert research_trace["counterevidence_run"]["records"][0]["outcome"] == (
         "candidate_evidence_found"
     )
@@ -407,8 +409,9 @@ def test_installed_ingest_and_index_adapters_persist_restartable_payloads(
     assert len(research_trace["counterevidence_retrieval_artifact_ids"]) == 1
     assert "require relation classification" in research_trace["insufficiencies"][0]
     assert len(research_trace["causal_events"]) == 4
-    assert research_trace["causal_trace"]["head_artifact_id"] == (
-        research_trace["causal_events"][-1]["artifact_id"]
+    assert (
+        research_trace["causal_trace"]["head_artifact_id"]
+        == (research_trace["causal_events"][-1]["artifact_id"])
     )
 
     linked_dispatcher = OperationDispatcher(
@@ -457,12 +460,10 @@ def test_installed_ingest_and_index_adapters_persist_restartable_payloads(
     assert manifest["status"] == "persisted"
     assert manifest["artifact_count"] >= 10
     assert any(
-        item["schema_id"] == "agent.research-trace.v1"
-        for item in manifest["artifacts"]
+        item["schema_id"] == "agent.research-trace.v1" for item in manifest["artifacts"]
     )
     assert any(
-        item["schema_id"] == "index.evidence-set.v1"
-        for item in manifest["artifacts"]
+        item["schema_id"] == "index.evidence-set.v1" for item in manifest["artifacts"]
     )
 
     linked_ask = RuntimeFirstExecutionService(
@@ -545,7 +546,9 @@ def test_installed_ingest_and_index_adapters_persist_restartable_payloads(
             (offline_upstream,),
         )
 
-    external_step = replace(reason_step, inputs=replace(reason_step.inputs, provider="remote"))
+    external_step = replace(
+        reason_step, inputs=replace(reason_step.inputs, provider="remote")
+    )
     with pytest.raises(StepDispatchError, match="configured credentials"):
         OperationDispatcher((CanonicalReasonOperationAdapter(),)).dispatch(
             external_step,

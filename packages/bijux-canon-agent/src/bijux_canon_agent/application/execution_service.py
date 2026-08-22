@@ -145,9 +145,7 @@ async def process_input_files(
             logger.error(
                 f"Unexpected error processing {input_file}: {exc}", exc_info=True
             )
-            results["failed"].append(
-                {"file_path": str(input_file), "error": str(exc)}
-            )
+            results["failed"].append({"file_path": str(input_file), "error": str(exc)})
             continue
         if "error" in result:
             logger.error(f"Pipeline failed for {input_file}: {result['error']}")

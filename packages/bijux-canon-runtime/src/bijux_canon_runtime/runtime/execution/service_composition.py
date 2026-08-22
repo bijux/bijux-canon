@@ -140,9 +140,7 @@ def compose_canonical_services(
             protocol_version="1.0",
             owner_distribution="bijux-canon-ingest",
             distribution_version=versions["bijux-canon-ingest"],
-            implementation_module=(
-                CanonicalIngestRuntime.__module__
-            ),
+            implementation_module=(CanonicalIngestRuntime.__module__),
             implementation_name=CanonicalIngestRuntime.__name__,
             operations=(DagOperation.INGEST,),
             capabilities=(

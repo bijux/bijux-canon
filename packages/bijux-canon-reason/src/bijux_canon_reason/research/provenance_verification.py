@@ -13,7 +13,10 @@ from typing import Literal, Self
 from pydantic import field_validator, model_validator
 
 from bijux_canon_reason.core.models.base import StableModel
-from bijux_canon_reason.grounding.evidence_packets import CitationEvidence, EvidencePacket
+from bijux_canon_reason.grounding.evidence_packets import (
+    CitationEvidence,
+    EvidencePacket,
+)
 from bijux_canon_reason.grounding.provider_contracts import (
     content_artifact_id,
     require_artifact_id,
@@ -97,10 +100,14 @@ class EvidenceProvenancePath(StableModel):
     @model_validator(mode="after")
     def _validate_path(self) -> Self:
         for digest in (self.source_content_sha256, self.exact_text_sha256):
-            if len(digest) != 64 or any(char not in "0123456789abcdef" for char in digest):
+            if len(digest) != 64 or any(
+                char not in "0123456789abcdef" for char in digest
+            ):
                 raise ValueError("provenance path digests must be lowercase SHA-256")
         if self.source_artifact_id != f"sha256:{self.source_content_sha256}":
-            raise ValueError("source artifact identity must match source content digest")
+            raise ValueError(
+                "source artifact identity must match source content digest"
+            )
         if self.artifact_id != content_artifact_id(
             self.model_dump(mode="json", exclude={"artifact_id"})
         ):
@@ -480,7 +487,9 @@ class ReasoningProvenanceVerifier:
                     ReasoningProvenanceErrorCode.unadmitted_evidence,
                     "admitted evidence identities must be unique",
                 )
-            exact_digest = hashlib.sha256(evidence.exact_text.encode("utf-8")).hexdigest()
+            exact_digest = hashlib.sha256(
+                evidence.exact_text.encode("utf-8")
+            ).hexdigest()
             if exact_digest != evidence.exact_text_sha256:
                 raise ReasoningProvenanceError(
                     ReasoningProvenanceErrorCode.digest_mismatch,
@@ -583,8 +592,7 @@ class ReasoningProvenanceVerifier:
             sorted(
                 item.artifact_id
                 for item in insufficiency.assumptions
-                if resolve(item.claim_artifact_id)
-                == claim.canonical_claim_artifact_id
+                if resolve(item.claim_artifact_id) == claim.canonical_claim_artifact_id
                 and item.status is not AssumptionStatus.tested
             )
         )

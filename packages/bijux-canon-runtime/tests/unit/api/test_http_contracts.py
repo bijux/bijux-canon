@@ -78,6 +78,7 @@ def test_readiness_uses_canonical_configuration_precedence(
     monkeypatch.setenv("AGENTIC_FLOWS_DB_PATH", "legacy.duckdb")
     monkeypatch.setenv("BIJUX_CANON_RUNTIME_DB_PATH", "canonical.duckdb")
     app_module = importlib.import_module("bijux_canon_runtime.api.v1.app")
+
     class Readiness:
         def __init__(self, configuration, *, environment):
             del environment

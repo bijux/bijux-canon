@@ -39,7 +39,9 @@ def test_identical_payload_publication_is_idempotent(tmp_path: Path) -> None:
     store = AtomicFilesystemArtifactPayloadStore(tmp_path / "cas")
     store.put(artifact)
     digest = str(artifact.descriptor.artifact_id).removeprefix("sha256:")
-    payload_path = tmp_path / "cas" / "objects" / "sha256" / digest[:2] / digest / "payload"
+    payload_path = (
+        tmp_path / "cas" / "objects" / "sha256" / digest[:2] / digest / "payload"
+    )
     first_stat = payload_path.stat()
 
     store.put(artifact)
@@ -61,7 +63,9 @@ def test_corrupt_existing_payload_fails_closed_without_replacement(
     store = AtomicFilesystemArtifactPayloadStore(tmp_path / "cas")
     store.put(artifact)
     digest = str(artifact.descriptor.artifact_id).removeprefix("sha256:")
-    payload_path = tmp_path / "cas" / "objects" / "sha256" / digest[:2] / digest / "payload"
+    payload_path = (
+        tmp_path / "cas" / "objects" / "sha256" / digest[:2] / digest / "payload"
+    )
     payload_path.write_bytes(b"corrupt vector bytes")
 
     with pytest.raises(PayloadCollisionError, match="corrupt durable content"):
@@ -97,15 +101,15 @@ def test_descriptor_tampering_is_detected_after_restart(tmp_path: Path) -> None:
     store = AtomicFilesystemArtifactPayloadStore(root)
     store.put(artifact)
     digest = str(artifact.descriptor.artifact_id).removeprefix("sha256:")
-    descriptor_path = root / "objects" / "sha256" / digest[:2] / digest / "descriptor.json"
+    descriptor_path = (
+        root / "objects" / "sha256" / digest[:2] / digest / "descriptor.json"
+    )
     descriptor = json.loads(descriptor_path.read_text(encoding="utf-8"))
     descriptor["producer"] = "tampered-producer"
     descriptor_path.write_text(json.dumps(descriptor), encoding="utf-8")
 
     with pytest.raises(ValueError, match="failed validation"):
-        AtomicFilesystemArtifactPayloadStore(root).load(
-            artifact.descriptor.artifact_id
-        )
+        AtomicFilesystemArtifactPayloadStore(root).load(artifact.descriptor.artifact_id)
 
 
 def test_binding_requires_a_durable_target(tmp_path: Path) -> None:

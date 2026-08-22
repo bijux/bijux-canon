@@ -88,16 +88,16 @@ class IndexGenerationRegistry:
         """Verify and publish a complete generation without activating it."""
 
         source_path = Path(source).resolve()
-        audit = audit_index_generation(
-            source_path, compatibility=self._compatibility
-        )
+        audit = audit_index_generation(source_path, compatibility=self._compatibility)
         generation_id = audit.generation_id
         destination = self.generations / _generation_directory_name(generation_id)
         with self._exclusive():
             if destination.exists():
                 with IndexGeneration.open(destination) as existing:
                     if existing.manifest.generation_id != generation_id:
-                        raise IndexActivationError("admitted generation identity collided")
+                        raise IndexActivationError(
+                            "admitted generation identity collided"
+                        )
                 return generation_id
             temporary = Path(
                 tempfile.mkdtemp(
@@ -110,7 +110,9 @@ class IndexGenerationRegistry:
                 for name in _SEGMENT_NAMES:
                     source_file = source_path / name
                     if not source_file.is_file():
-                        raise IndexActivationError(f"generation segment is missing: {name}")
+                        raise IndexActivationError(
+                            f"generation segment is missing: {name}"
+                        )
                     shutil.copyfile(source_file, temporary / name)
                     with (temporary / name).open("rb") as handle:
                         os.fsync(handle.fileno())
@@ -179,7 +181,9 @@ class IndexGenerationRegistry:
         try:
             payload = json.loads(raw)
         except (UnicodeDecodeError, json.JSONDecodeError) as error:
-            raise IndexActivationError("active generation pointer is unreadable") from error
+            raise IndexActivationError(
+                "active generation pointer is unreadable"
+            ) from error
         expected = {
             "generation_id",
             "generation_manifest_sha256",
@@ -187,14 +191,17 @@ class IndexGenerationRegistry:
             "schema_version",
         }
         if not isinstance(payload, dict) or set(payload) != expected:
-            raise IndexActivationError("active generation pointer fields are unsupported")
+            raise IndexActivationError(
+                "active generation pointer fields are unsupported"
+            )
         if raw != (_canonical_json(payload) + "\n").encode("utf-8"):
             raise IndexActivationError("active generation pointer is not canonical")
         generation_id = str(payload["generation_id"])
         generation_path = self.generations / _generation_directory_name(generation_id)
-        if _sha256_file(generation_path / MANIFEST_NAME) != payload[
-            "generation_manifest_sha256"
-        ]:
+        if (
+            _sha256_file(generation_path / MANIFEST_NAME)
+            != payload["generation_manifest_sha256"]
+        ):
             raise IndexActivationError("active generation manifest hash mismatches")
         return generation_id
 

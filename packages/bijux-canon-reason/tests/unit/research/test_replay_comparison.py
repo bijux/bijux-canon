@@ -143,9 +143,7 @@ def test_replays_immutable_attempts_and_attributes_every_graph_change() -> None:
     assert len(comparison.added_decision_artifact_ids) == 1
     assert len(comparison.removed_decision_artifact_ids) == 1
     assert len(comparison.attributions) == 6
-    assert {
-        item.authority for item in comparison.attributions
-    } == {
+    assert {item.authority for item in comparison.attributions} == {
         ResearchChangeAuthority.deterministic,
         ResearchChangeAuthority.provider_mediated,
     }
@@ -214,7 +212,8 @@ def test_replay_rejects_event_sequence_and_hash_chain_breaks() -> None:
         kind=first.kind,
         target_artifact_id=first.target_artifact_id,
         authority=first.authority,
-        authority_provenance_artifact_id=first.provider_provenance_artifact_id or _id("x"),
+        authority_provenance_artifact_id=first.provider_provenance_artifact_id
+        or _id("x"),
     )
     broken_sequence = root.model_copy(
         update={"events": (wrong_sequence,) + root.events[1:]}
@@ -230,9 +229,12 @@ def test_replay_rejects_event_sequence_and_hash_chain_breaks() -> None:
         kind=second.kind,
         target_artifact_id=second.target_artifact_id,
         authority=second.authority,
-        authority_provenance_artifact_id=second.deterministic_policy_artifact_id or _id("x"),
+        authority_provenance_artifact_id=second.deterministic_policy_artifact_id
+        or _id("x"),
     )
-    broken_chain = root.model_copy(update={"events": (first, wrong_chain) + root.events[2:]})
+    broken_chain = root.model_copy(
+        update={"events": (first, wrong_chain) + root.events[2:]}
+    )
     with pytest.raises(ResearchReplayError) as chain:
         service.replay_chain((broken_chain,))
     assert chain.value.code is ResearchReplayErrorCode.event_chain_mismatch
@@ -243,20 +245,28 @@ def test_replay_rejects_authority_and_content_identity_tampering() -> None:
     service = ResearchReasoningReplayService()
     first = root.events[0]
     no_provider = first.model_copy(update={"provider_provenance_artifact_id": None})
-    broken_authority = root.model_copy(update={"events": (no_provider,) + root.events[1:]})
+    broken_authority = root.model_copy(
+        update={"events": (no_provider,) + root.events[1:]}
+    )
     with pytest.raises(ResearchReplayError) as authority:
         service.replay_chain((broken_authority,))
     assert authority.value.code is (
         ResearchReplayErrorCode.authority_provenance_mismatch
     )
 
-    changed_event = first.model_copy(update={"target_artifact_id": _id("changed-target")})
-    broken_event = root.model_copy(update={"events": (changed_event,) + root.events[1:]})
+    changed_event = first.model_copy(
+        update={"target_artifact_id": _id("changed-target")}
+    )
+    broken_event = root.model_copy(
+        update={"events": (changed_event,) + root.events[1:]}
+    )
     with pytest.raises(ResearchReplayError) as event_identity:
         service.replay_chain((broken_event,))
     assert event_identity.value.code is ResearchReplayErrorCode.event_identity_mismatch
 
-    broken_attempt = root.model_copy(update={"research_input_artifact_ids": (_id("other"),)})
+    broken_attempt = root.model_copy(
+        update={"research_input_artifact_ids": (_id("other"),)}
+    )
     with pytest.raises(ResearchReplayError) as attempt_identity:
         service.replay_chain((broken_attempt,))
     assert attempt_identity.value.code is (
@@ -320,7 +330,5 @@ def test_comparison_requires_directly_adjacent_attempts() -> None:
     replayed = service.replay_chain((root, child))
 
     with pytest.raises(ResearchReplayError) as error:
-        service.compare(
-            baseline=replayed[1], current=replayed[0], current_attempt=root
-        )
+        service.compare(baseline=replayed[1], current=replayed[0], current_attempt=root)
     assert error.value.code is ResearchReplayErrorCode.nonadjacent_comparison

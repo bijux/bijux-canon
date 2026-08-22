@@ -56,9 +56,7 @@ def _build(service: IndexService) -> str:
         snapshot_artifact_id="sha256:snapshot",
         model_lock_artifact_id="sha256:model-lock",
         limits=IndexBuildLimits(10, 10_000, 10_000, 10_000),
-        hnsw_parameters=HnswParameters(
-            m=2, ef_construction=8, ef_search=8, seed=17
-        ),
+        hnsw_parameters=HnswParameters(m=2, ef_construction=8, ef_search=8, seed=17),
     )
     return report.generation_id
 

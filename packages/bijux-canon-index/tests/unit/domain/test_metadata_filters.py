@@ -47,9 +47,7 @@ def test_governed_and_user_predicates_match_conjunctively() -> None:
         tags=("reviewed", "ancient-dna"),
         languages=("en",),
         user=(
-            UserMetadataPredicate(
-                "quality", MetadataOperator.greater_or_equal, 0.9
-            ),
+            UserMetadataPredicate("quality", MetadataOperator.greater_or_equal, 0.9),
             UserMetadataPredicate(
                 "license", MetadataOperator.one_of, ("CC0-1.0", "CC-BY-4.0")
             ),
@@ -70,7 +68,10 @@ def test_governed_and_user_predicates_match_conjunctively() -> None:
         (UserMetadataPredicate("quality", MetadataOperator.equal, 0.95), True),
         (UserMetadataPredicate("quality", MetadataOperator.not_equal, 0.1), True),
         (UserMetadataPredicate("quality", MetadataOperator.less_or_equal, 1.0), True),
-        (UserMetadataPredicate("quality", MetadataOperator.greater_or_equal, 1.0), False),
+        (
+            UserMetadataPredicate("quality", MetadataOperator.greater_or_equal, 1.0),
+            False,
+        ),
         (UserMetadataPredicate("license", MetadataOperator.exists), True),
         (UserMetadataPredicate("license", MetadataOperator.absent), False),
         (UserMetadataPredicate("tags_local", MetadataOperator.contains, "x"), False),
@@ -81,7 +82,9 @@ def test_user_predicate_operators(
 ) -> None:
     metadata = validated_metadata(_metadata())  # type: ignore[arg-type]
 
-    assert matches_metadata_filter(metadata, MetadataFilter(user=(predicate,))) is expected
+    assert (
+        matches_metadata_filter(metadata, MetadataFilter(user=(predicate,))) is expected
+    )
 
 
 def test_invalid_filters_fail_during_construction() -> None:

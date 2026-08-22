@@ -61,9 +61,7 @@ def _cli(
     *,
     readiness: RuntimeReadinessService | None = None,
 ) -> tuple[int, dict[str, object]]:
-    args = build_parser(prog_name="bijux-canon-runtime").parse_args(
-        ["v2", command]
-    )
+    args = build_parser(prog_name="bijux-canon-runtime").parse_args(["v2", command])
     stdout, stderr = StringIO(), StringIO()
     with redirect_stdout(stdout), redirect_stderr(stderr):
         code = run_v2_command(
@@ -74,7 +72,9 @@ def _cli(
     return code, json.loads(stdout.getvalue() or stderr.getvalue())
 
 
-def test_liveness_performs_no_dependency_checks(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_liveness_performs_no_dependency_checks(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     readiness_module = __import__(
         "bijux_canon_runtime.application.readiness",
         fromlist=["readiness"],
@@ -175,7 +175,9 @@ def test_readiness_reports_writability_failure_without_losing_other_checks(
     def reject_write(_root: Path) -> None:
         raise OSError("not writable")
 
-    monkeypatch.setattr(RuntimeReadinessService, "_write_probe", staticmethod(reject_write))
+    monkeypatch.setattr(
+        RuntimeReadinessService, "_write_probe", staticmethod(reject_write)
+    )
     report = RuntimeReadinessService(_configuration(tmp_path)).evaluate()
 
     assert report.reasons == (ReadinessReason.STATE_NOT_WRITABLE,)

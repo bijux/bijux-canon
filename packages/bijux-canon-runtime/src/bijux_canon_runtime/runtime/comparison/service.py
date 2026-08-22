@@ -210,9 +210,7 @@ def _domain_values(
             _find_domain_values(artifact.json_value, domain, "$", selected)
         if matches_schema or selected:
             record: dict[str, object] = {
-                "values": [
-                    {"path": path, "value": value} for path, value in selected
-                ]
+                "values": [{"path": path, "value": value} for path, value in selected]
             }
             if matches_schema:
                 record["artifact_id"] = str(artifact.artifact_id)
@@ -283,9 +281,8 @@ def _timing_difference(
             baseline_total, candidate_total
         )
     equal = baseline_value == candidate_value
-    bounded = (
-        delta <= policy.max_duration_delta_ms
-        and (ratio is None or ratio <= policy.max_duration_ratio)
+    bounded = delta <= policy.max_duration_delta_ms and (
+        ratio is None or ratio <= policy.max_duration_ratio
     )
     if equal:
         classification = DifferenceClassification.EQUAL

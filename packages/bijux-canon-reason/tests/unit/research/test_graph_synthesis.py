@@ -128,9 +128,7 @@ def _assumption(claim_id: str) -> GraphAssumption:
     return GraphAssumption(artifact_id=content_artifact_id(payload), **payload)
 
 
-def _insufficiency(
-    claim_id: str, *, sufficient: bool
-) -> GraphInsufficiency:
+def _insufficiency(claim_id: str, *, sufficient: bool) -> GraphInsufficiency:
     payload = {
         "schema_version": "2.0.0",
         "artifact_type": "bijux.canon.reason.insufficiency",
@@ -179,9 +177,7 @@ def _delta(
         "insufficiencies": tuple(
             item.model_dump(mode="json") for item in insufficiencies
         ),
-        "deficiencies": tuple(
-            item.model_dump(mode="json") for item in deficiencies
-        ),
+        "deficiencies": tuple(item.model_dump(mode="json") for item in deficiencies),
     }
     return AssumptionInsufficiencyDelta(
         artifact_id=content_artifact_id(payload),
@@ -251,9 +247,7 @@ def _convergence(graph_id: str, *, outcome: str = "converged"):
 def _rich_inputs():
     graph_id = _id("graph")
     merge = _merge(graph_id)
-    source_1, source_2 = (
-        item.source_claim_artifact_id for item in merge.mappings
-    )
+    source_1, source_2 = (item.source_claim_artifact_id for item in merge.mappings)
     relations = (
         _relation(source_1, _id("evidence-1"), EvidenceRelationKind.supports),
         _relation(source_1, _id("evidence-2"), EvidenceRelationKind.supports),
@@ -397,7 +391,9 @@ def test_clean_terminal_graph_is_answered_with_explicit_scope_limit() -> None:
     merge = _merge(graph_id)
     source_ids = tuple(item.source_claim_artifact_id for item in merge.mappings)
     relations = tuple(
-        _relation(source, _id(f"clean-evidence-{ordinal}"), EvidenceRelationKind.supports)
+        _relation(
+            source, _id(f"clean-evidence-{ordinal}"), EvidenceRelationKind.supports
+        )
         for ordinal, source in enumerate(source_ids)
     )
     attachment = _attachment(graph_id, relations)
@@ -425,7 +421,9 @@ def test_declared_conflict_without_opposition_has_only_declared_provenance() -> 
     merge = _merge(graph_id)
     source_ids = tuple(item.source_claim_artifact_id for item in merge.mappings)
     relations = tuple(
-        _relation(source, _id(f"declared-evidence-{ordinal}"), EvidenceRelationKind.supports)
+        _relation(
+            source, _id(f"declared-evidence-{ordinal}"), EvidenceRelationKind.supports
+        )
         for ordinal, source in enumerate(source_ids)
     )
     attachment = _attachment(graph_id, relations)
@@ -618,7 +616,9 @@ def test_provenance_rejects_exact_text_and_source_digest_mismatch() -> None:
     synthesis, packet, merge, attachment, delta, convergence = _verified_bundle()
     verifier = ReasoningProvenanceVerifier()
     first = packet.selected[0]
-    corrupt_text = first.model_copy(update={"exact_text": first.exact_text + " altered"})
+    corrupt_text = first.model_copy(
+        update={"exact_text": first.exact_text + " altered"}
+    )
     corrupt_packet = packet.model_copy(
         update={"selected": (corrupt_text,) + packet.selected[1:]}
     )
@@ -679,7 +679,9 @@ def test_provenance_rejects_unadmitted_evidence_and_missing_trace() -> None:
             assumption_insufficiency=delta,
             convergence=convergence,
         )
-    assert trace_error.value.code is ReasoningProvenanceErrorCode.relation_trace_mismatch
+    assert (
+        trace_error.value.code is ReasoningProvenanceErrorCode.relation_trace_mismatch
+    )
 
 
 def test_provenance_rejects_orphan_claim_and_unsupported_confidence() -> None:
@@ -793,7 +795,9 @@ def test_provenance_rejects_source_graph_and_artifact_identity_mismatch() -> Non
             assumption_insufficiency=delta,
             convergence=alien_convergence,
         )
-    assert graph_error.value.code is ReasoningProvenanceErrorCode.graph_identity_mismatch
+    assert (
+        graph_error.value.code is ReasoningProvenanceErrorCode.graph_identity_mismatch
+    )
 
     changed_answer = synthesis.model_copy(update={"question": "Changed question"})
     with pytest.raises(ReasoningProvenanceError) as identity_error:

@@ -58,12 +58,8 @@ def _spec() -> MetadataFilter:
         tags=("ancient-dna", "reviewed"),
         languages=("en",),
         user=(
-            UserMetadataPredicate(
-                "quality", MetadataOperator.greater_or_equal, 0.9
-            ),
-            UserMetadataPredicate(
-                "license", MetadataOperator.equal, "CC-BY-4.0"
-            ),
+            UserMetadataPredicate("quality", MetadataOperator.greater_or_equal, 0.9),
+            UserMetadataPredicate("license", MetadataOperator.equal, "CC-BY-4.0"),
         ),
     )
 
@@ -134,6 +130,4 @@ def test_typed_and_legacy_filters_cannot_be_combined(tmp_path: Path) -> None:
         path, (record,), model_lock_artifact_id="model"
     ) as exact:
         with pytest.raises(ValueError, match="mutually exclusive"):
-            exact.query(
-                (1.0, 0.0), filters={"language": "en"}, metadata_filter=_spec()
-            )
+            exact.query((1.0, 0.0), filters={"language": "en"}, metadata_filter=_spec())

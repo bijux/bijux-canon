@@ -275,9 +275,7 @@ def eval_suite(
         preset=preset,
         seed=seed,
     )
-    _emit_json(
-        result.payload if json_output else {"summary": str(result.summary_path)}
-    )
+    _emit_json(result.payload if json_output else {"summary": str(result.summary_path)})
     if result.failed:
         _exit(
             2,

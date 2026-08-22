@@ -111,7 +111,9 @@ def validate_lock_document(
         raise RuntimeError("research corpus lock byte total mismatch")
     source_ids = [source.get("source_id") for source in sources]
     if source_ids != sorted(source_ids) or len(source_ids) != len(set(source_ids)):
-        raise RuntimeError("research corpus lock source identities are not unique and sorted")
+        raise RuntimeError(
+            "research corpus lock source identities are not unique and sorted"
+        )
 
     resolved_root = research_root.resolve(strict=True) if research_root else None
     for source in sources:
@@ -131,7 +133,9 @@ def validate_lock_document(
             or redistribution.get("permitted") is not True
             or not redistribution.get("terms")
         ):
-            raise RuntimeError("research corpus lock lacks offline redistribution terms")
+            raise RuntimeError(
+                "research corpus lock lacks offline redistribution terms"
+            )
         relative_path = _safe_source_path(source["local_path"])
         if resolved_root is not None:
             source_path = resolved_root.joinpath(*relative_path.parts)
@@ -140,10 +144,7 @@ def validate_lock_document(
                     f"research corpus source is not a regular file: {relative_path}"
                 )
             body = source_path.read_bytes()
-            if (
-                len(body) != source["byte_count"]
-                or sha256(body) != source["sha256"]
-            ):
+            if len(body) != source["byte_count"] or sha256(body) != source["sha256"]:
                 raise RuntimeError(
                     f"research corpus source bytes drifted: {source['source_id']}"
                 )
@@ -182,20 +183,14 @@ def _locked_source(
     )
     expected = {
         **manifest_source,
-        "acquisition_receipt_identity_sha256": receipt[
-            "receipt_identity_sha256"
-        ],
+        "acquisition_receipt_identity_sha256": receipt["receipt_identity_sha256"],
     }
     observed = {
         **receipt,
-        "acquisition_receipt_identity_sha256": receipt[
-            "receipt_identity_sha256"
-        ],
+        "acquisition_receipt_identity_sha256": receipt["receipt_identity_sha256"],
     }
     drift = [
-        field
-        for field in matching_fields
-        if expected.get(field) != observed.get(field)
+        field for field in matching_fields if expected.get(field) != observed.get(field)
     ]
     if (
         drift
@@ -216,9 +211,7 @@ def _locked_source(
         "source_record_identity_sha256": manifest_source[
             "source_record_identity_sha256"
         ],
-        "acquisition_receipt_identity_sha256": receipt[
-            "receipt_identity_sha256"
-        ],
+        "acquisition_receipt_identity_sha256": receipt["receipt_identity_sha256"],
         "retrieved_at": receipt["retrieved_at"],
         "media_type": "application/xml",
         "byte_count": len(body),
@@ -240,9 +233,7 @@ def _locked_source(
             "etag": transport.get("etag"),
             "last_modified": transport.get("last_modified"),
         },
-        "supplementary_links": manifest_source["inspection"][
-            "supplementary_links"
-        ],
+        "supplementary_links": manifest_source["inspection"]["supplementary_links"],
         "limitations": manifest_source["limitations"],
     }
 

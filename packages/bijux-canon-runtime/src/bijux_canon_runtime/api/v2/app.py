@@ -284,7 +284,9 @@ def create_app(
     )
     def ready(_: Version, readiness_service: Readiness) -> JSONResponse:
         report = readiness_service.evaluate()
-        payload = ReadinessResponse.model_validate(asdict(report)).model_dump(mode="json")
+        payload = ReadinessResponse.model_validate(asdict(report)).model_dump(
+            mode="json"
+        )
         return JSONResponse(status_code=200 if report.ready else 503, content=payload)
 
     Idempotency = Annotated[

@@ -21,6 +21,7 @@ from bijux_canon_reason.application.run_service import (
     RunService,
 )
 from bijux_canon_reason.core.types import ProblemSpec
+
 RUN_ID_PATTERN = r"^[A-Za-z0-9][A-Za-z0-9_.-]{0,127}$"
 RunIdPath = Annotated[str, StringConstraints(pattern=RUN_ID_PATTERN), FastPath()]
 
@@ -243,7 +244,9 @@ def register_run_routes(
         try:
             return service.verify_run(run_id=run_id)
         except RunNotFoundError as exc:
-            raise HTTPException(status_code=404, detail="run artifacts missing") from exc
+            raise HTTPException(
+                status_code=404, detail="run artifacts missing"
+            ) from exc
 
     @app.post(
         "/v1/runs/{run_id}/replay",

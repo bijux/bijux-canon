@@ -64,9 +64,7 @@ def test_library_cli_runtime_and_http_share_generation_service(
 ) -> None:
     registry_root = tmp_path / "registry"
     monkeypatch.setenv("BIJUX_CANON_INDEX_GENERATION_ROOT", str(registry_root))
-    monkeypatch.setenv(
-        "BIJUX_CANON_INDEX_MODEL_LOCK_ARTIFACT_ID", "sha256:model-lock"
-    )
+    monkeypatch.setenv("BIJUX_CANON_INDEX_MODEL_LOCK_ARTIFACT_ID", "sha256:model-lock")
     monkeypatch.setenv("BIJUX_CANON_INDEX_MODEL_DIMENSION", "3")
     runner = CliRunner()
     cli_build_request = tmp_path / "cli-build.json"
@@ -163,9 +161,7 @@ def test_generation_http_schema_and_refusal_are_explicit(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv(
-        "BIJUX_CANON_INDEX_GENERATION_ROOT", str(tmp_path / "registry")
-    )
+    monkeypatch.setenv("BIJUX_CANON_INDEX_GENERATION_ROOT", str(tmp_path / "registry"))
     client = TestClient(build_app())
     schema = client.get("/openapi.json").json()
     operation_ids = {

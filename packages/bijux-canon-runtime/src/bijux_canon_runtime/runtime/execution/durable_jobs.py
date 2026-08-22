@@ -316,7 +316,9 @@ class DurableJobManager:
                 raise KeyError(f"durable job not found: {job_id}")
             status = JobStatus(row[0])
             if not status.terminal:
-                terminal_status = "cancelled" if status is JobStatus.QUEUED else status.value
+                terminal_status = (
+                    "cancelled" if status is JobStatus.QUEUED else status.value
+                )
                 finished_at = _now() if status is JobStatus.QUEUED else None
                 connection.execute(
                     """
@@ -347,7 +349,9 @@ class DurableJobManager:
         self._notify()
         return self.status(job_id)
 
-    def wait(self, job_id: str, *, timeout_seconds: float | None = None) -> DurableJobSnapshot:
+    def wait(
+        self, job_id: str, *, timeout_seconds: float | None = None
+    ) -> DurableJobSnapshot:
         """Wait on worker notifications rather than repeatedly querying on a timer."""
         if timeout_seconds is not None and timeout_seconds <= 0:
             raise ValueError("durable job wait timeout must be positive")
@@ -592,14 +596,13 @@ class DurableJobManager:
                 (job_id,),
             ).fetchone()
             cancelled = bool(cancellation[0])
-            timed_out = (
-                cancellation[1] is not None
-                and cancellation[1] <= finished_at
-            )
+            timed_out = cancellation[1] is not None and cancellation[1] <= finished_at
             status = (
                 JobStatus.CANCELLED
                 if cancelled
-                else JobStatus.TIMED_OUT if timed_out else JobStatus.SUCCEEDED
+                else JobStatus.TIMED_OUT
+                if timed_out
+                else JobStatus.SUCCEEDED
             )
             connection.execute(
                 """
@@ -615,7 +618,9 @@ class DurableJobManager:
                     (
                         DurableJobCancelled.__name__
                         if cancelled
-                        else DurableJobTimedOut.__name__ if timed_out else None
+                        else DurableJobTimedOut.__name__
+                        if timed_out
+                        else None
                     ),
                     (
                         "durable job was cancelled after partial evidence"
@@ -643,14 +648,13 @@ class DurableJobManager:
                 (job_id,),
             ).fetchone()
             cancelled = bool(cancellation[0])
-            timed_out = (
-                cancellation[1] is not None
-                and cancellation[1] <= finished_at
-            )
+            timed_out = cancellation[1] is not None and cancellation[1] <= finished_at
             status = (
                 JobStatus.CANCELLED
                 if cancelled
-                else JobStatus.TIMED_OUT if timed_out else JobStatus.FAILED
+                else JobStatus.TIMED_OUT
+                if timed_out
+                else JobStatus.FAILED
             )
             connection.execute(
                 """
@@ -693,11 +697,7 @@ class DurableJobManager:
                 """,
                 (job_id,),
             ).fetchone()
-        return (
-            row is None
-            or bool(row[0])
-            or (row[1] is not None and row[1] <= _now())
-        )
+        return row is None or bool(row[0]) or (row[1] is not None and row[1] <= _now())
 
     def _connect(self) -> sqlite3.Connection:
         connection = sqlite3.connect(self._path, timeout=5.0)

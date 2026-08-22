@@ -86,9 +86,7 @@ def _lexical_limits() -> LexicalIndexLimits:
     )
 
 
-def _build(
-    path: Path, chunks: object | None = None
-) -> IndexGeneration:
+def _build(path: Path, chunks: object | None = None) -> IndexGeneration:
     admitted = _chunks() if chunks is None else chunks
     return IndexGeneration.build(
         path,
@@ -115,12 +113,14 @@ def test_build_publishes_one_coherent_restartable_generation(tmp_path: Path) -> 
         assert generation.lexical.query("ancient DNA", top_k=2)[0].chunk.chunk_id == (
             "chunk-a"
         )
-        assert generation.exact.query((1.0, 0.0, 0.0, 0.0), top_k=1)[
-            0
-        ].chunk_id == "chunk-a"
-        assert generation.hnsw.query((0.0, 1.0, 0.0, 0.0), top_k=1)[
-            0
-        ].chunk_id == "chunk-b"
+        assert (
+            generation.exact.query((1.0, 0.0, 0.0, 0.0), top_k=1)[0].chunk_id
+            == "chunk-a"
+        )
+        assert (
+            generation.hnsw.query((0.0, 1.0, 0.0, 0.0), top_k=1)[0].chunk_id
+            == "chunk-b"
+        )
 
     with IndexGeneration.open(destination) as restarted:
         assert restarted.manifest == manifest
@@ -159,18 +159,17 @@ def test_lexical_segment_is_independent_and_dense_assembly_reuses_it(
         snapshot_artifact_id="sha256:snapshot",
         model_lock_artifact_id="sha256:model-lock",
         limits=_limits(),
-        hnsw_parameters=HnswParameters(
-            m=2, ef_construction=8, ef_search=8, seed=7
-        ),
+        hnsw_parameters=HnswParameters(m=2, ef_construction=8, ef_search=8, seed=7),
     ) as assembled:
         assembled_manifest = assembled.manifest
     with _build(tmp_path / "compatibility") as compatibility:
         compatibility_manifest = compatibility.manifest
 
     assert assembled_manifest == compatibility_manifest
-    assert lexical_path.read_bytes() == (
-        tmp_path / "assembled" / "lexical.sqlite"
-    ).read_bytes()
+    assert (
+        lexical_path.read_bytes()
+        == (tmp_path / "assembled" / "lexical.sqlite").read_bytes()
+    )
 
 
 def test_dense_assembly_rejects_a_lexical_segment_from_other_content(

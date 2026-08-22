@@ -22,9 +22,7 @@ _QUALIFICATION_SOURCE = (
     _REPOSITORY_ROOT / "examples/document-formats/corpus/parser-jats-real.xml"
 )
 _LOCATOR_TRUTH = _REPOSITORY_ROOT / "examples/document-formats/locator-truth.jsonl"
-_ANCIENT_DNA_SOURCES = (
-    _REPOSITORY_ROOT / "examples/ancient-dna-research/corpus/sources"
-)
+_ANCIENT_DNA_SOURCES = _REPOSITORY_ROOT / "examples/ancient-dna-research/corpus/sources"
 _REQUIRED_ROLES = {
     "title",
     "abstract",

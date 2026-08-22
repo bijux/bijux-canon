@@ -55,9 +55,7 @@ def test_composed_corpus_job_survives_application_restart_without_model_load(
 
         assert completed.status is JobStatus.SUCCEEDED
         assert inspection.status.value == "completed"
-        assert corpus["schema_version"] == (
-            "bijux.canon.ingest.corpus_publication.v1"
-        )
+        assert corpus["schema_version"] == ("bijux.canon.ingest.corpus_publication.v1")
         assert corpus["byte_length"] > 0
 
     with compose_runtime_application_services(

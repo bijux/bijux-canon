@@ -63,9 +63,7 @@ def test_service_owns_build_activate_inspect_verify_query_and_restart(
         snapshot_artifact_id="sha256:snapshot",
         model_lock_artifact_id="sha256:model-lock",
         limits=IndexBuildLimits(10, 10_000, 10_000, 10_000),
-        hnsw_parameters=HnswParameters(
-            m=2, ef_construction=8, ef_search=8, seed=17
-        ),
+        hnsw_parameters=HnswParameters(m=2, ef_construction=8, ef_search=8, seed=17),
     )
     assert built.activation.active is False
     activated = service.activate(built.generation_id)
@@ -107,13 +105,16 @@ def test_service_owns_build_activate_inspect_verify_query_and_restart(
 
     restarted = _service(service.registry_root)
     assert restarted.inspect() == activated
-    assert restarted.query(
-        IndexQueryRequest(
-            channel=IndexQueryChannel.dense_exact,
-            query_vector=(1.0, 0.0, 0.0),
-            top_k=1,
+    assert (
+        restarted.query(
+            IndexQueryRequest(
+                channel=IndexQueryChannel.dense_exact,
+                query_vector=(1.0, 0.0, 0.0),
+                top_k=1,
+            )
         )
-    ) == exact
+        == exact
+    )
 
 
 def test_query_request_refuses_mixed_missing_and_unbounded_inputs() -> None:
@@ -185,9 +186,7 @@ def test_service_admits_and_activates_a_separately_built_lexical_segment(
         snapshot_artifact_id="sha256:snapshot",
         model_lock_artifact_id="sha256:model-lock",
         limits=IndexBuildLimits(10, 10_000, 10_000, 10_000),
-        hnsw_parameters=HnswParameters(
-            m=2, ef_construction=8, ef_search=8, seed=17
-        ),
+        hnsw_parameters=HnswParameters(m=2, ef_construction=8, ef_search=8, seed=17),
         activate=True,
     )
 

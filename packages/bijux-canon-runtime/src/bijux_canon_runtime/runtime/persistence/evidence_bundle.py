@@ -41,13 +41,16 @@ class EvidenceBundleLimits:
     stream_chunk_bytes: int = 1024 * 1024
 
     def __post_init__(self) -> None:
-        if min(
-            self.max_artifacts,
-            self.max_bundle_bytes,
-            self.max_artifact_bytes,
-            self.max_manifest_bytes,
-            self.stream_chunk_bytes,
-        ) < 1:
+        if (
+            min(
+                self.max_artifacts,
+                self.max_bundle_bytes,
+                self.max_artifact_bytes,
+                self.max_manifest_bytes,
+                self.stream_chunk_bytes,
+            )
+            < 1
+        ):
             raise ValueError("evidence bundle limits must be positive")
 
 
@@ -185,9 +188,7 @@ class EvidenceBundleExporter:
                 entries.append(
                     {
                         "artifact_id": str(artifact_id),
-                        "dependencies": [
-                            str(item) for item in descriptor.dependencies
-                        ],
+                        "dependencies": [str(item) for item in descriptor.dependencies],
                         "descriptor_file": str(descriptor_file),
                         "descriptor_sha256": hashlib.sha256(
                             descriptor_bytes
@@ -217,9 +218,7 @@ class EvidenceBundleExporter:
                 not staged_verification.valid
                 or staged_verification.bundle_sha256 != bundle_hash
             ):
-                raise EvidenceBundleIntegrityError(
-                    "staged evidence bundle is invalid"
-                )
+                raise EvidenceBundleIntegrityError("staged evidence bundle is invalid")
             os.rename(staged, destination)
             self._fsync_directory(destination.parent)
         finally:
@@ -262,9 +261,11 @@ class EvidenceBundleExporter:
                 "schema_version",
             }:
                 raise ValueError("manifest fields do not match its stable schema")
-            if not isinstance(bundle_hash, str) or hashlib.sha256(
-                cls._canonical_bytes(record)
-            ).hexdigest() != bundle_hash:
+            if (
+                not isinstance(bundle_hash, str)
+                or hashlib.sha256(cls._canonical_bytes(record)).hexdigest()
+                != bundle_hash
+            ):
                 raise ValueError("manifest checksum does not match")
             if record.get("schema_version") != "bijux.runtime.evidence-bundle.v1":
                 raise ValueError("unsupported evidence bundle schema")
@@ -282,8 +283,7 @@ class EvidenceBundleExporter:
                 policy_id=policy_record["policy_id"],
                 redact_schema_ids=tuple(policy_record["redact_schema_ids"]),
                 redact_artifact_ids=tuple(
-                    ArtifactID(item)
-                    for item in policy_record["redact_artifact_ids"]
+                    ArtifactID(item) for item in policy_record["redact_artifact_ids"]
                 ),
                 schema_version=policy_record["schema_version"],
             )
@@ -358,9 +358,7 @@ class EvidenceBundleExporter:
                     )
                     if descriptor.size_bytes != entry.get("size_bytes"):
                         raise ValueError("artifact size does not match manifest")
-                    if str(descriptor.payload_sha256) != entry.get(
-                        "payload_sha256"
-                    ):
+                    if str(descriptor.payload_sha256) != entry.get("payload_sha256"):
                         raise ValueError("artifact payload checksum does not match")
                     included += 1
                 elif disposition == "redacted" and entry.get("payload_file") is None:
@@ -390,7 +388,9 @@ class EvidenceBundleExporter:
             ValueError,
             json.JSONDecodeError,
         ) as exc:
-            raise EvidenceBundleIntegrityError("evidence bundle verification failed") from exc
+            raise EvidenceBundleIntegrityError(
+                "evidence bundle verification failed"
+            ) from exc
         return EvidenceBundleVerification(
             schema_version="bijux.runtime.evidence-bundle-verification.v1",
             bundle_sha256=bundle_hash,
@@ -497,9 +497,7 @@ class EvidenceBundleExporter:
 
     @staticmethod
     def _canonical_bytes(record: dict[str, object]) -> bytes:
-        return json.dumps(record, sort_keys=True, separators=(",", ":")).encode(
-            "utf-8"
-        )
+        return json.dumps(record, sort_keys=True, separators=(",", ":")).encode("utf-8")
 
     @staticmethod
     def _write_durable(path: Path, payload: bytes) -> None:

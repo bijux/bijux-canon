@@ -65,7 +65,9 @@ def vector_store_name(config: ExecutionConfig) -> str | None:
     if config.vector_store is None:
         return None
     name = config.vector_store.backend
-    descriptor = next((item for item in VECTOR_STORES.descriptors() if item.name == name), None)
+    descriptor = next(
+        (item for item in VECTOR_STORES.descriptors() if item.name == name), None
+    )
     return descriptor.name if descriptor is not None else None
 
 
@@ -80,17 +82,25 @@ def validate_vector_store(
         uri=config.vector_store.uri,
         options=config.vector_store.options,
     )
-    if contract is ExecutionContract.DETERMINISTIC and not resolution.descriptor.deterministic_exact:
+    if (
+        contract is ExecutionContract.DETERMINISTIC
+        and not resolution.descriptor.deterministic_exact
+    ):
         raise ValidationError(
             message="deterministic contract requires deterministic vector store"
         )
-    if contract is ExecutionContract.NON_DETERMINISTIC and not resolution.descriptor.supports_ann:
+    if (
+        contract is ExecutionContract.NON_DETERMINISTIC
+        and not resolution.descriptor.supports_ann
+    ):
         raise ValidationError(
             message="non_deterministic contract requires ANN-capable vector store"
         )
 
 
-def environment_report(*, config: ExecutionConfig, workspace: Path) -> dict[str, object]:
+def environment_report(
+    *, config: ExecutionConfig, workspace: Path
+) -> dict[str, object]:
     """Inspect optional dependencies, adapters, and writable runtime locations."""
     extras: dict[str, bool] = {}
     for module in ("faiss", "qdrant_client"):
@@ -126,7 +136,9 @@ def environment_report(*, config: ExecutionConfig, workspace: Path) -> dict[str,
         },
         "permissions": {
             "workspace_writable": os.access(workspace, os.W_OK),
-            "run_dir_writable": os.access(run_dir, os.W_OK) if run_dir.exists() else True,
+            "run_dir_writable": os.access(run_dir, os.W_OK)
+            if run_dir.exists()
+            else True,
         },
     }
 
@@ -138,7 +150,10 @@ def metrics_payload() -> dict[str, object]:
 
 
 def debug_bundle_payload(
-    *, engine: VectorExecutionEngine, redacted_config: dict[str, object], include_provenance: bool
+    *,
+    engine: VectorExecutionEngine,
+    redacted_config: dict[str, object],
+    include_provenance: bool,
 ) -> dict[str, object]:
     """Build the diagnostic bundle owned by the index application."""
     resolution = engine.vector_store_resolution

@@ -28,7 +28,10 @@ from bijux_canon_reason.research import (
 )
 
 from bijux_canon_runtime.model.artifact import canonical_json_bytes
-from bijux_canon_runtime.model.execution.request_plan import ConcreteDagStep, DagOperation
+from bijux_canon_runtime.model.execution.request_plan import (
+    ConcreteDagStep,
+    DagOperation,
+)
 from bijux_canon_runtime.runtime.execution.installed_operation_adapters import (
     _bounded_output,
     _json_object,
@@ -125,7 +128,9 @@ def _verify_claim_graph(subject: Mapping[str, object]) -> tuple[str, ...]:
         raw_sources = subject["sources"]
         if not isinstance(raw_sources, list):
             raise TypeError
-        sources = tuple(CitationSourceDescriptor.model_validate(item) for item in raw_sources)
+        sources = tuple(
+            CitationSourceDescriptor.model_validate(item) for item in raw_sources
+        )
     except (KeyError, TypeError, ValidationError) as error:
         raise StepDispatchError("grounded claim graph records are invalid") from error
     if subject.get("answer") != synthesis.answer_text:

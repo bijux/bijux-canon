@@ -148,7 +148,9 @@ class StepOutputArtifact:
             dependencies=descriptor.dependencies,
         )
         if descriptor != expected:
-            raise StepDispatchError("step artifact descriptor does not match its payload")
+            raise StepDispatchError(
+                "step artifact descriptor does not match its payload"
+            )
 
 
 class OperationAdapter(Protocol):
@@ -252,7 +254,8 @@ class OperationDispatcher:
             unresolved = set(step.depends_on).difference(outputs)
             if unresolved:
                 raise StepDispatchError(
-                    "plan is not topologically ordered: " + ", ".join(sorted(unresolved))
+                    "plan is not topologically ordered: "
+                    + ", ".join(sorted(unresolved))
                 )
             upstream = tuple(
                 artifact
@@ -298,7 +301,10 @@ class OperationDispatcher:
             raise StepDispatchError("operation adapter returned duplicate artifacts")
         expected_contracts = set(step.output_artifact_contract_ids)
         actual_contracts = {item.contract_id for item in artifacts}
-        if len(actual_contracts) != len(artifacts) or actual_contracts != expected_contracts:
+        if (
+            len(actual_contracts) != len(artifacts)
+            or actual_contracts != expected_contracts
+        ):
             raise StepDispatchError("operation adapter output contracts do not match")
         expected_dependencies = resolved_input_artifact_ids(
             step,
@@ -307,11 +313,17 @@ class OperationDispatcher:
         for artifact in artifacts:
             artifact.validate()
             if artifact.producer_step_id != step.step_id:
-                raise StepDispatchError("step artifact producer identity does not match")
+                raise StepDispatchError(
+                    "step artifact producer identity does not match"
+                )
             if artifact.producer_operation is not step.operation:
-                raise StepDispatchError("step artifact producer operation does not match")
+                raise StepDispatchError(
+                    "step artifact producer operation does not match"
+                )
             if artifact.artifact.descriptor.dependencies != expected_dependencies:
-                raise StepDispatchError("step artifact dependencies do not match inputs")
+                raise StepDispatchError(
+                    "step artifact dependencies do not match inputs"
+                )
 
 
 def _external_input_artifact_ids(step: ConcreteDagStep) -> tuple[ArtifactID, ...]:

@@ -145,9 +145,7 @@ class ItemService:
         return conn
 
     @staticmethod
-    def _read_item_row(
-        conn: sqlite3.Connection, *, item_id: int
-    ) -> sqlite3.Row | None:
+    def _read_item_row(conn: sqlite3.Connection, *, item_id: int) -> sqlite3.Row | None:
         row = conn.execute(
             "SELECT id, name, description, deleted FROM items WHERE id = ?",
             (item_id,),

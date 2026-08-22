@@ -46,9 +46,7 @@ def _plan(*, retrieval_mode: str, top_k: int, provider: str) -> ResearchPlanning
         constraints={"offline": provider == "Local"},
         provider_profile={
             "provider": provider,
-            "model": (
-                "local-deterministic" if provider == "Local" else "mock-model"
-            ),
+            "model": ("local-deterministic" if provider == "Local" else "mock-model"),
             "immutable_revision": "test",
             "temperature": 0.0,
             "seed": 1,
@@ -124,17 +122,15 @@ def test_retrieval_mode_top_k_and_provider_change_executed_requests(
 
     monkeypatch.setattr(requests, "post", reject_network)
     retriever = ObservingRetriever()
-    services = InjectedResearchServices(
-        retriever=retriever, reasoner=UnusedReasoner()
-    )
+    services = InjectedResearchServices(retriever=retriever, reasoner=UnusedReasoner())
     lexical = _plan(retrieval_mode="lexical", top_k=1, provider="Local")
     hybrid = _plan(retrieval_mode="hybrid", top_k=3, provider="Mock")
 
     lexical_result = services.retrieve(lexical)
     hybrid_result = services.retrieve(hybrid)
-    local_response = build_adapter(
-        {"model": lexical.provider_profile.model}
-    ).generate(lexical.query)
+    local_response = build_adapter({"model": lexical.provider_profile.model}).generate(
+        lexical.query
+    )
     mock_response = build_adapter({"model": hybrid.provider_profile.model}).generate(
         hybrid.query
     )
@@ -171,20 +167,18 @@ def test_budget_configuration_changes_execution_decisions() -> None:
     charge = BudgetDimensions(iterations=1)
 
     constrained.charge(role="plan", label="first", usage=charge)
-    constrained_second = constrained.charge(
-        role="plan", label="second", usage=charge
-    )
+    constrained_second = constrained.charge(role="plan", label="second", usage=charge)
     permissive.charge(role="plan", label="first", usage=charge)
-    permissive_second = permissive.charge(
-        role="plan", label="second", usage=charge
-    )
+    permissive_second = permissive.charge(role="plan", label="second", usage=charge)
 
     assert constrained_second.action is BudgetAction.TERMINATE
     assert permissive_second.action is BudgetAction.CONTINUE
 
 
 @pytest.mark.asyncio
-async def test_role_selection_changes_nodes_that_actually_execute(tmp_path: Path) -> None:
+async def test_role_selection_changes_nodes_that_actually_execute(
+    tmp_path: Path,
+) -> None:
     calls: list[str] = []
 
     def node(name: str) -> WorkflowNode:
@@ -253,9 +247,7 @@ async def test_failure_policy_changes_retry_execution(tmp_path: Path) -> None:
     critical = WorkflowOrchestrator(
         nodes=[failing_node("critical")],
         trace_path=tmp_path / "critical.json",
-        failure_policy=FailurePolicy(
-            abort=AbortPolicy(critical_codes=["CONFIGURED"])
-        ),
+        failure_policy=FailurePolicy(abort=AbortPolicy(critical_codes=["CONFIGURED"])),
         model_metadata=default_model_metadata(),
     )
     retry = WorkflowOrchestrator(

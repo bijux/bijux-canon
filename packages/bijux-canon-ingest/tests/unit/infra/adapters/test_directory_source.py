@@ -194,9 +194,7 @@ def test_discovery_rejects_non_regular_files_without_reading_them(
     fifo = root / "stream.txt"
     os.mkfifo(fifo)
 
-    result = discover_sources(
-        DiscoveryPolicy(roots=(DiscoveryRoot("research", root),))
-    )
+    result = discover_sources(DiscoveryPolicy(roots=(DiscoveryRoot("research", root),)))
 
     assert result.sources == ()
     assert [(issue.relative_path, issue.code) for issue in result.issues] == [
@@ -226,9 +224,7 @@ def test_discovery_rejects_file_swapped_to_external_symlink_before_read(
         return original_open(path, *args, **kwargs)
 
     monkeypatch.setattr(Path, "open", swap_before_open)
-    result = discover_sources(
-        DiscoveryPolicy(roots=(DiscoveryRoot("research", root),))
-    )
+    result = discover_sources(DiscoveryPolicy(roots=(DiscoveryRoot("research", root),)))
 
     assert swapped is True
     assert result.sources == ()

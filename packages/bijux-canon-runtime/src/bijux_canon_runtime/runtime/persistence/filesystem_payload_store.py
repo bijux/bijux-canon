@@ -123,9 +123,7 @@ class AtomicFilesystemArtifactPayloadStore(ArtifactPayloadStore):
             )
         return artifact
 
-    def load_descriptor(
-        self, artifact_id: ArtifactID
-    ) -> ImmutableArtifactDescriptor:
+    def load_descriptor(self, artifact_id: ArtifactID) -> ImmutableArtifactDescriptor:
         """Load and validate immutable metadata without materializing payload bytes."""
         directory = self._artifact_directory(artifact_id)
         if not directory.is_dir():
@@ -133,8 +131,8 @@ class AtomicFilesystemArtifactPayloadStore(ArtifactPayloadStore):
         try:
             descriptor_bytes = (directory / "descriptor.json").read_bytes()
             expected_descriptor_hash = (
-                directory / "descriptor.sha256"
-            ).read_text(encoding="ascii").strip()
+                (directory / "descriptor.sha256").read_text(encoding="ascii").strip()
+            )
             if hashlib.sha256(descriptor_bytes).hexdigest() != expected_descriptor_hash:
                 raise ValueError("artifact descriptor checksum does not match")
             descriptor = self._descriptor_from_record(json.loads(descriptor_bytes))
@@ -166,7 +164,9 @@ class AtomicFilesystemArtifactPayloadStore(ArtifactPayloadStore):
         identity_hash.update(b"\0")
         size_bytes = 0
         try:
-            with (self._artifact_directory(artifact_id) / "payload").open("rb") as stream:
+            with (self._artifact_directory(artifact_id) / "payload").open(
+                "rb"
+            ) as stream:
                 while chunk := stream.read(chunk_bytes):
                     size_bytes += len(chunk)
                     payload_hash.update(chunk)
@@ -285,7 +285,9 @@ class AtomicFilesystemArtifactPayloadStore(ArtifactPayloadStore):
     def _artifact_directory(self, artifact_id: ArtifactID) -> Path:
         value = str(artifact_id)
         if not value.startswith("sha256:") or len(value) != 71:
-            raise ValueError("filesystem payload identity must be a SHA-256 artifact ID")
+            raise ValueError(
+                "filesystem payload identity must be a SHA-256 artifact ID"
+            )
         digest = value.removeprefix("sha256:")
         if any(char not in "0123456789abcdef" for char in digest):
             raise ValueError("filesystem payload identity must use lowercase hex")
@@ -333,9 +335,7 @@ class AtomicFilesystemArtifactPayloadStore(ArtifactPayloadStore):
         }
 
     @classmethod
-    def _descriptor_from_record(
-        cls, record: Any
-    ) -> ImmutableArtifactDescriptor:
+    def _descriptor_from_record(cls, record: Any) -> ImmutableArtifactDescriptor:
         if not isinstance(record, dict) or set(record) != cls._DESCRIPTOR_KEYS:
             raise ValueError("artifact descriptor has an invalid shape")
         string_fields = (

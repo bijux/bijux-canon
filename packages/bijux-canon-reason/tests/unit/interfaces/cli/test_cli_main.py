@@ -149,9 +149,10 @@ def test_research_commands_route_through_shared_application_service(
         return ResearchCommandResult(payload=payload, research_id=research_id)
 
     monkeypatch.setattr(cli_main, executor_name, execute)
-    arguments = [
-        value.format(input=str(input_path)) for value in command
-    ] + ["--artifacts-dir", str(tmp_path)]
+    arguments = [value.format(input=str(input_path)) for value in command] + [
+        "--artifacts-dir",
+        str(tmp_path),
+    ]
     result = runner.invoke(root_app, arguments)
 
     assert result.exit_code == 0, result.stderr

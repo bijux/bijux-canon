@@ -196,9 +196,9 @@ def _record_is_stale(record: dict[str, object] | None) -> bool:
 
 
 def _write_record(fd: int, record: dict[str, object]) -> None:
-    payload = (
-        json.dumps(record, sort_keys=True, separators=(",", ":")) + "\n"
-    ).encode("utf-8")
+    payload = (json.dumps(record, sort_keys=True, separators=(",", ":")) + "\n").encode(
+        "utf-8"
+    )
     os.lseek(fd, 0, os.SEEK_SET)
     os.ftruncate(fd, 0)
     os.write(fd, payload)

@@ -174,7 +174,9 @@ class IndexQueryRequestPayload(StrictModel):
             query_text=self.query_text,
             query_vector=self.query_vector,
             metadata_filter=(
-                None if self.metadata_filter is None else self.metadata_filter.to_domain()
+                None
+                if self.metadata_filter is None
+                else self.metadata_filter.to_domain()
             ),
         )
 

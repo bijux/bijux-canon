@@ -42,7 +42,9 @@ def test_workspace_packages_copy_root_legal_artifact_bytes() -> None:
         for artifact_name, source_path in ROOT_LEGAL_ARTIFACTS.items():
             artifact_path = package_root / artifact_name
             if artifact_path.is_symlink():
-                failures.append(f"{package_name}: {artifact_name} must not be a symlink")
+                failures.append(
+                    f"{package_name}: {artifact_name} must not be a symlink"
+                )
                 continue
             if not artifact_path.is_file():
                 failures.append(f"{package_name}: {artifact_name} is missing")
@@ -119,9 +121,7 @@ def test_public_release_packages_let_metadata_own_legal_artifacts() -> None:
                 f"{package_name}: build.force-include duplicates metadata legal files"
             )
 
-    assert not failures, "legal artifact configuration failed:\n" + "\n".join(
-        failures
-    )
+    assert not failures, "legal artifact configuration failed:\n" + "\n".join(failures)
 
 
 def test_compatibility_packages_publish_package_local_ignore_rules() -> None:

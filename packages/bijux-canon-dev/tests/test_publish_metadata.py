@@ -280,9 +280,7 @@ def test_advertised_extras_install_owned_capabilities() -> None:
     empty_extras: list[str] = []
     for pyproject_path in _package_pyprojects():
         project = _project_table(pyproject_path)
-        extras = cast(
-            dict[str, list[str]], project.get("optional-dependencies", {})
-        )
+        extras = cast(dict[str, list[str]], project.get("optional-dependencies", {}))
         empty_extras.extend(
             f"{pyproject_path.parent.name}[{extra_name}]"
             for extra_name, dependencies in extras.items()
@@ -293,9 +291,7 @@ def test_advertised_extras_install_owned_capabilities() -> None:
     agent_project = _project_table(
         _package_path("bijux-canon-agent") / "pyproject.toml"
     )
-    agent_extras = cast(
-        dict[str, list[str]], agent_project["optional-dependencies"]
-    )
+    agent_extras = cast(dict[str, list[str]], agent_project["optional-dependencies"])
     document_readers = {
         canonicalize_name(Requirement(dependency).name)
         for dependency in agent_extras["document_readers"]
@@ -313,9 +309,7 @@ def test_advertised_extras_install_owned_capabilities() -> None:
     reason_project = _project_table(
         _package_path("bijux-canon-reason") / "pyproject.toml"
     )
-    reason_extras = cast(
-        dict[str, list[str]], reason_project["optional-dependencies"]
-    )
+    reason_extras = cast(dict[str, list[str]], reason_project["optional-dependencies"])
     assert "llm" not in reason_extras
 
 

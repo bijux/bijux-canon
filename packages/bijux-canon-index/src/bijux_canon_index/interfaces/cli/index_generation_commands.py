@@ -32,7 +32,9 @@ def register_index_generation_commands(index_app: typer.Typer) -> None:
     index_app.command("query")(query_generation)
 
 
-def _load_payload(path: Path, model: type[IndexBuildRequestPayload]) -> IndexBuildRequestPayload:
+def _load_payload(
+    path: Path, model: type[IndexBuildRequestPayload]
+) -> IndexBuildRequestPayload:
     return model.model_validate_json(path.read_text(encoding="utf-8"))
 
 

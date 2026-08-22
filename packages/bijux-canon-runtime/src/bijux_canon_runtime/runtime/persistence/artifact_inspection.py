@@ -203,9 +203,13 @@ class RuntimeArtifactInspector:
                 parameters,
             ).fetchall()
             if not rows:
-                raise KeyError(f"logical artifact reference not found: {logical_artifact_id}")
+                raise KeyError(
+                    f"logical artifact reference not found: {logical_artifact_id}"
+                )
             if len(rows) != 1:
-                raise ValueError("logical artifact reference has split-brain activation")
+                raise ValueError(
+                    "logical artifact reference has split-brain activation"
+                )
             resolved_revision, target_id, state = rows[0]
             reference = ArtifactReferenceView(
                 tenant_id=tenant_id,

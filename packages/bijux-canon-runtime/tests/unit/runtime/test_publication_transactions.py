@@ -58,7 +58,9 @@ def _item(payload: str, *, revision: int = 0) -> PublicationItem:
     )
 
 
-def test_prepared_publication_recovers_after_restart(tmp_path: Path, resolved_flow) -> None:
+def test_prepared_publication_recovers_after_restart(
+    tmp_path: Path, resolved_flow
+) -> None:
     coordinator, payload_root, db_path, tenant_id, run_id = _coordinator(
         tmp_path, resolved_flow
     )
@@ -71,8 +73,12 @@ def test_prepared_publication_recovers_after_restart(tmp_path: Path, resolved_fl
     )
     assert prepared.status == "prepared"
     connection = duckdb.connect(str(db_path), read_only=True)
-    assert connection.execute("SELECT count(*) FROM artifact_payloads").fetchone() == (0,)
-    assert connection.execute("SELECT count(*) FROM artifact_references").fetchone() == (0,)
+    assert connection.execute("SELECT count(*) FROM artifact_payloads").fetchone() == (
+        0,
+    )
+    assert connection.execute(
+        "SELECT count(*) FROM artifact_references"
+    ).fetchone() == (0,)
     connection.close()
 
     restarted = ArtifactPublicationCoordinator(
@@ -88,7 +94,9 @@ def test_prepared_publication_recovers_after_restart(tmp_path: Path, resolved_fl
 
     assert committed.status == "committed"
     connection = duckdb.connect(str(db_path), read_only=True)
-    assert connection.execute("SELECT count(*) FROM artifact_payloads").fetchone() == (1,)
+    assert connection.execute("SELECT count(*) FROM artifact_payloads").fetchone() == (
+        1,
+    )
     assert connection.execute(
         "SELECT reference_state FROM artifact_references"
     ).fetchone() == ("active",)
@@ -158,7 +166,9 @@ def test_missing_prepared_blob_aborts_recovery(tmp_path: Path, resolved_flow) ->
     assert connection.execute(
         "SELECT status, failure_reason FROM publication_transactions"
     ).fetchone() == ("aborted", "durable payload unavailable or invalid")
-    assert connection.execute("SELECT count(*) FROM artifact_references").fetchone() == (0,)
+    assert connection.execute(
+        "SELECT count(*) FROM artifact_references"
+    ).fetchone() == (0,)
     connection.close()
 
 

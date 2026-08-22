@@ -25,12 +25,15 @@ class RuntimeInspectionLimits:
     max_loaded_payload_bytes: int = 512 * 1024 * 1024
 
     def __post_init__(self) -> None:
-        if min(
-            self.max_inventory_artifacts,
-            self.max_control_artifacts,
-            self.max_related_artifacts,
-            self.max_loaded_payload_bytes,
-        ) < 1:
+        if (
+            min(
+                self.max_inventory_artifacts,
+                self.max_control_artifacts,
+                self.max_related_artifacts,
+                self.max_loaded_payload_bytes,
+            )
+            < 1
+        ):
             raise ValueError("Runtime inspection limits must be positive")
 
 

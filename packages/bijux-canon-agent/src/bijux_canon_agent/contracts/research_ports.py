@@ -54,9 +54,7 @@ class ServicePortDescriptor(TypedBaseModel):
             "reasoner": "bijux-canon-reason",
         }[self.port_kind]
         if self.owner_distribution != expected_owner:
-            raise ValueError(
-                f"{self.port_kind} port must be owned by {expected_owner}"
-            )
+            raise ValueError(f"{self.port_kind} port must be owned by {expected_owner}")
 
 
 class RetrievalPortResult(TypedBaseModel):
@@ -113,7 +111,10 @@ class ReasoningPortResult(TypedBaseModel):
     def model_post_init(self, __context: Any) -> None:
         if self.outcome in {"answered", "partial"} and not (self.text or "").strip():
             raise ValueError("answered and partial outcomes require result text")
-        if self.outcome in {"insufficient", "refused", "failed"} and self.text is not None:
+        if (
+            self.outcome in {"insufficient", "refused", "failed"}
+            and self.text is not None
+        ):
             raise ValueError("non-answer outcomes must not contain result text")
         _require_json(dict(self.record), "record")
 

@@ -61,9 +61,7 @@ def _parent(path: Path) -> IndexGeneration:
 
 def _delta() -> IndexDelta:
     return IndexDelta(
-        additions=(
-            _chunk("chunk-d", (0.5, 0.5, 0.0), "Ancient DNA delta evidence"),
-        ),
+        additions=(_chunk("chunk-d", (0.5, 0.5, 0.0), "Ancient DNA delta evidence"),),
         modifications=(
             _chunk("chunk-a", (0.0, 1.0, 0.0), "Ancient DNA alpha revised"),
         ),
@@ -87,11 +85,16 @@ def test_delta_matches_clean_rebuild_and_preserves_parent(tmp_path: Path) -> Non
             lineage = derived.manifest.lineage
             derived_manifest = derived.manifest
             assert [chunk.chunk_id for chunk in admitted] == ["chunk-a", "chunk-d"]
-            assert next(chunk for chunk in admitted if chunk.chunk_id == "chunk-a").text == (
-                "Ancient DNA alpha revised"
-            )
+            assert next(
+                chunk for chunk in admitted if chunk.chunk_id == "chunk-a"
+            ).text == ("Ancient DNA alpha revised")
             assert receipt.parent_generation_id == parent_id
-            assert (receipt.added, receipt.modified, receipt.deleted, receipt.tombstoned) == (
+            assert (
+                receipt.added,
+                receipt.modified,
+                receipt.deleted,
+                receipt.tombstoned,
+            ) == (
                 1,
                 1,
                 1,
@@ -129,9 +132,7 @@ def test_modified_vectors_replace_parent_embedding(tmp_path: Path) -> None:
             tmp_path / "derived",
             IndexDelta(
                 modifications=(
-                    _chunk(
-                        "chunk-a", (0.0, 0.0, 1.0), "Ancient DNA alpha re-embedded"
-                    ),
+                    _chunk("chunk-a", (0.0, 0.0, 1.0), "Ancient DNA alpha re-embedded"),
                 )
             ),
             snapshot_artifact_id="sha256:snapshot-b",

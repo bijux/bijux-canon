@@ -299,9 +299,7 @@ def test_export_verification_rejects_mutable_absolute_paths(
     manifest_path = bundle / "manifest.json"
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     manifest["artifacts"][0]["descriptor_file"] = str(tmp_path / "mutable.json")
-    unsigned = {
-        key: value for key, value in manifest.items() if key != "bundle_sha256"
-    }
+    unsigned = {key: value for key, value in manifest.items() if key != "bundle_sha256"}
     manifest["bundle_sha256"] = hashlib.sha256(
         json.dumps(unsigned, sort_keys=True, separators=(",", ":")).encode("utf-8")
     ).hexdigest()

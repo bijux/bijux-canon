@@ -23,7 +23,7 @@ _PARSER_NAME = "bijux-canon-ingest-jats"
 _PARSER_VERSION = "1"
 _XML_LANG = "{http://www.w3.org/XML/1998/namespace}lang"
 _XLINK_HREF = "{http://www.w3.org/1999/xlink}href"
-_ENTITY_DECLARATION = re.compile(br"<!ENTITY\s", re.IGNORECASE)
+_ENTITY_DECLARATION = re.compile(rb"<!ENTITY\s", re.IGNORECASE)
 _EXCLUDED_PARAGRAPH_ANCESTORS = frozenset(
     {"caption", "fig", "ref", "ref-list", "table", "table-wrap"}
 )
@@ -92,7 +92,9 @@ def _section_path(
     element: ET.Element,
     parents: dict[ET.Element, ET.Element],
 ) -> tuple[str, ...]:
-    sections = [item for item in _ancestors(element, parents) if _local_name(item) == "sec"]
+    sections = [
+        item for item in _ancestors(element, parents) if _local_name(item) == "sec"
+    ]
     headings = (
         _normalized_text(next(iter(_children(section, "title")), None))
         for section in sections
@@ -113,7 +115,10 @@ def _publication_year(article_meta: ET.Element) -> int | None:
     dates = [item for item in article_meta if _local_name(item) == "pub-date"]
     for preferred_type in ("epub", "electronic", "ppub", "print", "collection"):
         for date in dates:
-            if date.get("pub-type") == preferred_type or date.get("date-type") == preferred_type:
+            if (
+                date.get("pub-type") == preferred_type
+                or date.get("date-type") == preferred_type
+            ):
                 year = _normalized_text(_first_descendant(date, "year"))
                 if year.isdigit():
                     return int(year)
@@ -216,11 +221,15 @@ def parse_jats_content(content: bytes, *, source_content_sha256: str) -> ParsedD
             "source_changed", "JATS bytes do not match the admitted source identity"
         )
     if _ENTITY_DECLARATION.search(content):
-        raise DocumentParseError("unsafe_markup", "JATS entity declarations are forbidden")
+        raise DocumentParseError(
+            "unsafe_markup", "JATS entity declarations are forbidden"
+        )
     try:
         root = ET.fromstring(content)
     except ET.ParseError as error:
-        raise DocumentParseError("malformed_document", "JATS XML is malformed") from error
+        raise DocumentParseError(
+            "malformed_document", "JATS XML is malformed"
+        ) from error
     if _local_name(root) != "article":
         raise DocumentParseError("format_mismatch", "XML root element is not article")
 

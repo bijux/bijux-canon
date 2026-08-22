@@ -54,11 +54,14 @@ class VexExecutionBudget:
     def __post_init__(self) -> None:
         if not math.isfinite(self.max_latency_ms) or self.max_latency_ms <= 0:
             raise ValueError("VEX max_latency_ms must be finite and positive")
-        if min(
-            self.max_memory_bytes,
-            self.max_candidates,
-            self.max_ef_search,
-        ) <= 0:
+        if (
+            min(
+                self.max_memory_bytes,
+                self.max_candidates,
+                self.max_ef_search,
+            )
+            <= 0
+        ):
             raise ValueError("VEX effort budgets must be positive")
         if not 0.0 <= self.minimum_recall <= 1.0:
             raise ValueError("VEX minimum_recall must be within [0,1]")

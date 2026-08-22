@@ -185,9 +185,9 @@ def test_sqlite_fts5_preserves_declared_phrases_and_rejects_bad_quotes(
             "chunk-a",
             "chunk-b",
         }
-        assert [
-            hit.chunk.chunk_id for hit in index.query('"ancient DNA"')
-        ] == ["chunk-a"]
+        assert [hit.chunk.chunk_id for hit in index.query('"ancient DNA"')] == [
+            "chunk-a"
+        ]
         with pytest.raises(ValueError, match="unterminated phrase"):
             index.query('"ancient DNA')
 

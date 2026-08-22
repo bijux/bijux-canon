@@ -171,7 +171,10 @@ class ReplayedResearchAttempt(StableModel):
     state_artifact_id: str
 
     @field_validator(
-        "artifact_id", "attempt_artifact_id", "parent_attempt_artifact_id", "state_artifact_id"
+        "artifact_id",
+        "attempt_artifact_id",
+        "parent_attempt_artifact_id",
+        "state_artifact_id",
     )
     @classmethod
     def _validate_optional_id(cls, value: str | None) -> str | None:
@@ -301,12 +304,36 @@ class ResearchAttemptComparison(StableModel):
         graph_changes = {
             (surface, action, target)
             for surface, action, targets in (
-                (ResearchGraphSurface.claim, ResearchChangeAction.added, self.added_claim_artifact_ids),
-                (ResearchGraphSurface.claim, ResearchChangeAction.removed, self.removed_claim_artifact_ids),
-                (ResearchGraphSurface.evidence, ResearchChangeAction.added, self.added_evidence_artifact_ids),
-                (ResearchGraphSurface.evidence, ResearchChangeAction.removed, self.removed_evidence_artifact_ids),
-                (ResearchGraphSurface.decision, ResearchChangeAction.added, self.added_decision_artifact_ids),
-                (ResearchGraphSurface.decision, ResearchChangeAction.removed, self.removed_decision_artifact_ids),
+                (
+                    ResearchGraphSurface.claim,
+                    ResearchChangeAction.added,
+                    self.added_claim_artifact_ids,
+                ),
+                (
+                    ResearchGraphSurface.claim,
+                    ResearchChangeAction.removed,
+                    self.removed_claim_artifact_ids,
+                ),
+                (
+                    ResearchGraphSurface.evidence,
+                    ResearchChangeAction.added,
+                    self.added_evidence_artifact_ids,
+                ),
+                (
+                    ResearchGraphSurface.evidence,
+                    ResearchChangeAction.removed,
+                    self.removed_evidence_artifact_ids,
+                ),
+                (
+                    ResearchGraphSurface.decision,
+                    ResearchChangeAction.added,
+                    self.added_decision_artifact_ids,
+                ),
+                (
+                    ResearchGraphSurface.decision,
+                    ResearchChangeAction.removed,
+                    self.removed_decision_artifact_ids,
+                ),
             )
             for target in targets
         }
@@ -429,12 +456,36 @@ class ResearchReasoningReplayService:
         expected = {
             (surface, action, target)
             for surface, action, key in (
-                (ResearchGraphSurface.claim, ResearchChangeAction.added, "added_claim_artifact_ids"),
-                (ResearchGraphSurface.claim, ResearchChangeAction.removed, "removed_claim_artifact_ids"),
-                (ResearchGraphSurface.evidence, ResearchChangeAction.added, "added_evidence_artifact_ids"),
-                (ResearchGraphSurface.evidence, ResearchChangeAction.removed, "removed_evidence_artifact_ids"),
-                (ResearchGraphSurface.decision, ResearchChangeAction.added, "added_decision_artifact_ids"),
-                (ResearchGraphSurface.decision, ResearchChangeAction.removed, "removed_decision_artifact_ids"),
+                (
+                    ResearchGraphSurface.claim,
+                    ResearchChangeAction.added,
+                    "added_claim_artifact_ids",
+                ),
+                (
+                    ResearchGraphSurface.claim,
+                    ResearchChangeAction.removed,
+                    "removed_claim_artifact_ids",
+                ),
+                (
+                    ResearchGraphSurface.evidence,
+                    ResearchChangeAction.added,
+                    "added_evidence_artifact_ids",
+                ),
+                (
+                    ResearchGraphSurface.evidence,
+                    ResearchChangeAction.removed,
+                    "removed_evidence_artifact_ids",
+                ),
+                (
+                    ResearchGraphSurface.decision,
+                    ResearchChangeAction.added,
+                    "added_decision_artifact_ids",
+                ),
+                (
+                    ResearchGraphSurface.decision,
+                    ResearchChangeAction.removed,
+                    "removed_decision_artifact_ids",
+                ),
             )
             for target in changes[key]
         }
@@ -612,7 +663,9 @@ def _validate_local_event_chain(
     expected_sequence = tuple(range(1, len(events) + 1))
     if tuple(item.sequence for item in events) != expected_sequence:
         if as_model_error:
-            raise ValueError("attempt event sequence must begin at one and be contiguous")
+            raise ValueError(
+                "attempt event sequence must begin at one and be contiguous"
+            )
         raise ResearchReplayError(
             ResearchReplayErrorCode.event_sequence_mismatch,
             "attempt event sequence must begin at one and be contiguous",

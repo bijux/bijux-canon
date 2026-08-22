@@ -103,9 +103,7 @@ class ResearchBudgetPolicy:
         )
 
     @classmethod
-    def for_plan(
-        cls, planning_input: ResearchPlanningInput
-    ) -> ResearchBudgetPolicy:
+    def for_plan(cls, planning_input: ResearchPlanningInput) -> ResearchBudgetPolicy:
         """Create explicit ceilings for every role in the fixed role machine."""
         limits = BudgetDimensions.from_plan(planning_input.budget)
         role_limits = {
@@ -113,13 +111,9 @@ class ResearchBudgetPolicy:
                 iterations=1,
                 retrievals=limits.retrievals if role == "retrieve" else 0,
                 candidates=limits.candidates if role == "retrieve" else 0,
-                evidence_items=(
-                    limits.evidence_items if role == "retrieve" else 0
-                ),
+                evidence_items=(limits.evidence_items if role == "retrieve" else 0),
                 tool_calls=limits.tool_calls if role == "retrieve" else 0,
-                provider_calls=(
-                    limits.provider_calls if role == "synthesize" else 0
-                ),
+                provider_calls=(limits.provider_calls if role == "synthesize" else 0),
                 tokens=limits.tokens if role == "synthesize" else 0,
                 elapsed_ms=limits.elapsed_ms,
                 retries=limits.retries,
@@ -150,8 +144,7 @@ class ResearchBudgetPolicy:
                 "plan_sha256": self.plan_sha256,
                 "global_limits": self.global_limits.payload(),
                 "role_limits": {
-                    role: limits.payload()
-                    for role, limits in self.role_limits.items()
+                    role: limits.payload() for role, limits in self.role_limits.items()
                 },
             }
         )
@@ -219,9 +212,7 @@ class ResearchBudgetLedger:
             raise TypeError("policy must be ResearchBudgetPolicy")
         self._policy = policy
         self._global_usage = BudgetDimensions()
-        self._role_usage = {
-            role: BudgetDimensions() for role in policy.role_limits
-        }
+        self._role_usage = {role: BudgetDimensions() for role in policy.role_limits}
         self._decisions: list[BudgetDecision] = []
         self._exhausted: tuple[str, ...] = ()
 

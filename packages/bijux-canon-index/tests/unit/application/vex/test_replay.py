@@ -67,9 +67,7 @@ def _execution(
         request=request,
         normalized_vector_sha256=vector_sha256,
         plan=plan,
-        candidates=(
-            VexCandidateRecord("faiss-hnsw", 1, approximate_score, "chunk-a"),
-        ),
+        candidates=(VexCandidateRecord("faiss-hnsw", 1, approximate_score, "chunk-a"),),
         witness=witness,
         metrics={"latency_ms": latency_ms, "recall_at_k": 1.0},
         decision=VexPolicyDecision(
@@ -118,7 +116,9 @@ def test_comparison_accepts_bounded_score_noise_and_reports_divergence(
     assert comparison.maximum_score_delta == pytest.approx(5e-7)
     assert comparison.approximate_candidate_recall == 1.0
     assert comparison.exact_candidate_recall == 1.0
-    assert compare_vex_artifacts(original, divergent).outcome is VexReplayOutcome.diverged
+    assert (
+        compare_vex_artifacts(original, divergent).outcome is VexReplayOutcome.diverged
+    )
 
 
 @pytest.mark.parametrize(

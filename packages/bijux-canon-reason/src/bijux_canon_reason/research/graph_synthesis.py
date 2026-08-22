@@ -137,7 +137,9 @@ class GraphConfidenceBasis(StableModel):
             else round(len(self.support_evidence_artifact_ids) / denominator, 6)
         )
         if self.score != expected or self.level is not _confidence_level(expected):
-            raise ValueError("confidence must be derived from its declared graph inputs")
+            raise ValueError(
+                "confidence must be derived from its declared graph inputs"
+            )
         if self.artifact_id != content_artifact_id(
             self.model_dump(mode="json", exclude={"artifact_id"})
         ):
@@ -170,7 +172,10 @@ class SynthesizedGraphClaim(StableModel):
 
     @model_validator(mode="after")
     def _validate_claim(self) -> Self:
-        if not self.statement.strip() or not self.confidence.support_evidence_artifact_ids:
+        if (
+            not self.statement.strip()
+            or not self.confidence.support_evidence_artifact_ids
+        ):
             raise ValueError("synthesis may expose only supported substantive claims")
         expected_section = SynthesisClaimSection.consensus
         if (
@@ -302,7 +307,9 @@ class VerifiedGraphSynthesis(StableModel):
             + tuple(item.artifact_id for item in self.remaining_gaps)
         )
         if any(item not in self.answer for item in required_answer_ids):
-            raise ValueError("rendered answer must retain every structured graph identity")
+            raise ValueError(
+                "rendered answer must retain every structured graph identity"
+            )
         if self.artifact_id != content_artifact_id(
             self.model_dump(mode="json", exclude={"artifact_id"})
         ):
@@ -383,7 +390,9 @@ class VerifiedGraphSynthesisService:
 
         assumptions_by_claim: dict[str, list[GraphAssumption]] = defaultdict(list)
         for assumption in assumption_insufficiency.assumptions:
-            assumptions_by_claim[resolve(assumption.claim_artifact_id)].append(assumption)
+            assumptions_by_claim[resolve(assumption.claim_artifact_id)].append(
+                assumption
+            )
 
         open_statuses = {
             ResearchDeficiencyStatus.open,
@@ -406,9 +415,9 @@ class VerifiedGraphSynthesisService:
             if deficiency.target_claim_artifact_id is None:
                 global_deficiencies.append(deficiency)
             else:
-                deficiencies_by_claim[resolve(deficiency.target_claim_artifact_id)].append(
-                    deficiency
-                )
+                deficiencies_by_claim[
+                    resolve(deficiency.target_claim_artifact_id)
+                ].append(deficiency)
 
         context_by_claim: dict[str, ClaimContextAnnotation] = {}
         for context in contexts:
@@ -549,9 +558,7 @@ class VerifiedGraphSynthesisService:
             "conflicted_claims": tuple(
                 item.model_dump(mode="json") for item in conflicted_claims
             ),
-            "limitations": tuple(
-                item.model_dump(mode="json") for item in limitations
-            ),
+            "limitations": tuple(item.model_dump(mode="json") for item in limitations),
             "assumptions": tuple(item.model_dump(mode="json") for item in assumptions),
             "remaining_gaps": tuple(
                 item.model_dump(mode="json") for item in remaining_gaps
@@ -582,11 +589,7 @@ def _evidence_ids(
 ) -> tuple[str, ...]:
     return tuple(
         sorted(
-            {
-                item.evidence_artifact_id
-                for item in relations
-                if item.relation is kind
-            }
+            {item.evidence_artifact_id for item in relations if item.relation is kind}
         )
     )
 
@@ -707,7 +710,9 @@ def _limitations(
     result = []
     for canonical_id, context in sorted(contexts.items()):
         for statement in context.uncertainty + context.limitations:
-            result.append(_limitation(statement, (canonical_id,), (context.artifact_id,)))
+            result.append(
+                _limitation(statement, (canonical_id,), (context.artifact_id,))
+            )
     for assessment in insufficiency.insufficiencies:
         if assessment.outcome is InsufficiencyOutcome.sufficient:
             continue

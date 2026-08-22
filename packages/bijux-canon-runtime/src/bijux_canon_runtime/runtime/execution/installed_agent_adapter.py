@@ -179,7 +179,9 @@ def _targets(
     raw_claims = raw_claim_set.get("claims")
     if not isinstance(raw_claims, list):
         raise StepDispatchError("claim graph claims are invalid")
-    scope_id = _required_string(raw_packet.get("scope_artifact_id"), "scope_artifact_id")
+    scope_id = _required_string(
+        raw_packet.get("scope_artifact_id"), "scope_artifact_id"
+    )
     targets = []
     for raw_claim in raw_claims:
         if not isinstance(raw_claim, dict):
@@ -385,9 +387,7 @@ class CanonicalAgentOperationAdapter:
         observation = create_convergence_observation(
             iteration=1,
             graph_artifact_id=graph_id,
-            coverage=(
-                0.0 if required_count == 0 else verified_count / required_count
-            ),
+            coverage=(0.0 if required_count == 0 else verified_count / required_count),
             verified_answerable_claims=min(verified_count, required_count),
             required_claims=required_count,
             blocking_gap_count=blocking_gaps,

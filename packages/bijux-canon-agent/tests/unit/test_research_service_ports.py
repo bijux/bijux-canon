@@ -300,8 +300,7 @@ def test_research_role_machine_executes_one_operation_per_legal_edge() -> None:
     assert result.budget_policy_artifact_id == budget_policy().artifact_id
     assert not result.exhausted_budget_dimensions
     assert all(
-        decision.action is BudgetAction.CONTINUE
-        for decision in result.budget_decisions
+        decision.action is BudgetAction.CONTINUE for decision in result.budget_decisions
     )
     assert result.operations[1].payload["tool_policy_decision_artifact_id"] == (
         result.tool_decisions[0].artifact_id
@@ -419,12 +418,8 @@ def test_research_role_machine_resumes_without_duplicate_tool_calls() -> None:
     assert len(resumed_reasoner.requests) == 1
     assert len(resumed.causal_events) == 8
     assert len(checkpoints.persisted) == 8
-    assert checkpoints.persisted[-1].cancellation_lineage == (
-        "sha256:" + "c" * 64,
-    )
-    assert checkpoints.persisted[-1].failure_lineage == (
-        "sha256:" + "f" * 64,
-    )
+    assert checkpoints.persisted[-1].cancellation_lineage == ("sha256:" + "c" * 64,)
+    assert checkpoints.persisted[-1].failure_lineage == ("sha256:" + "f" * 64,)
 
 
 def test_research_role_machine_rejects_checkpoint_dependency_drift() -> None:
@@ -550,7 +545,11 @@ def test_research_role_machine_preserves_evidence_on_cooperative_cancellation() 
     ("error", "kind", "retryable"),
     [
         (TimeoutError("secret timeout detail"), ResearchFailureKind.TIMEOUT, True),
-        (ValueError("secret permanent detail"), ResearchFailureKind.PERMANENT_TOOL, False),
+        (
+            ValueError("secret permanent detail"),
+            ResearchFailureKind.PERMANENT_TOOL,
+            False,
+        ),
         (
             ConnectionError("secret connection detail"),
             ResearchFailureKind.RETRYABLE_TOOL,
