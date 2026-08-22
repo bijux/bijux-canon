@@ -28,7 +28,7 @@ def _package(
 ) -> CandidatePackage:
     return CandidatePackage(
         distribution_name=name,
-        package_id=name,
+        package_key=f"{name}-key",
         package_class="canonical",
         pyproject_path=root / name / "pyproject.toml",
         changelog_path=root / name / "CHANGELOG.md",
@@ -70,6 +70,7 @@ def test_candidate_requires_matching_source_and_wheel_versions(
     )
     assert results[0]["status"] == "passed"
     assert results[0]["wheel_version"] == VERSION
+    assert results[0]["package_key"] == "example-key"
 
     with pytest.raises(ReleaseCandidateIdentityError, match="wheel-version"):
         analyze_release_candidate(

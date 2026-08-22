@@ -38,7 +38,7 @@ class CandidatePackage:
     """Source metadata that must agree for one candidate distribution."""
 
     distribution_name: str
-    package_id: str | None
+    package_key: str | None
     package_class: str
     pyproject_path: Path
     changelog_path: Path
@@ -143,7 +143,7 @@ def _candidate_packages(repo_root: Path, version: str) -> tuple[CandidatePackage
         packages.append(
             CandidatePackage(
                 distribution_name=policy.distribution_name,
-                package_id=policy.package_key,
+                package_key=policy.package_key,
                 package_class=policy.package_class,
                 pyproject_path=policy.pyproject_path,
                 changelog_path=changelog,
@@ -194,7 +194,7 @@ def analyze_release_candidate(
         results.append(
             {
                 "distribution_name": package.distribution_name,
-                "package_id": package.package_id,
+                "package_key": package.package_key,
                 "package_class": package.package_class,
                 "fallback_version": package.fallback_version,
                 "wheel_version": wheel.version,
@@ -288,12 +288,12 @@ def run_release_candidate_identity(
     failures = [] if lock_check.exit_code == 0 else ["lock-check"]
     package_results = [
         {
-            "package_id": record["package_id"],
+            "package_id": record["distribution_name"],
             "package_class": record["package_class"],
             "status": record["status"],
         }
         for record in package_records
-        if record["package_id"] is not None
+        if record["package_key"] is not None
     ]
     evidence: dict[str, object] = {
         "schema_version": "bijux.canon.release_candidate_identity.v1",
