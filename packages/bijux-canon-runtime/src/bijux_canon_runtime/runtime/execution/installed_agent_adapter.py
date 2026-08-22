@@ -19,7 +19,9 @@ from bijux_canon_reason.research import (
     CounterevidencePolicy,
     CounterevidenceSearchOutcome,
     CounterevidenceSearchService,
+    CounterevidenceTarget,
     RetrievalBatchStatus,
+    RetrievalEvidenceBatch,
     ScopedRetrievalRequest,
     create_convergence_observation,
     create_counterevidence_target,
@@ -104,7 +106,7 @@ class _IndexCounterevidencePort:
         self.outputs: list[dict[str, object]] = []
         self.output_artifact_ids: list[ArtifactID] = []
 
-    def retrieve(self, request: ScopedRetrievalRequest):
+    def retrieve(self, request: ScopedRetrievalRequest) -> RetrievalEvidenceBatch:
         self._context.raise_if_stopped()
         retrieval_step = ConcreteDagStep(
             step_id=f"counterevidence-{len(self.outputs) + 1}",
@@ -169,7 +171,7 @@ def _targets(
     claim_graph: dict[str, object],
     *,
     graph_artifact_id: str,
-) -> tuple:
+) -> tuple[CounterevidenceTarget, ...]:
     raw_claim_set = claim_graph.get("claims")
     raw_packet = claim_graph.get("evidence_packet")
     if not isinstance(raw_claim_set, dict) or not isinstance(raw_packet, dict):

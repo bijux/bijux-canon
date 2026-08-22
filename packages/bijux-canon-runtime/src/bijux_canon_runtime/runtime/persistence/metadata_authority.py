@@ -533,15 +533,16 @@ class DuckDBMetadataAuthority:
             "run_checks",
             "run_publications",
         )
-        return {
-            table: int(
-                self._connection.execute(
-                    f"SELECT count(*) FROM {table} WHERE tenant_id = ? AND run_id = ?",
-                    (str(tenant_id), str(run_id)),
-                ).fetchone()[0]
-            )
-            for table in tables
-        }
+        counts: dict[str, int] = {}
+        for table in tables:
+            row = self._connection.execute(
+                f"SELECT count(*) FROM {table} WHERE tenant_id = ? AND run_id = ?",
+                (str(tenant_id), str(run_id)),
+            ).fetchone()
+            if row is None:
+                raise MetadataIntegrityError(f"count query returned no row for {table}")
+            counts[table] = int(row[0])
+        return counts
 
     def _activate_reference(
         self,

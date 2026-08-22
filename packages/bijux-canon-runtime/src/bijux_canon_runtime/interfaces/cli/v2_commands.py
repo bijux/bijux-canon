@@ -12,8 +12,9 @@ import json
 import os
 from pathlib import Path
 import sys
+from typing import TypeVar
 
-from pydantic import ValidationError
+from pydantic import BaseModel, ValidationError
 
 from bijux_canon_ingest.application.source_discovery import (
     SourceDiscoveryRequest,
@@ -54,7 +55,10 @@ from bijux_canon_runtime.application.runtime_configuration import (
     resolve_runtime_configuration,
 )
 from bijux_canon_runtime.runtime.pagination import PageRequest
-from bijux_canon_runtime.model.execution.request_plan import RuntimeRequestOperation
+from bijux_canon_runtime.model.execution.request_plan import (
+    RuntimeOperationRequest,
+    RuntimeRequestOperation,
+)
 from bijux_canon_runtime.ontology.ids import ArtifactID, RequestID
 from bijux_canon_runtime.ontology.public import ReplayMode
 from bijux_canon_runtime.runtime.comparison import (
@@ -75,6 +79,7 @@ EXIT_MISSING_CAPABILITY = 3
 EXIT_OPERATION_FAILED = 4
 EXIT_NOT_READY = 5
 _default_application_services: RuntimeApplicationServicesV2 | None = None
+ModelT = TypeVar("ModelT", bound=BaseModel)
 
 
 def run_v2_command(
@@ -259,60 +264,65 @@ def _submit(
 ) -> int:
     command = args.v2_command
     if command == "ingest":
-        body = _load_model(Path(args.request), PrepareCorpusRequest)
+        ingest_body = _load_model(Path(args.request), PrepareCorpusRequest)
         request = operation_request(
-            context=body.context,
+            context=ingest_body.context,
             operation=RuntimeRequestOperation.CORPUS_PREPARE,
-            execution_profile=body.execution_profile,
-            budget=body.budget,
-            scope=body.scope,
-            source_directory=body.source_directory,
+            execution_profile=ingest_body.execution_profile,
+            budget=ingest_body.budget,
+            scope=ingest_body.scope,
+            source_directory=ingest_body.source_directory,
         )
         snapshot = service.corpus(request, idempotency_key=args.idempotency_key)
     elif command == "index":
-        body = _load_model(Path(args.request), BuildIndexRequest)
+        index_body = _load_model(Path(args.request), BuildIndexRequest)
         request = operation_request(
-            context=body.context,
+            context=index_body.context,
             operation=RuntimeRequestOperation.INDEX_BUILD,
-            execution_profile=body.execution_profile,
-            budget=body.budget,
-            scope=body.scope,
-            corpus_id=body.corpus_id,
+            execution_profile=index_body.execution_profile,
+            budget=index_body.budget,
+            scope=index_body.scope,
+            corpus_id=index_body.corpus_id,
         )
         snapshot = service.index(request, idempotency_key=args.idempotency_key)
     elif command == "retrieve":
-        body = _load_model(Path(args.request), RetrieveRequest)
-        request = _retrieval(body, RuntimeRequestOperation.RETRIEVE)
+        retrieve_body = _load_model(Path(args.request), RetrieveRequest)
+        request = _retrieval(retrieve_body, RuntimeRequestOperation.RETRIEVE)
         snapshot = service.retrieve(request, idempotency_key=args.idempotency_key)
     elif command == "ask":
-        body = _load_model(Path(args.request), AskRequest)
-        request = _answer(body, RuntimeRequestOperation.ASK)
+        ask_body = _load_model(Path(args.request), AskRequest)
+        request = _answer(ask_body, RuntimeRequestOperation.ASK)
         snapshot = service.ask(request, idempotency_key=args.idempotency_key)
     elif command == "research":
-        body = _load_model(Path(args.request), ResearchRequest)
-        request = _answer(body, RuntimeRequestOperation.RESEARCH)
+        research_body = _load_model(Path(args.request), ResearchRequest)
+        request = _answer(research_body, RuntimeRequestOperation.RESEARCH)
         snapshot = service.research(request, idempotency_key=args.idempotency_key)
     else:
-        body = _load_model(Path(args.request), RunRequest)
+        run_body = _load_model(Path(args.request), RunRequest)
         request = operation_request(
-            context=body.context,
+            context=run_body.context,
             operation=RuntimeRequestOperation.RUN,
-            execution_profile=body.execution_profile,
-            budget=body.budget,
-            scope=body.scope,
-            query=body.query,
-            source_directory=body.source_directory,
-            corpus_id=body.corpus_id,
-            filters=(body.filters.document_ids, body.filters.source_uris),
-            top_k=body.top_k,
-            answer_policy=body.answer_policy,
+            execution_profile=run_body.execution_profile,
+            budget=run_body.budget,
+            scope=run_body.scope,
+            query=run_body.query,
+            source_directory=run_body.source_directory,
+            corpus_id=run_body.corpus_id,
+            filters=(
+                run_body.filters.document_ids,
+                run_body.filters.source_uris,
+            ),
+            top_k=run_body.top_k,
+            answer_policy=run_body.answer_policy,
         )
         snapshot = service.run(request, idempotency_key=args.idempotency_key)
     _write(job_status(snapshot).model_dump(mode="json"))
     return 0
 
 
-def _retrieval(body: RetrieveRequest, operation: RuntimeRequestOperation):
+def _retrieval(
+    body: RetrieveRequest, operation: RuntimeRequestOperation
+) -> RuntimeOperationRequest:
     return operation_request(
         context=body.context,
         operation=operation,
@@ -326,7 +336,9 @@ def _retrieval(body: RetrieveRequest, operation: RuntimeRequestOperation):
     )
 
 
-def _answer(body: AskRequest, operation: RuntimeRequestOperation):
+def _answer(
+    body: AskRequest, operation: RuntimeRequestOperation
+) -> RuntimeOperationRequest:
     return operation_request(
         context=body.context,
         operation=operation,
@@ -401,7 +413,7 @@ def _compare(args: argparse.Namespace, service: RuntimeApplicationServicesV2) ->
     return 0
 
 
-def _load_model(path: Path, model_type):
+def _load_model(path: Path, model_type: type[ModelT]) -> ModelT:
     payload = json.loads(path.read_text(encoding="utf-8"))
     return model_type.model_validate(payload)
 

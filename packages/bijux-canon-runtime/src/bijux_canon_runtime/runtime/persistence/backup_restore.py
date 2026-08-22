@@ -173,11 +173,12 @@ class RuntimeBackupManager:
                 restored_cas.put(artifact)
             database = DuckDBExecutionStore(staged / "runtime.duckdb")
             try:
-                schema_version = int(
-                    database._connection.execute(
-                        "SELECT max(version) FROM schema_migrations"
-                    ).fetchone()[0]
-                )
+                schema_row = database._connection.execute(
+                    "SELECT max(version) FROM schema_migrations"
+                ).fetchone()
+                if schema_row is None or schema_row[0] is None:
+                    raise BackupIntegrityError("restored database has no schema version")
+                schema_version = int(schema_row[0])
             finally:
                 database.close()
             report = ArtifactReachabilityValidator(

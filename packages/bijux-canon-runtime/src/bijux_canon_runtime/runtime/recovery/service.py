@@ -169,7 +169,13 @@ class RuntimeRecoveryService:
             source=source_identity,
             process_id=process_id,
         )
-        replay_mode = ReplayMode(source.events[0].policy["replay_mode"])
+        replay_mode_value = source.events[0].policy.get("replay_mode")
+        if not isinstance(replay_mode_value, str):
+            raise RuntimeRecoveryError("source attempt replay mode is invalid")
+        try:
+            replay_mode = ReplayMode(replay_mode_value)
+        except ValueError as exc:
+            raise RuntimeRecoveryError("source attempt replay mode is invalid") from exc
         reconstruction = reconstruct_linked_plan(
             source,
             request_id=request_id,

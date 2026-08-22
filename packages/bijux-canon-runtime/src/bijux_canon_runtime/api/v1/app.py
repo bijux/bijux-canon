@@ -13,7 +13,7 @@ from __future__ import annotations
 
 from collections.abc import Awaitable, Callable
 import os
-from typing import Annotated
+from typing import Annotated, Any
 
 from fastapi import Body, FastAPI, Header, Request, status
 from fastapi.exceptions import RequestValidationError
@@ -94,10 +94,10 @@ def _openapi() -> dict[str, object]:
     return schema
 
 
-app.openapi = _openapi
+setattr(app, "openapi", _openapi)
 
 
-FAILURE_RESPONSES = {
+FAILURE_RESPONSES: dict[int | str, dict[str, Any]] = {
     status.HTTP_400_BAD_REQUEST: {
         "description": "Request body could not be parsed.",
         "model": FailureEnvelope,
