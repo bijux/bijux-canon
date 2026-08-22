@@ -13,6 +13,7 @@ from bijux_canon_reason.research import (
     ResearchAttemptComparison,
     ResearchChangeAction,
     ResearchChangeAuthority,
+    ResearchGraphEvent,
     ResearchGraphEventKind,
     ResearchGraphSurface,
     ResearchReasoningAttempt,
@@ -28,8 +29,12 @@ def _id(value: str) -> str:
     return content_artifact_id({"test": value})
 
 
-def _events(specifications):
-    events = []
+def _events(
+    specifications: tuple[
+        tuple[ResearchGraphEventKind, str, ResearchChangeAuthority], ...
+    ],
+) -> tuple[ResearchGraphEvent, ...]:
+    events: list[ResearchGraphEvent] = []
     for sequence, (kind, target, authority) in enumerate(specifications, start=1):
         previous = events[-1].artifact_id if events else None
         events.append(
@@ -49,7 +54,7 @@ def _events(specifications):
     return tuple(events)
 
 
-def _attempt_chain():
+def _attempt_chain() -> tuple[ResearchReasoningAttempt, ResearchReasoningAttempt]:
     claim_1, claim_2 = _id("claim-1"), _id("claim-2")
     evidence_1, evidence_2 = _id("evidence-1"), _id("evidence-2")
     decision_1, decision_2 = _id("decision-1"), _id("decision-2")

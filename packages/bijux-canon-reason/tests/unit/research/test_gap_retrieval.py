@@ -17,7 +17,10 @@ from bijux_canon_reason.research import (
     GapRetrievalService,
     QuestionDecomposer,
     ResearchQuestion,
+    ResearchSubquestion,
     RetrievalBatchStatus,
+    RetrievalEvidenceBatch,
+    ScopedRetrievalRequest,
     SubquestionStatus,
     create_retrieval_evidence_batch,
     create_subquestion_candidate,
@@ -33,7 +36,7 @@ def _artifact(value: str) -> str:
 
 def _subquestion(
     text: str = "Which exact source sentence defines FASTQ?", *, priority: int = 90
-):
+) -> ResearchSubquestion:
     records = json.loads(
         (
             _REPO / "apis/bijux-canon-reason/v2/examples/evaluation-claim-records.json"
@@ -66,9 +69,9 @@ class _Port:
         self.evidence = evidence
         self.status = status
         self.refusal_code = refusal_code
-        self.calls = []
+        self.calls: list[str] = []
 
-    def retrieve(self, request):
+    def retrieve(self, request: ScopedRetrievalRequest) -> RetrievalEvidenceBatch:
         self.calls.append(request.artifact_id)
         return create_retrieval_evidence_batch(
             request,
@@ -112,7 +115,11 @@ def test_retrieval_records_new_and_repeated_evidence_exactly() -> None:
         ),
     ],
 )
-def test_empty_and_refused_results_remain_typed(status, refusal_code, expected) -> None:
+def test_empty_and_refused_results_remain_typed(
+    status: RetrievalBatchStatus,
+    refusal_code: str | None,
+    expected: EvidenceChange,
+) -> None:
     request = create_subquestion_retrieval_request(
         _subquestion(), graph_artifact_id=_artifact("3")
     )
@@ -150,7 +157,7 @@ def test_adapter_identity_mismatch_fails_closed() -> None:
     )
 
     class MismatchedPort(_Port):
-        def retrieve(self, value):
+        def retrieve(self, value: ScopedRetrievalRequest) -> RetrievalEvidenceBatch:
             batch = super().retrieve(value)
             return batch.model_copy(update={"query_text_sha256": "0" * 64})
 

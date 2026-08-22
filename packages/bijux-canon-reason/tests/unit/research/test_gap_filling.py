@@ -8,6 +8,7 @@ import pytest
 
 from bijux_canon_reason.research import (
     EvidenceChange,
+    GapFillingCandidate,
     GapFillingError,
     GapFillingErrorCode,
     GapFillingPolicy,
@@ -37,7 +38,7 @@ def _candidate(
     graph: str | None = None,
     query: str = "external validation cohort evidence",
     status: GapResolutionStatus = GapResolutionStatus.unresolved,
-):
+) -> GapFillingCandidate:
     return create_gap_filling_candidate(
         graph_artifact_id=graph or _artifact("a"),
         source_artifact_id=_artifact(source),

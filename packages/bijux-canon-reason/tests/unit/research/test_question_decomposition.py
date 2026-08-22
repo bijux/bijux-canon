@@ -18,6 +18,7 @@ from bijux_canon_reason.research import (
     QuestionDecompositionErrorCode,
     QuestionDecompositionPolicy,
     ResearchQuestion,
+    SubquestionCandidate,
     SubquestionDisposition,
     create_subquestion_candidate,
 )
@@ -44,7 +45,7 @@ def _candidate(
     *,
     rationale: str = "This evidence need resolves part of the root question.",
     scope_artifact_id: str | None = None,
-):
+) -> SubquestionCandidate:
     question = _real_question()
     return create_subquestion_candidate(
         text=text,

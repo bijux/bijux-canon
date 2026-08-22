@@ -11,6 +11,7 @@ from bijux_canon_reason.research import (
     ClaimMergeErrorCode,
     ClaimMergeResult,
     ClaimMergingService,
+    MergeableClaim,
     create_mergeable_claim,
 )
 
@@ -28,7 +29,7 @@ def _claim(
     qualifiers: tuple[tuple[str, str], ...] = (),
     evidence: tuple[str, ...] = ("1",),
     parents: tuple[str, ...] = (),
-):
+) -> MergeableClaim:
     return create_mergeable_claim(
         claim_artifact_id=_artifact(claim_id),
         semantic_key=semantic_key,

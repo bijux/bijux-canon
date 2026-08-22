@@ -14,6 +14,7 @@ from bijux_canon_reason.research import (
     CounterevidenceSearchOutcome,
     CounterevidenceSearchRun,
     CounterevidenceSearchService,
+    CounterevidenceTarget,
     RetrievalBatchStatus,
     RetrievalEvidenceBatch,
     ScopedRetrievalRequest,
@@ -33,7 +34,7 @@ def _target(
     graph: str | None = None,
     statement: str = "The intervention improves the measured outcome.",
     known: tuple[str, ...] = (),
-):
+) -> CounterevidenceTarget:
     return create_counterevidence_target(
         graph_artifact_id=graph or _artifact("a"),
         claim_artifact_id=_artifact(claim),

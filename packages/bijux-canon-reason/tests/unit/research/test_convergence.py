@@ -10,6 +10,7 @@ from bijux_canon_reason.research import (
     ConvergenceDecision,
     ConvergenceError,
     ConvergenceErrorCode,
+    ConvergenceObservation,
     ConvergenceOutcome,
     ConvergencePolicy,
     ConvergenceReason,
@@ -36,7 +37,7 @@ def _observation(
     elapsed: int = 100,
     cancelled: bool = False,
     insufficient: bool = False,
-):
+) -> ConvergenceObservation:
     return create_convergence_observation(
         iteration=iteration,
         graph_artifact_id=_artifact(graph),
@@ -150,7 +151,9 @@ def test_stable_graph_and_diminishing_value_stop_insufficient_research() -> None
     ],
 )
 def test_each_resource_limit_stops_without_another_iteration(
-    policy: ConvergencePolicy, observations: tuple, reason: ConvergenceReason
+    policy: ConvergencePolicy,
+    observations: tuple[ConvergenceObservation, ...],
+    reason: ConvergenceReason,
 ) -> None:
     decision = ConvergenceService(policy).evaluate(observations)
 
