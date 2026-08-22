@@ -164,8 +164,11 @@ class PublicationTransactionRecord:
 class DuckDBMetadataAuthority:
     """Validate and persist typed metadata beside the execution journal."""
 
-    def __init__(self, path: Path) -> None:
-        self._store = DuckDBExecutionStore(path)
+    def __init__(self, path: Path, *, lock_timeout_seconds: float = 5.0) -> None:
+        self._store = DuckDBExecutionStore(
+            path,
+            lock_timeout_seconds=lock_timeout_seconds,
+        )
         self._connection = self._store._connection
 
     def close(self) -> None:

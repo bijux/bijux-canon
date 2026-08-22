@@ -10,7 +10,6 @@ from __future__ import annotations
 from contextlib import suppress
 from datetime import UTC, datetime
 import json
-import os
 from pathlib import Path
 from uuid import uuid4
 
@@ -35,7 +34,10 @@ from bijux_canon_runtime.model.identifiers.execution_event import ExecutionEvent
 from bijux_canon_runtime.model.identifiers.tool_invocation import ToolInvocation
 from bijux_canon_runtime.observability.storage import schema_contracts
 from bijux_canon_runtime.observability.storage.execution_store_lock import (
-    acquire_execution_store_lock,
+    ExecutionStoreLease,
+    ExecutionStoreLockTimeout,
+    ExecutionStoreLockUpgradeError,
+    acquire_execution_store_lease,
 )
 from bijux_canon_runtime.observability.storage.execution_store_protocol import (
     ExecutionReadStoreProtocol,
@@ -91,35 +93,61 @@ SCHEMA_CONTRACT_PATH = DEFAULT_SCHEMA_CONTRACT_PATH
 SCHEMA_HASH_PATH = DEFAULT_SCHEMA_HASH_PATH
 
 
-def _acquire_lock(path: Path) -> int:
+def _acquire_lock(
+    path: Path,
+    *,
+    read_only: bool,
+    timeout_seconds: float,
+) -> ExecutionStoreLease:
     """Internal helper; not part of the public API."""
-    return acquire_execution_store_lock(path)
+    return acquire_execution_store_lease(
+        path,
+        exclusive=not read_only,
+        timeout_seconds=timeout_seconds,
+    )
 
 
-# Single-writer assumption; no concurrent mutation guarantees are provided.
-# This store is for audit and replay only, not transactional execution.
 class DuckDBExecutionStore:
     """Persists runs, steps, events, artifact, evidence, entropy usage, tool invocations, claim ids, dataset metadata, and replay envelopes; intentionally excludes in-memory execution state, transient executor caches, and any non-persisted runtime objects."""
 
-    def __init__(self, path: Path) -> None:
+    def __init__(
+        self,
+        path: Path,
+        *,
+        read_only: bool = False,
+        lock_timeout_seconds: float = 5.0,
+    ) -> None:
         """Internal helper; not part of the public API."""
         self._lock_path = path.with_suffix(f"{path.suffix}.lock")
-        self._lock_fd: int | None = _acquire_lock(self._lock_path)
-        self._connection = duckdb.connect(str(path))
-        self._migrate()
+        lease_read_only = read_only and path.exists()
+        self._lease: ExecutionStoreLease | None = _acquire_lock(
+            self._lock_path,
+            read_only=lease_read_only,
+            timeout_seconds=lock_timeout_seconds,
+        )
+        effective_read_only = lease_read_only and not self._lease.exclusive
+        try:
+            self._connection = duckdb.connect(
+                str(path),
+                read_only=effective_read_only,
+            )
+            if not effective_read_only:
+                self._migrate()
+        except Exception:
+            self._lease.release()
+            self._lease = None
+            raise
 
     def close(self) -> None:
         """Internal helper; not part of the public API."""
         with suppress(Exception):
             self._connection.close()
-        lock_fd = getattr(self, "_lock_fd", None)
-        if lock_fd is None:
+        lease = getattr(self, "_lease", None)
+        if lease is None:
             return
         with suppress(Exception):
-            os.close(lock_fd)
-        with suppress(Exception):
-            self._lock_path.unlink()
-        self._lock_fd = None
+            lease.release()
+        self._lease = None
 
     def __del__(self) -> None:
         """Internal helper; not part of the public API."""
@@ -1398,10 +1426,13 @@ class DuckDBExecutionStore:
 class DuckDBExecutionWriteStore(ExecutionWriteStoreProtocol):
     """DuckDB write store; misuse breaks append-only guarantees."""
 
-    def __init__(self, path: Path) -> None:
+    def __init__(self, path: Path, *, lock_timeout_seconds: float = 5.0) -> None:
         """Internal helper; not part of the public API."""
         self.path = path
-        self._store = DuckDBExecutionStore(path)
+        self._store = DuckDBExecutionStore(
+            path,
+            lock_timeout_seconds=lock_timeout_seconds,
+        )
         self._connection = self._store._connection
 
     def begin_run(self, *, plan: ExecutionSteps, mode: RunMode) -> RunID:
@@ -1519,9 +1550,13 @@ class DuckDBExecutionWriteStore(ExecutionWriteStoreProtocol):
 class DuckDBExecutionReadStore(ExecutionReadStoreProtocol):
     """DuckDB read store; misuse breaks replay analysis."""
 
-    def __init__(self, path: Path) -> None:
+    def __init__(self, path: Path, *, lock_timeout_seconds: float = 5.0) -> None:
         """Internal helper; not part of the public API."""
-        self._store = DuckDBExecutionStore(path)
+        self._store = DuckDBExecutionStore(
+            path,
+            read_only=True,
+            lock_timeout_seconds=lock_timeout_seconds,
+        )
         self._connection = self._store._connection
 
     def load_trace(self, run_id: RunID, *, tenant_id: TenantID) -> ExecutionTrace:
@@ -1587,6 +1622,8 @@ __all__ = [
     "DuckDBExecutionReadStore",
     "DuckDBExecutionStore",
     "DuckDBExecutionWriteStore",
+    "ExecutionStoreLockTimeout",
+    "ExecutionStoreLockUpgradeError",
     "SCHEMA_CONTRACT_PATH",
     "SCHEMA_VERSION",
 ]

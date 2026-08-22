@@ -60,9 +60,11 @@ class ArtifactPublicationCoordinator:
         *,
         payload_store: AtomicFilesystemArtifactPayloadStore,
         database_path: Path,
+        lock_timeout_seconds: float = 5.0,
     ) -> None:
         self._payload_store = payload_store
         self._database_path = database_path
+        self._lock_timeout_seconds = lock_timeout_seconds
 
     def prepare(
         self,
@@ -99,7 +101,10 @@ class ArtifactPublicationCoordinator:
             }
         )
         intent_hash = hashlib.sha256(intent_bytes).hexdigest()
-        with DuckDBMetadataAuthority(self._database_path) as authority:
+        with DuckDBMetadataAuthority(
+            self._database_path,
+            lock_timeout_seconds=self._lock_timeout_seconds,
+        ) as authority:
             transaction = authority.prepare_publication_transaction(
                 tenant_id=tenant_id,
                 run_id=run_id,
@@ -119,7 +124,10 @@ class ArtifactPublicationCoordinator:
         completed_at: str,
     ) -> PublicationOutcome:
         """Recover a prepared intent and atomically activate its metadata."""
-        with DuckDBMetadataAuthority(self._database_path) as authority:
+        with DuckDBMetadataAuthority(
+            self._database_path,
+            lock_timeout_seconds=self._lock_timeout_seconds,
+        ) as authority:
             transaction = authority.publication_transaction(
                 tenant_id=tenant_id,
                 run_id=run_id,

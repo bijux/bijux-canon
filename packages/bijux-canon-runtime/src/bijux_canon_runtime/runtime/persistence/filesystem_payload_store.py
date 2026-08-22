@@ -73,7 +73,7 @@ class AtomicFilesystemArtifactPayloadStore(ArtifactPayloadStore):
             self._fsync_directory(self._objects)
         staged = Path(
             tempfile.mkdtemp(
-                prefix=f"{target.name}.",
+                prefix=f"{target.name}.{os.getpid()}.",
                 suffix=".partial",
                 dir=self._staging,
             )
@@ -170,6 +170,9 @@ class AtomicFilesystemArtifactPayloadStore(ArtifactPayloadStore):
         for entry in self._staging.iterdir():
             if not entry.name.endswith(".partial"):
                 continue
+            owner_pid = self._staging_owner_pid(entry)
+            if owner_pid is not None and self._process_exists(owner_pid):
+                continue
             if entry.is_symlink():
                 entry.unlink()
             elif entry.is_dir():
@@ -180,6 +183,27 @@ class AtomicFilesystemArtifactPayloadStore(ArtifactPayloadStore):
         if removed:
             self._fsync_directory(self._staging)
         return removed
+
+    @staticmethod
+    def _staging_owner_pid(entry: Path) -> int | None:
+        parts = entry.name.split(".")
+        if len(parts) < 4 or not parts[-2]:
+            return None
+        try:
+            pid = int(parts[-3])
+        except ValueError:
+            return None
+        return pid if pid > 0 else None
+
+    @staticmethod
+    def _process_exists(pid: int) -> bool:
+        try:
+            os.kill(pid, 0)
+        except ProcessLookupError:
+            return False
+        except PermissionError:
+            return True
+        return True
 
     def artifact_ids(self) -> tuple[ArtifactID, ...]:
         """Inventory immutable object paths without trusting their contents."""
