@@ -292,6 +292,8 @@ def test_repository_operations_leaf_pages_keep_section_sidebar(
         "Contributor Workflows",
         "Automation Surfaces",
         "Artifact Governance",
+        "Production Threat Model",
+        "Security Evidence and Incident Response",
         "Review Expectations",
         "Change Management",
     ]
