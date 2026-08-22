@@ -14,6 +14,11 @@ import pytest
 
 from bijux_canon_reason.evaluation import (
     AbstentionExpectation,
+    AbstentionSafetyCaseKind,
+    AbstentionSafetyEvaluationError,
+    AbstentionSafetyEvaluator,
+    AbstentionSafetyInput,
+    AbstentionSafetyReport,
     AtomicClaimTruth,
     ClaimFaithfulnessEvaluator,
     ClaimFaithfulnessReport,
@@ -552,3 +557,102 @@ def test_unknown_claim_and_missing_evidence_are_retained_as_failures() -> None:
     assert report.expected_claim_recall.value == 0.0
     assert report.nonexistent_evidence_claims.numerator == 1
     assert not report.passed
+
+
+def _safety_input(kind: AbstentionSafetyCaseKind) -> AbstentionSafetyInput:
+    original = _case()
+    label = (
+        original.claims[0]
+        .citations[0]
+        .model_copy(update={"relation": CitationTruthRelation.opposes})
+    )
+    opposed_claim = original.claims[0].model_copy(
+        update={
+            "claim_class": ClaimTruthClass.opposed,
+            "expected_in_answer": False,
+            "abstention_expectation": AbstentionExpectation.required,
+            "citations": (label,),
+        }
+    )
+    case = original.model_copy(
+        update={
+            "case_id": f"safety-{kind.value}",
+            "archetype": kind.value,
+            "claims": (opposed_claim,),
+            "abstention_expectation": AbstentionExpectation.required,
+        }
+    )
+    output = SystemOutput(
+        output_id=f"output-{kind.value}",
+        case_id=case.case_id,
+        runtime_run_id="runtime-run",
+        runtime_attempt_id="runtime-attempt",
+        answer="",
+        disposition=SystemAnswerDisposition.abstained,
+        abstention_reason=f"The {kind.value} case cannot be answered safely.",
+        trace_identity_sha256="9" * 64,
+    )
+    integrity = CitationIntegrityEvaluator().evaluate(
+        case=case,
+        output=output,
+        source_payloads={},
+    )
+    return AbstentionSafetyInput(
+        kind=kind,
+        truth=case,
+        output=output,
+        citation_integrity=integrity,
+    )
+
+
+def test_all_negative_strata_abstain_without_leaking_scope_or_citations() -> None:
+    cases = tuple(_safety_input(kind) for kind in AbstentionSafetyCaseKind)
+
+    report = AbstentionSafetyEvaluator().evaluate(cases)
+    restarted = AbstentionSafetyReport.model_validate_json(report.model_dump_json())
+
+    assert restarted == report
+    assert report.passed
+    assert report.correct_abstention.numerator == 5
+    assert report.correct_abstention.denominator == 5
+    assert report.scope_enforcement.value == 1.0
+    assert report.invented_citations.numerator == 0
+    assert report.invented_citations.denominator == 0
+
+
+def test_fabricated_answer_and_locator_fail_without_denominator_dropping() -> None:
+    cases = [_safety_input(kind) for kind in AbstentionSafetyCaseKind]
+    original = cases[2]
+    citation = _citation(original.truth, locator_id="fabricated-locator")
+    output = _output(original.truth, citation).model_copy(
+        update={"output_id": "fabricated-answer-output"}
+    )
+    integrity = CitationIntegrityEvaluator().evaluate(
+        case=original.truth,
+        output=output,
+        source_payloads=_sources(original.truth),
+    )
+    cases[2] = AbstentionSafetyInput(
+        kind=AbstentionSafetyCaseKind.fabricated_entity,
+        truth=original.truth,
+        output=output,
+        citation_integrity=integrity,
+    )
+
+    report = AbstentionSafetyEvaluator().evaluate(tuple(cases))
+
+    assert not report.passed
+    assert report.correct_abstention.numerator == 4
+    assert report.correct_abstention.denominator == 5
+    assert report.scope_enforcement.numerator == 4
+    assert report.scope_enforcement.denominator == 5
+    assert report.invented_citations.numerator == 1
+    assert report.invented_citations.denominator == 1
+    assert report.outcomes[2].invented_citation_ids == (citation.citation_id,)
+
+
+def test_safety_suite_refuses_missing_negative_strata() -> None:
+    with pytest.raises(AbstentionSafetyEvaluationError, match="missing required"):
+        AbstentionSafetyEvaluator().evaluate(
+            (_safety_input(AbstentionSafetyCaseKind.unanswerable),)
+        )

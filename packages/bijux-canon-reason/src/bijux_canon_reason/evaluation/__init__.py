@@ -4,6 +4,15 @@
 
 from __future__ import annotations
 
+from bijux_canon_reason.evaluation.abstention_safety import (
+    AbstentionSafetyCaseKind,
+    AbstentionSafetyCaseOutcome,
+    AbstentionSafetyEvaluationError,
+    AbstentionSafetyEvaluator,
+    AbstentionSafetyInput,
+    AbstentionSafetyMetric,
+    AbstentionSafetyReport,
+)
 from bijux_canon_reason.evaluation.annotation import (
     AnnotationAdjudication,
     AnnotationAdjudicationVerdict,
@@ -83,6 +92,13 @@ from bijux_canon_reason.evaluation.truth import (
 
 __all__ = [
     "AbstentionExpectation",
+    "AbstentionSafetyCaseKind",
+    "AbstentionSafetyCaseOutcome",
+    "AbstentionSafetyEvaluationError",
+    "AbstentionSafetyEvaluator",
+    "AbstentionSafetyInput",
+    "AbstentionSafetyMetric",
+    "AbstentionSafetyReport",
     "AnnotationAdjudication",
     "AnnotationAdjudicationVerdict",
     "AnnotationAdmission",
