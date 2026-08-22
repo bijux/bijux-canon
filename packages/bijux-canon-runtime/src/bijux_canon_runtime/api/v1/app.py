@@ -42,7 +42,16 @@ from bijux_canon_runtime.application.runtime_configuration import (
 
 HTTP_HEADER_VALUE_PATTERN = r"^[A-Za-z0-9._:-]+$"
 
-app = FastAPI(
+
+class RuntimeFastAPI(FastAPI):
+    """FastAPI application with an owned deterministic OpenAPI contract."""
+
+    def openapi(self) -> dict[str, Any]:
+        """Return the runtime schema with its explicit public security contract."""
+        return _openapi(self)
+
+
+app = RuntimeFastAPI(
     title="bijux-canon-runtime API",
     summary="Contract-enforced execution and replay for the runtime layer.",
     description=(
@@ -72,29 +81,26 @@ app = FastAPI(
 )
 
 
-def _openapi() -> dict[str, object]:
+def _openapi(application: FastAPI) -> dict[str, Any]:
     """Handle OpenAPI."""
-    if app.openapi_schema is not None:
-        return app.openapi_schema
+    if application.openapi_schema is not None:
+        return application.openapi_schema
 
     schema = get_openapi(
-        title=app.title,
-        version=app.version,
-        openapi_version=app.openapi_version,
-        summary=app.summary,
-        description=app.description,
-        routes=app.routes,
-        tags=app.openapi_tags,
-        servers=app.servers,
-        contact=app.contact,
-        license_info=app.license_info,
+        title=application.title,
+        version=application.version,
+        openapi_version=application.openapi_version,
+        summary=application.summary,
+        description=application.description,
+        routes=application.routes,
+        tags=application.openapi_tags,
+        servers=application.servers,
+        contact=application.contact,
+        license_info=application.license_info,
     )
     schema["security"] = []
-    app.openapi_schema = schema
+    application.openapi_schema = schema
     return schema
-
-
-app.openapi = _openapi
 
 
 FAILURE_RESPONSES: dict[int | str, dict[str, Any]] = {
