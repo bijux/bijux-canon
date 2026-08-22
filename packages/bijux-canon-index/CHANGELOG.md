@@ -5,6 +5,15 @@ All notable changes to `bijux-canon-index` are documented here.
 Historical release entries below preserve the wording that shipped with the
 tagged release, including legacy distribution naming where applicable.
 
+## 0.4.0 - 2026-08-22
+
+### Changed
+
+- Added stable generation interfaces, typed backend contracts, and installed
+  production search dependencies.
+- Added qrel-based retrieval evaluation, retrieval-mode comparison, and
+  artifact/database tamper detection.
+
 ## 0.3.9 - 2026-07-04
 
 ### Changed

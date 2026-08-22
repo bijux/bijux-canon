@@ -56,6 +56,14 @@ package catalog: canonical leaf packages first; runtime and leaf aliases next;
 and the two runtime aliases last. Exact pins deliberately turn a partial or
 mixed family into a resolver conflict instead of an untested installation.
 
+Before creating a release tag, build the complete family with the proposed
+stable version and run the installed release-candidate identity check. The
+check requires an absent, valid tag name targeting the clean evaluated commit;
+matching source fallbacks and changelog entries; a current lock; and one
+hash-bound wheel at that version for every repository distribution. It records
+that no tag was created. Tag creation and publication remain separate,
+explicitly authorized actions.
+
 ## Release Evidence
 
 The common publication path resolves the version, applies publication policy,

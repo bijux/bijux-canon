@@ -6,6 +6,17 @@ All notable changes to **bijux-canon-runtime** are documented here.
 Historical release entries below preserve the wording that shipped with the
 tagged release, including legacy distribution naming where applicable.
 
+## [0.4.0] - 2026-08-22
+
+### Changed
+
+- Bound agent, ingest, reason, and index peers to the exact runtime version and
+  defined dependency-ordered family publication.
+- Added immutable run publication, interrupted-attempt recovery, explicit
+  cancellation/deadline outcomes, and enforced resource/concurrency budgets.
+- Strengthened replay comparison, secret handling, and persisted-artifact
+  tamper detection.
+
 ## [0.3.9] - 2026-07-04
 
 ### Changed

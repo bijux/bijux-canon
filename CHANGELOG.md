@@ -10,6 +10,24 @@ The goal of this changelog is to explain repository changes that affect more
 than one package or change the way contributors and maintainers work across the
 whole workspace.
 
+## 0.4.0 - 2026-08-22
+
+### Changed
+
+- Hardened the canonical runtime, agent, ingestion, retrieval, and reasoning
+  boundaries with deterministic lifecycle, provenance, evaluation, and
+  installed-distribution verification.
+- Bound canonical and compatibility distributions to one exact release-family
+  version and a dependency-ordered publication plan.
+- Added reproducible wheel, clean installation, extras capability, supported
+  Python, and release-candidate identity checks to the maintained product
+  tooling.
+
+### Security
+
+- Added parser and archive bounds, untrusted-content handling, secret
+  redaction, resource budgets, and artifact/database tamper detection.
+
 ## 0.3.9 - 2026-07-04
 
 ### Changed

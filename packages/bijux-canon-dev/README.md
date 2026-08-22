@@ -44,7 +44,9 @@ excluded from the repository's public release package set. Its installed
 maintenance commands verify supply-chain bindings, wheel metadata and contents,
 clean isolated installs, advertised extras and their installed capabilities, and
 exact-version family compatibility and publication order, and the complete
-supported Python wheel matrix;
+supported Python wheel matrix. Its release-candidate command binds an
+uncreated stable tag to the clean target commit, package changelogs and
+fallbacks, lock identity, and exact candidate wheel hashes;
 generated reports and isolated environments belong under the repository
 `artifacts/` tree. Its VCS-derived version supports workspace builds; it is not
 a promise of an end-user product release.

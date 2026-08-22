@@ -5,6 +5,15 @@ All notable changes to `bijux-canon-agent` are documented here.
 Historical release entries below preserve the wording that shipped with the
 tagged release.
 
+## 0.4.0 - 2026-08-22
+
+### Changed
+
+- Added deterministic pipeline outcomes, restart-safe lifecycle evidence, and
+  measured research-policy and termination behavior.
+- Made provider credentials lazy and strengthened installed tool-policy and
+  untrusted-retrieval boundaries.
+
 ## 0.3.9 - 2026-07-04
 
 ### Changed

@@ -8,6 +8,14 @@ distribution name while the canonical package lives at `bijux-canon-reason`.
 Historical release entries below preserve the wording that shipped with tagged
 releases when a tagged changelog existed.
 
+## 0.4.0 - 2026-08-22
+
+### Changed
+
+- Bound the installed `bijux-rar` bridge to the exact
+  `bijux-canon-reason` release and exposed its delegated command through the
+  installed compatibility interface.
+
 ## 0.3.9 - 2026-07-04
 
 ### Changed

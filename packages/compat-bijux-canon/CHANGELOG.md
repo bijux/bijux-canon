@@ -9,6 +9,14 @@ Historical release entries below preserve the wording that shipped with tagged
 releases when a tagged changelog existed. Releases that shipped without a
 changelog update are reconstructed from tag annotations and release diffs.
 
+## 0.4.0 - 2026-08-22
+
+### Changed
+
+- Bound the installed `bijux-canon` family-root alias to the exact
+  `bijux-canon-runtime` release and retained its documented delegation
+  contract and legal distribution files.
+
 ## 0.3.9 - 2026-07-04
 
 ### Changed

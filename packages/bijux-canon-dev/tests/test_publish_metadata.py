@@ -15,7 +15,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 REPO_ROOT = Path(__file__).resolve().parents[3]
 PACKAGE_ROOT = REPO_ROOT / "packages"
 CHANGELOG_URL_PREFIX = "https://github.com/bijux/bijux-canon/blob/main/"
-PUBLIC_RELEASE_VERSION = "0.3.9"
+PUBLIC_RELEASE_VERSION = "0.4.0"
 REQUIRED_PUBLIC_URLS = {
     "Homepage",
     "Website",
