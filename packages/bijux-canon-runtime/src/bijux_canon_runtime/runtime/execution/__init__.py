@@ -14,10 +14,17 @@ from bijux_canon_runtime.runtime.execution.operation_dispatcher import (
     StepDispatchResult,
     StepOutputArtifact,
 )
+from bijux_canon_runtime.runtime.execution.service_composition import (
+    CanonicalServiceComposition,
+    InstalledServiceCapability,
+    compose_canonical_services,
+)
 from bijux_canon_runtime.runtime.execution.step_executor import ExecutionOutcome
 
 __all__ = [
     "ExecutionOutcome",
+    "CanonicalServiceComposition",
+    "InstalledServiceCapability",
     "OperationAdapter",
     "OperationDispatcher",
     "StepDispatchCancelled",
@@ -25,4 +32,5 @@ __all__ = [
     "StepDispatchError",
     "StepDispatchResult",
     "StepOutputArtifact",
+    "compose_canonical_services",
 ]
