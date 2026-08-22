@@ -20,3 +20,10 @@ Regenerate the portfolio with the repository-owned
 and acquisition. The command must use current acquisition receipts and the
 live production-finalization graph; it refuses to replace different bytes at a
 stable source path.
+
+The sibling `corpus.lock.json` is the offline provenance and attribution
+inventory for these exact bytes. It records acquisition time, transport
+identity, article-specific license and redistribution terms, transformations,
+and every file digest. Rebuild it from a reviewed acquisition snapshot with
+`bijux_canon_dev.corpus.research_corpus_lock`; the builder rejects receipt,
+manifest, or source-byte drift and never replaces a different existing lock.
