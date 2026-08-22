@@ -84,6 +84,17 @@ def _docx(
     return target.getvalue()
 
 
+def _append_archive_member(
+    content: bytes,
+    name: str | zipfile.ZipInfo,
+    payload: bytes,
+) -> bytes:
+    target = io.BytesIO(content)
+    with zipfile.ZipFile(target, "a", compression=zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr(name, payload)
+    return target.getvalue()
+
+
 @pytest.mark.parametrize(
     ("name", "content", "declared_media_type", "format_id", "detected_media_type"),
     [
@@ -303,6 +314,70 @@ def test_admission_rejects_unsafe_and_oversized_docx_archives(
 
     assert unsafe.issues[0].code == "unsafe_archive"
     assert oversized.issues[0].code == "archive_budget_exceeded"
+
+
+@pytest.mark.parametrize(
+    "member_name",
+    [
+        "/absolute.xml",
+        "../escape.xml",
+        "word/../escape.xml",
+        "word/./document.xml",
+        "word//document.xml",
+        "word\\document.xml",
+        "C:/document.xml",
+    ],
+)
+def test_admission_rejects_nonportable_archive_member_names(
+    tmp_path: Path,
+    member_name: str,
+) -> None:
+    content = _append_archive_member(_docx(), member_name, b"<unsafe/>")
+
+    result = admit_source(
+        _source(tmp_path, "unsafe-name.docx", content, _DOCX_MEDIA_TYPE)
+    )
+
+    assert result.issues[0].code == "unsafe_archive"
+
+
+def test_admission_rejects_duplicate_and_symlink_archive_members(
+    tmp_path: Path,
+) -> None:
+    with pytest.warns(UserWarning, match="Duplicate name"):
+        duplicate = _append_archive_member(
+            _docx(), "word/document.xml", b"<w:document/>"
+        )
+    link = zipfile.ZipInfo("word/external-link")
+    link.create_system = 3
+    link.external_attr = (0o120777 << 16) | 0xA000
+    symlink = _append_archive_member(_docx(), link, b"../../outside")
+
+    duplicate_result = admit_source(
+        _source(tmp_path, "duplicate.docx", duplicate, _DOCX_MEDIA_TYPE)
+    )
+    symlink_result = admit_source(
+        _source(tmp_path, "symlink.docx", symlink, _DOCX_MEDIA_TYPE)
+    )
+
+    assert duplicate_result.issues[0].code == "unsafe_archive"
+    assert symlink_result.issues[0].code == "unsafe_archive"
+
+
+def test_admission_bounds_nested_archive_payloads_without_expansion(
+    tmp_path: Path,
+) -> None:
+    nested = _append_archive_member(
+        _docx(), "word/embeddings/archive.zip", b"PK\x03\x04" + b"x" * 10_000
+    )
+
+    result = admit_source(
+        _source(tmp_path, "nested.docx", nested, _DOCX_MEDIA_TYPE),
+        budgets=AdmissionBudgets(max_archive_compression_ratio=2.0),
+    )
+
+    assert result.issues[0].code == "archive_budget_exceeded"
+    assert result.evidence.node_count is None
 
 
 def test_admission_rejects_docx_compression_bombs_before_member_reads(

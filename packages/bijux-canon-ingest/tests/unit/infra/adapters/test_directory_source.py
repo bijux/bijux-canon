@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 import pytest
@@ -183,3 +184,54 @@ def test_policy_rejects_ambiguous_roots_and_nonportable_globs(tmp_path: Path) ->
         DiscoveryPolicy(roots=(root, root))
     with pytest.raises(ValueError, match="portable"):
         DiscoveryPolicy(roots=(root,), include=("../*.pdf",))
+
+
+def test_discovery_rejects_non_regular_files_without_reading_them(
+    tmp_path: Path,
+) -> None:
+    root = tmp_path / "documents"
+    root.mkdir()
+    fifo = root / "stream.txt"
+    os.mkfifo(fifo)
+
+    result = discover_sources(
+        DiscoveryPolicy(roots=(DiscoveryRoot("research", root),))
+    )
+
+    assert result.sources == ()
+    assert [(issue.relative_path, issue.code) for issue in result.issues] == [
+        ("stream.txt", "non_regular_file")
+    ]
+
+
+def test_discovery_rejects_file_swapped_to_external_symlink_before_read(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    root = tmp_path / "documents"
+    root.mkdir()
+    source = root / "paper.txt"
+    source.write_text("authorized bytes", encoding="utf-8")
+    outside = tmp_path / "outside.txt"
+    outside.write_text("unauthorized bytes", encoding="utf-8")
+    original_open = Path.open
+    swapped = False
+
+    def swap_before_open(path: Path, *args: object, **kwargs: object):
+        nonlocal swapped
+        if path == source and not swapped:
+            swapped = True
+            source.unlink()
+            source.symlink_to(outside)
+        return original_open(path, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "open", swap_before_open)
+    result = discover_sources(
+        DiscoveryPolicy(roots=(DiscoveryRoot("research", root),))
+    )
+
+    assert swapped is True
+    assert result.sources == ()
+    assert [(issue.relative_path, issue.code) for issue in result.issues] == [
+        ("paper.txt", "source_changed")
+    ]
