@@ -4,7 +4,7 @@
   "artifact_schema_version": "2.0.0",
   "schema_bundle": {
     "path": "runtime-run-artifacts.schema.json",
-    "sha256": "6ed12ed4925530c563e50a137e4507edf9720d05fd0f9c0b1a527685c1914ca6",
+    "sha256": "628a04aaab89d2d70d706e4881279f6c3a20d8e141b8b2e4795fe1d8993988c0",
     "definitions": {
       "artifact": "#/$defs/artifact",
       "cancellation": "#/$defs/cancellation",
@@ -25,7 +25,7 @@
   },
   "conformance": {
     "path": "examples/evaluation-runtime-run-records.json",
-    "sha256": "0fd690a3aad099fa27042655ceea3dafc9088e0e2f6761cdcc74292869fab714",
+    "sha256": "f949b62680574fd971e40ad6d38a5e3182ba78dea360179c68c8bacd890fdb4b",
     "record_count": 11,
     "source_corpus": {
       "sha256": "03a79d793dc4bc525745c8c564a5b116ea727a2dfea9766397d886edfc39e4aa",

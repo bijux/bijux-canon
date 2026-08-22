@@ -19,16 +19,35 @@
   ],
   "records": [
     {
-      "schema_version": "2.0.0", "artifact_type": "bijux.canon.runtime.dag", "artifact_id": "sha256:022ebc5dc64b162dd80283529d2373cfe458a55f19c28a527c7fae493e9d2021", "run_key": "sha256:c274eed5ca583b19f079abfead64014b6daf6c9d96853f9c02f2ebf5dda85330", "sequence": 0,
+      "schema_version": "2.0.0", "artifact_type": "bijux.canon.runtime.dag", "artifact_id": "sha256:c38be42bfa4d58fab84ef0836327000fd5a5a1ba7695cba2fbfd9a1e18284455", "run_key": "sha256:c274eed5ca583b19f079abfead64014b6daf6c9d96853f9c02f2ebf5dda85330", "sequence": 0,
       "source_commit": "05f0f1484d28ca1769bffa7b87096caa981401da",
+      "entry_node_ids": ["ingest"],
+      "terminal_node_ids": ["publish"],
       "nodes": [
-        {"node_id": "publish", "owner": "runtime", "operation": "publish verified run"},
-        {"node_id": "research", "owner": "agent", "operation": "synthesize grounded answer"},
-        {"node_id": "retrieve", "owner": "index", "operation": "retrieve admitted evidence"}
+        {"node_id": "agent", "owner": "agent", "operation": "agent", "input_artifact_contracts": [{"contract_id": "reason.claim-graph.v1", "schema_id": "bijux.reason.claim-graph.v1", "media_type": "application/json", "cardinality": "one", "content_addressed": true}], "output_artifact_contracts": [{"contract_id": "agent.research-trace.v1", "schema_id": "bijux.agent.research-trace.v1", "media_type": "application/json", "cardinality": "one", "content_addressed": true}]},
+        {"node_id": "dense_index", "owner": "index", "operation": "dense-index", "input_artifact_contracts": [{"contract_id": "index.embedding-matrix.v1", "schema_id": "bijux.index.embedding-matrix.v1", "media_type": "application/octet-stream", "cardinality": "one", "content_addressed": true}], "output_artifact_contracts": [{"contract_id": "index.dense.v1", "schema_id": "bijux.index.dense.v1", "media_type": "application/json", "cardinality": "one", "content_addressed": true}]},
+        {"node_id": "embed", "owner": "index", "operation": "embed", "input_artifact_contracts": [{"contract_id": "ingest.corpus-snapshot.v1", "schema_id": "bijux.ingest.corpus-snapshot.v1", "media_type": "application/json", "cardinality": "one", "content_addressed": true}], "output_artifact_contracts": [{"contract_id": "index.embedding-matrix.v1", "schema_id": "bijux.index.embedding-matrix.v1", "media_type": "application/octet-stream", "cardinality": "one", "content_addressed": true}]},
+        {"node_id": "ingest", "owner": "ingest", "operation": "ingest", "input_artifact_contracts": [{"contract_id": "ingest.source-selection.v1", "schema_id": "bijux.ingest.source-selection.v1", "media_type": "application/json", "cardinality": "one", "content_addressed": true}], "output_artifact_contracts": [{"contract_id": "ingest.source-documents.v1", "schema_id": "bijux.ingest.source-documents.v1", "media_type": "application/json", "cardinality": "many", "content_addressed": true}]},
+        {"node_id": "lexical_index", "owner": "index", "operation": "lexical-index", "input_artifact_contracts": [{"contract_id": "ingest.corpus-snapshot.v1", "schema_id": "bijux.ingest.corpus-snapshot.v1", "media_type": "application/json", "cardinality": "one", "content_addressed": true}], "output_artifact_contracts": [{"contract_id": "index.lexical.v1", "schema_id": "bijux.index.lexical.v1", "media_type": "application/json", "cardinality": "one", "content_addressed": true}]},
+        {"node_id": "persist", "owner": "runtime", "operation": "persist", "input_artifact_contracts": [{"contract_id": "reason.verification-receipt.v1", "schema_id": "bijux.reason.verification-receipt.v1", "media_type": "application/json", "cardinality": "one", "content_addressed": true}], "output_artifact_contracts": [{"contract_id": "runtime.run-manifest.v1", "schema_id": "bijux.runtime.run-manifest.v1", "media_type": "application/json", "cardinality": "one", "content_addressed": true}]},
+        {"node_id": "publish", "owner": "runtime", "operation": "publish", "input_artifact_contracts": [{"contract_id": "runtime.run-manifest.v1", "schema_id": "bijux.runtime.run-manifest.v1", "media_type": "application/json", "cardinality": "one", "content_addressed": true}], "output_artifact_contracts": [{"contract_id": "runtime.publication-receipt.v1", "schema_id": "bijux.runtime.publication-receipt.v1", "media_type": "application/json", "cardinality": "one", "content_addressed": true}]},
+        {"node_id": "reason", "owner": "reason", "operation": "reason", "input_artifact_contracts": [{"contract_id": "index.evidence-set.v1", "schema_id": "bijux.index.evidence-set.v1", "media_type": "application/json", "cardinality": "many", "content_addressed": true}], "output_artifact_contracts": [{"contract_id": "reason.claim-graph.v1", "schema_id": "bijux.reason.claim-graph.v1", "media_type": "application/json", "cardinality": "one", "content_addressed": true}]},
+        {"node_id": "retrieve", "owner": "index", "operation": "retrieve", "input_artifact_contracts": [{"contract_id": "index.dense.v1", "schema_id": "bijux.index.dense.v1", "media_type": "application/json", "cardinality": "one", "content_addressed": true}, {"contract_id": "index.lexical.v1", "schema_id": "bijux.index.lexical.v1", "media_type": "application/json", "cardinality": "one", "content_addressed": true}], "output_artifact_contracts": [{"contract_id": "index.evidence-set.v1", "schema_id": "bijux.index.evidence-set.v1", "media_type": "application/json", "cardinality": "many", "content_addressed": true}]},
+        {"node_id": "snapshot", "owner": "ingest", "operation": "snapshot", "input_artifact_contracts": [{"contract_id": "ingest.source-documents.v1", "schema_id": "bijux.ingest.source-documents.v1", "media_type": "application/json", "cardinality": "many", "content_addressed": true}], "output_artifact_contracts": [{"contract_id": "ingest.corpus-snapshot.v1", "schema_id": "bijux.ingest.corpus-snapshot.v1", "media_type": "application/json", "cardinality": "one", "content_addressed": true}]},
+        {"node_id": "verify", "owner": "reason", "operation": "verify", "input_artifact_contracts": [{"contract_id": "agent.research-trace.v1", "schema_id": "bijux.agent.research-trace.v1", "media_type": "application/json", "cardinality": "one", "content_addressed": true}], "output_artifact_contracts": [{"contract_id": "reason.verification-receipt.v1", "schema_id": "bijux.reason.verification-receipt.v1", "media_type": "application/json", "cardinality": "one", "content_addressed": true}]}
       ],
       "edges": [
-        {"from_node_id": "research", "to_node_id": "publish"},
-        {"from_node_id": "retrieve", "to_node_id": "research"}
+        {"from_node_id": "agent", "to_node_id": "verify", "artifact_contract_id": "agent.research-trace.v1"},
+        {"from_node_id": "dense_index", "to_node_id": "retrieve", "artifact_contract_id": "index.dense.v1"},
+        {"from_node_id": "embed", "to_node_id": "dense_index", "artifact_contract_id": "index.embedding-matrix.v1"},
+        {"from_node_id": "ingest", "to_node_id": "snapshot", "artifact_contract_id": "ingest.source-documents.v1"},
+        {"from_node_id": "lexical_index", "to_node_id": "retrieve", "artifact_contract_id": "index.lexical.v1"},
+        {"from_node_id": "persist", "to_node_id": "publish", "artifact_contract_id": "runtime.run-manifest.v1"},
+        {"from_node_id": "reason", "to_node_id": "agent", "artifact_contract_id": "reason.claim-graph.v1"},
+        {"from_node_id": "retrieve", "to_node_id": "reason", "artifact_contract_id": "index.evidence-set.v1"},
+        {"from_node_id": "snapshot", "to_node_id": "embed", "artifact_contract_id": "ingest.corpus-snapshot.v1"},
+        {"from_node_id": "snapshot", "to_node_id": "lexical_index", "artifact_contract_id": "ingest.corpus-snapshot.v1"},
+        {"from_node_id": "verify", "to_node_id": "persist", "artifact_contract_id": "reason.verification-receipt.v1"}
       ]
     },
     {
@@ -39,8 +58,8 @@
       "publication": {"require_exact_replay": true, "required_check_ids": ["artifact_integrity", "citation_grounding", "replay_equivalence"]}
     },
     {
-      "schema_version": "2.0.0", "artifact_type": "bijux.canon.runtime.job", "artifact_id": "sha256:62e0b218fea4c1bff71f4a9cfd5118fa3d5ef1fe30faf5fa100c4e857377e1ba", "run_key": "sha256:c274eed5ca583b19f079abfead64014b6daf6c9d96853f9c02f2ebf5dda85330", "sequence": 2,
-      "dag_artifact_id": "sha256:022ebc5dc64b162dd80283529d2373cfe458a55f19c28a527c7fae493e9d2021", "policy_artifact_id": "sha256:85b5bc38c39dc0555c5dc9ae5fe6fa50895f43b89bde9f31b40e4342f4696003",
+      "schema_version": "2.0.0", "artifact_type": "bijux.canon.runtime.job", "artifact_id": "sha256:c4aab4daf3851403fdb55665d603bbad4837ce55e1a4f7c99cee7153ef6da013", "run_key": "sha256:c274eed5ca583b19f079abfead64014b6daf6c9d96853f9c02f2ebf5dda85330", "sequence": 2,
+      "dag_artifact_id": "sha256:c38be42bfa4d58fab84ef0836327000fd5a5a1ba7695cba2fbfd9a1e18284455", "policy_artifact_id": "sha256:85b5bc38c39dc0555c5dc9ae5fe6fa50895f43b89bde9f31b40e4342f4696003",
       "input_artifact_ids": [
         "sha256:0baea209d67d992101eee0fa7007d798a02285918822ec774c7a9dc8e7e18a91",
         "sha256:251bd65e22ba7c6d780bac18d6073be26b1470dfc1b05f8a470879d9762bc9e6",
@@ -51,47 +70,47 @@
       "mode": "original", "status": "completed", "started_at": "2026-08-21T06:20:00Z", "completed_at": "2026-08-21T06:20:06Z"
     },
     {
-      "schema_version": "2.0.0", "artifact_type": "bijux.canon.runtime.step_attempt", "artifact_id": "sha256:0bb832c5fdcf4d442e3a35743e2ac3795fc2c02125a104c0d2e507e66393436f", "run_key": "sha256:c274eed5ca583b19f079abfead64014b6daf6c9d96853f9c02f2ebf5dda85330", "sequence": 3,
-      "job_artifact_id": "sha256:62e0b218fea4c1bff71f4a9cfd5118fa3d5ef1fe30faf5fa100c4e857377e1ba", "node_id": "research", "attempt_number": 1, "status": "succeeded",
+      "schema_version": "2.0.0", "artifact_type": "bijux.canon.runtime.step_attempt", "artifact_id": "sha256:b584263685bcfefd597a8c6f706bb4124528b9145b4038e21a264bc7626c81ed", "run_key": "sha256:c274eed5ca583b19f079abfead64014b6daf6c9d96853f9c02f2ebf5dda85330", "sequence": 3,
+      "job_artifact_id": "sha256:c4aab4daf3851403fdb55665d603bbad4837ce55e1a4f7c99cee7153ef6da013", "node_id": "reason", "attempt_number": 1, "status": "succeeded",
       "input_artifact_ids": ["sha256:251bd65e22ba7c6d780bac18d6073be26b1470dfc1b05f8a470879d9762bc9e6", "sha256:2eef888d1ee254ad9dbe750f37790e3f1a3cc05dd9455d0c4a4981583176ae86"],
       "output_payload_sha256": "84b612ef50a9399391569be6ca277c1d6c2cc5dab3d27d03df74e8973a325c15", "started_at": "2026-08-21T06:20:02Z", "completed_at": "2026-08-21T06:20:06Z"
     },
     {
-      "schema_version": "2.0.0", "artifact_type": "bijux.canon.runtime.artifact", "artifact_id": "sha256:61cb7f715a1e5f40df398c79bb56a2d944f37e9d3b3f9ad2083ac7ee2674456b", "run_key": "sha256:c274eed5ca583b19f079abfead64014b6daf6c9d96853f9c02f2ebf5dda85330", "sequence": 4,
-      "job_artifact_id": "sha256:62e0b218fea4c1bff71f4a9cfd5118fa3d5ef1fe30faf5fa100c4e857377e1ba", "producer_attempt_artifact_id": "sha256:0bb832c5fdcf4d442e3a35743e2ac3795fc2c02125a104c0d2e507e66393436f", "kind": "result", "media_type": "text/plain; charset=utf-8",
+      "schema_version": "2.0.0", "artifact_type": "bijux.canon.runtime.artifact", "artifact_id": "sha256:5ce78a4a5bc93d3d714faa99ece3819beca617495619f65f9e9feb74b1e0dde2", "run_key": "sha256:c274eed5ca583b19f079abfead64014b6daf6c9d96853f9c02f2ebf5dda85330", "sequence": 4,
+      "job_artifact_id": "sha256:c4aab4daf3851403fdb55665d603bbad4837ce55e1a4f7c99cee7153ef6da013", "producer_attempt_artifact_id": "sha256:b584263685bcfefd597a8c6f706bb4124528b9145b4038e21a264bc7626c81ed", "kind": "result", "media_type": "text/plain; charset=utf-8",
       "payload_sha256": "84b612ef50a9399391569be6ca277c1d6c2cc5dab3d27d03df74e8973a325c15", "size_bytes": 35,
       "storage_uri": "cas://sha256/84b612ef50a9399391569be6ca277c1d6c2cc5dab3d27d03df74e8973a325c15"
     },
     {
-      "schema_version": "2.0.0", "artifact_type": "bijux.canon.runtime.event", "artifact_id": "sha256:e1f07e119f7451715b97ef484b0cac6851e1c2415ab749a15059eab155854de0", "run_key": "sha256:c274eed5ca583b19f079abfead64014b6daf6c9d96853f9c02f2ebf5dda85330", "sequence": 5,
-      "job_artifact_id": "sha256:62e0b218fea4c1bff71f4a9cfd5118fa3d5ef1fe30faf5fa100c4e857377e1ba", "event_index": 0, "event_type": "job_completed", "subject_artifact_id": "sha256:61cb7f715a1e5f40df398c79bb56a2d944f37e9d3b3f9ad2083ac7ee2674456b", "predecessor_event_artifact_ids": [],
+      "schema_version": "2.0.0", "artifact_type": "bijux.canon.runtime.event", "artifact_id": "sha256:632918e57d3a4c0ba3e5108eaaf123a86798518eaf1e282361fc93c37e08002e", "run_key": "sha256:c274eed5ca583b19f079abfead64014b6daf6c9d96853f9c02f2ebf5dda85330", "sequence": 5,
+      "job_artifact_id": "sha256:c4aab4daf3851403fdb55665d603bbad4837ce55e1a4f7c99cee7153ef6da013", "event_index": 0, "event_type": "job_completed", "subject_artifact_id": "sha256:5ce78a4a5bc93d3d714faa99ece3819beca617495619f65f9e9feb74b1e0dde2", "predecessor_event_artifact_ids": [],
       "payload_sha256": "1660a9dc0a53fd88e3f3ea235b21f297f09e7bdd1a0b2eae4787976363f5a432", "recorded_at": "2026-08-21T06:20:06Z"
     },
     {
-      "schema_version": "2.0.0", "artifact_type": "bijux.canon.runtime.inspection", "artifact_id": "sha256:938056334dfdebe1f1321209c3513a08418b53a72a1675798c788b8745e717d2", "run_key": "sha256:c274eed5ca583b19f079abfead64014b6daf6c9d96853f9c02f2ebf5dda85330", "sequence": 6,
-      "job_artifact_id": "sha256:62e0b218fea4c1bff71f4a9cfd5118fa3d5ef1fe30faf5fa100c4e857377e1ba", "artifact_ids": ["sha256:61cb7f715a1e5f40df398c79bb56a2d944f37e9d3b3f9ad2083ac7ee2674456b"], "event_artifact_ids": ["sha256:e1f07e119f7451715b97ef484b0cac6851e1c2415ab749a15059eab155854de0"],
+      "schema_version": "2.0.0", "artifact_type": "bijux.canon.runtime.inspection", "artifact_id": "sha256:ddd0c86c2f4f4bfbb5cec599b5d3e315be1031611c1563584b6f7db888cb0f24", "run_key": "sha256:c274eed5ca583b19f079abfead64014b6daf6c9d96853f9c02f2ebf5dda85330", "sequence": 6,
+      "job_artifact_id": "sha256:c4aab4daf3851403fdb55665d603bbad4837ce55e1a4f7c99cee7153ef6da013", "artifact_ids": ["sha256:5ce78a4a5bc93d3d714faa99ece3819beca617495619f65f9e9feb74b1e0dde2"], "event_artifact_ids": ["sha256:632918e57d3a4c0ba3e5108eaaf123a86798518eaf1e282361fc93c37e08002e"],
       "reachable_count": 2, "missing_count": 0, "corrupt_count": 0, "outcome": "passed", "inspected_at": "2026-08-21T06:20:07Z"
     },
     {
-      "schema_version": "2.0.0", "artifact_type": "bijux.canon.runtime.cancellation", "artifact_id": "sha256:2380532798ce34a0015b45f3236bddcf5184a3e120541407767d7b81227dce60", "run_key": "sha256:c274eed5ca583b19f079abfead64014b6daf6c9d96853f9c02f2ebf5dda85330", "sequence": 7,
-      "job_artifact_id": "sha256:62e0b218fea4c1bff71f4a9cfd5118fa3d5ef1fe30faf5fa100c4e857377e1ba", "policy_artifact_id": "sha256:85b5bc38c39dc0555c5dc9ae5fe6fa50895f43b89bde9f31b40e4342f4696003", "requested_at": "2026-08-21T06:20:07Z",
+      "schema_version": "2.0.0", "artifact_type": "bijux.canon.runtime.cancellation", "artifact_id": "sha256:b8771608649480d084f35f3f461022b824f444e9ef0f5b35d61af2f70baf3790", "run_key": "sha256:c274eed5ca583b19f079abfead64014b6daf6c9d96853f9c02f2ebf5dda85330", "sequence": 7,
+      "job_artifact_id": "sha256:c4aab4daf3851403fdb55665d603bbad4837ce55e1a4f7c99cee7153ef6da013", "policy_artifact_id": "sha256:85b5bc38c39dc0555c5dc9ae5fe6fa50895f43b89bde9f31b40e4342f4696003", "requested_at": "2026-08-21T06:20:07Z",
       "outcome": "refused_terminal", "reason": "The completed job is immutable.", "checkpoint_artifact_id": null
     },
     {
-      "schema_version": "2.0.0", "artifact_type": "bijux.canon.runtime.replay", "artifact_id": "sha256:b57576835c6988e94ac9ed9306be05838f402549c86a7d8e02e06fb83ff4ce92", "run_key": "sha256:c274eed5ca583b19f079abfead64014b6daf6c9d96853f9c02f2ebf5dda85330", "sequence": 8,
-      "job_artifact_id": "sha256:62e0b218fea4c1bff71f4a9cfd5118fa3d5ef1fe30faf5fa100c4e857377e1ba", "policy_artifact_id": "sha256:85b5bc38c39dc0555c5dc9ae5fe6fa50895f43b89bde9f31b40e4342f4696003", "mode": "strict", "environment_sha256": "32476ca3a83a34c73c82b07ad371c72176cd5c9414630c1f690789e8b7823f78",
+      "schema_version": "2.0.0", "artifact_type": "bijux.canon.runtime.replay", "artifact_id": "sha256:72bedd5df8948a55c4d3f94e1434f8243e634b466e042991758316f347408c61", "run_key": "sha256:c274eed5ca583b19f079abfead64014b6daf6c9d96853f9c02f2ebf5dda85330", "sequence": 8,
+      "job_artifact_id": "sha256:c4aab4daf3851403fdb55665d603bbad4837ce55e1a4f7c99cee7153ef6da013", "policy_artifact_id": "sha256:85b5bc38c39dc0555c5dc9ae5fe6fa50895f43b89bde9f31b40e4342f4696003", "mode": "strict", "environment_sha256": "32476ca3a83a34c73c82b07ad371c72176cd5c9414630c1f690789e8b7823f78",
       "expected_output_sha256": "84b612ef50a9399391569be6ca277c1d6c2cc5dab3d27d03df74e8973a325c15", "observed_output_sha256": "84b612ef50a9399391569be6ca277c1d6c2cc5dab3d27d03df74e8973a325c15",
       "exact": true, "replayed_at": "2026-08-21T06:20:08Z"
     },
     {
-      "schema_version": "2.0.0", "artifact_type": "bijux.canon.runtime.comparison", "artifact_id": "sha256:eaf456500695616c145a3b4788dd8b3e981228b215e56bb4d94465b5dcd5c1d4", "run_key": "sha256:c274eed5ca583b19f079abfead64014b6daf6c9d96853f9c02f2ebf5dda85330", "sequence": 9,
-      "job_artifact_id": "sha256:62e0b218fea4c1bff71f4a9cfd5118fa3d5ef1fe30faf5fa100c4e857377e1ba", "replay_artifact_id": "sha256:b57576835c6988e94ac9ed9306be05838f402549c86a7d8e02e06fb83ff4ce92",
+      "schema_version": "2.0.0", "artifact_type": "bijux.canon.runtime.comparison", "artifact_id": "sha256:c53b17009914834f3547e727997cf43200dd9e1f7c55c54275213d820c529441", "run_key": "sha256:c274eed5ca583b19f079abfead64014b6daf6c9d96853f9c02f2ebf5dda85330", "sequence": 9,
+      "job_artifact_id": "sha256:c4aab4daf3851403fdb55665d603bbad4837ce55e1a4f7c99cee7153ef6da013", "replay_artifact_id": "sha256:72bedd5df8948a55c4d3f94e1434f8243e634b466e042991758316f347408c61",
       "dimensions": {"outputs_equal": true, "events_equal": true, "policy_equal": true, "environment_equal": true}, "equivalent": true
     },
     {
-      "schema_version": "2.0.0", "artifact_type": "bijux.canon.runtime.publication_receipt", "artifact_id": "sha256:47c612c6833bd215b240aeff69303fecfef0222af91ade1f281926fcc90da97e", "run_key": "sha256:c274eed5ca583b19f079abfead64014b6daf6c9d96853f9c02f2ebf5dda85330", "sequence": 10,
-      "job_artifact_id": "sha256:62e0b218fea4c1bff71f4a9cfd5118fa3d5ef1fe30faf5fa100c4e857377e1ba", "dag_artifact_id": "sha256:022ebc5dc64b162dd80283529d2373cfe458a55f19c28a527c7fae493e9d2021", "policy_artifact_id": "sha256:85b5bc38c39dc0555c5dc9ae5fe6fa50895f43b89bde9f31b40e4342f4696003", "selected_attempt_artifact_id": "sha256:0bb832c5fdcf4d442e3a35743e2ac3795fc2c02125a104c0d2e507e66393436f",
-      "artifact_manifest_ids": ["sha256:61cb7f715a1e5f40df398c79bb56a2d944f37e9d3b3f9ad2083ac7ee2674456b"], "event_artifact_ids": ["sha256:e1f07e119f7451715b97ef484b0cac6851e1c2415ab749a15059eab155854de0"], "inspection_artifact_id": "sha256:938056334dfdebe1f1321209c3513a08418b53a72a1675798c788b8745e717d2", "cancellation_artifact_id": "sha256:2380532798ce34a0015b45f3236bddcf5184a3e120541407767d7b81227dce60", "replay_artifact_id": "sha256:b57576835c6988e94ac9ed9306be05838f402549c86a7d8e02e06fb83ff4ce92", "comparison_artifact_id": "sha256:eaf456500695616c145a3b4788dd8b3e981228b215e56bb4d94465b5dcd5c1d4",
+      "schema_version": "2.0.0", "artifact_type": "bijux.canon.runtime.publication_receipt", "artifact_id": "sha256:698d6fb346ac22949d1f469371a651c0061b21ac7cfa0a6f1fad87481293799e", "run_key": "sha256:c274eed5ca583b19f079abfead64014b6daf6c9d96853f9c02f2ebf5dda85330", "sequence": 10,
+      "job_artifact_id": "sha256:c4aab4daf3851403fdb55665d603bbad4837ce55e1a4f7c99cee7153ef6da013", "dag_artifact_id": "sha256:c38be42bfa4d58fab84ef0836327000fd5a5a1ba7695cba2fbfd9a1e18284455", "policy_artifact_id": "sha256:85b5bc38c39dc0555c5dc9ae5fe6fa50895f43b89bde9f31b40e4342f4696003", "selected_attempt_artifact_id": "sha256:b584263685bcfefd597a8c6f706bb4124528b9145b4038e21a264bc7626c81ed",
+      "artifact_manifest_ids": ["sha256:5ce78a4a5bc93d3d714faa99ece3819beca617495619f65f9e9feb74b1e0dde2"], "event_artifact_ids": ["sha256:632918e57d3a4c0ba3e5108eaaf123a86798518eaf1e282361fc93c37e08002e"], "inspection_artifact_id": "sha256:ddd0c86c2f4f4bfbb5cec599b5d3e315be1031611c1563584b6f7db888cb0f24", "cancellation_artifact_id": "sha256:b8771608649480d084f35f3f461022b824f444e9ef0f5b35d61af2f70baf3790", "replay_artifact_id": "sha256:72bedd5df8948a55c4d3f94e1434f8243e634b466e042991758316f347408c61", "comparison_artifact_id": "sha256:c53b17009914834f3547e727997cf43200dd9e1f7c55c54275213d820c529441",
       "source_commit": "05f0f1484d28ca1769bffa7b87096caa981401da", "corpus_artifact_id": "sha256:0baea209d67d992101eee0fa7007d798a02285918822ec774c7a9dc8e7e18a91", "index_artifact_id": "sha256:55ef70ded9947f316a7a114b859c2023d8be06cecd947fda4f7d22e55afd8be1", "model_artifact_id": "sha256:c10a4ea4c56dc30cb6c216a8d14bae14e67ae4b2d9cf8cc4c95cf95eb9e68f0b", "configuration_sha256": "8d617b88a48e4dd836385667b5dc1e6709c288528a96eb76cb0b5719d4bafb58",
       "checks": [
         {"check_id": "artifact_integrity", "outcome": "passed", "evidence_sha256": "2a90af62f87be0e20134694aae86dd4a5a211374dd825e7cdde19e7214846f55"},

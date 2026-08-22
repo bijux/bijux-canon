@@ -202,6 +202,43 @@
         ],
         "type": "object"
       },
+      "ArtifactContract": {
+        "additionalProperties": false,
+        "properties": {
+          "cardinality": {
+            "enum": [
+              "one",
+              "optional",
+              "many"
+            ],
+            "type": "string"
+          },
+          "content_addressed": {
+            "const": true,
+            "type": "boolean"
+          },
+          "contract_id": {
+            "pattern": "^[a-z][a-z0-9._-]*\\.v[1-9][0-9]*$",
+            "type": "string"
+          },
+          "media_type": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "schema_id": {
+            "pattern": "^bijux\\.[a-z0-9._-]+\\.v[1-9][0-9]*$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "contract_id",
+          "schema_id",
+          "media_type",
+          "cardinality",
+          "content_addressed"
+        ],
+        "type": "object"
+      },
       "ArtifactRef": {
         "additionalProperties": false,
         "properties": {
@@ -545,13 +582,38 @@
         ],
         "type": "object"
       },
+      "DagDependency": {
+        "additionalProperties": false,
+        "properties": {
+          "artifact_contract_id": {
+            "pattern": "^[a-z][a-z0-9._-]*\\.v[1-9][0-9]*$",
+            "type": "string"
+          },
+          "step_id": {
+            "$ref": "#/components/schemas/StableId"
+          }
+        },
+        "required": [
+          "step_id",
+          "artifact_contract_id"
+        ],
+        "type": "object"
+      },
       "DagStep": {
         "additionalProperties": false,
         "properties": {
           "depends_on": {
             "items": {
-              "$ref": "#/components/schemas/StableId"
+              "$ref": "#/components/schemas/DagDependency"
             },
+            "type": "array",
+            "uniqueItems": true
+          },
+          "input_artifact_contracts": {
+            "items": {
+              "$ref": "#/components/schemas/ArtifactContract"
+            },
+            "minItems": 1,
             "type": "array",
             "uniqueItems": true
           },
@@ -564,16 +626,27 @@
           },
           "kind": {
             "enum": [
-              "corpus.prepare",
-              "index.build",
+              "ingest",
+              "snapshot",
+              "embed",
+              "lexical-index",
+              "dense-index",
               "retrieve",
-              "ask",
-              "research",
+              "reason",
+              "agent",
               "verify",
               "persist",
               "publish"
             ],
             "type": "string"
+          },
+          "output_artifact_contracts": {
+            "items": {
+              "$ref": "#/components/schemas/ArtifactContract"
+            },
+            "minItems": 1,
+            "type": "array",
+            "uniqueItems": true
           },
           "step_id": {
             "$ref": "#/components/schemas/StableId"
@@ -583,7 +656,9 @@
           "step_id",
           "kind",
           "depends_on",
-          "input_artifact_ids"
+          "input_artifact_ids",
+          "input_artifact_contracts",
+          "output_artifact_contracts"
         ],
         "type": "object"
       },

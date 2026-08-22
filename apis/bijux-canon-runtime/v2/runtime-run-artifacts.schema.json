@@ -17,13 +17,20 @@
       "type": "object", "required": ["schema_version", "artifact_type", "artifact_id", "run_key", "sequence"],
       "properties": {"schema_version": {"const": "2.0.0"}, "artifact_type": {"type": "string"}, "artifact_id": {"$ref": "#/$defs/artifact_id"}, "run_key": {"$ref": "#/$defs/artifact_id"}, "sequence": {"type": "integer", "minimum": 0}}
     },
+    "artifact_contract": {
+      "type": "object", "additionalProperties": false,
+      "required": ["contract_id", "schema_id", "media_type", "cardinality", "content_addressed"],
+      "properties": {"contract_id": {"type": "string", "pattern": "^[a-z][a-z0-9._-]*\\.v[1-9][0-9]*$"}, "schema_id": {"type": "string", "pattern": "^bijux\\.[a-z0-9._-]+\\.v[1-9][0-9]*$"}, "media_type": {"type": "string", "minLength": 1}, "cardinality": {"enum": ["one", "optional", "many"]}, "content_addressed": {"const": true}}
+    },
     "dag_node": {
-      "type": "object", "additionalProperties": false, "required": ["node_id", "owner", "operation"],
-      "properties": {"node_id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"}, "owner": {"enum": ["runtime", "index", "reason", "agent"]}, "operation": {"type": "string", "minLength": 1}}
+      "type": "object", "additionalProperties": false,
+      "required": ["node_id", "owner", "operation", "input_artifact_contracts", "output_artifact_contracts"],
+      "properties": {"node_id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"}, "owner": {"enum": ["runtime", "ingest", "index", "reason", "agent"]}, "operation": {"enum": ["ingest", "snapshot", "embed", "lexical-index", "dense-index", "retrieve", "reason", "agent", "verify", "persist", "publish"]}, "input_artifact_contracts": {"type": "array", "items": {"$ref": "#/$defs/artifact_contract"}, "minItems": 1, "uniqueItems": true, "x-bijux-ordering": "contract_id ascending"}, "output_artifact_contracts": {"type": "array", "items": {"$ref": "#/$defs/artifact_contract"}, "minItems": 1, "uniqueItems": true, "x-bijux-ordering": "contract_id ascending"}}
     },
     "dag_edge": {
-      "type": "object", "additionalProperties": false, "required": ["from_node_id", "to_node_id"],
-      "properties": {"from_node_id": {"type": "string"}, "to_node_id": {"type": "string"}}
+      "type": "object", "additionalProperties": false,
+      "required": ["from_node_id", "to_node_id", "artifact_contract_id"],
+      "properties": {"from_node_id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"}, "to_node_id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"}, "artifact_contract_id": {"type": "string", "pattern": "^[a-z][a-z0-9._-]*\\.v[1-9][0-9]*$"}}
     },
     "check_result": {
       "type": "object", "additionalProperties": false, "required": ["check_id", "outcome", "evidence_sha256"],
@@ -31,8 +38,8 @@
     },
     "dag": {
       "allOf": [{"$ref": "#/$defs/base"}, {"type": "object", "additionalProperties": false,
-        "required": ["schema_version", "artifact_type", "artifact_id", "run_key", "sequence", "source_commit", "nodes", "edges"],
-        "properties": {"schema_version": {}, "artifact_type": {"const": "bijux.canon.runtime.dag"}, "artifact_id": {}, "run_key": {}, "sequence": {}, "source_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"}, "nodes": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/dag_node"}, "uniqueItems": true, "x-bijux-ordering": "node_id ascending"}, "edges": {"type": "array", "items": {"$ref": "#/$defs/dag_edge"}, "uniqueItems": true, "x-bijux-ordering": "from_node_id, to_node_id"}}
+        "required": ["schema_version", "artifact_type", "artifact_id", "run_key", "sequence", "source_commit", "entry_node_ids", "terminal_node_ids", "nodes", "edges"],
+        "properties": {"schema_version": {}, "artifact_type": {"const": "bijux.canon.runtime.dag"}, "artifact_id": {}, "run_key": {}, "sequence": {}, "source_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"}, "entry_node_ids": {"type": "array", "minItems": 1, "items": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"}, "uniqueItems": true, "x-bijux-ordering": "node_id ascending"}, "terminal_node_ids": {"type": "array", "minItems": 1, "items": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"}, "uniqueItems": true, "x-bijux-ordering": "node_id ascending"}, "nodes": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/dag_node"}, "uniqueItems": true, "x-bijux-ordering": "node_id ascending"}, "edges": {"type": "array", "items": {"$ref": "#/$defs/dag_edge"}, "uniqueItems": true, "x-bijux-ordering": "from_node_id, to_node_id, artifact_contract_id"}}
       }]
     },
     "policy": {
@@ -102,5 +109,5 @@
     }
   },
   "x-bijux-identity": {"algorithm": "sha-256", "canonicalization": "RFC 8785", "excluded_json_pointers": ["/artifact_id"]},
-  "x-bijux-invariants": ["sequence values are unique and strictly increasing", "DAG edges resolve and are acyclic", "attempt numbers are never overwritten", "references resolve to earlier records or declared external artifacts", "strict replay is exact", "comparison equivalence is the conjunction of all dimensions", "publication requires successful inspection, exact replay, equivalent comparison, and all required checks"]
+  "x-bijux-invariants": ["sequence values are unique and strictly increasing", "DAG edges resolve and are acyclic", "every DAG edge names one producer output contract and matching consumer input contract", "every DAG node executes exactly one typed operation", "attempt numbers are never overwritten", "references resolve to earlier records or declared external artifacts", "strict replay is exact", "comparison equivalence is the conjunction of all dimensions", "publication requires successful inspection, exact replay, equivalent comparison, and all required checks"]
 }
