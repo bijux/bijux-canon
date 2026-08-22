@@ -75,7 +75,7 @@ def _index_inspection(artifact_id: ArtifactID) -> Mapping[str, object]:
         "model_lock_artifact_id": "sha256:" + "e" * 64,
         "schema_version": "bijux.canon.index.inspection.v1",
         "segments": [],
-        "snapshot_artifact_id": str(_CORPUS_ID),
+        "snapshot_artifact_id": "sha256:real-derived-345",
         "text_bytes": 8192,
         "vector_bytes": 529920,
     }

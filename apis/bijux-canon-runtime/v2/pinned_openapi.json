@@ -408,7 +408,8 @@
             "type": "integer"
           },
           "model_lock_artifact_id": {
-            "pattern": "^sha256:[0-9a-f]{64}$",
+            "maxLength": 200,
+            "minLength": 1,
             "title": "Model Lock Artifact Id",
             "type": "string"
           },
@@ -426,7 +427,8 @@
             "type": "array"
           },
           "snapshot_artifact_id": {
-            "pattern": "^sha256:[0-9a-f]{64}$",
+            "maxLength": 200,
+            "minLength": 1,
             "title": "Snapshot Artifact Id",
             "type": "string"
           },

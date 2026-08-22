@@ -224,8 +224,8 @@ class IndexInspectionResponse(StrictModel):
 
     schema_version: Literal["bijux.canon.index.inspection.v1"]
     generation_id: ArtifactIdentity
-    snapshot_artifact_id: ArtifactIdentity
-    model_lock_artifact_id: ArtifactIdentity
+    snapshot_artifact_id: StableIdentity
+    model_lock_artifact_id: StableIdentity
     chunk_set_sha256: Annotated[str, Field(pattern=r"^[0-9a-f]{64}$")]
     chunk_count: Annotated[int, Field(ge=1)]
     dimension: Annotated[int, Field(ge=1)]
