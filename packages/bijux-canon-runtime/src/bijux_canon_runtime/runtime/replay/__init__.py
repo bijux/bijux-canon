@@ -42,7 +42,6 @@ __all__ = [
 
 def __getattr__(name: str) -> Any:
     """Load the execution service without coupling replay policy imports to execution."""
-
     if name == "RuntimeReplayService":
         from bijux_canon_runtime.runtime.replay.service import RuntimeReplayService
 
@@ -53,5 +52,4 @@ def __getattr__(name: str) -> Any:
 
 def __dir__() -> list[str]:
     """Include the lazy execution service in interactive discovery."""
-
     return sorted(set(globals()) | set(__all__))

@@ -83,7 +83,6 @@ class RuntimeExecutionService:
         is_cancelled: Callable[[], bool],
     ) -> Mapping[str, object]:
         """Execute one artifact-resolved request through its complete typed DAG."""
-
         source_selection: AddressedArtifact | None = None
         resolved_corpus_id = request.corpus_id
         if resolved_corpus_id is None and request.source_directory is not None:

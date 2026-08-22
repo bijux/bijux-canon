@@ -132,7 +132,6 @@ __all__ = [
 
 def __getattr__(name: str) -> Any:
     """Load the application composition root only when explicitly requested."""
-
     if name == "compose_runtime_application_services":
         from bijux_canon_runtime.runtime.execution.application_composition import (
             compose_runtime_application_services,
@@ -145,5 +144,4 @@ def __getattr__(name: str) -> Any:
 
 def __dir__() -> list[str]:
     """Include the lazy composition root in interactive discovery."""
-
     return sorted(set(globals()) | set(__all__))

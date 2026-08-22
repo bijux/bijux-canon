@@ -92,7 +92,6 @@ def compose_runtime_application_services(
     max_workers: int = 4,
 ) -> RuntimeApplicationServicesV2:
     """Bind installed owners, durable jobs, CAS, inspection, and replay."""
-
     if not working_root.is_absolute() or not model_root.is_absolute():
         raise ValueError("Runtime application roots must be absolute paths")
     if max_workers < 1:
