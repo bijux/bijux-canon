@@ -6,6 +6,10 @@ from bijux_canon_agent.application.research_tool_gateway import (
     ToolPolicyDenied,
 )
 from bijux_canon_agent.application.research_workflow import (
+    AgentBehaviorDimension,
+    AgentBehaviorEvaluator,
+    AgentBehaviorOutcome,
+    AgentBehaviorReport,
     ResearchCheckpoint,
     ResearchCheckpointPort,
     ResearchExecutionResult,
@@ -34,6 +38,10 @@ from bijux_canon_agent.contracts.research_budget import (
 )
 
 __all__ = [
+    "AgentBehaviorDimension",
+    "AgentBehaviorEvaluator",
+    "AgentBehaviorOutcome",
+    "AgentBehaviorReport",
     "BudgetAction",
     "BudgetDecision",
     "BudgetDimensions",

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import replace
 import hashlib
 import inspect
 import json
@@ -8,6 +9,8 @@ from pydantic import ValidationError
 import pytest
 
 from bijux_canon_agent.application import (
+    AgentBehaviorDimension,
+    AgentBehaviorEvaluator,
     BudgetAction,
     BudgetDimensions,
     CancellationSignal,
@@ -340,6 +343,9 @@ def test_research_role_machine_executes_one_operation_per_legal_edge() -> None:
     assert result.causal_events[2].evidence_artifact_ids == (
         "sha256:" + hashlib.sha256(b"evidence").hexdigest(),
     )
+    behavior = AgentBehaviorEvaluator().evaluate(result)
+    assert behavior.passed
+    assert all(item.passed for item in behavior.outcomes)
 
 
 def test_research_role_machine_is_deterministic_and_terminal() -> None:
@@ -373,6 +379,26 @@ def test_research_role_machine_is_deterministic_and_terminal() -> None:
     assert machine.role is ResearchRole.TERMINAL
     with pytest.raises(RuntimeError, match="cannot advance"):
         machine.advance()
+
+
+def test_agent_behavior_evaluation_retains_policy_failure() -> None:
+    result = ResearchRoleMachine(
+        planning_input=planning_input(),
+        services=InjectedResearchServices(
+            retriever=RecordingRetriever(), reasoner=RecordingReasoner()
+        ),
+        tool_policy=tool_policy(),
+        budget_policy=budget_policy(),
+        checkpoint_port=RecordingCheckpointPort(),
+        cancellation_port=StaticCancellation(),
+    ).run()
+    drifted = replace(result, tool_policy_artifact_id="sha256:" + "0" * 64)
+
+    report = AgentBehaviorEvaluator().evaluate(drifted)
+
+    assert not report.passed
+    failed = tuple(item.dimension for item in report.outcomes if not item.passed)
+    assert failed == (AgentBehaviorDimension.tool_policy,)
 
 
 def test_research_role_machine_resumes_without_duplicate_tool_calls() -> None:
@@ -420,6 +446,7 @@ def test_research_role_machine_resumes_without_duplicate_tool_calls() -> None:
     assert len(checkpoints.persisted) == 8
     assert checkpoints.persisted[-1].cancellation_lineage == ("sha256:" + "c" * 64,)
     assert checkpoints.persisted[-1].failure_lineage == ("sha256:" + "f" * 64,)
+    assert AgentBehaviorEvaluator().evaluate(resumed).passed
 
 
 def test_research_role_machine_rejects_checkpoint_dependency_drift() -> None:
@@ -512,6 +539,7 @@ def test_research_role_machine_cancels_before_external_effects() -> None:
     assert retriever.requests == []
     assert reasoner.requests == []
     assert all(item.payload["status"] == "cancelled" for item in result.operations)
+    assert AgentBehaviorEvaluator().evaluate(result).passed
 
 
 def test_research_role_machine_preserves_evidence_on_cooperative_cancellation() -> None:
@@ -539,6 +567,7 @@ def test_research_role_machine_preserves_evidence_on_cooperative_cancellation() 
     assert result.retrieval is not None
     assert len(retriever.requests) == 1
     assert reasoner.requests == []
+    assert AgentBehaviorEvaluator().evaluate(result).passed
 
 
 @pytest.mark.parametrize(
@@ -607,6 +636,7 @@ def test_research_role_machine_classifies_failure_and_preserves_evidence(
     ).run()
     assert resumed == result
     assert resumed_reasoner.requests == []
+    assert AgentBehaviorEvaluator().evaluate(result).passed
 
 
 def test_research_role_machine_rejects_skips_and_wrong_operations() -> None:
