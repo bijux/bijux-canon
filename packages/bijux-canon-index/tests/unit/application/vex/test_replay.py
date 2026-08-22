@@ -3,8 +3,10 @@
 
 from __future__ import annotations
 
+from collections.abc import MutableMapping
 from dataclasses import replace
 from pathlib import Path
+from typing import cast
 
 import pytest
 
@@ -88,7 +90,9 @@ def test_replay_persists_both_attempts_and_ignores_runtime_metric_noise(
     def execute(replay_input: VexReplayInput) -> VexExecutionArtifact:
         assert replay_input.normalized_vector_sha256 == "a" * 64
         with pytest.raises(TypeError):
-            replay_input.request["generation_id"] = "changed"  # type: ignore[index]
+            cast(MutableMapping[str, object], replay_input.request)["generation_id"] = (
+                "changed"
+            )
         return _execution(latency_ms=2.0)
 
     comparison = replay_vex_execution(store, original.artifact_id, execute)
@@ -143,9 +147,13 @@ def test_comparison_refuses_each_immutable_identity_drift(
 ) -> None:
     base = _execution()
     request = dict(base.request)
-    request.update(changed.get("request", {}))  # type: ignore[arg-type]
+    changed_request = changed.get("request", {})
+    assert isinstance(changed_request, dict)
+    request.update(changed_request)
     plan = dict(base.plan)
-    plan.update(changed.get("plan", {}))  # type: ignore[arg-type]
+    changed_plan = changed.get("plan", {})
+    assert isinstance(changed_plan, dict)
+    plan.update(changed_plan)
     replay = _execution(
         request=request,
         plan=plan,

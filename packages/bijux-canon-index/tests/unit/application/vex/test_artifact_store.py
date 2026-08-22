@@ -68,7 +68,9 @@ def test_store_persists_complete_content_addressed_artifact_and_restarts(
     assert stored.record["metrics"] == artifact.metrics
     assert stored.record["decision"]
     assert stored.record["logs"] == list(artifact.logs)
-    assert set(stored.record["component_hashes"]) == {
+    component_hashes = stored.record["component_hashes"]
+    assert isinstance(component_hashes, dict)
+    assert set(component_hashes) == {
         "candidates",
         "decision",
         "logs",

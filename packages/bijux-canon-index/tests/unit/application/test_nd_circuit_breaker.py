@@ -95,7 +95,7 @@ def test_nd_circuit_breaker_refuses_after_failures() -> None:
         ),
         nd_build_on_demand=True,
         randomness_profile=RandomnessProfilePayload(
-            seed=1, sources=("seed",), bounded=True, non_replayable=False
+            seed=1, sources=["seed"], bounded=True, non_replayable=False
         ),
     )
 

@@ -5,6 +5,8 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
+
 import pytest
 
 from bijux_canon_index.infra.adapters.vectorstore_registry import (
@@ -13,6 +15,8 @@ from bijux_canon_index.infra.adapters.vectorstore_registry import (
     VectorStoreRegistry,
 )
 from bijux_canon_index.infra.embeddings.registry import (
+    EmbeddingBatch,
+    EmbeddingProvider,
     EmbeddingProviderRegistry,
 )
 from bijux_canon_index.infra.plugins.contract import PluginContract
@@ -20,6 +24,18 @@ from bijux_canon_index.infra.plugins.contract import PluginContract
 CONTRACT = PluginContract(
     determinism="deterministic_exact", randomness_sources=(), approximation=False
 )
+
+
+class _EmbeddingProvider(EmbeddingProvider):
+    name = "example"
+
+    def embed(
+        self,
+        texts: list[str],
+        model: str,
+        options: Mapping[str, str] | None = None,
+    ) -> EmbeddingBatch:
+        raise AssertionError("conflict tests must not resolve the provider")
 
 
 def test_vector_store_name_conflicts_are_rejected() -> None:
@@ -34,12 +50,15 @@ def test_vector_store_name_conflicts_are_rejected() -> None:
         deterministic_exact=True,
         experimental=True,
     )
-    register = lambda: registry.register(  # noqa: E731
-        "example",
-        descriptor=descriptor,
-        factory=lambda _uri, _options: EphemeralVectorStoreAdapter(),
-        contract=CONTRACT,
-    )
+
+    def register() -> None:
+        registry.register(
+            "example",
+            descriptor=descriptor,
+            factory=lambda _uri, _options: EphemeralVectorStoreAdapter(),
+            contract=CONTRACT,
+        )
+
     register()
 
     with pytest.raises(ValueError, match="conflicts"):
@@ -48,9 +67,12 @@ def test_vector_store_name_conflicts_are_rejected() -> None:
 
 def test_embedding_provider_name_conflicts_are_rejected() -> None:
     registry = EmbeddingProviderRegistry()
-    register = lambda: registry.register(  # noqa: E731
-        "example", factory=lambda: object(), contract=CONTRACT
-    )
+
+    def register() -> None:
+        registry.register(
+            "example", factory=lambda: _EmbeddingProvider(), contract=CONTRACT
+        )
+
     register()
 
     with pytest.raises(ValueError, match="conflicts"):

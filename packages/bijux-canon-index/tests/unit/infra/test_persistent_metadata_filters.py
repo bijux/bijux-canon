@@ -15,6 +15,7 @@ pytest.importorskip("faiss")
 from bijux_canon_index.domain.metadata_filters import (
     MetadataFilter,
     MetadataOperator,
+    MetadataValue,
     UserMetadataPredicate,
 )
 from bijux_canon_index.infra.adapters.faiss.exact import (
@@ -31,7 +32,7 @@ from bijux_canon_index.infra.adapters.sqlite.lexical import (
 )
 
 
-def _metadata(source_id: str, *, target: bool) -> dict[str, object]:
+def _metadata(source_id: str, *, target: bool) -> dict[str, MetadataValue]:
     return {
         "source_id": source_id,
         "doi": f"10.1371/{source_id}",

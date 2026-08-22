@@ -9,6 +9,7 @@ import json
 from pathlib import Path
 
 from fastapi.testclient import TestClient
+import pytest
 from typer.testing import CliRunner
 
 from bijux_canon_index.api.v1.app import build_app
@@ -60,7 +61,7 @@ def _build_payload(snapshot: str, *, activate: bool) -> dict[str, object]:
 
 def test_library_cli_runtime_and_http_share_generation_service(
     tmp_path: Path,
-    monkeypatch,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     registry_root = tmp_path / "registry"
     monkeypatch.setenv("BIJUX_CANON_INDEX_GENERATION_ROOT", str(registry_root))
@@ -159,7 +160,7 @@ def test_library_cli_runtime_and_http_share_generation_service(
 
 def test_generation_http_schema_and_refusal_are_explicit(
     tmp_path: Path,
-    monkeypatch,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setenv("BIJUX_CANON_INDEX_GENERATION_ROOT", str(tmp_path / "registry"))
     client = TestClient(build_app())

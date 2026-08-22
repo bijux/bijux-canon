@@ -244,11 +244,11 @@ def _matches_user_predicate(
         return (
             isinstance(actual, str) and isinstance(expected, str) and expected in actual
         )
-    if predicate.operator is MetadataOperator.greater_or_equal:
-        return _ordered_compare(actual, expected, greater=True)
-    if predicate.operator is MetadataOperator.less_or_equal:
-        return _ordered_compare(actual, expected, greater=False)
-    return None
+    return _ordered_compare(
+        actual,
+        expected,
+        greater=predicate.operator is MetadataOperator.greater_or_equal,
+    )
 
 
 def matches_metadata_filter(
