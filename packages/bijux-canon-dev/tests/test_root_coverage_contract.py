@@ -46,4 +46,23 @@ def test_root_coverage_configuration_matches_shared_python_baseline() -> None:
     assert report_section["show_missing"] == "True"
     assert report_section["skip_covered"] == "False"
     assert report_section["precision"] == "1"
+    assert report_section.getint("fail_under") == 40
     assert html_section["directory"] == "artifacts/test/htmlcov"
+
+
+def test_primary_package_coverage_profiles_use_real_tests_and_measured_floors() -> None:
+    expected_floors = {
+        "bijux-canon-agent": 60,
+        "bijux-canon-dev": 40,
+        "bijux-canon-index": 70,
+        "bijux-canon-ingest": 70,
+        "bijux-canon-reason": 85,
+        "bijux-canon-runtime": 70,
+    }
+
+    for package, floor in expected_floors.items():
+        profile = (REPO_ROOT / "makes" / "packages" / f"{package}.mk").read_text(
+            encoding="utf-8"
+        )
+        assert "TEST_COVERAGE_TARGETS := $(abspath tests" in profile
+        assert f"TEST_COVERAGE_FAIL_UNDER := {floor}" in profile

@@ -10,7 +10,8 @@ SCHEMATHESIS = $(PROJECT_DIR)/tooling/schemathesis_exit_guard.py
 SCHEMATHESIS_OPTS = --checks=all --max-failures=1 --report junit --report-junit-path $(SCHEMATHESIS_JUNIT_ABS) --request-timeout=5 --max-response-time=3 --max-examples=50 --seed=1 --generation-deterministic --exclude-checks=positive_data_acceptance,response_schema_conformance --suppress-health-check=filter_too_much --warnings off
 BUILD_CLEAN_PYCACHE := 1
 PUBLISH_VERIFY_INSTALL_CMD := bijux --version
-TEST_COVERAGE_TARGETS := $(abspath src/bijux_canon_reason/core) $(abspath src/bijux_canon_reason/interfaces)
+TEST_COVERAGE_TARGETS := $(abspath tests/unit)
+TEST_COVERAGE_FAIL_UNDER := 85
 TEST_MAIN_ARGS := -m "not slow" --maxfail=1
 
 test-all: TEST_MAIN_ARGS =

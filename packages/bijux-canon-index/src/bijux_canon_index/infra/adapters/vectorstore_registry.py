@@ -470,7 +470,7 @@ VECTOR_STORES.register(
 def _faiss_available() -> tuple[bool, str | None, str | None]:
     """Handle FAISS available."""
     try:
-        import faiss  # type: ignore[import-untyped]
+        import faiss  # type: ignore[import-not-found, import-untyped, unused-ignore]
 
         return True, getattr(faiss, "__version__", None), None
     except Exception:
@@ -489,7 +489,7 @@ def _faiss_factory(
 def _qdrant_available() -> tuple[bool, str | None, str | None]:
     """Exclude Qdrant until a live service is explicitly admitted."""
     try:
-        import qdrant_client
+        import qdrant_client  # type: ignore[import-not-found, unused-ignore]
 
         return (
             False,

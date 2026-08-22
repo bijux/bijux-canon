@@ -32,6 +32,8 @@ TEST_MAIN_ARGS       := -m "not integration and not e2e and not slow"
 TEST_UNIT_DIR_ARGS   := -m "not integration and not e2e and not slow" --maxfail=1 -q
 TEST_UNIT_FALLBACK_ARGS := -k "not e2e and not integration and not functional" -m "not integration and not e2e and not slow" --maxfail=1 -q
 TEST_SYNTAX_PATHS    := src tests
+TEST_COVERAGE_TARGETS := $(abspath tests/unit)
+TEST_COVERAGE_FAIL_UNDER := 60
 TEST_PYCACHE_PREFIX  = $(TEST_ARTIFACTS_DIR)/pycache
 TEST_RESET_PYCACHE   := 1
 TEST_PRE_TARGETS     := bootstrap

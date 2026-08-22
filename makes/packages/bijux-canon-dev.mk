@@ -9,6 +9,8 @@ BUILD_CHECK_DISTS := 1
 PACKAGE_ALL_TARGETS := clean install test lint quality security build sbom
 QUALITY_MYPY_CONFIG = $(MONOREPO_ROOT)/configs/mypy.ini
 TEST_MAIN_ARGS := -m "not slow"
+TEST_COVERAGE_TARGETS := $(abspath tests)
+TEST_COVERAGE_FAIL_UNDER := 40
 
 test-all: TEST_MAIN_ARGS =
 test-all: PYTEST_ADDOPTS_EXTRA = -o timeout=0

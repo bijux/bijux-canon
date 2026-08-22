@@ -16,8 +16,12 @@ from bijux_canon_index.infra.adapters.vectorstore import VectorStoreAdapter
 QdrantClient: Any
 qmodels: Any
 try:  # pragma: no cover - optional dependency
-    from qdrant_client import QdrantClient as _QdrantClient
-    from qdrant_client.http import models as _qmodels
+    from qdrant_client import (  # type: ignore[import-not-found, unused-ignore]
+        QdrantClient as _QdrantClient,
+    )
+    from qdrant_client.http import (  # type: ignore[import-not-found, unused-ignore]
+        models as _qmodels,
+    )
 except Exception:  # pragma: no cover - optional dependency
     QdrantClient = None
     qmodels = None

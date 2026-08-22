@@ -5,29 +5,29 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable, Mapping, Sequence
+from dataclasses import dataclass
 import hashlib
 import json
 import math
 import os
-from collections.abc import Iterable, Mapping, Sequence
-from dataclasses import dataclass
 from pathlib import Path
 import sqlite3
 import tempfile
 from typing import Any
 
-from bijux_canon_index.infra.runtime_paths import ensure_parent_dir
 from bijux_canon_index.domain.metadata_filters import (
     MetadataFilter,
     MetadataValue,
     matches_metadata_filter,
     validated_metadata,
 )
+from bijux_canon_index.infra.runtime_paths import ensure_parent_dir
 
 faiss: Any
 np: Any
 try:  # pragma: no cover - availability is exercised by installed-profile checks
-    import faiss as _faiss  # type: ignore[import-untyped]
+    import faiss as _faiss  # type: ignore[import-not-found, import-untyped, unused-ignore]
     import numpy as _np
 except Exception:  # pragma: no cover - optional dependency
     faiss = None

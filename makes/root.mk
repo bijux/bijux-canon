@@ -15,11 +15,17 @@ ROOT_DOCS_DEV_ADDR ?= 127.0.0.1:8001
 UV_SYNC := UV_PROJECT_ENVIRONMENT="$(ROOT_CHECK_VENV)" $(UV) sync --frozen --group dev --python "$(PYTHON)"
 BIJUX_PY_SYSTEM_REL ?= .bijux/shared/bijux-makes-py
 BIJUX_GH_PY_SHARED_DIR ?= .bijux/shared/bijux-gh
-ROOT_PACKAGE_TARGETS += test-all test-all-plus-run-time
+ROOT_PACKAGE_TARGETS += test-all test-all-plus-run-time coverage-core
 ROOT_TARGET_GROUPS_test-all ?= check
 ROOT_TARGET_GROUPS_test-all-plus-run-time ?= check
+ROOT_TARGET_GROUPS_coverage-core ?= primary
 ROOT_TARGET_SHARED_ENV_test-all ?= 1
 ROOT_TARGET_SHARED_ENV_test-all-plus-run-time ?= 1
+ROOT_TARGET_SHARED_ENV_coverage-core ?= 1
+ROOT_VULTURE_ARTIFACTS_DIR := $(PROJECT_ARTIFACTS_DIR)/root/quality
+ROOT_VULTURE_LOG := $(ROOT_VULTURE_ARTIFACTS_DIR)/vulture.log
+ROOT_VULTURE_PATHS := $(wildcard packages/*/src)
+ROOT_VULTURE_WHITELIST := configs/vulture_whitelist.py
 # Guard against stale local stamp state so root docs and helper lanes can
 # recreate the shared check environment when the interpreter path was removed.
 ROOT_CHECK_ENV_COMMAND = @test -x "$(ROOT_CHECK_PYTHON)" || { \
@@ -29,6 +35,22 @@ ROOT_CHECK_ENV_COMMAND = @test -x "$(ROOT_CHECK_PYTHON)" || { \
 }
 
 include $(ROOT_MAKEFILE_DIR)/bijux-py/repository/root.mk
+
+.PHONY: quality-dead-code
+
+quality: quality-dead-code
+
+quality-dead-code: root-check-env
+	@echo "→ Running fatal repository dead-code analysis"
+	@mkdir -p "$(ROOT_VULTURE_ARTIFACTS_DIR)"
+	@set -eu; \
+	  if ! "$(ROOT_CHECK_PYTHON)" -m vulture $(ROOT_VULTURE_PATHS) \
+	    "$(ROOT_VULTURE_WHITELIST)" --min-confidence 100 \
+	    >"$(ROOT_VULTURE_LOG)" 2>&1; then \
+	    cat "$(ROOT_VULTURE_LOG)"; \
+	    exit 1; \
+	  fi
+	@echo "✔ Fatal dead-code analysis passed"
 
 include $(ROOT_MAKEFILE_DIR)/bijux-py/root/package-dispatch.mk
 # Root verification must inspect the submitted tree. Package profiles may keep
@@ -56,6 +78,7 @@ help: ## Show generated repository commands from included make modules
 check: lock-check lint test quality security docs api build sbom ## Run the full repository verification flow
 test-all: ## Run every repository test surface, including slow, evaluation, and real-local tests
 test-all-plus-run-time: ## Run every repository test surface and report per-test durations
+coverage-core: ## Enforce measured canonical-package coverage floors
 list: ## List primary package slugs
 list-all: ## List every canonical package slug
 install: ## Sync the shared root uv environment from pyproject.toml and uv.lock

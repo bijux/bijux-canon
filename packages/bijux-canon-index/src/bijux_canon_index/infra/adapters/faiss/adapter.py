@@ -26,7 +26,7 @@ from bijux_canon_index.infra.adapters.vectorstore import VectorStoreAdapter
 
 faiss: Any
 try:  # pragma: no cover - optional dependency
-    import faiss as _faiss  # type: ignore[import-untyped]
+    import faiss as _faiss  # type: ignore[import-not-found, import-untyped, unused-ignore]
 except Exception:  # pragma: no cover - optional dependency
     faiss = None
 else:

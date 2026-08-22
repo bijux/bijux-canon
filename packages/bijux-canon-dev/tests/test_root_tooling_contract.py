@@ -64,6 +64,16 @@ def test_security_tooling_has_no_ungoverned_suppressions() -> None:
     assert '--output "$(SBOM_DEV_FILE)" || true' not in sbom_make
 
 
+def test_root_dead_code_gate_is_fatal_and_uses_an_owned_whitelist() -> None:
+    root_make = (REPO_ROOT / "makes" / "root.mk").read_text(encoding="utf-8")
+
+    assert "quality: quality-dead-code" in root_make
+    assert '"$(ROOT_CHECK_PYTHON)" -m vulture' in root_make
+    assert '"$(ROOT_VULTURE_WHITELIST)" --min-confidence 100' in root_make
+    assert "|| true" not in root_make.split("quality-dead-code:", 1)[1]
+    assert (REPO_ROOT / "configs" / "vulture_whitelist.py").is_file()
+
+
 def test_root_pyproject_uses_only_the_shared_dev_group() -> None:
     dependency_groups = _as_dict(_root_pyproject()["dependency-groups"])
     assert set(dependency_groups) == {"dev"}
