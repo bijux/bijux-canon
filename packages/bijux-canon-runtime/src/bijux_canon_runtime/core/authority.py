@@ -42,6 +42,11 @@ class _Event(Protocol):
     """Internal helper type; not part of the public API."""
 
     @property
+    def step_index(self) -> int:
+        """Step associated with the event."""
+        ...
+
+    @property
     def event_type(self) -> EventType:
         """Event type for semantic checks."""
         ...
@@ -271,19 +276,45 @@ def _claim_artifact_hash_violations(
 
 def _has_complete_verification_coverage(result: _RunResult) -> bool:
     """Internal helper; not part of the public API."""
+    trace = result.trace
+    if trace is None or not _has_exact_step_verification(trace.events):
+        return False
     reasoning_bundle_ids = {
         str(bundle.bundle_id)
         for bundle in result.reasoning_bundles
         if hasattr(bundle, "bundle_id")
     }
     if not reasoning_bundle_ids:
-        return False
+        return True
     arbitration_bundle_ids = {
         str(item)
         for arbitration in result.verification_arbitrations
         for item in arbitration.target_artifact_ids
     }
     return arbitration_bundle_ids.issuperset(reasoning_bundle_ids)
+
+
+def _has_exact_step_verification(events: Sequence[_Event]) -> bool:
+    """Require one successful verification sequence per completed step."""
+    completed_steps = [
+        event.step_index for event in events if event.event_type == EventType.STEP_END
+    ]
+    if not completed_steps or len(completed_steps) != len(set(completed_steps)):
+        return False
+    for step_index in completed_steps:
+        step_events = [
+            event.event_type for event in events if event.step_index == step_index
+        ]
+        if step_events.count(EventType.VERIFICATION_START) != 1:
+            return False
+        if step_events.count(EventType.VERIFICATION_PASS) != 1:
+            return False
+        if any(
+            event_type in {EventType.VERIFICATION_FAIL, EventType.VERIFICATION_ESCALATE}
+            for event_type in step_events
+        ):
+            return False
+    return True
 
 
 def _has_verification_terminating_failure(events: Iterable[_Event]) -> bool:

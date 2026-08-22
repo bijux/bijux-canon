@@ -1435,6 +1435,10 @@ class DuckDBExecutionWriteStore(ExecutionWriteStoreProtocol):
         )
         self._connection = self._store._connection
 
+    def close(self) -> None:
+        """Release the database connection and its writer lease."""
+        self._store.close()
+
     def begin_run(self, *, plan: ExecutionSteps, mode: RunMode) -> RunID:
         """Execute begin_run and enforce its contract."""
         return self._store.begin_run(plan=plan, mode=mode)
@@ -1558,6 +1562,10 @@ class DuckDBExecutionReadStore(ExecutionReadStoreProtocol):
             lock_timeout_seconds=lock_timeout_seconds,
         )
         self._connection = self._store._connection
+
+    def close(self) -> None:
+        """Release the database connection and its reader lease."""
+        self._store.close()
 
     def load_trace(self, run_id: RunID, *, tenant_id: TenantID) -> ExecutionTrace:
         """Execute load_trace and enforce its contract."""
