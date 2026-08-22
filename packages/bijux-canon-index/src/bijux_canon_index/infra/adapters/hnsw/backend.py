@@ -68,16 +68,15 @@ def hnsw_backend(
         capabilities=caps,
     )
     diagnostics = dict(base.diagnostics or {})
-    diagnostics["index_dir"] = lambda: str(
-        Path(
-            index_dir
-            or read_env(
-                "BIJUX_CANON_INDEX_HNSW_PATH",
-                legacy="BIJUX_VEX_HNSW_PATH",
-                default="artifacts/bijux-canon-index/hnsw_index",
-            )
-        ).resolve()
+    configured_index_dir = index_dir or read_env(
+        "BIJUX_CANON_INDEX_HNSW_PATH",
+        legacy="BIJUX_VEX_HNSW_PATH",
+        default="artifacts/bijux-canon-index/hnsw_index",
     )
+    resolved_index_dir = Path(
+        configured_index_dir or "artifacts/bijux-canon-index/hnsw_index"
+    ).resolve()
+    diagnostics["index_dir"] = lambda: str(resolved_index_dir)
     return HnswFixture(
         tx_factory=base.tx_factory,
         stores=stores,

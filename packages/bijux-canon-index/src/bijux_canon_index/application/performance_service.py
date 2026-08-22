@@ -9,6 +9,7 @@ import json
 from pathlib import Path
 from statistics import mean
 import time
+from typing import TypedDict
 
 from bijux_canon_index.application.engine import VectorExecutionEngine
 from bijux_canon_index.core.config import ExecutionConfig
@@ -31,6 +32,29 @@ from bijux_canon_index.tooling.benchmarks.dataset import (
     save_dataset,
 )
 from bijux_canon_index.tooling.benchmarks.runner import format_table, run_benchmark
+
+
+class _AnnParameters(TypedDict):
+    m: int
+    ef_construction: int
+    ef_search: int
+
+
+class _LatencyMetrics(TypedDict):
+    mean: float
+    p95: float
+
+
+class _QualityMetrics(TypedDict):
+    overlap_at_k: float
+    rank_instability: float
+
+
+class _AnnTuningResult(TypedDict):
+    params: _AnnParameters
+    latency_ms: _LatencyMetrics
+    quality: _QualityMetrics
+    samples: int
 
 
 def tune_ann(
@@ -122,7 +146,7 @@ def tune_ann(
         return scored[:top_k]
 
     exact_cache = {query: exact(query) for query in queries}
-    results: list[dict[str, object]] = []
+    results: list[_AnnTuningResult] = []
     for m_value in (8, 16, 32):
         for ef_construction in (100, 200):
             for ef_search in (50, 100, 200):
@@ -192,7 +216,7 @@ def tune_ann(
                     }
                 )
 
-    def dominates(left: dict[str, object], right: dict[str, object]) -> bool:
+    def dominates(left: _AnnTuningResult, right: _AnnTuningResult) -> bool:
         left_latency = left["latency_ms"]["mean"]
         right_latency = right["latency_ms"]["mean"]
         left_quality = left["quality"]["overlap_at_k"]
@@ -216,7 +240,7 @@ def tune_ann(
         ),
     )
     params = recommended["params"]
-    payload = {
+    payload: dict[str, object] = {
         "grid": results,
         "pareto_frontier": pareto,
         "recommended": recommended,

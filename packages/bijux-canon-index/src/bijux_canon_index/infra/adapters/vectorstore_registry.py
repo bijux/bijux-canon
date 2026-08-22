@@ -8,7 +8,7 @@ from collections.abc import Callable, Iterable, Mapping, Sequence
 from dataclasses import dataclass
 import math
 import threading
-from typing import Any
+from typing import Any, NoReturn
 from urllib.parse import urlsplit, urlunsplit
 
 from bijux_canon_index.core.errors import (
@@ -148,7 +148,7 @@ class ExcludedVectorStoreAdapter(VectorStoreAdapter):
     def connect(self) -> None:
         """Validate the explicit exclusion without claiming connectivity."""
 
-    def _raise(self) -> None:
+    def _raise(self) -> NoReturn:
         raise BackendCapabilityError(
             message=(
                 f"vector store '{self.backend}' is excluded: {self._reason}; "
@@ -470,7 +470,7 @@ VECTOR_STORES.register(
 def _faiss_available() -> tuple[bool, str | None, str | None]:
     """Handle FAISS available."""
     try:
-        import faiss
+        import faiss  # type: ignore[import-untyped]
 
         return True, getattr(faiss, "__version__", None), None
     except Exception:

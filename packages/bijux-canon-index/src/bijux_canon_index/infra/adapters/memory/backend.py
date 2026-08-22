@@ -232,8 +232,6 @@ class MemoryTx(Tx):
         if self._result_writes or self._result_deletes:
             actions.append("execution_results")
         return actions
-        self._state.in_tx = False
-        return None
 
     def abort(self) -> None:
         """Handle abort."""

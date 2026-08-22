@@ -162,7 +162,7 @@ class IndexQueryRequestPayload(StrictModel):
     query_vector: tuple[float, ...] | None = None
     metadata_filter: MetadataFilterPayload | None = None
 
-    @model_validator(mode="after")  # type: ignore[untyped-decorator]
+    @model_validator(mode="after")
     def validate_domain_contract(self) -> Self:
         self.to_domain()
         return self

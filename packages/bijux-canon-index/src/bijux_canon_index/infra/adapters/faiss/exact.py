@@ -16,13 +16,6 @@ import sqlite3
 import tempfile
 from typing import Any
 
-try:  # pragma: no cover - availability is exercised by installed-profile checks
-    import faiss
-    import numpy as np
-except Exception:  # pragma: no cover - optional dependency
-    faiss = None
-    np = None
-
 from bijux_canon_index.infra.runtime_paths import ensure_parent_dir
 from bijux_canon_index.domain.metadata_filters import (
     MetadataFilter,
@@ -30,6 +23,18 @@ from bijux_canon_index.domain.metadata_filters import (
     matches_metadata_filter,
     validated_metadata,
 )
+
+faiss: Any
+np: Any
+try:  # pragma: no cover - availability is exercised by installed-profile checks
+    import faiss as _faiss  # type: ignore[import-untyped]
+    import numpy as _np
+except Exception:  # pragma: no cover - optional dependency
+    faiss = None
+    np = None
+else:
+    faiss = _faiss
+    np = _np
 
 _validated_metadata = validated_metadata
 

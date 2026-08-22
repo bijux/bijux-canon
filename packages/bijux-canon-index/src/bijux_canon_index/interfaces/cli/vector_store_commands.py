@@ -90,7 +90,9 @@ def vdb_rebuild(
                 artifact.artifact_id, vectors, artifact.metric, None
             )
             index_hash = index_info.get("index_hash") if index_info else None
-            extra = (("ann_index_info", json.dumps(index_info, sort_keys=True)),)
+            extra: tuple[tuple[str, str], ...] = (
+                ("ann_index_info", json.dumps(index_info, sort_keys=True)),
+            )
             if index_hash:
                 extra = extra + (("ann_index_hash", str(index_hash)),)
             updated = replace(

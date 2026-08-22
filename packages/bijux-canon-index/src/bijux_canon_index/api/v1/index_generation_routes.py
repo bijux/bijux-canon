@@ -38,7 +38,7 @@ def register_index_generation_routes(app: FastAPI) -> None:
         tags=["Materialization"],
         operation_id="buildIndexGeneration",
         response_model=IndexInspectionResponse,
-    )  # type: ignore[untyped-decorator]
+    )
     def build_generation(request: IndexBuildRequestPayload) -> IndexInspectionResponse:
         try:
             report = generation_service().build(
@@ -58,7 +58,7 @@ def register_index_generation_routes(app: FastAPI) -> None:
         tags=["Materialization"],
         operation_id="activateIndexGeneration",
         response_model=IndexInspectionResponse,
-    )  # type: ignore[untyped-decorator]
+    )
     def activate_generation(
         request: IndexActivationRequestPayload,
     ) -> IndexInspectionResponse:
@@ -74,7 +74,7 @@ def register_index_generation_routes(app: FastAPI) -> None:
         tags=["Discovery"],
         operation_id="inspectIndexGeneration",
         response_model=IndexInspectionResponse,
-    )  # type: ignore[untyped-decorator]
+    )
     def inspect_generation(request: IndexSelectionPayload) -> IndexInspectionResponse:
         try:
             return IndexInspectionResponse.from_report(
@@ -88,7 +88,7 @@ def register_index_generation_routes(app: FastAPI) -> None:
         tags=["Discovery"],
         operation_id="verifyIndexGeneration",
         response_model=IndexInspectionResponse,
-    )  # type: ignore[untyped-decorator]
+    )
     def verify_generation(request: IndexSelectionPayload) -> IndexInspectionResponse:
         try:
             return IndexInspectionResponse.from_report(
@@ -102,7 +102,7 @@ def register_index_generation_routes(app: FastAPI) -> None:
         tags=["Execution"],
         operation_id="queryIndexGeneration",
         response_model=IndexQueryResponse,
-    )  # type: ignore[untyped-decorator]
+    )
     def query_generation(request: IndexQueryRequestPayload) -> IndexQueryResponse:
         try:
             report = generation_service().query(

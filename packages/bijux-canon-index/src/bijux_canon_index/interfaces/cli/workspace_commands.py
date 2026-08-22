@@ -76,7 +76,16 @@ def audit(
     )
     engine = VectorExecutionEngine(config=config)
     caps = engine.capabilities()
-    nd_caps = caps.get("ann", {})
+    raw_nd_caps = caps.get("ann")
+    nd_caps = raw_nd_caps if isinstance(raw_nd_caps, dict) else {}
+    raw_vector_store_caps = caps.get("vector_store")
+    vector_store_caps = (
+        raw_vector_store_caps if isinstance(raw_vector_store_caps, dict) else {}
+    )
+    raw_execution_caps = caps.get("execution")
+    execution_caps = (
+        raw_execution_caps if isinstance(raw_execution_caps, dict) else {}
+    )
     payload = {
         "determinism_guarantees": {
             "exact": "bit-identical when deterministic contract is used",
@@ -89,8 +98,8 @@ def audit(
             "replay_strict": True,
         },
         "backend_trust": {
-            "vector_store": caps.get("vector_store", {}).get("selected"),
-            "backend": caps.get("execution", {}).get("backend"),
+            "vector_store": vector_store_caps.get("selected"),
+            "backend": execution_caps.get("backend"),
         },
         "known_limitations": (
             "ND quality is bounded by ANN candidate quality",

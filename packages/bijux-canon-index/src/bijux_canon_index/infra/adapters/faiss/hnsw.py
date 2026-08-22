@@ -638,7 +638,7 @@ def measure_hnsw_recall(
 
     recalls = []
     reached = 0
-    score_deltas = []
+    score_deltas: list[float] = []
     for query in queries:
         exact_results = exact.query(query, top_k=k)
         approximate_results = approximate.query(query, top_k=k)

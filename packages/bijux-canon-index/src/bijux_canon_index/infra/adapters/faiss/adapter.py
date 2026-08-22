@@ -12,11 +12,6 @@ from pathlib import Path
 import tempfile
 from typing import Any
 
-try:  # pragma: no cover - optional dependency
-    import faiss
-except Exception:  # pragma: no cover - optional dependency
-    faiss = None
-
 import numpy as np
 
 from bijux_canon_index.core.errors import (
@@ -28,6 +23,14 @@ from bijux_canon_index.core.errors import (
     ValidationError,
 )
 from bijux_canon_index.infra.adapters.vectorstore import VectorStoreAdapter
+
+faiss: Any
+try:  # pragma: no cover - optional dependency
+    import faiss as _faiss  # type: ignore[import-untyped]
+except Exception:  # pragma: no cover - optional dependency
+    faiss = None
+else:
+    faiss = _faiss
 
 INDEX_VERSION = 1
 EXACT_INDEX_TYPE = "IndexFlatL2"

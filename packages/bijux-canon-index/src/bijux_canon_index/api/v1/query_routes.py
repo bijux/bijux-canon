@@ -86,7 +86,7 @@ def register_query_routes(app: FastAPI) -> None:
                 }
             },
         },
-    )  # type: ignore[untyped-decorator]
+    )
     def execute(
         req: ExecutionRequestPayload,
         response: Response,
@@ -161,7 +161,7 @@ def register_query_routes(app: FastAPI) -> None:
                 }
             },
         },
-    )  # type: ignore[untyped-decorator]
+    )
     def explain(
         req: ExplainRequest,
         response: Response,
@@ -235,7 +235,7 @@ def register_query_routes(app: FastAPI) -> None:
                 }
             },
         },
-    )  # type: ignore[untyped-decorator]
+    )
     def replay(
         req: ExecutionRequestPayload,
         response: Response,

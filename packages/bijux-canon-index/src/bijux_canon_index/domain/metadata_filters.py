@@ -246,7 +246,6 @@ def _matches_user_predicate(
         return _ordered_compare(actual, expected, greater=True)
     if predicate.operator is MetadataOperator.less_or_equal:
         return _ordered_compare(actual, expected, greater=False)
-    return False
 
 
 def matches_metadata_filter(

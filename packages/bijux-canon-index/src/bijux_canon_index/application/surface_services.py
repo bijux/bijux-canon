@@ -200,11 +200,12 @@ def pack_execution_artifact(
     engine = VectorExecutionEngine()
     vectors_payload: dict[str, object] = {}
     if include_vectors:
-        vectors_payload["vectors"] = []
+        vector_entries: list[dict[str, object]] = []
+        vectors_payload["vectors"] = vector_entries
         for vector_id in run.result.get("results", []) if run.result else []:
             vector = engine.stores.vectors.get_vector(vector_id)
             if vector:
-                vectors_payload["vectors"].append(
+                vector_entries.append(
                     {"vector_id": vector_id, "values": list(vector.values)}
                 )
     vector_hashes = []
