@@ -1,0 +1,330 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright © 2026 Bijan Mousavi
+
+"""Stable JSON CLI adapter over Runtime v2 application services."""
+
+from __future__ import annotations
+
+import argparse
+from dataclasses import asdict
+from enum import Enum
+import json
+from pathlib import Path
+import sys
+from typing import cast
+
+from pydantic import ValidationError
+
+from bijux_canon_ingest.application.source_discovery import discover_sources
+from bijux_canon_ingest.domain.source_discovery import (
+    DiscoveryPolicy,
+    DiscoveryRoot,
+    SymlinkPolicy,
+)
+
+from bijux_canon_runtime.api.v2.conversion import (
+    job_status,
+    json_value,
+    operation_request,
+)
+from bijux_canon_runtime.api.v2.schemas import (
+    AskRequest,
+    BuildIndexRequest,
+    CancelRequest,
+    CompareRequest,
+    PrepareCorpusRequest,
+    ReplayRequest,
+    ResearchRequest,
+    RetrieveRequest,
+    RunRequest,
+)
+from bijux_canon_runtime.application.operations import (
+    ReplayOperationRequest,
+    RuntimeApplicationServicesV2,
+)
+from bijux_canon_runtime.model.execution.request_plan import RuntimeRequestOperation
+from bijux_canon_runtime.ontology.ids import RequestID
+from bijux_canon_runtime.ontology.public import ReplayMode
+from bijux_canon_runtime.runtime.comparison import (
+    ComparisonDimension,
+    RuntimeComparisonPolicy,
+)
+from bijux_canon_runtime.runtime.execution.durable_jobs import DurableJobError
+from bijux_canon_runtime.runtime.replay.models import (
+    ReplayNetworkPolicy,
+    RuntimeReplayPolicy,
+)
+
+EXIT_INVALID_REQUEST = 2
+EXIT_MISSING_CAPABILITY = 3
+EXIT_OPERATION_FAILED = 4
+
+
+def run_v2_command(
+    args: argparse.Namespace,
+    *,
+    services: RuntimeApplicationServicesV2 | None,
+) -> int:
+    """Execute one parsed v2 command and emit exactly one JSON document."""
+    try:
+        if args.v2_command == "discover":
+            return _discover(args)
+        service = _require_services(services)
+        if args.v2_command in {"ingest", "index", "retrieve", "ask", "research", "run"}:
+            return _submit(args, service)
+        if args.v2_command == "status":
+            _write(job_status(service.status(args.job_id)).model_dump(mode="json"))
+            return 0
+        if args.v2_command == "result":
+            _write(
+                {
+                    "job_id": args.job_id,
+                    "result": service.result(args.job_id),
+                    "schema_version": "bijux.runtime.cli-job-result.v2",
+                }
+            )
+            return 0
+        if args.v2_command == "inspect":
+            return _inspect(args, service)
+        if args.v2_command == "replay":
+            return _replay(args, service)
+        if args.v2_command == "compare":
+            return _compare(args, service)
+        if args.v2_command == "cancel":
+            _load_model(Path(args.request), CancelRequest)
+            _write(job_status(service.cancel(args.job_id)).model_dump(mode="json"))
+            return 0
+        raise ValueError(f"unsupported v2 command: {args.v2_command}")
+    except ValidationError as exc:
+        _failure(
+            "invalid-request",
+            "Correct the JSON request using the v2 schema.",
+            exc.errors()[0]["type"] if exc.errors() else type(exc).__name__,
+        )
+        return EXIT_INVALID_REQUEST
+    except (ValueError, OSError, json.JSONDecodeError) as exc:
+        _failure("invalid-request", "Correct the command input.", str(exc))
+        return EXIT_INVALID_REQUEST
+    except (KeyError, DurableJobError) as exc:
+        _failure(
+            "not-found-or-conflict", "Inspect the supplied durable identity.", str(exc)
+        )
+        return EXIT_OPERATION_FAILED
+    except RuntimeError as exc:
+        if services is None:
+            _failure(
+                "missing-capability",
+                "Configure installed Runtime v2 application services.",
+                str(exc),
+            )
+            return EXIT_MISSING_CAPABILITY
+        _failure("operation-failed", "Inspect persisted evidence and retry.", str(exc))
+        return EXIT_OPERATION_FAILED
+
+
+def _require_services(
+    services: RuntimeApplicationServicesV2 | None,
+) -> RuntimeApplicationServicesV2:
+    if services is None:
+        raise RuntimeError("Runtime v2 application services are not configured")
+    return services
+
+
+def _discover(args: argparse.Namespace) -> int:
+    directory = Path(args.directory).resolve()
+    result = discover_sources(
+        DiscoveryPolicy(
+            roots=(DiscoveryRoot(args.root_name, directory),),
+            include=tuple(args.include) or ("**/*",),
+            exclude=tuple(args.exclude),
+            symlink_policy=cast(SymlinkPolicy, args.symlink_policy),
+        )
+    )
+    _write(result.manifest())
+    return 0 if result.complete else EXIT_OPERATION_FAILED
+
+
+def _submit(
+    args: argparse.Namespace,
+    service: RuntimeApplicationServicesV2,
+) -> int:
+    command = args.v2_command
+    if command == "ingest":
+        body = _load_model(Path(args.request), PrepareCorpusRequest)
+        request = operation_request(
+            context=body.context,
+            operation=RuntimeRequestOperation.CORPUS_PREPARE,
+            execution_profile=body.execution_profile,
+            budget=body.budget,
+            scope=body.scope,
+            source_directory=body.source_directory,
+        )
+        snapshot = service.corpus(request, idempotency_key=args.idempotency_key)
+    elif command == "index":
+        body = _load_model(Path(args.request), BuildIndexRequest)
+        request = operation_request(
+            context=body.context,
+            operation=RuntimeRequestOperation.INDEX_BUILD,
+            execution_profile=body.execution_profile,
+            budget=body.budget,
+            scope=body.scope,
+            corpus_id=body.corpus_id,
+        )
+        snapshot = service.index(request, idempotency_key=args.idempotency_key)
+    elif command == "retrieve":
+        body = _load_model(Path(args.request), RetrieveRequest)
+        request = _retrieval(body, RuntimeRequestOperation.RETRIEVE)
+        snapshot = service.retrieve(request, idempotency_key=args.idempotency_key)
+    elif command == "ask":
+        body = _load_model(Path(args.request), AskRequest)
+        request = _answer(body, RuntimeRequestOperation.ASK)
+        snapshot = service.ask(request, idempotency_key=args.idempotency_key)
+    elif command == "research":
+        body = _load_model(Path(args.request), ResearchRequest)
+        request = _answer(body, RuntimeRequestOperation.RESEARCH)
+        snapshot = service.research(request, idempotency_key=args.idempotency_key)
+    else:
+        body = _load_model(Path(args.request), RunRequest)
+        request = operation_request(
+            context=body.context,
+            operation=RuntimeRequestOperation.RUN,
+            execution_profile=body.execution_profile,
+            budget=body.budget,
+            scope=body.scope,
+            query=body.query,
+            source_directory=body.source_directory,
+            corpus_id=body.corpus_id,
+            filters=(body.filters.document_ids, body.filters.source_uris),
+            top_k=body.top_k,
+            answer_policy=body.answer_policy,
+        )
+        snapshot = service.run(request, idempotency_key=args.idempotency_key)
+    _write(job_status(snapshot).model_dump(mode="json"))
+    return 0
+
+
+def _retrieval(body: RetrieveRequest, operation: RuntimeRequestOperation):
+    return operation_request(
+        context=body.context,
+        operation=operation,
+        execution_profile=body.execution_profile,
+        budget=body.budget,
+        scope=body.scope,
+        query=body.query,
+        index_id=body.index_id,
+        filters=(body.filters.document_ids, body.filters.source_uris),
+        top_k=body.top_k,
+    )
+
+
+def _answer(body: AskRequest, operation: RuntimeRequestOperation):
+    return operation_request(
+        context=body.context,
+        operation=operation,
+        execution_profile=body.execution_profile,
+        budget=body.budget,
+        scope=body.scope,
+        query=body.query,
+        corpus_id=body.corpus_id,
+        index_id=body.index_id,
+        filters=(body.filters.document_ids, body.filters.source_uris),
+        top_k=body.top_k,
+        answer_policy=body.answer_policy,
+    )
+
+
+def _inspect(args: argparse.Namespace, service: RuntimeApplicationServicesV2) -> int:
+    value = json_value(service.inspect(args.run_id, attempt_id=args.attempt_id))
+    assert isinstance(value, dict)
+    if args.offset < 0 or not 1 <= args.limit <= 1000:
+        raise ValueError("inspection offset and limit are outside supported bounds")
+    for field in ("steps", "artifacts", "events"):
+        records = value.get(field)
+        if isinstance(records, list):
+            value[field] = records[args.offset : args.offset + args.limit]
+    value["page"] = {"limit": args.limit, "offset": args.offset}
+    _write(value)
+    return 0
+
+
+def _replay(args: argparse.Namespace, service: RuntimeApplicationServicesV2) -> int:
+    body = _load_model(Path(args.request), ReplayRequest)
+    request = ReplayOperationRequest(
+        run_id=args.run_id,
+        source_attempt_id=body.source_attempt_id,
+        request_id=RequestID(body.context.request_id),
+        process_id=body.process_id,
+        policy=RuntimeReplayPolicy(
+            replay_mode=ReplayMode(body.context.replay_mode),
+            network_policy=ReplayNetworkPolicy(body.network_policy),
+            provider_allowlist=body.provider_allowlist,
+        ),
+    )
+    snapshot = service.replay(
+        request,
+        idempotency_key=args.idempotency_key,
+        timeout_seconds=body.timeout_seconds,
+    )
+    _write(job_status(snapshot).model_dump(mode="json"))
+    return 0
+
+
+def _compare(args: argparse.Namespace, service: RuntimeApplicationServicesV2) -> int:
+    body = _load_model(Path(args.request), CompareRequest)
+    dimensions = tuple(ComparisonDimension(item) for item in body.dimensions)
+    result = service.compare(
+        baseline_run_id=body.baseline_run_id,
+        baseline_attempt_id=body.baseline_attempt_id,
+        candidate_run_id=body.candidate_run_id,
+        candidate_attempt_id=body.candidate_attempt_id,
+        policy=RuntimeComparisonPolicy(
+            dimensions=dimensions,
+            expected_differences=tuple(
+                item
+                for item in (ComparisonDimension.TIMING, ComparisonDimension.POLICY)
+                if item in dimensions
+            ),
+        ),
+    )
+    _write(json_value(result))
+    return 0
+
+
+def _load_model(path: Path, model_type):
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    return model_type.model_validate(payload)
+
+
+def _write(value: object) -> None:
+    print(json.dumps(_normalize(value), sort_keys=True, separators=(",", ":")))
+
+
+def _normalize(value: object) -> object:
+    if isinstance(value, Enum):
+        return value.value
+    if hasattr(value, "__dataclass_fields__"):
+        return _normalize(asdict(value))  # type: ignore[call-overload]
+    if isinstance(value, dict):
+        return {str(key): _normalize(item) for key, item in value.items()}
+    if isinstance(value, tuple | list):
+        return [_normalize(item) for item in value]
+    return value
+
+
+def _failure(code: str, remediation: str, cause: str) -> None:
+    payload = {
+        "cause": cause,
+        "code": code,
+        "remediation": remediation,
+        "retryable": code in {"missing-capability", "operation-failed"},
+        "schema_version": "bijux.runtime.cli-problem.v2",
+    }
+    print(json.dumps(payload, sort_keys=True, separators=(",", ":")), file=sys.stderr)
+
+
+__all__ = [
+    "EXIT_INVALID_REQUEST",
+    "EXIT_MISSING_CAPABILITY",
+    "EXIT_OPERATION_FAILED",
+    "run_v2_command",
+]

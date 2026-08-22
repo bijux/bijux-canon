@@ -13,6 +13,7 @@ from bijux_canon_runtime.model.execution.command_modes import (
     RUN_COMMAND,
     UNSAFE_RUN_COMMAND,
 )
+from bijux_canon_runtime.interfaces.cli.v2_parser import add_v2_commands
 
 
 def build_parser(*, prog_name: str) -> argparse.ArgumentParser:
@@ -25,6 +26,7 @@ def build_parser(*, prog_name: str) -> argparse.ArgumentParser:
         ),
     )
     subparsers = parser.add_subparsers(dest="command")
+    add_v2_commands(subparsers)
 
     run_parser = subparsers.add_parser(
         RUN_COMMAND,
