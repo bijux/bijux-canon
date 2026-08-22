@@ -4,11 +4,22 @@
 
 from __future__ import annotations
 
+from datetime import date
 import hashlib
 
 from pydantic import ValidationError
 import pytest
 
+from bijux_canon_reason.evaluation import (
+    ContradictionRetentionEvaluator,
+    ContradictionRetentionReport,
+    ContradictionRetentionTruth,
+    RetentionKind,
+    RetentionTruthItem,
+    SystemAnswerDisposition,
+    SystemOutput,
+    TruthProvenance,
+)
 from bijux_canon_reason.grounding import (
     CitationEvidence,
     CitationIntegrityStatus,
@@ -382,6 +393,74 @@ def _verified_bundle() -> tuple[
     return synthesis, packet, merge, attachment, delta, convergence
 
 
+def _retention_truth(*, missing: bool = False) -> ContradictionRetentionTruth:
+    provenance = TruthProvenance(
+        reviewer_ids=("reviewer-a", "reviewer-b"),
+        reviewed_on=date(2026, 8, 22),
+        review_method="independent source-first conflict annotation",
+        source_identity_sha256="a" * 64,
+        data_identity_sha256="b" * 64,
+    )
+    items = (
+        RetentionTruthItem(
+            retention_id="conflicted-finding",
+            kind=RetentionKind.conflict,
+            statement="Verified finding 2.",
+        ),
+        RetentionTruthItem(
+            retention_id="population-divergence",
+            kind=RetentionKind.population_scope,
+            statement=(
+                "The source-scoped findings diverge. Scope: "
+                "The study populations differ."
+            ),
+        ),
+        RetentionTruthItem(
+            retention_id="study-design-limit",
+            kind=RetentionKind.study_limit,
+            statement=(
+                "A missing limitation that must fail exact retention."
+                if missing
+                else "The study is not randomized."
+            ),
+        ),
+        RetentionTruthItem(
+            retention_id="sampling-assumption",
+            kind=RetentionKind.assumption,
+            statement="The reported sampling frame represents the target population.",
+        ),
+        RetentionTruthItem(
+            retention_id="replication-gap",
+            kind=RetentionKind.unresolved_gap,
+            statement="Only one independent source supports the claim.",
+        ),
+    )
+    payload = {
+        "schema_version": "bijux.canon.evaluation.contradiction-truth.v1",
+        "case_id": "verified-graph-conflict",
+        "items": tuple(item.model_dump(mode="json") for item in items),
+        "provenance": provenance.model_dump(mode="json"),
+    }
+    return ContradictionRetentionTruth(
+        artifact_id=content_artifact_id(payload),
+        case_id="verified-graph-conflict",
+        items=items,
+        provenance=provenance,
+    )
+
+
+def _evaluation_output(synthesis: VerifiedGraphSynthesis) -> SystemOutput:
+    return SystemOutput(
+        output_id="verified-graph-output",
+        case_id="verified-graph-conflict",
+        runtime_run_id="runtime-run",
+        runtime_attempt_id="runtime-attempt",
+        answer=synthesis.answer,
+        disposition=SystemAnswerDisposition.answered,
+        trace_identity_sha256="c" * 64,
+    )
+
+
 def test_synthesizes_consensus_conflict_context_assumptions_and_gaps() -> None:
     graph_id, merge, attachment, delta, context, conflict = _rich_inputs()
 
@@ -410,6 +489,43 @@ def test_synthesizes_consensus_conflict_context_assumptions_and_gaps() -> None:
     assert all(item.artifact_id in result.answer for item in result.conflicts)
     assert "Consensus:" in result.answer
     assert "Remaining gaps:" in result.answer
+
+
+def test_evaluation_retains_conflict_limits_scope_assumptions_and_gaps() -> None:
+    synthesis, *_ = _verified_bundle()
+
+    report = ContradictionRetentionEvaluator().evaluate(
+        truth=_retention_truth(),
+        synthesis=synthesis,
+        output=_evaluation_output(synthesis),
+    )
+    restarted = ContradictionRetentionReport.model_validate_json(
+        report.model_dump_json()
+    )
+
+    assert restarted == report
+    assert report.passed
+    assert report.retention.numerator == report.retention.denominator == 5
+    assert report.false_consensus.numerator == 0
+    assert report.false_consensus.denominator == 1
+
+
+def test_evaluation_retains_missing_limit_as_failure() -> None:
+    synthesis, *_ = _verified_bundle()
+
+    report = ContradictionRetentionEvaluator().evaluate(
+        truth=_retention_truth(missing=True),
+        synthesis=synthesis,
+        output=_evaluation_output(synthesis),
+    )
+
+    assert not report.passed
+    assert report.retention.numerator == 4
+    assert report.retention.denominator == 5
+    failure = next(item for item in report.outcomes if not item.passed)
+    assert failure.kind is RetentionKind.study_limit
+    assert not failure.graph_retained
+    assert not failure.answer_retained
 
 
 def test_clean_terminal_graph_is_answered_with_explicit_scope_limit() -> None:

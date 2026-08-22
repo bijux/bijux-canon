@@ -50,6 +50,16 @@ from bijux_canon_reason.evaluation.claim_faithfulness import (
     ClaimFaithfulnessReport,
     ClaimFaithfulnessStatus,
 )
+from bijux_canon_reason.evaluation.contradiction_retention import (
+    ContradictionRetentionEvaluationError,
+    ContradictionRetentionEvaluator,
+    ContradictionRetentionMetric,
+    ContradictionRetentionReport,
+    ContradictionRetentionTruth,
+    RetentionKind,
+    RetentionOutcome,
+    RetentionTruthItem,
+)
 from bijux_canon_reason.evaluation.metrics import (
     ConfidenceInterval,
     EvaluationCaseOutcome,
@@ -134,6 +144,11 @@ __all__ = [
     "ClaimFaithfulnessStatus",
     "ConfidenceInterval",
     "ConflictExpectation",
+    "ContradictionRetentionEvaluationError",
+    "ContradictionRetentionEvaluator",
+    "ContradictionRetentionMetric",
+    "ContradictionRetentionReport",
+    "ContradictionRetentionTruth",
     "EVALUATION_SCHEMA_CATALOG_VERSION",
     "EvaluationCaseOutcome",
     "EvaluationCaseTruth",
@@ -148,6 +163,9 @@ __all__ = [
     "ReviewerDecision",
     "ReviewSubjectKind",
     "ReviewVerdict",
+    "RetentionKind",
+    "RetentionOutcome",
+    "RetentionTruthItem",
     "SystemAnswerDisposition",
     "SystemCitation",
     "SystemClaim",
