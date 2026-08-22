@@ -66,3 +66,9 @@ def test_primary_package_coverage_profiles_use_real_tests_and_measured_floors() 
         )
         assert "TEST_COVERAGE_TARGETS := $(abspath tests" in profile
         assert f"TEST_COVERAGE_FAIL_UNDER := {floor}" in profile
+
+
+def test_root_coverage_gate_dispatches_every_primary_package() -> None:
+    root_make = (REPO_ROOT / "makes" / "root.mk").read_text(encoding="utf-8")
+
+    assert "ROOT_TARGET_PACKAGES_coverage-core := $(PRIMARY_PACKAGES)" in root_make

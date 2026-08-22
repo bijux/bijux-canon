@@ -59,6 +59,7 @@ lint: export RUFF_CHECK_FIX := 0
 lint: export FMT_RUN_RUFF_CHECK_FIX := 0
 ROOT_TARGET_PACKAGES_test-all := $(CHECK_PACKAGES)
 ROOT_TARGET_PACKAGES_test-all-plus-run-time := $(CHECK_PACKAGES)
+ROOT_TARGET_PACKAGES_coverage-core := $(PRIMARY_PACKAGES)
 include $(ROOT_MAKEFILE_DIR)/bijux-py/root/docs.mk
 include $(ROOT_MAKEFILE_DIR)/bijux-docs.mk
 include $(ROOT_MAKEFILE_DIR)/bijux-std.mk
