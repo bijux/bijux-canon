@@ -19,12 +19,12 @@ from bijux_canon_index.core.failures import (
 )
 
 
-def test_invariant_is_terminal():
+def test_invariant_is_terminal() -> None:
     err = InvariantError(message="stop")
     assert classify_failure(err) is FailureKind.TERMINAL
 
 
-def test_retry_policy_respects_retryable():
+def test_retry_policy_respects_retryable() -> None:
     err = ValidationError(message="retry me")
     retryable = mark_retryable(err)
     calls = {"n": 0}
@@ -41,7 +41,7 @@ def test_retry_policy_respects_retryable():
         retry_with_policy(lambda: (_ for _ in ()).throw(InvariantError(message="bad")))
 
 
-def test_retry_policy_obeys_contract():
+def test_retry_policy_obeys_contract() -> None:
     calls = {"n": 0}
 
     def flaky():

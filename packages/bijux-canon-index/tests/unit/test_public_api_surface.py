@@ -94,7 +94,7 @@ def _public_names(module):
     return names
 
 
-def test_public_surface_is_stable():
+def test_public_surface_is_stable() -> None:
     for module_path, expected in EXPECTED.items():
         module = importlib.import_module(module_path)
         assert _public_names(module) == expected

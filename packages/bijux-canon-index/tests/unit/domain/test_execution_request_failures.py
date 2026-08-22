@@ -43,7 +43,7 @@ def _prepare_artifact(backend):
     return art
 
 
-def test_missing_artifact_raises():
+def test_missing_artifact_raises() -> None:
     backend = memory_backend()
     with pytest.raises(NotFoundError):
         backend.stores.vectors.query(
@@ -59,7 +59,7 @@ def test_missing_artifact_raises():
         )
 
 
-def test_empty_corpus_returns_empty():
+def test_empty_corpus_returns_empty() -> None:
     backend = memory_backend()
     art = _prepare_artifact(backend)
     art = ExecutionArtifact(
@@ -86,7 +86,7 @@ def test_empty_corpus_returns_empty():
     assert results == []
 
 
-def test_malformed_query_vector_missing():
+def test_malformed_query_vector_missing() -> None:
     backend = memory_backend()
     art = _prepare_artifact(backend)
     with pytest.raises(ValidationError):
@@ -103,7 +103,7 @@ def test_malformed_query_vector_missing():
         )
 
 
-def test_request_before_artifact_build_fails():
+def test_request_before_artifact_build_fails() -> None:
     backend = memory_backend()
     with pytest.raises(NotFoundError):
         backend.stores.vectors.query(
@@ -119,7 +119,7 @@ def test_request_before_artifact_build_fails():
         )
 
 
-def test_contract_mismatch_rejected():
+def test_contract_mismatch_rejected() -> None:
     backend = memory_backend()
     art = _prepare_artifact(backend)
     with pytest.raises(InvariantError):
@@ -138,7 +138,7 @@ def test_contract_mismatch_rejected():
         )
 
 
-def test_backend_capability_mismatch_is_detected():
+def test_backend_capability_mismatch_is_detected() -> None:
     backend = memory_backend()
     art = ExecutionArtifact(
         artifact_id="nd-art",

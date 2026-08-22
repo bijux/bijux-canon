@@ -15,7 +15,7 @@ from bijux_canon_index.core.invariants import (
 from bijux_canon_index.core.types import ExecutionArtifact
 
 
-def test_validate_execution_artifact_happy_path():
+def test_validate_execution_artifact_happy_path() -> None:
     artifact = ExecutionArtifact(
         artifact_id="art-1",
         corpus_fingerprint="corp-fp",

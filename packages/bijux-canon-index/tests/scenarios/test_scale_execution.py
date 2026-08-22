@@ -13,7 +13,7 @@ from bijux_canon_index.domain.requests.request_execution import (
 from tests.fixtures.test_scale_vectors import build_scale_backend
 
 
-def test_scale_execution_topk():
+def test_scale_execution_topk() -> None:
     backend = build_scale_backend(count=10000, dim=8)
     artifact = ExecutionArtifact(
         artifact_id="art-scale",

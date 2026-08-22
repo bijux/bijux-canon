@@ -8,7 +8,7 @@ from bijux_canon_index.core.types import Document
 from bijux_canon_index.infra.adapters.memory.backend import memory_backend
 
 
-def test_backends_are_isolated():
+def test_backends_are_isolated() -> None:
     a = memory_backend()
     b = memory_backend()
     assert a is not b

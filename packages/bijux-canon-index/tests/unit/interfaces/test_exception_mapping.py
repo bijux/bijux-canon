@@ -18,7 +18,7 @@ from bijux_canon_index.interfaces.errors import to_cli_exit, to_http_status
         (errors.ValidationError(message="x"), 400),
     ],
 )
-def test_http_mapping(exc, status):
+def test_http_mapping(exc, status) -> None:
     assert to_http_status(exc) == status
 
 
@@ -30,10 +30,10 @@ def test_http_mapping(exc, status):
         (errors.ValidationError(message="x"), 2),
     ],
 )
-def test_cli_mapping(exc, code):
+def test_cli_mapping(exc, code) -> None:
     assert to_cli_exit(exc) == code
 
 
-def test_unknown_exception_raises():
+def test_unknown_exception_raises() -> None:
     with pytest.raises(RuntimeError):
         to_http_status(RuntimeError("boom"))

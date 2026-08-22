@@ -24,7 +24,7 @@ def _roundtrip(obj, builder):
     assert fingerprint(obj) == fingerprint(rebuilt)
 
 
-def test_roundtrip_core_objects():
+def test_roundtrip_core_objects() -> None:
     doc = Document(document_id="d1", text="hello", source="src", version="v1")
     chunk = Chunk(chunk_id="c1", document_id="d1", text="hello", ordinal=0)
     vec = Vector(
@@ -88,13 +88,13 @@ def test_roundtrip_core_objects():
     )
 
 
-def test_dict_ordering_is_canonical():
+def test_dict_ordering_is_canonical() -> None:
     first = {"b": 1, "a": 2}
     second = {"a": 2, "b": 1}
     assert canon(first) == canon(second)
 
 
-def test_list_ordering_changes_fingerprint():
+def test_list_ordering_changes_fingerprint() -> None:
     list_a = [1, 2, 3]
     list_b = [3, 2, 1]
     assert fingerprint(list_a) != fingerprint(list_b)

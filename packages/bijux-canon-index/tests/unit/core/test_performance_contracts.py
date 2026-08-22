@@ -20,7 +20,7 @@ from bijux_canon_index.infra.adapters.memory.backend import memory_backend
 from tests.conformance.test_cross_backend_replay import _seed_backend
 
 
-def test_deterministic_execution_respects_envelope():
+def test_deterministic_execution_respects_envelope() -> None:
     backend = memory_backend()
     artifact, request = _seed_backend(backend, "perf-")
     session = start_execution_session(artifact, request, backend.stores)
@@ -28,7 +28,7 @@ def test_deterministic_execution_respects_envelope():
     assert_performance_envelope(result, ExecutionContract.DETERMINISTIC)
 
 
-def test_nd_execution_requires_approximation_report():
+def test_nd_execution_requires_approximation_report() -> None:
     backend = memory_backend()
     artifact, request = _seed_backend(backend, "nd-")
     artifact = replace(

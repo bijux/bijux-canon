@@ -15,7 +15,7 @@ from tests.conformance.suite import default_backends, parametrize_backends
 
 
 @parametrize_backends(default_backends())
-def test_tie_break_order_is_stable(backend_case):
+def test_tie_break_order_is_stable(backend_case) -> None:
     fixture = backend_case.factory()
     doc = Document(document_id="doc-q", text="text")
     chunk_a = Chunk(
@@ -71,7 +71,7 @@ def test_tie_break_order_is_stable(backend_case):
 
 
 @parametrize_backends(default_backends())
-def test_insertion_order_does_not_affect_ranking(backend_case):
+def test_insertion_order_does_not_affect_ranking(backend_case) -> None:
     doc = Document(document_id="doc-q2", text="text")
     chunk_a = Chunk(
         chunk_id="chunk-a2", document_id=doc.document_id, text="a", ordinal=0

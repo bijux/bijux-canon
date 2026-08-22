@@ -5,7 +5,7 @@ from __future__ import annotations
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 
 
-def test_contract_surface_matrix_and_levels():
+def test_contract_surface_matrix_and_levels() -> None:
     matrix = ExecutionContract.surface_matrix()
     assert matrix["deterministic"] == "SUPPORTED"
     assert matrix["non_deterministic"] == "STABLE_BOUNDED"

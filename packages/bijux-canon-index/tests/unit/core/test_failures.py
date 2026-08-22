@@ -14,7 +14,7 @@ from bijux_canon_index.core.failures import (
 )
 
 
-def test_classify_and_retry():
+def test_classify_and_retry() -> None:
     err = InvariantError(message="boom")
     assert classify_failure(err) is FailureKind.TERMINAL
 

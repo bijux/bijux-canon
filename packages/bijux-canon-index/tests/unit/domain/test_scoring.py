@@ -13,24 +13,24 @@ from bijux_canon_index.core.types import Result
 from bijux_canon_index.domain.requests import scoring
 
 
-def test_l2_distance_deterministic():
+def test_l2_distance_deterministic() -> None:
     q = (0.0, 1.0, 2.0)
     t = (1.0, 1.0, 1.0)
     assert scoring.l2_distance(q, t) == 2.0
     assert scoring.l2_distance(t, q) == 2.0
 
 
-def test_cosine_similarity_rejects_zero_vector():
+def test_cosine_similarity_rejects_zero_vector() -> None:
     with pytest.raises(ValidationError):
         scoring.cosine_similarity((0.0, 0.0), (1.0, 1.0))
 
 
-def test_score_non_finite_rejected():
+def test_score_non_finite_rejected() -> None:
     with pytest.raises(ValidationError):
         scoring.l2_distance((math.inf,), (0.0,))
 
 
-def test_tie_break_key_ordering():
+def test_tie_break_key_ordering() -> None:
     r1 = Result(
         request_id="q",
         document_id="d1",

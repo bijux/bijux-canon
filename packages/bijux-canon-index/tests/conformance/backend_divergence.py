@@ -39,7 +39,7 @@ def _seed(backend):
     return doc, chunk, vec, art
 
 
-def test_memory_sqlite_divergence_detection():
+def test_memory_sqlite_divergence_detection() -> None:
     backends = list(default_backends())
     mem = next(b.factory() for b in backends if b.name == "memory")
     sql = next(b.factory() for b in backends if b.name == "sqlite")

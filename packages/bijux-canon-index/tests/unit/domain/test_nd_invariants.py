@@ -22,7 +22,7 @@ from bijux_canon_index.infra.adapters.ann_reference import ReferenceAnnRunner
 from bijux_canon_index.infra.adapters.memory.backend import memory_backend
 
 
-def test_nd_result_emits_quality_or_reason():
+def test_nd_result_emits_quality_or_reason() -> None:
     backend = memory_backend()
     with backend.tx_factory() as tx:
         doc = Document(document_id="d", text="hello")

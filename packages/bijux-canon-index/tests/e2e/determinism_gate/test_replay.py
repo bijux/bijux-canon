@@ -15,7 +15,7 @@ from bijux_canon_index.domain.provenance.replay import replay
 from bijux_canon_index.infra.adapters.memory.backend import memory_backend
 
 
-def test_replay_produces_identical_fingerprint():
+def test_replay_produces_identical_fingerprint() -> None:
     backend = memory_backend()
     doc = Document(document_id="doc-r", text="hello")
     chunk = Chunk(

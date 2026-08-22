@@ -11,7 +11,7 @@ from tests.conformance.suite import default_backends, parametrize_backends
 
 
 @parametrize_backends(default_backends())
-def test_document_and_chunk_round_trip(backend_case):
+def test_document_and_chunk_round_trip(backend_case) -> None:
     fixture = backend_case.factory()
     doc = Document(document_id="doc-1", text="hello world", source="unit", version="v1")
     chunk = Chunk(
@@ -32,7 +32,7 @@ def test_document_and_chunk_round_trip(backend_case):
 
 
 @parametrize_backends(default_backends())
-def test_vector_and_artifact_round_trip(backend_case):
+def test_vector_and_artifact_round_trip(backend_case) -> None:
     fixture = backend_case.factory()
     vector = Vector(
         vector_id="vec-1",

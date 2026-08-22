@@ -32,21 +32,21 @@ def _check_chain(records: list[AuditRecord]) -> bool:
     return True
 
 
-def test_chain_integrity_passes():
+def test_chain_integrity_passes() -> None:
     first = _record("r1", None)
     second = _record("r2", first.record_hash)
     third = _record("r3", second.record_hash)
     assert _check_chain([first, second, third])
 
 
-def test_chain_tamper_detected():
+def test_chain_tamper_detected() -> None:
     first = _record("r1", None)
     second = _record("r2", first.record_hash)
     tampered = replace(second, action="tampered")
     assert not _check_chain([first, tampered])
 
 
-def test_missing_prev_hash_detected():
+def test_missing_prev_hash_detected() -> None:
     first = _record("r1", None)
     second = _record("r2", None)
     assert not _check_chain([first, second])

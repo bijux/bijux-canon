@@ -8,11 +8,11 @@ from bijux_canon_index.core.canon import CANON_VERSION, canon
 from bijux_canon_index.core.identity.ids import fingerprint
 
 
-def test_canon_version_constant_default():
+def test_canon_version_constant_default() -> None:
     assert CANON_VERSION == "v1"
 
 
-def test_fingerprint_changes_with_version():
+def test_fingerprint_changes_with_version() -> None:
     obj = {"a": 1, "b": [2, 3]}
     base = fingerprint(obj)
     bumped = fingerprint(obj, canon_version="v2")

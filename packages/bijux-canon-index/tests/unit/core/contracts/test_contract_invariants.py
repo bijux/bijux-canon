@@ -45,13 +45,13 @@ def request_det():
     )
 
 
-def test_execution_contract_invariant_passes(artifact, request_det):
+def test_execution_contract_invariant_passes(artifact, request_det) -> None:
     inv = invariant_execution_contract_match(artifact, request_det)
     assert inv.predicate() is True
     assert_invariants([inv])
 
 
-def test_execution_contract_invariant_fails(artifact, request_det):
+def test_execution_contract_invariant_fails(artifact, request_det) -> None:
     nd_req = ExecutionRequest(
         request_id="r2",
         text=None,
@@ -67,7 +67,7 @@ def test_execution_contract_invariant_fails(artifact, request_det):
         assert_invariants([inv])
 
 
-def test_randomness_invariant_requires_budget():
+def test_randomness_invariant_requires_budget() -> None:
     with pytest.raises(InvariantError):
         ExecutionRequest(
             request_id="r3",
@@ -80,7 +80,7 @@ def test_randomness_invariant_requires_budget():
         )
 
 
-def test_provenance_invariant_placeholder(artifact):
+def test_provenance_invariant_placeholder(artifact) -> None:
     inv = invariant_provenance_required(artifact)
     assert inv.invariant_id == "INV-040"
     assert_invariants([inv])

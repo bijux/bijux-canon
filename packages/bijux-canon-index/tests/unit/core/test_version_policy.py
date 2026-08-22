@@ -13,7 +13,7 @@ from bijux_canon_index.core.version import (
 )
 
 
-def test_version_policy():
+def test_version_policy() -> None:
     assert PUBLIC_API_VERSION.startswith("1.")
     assert "backward-compatible" in DEPRECATION_POLICY
     assert_supported_version("1.2.3")

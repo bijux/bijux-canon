@@ -13,7 +13,7 @@ EXPECTED_OPENAPI_FINGERPRINT = (
 )
 
 
-def test_openapi_schema_is_frozen():
+def test_openapi_schema_is_frozen() -> None:
     app = build_app()
     schema = jsonable_encoder(app.openapi())
     fp = fingerprint(canon(schema))

@@ -15,7 +15,7 @@ from bijux_canon_index.domain.provenance.replay import replay
 from bijux_canon_index.infra.adapters.memory.backend import memory_backend
 
 
-def test_replay_reports_mismatch():
+def test_replay_reports_mismatch() -> None:
     backend = memory_backend()
     doc = Document(document_id="doc-m", text="hello")
     chunk = Chunk(

@@ -67,7 +67,7 @@ def _normalize_cli_help(text: str) -> str:
     return "\n".join(normalized_lines).strip() + "\n"
 
 
-def test_cli_help_is_frozen():
+def test_cli_help_is_frozen() -> None:
     repo_root = Path(__file__).resolve().parents[3]
     env = {
         **os.environ,

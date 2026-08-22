@@ -9,7 +9,7 @@ from tests.conformance.suite import default_backends, parametrize_backends
 
 
 @parametrize_backends(default_backends())
-def test_mid_tx_failure_rolls_back(backend_case):
+def test_mid_tx_failure_rolls_back(backend_case) -> None:
     fixture = backend_case.factory()
     doc = Document(document_id="fail-doc", text="temp")
     with pytest.raises(RuntimeError), fixture.tx_factory() as tx:
@@ -19,7 +19,7 @@ def test_mid_tx_failure_rolls_back(backend_case):
 
 
 @parametrize_backends(default_backends())
-def test_double_commit_is_idempotent(backend_case):
+def test_double_commit_is_idempotent(backend_case) -> None:
     fixture = backend_case.factory()
     doc = Document(document_id="double", text="ok")
     tx = fixture.tx_factory()
@@ -30,7 +30,7 @@ def test_double_commit_is_idempotent(backend_case):
 
 
 @parametrize_backends(default_backends())
-def test_abort_after_stage_discards_changes(backend_case):
+def test_abort_after_stage_discards_changes(backend_case) -> None:
     fixture = backend_case.factory()
     doc = Document(document_id="abort-doc", text="temp")
     tx = fixture.tx_factory()

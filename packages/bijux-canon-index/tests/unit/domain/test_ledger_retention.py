@@ -49,7 +49,7 @@ def _fake_result(execution_id: str) -> ExecutionResult:
     )
 
 
-def test_memory_ledger_enforces_result_retention_limit():
+def test_memory_ledger_enforces_result_retention_limit() -> None:
     fixture = memory_backend()
     ledger: MemoryExecutionLedger = fixture.stores.ledger  # type: ignore[assignment]
     original_limit = ledger.MAX_RESULTS

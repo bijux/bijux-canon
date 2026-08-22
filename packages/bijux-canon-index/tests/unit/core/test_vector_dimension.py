@@ -10,7 +10,7 @@ from bijux_canon_index.core.errors import InvariantError
 from bijux_canon_index.core.types import Vector
 
 
-def test_vector_dimension_must_match_values():
+def test_vector_dimension_must_match_values() -> None:
     with pytest.raises(InvariantError):
         Vector(
             vector_id="v1",
@@ -20,7 +20,7 @@ def test_vector_dimension_must_match_values():
         )
 
 
-def test_vector_dimension_positive():
+def test_vector_dimension_positive() -> None:
     with pytest.raises(InvariantError):
         Vector(
             vector_id="v1",

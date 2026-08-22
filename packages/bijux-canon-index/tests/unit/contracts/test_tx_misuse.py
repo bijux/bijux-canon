@@ -18,7 +18,7 @@ def backend(request, tmp_path):
     return sqlite_backend(tmp_path / "tx.sqlite")
 
 
-def test_nested_tx_fails(backend):
+def test_nested_tx_fails(backend) -> None:
     with (
         pytest.raises(AtomicityViolationError),
         backend.tx_factory(),
@@ -27,13 +27,13 @@ def test_nested_tx_fails(backend):
         pass
 
 
-def test_commit_without_enter_fails(backend):
+def test_commit_without_enter_fails(backend) -> None:
     tx = backend.tx_factory()
     with pytest.raises(AtomicityViolationError):
         tx.commit()
 
 
-def test_double_commit_and_abort_after_commit(backend):
+def test_double_commit_and_abort_after_commit(backend) -> None:
     tx = backend.tx_factory()
     tx.__enter__()
     tx.commit()

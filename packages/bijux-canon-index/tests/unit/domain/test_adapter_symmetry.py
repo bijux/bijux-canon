@@ -16,7 +16,7 @@ def _public_methods(obj):
     return {m for m in dir(obj) if not m.startswith("_")}
 
 
-def test_vector_source_symmetry():
+def test_vector_source_symmetry() -> None:
     mem = memory_backend().stores.vectors
     sqlite = sqlite_backend().stores.vectors
     hnsw = hnsw_backend().stores.vectors
@@ -28,7 +28,7 @@ def test_vector_source_symmetry():
         assert _public_methods(backend) == expected
 
 
-def test_ledger_symmetry():
+def test_ledger_symmetry() -> None:
     mem = memory_backend().stores.ledger
     sqlite = sqlite_backend().stores.ledger
     hnsw = hnsw_backend().stores.ledger

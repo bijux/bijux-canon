@@ -10,7 +10,7 @@ from tests import strategies
 
 @settings(max_examples=20, suppress_health_check=[HealthCheck.too_slow])
 @given(strategies.vectors())
-def test_scoring_determinism(vec):
+def test_scoring_determinism(vec) -> None:
     score1 = scoring.l2_distance(vec, vec)
     score2 = scoring.l2_distance(vec, vec)
     assert score1 == score2
@@ -18,6 +18,6 @@ def test_scoring_determinism(vec):
 
 @settings(max_examples=20)
 @given(strategies.chunk_layouts())
-def test_chunk_ordinals_sorted(layout):
+def test_chunk_ordinals_sorted(layout) -> None:
     sorted_layout = sorted(layout)
     assert sorted_layout == sorted(layout)

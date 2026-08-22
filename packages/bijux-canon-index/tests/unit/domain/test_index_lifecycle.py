@@ -19,7 +19,7 @@ def _artifact() -> ExecutionArtifact:
     )
 
 
-def test_index_lifecycle_states_and_fingerprint():
+def test_index_lifecycle_states_and_fingerprint() -> None:
     art = _artifact()
     state = lifecycle.build(art)
     assert state.status is lifecycle.IndexState.READY

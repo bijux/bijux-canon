@@ -17,7 +17,7 @@ from bijux_canon_index.core.types import (
 from bijux_canon_index.infra.adapters.memory.backend import memory_backend
 
 
-def test_medium_scale_query_is_deterministic():
+def test_medium_scale_query_is_deterministic() -> None:
     rng = random.Random(1234)
     backend = memory_backend()
     dim = 4

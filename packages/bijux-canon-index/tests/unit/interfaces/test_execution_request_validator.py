@@ -52,7 +52,7 @@ def _payload(**overrides):
     return SimpleNamespace(**base)
 
 
-def test_validator_rejects_nd_without_randomness():
+def test_validator_rejects_nd_without_randomness() -> None:
     payload = _payload(
         execution_contract=ExecutionContract.NON_DETERMINISTIC,
         execution_mode=ExecutionMode.BOUNDED,
@@ -62,13 +62,13 @@ def test_validator_rejects_nd_without_randomness():
         validate_execution_request_payload(payload)
 
 
-def test_validator_rejects_nd_settings_for_deterministic():
+def test_validator_rejects_nd_settings_for_deterministic() -> None:
     payload = _payload(nd_two_stage=False)
     with pytest.raises(ValueError, match="nd_\\* settings require non_deterministic"):
         validate_execution_request_payload(payload)
 
 
-def test_validator_accepts_minimal_nd():
+def test_validator_accepts_minimal_nd() -> None:
     payload = _payload(
         execution_contract=ExecutionContract.NON_DETERMINISTIC,
         execution_mode=ExecutionMode.BOUNDED,

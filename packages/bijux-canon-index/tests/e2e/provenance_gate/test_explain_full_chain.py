@@ -15,7 +15,7 @@ from bijux_canon_index.domain.provenance.lineage import explain_result
 from bijux_canon_index.infra.adapters.memory.backend import memory_backend
 
 
-def test_explain_reconstructs_full_chain():
+def test_explain_reconstructs_full_chain() -> None:
     backend = memory_backend()
     doc = Document(document_id="doc", text="hello")
     chunk = Chunk(

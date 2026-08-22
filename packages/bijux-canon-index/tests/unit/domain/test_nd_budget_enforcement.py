@@ -65,7 +65,7 @@ def _setup_backend():
         ),
     ],
 )
-def test_nd_budget_enforced(budget, nd_settings):
+def test_nd_budget_enforced(budget, nd_settings) -> None:
     backend = _setup_backend()
     ann = HnswAnnRunner(backend.stores.vectors)
     ann.build_index(
