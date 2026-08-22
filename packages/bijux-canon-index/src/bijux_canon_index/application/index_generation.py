@@ -83,6 +83,30 @@ class AdmittedIndexChunk:
 
 
 @dataclass(frozen=True, slots=True)
+class LexicalIndexChunk:
+    """One snapshot chunk admitted without requiring an embedding vector."""
+
+    chunk_id: str
+    document_id: str
+    ordinal: int
+    text: str
+    metadata: Mapping[str, MetadataValue]
+
+
+@dataclass(frozen=True, slots=True)
+class LexicalIndexLimits:
+    """Hard admission bounds for an independent lexical segment build."""
+
+    max_chunks: int
+    max_text_bytes: int
+    max_metadata_bytes: int
+
+    def __post_init__(self) -> None:
+        if min(self.max_chunks, self.max_text_bytes, self.max_metadata_bytes) <= 0:
+            raise ValueError("all lexical index limits must be positive")
+
+
+@dataclass(frozen=True, slots=True)
 class IndexBuildLimits:
     """Hard admission bounds for an in-memory generation build."""
 
@@ -329,6 +353,61 @@ def _admit_chunks(
     )
 
 
+def _admit_lexical_chunks(
+    chunks: Iterable[LexicalIndexChunk], limits: LexicalIndexLimits
+) -> tuple[LexicalChunk, ...]:
+    admitted: list[LexicalChunk] = []
+    text_bytes = 0
+    metadata_bytes = 0
+    for source in chunks:
+        if len(admitted) >= limits.max_chunks:
+            raise ValueError("lexical index build exceeds max_chunks")
+        metadata = validated_metadata(source.metadata)
+        text_bytes += len(source.text.encode("utf-8"))
+        metadata_bytes += len(_canonical_json(dict(metadata)).encode("utf-8"))
+        if text_bytes > limits.max_text_bytes:
+            raise ValueError("lexical index build exceeds max_text_bytes")
+        if metadata_bytes > limits.max_metadata_bytes:
+            raise ValueError("lexical index build exceeds max_metadata_bytes")
+        admitted.append(
+            LexicalChunk(
+                chunk_id=source.chunk_id,
+                document_id=source.document_id,
+                ordinal=source.ordinal,
+                text=source.text,
+                metadata=metadata,
+            )
+        )
+    if not admitted:
+        raise ValueError("a lexical index segment requires at least one admitted chunk")
+    admitted.sort(key=lambda chunk: chunk.chunk_id)
+    identities = [chunk.chunk_id for chunk in admitted]
+    if len(identities) != len(set(identities)):
+        raise ValueError("chunk identities must be unique within a lexical segment")
+    return tuple(admitted)
+
+
+def build_lexical_index_segment(
+    path: str | Path,
+    chunks: Iterable[LexicalIndexChunk],
+    *,
+    limits: LexicalIndexLimits,
+) -> IndexBuildStageReceipt:
+    """Build one bounded lexical segment without performing dense work."""
+
+    admitted = _admit_lexical_chunks(chunks, limits)
+    destination = Path(path).resolve()
+    with SQLiteLexicalIndex.build(destination, admitted) as lexical:
+        return _stage_receipt(
+            "lexical",
+            "sqlite-fts5",
+            destination,
+            lexical.manifest.generation_id,
+            lexical.manifest.chunk_set_sha256,
+            lexical.manifest.chunk_count,
+        )
+
+
 class IndexGeneration:
     """Verified read handles for one coherent persistent index generation."""
 
@@ -500,9 +579,97 @@ class IndexGeneration:
         destination.parent.mkdir(parents=True, exist_ok=True)
         if destination.exists():
             raise FileExistsError(destination)
-        parameters = hnsw_parameters or HnswParameters()
         admitted, statistics = _admit_chunks(chunks, limits)
         lexical_chunks = tuple(
+            LexicalIndexChunk(
+                chunk_id=chunk.chunk_id,
+                document_id=chunk.document_id,
+                ordinal=chunk.ordinal,
+                text=chunk.text,
+                metadata=chunk.metadata,
+            )
+            for chunk in admitted
+        )
+        lexical_limits = LexicalIndexLimits(
+            max_chunks=limits.max_chunks,
+            max_text_bytes=limits.max_text_bytes,
+            max_metadata_bytes=limits.max_metadata_bytes,
+        )
+        with tempfile.TemporaryDirectory(
+            prefix=f".{destination.name}.lexical.",
+            dir=destination.parent,
+        ) as work:
+            lexical_path = Path(work) / LEXICAL_NAME
+            try:
+                build_lexical_index_segment(
+                    lexical_path,
+                    lexical_chunks,
+                    limits=lexical_limits,
+                )
+            except BaseException as error:
+                raise IndexGenerationBuildError("lexical", (), error) from error
+            return cls._build_from_lexical(
+                destination,
+                lexical_path,
+                admitted,
+                statistics,
+                snapshot_artifact_id=snapshot_artifact_id,
+                model_lock_artifact_id=model_lock_artifact_id,
+                limits=limits,
+                hnsw_parameters=hnsw_parameters,
+                lineage=lineage,
+            )
+
+    @classmethod
+    def build_from_lexical(
+        cls,
+        path: str | Path,
+        lexical_segment_path: str | Path,
+        chunks: Iterable[AdmittedIndexChunk],
+        *,
+        snapshot_artifact_id: str,
+        model_lock_artifact_id: str,
+        limits: IndexBuildLimits,
+        hnsw_parameters: HnswParameters | None = None,
+        lineage: IndexGenerationLineage | None = None,
+    ) -> IndexGeneration:
+        """Build dense segments around one independently completed lexical segment."""
+
+        if not snapshot_artifact_id or not model_lock_artifact_id:
+            raise ValueError("index generation input identities must not be empty")
+        destination = Path(path).resolve()
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        if destination.exists():
+            raise FileExistsError(destination)
+        admitted, statistics = _admit_chunks(chunks, limits)
+        return cls._build_from_lexical(
+            destination,
+            Path(lexical_segment_path).resolve(),
+            admitted,
+            statistics,
+            snapshot_artifact_id=snapshot_artifact_id,
+            model_lock_artifact_id=model_lock_artifact_id,
+            limits=limits,
+            hnsw_parameters=hnsw_parameters,
+            lineage=lineage,
+        )
+
+    @classmethod
+    def _build_from_lexical(
+        cls,
+        destination: Path,
+        lexical_segment_path: Path,
+        admitted: tuple[AdmittedIndexChunk, ...],
+        statistics: IndexBuildStatistics,
+        *,
+        snapshot_artifact_id: str,
+        model_lock_artifact_id: str,
+        limits: IndexBuildLimits,
+        hnsw_parameters: HnswParameters | None,
+        lineage: IndexGenerationLineage | None,
+    ) -> IndexGeneration:
+        parameters = hnsw_parameters or HnswParameters()
+        expected_lexical_chunks = tuple(
             LexicalChunk(
                 chunk_id=chunk.chunk_id,
                 document_id=chunk.document_id,
@@ -512,6 +679,11 @@ class IndexGeneration:
             )
             for chunk in admitted
         )
+        with SQLiteLexicalIndex(lexical_segment_path) as source_lexical:
+            if source_lexical.chunks() != expected_lexical_chunks:
+                raise ValueError(
+                    "lexical segment does not match the admitted dense chunk set"
+                )
         dense_records = tuple(
             DenseVectorRecord(
                 chunk_id=chunk.chunk_id,
@@ -531,9 +703,12 @@ class IndexGeneration:
         stage = "lexical"
         published = False
         try:
-            with SQLiteLexicalIndex.build(
-                temporary / LEXICAL_NAME, lexical_chunks
-            ) as lexical:
+            shutil.copyfile(lexical_segment_path, temporary / LEXICAL_NAME)
+            with (temporary / LEXICAL_NAME).open("rb") as handle:
+                os.fsync(handle.fileno())
+            with SQLiteLexicalIndex(temporary / LEXICAL_NAME) as lexical:
+                if lexical.chunks() != expected_lexical_chunks:
+                    raise ValueError("copied lexical segment content changed")
                 receipts.append(
                     _stage_receipt(
                         stage,
@@ -703,4 +878,7 @@ __all__ = [
     "IndexGenerationIntegrityError",
     "IndexGenerationLineage",
     "IndexGenerationManifest",
+    "LexicalIndexChunk",
+    "LexicalIndexLimits",
+    "build_lexical_index_segment",
 ]

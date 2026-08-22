@@ -135,6 +135,37 @@ class IndexService:
             self._registry.activate(generation_id)
         return self._registry.inspect(generation_id)
 
+    def build_from_lexical(
+        self,
+        lexical_segment_path: str | Path,
+        chunks: Iterable[AdmittedIndexChunk],
+        *,
+        snapshot_artifact_id: str,
+        model_lock_artifact_id: str,
+        limits: IndexBuildLimits,
+        hnsw_parameters: HnswParameters | None = None,
+        activate: bool = False,
+    ) -> IndexInspectionReport:
+        """Build and admit dense indexes around a completed lexical segment."""
+
+        with tempfile.TemporaryDirectory(
+            prefix=".generation-building-",
+            dir=self._registry.root,
+        ) as work:
+            with IndexGeneration.build_from_lexical(
+                Path(work) / "generation",
+                lexical_segment_path,
+                chunks,
+                snapshot_artifact_id=snapshot_artifact_id,
+                model_lock_artifact_id=model_lock_artifact_id,
+                limits=limits,
+                hnsw_parameters=hnsw_parameters,
+            ) as generation:
+                generation_id = self._registry.admit(generation.path)
+        if activate:
+            self._registry.activate(generation_id)
+        return self._registry.inspect(generation_id)
+
     def activate(self, generation_id: str) -> IndexInspectionReport:
         """Atomically activate and report one admitted generation."""
 

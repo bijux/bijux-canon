@@ -10,6 +10,9 @@ from bijux_canon_index.application.index_generation import (
     IndexGenerationIntegrityError,
     IndexGenerationLineage,
     IndexGenerationManifest,
+    LexicalIndexChunk,
+    LexicalIndexLimits,
+    build_lexical_index_segment,
 )
 from bijux_canon_index.application.index_activation import (
     IndexActivationError,
@@ -246,6 +249,8 @@ __all__ = [
     "LexicalCandidateDisposition",
     "LexicalCandidateOutcome",
     "LexicalCandidateService",
+    "LexicalIndexChunk",
+    "LexicalIndexLimits",
     "LocatorValue",
     "MultiQueryBatch",
     "MultiQueryExecutor",
@@ -304,6 +309,7 @@ __all__ = [
     "plan_subqueries",
     "apply_index_delta",
     "audit_index_generation",
+    "build_lexical_index_segment",
     "build_exact_search_witness",
     "compare_vex_artifacts",
     "evaluate_vex_budget",

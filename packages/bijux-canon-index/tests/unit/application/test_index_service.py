@@ -18,6 +18,9 @@ from bijux_canon_index.application import (
     IndexQueryChannel,
     IndexQueryRequest,
     IndexService,
+    LexicalIndexChunk,
+    LexicalIndexLimits,
+    build_lexical_index_segment,
 )
 from bijux_canon_index.domain.metadata_filters import MetadataFilter
 from bijux_canon_index.infra.adapters.faiss.hnsw import HnswParameters
@@ -154,3 +157,40 @@ def test_failed_build_leaves_no_partial_generation(tmp_path: Path) -> None:
 
     assert not tuple(service.registry_root.glob(".generation-building-*"))
     assert not tuple((service.registry_root / "generations").iterdir())
+
+
+def test_service_admits_and_activates_a_separately_built_lexical_segment(
+    tmp_path: Path,
+) -> None:
+    service = _service(tmp_path / "registry")
+    lexical_path = tmp_path / "lexical.sqlite"
+    build_lexical_index_segment(
+        lexical_path,
+        (
+            LexicalIndexChunk(
+                chunk.chunk_id,
+                chunk.document_id,
+                chunk.ordinal,
+                chunk.text,
+                chunk.metadata,
+            )
+            for chunk in _chunks()
+        ),
+        limits=LexicalIndexLimits(10, 10_000, 10_000),
+    )
+
+    report = service.build_from_lexical(
+        lexical_path,
+        _chunks(),
+        snapshot_artifact_id="sha256:snapshot",
+        model_lock_artifact_id="sha256:model-lock",
+        limits=IndexBuildLimits(10, 10_000, 10_000, 10_000),
+        hnsw_parameters=HnswParameters(
+            m=2, ef_construction=8, ef_search=8, seed=17
+        ),
+        activate=True,
+    )
+
+    assert report.activation.active is True
+    assert service.inspect().generation_id == report.generation_id
+    assert lexical_path.is_file()

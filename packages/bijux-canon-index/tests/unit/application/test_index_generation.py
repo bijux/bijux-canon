@@ -19,6 +19,9 @@ from bijux_canon_index.application.index_generation import (
     IndexBuildLimits,
     IndexGeneration,
     IndexGenerationBuildError,
+    LexicalIndexChunk,
+    LexicalIndexLimits,
+    build_lexical_index_segment,
 )
 from bijux_canon_index.infra.adapters.faiss.exact import FaissExactIndex
 from bijux_canon_index.infra.adapters.faiss.hnsw import HnswParameters
@@ -58,6 +61,27 @@ def _limits() -> IndexBuildLimits:
         max_chunks=10,
         max_text_bytes=10_000,
         max_vector_bytes=10_000,
+        max_metadata_bytes=10_000,
+    )
+
+
+def _lexical_chunks() -> tuple[LexicalIndexChunk, ...]:
+    return tuple(
+        LexicalIndexChunk(
+            chunk_id=chunk.chunk_id,
+            document_id=chunk.document_id,
+            ordinal=chunk.ordinal,
+            text=chunk.text,
+            metadata=chunk.metadata,
+        )
+        for chunk in _chunks()
+    )
+
+
+def _lexical_limits() -> LexicalIndexLimits:
+    return LexicalIndexLimits(
+        max_chunks=10,
+        max_text_bytes=10_000,
         max_metadata_bytes=10_000,
     )
 
@@ -112,6 +136,66 @@ def test_clean_rebuild_identity_is_independent_of_input_order(tmp_path: Path) ->
     assert (tmp_path / "first" / "generation.json").read_bytes() == (
         tmp_path / "second" / "generation.json"
     ).read_bytes()
+
+
+def test_lexical_segment_is_independent_and_dense_assembly_reuses_it(
+    tmp_path: Path,
+) -> None:
+    lexical_path = tmp_path / "lexical.sqlite"
+    receipt = build_lexical_index_segment(
+        lexical_path,
+        reversed(_lexical_chunks()),
+        limits=_lexical_limits(),
+    )
+
+    assert receipt.stage == "lexical"
+    assert receipt.file_name == "lexical.sqlite"
+    assert sorted(path.name for path in tmp_path.iterdir()) == ["lexical.sqlite"]
+
+    with IndexGeneration.build_from_lexical(
+        tmp_path / "assembled",
+        lexical_path,
+        _chunks(),
+        snapshot_artifact_id="sha256:snapshot",
+        model_lock_artifact_id="sha256:model-lock",
+        limits=_limits(),
+        hnsw_parameters=HnswParameters(
+            m=2, ef_construction=8, ef_search=8, seed=7
+        ),
+    ) as assembled:
+        assembled_manifest = assembled.manifest
+    with _build(tmp_path / "compatibility") as compatibility:
+        compatibility_manifest = compatibility.manifest
+
+    assert assembled_manifest == compatibility_manifest
+    assert lexical_path.read_bytes() == (
+        tmp_path / "assembled" / "lexical.sqlite"
+    ).read_bytes()
+
+
+def test_dense_assembly_rejects_a_lexical_segment_from_other_content(
+    tmp_path: Path,
+) -> None:
+    lexical_path = tmp_path / "lexical.sqlite"
+    changed = replace(_lexical_chunks()[0], text="substituted source text")
+    build_lexical_index_segment(
+        lexical_path,
+        (changed, *_lexical_chunks()[1:]),
+        limits=_lexical_limits(),
+    )
+
+    with pytest.raises(ValueError, match="does not match"):
+        IndexGeneration.build_from_lexical(
+            tmp_path / "generation",
+            lexical_path,
+            _chunks(),
+            snapshot_artifact_id="sha256:snapshot",
+            model_lock_artifact_id="sha256:model-lock",
+            limits=_limits(),
+        )
+
+    assert lexical_path.is_file()
+    assert not (tmp_path / "generation").exists()
 
 
 @pytest.mark.parametrize(
