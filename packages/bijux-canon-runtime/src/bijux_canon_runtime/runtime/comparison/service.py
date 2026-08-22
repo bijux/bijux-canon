@@ -323,6 +323,7 @@ def _timings(inspection: RuntimeRunInspection) -> dict[str, float]:
             InspectedEventKind.COMPLETED,
             InspectedEventKind.FAILED,
             InspectedEventKind.CANCELLED,
+            InspectedEventKind.TIMED_OUT,
         }
     }
 

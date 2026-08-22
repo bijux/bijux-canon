@@ -84,6 +84,7 @@ class _RecoveryAdapter:
         if source.status in {
             InspectedStepStatus.RUNNING,
             InspectedStepStatus.FAILED,
+            InspectedStepStatus.TIMED_OUT,
         }:
             if self.reconciliation_adapter is None:
                 raise RuntimeRecoveryError(
@@ -122,6 +123,7 @@ class RuntimeRecoveryService:
         reconciliation_adapters: Mapping[DagOperation, OperationAdapter] | None = None,
         scheduler_policy: SchedulerPolicy | None = None,
         is_cancelled: Callable[[], bool] | None = None,
+        deadline_monotonic: float | None = None,
     ) -> RuntimeRecoveryOutcome:
         """Supersede an interruption while preserving every admitted output."""
         current = self._inspector.inspect(run_id)
@@ -137,14 +139,16 @@ class RuntimeRecoveryService:
         if source.status not in {
             InspectedRunStatus.RUNNING,
             InspectedRunStatus.FAILED,
+            InspectedRunStatus.TIMED_OUT,
         }:
             raise RuntimeRecoveryError(
-                "recovery requires an interrupted or failed attempt"
+                "recovery requires an interrupted, failed, or timed-out attempt"
             )
         reconciliation = dict(reconciliation_adapters or {})
         ambiguous_statuses = {
             InspectedStepStatus.RUNNING,
             InspectedStepStatus.FAILED,
+            InspectedStepStatus.TIMED_OUT,
         }
         ambiguous = {
             step.operation
@@ -233,7 +237,11 @@ class RuntimeRecoveryService:
             policy=policy,
             journal=journal,
             events=ledger,
-        ).run(plan, is_cancelled=is_cancelled)
+        ).run(
+            plan,
+            is_cancelled=is_cancelled,
+            deadline_monotonic=deadline_monotonic,
+        )
         recovered = self._inspector.inspect(run_id, attempt_id=retry.attempt_id)
         return RuntimeRecoveryOutcome(
             source=source,
@@ -296,6 +304,7 @@ def _recovered_steps(
         InspectedStepStatus.COMPLETED: RecoveryStepDisposition.REUSED,
         InspectedStepStatus.RUNNING: RecoveryStepDisposition.RECONCILED,
         InspectedStepStatus.FAILED: RecoveryStepDisposition.RECONCILED,
+        InspectedStepStatus.TIMED_OUT: RecoveryStepDisposition.RECONCILED,
         InspectedStepStatus.PLANNED: RecoveryStepDisposition.EXECUTED,
         InspectedStepStatus.SKIPPED: RecoveryStepDisposition.EXECUTED,
     }

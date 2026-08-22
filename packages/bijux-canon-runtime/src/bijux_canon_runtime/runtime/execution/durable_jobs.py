@@ -8,7 +8,7 @@ from __future__ import annotations
 from collections.abc import Callable, Mapping
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from enum import StrEnum
 import hashlib
 import json
@@ -22,6 +22,14 @@ from bijux_canon_runtime.model.artifact import canonical_json_bytes
 
 class DurableJobError(RuntimeError):
     """A durable job request or state transition is invalid."""
+
+
+class DurableJobCancelled(DurableJobError):
+    """A caller cancelled a durable job before successful completion."""
+
+
+class DurableJobTimedOut(DurableJobError):
+    """A durable job exceeded its persisted execution deadline."""
 
 
 class JobKind(StrEnum):
@@ -39,11 +47,17 @@ class JobStatus(StrEnum):
     SUCCEEDED = "succeeded"
     FAILED = "failed"
     CANCELLED = "cancelled"
+    TIMED_OUT = "timed_out"
 
     @property
     def terminal(self) -> bool:
         """Return whether the job cannot transition again."""
-        return self in {self.SUCCEEDED, self.FAILED, self.CANCELLED}
+        return self in {
+            self.SUCCEEDED,
+            self.FAILED,
+            self.CANCELLED,
+            self.TIMED_OUT,
+        }
 
 
 @dataclass(frozen=True, slots=True)
@@ -53,6 +67,7 @@ class DurableJobRequest:
     kind: JobKind
     idempotency_key: str
     payload: Mapping[str, object]
+    timeout_seconds: float | None = None
     _payload_json: str = field(init=False, repr=False, compare=False)
     _request_sha256: str = field(init=False, repr=False, compare=False)
 
@@ -63,6 +78,8 @@ class DurableJobRequest:
             raise ValueError("job idempotency key must not be empty")
         if self.idempotency_key != self.idempotency_key.strip():
             raise ValueError("job idempotency key must not have surrounding whitespace")
+        if self.timeout_seconds is not None and self.timeout_seconds <= 0:
+            raise ValueError("job execution timeout must be positive")
         encoded = canonical_json_bytes(dict(self.payload))
         payload = json.loads(encoded)
         if not isinstance(payload, dict):
@@ -70,10 +87,16 @@ class DurableJobRequest:
         payload_json = encoded.decode("utf-8")
         object.__setattr__(self, "payload", payload)
         object.__setattr__(self, "_payload_json", payload_json)
+        identity_payload: object = payload
+        if self.timeout_seconds is not None:
+            identity_payload = {
+                "payload": payload,
+                "timeout_seconds": self.timeout_seconds,
+            }
         object.__setattr__(
             self,
             "_request_sha256",
-            hashlib.sha256(encoded).hexdigest(),
+            hashlib.sha256(canonical_json_bytes(identity_payload)).hexdigest(),
         )
 
     @property
@@ -113,6 +136,8 @@ class DurableJobSnapshot:
     submitted_at: str
     started_at: str | None
     finished_at: str | None
+    deadline_at: str | None
+    timeout_seconds: float | None
     result: dict[str, object] | None
     error_type: str | None
     error_message: str | None
@@ -172,7 +197,8 @@ class DurableJobManager:
             connection.execute("BEGIN IMMEDIATE")
             existing = connection.execute(
                 """
-                SELECT job_id, kind, request_sha256, payload_json
+                SELECT job_id, kind, request_sha256, payload_json,
+                       timeout_seconds
                 FROM runtime_jobs WHERE idempotency_key = ?
                 """,
                 (request.idempotency_key,),
@@ -183,6 +209,7 @@ class DurableJobManager:
                     request.kind.value,
                     request.request_sha256,
                     payload_json,
+                    request.timeout_seconds,
                 ):
                     connection.execute("ROLLBACK")
                     raise DurableJobError(
@@ -193,13 +220,26 @@ class DurableJobManager:
                 if not snapshot.status.terminal:
                     self._schedule(request.job_id)
                 return snapshot
+            submitted_at = _now()
+            deadline_at = (
+                None
+                if request.timeout_seconds is None
+                else (
+                    datetime.fromisoformat(submitted_at)
+                    + timedelta(seconds=request.timeout_seconds)
+                ).isoformat()
+            )
             connection.execute(
                 """
                 INSERT INTO runtime_jobs (
                     job_id, kind, idempotency_key, request_sha256, payload_json,
                     status, cancel_requested, attempt_count, submitted_at,
-                    started_at, finished_at, result_json, error_type, error_message
-                ) VALUES (?, ?, ?, ?, ?, 'queued', 0, 0, ?, NULL, NULL, NULL, NULL, NULL)
+                    started_at, finished_at, deadline_at, timeout_seconds,
+                    result_json, error_type, error_message
+                ) VALUES (
+                    ?, ?, ?, ?, ?, 'queued', 0, 0, ?, NULL, NULL, ?, ?,
+                    NULL, NULL, NULL
+                )
                 """,
                 (
                     request.job_id,
@@ -207,7 +247,9 @@ class DurableJobManager:
                     request.idempotency_key,
                     request.request_sha256,
                     payload_json,
-                    _now(),
+                    submitted_at,
+                    deadline_at,
+                    request.timeout_seconds,
                 ),
             )
             connection.execute("COMMIT")
@@ -222,7 +264,8 @@ class DurableJobManager:
                 """
                 SELECT job_id, kind, idempotency_key, request_sha256, status,
                        cancel_requested, attempt_count, submitted_at, started_at,
-                       finished_at, result_json, error_type, error_message
+                       finished_at, deadline_at, timeout_seconds, result_json,
+                       error_type, error_message
                 FROM runtime_jobs WHERE job_id = ?
                 """,
                 (job_id,),
@@ -240,9 +283,11 @@ class DurableJobManager:
             submitted_at=row[7],
             started_at=row[8],
             finished_at=row[9],
-            result=None if row[10] is None else json.loads(row[10]),
-            error_type=row[11],
-            error_message=row[12],
+            deadline_at=row[10],
+            timeout_seconds=row[11],
+            result=None if row[12] is None else json.loads(row[12]),
+            error_type=row[13],
+            error_message=row[14],
         )
 
     def result(self, job_id: str) -> dict[str, object]:
@@ -276,10 +321,27 @@ class DurableJobManager:
                 connection.execute(
                     """
                     UPDATE runtime_jobs
-                    SET cancel_requested = 1, status = ?, finished_at = COALESCE(?, finished_at)
+                    SET cancel_requested = 1, status = ?,
+                        finished_at = COALESCE(?, finished_at),
+                        error_type = COALESCE(?, error_type),
+                        error_message = COALESCE(?, error_message)
                     WHERE job_id = ?
                     """,
-                    (terminal_status, finished_at, job_id),
+                    (
+                        terminal_status,
+                        finished_at,
+                        (
+                            DurableJobCancelled.__name__
+                            if status is JobStatus.QUEUED
+                            else None
+                        ),
+                        (
+                            "durable job was cancelled before execution"
+                            if status is JobStatus.QUEUED
+                            else None
+                        ),
+                        job_id,
+                    ),
                 )
             connection.execute("COMMIT")
         self._notify()
@@ -314,43 +376,125 @@ class DurableJobManager:
 
     def _initialize(self) -> None:
         with self._connect() as connection:
-            connection.executescript(
+            connection.execute("PRAGMA journal_mode=WAL")
+            connection.execute("PRAGMA synchronous=FULL")
+            existing = connection.execute(
+                "SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'runtime_jobs'"
+            ).fetchone()
+            if existing is None:
+                connection.execute(self._table_sql())
+                return
+            columns = {
+                row[1]
+                for row in connection.execute(
+                    "PRAGMA table_info(runtime_jobs)"
+                ).fetchall()
+            }
+            if {"deadline_at", "timeout_seconds"}.issubset(columns) and (
+                "timed_out" in str(existing[0])
+            ):
+                return
+            connection.execute("BEGIN IMMEDIATE")
+            connection.execute("ALTER TABLE runtime_jobs RENAME TO runtime_jobs_legacy")
+            connection.execute(self._table_sql())
+            connection.execute(
                 """
-                PRAGMA journal_mode=WAL;
-                PRAGMA synchronous=FULL;
-                CREATE TABLE IF NOT EXISTS runtime_jobs (
-                    job_id TEXT PRIMARY KEY,
-                    kind TEXT NOT NULL CHECK (kind IN ('run', 'replay')),
-                    idempotency_key TEXT NOT NULL UNIQUE,
-                    request_sha256 TEXT NOT NULL,
-                    payload_json TEXT NOT NULL,
-                    status TEXT NOT NULL CHECK (
-                        status IN ('queued', 'running', 'succeeded', 'failed', 'cancelled')
-                    ),
-                    cancel_requested INTEGER NOT NULL CHECK (cancel_requested IN (0, 1)),
-                    attempt_count INTEGER NOT NULL,
-                    submitted_at TEXT NOT NULL,
-                    started_at TEXT,
-                    finished_at TEXT,
-                    result_json TEXT,
-                    error_type TEXT,
-                    error_message TEXT
-                );
+                INSERT INTO runtime_jobs (
+                    job_id, kind, idempotency_key, request_sha256, payload_json,
+                    status, cancel_requested, attempt_count, submitted_at,
+                    started_at, finished_at, deadline_at, timeout_seconds,
+                    result_json, error_type, error_message
+                )
+                SELECT job_id, kind, idempotency_key, request_sha256, payload_json,
+                       status, cancel_requested, attempt_count, submitted_at,
+                       started_at, finished_at, NULL, NULL, result_json,
+                       error_type, error_message
+                FROM runtime_jobs_legacy
                 """
             )
+            connection.execute("DROP TABLE runtime_jobs_legacy")
+            connection.execute("COMMIT")
+
+    @staticmethod
+    def _table_sql() -> str:
+        return """
+            CREATE TABLE runtime_jobs (
+                job_id TEXT PRIMARY KEY,
+                kind TEXT NOT NULL CHECK (kind IN ('run', 'replay')),
+                idempotency_key TEXT NOT NULL UNIQUE,
+                request_sha256 TEXT NOT NULL,
+                payload_json TEXT NOT NULL,
+                status TEXT NOT NULL CHECK (
+                    status IN (
+                        'queued', 'running', 'succeeded', 'failed',
+                        'cancelled', 'timed_out'
+                    )
+                ),
+                cancel_requested INTEGER NOT NULL CHECK (cancel_requested IN (0, 1)),
+                attempt_count INTEGER NOT NULL,
+                submitted_at TEXT NOT NULL,
+                started_at TEXT,
+                finished_at TEXT,
+                deadline_at TEXT,
+                timeout_seconds REAL,
+                result_json TEXT,
+                error_type TEXT,
+                error_message TEXT
+            )
+        """
 
     def _recover_interrupted_jobs(self) -> None:
+        now = _now()
         with self._connect() as connection:
             connection.execute("BEGIN IMMEDIATE")
             connection.execute(
                 """
-                UPDATE runtime_jobs
-                SET status = CASE WHEN cancel_requested = 1 THEN 'cancelled' ELSE 'queued' END,
-                    finished_at = CASE WHEN cancel_requested = 1 THEN ? ELSE NULL END,
-                    started_at = NULL
+                UPDATE runtime_jobs SET
+                    status = CASE
+                        WHEN cancel_requested = 1 THEN 'cancelled'
+                        WHEN deadline_at IS NOT NULL AND deadline_at <= ? THEN 'timed_out'
+                        ELSE 'queued'
+                    END,
+                    finished_at = CASE
+                        WHEN cancel_requested = 1 THEN ?
+                        WHEN deadline_at IS NOT NULL AND deadline_at <= ? THEN ?
+                        ELSE NULL
+                    END,
+                    started_at = NULL,
+                    error_type = CASE
+                        WHEN cancel_requested = 1 THEN ?
+                        WHEN deadline_at IS NOT NULL AND deadline_at <= ? THEN ?
+                        ELSE error_type
+                    END,
+                    error_message = CASE
+                        WHEN cancel_requested = 1 THEN 'durable job was cancelled'
+                        WHEN deadline_at IS NOT NULL AND deadline_at <= ?
+                            THEN 'durable job deadline expired during interruption'
+                        ELSE error_message
+                    END
                 WHERE status = 'running'
                 """,
-                (_now(),),
+                (
+                    now,
+                    now,
+                    now,
+                    now,
+                    DurableJobCancelled.__name__,
+                    now,
+                    DurableJobTimedOut.__name__,
+                    now,
+                ),
+            )
+            connection.execute(
+                """
+                UPDATE runtime_jobs
+                SET status = 'timed_out', finished_at = ?,
+                    error_type = ?,
+                    error_message = 'durable job deadline expired before execution'
+                WHERE status = 'queued' AND deadline_at IS NOT NULL
+                      AND deadline_at <= ?
+                """,
+                (now, DurableJobTimedOut.__name__, now),
             )
             job_ids = [
                 row[0]
@@ -376,7 +520,7 @@ class DurableJobManager:
                 return
             handler = self._handlers[request.kind]
             try:
-                result = dict(handler(request, lambda: self._cancel_requested(job_id)))
+                result = dict(handler(request, lambda: self._stop_requested(job_id)))
                 canonical_json_bytes(result)
             except Exception as exc:
                 self._finish_failed(job_id, exc)
@@ -392,12 +536,25 @@ class DurableJobManager:
             connection.execute("BEGIN IMMEDIATE")
             row = connection.execute(
                 """
-                SELECT kind, idempotency_key, payload_json, status, cancel_requested
+                SELECT kind, idempotency_key, payload_json, status,
+                       cancel_requested, timeout_seconds, deadline_at
                 FROM runtime_jobs WHERE job_id = ?
                 """,
                 (job_id,),
             ).fetchone()
             if row is None or row[3] != JobStatus.QUEUED.value or bool(row[4]):
+                connection.execute("COMMIT")
+                return None
+            if row[6] is not None and row[6] <= _now():
+                connection.execute(
+                    """
+                    UPDATE runtime_jobs
+                    SET status = 'timed_out', finished_at = ?, error_type = ?,
+                        error_message = 'durable job deadline expired before execution'
+                    WHERE job_id = ? AND status = 'queued'
+                    """,
+                    (_now(), DurableJobTimedOut.__name__, job_id),
+                )
                 connection.execute("COMMIT")
                 return None
             connection.execute(
@@ -409,7 +566,12 @@ class DurableJobManager:
                 (_now(), job_id),
             )
             connection.execute("COMMIT")
-        return DurableJobRequest(JobKind(row[0]), row[1], json.loads(row[2]))
+        return DurableJobRequest(
+            JobKind(row[0]),
+            row[1],
+            json.loads(row[2]),
+            row[5],
+        )
 
     def _finish_success(self, job_id: str, result: dict[str, object]) -> None:
         result_json = json.dumps(
@@ -419,37 +581,76 @@ class DurableJobManager:
             ensure_ascii=False,
             allow_nan=False,
         )
+        finished_at = _now()
         with self._connect() as connection:
             connection.execute("BEGIN IMMEDIATE")
-            cancelled = bool(
-                connection.execute(
-                    "SELECT cancel_requested FROM runtime_jobs WHERE job_id = ?",
-                    (job_id,),
-                ).fetchone()[0]
+            cancellation = connection.execute(
+                """
+                SELECT cancel_requested, deadline_at
+                FROM runtime_jobs WHERE job_id = ?
+                """,
+                (job_id,),
+            ).fetchone()
+            cancelled = bool(cancellation[0])
+            timed_out = (
+                cancellation[1] is not None
+                and cancellation[1] <= finished_at
+            )
+            status = (
+                JobStatus.CANCELLED
+                if cancelled
+                else JobStatus.TIMED_OUT if timed_out else JobStatus.SUCCEEDED
             )
             connection.execute(
                 """
-                UPDATE runtime_jobs
-                SET status = ?, result_json = ?, finished_at = ?
+                UPDATE runtime_jobs SET
+                    status = ?, result_json = ?, finished_at = ?,
+                    error_type = ?, error_message = ?
                 WHERE job_id = ? AND status = 'running'
                 """,
                 (
-                    JobStatus.CANCELLED.value if cancelled else JobStatus.SUCCEEDED.value,
-                    None if cancelled else result_json,
-                    _now(),
+                    status.value,
+                    result_json,
+                    finished_at,
+                    (
+                        DurableJobCancelled.__name__
+                        if cancelled
+                        else DurableJobTimedOut.__name__ if timed_out else None
+                    ),
+                    (
+                        "durable job was cancelled after partial evidence"
+                        if cancelled
+                        else (
+                            "durable job deadline exceeded after partial evidence"
+                            if timed_out
+                            else None
+                        )
+                    ),
                     job_id,
                 ),
             )
             connection.execute("COMMIT")
 
     def _finish_failed(self, job_id: str, error: Exception) -> None:
+        finished_at = _now()
         with self._connect() as connection:
             connection.execute("BEGIN IMMEDIATE")
-            cancelled = bool(
-                connection.execute(
-                    "SELECT cancel_requested FROM runtime_jobs WHERE job_id = ?",
-                    (job_id,),
-                ).fetchone()[0]
+            cancellation = connection.execute(
+                """
+                SELECT cancel_requested, deadline_at
+                FROM runtime_jobs WHERE job_id = ?
+                """,
+                (job_id,),
+            ).fetchone()
+            cancelled = bool(cancellation[0])
+            timed_out = (
+                cancellation[1] is not None
+                and cancellation[1] <= finished_at
+            )
+            status = (
+                JobStatus.CANCELLED
+                if cancelled
+                else JobStatus.TIMED_OUT if timed_out else JobStatus.FAILED
             )
             connection.execute(
                 """
@@ -458,22 +659,45 @@ class DurableJobManager:
                 WHERE job_id = ? AND status = 'running'
                 """,
                 (
-                    JobStatus.CANCELLED.value if cancelled else JobStatus.FAILED.value,
-                    type(error).__name__,
-                    str(error),
-                    _now(),
+                    status.value,
+                    (
+                        DurableJobCancelled.__name__
+                        if cancelled
+                        else (
+                            DurableJobTimedOut.__name__
+                            if timed_out
+                            else type(error).__name__
+                        )
+                    ),
+                    (
+                        "durable job was cancelled"
+                        if cancelled
+                        else (
+                            "durable job deadline was exceeded"
+                            if timed_out
+                            else str(error)
+                        )
+                    ),
+                    finished_at,
                     job_id,
                 ),
             )
             connection.execute("COMMIT")
 
-    def _cancel_requested(self, job_id: str) -> bool:
+    def _stop_requested(self, job_id: str) -> bool:
         with self._connect() as connection:
             row = connection.execute(
-                "SELECT cancel_requested FROM runtime_jobs WHERE job_id = ?",
+                """
+                SELECT cancel_requested, deadline_at
+                FROM runtime_jobs WHERE job_id = ?
+                """,
                 (job_id,),
             ).fetchone()
-        return row is None or bool(row[0])
+        return (
+            row is None
+            or bool(row[0])
+            or (row[1] is not None and row[1] <= _now())
+        )
 
     def _connect(self) -> sqlite3.Connection:
         connection = sqlite3.connect(self._path, timeout=5.0)
@@ -491,11 +715,13 @@ class DurableJobManager:
 
 
 __all__ = [
+    "DurableJobCancelled",
     "DurableJobError",
     "DurableJobHandler",
     "DurableJobManager",
     "DurableJobRequest",
     "DurableJobSnapshot",
+    "DurableJobTimedOut",
     "JobKind",
     "JobStatus",
 ]

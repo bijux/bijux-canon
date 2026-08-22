@@ -11,7 +11,7 @@ from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from enum import StrEnum
 import threading
-from time import perf_counter_ns
+from time import monotonic, perf_counter_ns
 
 from bijux_canon_runtime.model.artifact import AddressedArtifact
 from bijux_canon_runtime.model.execution.request_plan import (
@@ -24,6 +24,7 @@ from bijux_canon_runtime.runtime.execution.operation_dispatcher import (
     StepDispatchCancelled,
     StepDispatchContext,
     StepDispatchResult,
+    StepDispatchTimedOut,
     StepOutputArtifact,
 )
 from bijux_canon_runtime.runtime.execution.runtime_event_ledger import (
@@ -46,6 +47,7 @@ class StepNodeStatus(StrEnum):
     FAILED = "failed"
     BLOCKED = "blocked"
     CANCELLED = "cancelled"
+    TIMED_OUT = "timed_out"
 
 
 @dataclass(frozen=True, slots=True)
@@ -217,11 +219,13 @@ class ArtifactTransitionJournal:
                 StepNodeStatus.RUNNING,
                 StepNodeStatus.BLOCKED,
                 StepNodeStatus.CANCELLED,
+                StepNodeStatus.TIMED_OUT,
             },
             StepNodeStatus.RUNNING: {
                 StepNodeStatus.SUCCEEDED,
                 StepNodeStatus.FAILED,
                 StepNodeStatus.CANCELLED,
+                StepNodeStatus.TIMED_OUT,
             },
         }
         if to_status not in allowed.get(from_status, set()):
@@ -265,6 +269,8 @@ class DependencyAwareScheduler:
         plan: RuntimeRequestPlan,
         *,
         is_cancelled: Callable[[], bool] | None = None,
+        deadline_monotonic: float | None = None,
+        monotonic_clock: Callable[[], float] = monotonic,
     ) -> DagScheduleResult:
         """Run the plan until every node is terminal or cancellation wins."""
         if plan.plan_sha256 != self._journal.plan_sha256:
@@ -276,6 +282,11 @@ class DependencyAwareScheduler:
         if set(constraints) != step_ids:
             raise SchedulerError("scheduler policy must cover every plan step exactly")
         cancelled = is_cancelled or (lambda: False)
+        deadline = deadline_monotonic
+        if deadline is None:
+            deadline = monotonic_clock() + min(
+                step.inputs.budget.timeout_seconds for step in plan.steps
+            )
         statuses = dict.fromkeys(step_ids, StepNodeStatus.QUEUED)
         outputs: dict[str, tuple[StepOutputArtifact, ...]] = {}
         results: dict[str, StepDispatchResult] = {}
@@ -302,22 +313,41 @@ class DependencyAwareScheduler:
                 ]
                 if not queued:
                     break
+                stop_error: StepDispatchCancelled | StepDispatchTimedOut | None = None
                 if cancelled():
+                    stop_error = StepDispatchCancelled(
+                        "execution cancelled before dispatch"
+                    )
+                elif monotonic_clock() >= deadline:
+                    stop_error = StepDispatchTimedOut(
+                        "execution deadline exceeded before dispatch"
+                    )
+                if stop_error is not None:
+                    timed_out = isinstance(stop_error, StepDispatchTimedOut)
+                    terminal_status = (
+                        StepNodeStatus.TIMED_OUT
+                        if timed_out
+                        else StepNodeStatus.CANCELLED
+                    )
+                    event_kind = (
+                        RuntimeEventKind.TIMED_OUT
+                        if timed_out
+                        else RuntimeEventKind.CANCELLED
+                    )
                     for step in queued:
-                        statuses[step.step_id] = StepNodeStatus.CANCELLED
+                        statuses[step.step_id] = terminal_status
                         self._journal.append(
                             step_id=step.step_id,
                             from_status=StepNodeStatus.QUEUED,
-                            to_status=StepNodeStatus.CANCELLED,
+                            to_status=terminal_status,
+                            failure=stop_error,
                         )
                         if self._events is not None:
                             self._events.record(
                                 step=step,
-                                event_kind=RuntimeEventKind.CANCELLED,
+                                event_kind=event_kind,
                                 duration_ms=0.0,
-                                error=StepDispatchCancelled(
-                                    "execution cancelled before dispatch"
-                                ),
+                                error=stop_error,
                             )
                     break
                 ready = [
@@ -358,7 +388,11 @@ class DependencyAwareScheduler:
                         self._dispatcher.dispatch,
                         step,
                         upstream,
-                        context=StepDispatchContext(cancelled),
+                        context=StepDispatchContext(
+                            cancelled,
+                            deadline,
+                            monotonic_clock,
+                        ),
                     )
                 for step in wave:
                     future = futures[step.step_id]
@@ -380,6 +414,23 @@ class DependencyAwareScheduler:
                             self._events.record(
                                 step=step,
                                 event_kind=RuntimeEventKind.CANCELLED,
+                                inputs=upstream_by_step[step.step_id],
+                                duration_ms=duration_ms,
+                                error=exc,
+                            )
+                    except StepDispatchTimedOut as exc:
+                        statuses[step.step_id] = StepNodeStatus.TIMED_OUT
+                        failures[step.step_id] = str(exc)
+                        self._journal.append(
+                            step_id=step.step_id,
+                            from_status=StepNodeStatus.RUNNING,
+                            to_status=StepNodeStatus.TIMED_OUT,
+                            failure=exc,
+                        )
+                        if self._events is not None:
+                            self._events.record(
+                                step=step,
+                                event_kind=RuntimeEventKind.TIMED_OUT,
                                 inputs=upstream_by_step[step.step_id],
                                 duration_ms=duration_ms,
                                 error=exc,
@@ -462,6 +513,7 @@ class DependencyAwareScheduler:
                         StepNodeStatus.FAILED,
                         StepNodeStatus.BLOCKED,
                         StepNodeStatus.CANCELLED,
+                        StepNodeStatus.TIMED_OUT,
                     }
                 )
                 if blocking_dependencies:

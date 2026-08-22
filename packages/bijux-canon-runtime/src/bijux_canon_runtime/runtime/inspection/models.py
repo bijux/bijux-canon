@@ -22,6 +22,7 @@ class InspectedRunStatus(StrEnum):
     COMPLETED = "completed"
     FAILED = "failed"
     CANCELLED = "cancelled"
+    TIMED_OUT = "timed_out"
 
 
 class InspectedStepStatus(StrEnum):
@@ -32,6 +33,7 @@ class InspectedStepStatus(StrEnum):
     COMPLETED = "completed"
     FAILED = "failed"
     CANCELLED = "cancelled"
+    TIMED_OUT = "timed_out"
     SKIPPED = "skipped"
 
 
@@ -43,6 +45,7 @@ class InspectedEventKind(StrEnum):
     COMPLETED = "completed"
     FAILED = "failed"
     CANCELLED = "cancelled"
+    TIMED_OUT = "timed_out"
     SKIPPED = "skipped"
     PUBLISHED = "published"
 

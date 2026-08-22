@@ -7,6 +7,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
+from time import monotonic
 from types import MappingProxyType
 from typing import Protocol
 
@@ -27,20 +28,42 @@ class StepDispatchCancelled(StepDispatchError):
     """Execution was cancelled before a step artifact could be accepted."""
 
 
+class StepDispatchTimedOut(StepDispatchError):
+    """Execution exceeded its deadline before outputs could be accepted."""
+
+
 def _never_cancelled() -> bool:
     return False
 
 
 @dataclass(frozen=True, slots=True)
 class StepDispatchContext:
-    """Cooperative cancellation boundary shared with one adapter invocation."""
+    """Cooperative cancellation and deadline boundary for one adapter call."""
 
     is_cancelled: Callable[[], bool] = _never_cancelled
+    deadline_monotonic: float | None = None
+    monotonic_clock: Callable[[], float] = monotonic
 
-    def raise_if_cancelled(self) -> None:
-        """Stop before accepting work after cancellation was requested."""
+    @property
+    def remaining_seconds(self) -> float | None:
+        """Return the bounded provider timeout available at this instant."""
+        if self.deadline_monotonic is None:
+            return None
+        return max(0.0, self.deadline_monotonic - self.monotonic_clock())
+
+    def raise_if_stopped(self) -> None:
+        """Distinguish caller cancellation from deadline exhaustion."""
         if self.is_cancelled():
             raise StepDispatchCancelled("step dispatch was cancelled")
+        if (
+            self.deadline_monotonic is not None
+            and self.monotonic_clock() >= self.deadline_monotonic
+        ):
+            raise StepDispatchTimedOut("step dispatch deadline was exceeded")
+
+    def raise_if_cancelled(self) -> None:
+        """Retain the established cooperative checkpoint API."""
+        self.raise_if_stopped()
 
 
 @dataclass(frozen=True, slots=True)
@@ -182,7 +205,7 @@ class OperationDispatcher:
     ) -> StepDispatchResult:
         """Invoke one operation adapter and validate its complete artifact set."""
         dispatch_context = context or StepDispatchContext()
-        dispatch_context.raise_if_cancelled()
+        dispatch_context.raise_if_stopped()
         self._validate_upstream(step, upstream_artifacts)
         adapter = self._adapters.get(step.operation)
         if adapter is None:
@@ -197,7 +220,7 @@ class OperationDispatcher:
             raise StepDispatchError(
                 f"adapter {adapter.adapter_id} failed operation {step.operation.value}"
             ) from exc
-        dispatch_context.raise_if_cancelled()
+        dispatch_context.raise_if_stopped()
         self._validate_outputs(step, artifacts, upstream_artifacts)
         return StepDispatchResult(
             step_id=step.step_id,
@@ -285,6 +308,7 @@ __all__ = [
     "OperationAdapter",
     "OperationDispatcher",
     "StepDispatchCancelled",
+    "StepDispatchTimedOut",
     "StepDispatchContext",
     "StepDispatchError",
     "StepDispatchResult",

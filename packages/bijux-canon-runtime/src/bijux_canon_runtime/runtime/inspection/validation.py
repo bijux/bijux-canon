@@ -300,6 +300,7 @@ def validate_artifact_contracts(
                 InspectedStepStatus.RUNNING,
                 InspectedStepStatus.COMPLETED,
                 InspectedStepStatus.FAILED,
+                InspectedStepStatus.TIMED_OUT,
             }
             and {item.schema_id for item in inputs} != set(step.input_contract_ids)
         ):
@@ -309,10 +310,14 @@ def validate_artifact_contracts(
 def run_status(steps: tuple[InspectedDagStep, ...]) -> InspectedRunStatus:
     """Derive the run outcome from complete step state."""
     statuses = {step.status for step in steps}
-    if InspectedStepStatus.FAILED in statuses or InspectedStepStatus.SKIPPED in statuses:
+    if InspectedStepStatus.FAILED in statuses:
         return InspectedRunStatus.FAILED
+    if InspectedStepStatus.TIMED_OUT in statuses:
+        return InspectedRunStatus.TIMED_OUT
     if InspectedStepStatus.CANCELLED in statuses:
         return InspectedRunStatus.CANCELLED
+    if InspectedStepStatus.SKIPPED in statuses:
+        return InspectedRunStatus.FAILED
     if statuses == {InspectedStepStatus.COMPLETED}:
         return InspectedRunStatus.COMPLETED
     return InspectedRunStatus.RUNNING
@@ -335,6 +340,7 @@ _EVENT_STATUSES = {
     InspectedEventKind.PUBLISHED: InspectedStepStatus.COMPLETED,
     InspectedEventKind.FAILED: InspectedStepStatus.FAILED,
     InspectedEventKind.CANCELLED: InspectedStepStatus.CANCELLED,
+    InspectedEventKind.TIMED_OUT: InspectedStepStatus.TIMED_OUT,
     InspectedEventKind.SKIPPED: InspectedStepStatus.SKIPPED,
 }
 
@@ -342,6 +348,7 @@ _VALID_EVENT_SEQUENCES = {
     (InspectedEventKind.PLANNED,),
     (InspectedEventKind.PLANNED, InspectedEventKind.STARTED),
     (InspectedEventKind.PLANNED, InspectedEventKind.CANCELLED),
+    (InspectedEventKind.PLANNED, InspectedEventKind.TIMED_OUT),
     (InspectedEventKind.PLANNED, InspectedEventKind.SKIPPED),
     (
         InspectedEventKind.PLANNED,
@@ -357,6 +364,11 @@ _VALID_EVENT_SEQUENCES = {
         InspectedEventKind.PLANNED,
         InspectedEventKind.STARTED,
         InspectedEventKind.CANCELLED,
+    ),
+    (
+        InspectedEventKind.PLANNED,
+        InspectedEventKind.STARTED,
+        InspectedEventKind.TIMED_OUT,
     ),
     (
         InspectedEventKind.PLANNED,

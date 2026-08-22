@@ -32,6 +32,7 @@ class RuntimeEventKind(StrEnum):
     COMPLETED = "completed"
     FAILED = "failed"
     CANCELLED = "cancelled"
+    TIMED_OUT = "timed_out"
     SKIPPED = "skipped"
     PUBLISHED = "published"
 
@@ -240,6 +241,7 @@ class RuntimeEventLedger:
             RuntimeEventKind.COMPLETED,
             RuntimeEventKind.FAILED,
             RuntimeEventKind.CANCELLED,
+            RuntimeEventKind.TIMED_OUT,
             RuntimeEventKind.SKIPPED,
             RuntimeEventKind.PUBLISHED,
         }
@@ -250,6 +252,7 @@ class RuntimeEventLedger:
         error_kinds = {
             RuntimeEventKind.FAILED,
             RuntimeEventKind.CANCELLED,
+            RuntimeEventKind.TIMED_OUT,
             RuntimeEventKind.SKIPPED,
         }
         if event_kind is RuntimeEventKind.FAILED and error is None:

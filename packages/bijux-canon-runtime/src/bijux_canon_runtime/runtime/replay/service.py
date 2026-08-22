@@ -74,6 +74,7 @@ class RuntimeReplayService:
         dispatcher: OperationDispatcher | None = None,
         scheduler_policy: SchedulerPolicy | None = None,
         is_cancelled: Callable[[], bool] | None = None,
+        deadline_monotonic: float | None = None,
     ) -> RuntimeReplayOutcome:
         """Create or idempotently resolve a replay under explicit authority."""
         current = self._inspector.inspect(run_id)
@@ -137,7 +138,11 @@ class RuntimeReplayService:
             policy=schedule_policy,
             journal=journal,
             events=ledger,
-        ).run(plan, is_cancelled=is_cancelled)
+        ).run(
+            plan,
+            is_cancelled=is_cancelled,
+            deadline_monotonic=deadline_monotonic,
+        )
         replay = self._inspector.inspect(
             run_id,
             attempt_id=replay_identity.attempt_id,
@@ -366,6 +371,7 @@ def _duration(inspection: RuntimeRunInspection) -> float:
         InspectedEventKind.COMPLETED,
         InspectedEventKind.FAILED,
         InspectedEventKind.CANCELLED,
+        InspectedEventKind.TIMED_OUT,
     }
     return sum(
         event.duration_ms or 0.0
