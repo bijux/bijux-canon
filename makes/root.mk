@@ -26,7 +26,6 @@ ROOT_VULTURE_ARTIFACTS_DIR := $(PROJECT_ARTIFACTS_DIR)/root/quality
 ROOT_VULTURE_LOG := $(ROOT_VULTURE_ARTIFACTS_DIR)/vulture.log
 ROOT_VULTURE_PATHS := $(wildcard packages/*/src)
 ROOT_VULTURE_WHITELIST := configs/vulture_whitelist.py
-ROOT_GENERATED_VERSION_PATTERN := */src/*/_build_version.py
 # Guard against stale local stamp state so root docs and helper lanes can
 # recreate the shared check environment when the interpreter path was removed.
 ROOT_CHECK_ENV_COMMAND = @test -x "$(ROOT_CHECK_PYTHON)" || { \
@@ -34,8 +33,7 @@ ROOT_CHECK_ENV_COMMAND = @test -x "$(ROOT_CHECK_PYTHON)" || { \
 	rm -f "$(ROOT_CHECK_STAMP)"; \
 	$(MAKE) "$(ROOT_CHECK_STAMP)"; \
 	}; \
-	$(UV_SYNC) >/dev/null; \
-	find "$(CURDIR)/packages" -path "$(ROOT_GENERATED_VERSION_PATTERN)" -type f -delete
+	$(UV_SYNC) >/dev/null
 
 include $(ROOT_MAKEFILE_DIR)/bijux-py/repository/root.mk
 

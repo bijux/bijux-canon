@@ -155,6 +155,10 @@ def test_root_ruff_configuration_matches_shared_python_baseline() -> None:
         "*.egg-info",
         "site",
     ]
+    assert _as_str_list(ruff_config["extend-exclude"]) == [
+        "src/**/_version.py",
+        "src/**/_build_version.py",
+    ]
 
     lint = _as_dict(ruff_config["lint"])
     assert _as_str_list(lint["select"]) == [

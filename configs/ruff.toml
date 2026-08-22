@@ -47,7 +47,7 @@ exclude = [
   "*.egg-info",
   "site",
 ]
-extend-exclude = ["src/**/_version.py"]
+extend-exclude = ["src/**/_version.py", "src/**/_build_version.py"]
 
 [lint]
 select = ["E", "F", "I", "B", "UP", "SIM", "C4", "PIE", "RET", "ISC"]

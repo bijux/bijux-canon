@@ -189,7 +189,7 @@ def test_generated_version_files_write_to_ignored_build_modules() -> None:
             "_build_version.py", "_version.py"
         )
         version_text = version_wrapper.read_text(encoding="utf-8")
-        if "from ._build_version import" not in version_text:
+        if 'import_module(f"{__package__}._build_version")' not in version_text:
             failures.append(
                 f"{package_name}: _version.py should load _build_version first"
             )
