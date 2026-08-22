@@ -74,6 +74,15 @@ def test_root_dead_code_gate_is_fatal_and_uses_an_owned_whitelist() -> None:
     assert (REPO_ROOT / "configs" / "vulture_whitelist.py").is_file()
 
 
+def test_root_checks_preserve_the_locked_shared_environment() -> None:
+    root_make = (REPO_ROOT / "makes" / "root.mk").read_text(encoding="utf-8")
+
+    assert "$(UV_SYNC) >/dev/null" in root_make
+    assert "PACKAGE_BOOTSTRAP_TARGETS=" in root_make
+    assert "PACKAGE_INSTALL_TARGETS=" in root_make
+    assert "LINT_PRE_TARGETS=" in root_make
+
+
 def test_root_pyproject_uses_only_the_shared_dev_group() -> None:
     dependency_groups = _as_dict(_root_pyproject()["dependency-groups"])
     assert set(dependency_groups) == {"dev"}

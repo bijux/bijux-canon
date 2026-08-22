@@ -32,7 +32,8 @@ ROOT_CHECK_ENV_COMMAND = @test -x "$(ROOT_CHECK_PYTHON)" || { \
 	echo "→ Rebuilding missing root check environment"; \
 	rm -f "$(ROOT_CHECK_STAMP)"; \
 	$(MAKE) "$(ROOT_CHECK_STAMP)"; \
-}
+	}; \
+	$(UV_SYNC) >/dev/null
 
 include $(ROOT_MAKEFILE_DIR)/bijux-py/repository/root.mk
 
@@ -53,6 +54,12 @@ quality-dead-code: root-check-env
 	@echo "✔ Fatal dead-code analysis passed"
 
 include $(ROOT_MAKEFILE_DIR)/bijux-py/root/package-dispatch.mk
+# The root environment is already synchronized from uv.lock. Package-local
+# bootstrap rules must not replace its locked check tools while a root gate runs.
+ROOT_SHARED_CHECK_OVERRIDES += \
+	PACKAGE_BOOTSTRAP_TARGETS= \
+	PACKAGE_INSTALL_TARGETS= \
+	LINT_PRE_TARGETS=
 # Root verification must inspect the submitted tree. Package profiles may keep
 # autofix defaults for their explicit formatting workflow, but never for lint.
 lint: export RUFF_CHECK_FIX := 0
