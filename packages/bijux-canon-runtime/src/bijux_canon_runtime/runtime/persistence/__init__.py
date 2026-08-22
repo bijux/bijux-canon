@@ -13,6 +13,12 @@ from bijux_canon_runtime.runtime.persistence.filesystem_payload_store import (
     AtomicFilesystemArtifactPayloadStore,
     PayloadCorruptionError,
 )
+from bijux_canon_runtime.runtime.persistence.backup_restore import (
+    BackupIntegrityError,
+    RuntimeBackupManager,
+    RuntimeBackupManifest,
+    RuntimeRestoreResult,
+)
 from bijux_canon_runtime.runtime.persistence.metadata_authority import (
     ArtifactReferenceRecord,
     AttemptStatus,
@@ -56,6 +62,7 @@ __all__ = [
     "ArtifactReferenceRecord",
     "AtomicFilesystemArtifactPayloadStore",
     "AttemptStatus",
+    "BackupIntegrityError",
     "CheckStatus",
     "DuckDBMetadataAuthority",
     "GarbageCollectionCandidate",
@@ -79,6 +86,9 @@ __all__ = [
     "RunPolicyRecord",
     "RunPublicationRecord",
     "RunRevisionRecord",
+    "RuntimeBackupManager",
+    "RuntimeBackupManifest",
+    "RuntimeRestoreResult",
     "RetentionPolicy",
     "SafeGarbageCollector",
 ]
