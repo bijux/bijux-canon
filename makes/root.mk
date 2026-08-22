@@ -26,6 +26,8 @@ ROOT_VULTURE_ARTIFACTS_DIR := $(PROJECT_ARTIFACTS_DIR)/root/quality
 ROOT_VULTURE_LOG := $(ROOT_VULTURE_ARTIFACTS_DIR)/vulture.log
 ROOT_VULTURE_PATHS := $(wildcard packages/*/src)
 ROOT_VULTURE_WHITELIST := configs/vulture_whitelist.py
+FREEZE_REF ?= HEAD
+FREEZE_PYTHON ?= $(if $(wildcard $(ROOT_CHECK_PYTHON)),$(ROOT_CHECK_PYTHON),$(PYTHON))
 # Guard against stale local stamp state so root docs and helper lanes can
 # recreate the shared check environment when the interpreter path was removed.
 ROOT_CHECK_ENV_COMMAND = @test -x "$(ROOT_CHECK_PYTHON)" || { \
@@ -37,7 +39,7 @@ ROOT_CHECK_ENV_COMMAND = @test -x "$(ROOT_CHECK_PYTHON)" || { \
 
 include $(ROOT_MAKEFILE_DIR)/bijux-py/repository/root.mk
 
-.PHONY: quality-dead-code
+.PHONY: freeze quality-dead-code
 
 quality: quality-dead-code
 
@@ -98,6 +100,9 @@ clean-root-artifacts: ## Remove stray root-level caches outside artifacts
 check-shared-bijux-py: ## Verify shared bijux-py make modules match across sibling repositories
 check-config-layout: ## Validate the repository config tree shape and required tool configs
 check-make-layout: ## Validate the repository make tree shape and required entrypoints
+freeze: ## Archive a tracked repository revision and its reachable Git history
+	@$(CANON_DEV_PYTHON_ENV) "$(FREEZE_PYTHON)" -m bijux_canon_dev.release.repository_freeze \
+		--repo "$(MONOREPO_ROOT)" --ref "$(FREEZE_REF)"
 sync-badges: root-check-env ## Render shared badge blocks from docs/badges.md into README surfaces
 	@"$(ROOT_CHECK_PYTHON)" -m bijux_canon_dev.docs.badge_sync sync
 check-badges: root-check-env ## Verify README badge blocks match docs/badges.md
