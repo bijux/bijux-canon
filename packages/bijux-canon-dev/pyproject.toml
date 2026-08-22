@@ -36,6 +36,9 @@ Issues = "https://github.com/bijux/bijux-canon/issues"
 Changelog = "https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-dev/CHANGELOG.md"
 Security = "https://github.com/bijux/bijux-canon/blob/main/SECURITY.md"
 
+[project.scripts]
+bijux-canon-supply-chain = "bijux_canon_dev.sbom.supply_chain:main"
+
 [project.optional-dependencies]
 dev = [
   "pytest>=9.0.3,<10.0",
