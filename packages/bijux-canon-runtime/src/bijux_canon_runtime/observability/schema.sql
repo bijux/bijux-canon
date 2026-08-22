@@ -411,3 +411,33 @@ CREATE INDEX IF NOT EXISTS artifact_references_target_idx
     ON artifact_references (target_artifact_id);
 CREATE INDEX IF NOT EXISTS run_attempts_step_idx
     ON run_attempts (tenant_id, run_id, step_index, attempt_number);
+
+CREATE TABLE IF NOT EXISTS publication_transactions (
+    tenant_id TEXT NOT NULL,
+    run_id TEXT NOT NULL,
+    transaction_id TEXT NOT NULL,
+    intent_hash TEXT NOT NULL,
+    intent_json TEXT NOT NULL,
+    status TEXT NOT NULL CHECK (status IN ('prepared', 'committed', 'aborted')),
+    failure_reason TEXT,
+    created_at TEXT NOT NULL,
+    completed_at TEXT,
+    PRIMARY KEY (tenant_id, run_id, transaction_id),
+    FOREIGN KEY (tenant_id, run_id) REFERENCES runs (tenant_id, run_id)
+);
+
+CREATE TABLE IF NOT EXISTS publication_transaction_artifacts (
+    tenant_id TEXT NOT NULL,
+    run_id TEXT NOT NULL,
+    transaction_id TEXT NOT NULL,
+    logical_artifact_id TEXT NOT NULL,
+    revision INTEGER NOT NULL CHECK (revision >= 0),
+    target_artifact_id TEXT NOT NULL,
+    PRIMARY KEY (
+        tenant_id, run_id, transaction_id, logical_artifact_id, revision
+    ),
+    FOREIGN KEY (target_artifact_id) REFERENCES artifact_payloads (artifact_id)
+);
+
+CREATE INDEX IF NOT EXISTS publication_transactions_status_idx
+    ON publication_transactions (tenant_id, run_id, status);

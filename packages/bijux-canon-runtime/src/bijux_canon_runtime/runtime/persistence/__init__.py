@@ -20,6 +20,7 @@ from bijux_canon_runtime.runtime.persistence.metadata_authority import (
     DuckDBMetadataAuthority,
     MetadataIntegrityError,
     PublicationState,
+    PublicationTransactionRecord,
     ReferenceState,
     RunAttemptRecord,
     RunCheckRecord,
@@ -28,9 +29,16 @@ from bijux_canon_runtime.runtime.persistence.metadata_authority import (
     RunPublicationRecord,
     RunRevisionRecord,
 )
+from bijux_canon_runtime.runtime.persistence.publication import (
+    ArtifactPublicationCoordinator,
+    PublicationItem,
+    PublicationOutcome,
+    PublicationRecoveryError,
+)
 
 __all__ = [
     "ArtifactPayloadStore",
+    "ArtifactPublicationCoordinator",
     "ArtifactReferenceRecord",
     "AtomicFilesystemArtifactPayloadStore",
     "AttemptStatus",
@@ -42,6 +50,10 @@ __all__ = [
     "PayloadCorruptionError",
     "MetadataIntegrityError",
     "PublicationState",
+    "PublicationItem",
+    "PublicationOutcome",
+    "PublicationRecoveryError",
+    "PublicationTransactionRecord",
     "ReferenceState",
     "RunAttemptRecord",
     "RunCheckRecord",

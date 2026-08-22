@@ -27,7 +27,7 @@ def test_duckdb_migrations_apply(tmp_path: Path) -> None:
     rows = connection.execute(
         "SELECT version, checksum FROM schema_migrations ORDER BY version"
     ).fetchall()
-    assert [int(row[0]) for row in rows] == [1, 2, 3, SCHEMA_VERSION]
+    assert [int(row[0]) for row in rows] == [1, 2, 3, 4, SCHEMA_VERSION]
     expected_init = DuckDBExecutionWriteStore._hash_payload(
         (MIGRATIONS_DIR / "001_init.sql").read_text(encoding="utf-8")
     )
@@ -42,10 +42,16 @@ def test_duckdb_migrations_apply(tmp_path: Path) -> None:
     expected_metadata = DuckDBExecutionWriteStore._hash_payload(
         (MIGRATIONS_DIR / "004_metadata_authority.sql").read_text(encoding="utf-8")
     )
+    expected_transactions = DuckDBExecutionWriteStore._hash_payload(
+        (MIGRATIONS_DIR / "005_publication_transactions.sql").read_text(
+            encoding="utf-8"
+        )
+    )
     assert rows[0][1] == expected_init
     assert rows[1][1] == expected_update
     assert rows[2][1] == expected_slices
     assert rows[3][1] == expected_metadata
+    assert rows[4][1] == expected_transactions
     contract_row = connection.execute(
         "SELECT schema_version, schema_hash FROM schema_contract"
     ).fetchone()
@@ -76,6 +82,8 @@ def test_duckdb_migration_updates_prior_schema_contract(tmp_path: Path) -> None:
     store = DuckDBExecutionWriteStore(db_path)
     connection = store._connection
     for table in (
+        "publication_transaction_artifacts",
+        "publication_transactions",
         "run_publications",
         "run_checks",
         "run_policies",
@@ -87,12 +95,12 @@ def test_duckdb_migration_updates_prior_schema_contract(tmp_path: Path) -> None:
         "artifact_payloads",
     ):
         connection.execute(f"DROP TABLE {table}")
-    connection.execute("DELETE FROM schema_migrations WHERE version = 4")
+    connection.execute("DELETE FROM schema_migrations WHERE version >= 4")
     connection.execute(
         """
         UPDATE schema_contract
         SET schema_version = 3, schema_hash = 'prior-schema-hash'
-        WHERE schema_version = 4
+        WHERE schema_version = 5
         """
     )
     connection.commit()
