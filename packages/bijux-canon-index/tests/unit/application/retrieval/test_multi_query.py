@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import replace
 import hashlib
 
@@ -18,6 +19,7 @@ from bijux_canon_index.application import (
     ExactSourceLocator,
     MultiQueryOutcome,
     MultiQueryPolicy,
+    PlannedSubquery,
     SubqueryDisposition,
     SubqueryOrigin,
     execute_multi_query,
@@ -77,7 +79,12 @@ def _hit(
     )
 
 
-def _batch(subquery, hits, *, mode: CitationRetrievalMode = _MODE):
+def _batch(
+    subquery: PlannedSubquery,
+    hits: Iterable[CitationReadyHit],
+    *,
+    mode: CitationRetrievalMode = _MODE,
+) -> CitationResolutionBatch:
     return CitationResolutionBatch(
         "bijux.canon.retrieval.citation_resolution.v1",
         _GENERATION_ID,
@@ -131,9 +138,9 @@ def test_execution_deduplicates_content_and_attributes_every_subquery() -> None:
         policy=policy,
         supplied_subqueries=("ancient DNA contamination",),
     )
-    calls = []
+    calls: list[tuple[str, int]] = []
 
-    def execute(subquery, top_k):
+    def execute(subquery: PlannedSubquery, top_k: int) -> CitationResolutionBatch:
         calls.append((subquery.subquery_id, top_k))
         if subquery.ordinal == 1:
             return _batch(

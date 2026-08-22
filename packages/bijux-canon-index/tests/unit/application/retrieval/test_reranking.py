@@ -45,7 +45,11 @@ class _Reranker:
         self.delay = delay
         self.error = error
 
-    def rerank(self, query_text_sha256, candidates):
+    def rerank(
+        self,
+        query_text_sha256: str,
+        candidates: tuple[FusedCandidate, ...],
+    ) -> RerankResponse:
         sleep(self.delay)
         if self.error:
             raise self.error
@@ -94,7 +98,9 @@ def test_disabled_reranker_preserves_retrieval_truth_without_provider() -> None:
     "failure",
     [TimeoutError("sensitive-token-123"), ValueError("sensitive-token-123")],
 )
-def test_reranker_failure_retains_order_without_logging_error_text(failure) -> None:
+def test_reranker_failure_retains_order_without_logging_error_text(
+    failure: Exception,
+) -> None:
     batch = rerank_candidates(
         _fusion(),
         policy=_policy(),
@@ -130,7 +136,11 @@ def test_reranker_timeout_returns_with_declared_fallback_or_refusal() -> None:
 
 def test_reranker_rejects_new_missing_or_duplicate_candidates() -> None:
     class Invalid(_Reranker):
-        def rerank(self, query_text_sha256, candidates):
+        def rerank(
+            self,
+            query_text_sha256: str,
+            candidates: tuple[FusedCandidate, ...],
+        ) -> RerankResponse:
             return RerankResponse((RerankScore("new", 1.0),), None)
 
     batch = rerank_candidates(_fusion(), policy=_policy(), reranker=Invalid())

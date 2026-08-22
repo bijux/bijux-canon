@@ -3,10 +3,12 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping, MutableMapping
 from dataclasses import replace
 import hashlib
 import json
 from pathlib import Path
+from typing import cast
 
 import pytest
 
@@ -20,6 +22,7 @@ from bijux_canon_index.application import (
     LexicalCandidateOutcome,
     RetrievalTraceArtifact,
     RetrievalTraceDriftKind,
+    RetrievalTraceReplayInput,
     RetrievalTraceReplayOutcome,
     RetrievalTraceStore,
     RrfFusionBatch,
@@ -131,12 +134,12 @@ def test_trace_replay_ignores_timing_but_compares_semantic_outputs(
     store = RetrievalTraceStore(tmp_path)
     original = _artifact(timing=1.0)
     store.put(original)
-    observed = {}
+    observed: dict[str, Mapping[str, object]] = {}
 
-    def execute(replay_input):
+    def execute(replay_input: RetrievalTraceReplayInput) -> RetrievalTraceArtifact:
         observed["request"] = replay_input.request
         with pytest.raises(TypeError):
-            replay_input.request["top_k"] = 99
+            cast(MutableMapping[str, object], replay_input.request)["top_k"] = 99
         return _artifact(timing=2.0, attempt_marker="b")
 
     comparison = replay_retrieval_trace(store, original.artifact_id, execute)

@@ -16,7 +16,9 @@ from bijux_canon_index.application import (
 )
 
 
-def _candidate(rank: int, chunk_id: str, *, score: float = 1.0):
+def _candidate(
+    rank: int, chunk_id: str, *, score: float = 1.0
+) -> RankedChannelCandidate:
     return RankedChannelCandidate(
         rank=rank,
         score=score,
@@ -98,7 +100,9 @@ def test_rrf_accepts_a_typed_empty_channel_without_fabricating_hits() -> None:
         ),
     ],
 )
-def test_rrf_requires_exactly_one_ranking_per_hybrid_channel(rankings) -> None:
+def test_rrf_requires_exactly_one_ranking_per_hybrid_channel(
+    rankings: tuple[FusionChannelRanking, ...],
+) -> None:
     with pytest.raises(ValueError, match="exactly one"):
         reciprocal_rank_fusion(rankings)
 

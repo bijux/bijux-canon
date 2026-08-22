@@ -130,18 +130,26 @@ def test_dense_candidates_embed_once_and_persist_complete_vex_provenance(
     assert batch.candidates[0].chunk_id == "chunk-a"
     assert embedder.calls == [("ancient DNA",)]
     stored = VexArtifactStore(artifacts).load(batch.artifact_id)
-    assert stored.record["execution_id"] == batch.execution_id
-    assert stored.record["normalized_vector_sha256"] == batch.query_vector_sha256
-    assert stored.record["witness"]["witness_id"] == batch.witness_id
-    assert stored.record["request"]["candidate_limit"] == 2
-    assert stored.record["request"]["query_text_sha256"] == batch.query_text_sha256
-    assert stored.record["metrics"]["result_reachability"] == 1.0
-    assert stored.record["plan"]["backend"] in {"faiss-flat-ip", "faiss-hnsw"}
-    assert stored.record["plan"]["embedding_inference_threads"] == 1
-    assert (
-        stored.record["plan"]["filter_enforcement"]["enforcement_stage"]
-        == "query_time_before_result_limit"
-    )
+    record = stored.record
+    witness = record["witness"]
+    request = record["request"]
+    metrics = record["metrics"]
+    plan = record["plan"]
+    assert isinstance(witness, dict)
+    assert isinstance(request, dict)
+    assert isinstance(metrics, dict)
+    assert isinstance(plan, dict)
+    filter_enforcement = plan["filter_enforcement"]
+    assert isinstance(filter_enforcement, dict)
+    assert record["execution_id"] == batch.execution_id
+    assert record["normalized_vector_sha256"] == batch.query_vector_sha256
+    assert witness["witness_id"] == batch.witness_id
+    assert request["candidate_limit"] == 2
+    assert request["query_text_sha256"] == batch.query_text_sha256
+    assert metrics["result_reachability"] == 1.0
+    assert plan["backend"] in {"faiss-flat-ip", "faiss-hnsw"}
+    assert plan["embedding_inference_threads"] == 1
+    assert filter_enforcement["enforcement_stage"] == "query_time_before_result_limit"
 
     restarted = DenseCandidateService(
         root,

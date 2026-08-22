@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from pathlib import Path
 
 import pytest
@@ -75,6 +76,15 @@ def _result(
     )
 
 
+def _runner(
+    channel: RetrievalChannel,
+    generation_id: str,
+    *,
+    state: RetrievalChannelState = RetrievalChannelState.available,
+) -> Callable[[], RetrievalChannelResult]:
+    return lambda: _result(channel, generation_id, state=state)
+
+
 @pytest.mark.parametrize(
     ("mode", "channels"),
     (
@@ -102,8 +112,7 @@ def test_complete_modes_return_only_observed_evidence(
         mode=mode,
         generation_id=generation_id,
         channel_runners={
-            channel: lambda channel=channel: _result(channel, generation_id)
-            for channel in channels
+            channel: _runner(channel, generation_id) for channel in channels
         },
     )
 
@@ -125,7 +134,7 @@ def test_empty_modes_return_typed_no_hits_without_evidence(
         mode=mode,
         generation_id=generation_id,
         channel_runners={
-            channel: lambda channel=channel: _result(
+            channel: _runner(
                 channel,
                 generation_id,
                 state=RetrievalChannelState.empty,
