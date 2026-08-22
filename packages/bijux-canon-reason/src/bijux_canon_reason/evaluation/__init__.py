@@ -4,6 +4,18 @@
 
 from __future__ import annotations
 
+from bijux_canon_reason.evaluation.annotation import (
+    AnnotationAdjudication,
+    AnnotationAdjudicationVerdict,
+    AnnotationAdmission,
+    AnnotationConflict,
+    AnnotationProtocol,
+    AnnotationReview,
+    AnnotationReviewVerdict,
+    AnnotationRevision,
+    AnnotationWorkflowError,
+    IndependentAnnotationWorkflow,
+)
 from bijux_canon_reason.evaluation.metrics import (
     ConfidenceInterval,
     EvaluationCaseOutcome,
@@ -46,6 +58,15 @@ from bijux_canon_reason.evaluation.truth import (
 
 __all__ = [
     "AbstentionExpectation",
+    "AnnotationAdjudication",
+    "AnnotationAdjudicationVerdict",
+    "AnnotationAdmission",
+    "AnnotationConflict",
+    "AnnotationProtocol",
+    "AnnotationReview",
+    "AnnotationReviewVerdict",
+    "AnnotationRevision",
+    "AnnotationWorkflowError",
     "AdjudicationDecision",
     "AtomicClaimTruth",
     "CitationTruthLabel",
@@ -60,6 +81,7 @@ __all__ = [
     "EvaluationReport",
     "EvaluationSplit",
     "ExactEvidenceLocator",
+    "IndependentAnnotationWorkflow",
     "MetricDirection",
     "MetricObservation",
     "QrelJudgment",
