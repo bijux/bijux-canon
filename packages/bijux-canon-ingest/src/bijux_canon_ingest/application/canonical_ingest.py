@@ -6,6 +6,8 @@
 from __future__ import annotations
 
 import hashlib
+import json
+from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -60,6 +62,94 @@ class CanonicalIngestRequest:
     exclude: tuple[str, ...] = ()
     symlink_policy: SymlinkPolicy = "reject"
     publication_root: Path | None = None
+
+
+def _canonical_json(value: object) -> bytes:
+    return json.dumps(
+        value,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
+        allow_nan=False,
+    ).encode("utf-8")
+
+
+def _identity(value: object) -> str:
+    return f"sha256:{hashlib.sha256(_canonical_json(value)).hexdigest()}"
+
+
+@dataclass(frozen=True, slots=True)
+class CanonicalCorpusPreparation:
+    """Validated source documents before immutable snapshot assembly."""
+
+    configuration: CorpusSnapshotConfiguration
+    documents: tuple[CorpusSnapshotDocument, ...]
+    rejections: tuple[AdmissionResult, ...]
+    discovery: DiscoveryResult
+    ocr_required: tuple[OcrRequiredOutcome, ...]
+
+    def __post_init__(self) -> None:
+        if not self.documents:
+            raise ValueError("corpus preparation requires admitted documents")
+        if not self.discovery.complete:
+            raise ValueError("corpus preparation requires complete discovery")
+
+    def snapshot(self) -> CorpusSnapshot:
+        """Assemble the distinct immutable snapshot operation in memory."""
+        return build_corpus_snapshot(
+            self.configuration,
+            self.documents,
+            rejections=self.rejections,
+        )
+
+    def manifest(self) -> dict[str, object]:
+        """Return restart-safe source-document input for snapshot assembly."""
+        payload: dict[str, object] = {
+            "configuration": self.configuration.manifest(),
+            "configuration_sha256": self.configuration.configuration_sha256,
+            "discovery": self.discovery.manifest(),
+            "documents": [document.manifest() for document in self.documents],
+            "ocr_required": [outcome.manifest() for outcome in self.ocr_required],
+            "rejections": [rejection.manifest() for rejection in self.rejections],
+            "schema_version": "bijux.canon.ingest.corpus_preparation.v1",
+        }
+        return {"preparation_id": _identity(payload), **payload}
+
+
+def assemble_corpus_snapshot_manifest(
+    preparation: Mapping[str, object],
+) -> dict[str, object]:
+    """Assemble and validate a snapshot manifest from persisted preparation."""
+    record = dict(preparation)
+    if record.get("schema_version") != "bijux.canon.ingest.corpus_preparation.v1":
+        raise ValueError("corpus preparation schema is unsupported")
+    preparation_id = record.pop("preparation_id", None)
+    if preparation_id != _identity(record):
+        raise ValueError("corpus preparation identity is invalid")
+    configuration = record.get("configuration")
+    documents = record.get("documents")
+    rejections = record.get("rejections")
+    discovery = record.get("discovery")
+    if not isinstance(configuration, dict):
+        raise ValueError("corpus preparation configuration is invalid")
+    if not isinstance(documents, list) or not documents:
+        raise ValueError("corpus preparation documents are invalid")
+    if not isinstance(rejections, list):
+        raise ValueError("corpus preparation rejections are invalid")
+    if not isinstance(discovery, dict) or discovery.get("complete") is not True:
+        raise ValueError("corpus preparation discovery is incomplete")
+    if record.get("configuration_sha256") != _identity(configuration):
+        raise ValueError("corpus preparation configuration identity is invalid")
+    if any(not isinstance(item, dict) for item in documents + rejections):
+        raise ValueError("corpus preparation membership is invalid")
+    payload: dict[str, object] = {
+        "configuration": configuration,
+        "configuration_sha256": record["configuration_sha256"],
+        "documents": documents,
+        "rejections": rejections,
+        "schema_version": "bijux.canon.ingest.corpus_snapshot.v1",
+    }
+    return {"snapshot_id": _identity(payload), **payload}
 
 
 @dataclass(frozen=True, slots=True)
@@ -119,7 +209,8 @@ def _parse(admission: AdmissionResult) -> ParsedSourceDocument:
 class CanonicalIngestRuntime:
     """Runtime adapter around the canonical application service."""
 
-    def ingest(self, request: CanonicalIngestRequest) -> CanonicalIngestResult:
+    def prepare(self, request: CanonicalIngestRequest) -> CanonicalCorpusPreparation:
+        """Discover, admit, extract, and chunk without assembling a snapshot."""
         discovery = discover_sources(
             DiscoveryPolicy(
                 roots=(DiscoveryRoot(request.root_name, request.root_path),),
@@ -170,11 +261,18 @@ class CanonicalIngestRuntime:
             )
         if not documents:
             raise CanonicalIngestError("no supported documents were admitted")
-        snapshot = build_corpus_snapshot(
+        return CanonicalCorpusPreparation(
             request.configuration,
-            documents,
-            rejections=rejections,
+            tuple(documents),
+            tuple(rejections),
+            discovery,
+            tuple(ocr_required),
         )
+
+    def ingest(self, request: CanonicalIngestRequest) -> CanonicalIngestResult:
+        """Preserve the one-call installed API over distinct internal operations."""
+        preparation = self.prepare(request)
+        snapshot = preparation.snapshot()
         publication = (
             publish_corpus_snapshot(request.publication_root, snapshot)
             if request.publication_root is not None
@@ -182,8 +280,8 @@ class CanonicalIngestRuntime:
         )
         return CanonicalIngestResult(
             snapshot,
-            discovery,
-            tuple(ocr_required),
+            preparation.discovery,
+            preparation.ocr_required,
             publication,
         )
 
@@ -194,10 +292,18 @@ def ingest_corpus(request: CanonicalIngestRequest) -> CanonicalIngestResult:
     return CanonicalIngestRuntime().ingest(request)
 
 
+def prepare_corpus(request: CanonicalIngestRequest) -> CanonicalCorpusPreparation:
+    """Run only the source-document operation for Runtime composition."""
+    return CanonicalIngestRuntime().prepare(request)
+
+
 __all__ = [
     "CanonicalIngestError",
     "CanonicalIngestRequest",
     "CanonicalIngestResult",
     "CanonicalIngestRuntime",
+    "CanonicalCorpusPreparation",
+    "assemble_corpus_snapshot_manifest",
     "ingest_corpus",
+    "prepare_corpus",
 ]
