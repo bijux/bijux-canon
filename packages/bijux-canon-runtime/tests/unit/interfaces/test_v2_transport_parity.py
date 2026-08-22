@@ -6,6 +6,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from contextlib import redirect_stderr, redirect_stdout
 from io import StringIO
+import importlib
 import json
 from pathlib import Path
 
@@ -23,6 +24,7 @@ from bijux_canon_runtime.application.problems import (
     runtime_problem_fields,
 )
 from bijux_canon_runtime.interfaces.cli.parser import build_parser
+from bijux_canon_runtime.interfaces.cli import v2_commands
 from bijux_canon_runtime.interfaces.cli.v2_commands import run_v2_command
 from bijux_canon_runtime.model.execution.request_plan import RuntimeOperationRequest
 from bijux_canon_runtime.ontology.ids import ArtifactID
@@ -33,6 +35,7 @@ from bijux_canon_runtime.runtime.execution.durable_jobs import (
 )
 
 pytestmark = pytest.mark.unit
+v2_app_module = importlib.import_module("bijux_canon_runtime.api.v2.app")
 
 _CORPUS_ID = "sha256:" + "a" * 64
 _INDEX_ID = "sha256:" + "b" * 64
@@ -294,6 +297,60 @@ def test_create_operations_have_identical_requests_and_responses(
     assert cli_code == 0 and response.status_code == 202
     assert cli_payload == response.json()
     assert cli_service.calls == http_service.calls
+
+
+def test_process_owned_cli_services_finish_before_return(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    service = _RecordingServices()
+    closed: list[bool] = []
+    monkeypatch.setattr(v2_commands, "_require_services", lambda _: service)
+    monkeypatch.setattr(service, "close", lambda: closed.append(True))
+    request_path = _write_request(tmp_path, "index", _request_payloads(tmp_path)["index"])
+
+    code, _ = _cli(
+        None,
+        [
+            "index",
+            "--request",
+            str(request_path),
+            "--idempotency-key",
+            _IDEMPOTENCY_KEY,
+        ],
+    )
+
+    assert code == 0
+    assert closed == [True]
+
+
+def test_process_owned_http_services_close_with_application(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    service = _RecordingServices()
+    closed: list[bool] = []
+    monkeypatch.setenv("BIJUX_CANON_RUNTIME_WORKING_ROOT", str(tmp_path / "state"))
+    monkeypatch.setenv(
+        "BIJUX_CANON_RUNTIME_EMBEDDING_MODEL_PATH",
+        str(tmp_path / "model"),
+    )
+    monkeypatch.setattr(
+        v2_app_module,
+        "compose_runtime_application_services",
+        lambda **_: service,
+    )
+    monkeypatch.setattr(service, "close", lambda: closed.append(True))
+
+    with TestClient(create_app()) as client:
+        response = client.get(
+            f"/api/v2/jobs/{_snapshot(JobKind.RUN).job_id}",
+            headers={"Bijux-API-Version": "v2"},
+        )
+        assert response.status_code == 200
+        assert closed == []
+
+    assert closed == [True]
 
 
 def test_replay_has_identical_request_and_response(tmp_path: Path) -> None:

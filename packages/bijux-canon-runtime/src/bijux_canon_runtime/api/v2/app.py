@@ -3,11 +3,12 @@
 
 """Thin FastAPI v2 adapter over the shared Runtime application service."""
 
-from collections.abc import Awaitable, Callable
+from collections.abc import AsyncIterator, Awaitable, Callable
+from contextlib import asynccontextmanager
 from dataclasses import asdict
 import os
 import threading
-from typing import Annotated
+from typing import Annotated, Any
 
 from fastapi import Body, Depends, FastAPI, Header, Query, Request, status
 from fastapi.exceptions import RequestValidationError
@@ -74,7 +75,7 @@ from bijux_canon_runtime.runtime.replay.models import (
 )
 
 SUPPORTED_VERSION = "v2"
-PROBLEM_RESPONSES = {
+PROBLEM_RESPONSES: dict[int | str, dict[str, Any]] = {
     400: {"model": ProblemDetail, "description": "Invalid typed request."},
     404: {"model": ProblemDetail, "description": "Resource not found."},
     406: {"model": ProblemDetail, "description": "Unsupported API version."},
@@ -112,6 +113,19 @@ def create_app(
     readiness: RuntimeReadinessService | None = None,
 ) -> FastAPI:
     """Create an isolated v2 adapter with explicit application composition."""
+
+    @asynccontextmanager
+    async def lifespan(application: FastAPI) -> AsyncIterator[None]:
+        try:
+            yield
+        finally:
+            configured = application.state.application_services
+            if services is None and isinstance(
+                configured, RuntimeApplicationServicesV2
+            ):
+                configured.close()
+                application.state.application_services = None
+
     api = FastAPI(
         title="bijux-canon-runtime API",
         summary="Typed application operations for durable Bijux Canon workflows.",
@@ -122,6 +136,7 @@ def create_app(
             "name": "Apache 2.0",
             "url": "https://www.apache.org/licenses/LICENSE-2.0",
         },
+        lifespan=lifespan,
     )
     api.state.application_services = services
     api.state.application_services_lock = threading.Lock()

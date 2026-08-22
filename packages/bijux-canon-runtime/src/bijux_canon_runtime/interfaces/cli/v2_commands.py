@@ -88,6 +88,7 @@ def run_v2_command(
 ) -> int:
     """Execute one parsed v2 command and emit exactly one JSON document."""
     correlation_id, run_id = _problem_context(args)
+    owned_service: RuntimeApplicationServicesV2 | None = None
     try:
         if args.v2_command == "discover":
             return _discover(args)
@@ -103,6 +104,8 @@ def run_v2_command(
             _write(report)
             return 0 if report.ready else EXIT_NOT_READY
         service = _require_services(services)
+        if services is None:
+            owned_service = service
         if args.v2_command in {"ingest", "index", "retrieve", "ask", "research", "run"}:
             return _submit(args, service)
         if args.v2_command == "corpus-inspect":
@@ -199,6 +202,9 @@ def run_v2_command(
             cause=exc,
         )
         return EXIT_OPERATION_FAILED
+    finally:
+        if owned_service is not None:
+            _close_default_services(owned_service)
 
 
 def _require_services(
@@ -223,6 +229,16 @@ def _require_services(
         model_root=configuration.embedding_model_path.expanduser().resolve(),
     )
     return _default_application_services
+
+
+def _close_default_services(service: RuntimeApplicationServicesV2) -> None:
+    """Finish process-owned work before Python begins executor shutdown."""
+    global _default_application_services
+    try:
+        service.close()
+    finally:
+        if _default_application_services is service:
+            _default_application_services = None
 
 
 def _discover(args: argparse.Namespace) -> int:

@@ -23,7 +23,7 @@ from bijux_canon_runtime.application.operations import (
 )
 from bijux_canon_runtime.ontology.ids import ArtifactID
 from bijux_canon_runtime.runtime.execution.application_executor import (
-    RuntimeFirstExecutionService,
+    RuntimeExecutionService,
 )
 from bijux_canon_runtime.runtime.execution.durable_jobs import DurableJobManager
 from bijux_canon_runtime.runtime.execution.installed_operation_adapters import (
@@ -98,7 +98,7 @@ def compose_runtime_application_services(
             ),
         )
     )
-    execution = RuntimeFirstExecutionService(
+    execution = RuntimeExecutionService(
         store=store,
         dispatcher=dispatcher,
         process_id="bijux-canon-runtime-v2",

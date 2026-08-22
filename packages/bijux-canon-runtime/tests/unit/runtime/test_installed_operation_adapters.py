@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+from dataclasses import replace
 from pathlib import Path
 
 import pytest
@@ -160,12 +161,13 @@ def test_installed_ingest_and_index_adapters_persist_restartable_payloads(
     assert admitted.generation_id == archive.generation_id
     assert restarted_index.verify().integrity.status == "verified"
 
-    execution = RuntimeFirstExecutionService(
+    execution_service = RuntimeFirstExecutionService(
         store=store,
         dispatcher=index_dispatcher,
         process_id="installed-adapter-test",
         max_workers=2,
-    ).execute(index_request, lambda: False)
+    )
+    execution = execution_service.execute(index_request, lambda: False)
     inspection = RuntimeRunInspector(store).inspect(str(execution["run_id"]))
     assert execution["status"] == "completed"
     assert inspection.status.value == "completed"
@@ -174,3 +176,12 @@ def test_installed_ingest_and_index_adapters_persist_restartable_payloads(
         "lexical_index",
         "dense_index",
     ]
+
+    retry = execution_service.execute(
+        replace(index_request, request_id=RequestID("request-index-retry")),
+        lambda: False,
+    )
+    retried_inspection = RuntimeRunInspector(store).inspect(str(retry["run_id"]))
+    assert [attempt.attempt_number for attempt in retried_inspection.attempts] == [1, 2]
+    assert retried_inspection.attempts[-1].relation == "retry"
+    assert retried_inspection.attempts[-1].source_attempt_id == execution["attempt_id"]

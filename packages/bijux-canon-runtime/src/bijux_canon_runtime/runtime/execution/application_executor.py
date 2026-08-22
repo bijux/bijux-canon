@@ -1,21 +1,30 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""First-execution service for persisted typed Runtime request plans."""
+"""Execution service for persisted typed Runtime request plans."""
 
 from __future__ import annotations
 
 from collections.abc import Callable, Mapping
 from pathlib import Path
+import threading
 
 from bijux_canon_runtime.application.request_planner import RuntimeRequestPlanner
 from bijux_canon_runtime.model.artifact import AddressedArtifact
-from bijux_canon_runtime.model.execution.request_plan import RuntimeOperationRequest
+from bijux_canon_runtime.model.execution.request_plan import (
+    RuntimeOperationRequest,
+    RuntimeRequestPlan,
+)
 from bijux_canon_runtime.model.execution.run_identity import (
+    AttemptRelation,
     ExecutionAttemptIdentity,
     SemanticRunIdentity,
     SemanticRunInputs,
 )
+from bijux_canon_runtime.observability.storage.execution_store_lock import (
+    acquire_execution_store_lock,
+)
+from bijux_canon_runtime.ontology.ids import RequestID, RunID
 from bijux_canon_runtime.runtime.execution.dag_scheduler import (
     ArtifactTransitionJournal,
     DependencyAwareScheduler,
@@ -28,17 +37,26 @@ from bijux_canon_runtime.runtime.execution.runtime_event_ledger import (
     RuntimeEventLedger,
 )
 from bijux_canon_runtime.runtime.inspection import RuntimeRunInspector
+from bijux_canon_runtime.runtime.inspection.models import InspectedAttempt
 from bijux_canon_runtime.runtime.persistence.filesystem_payload_store import (
     AtomicFilesystemArtifactPayloadStore,
 )
 
+_PROCESS_RUN_LOCKS: dict[Path, threading.Lock] = {}
+_PROCESS_RUN_LOCKS_GUARD = threading.Lock()
+
+
+def _process_run_lock(path: Path) -> threading.Lock:
+    with _PROCESS_RUN_LOCKS_GUARD:
+        return _PROCESS_RUN_LOCKS.setdefault(path.resolve(), threading.Lock())
+
 
 class RuntimeFirstExecutionError(RuntimeError):
-    """A first execution could not produce one complete persisted attempt."""
+    """A Runtime execution could not produce one complete persisted attempt."""
 
 
-class RuntimeFirstExecutionService:
-    """Plan, schedule, persist, and inspect one initial Runtime attempt."""
+class RuntimeExecutionService:
+    """Plan, schedule, persist, and inspect linked Runtime attempts."""
 
     def __init__(
         self,
@@ -96,11 +114,30 @@ class RuntimeFirstExecutionService:
                 output_policy=request.output_policy,
             )
         )
-        attempt = ExecutionAttemptIdentity.initial(
-            run=run,
-            request_id=request.request_id,
-            process_id=self._process_id,
-        )
+        lock_path = self._store.root / "run-locks" / f"{run.run_id}.lock"
+        with _process_run_lock(lock_path):
+            with acquire_execution_store_lock(
+                lock_path,
+                timeout_seconds=request.budget.timeout_seconds,
+            ):
+                return self._execute_attempt(
+                    request=request,
+                    plan=plan,
+                    run=run,
+                    source_selection=source_selection,
+                    is_cancelled=is_cancelled,
+                )
+
+    def _execute_attempt(
+        self,
+        *,
+        request: RuntimeOperationRequest,
+        plan: RuntimeRequestPlan,
+        run: SemanticRunIdentity,
+        source_selection: AddressedArtifact | None,
+        is_cancelled: Callable[[], bool],
+    ) -> Mapping[str, object]:
+        attempt = self._next_attempt(run, request.request_id)
         journal = ArtifactTransitionJournal(
             store=self._store,
             plan_sha256=plan.plan_sha256,
@@ -110,7 +147,7 @@ class RuntimeFirstExecutionService:
             plan=plan,
             attempt=attempt,
             execution_metadata={
-                "execution_kind": "initial",
+                "execution_kind": attempt.relation.value,
                 "process_id": self._process_id,
             },
             manifest_dependencies=(
@@ -159,5 +196,50 @@ class RuntimeFirstExecutionService:
             ],
         }
 
+    def _next_attempt(
+        self,
+        run: SemanticRunIdentity,
+        request_id: RequestID,
+    ) -> ExecutionAttemptIdentity:
+        try:
+            inspection = self._inspector.inspect(str(run.run_id))
+        except KeyError:
+            return ExecutionAttemptIdentity.initial(
+                run=run,
+                request_id=request_id,
+                process_id=self._process_id,
+            )
+        latest = max(inspection.attempts, key=lambda item: item.attempt_number)
+        return ExecutionAttemptIdentity.retry_persisted(
+            request_id=request_id,
+            source=_attempt_identity(latest, str(run.run_id)),
+            process_id=self._process_id,
+        )
 
-__all__ = ["RuntimeFirstExecutionError", "RuntimeFirstExecutionService"]
+
+def _attempt_identity(
+    attempt: InspectedAttempt,
+    run_id: str,
+) -> ExecutionAttemptIdentity:
+    return ExecutionAttemptIdentity(
+        attempt_id=attempt.attempt_id,
+        run_id=RunID(run_id),
+        request_id=RequestID(attempt.request_id),
+        attempt_number=attempt.attempt_number,
+        relation=AttemptRelation(attempt.relation),
+        source_attempt_id=attempt.source_attempt_id,
+        supersedes_attempt_id=attempt.supersedes_attempt_id,
+        retry_id=attempt.retry_id,
+        replay_id=attempt.replay_id,
+        process_id=attempt.process_id,
+    )
+
+
+RuntimeFirstExecutionService = RuntimeExecutionService
+
+
+__all__ = [
+    "RuntimeExecutionService",
+    "RuntimeFirstExecutionError",
+    "RuntimeFirstExecutionService",
+]

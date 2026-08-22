@@ -30,6 +30,7 @@ from bijux_canon_runtime.runtime.execution.application_composition import (
     compose_runtime_application_services,
 )
 from bijux_canon_runtime.runtime.execution.application_executor import (
+    RuntimeExecutionService,
     RuntimeFirstExecutionError,
     RuntimeFirstExecutionService,
 )
@@ -100,6 +101,7 @@ __all__ = [
     "OperationDispatcher",
     "PersistedInspectionValue",
     "RuntimeInspectionError",
+    "RuntimeExecutionService",
     "RuntimeFirstExecutionError",
     "RuntimeFirstExecutionService",
     "RuntimeErrorRecord",
