@@ -215,8 +215,8 @@ def _inspector(
     )
 
 
-def _constraint_file(records: Sequence[WheelRecord], *, output_path: Path) -> Path:
-    path = output_path.parent / "candidate-constraints.txt"
+def _constraint_file(records: Sequence[WheelRecord], *, environment_root: Path) -> Path:
+    path = environment_root.parent / "candidate-constraints.txt"
     path.write_text(
         "".join(
             f"{record.distribution_name}=={record.version}\n" for record in records
@@ -264,7 +264,7 @@ def run_installation_matrix(
     }
     environment_root.mkdir(parents=True, exist_ok=True)
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    constraints = _constraint_file(records, output_path=output_path)
+    constraints = _constraint_file(records, environment_root=environment_root)
     cache_root = output_path.parent / "cache"
     environment = dict(os.environ)
     environment.update(

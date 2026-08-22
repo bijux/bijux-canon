@@ -114,7 +114,7 @@ def _passing_runner(
 def test_matrix_installs_each_wheel_and_complete_family(tmp_path: Path) -> None:
     root = _repository(tmp_path)
     wheel_dir = _wheel_set(root)
-    output = root / "artifacts" / "install" / "result.json"
+    output = root / "artifacts" / "reports" / "result.json"
     commands: list[tuple[str, ...]] = []
 
     def runner(
@@ -152,6 +152,7 @@ def test_matrix_installs_each_wheel_and_complete_family(tmp_path: Path) -> None:
     assert "packages/example/src" in inspector
     assert "source_roots" in inspector
     constraints = root / str(evidence["constraint_file"])
+    assert constraints == root / "artifacts" / "install" / "candidate-constraints.txt"
     assert constraints.read_text(encoding="utf-8") == (
         "example==1.2.3\nworkspace-repository==1.2.3\n"
     )
