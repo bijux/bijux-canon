@@ -87,6 +87,31 @@ Package profiles may add release-specific checks before or after the common
 build. Inspect the selected package’s `release-dry` behavior rather than
 assuming all distributions have identical evidence.
 
+## Wheel Family Verification
+
+The installed `bijux-canon-wheel-inventory` command validates the exact root
+and package wheel family against the checked-in workspace and package metadata.
+It compares names, one shared version, Python constraints, dependencies,
+optional extras, console entry points, and license declarations. It also
+verifies archive paths, wheel tags, every `RECORD` hash and byte count, exact
+copies of `LICENSE` and `NOTICE`, declared runtime assets such as `py.typed` and
+schema hashes, and the absence of source-tree, test, cache, and local path
+leaks. A real `twine check` over the same wheel bytes is part of the result.
+
+```bash
+bijux-canon-wheel-inventory \
+  --repo-root . \
+  --wheel-dir artifacts/release/wheels \
+  --output artifacts/release/wheel-inventory.json
+```
+
+The command requires a clean checkout and writes the Twine command outcome,
+wheel hashes, source metadata hashes, lock hash, environment identity, package
+results, and retained failures to the requested JSON file. The wheel directory,
+cache, and result must remain under `artifacts/`; the validator and its tests
+remain in `bijux-canon-dev` so the same release contract survives disposal of a
+particular run's evidence.
+
 ## Supported Python Verification
 
 The installed `bijux-canon-python-support` command treats package metadata as

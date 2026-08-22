@@ -652,6 +652,7 @@ dependencies = [
     { name = "jsonschema", extra = ["format-nongpl"] },
     { name = "packaging" },
     { name = "pyyaml" },
+    { name = "twine" },
 ]
 
 [package.optional-dependencies]
@@ -708,6 +709,7 @@ requires-dist = [
     { name = "pytest-timeout", marker = "extra == 'dev'", specifier = ">=2.4.0,<3.0" },
     { name = "pyyaml", specifier = ">=6.0,<7.0" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.6.8,<1.0" },
+    { name = "twine", specifier = ">=6.1.0,<7.0" },
     { name = "types-jsonschema", marker = "extra == 'dev'", specifier = ">=4.23,<5.0" },
     { name = "types-pyyaml", marker = "extra == 'dev'", specifier = ">=6.0.12.20250822,<7.0" },
     { name = "vulture", marker = "extra == 'dev'", specifier = ">=2.7,<3.0" },
