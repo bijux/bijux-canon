@@ -33,6 +33,14 @@ from bijux_canon_reason.evaluation.citation_quality import (
     CitationQualityMetric,
     CitationQualityReport,
 )
+from bijux_canon_reason.evaluation.claim_faithfulness import (
+    ClaimFaithfulnessEvaluationError,
+    ClaimFaithfulnessEvaluator,
+    ClaimFaithfulnessJudgment,
+    ClaimFaithfulnessMetric,
+    ClaimFaithfulnessReport,
+    ClaimFaithfulnessStatus,
+)
 from bijux_canon_reason.evaluation.metrics import (
     ConfidenceInterval,
     EvaluationCaseOutcome,
@@ -102,6 +110,12 @@ __all__ = [
     "CitationQualityMetric",
     "CitationQualityReport",
     "ClaimTruthClass",
+    "ClaimFaithfulnessEvaluationError",
+    "ClaimFaithfulnessEvaluator",
+    "ClaimFaithfulnessJudgment",
+    "ClaimFaithfulnessMetric",
+    "ClaimFaithfulnessReport",
+    "ClaimFaithfulnessStatus",
     "ConfidenceInterval",
     "ConflictExpectation",
     "EVALUATION_SCHEMA_CATALOG_VERSION",

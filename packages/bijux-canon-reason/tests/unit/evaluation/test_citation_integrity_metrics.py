@@ -15,6 +15,9 @@ import pytest
 from bijux_canon_reason.evaluation import (
     AbstentionExpectation,
     AtomicClaimTruth,
+    ClaimFaithfulnessEvaluator,
+    ClaimFaithfulnessReport,
+    ClaimFaithfulnessStatus,
     CitationIntegrityEvaluator,
     CitationIntegrityFailureCode,
     CitationIntegrityOwner,
@@ -405,3 +408,147 @@ def test_duplicate_emission_does_not_multiply_reviewed_relation_credit() -> None
     assert [failure.code for failure in report.failures] == [
         CitationQualityFailureCode.duplicate_reviewed_relation
     ]
+
+
+def test_real_reviewed_claim_is_faithful_only_with_reachable_related_evidence() -> None:
+    case = _case()
+    output = _output(case, _citation(case))
+    integrity = CitationIntegrityEvaluator().evaluate(
+        case=case,
+        output=output,
+        source_payloads=_sources(case),
+    )
+
+    report = ClaimFaithfulnessEvaluator().evaluate(
+        case=case,
+        output=output,
+        integrity=integrity,
+    )
+    restarted = ClaimFaithfulnessReport.model_validate_json(report.model_dump_json())
+
+    assert restarted == report
+    assert report.passed
+    assert report.judgments[0].status is ClaimFaithfulnessStatus.supported
+    assert report.status_completeness.value == 1.0
+    assert report.supported_claim_coverage.value == 1.0
+    assert report.expected_claim_recall.value == 1.0
+    assert report.nonexistent_evidence_claims.numerator == 0
+
+
+@pytest.mark.parametrize(
+    ("relation", "claim_class", "expected_status"),
+    [
+        (
+            CitationTruthRelation.opposes,
+            ClaimTruthClass.opposed,
+            ClaimFaithfulnessStatus.opposed,
+        ),
+        (
+            CitationTruthRelation.limits,
+            ClaimTruthClass.forbidden,
+            ClaimFaithfulnessStatus.ambiguous,
+        ),
+    ],
+)
+def test_reviewed_relation_classifies_opposed_and_ambiguous_claims(
+    relation: CitationTruthRelation,
+    claim_class: ClaimTruthClass,
+    expected_status: ClaimFaithfulnessStatus,
+) -> None:
+    original = _case()
+    label = original.claims[0].citations[0].model_copy(update={"relation": relation})
+    truth_claim = original.claims[0].model_copy(
+        update={
+            "claim_class": claim_class,
+            "expected_in_answer": False,
+            "abstention_expectation": AbstentionExpectation.required,
+            "citations": (label,),
+        }
+    )
+    case = original.model_copy(
+        update={
+            "claims": (truth_claim,),
+            "abstention_expectation": AbstentionExpectation.required,
+        }
+    )
+    output = _output(case, _citation(case))
+    integrity = CitationIntegrityEvaluator().evaluate(
+        case=case,
+        output=output,
+        source_payloads=_sources(case),
+    )
+
+    report = ClaimFaithfulnessEvaluator().evaluate(
+        case=case,
+        output=output,
+        integrity=integrity,
+    )
+
+    assert report.judgments[0].status is expected_status
+    assert report.status_completeness.value == 1.0
+    assert report.supported_claim_coverage.value == 0.0
+
+
+def test_verified_but_unrelated_evidence_is_irrelevant_not_supported() -> None:
+    original = _case()
+    original_qrel = original.qrels[0]
+    unrelated_locator = original_qrel.locator.model_copy(
+        update={"locator_id": "unrelated-reviewed-locator"}
+    )
+    unrelated_qrel = original_qrel.model_copy(
+        update={"qrel_id": "unrelated-qrel", "locator": unrelated_locator}
+    )
+    case = original.model_copy(update={"qrels": original.qrels + (unrelated_qrel,)})
+    citation = _citation(case, locator_id=unrelated_locator.locator_id)
+    output = _output(case, citation)
+    integrity = CitationIntegrityEvaluator().evaluate(
+        case=case,
+        output=output,
+        source_payloads=_sources(case),
+    )
+
+    report = ClaimFaithfulnessEvaluator().evaluate(
+        case=case,
+        output=output,
+        integrity=integrity,
+    )
+
+    assert integrity.passed
+    assert report.judgments[0].status is ClaimFaithfulnessStatus.irrelevant
+    assert report.supported_claim_coverage.numerator == 0
+
+
+def test_unknown_claim_and_missing_evidence_are_retained_as_failures() -> None:
+    case = _case()
+    claim = SystemClaim(
+        claim_id="invented-claim",
+        statement="This atomic claim has no reviewed truth or evidence.",
+        disposition=SystemClaimDisposition.asserted,
+    )
+    output = SystemOutput(
+        output_id="invented-output",
+        case_id=case.case_id,
+        runtime_run_id="runtime-run",
+        runtime_attempt_id="runtime-attempt",
+        answer=claim.statement,
+        disposition=SystemAnswerDisposition.answered,
+        claims=(claim,),
+        trace_identity_sha256="a" * 64,
+    )
+    integrity = CitationIntegrityEvaluator().evaluate(
+        case=case,
+        output=output,
+        source_payloads={},
+    )
+
+    report = ClaimFaithfulnessEvaluator().evaluate(
+        case=case,
+        output=output,
+        integrity=integrity,
+    )
+
+    assert report.judgments[0].status is ClaimFaithfulnessStatus.unverifiable
+    assert report.status_completeness.value == 1.0
+    assert report.expected_claim_recall.value == 0.0
+    assert report.nonexistent_evidence_claims.numerator == 1
+    assert not report.passed
