@@ -59,6 +59,14 @@ def load_split(path: Path) -> dict[str, Any]:
     return value
 
 
+def write_evaluation_cases(document: Mapping[str, Any], path: Path) -> None:
+    """Write the frozen case inventory as canonical reviewable JSON Lines."""
+    cases = document.get("cases")
+    if not isinstance(cases, list) or len(cases) != 120:
+        raise RuntimeError("research evaluation split must contain exactly 120 cases")
+    path.write_bytes(b"".join(canonical(case) + b"\n" for case in cases))
+
+
 def _relation(qrel: Mapping[str, Any], claim: Mapping[str, Any]) -> str:
     evidence = claim["evidence"]
     if evidence["exact_text"] not in qrel["chunk"]["normalized_text"]:
@@ -291,6 +299,7 @@ def main() -> None:
     parser.add_argument("--qrels", type=Path, required=True)
     parser.add_argument("--research-root", type=Path, required=True)
     parser.add_argument("--split", type=Path, required=True)
+    parser.add_argument("--cases-output", type=Path)
     args = parser.parse_args()
     result = validate_split(
         load_split(args.split),
@@ -301,6 +310,8 @@ def main() -> None:
         research_root=args.research_root,
         split_path=args.split,
     )
+    if args.cases_output is not None:
+        write_evaluation_cases(load_split(args.split), args.cases_output)
     json.dump(result, sys.stdout, indent=2, sort_keys=True)
     sys.stdout.write("\n")
 

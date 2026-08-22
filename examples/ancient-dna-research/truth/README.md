@@ -60,6 +60,11 @@ ten held-out cases per claim class, records query/evidence/conflict/negative/
 format/difficulty strata, prohibits tuning use of held-out labels, and hashes
 every case and the complete split.
 
+`evaluation-cases.jsonl` is the canonical line-oriented projection of those 120
+cases for review, sharding, and evaluation execution. It is regenerated from
+the validated split with `--cases-output`; byte drift from `split.json` fails
+the repository test suite.
+
 Validate the frozen case construction, strata, partition isolation, and hashes
 with:
 
@@ -70,5 +75,6 @@ python -m bijux_canon_dev.corpus.research_evaluation_split \
   --locator-truth examples/ancient-dna-research/truth/locator-truth.jsonl \
   --qrels examples/ancient-dna-research/truth/qrels.jsonl \
   --claim-truth examples/ancient-dna-research/truth/claim-truth.jsonl \
-  --split examples/ancient-dna-research/truth/split.json
+  --split examples/ancient-dna-research/truth/split.json \
+  --cases-output examples/ancient-dna-research/truth/evaluation-cases.jsonl
 ```

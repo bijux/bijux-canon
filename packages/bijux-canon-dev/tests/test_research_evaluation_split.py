@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
+import json
 from pathlib import Path
 
 import pytest
@@ -13,6 +14,7 @@ from bijux_canon_dev.corpus.research_evaluation_split import (
     load_split,
     split_identity,
     validate_split,
+    write_evaluation_cases,
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -57,6 +59,24 @@ def test_split_freezes_exactly_120_balanced_reviewed_cases() -> None:
 
 def test_split_validation_is_restart_stable() -> None:
     assert _validate(_document()) == _validate(load_split(SPLIT_PATH))
+
+
+def test_evaluation_cases_jsonl_is_exact_canonical_split_projection(
+    tmp_path: Path,
+) -> None:
+    output = tmp_path / "evaluation-cases.jsonl"
+
+    write_evaluation_cases(_document(), output)
+
+    assert (
+        output.read_bytes()
+        == (RESEARCH_ROOT / "truth/evaluation-cases.jsonl").read_bytes()
+    )
+    records = [json.loads(line) for line in output.read_text().splitlines()]
+    assert len(records) == 120
+    assert [item["case_id"] for item in records] == [
+        f"adna-case-{ordinal:03d}" for ordinal in range(1, 121)
+    ]
 
 
 def test_heldout_labels_cannot_be_enabled_for_tuning() -> None:
