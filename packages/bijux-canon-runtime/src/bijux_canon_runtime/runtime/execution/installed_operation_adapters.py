@@ -22,6 +22,7 @@ from bijux_canon_index.application import (
     LexicalIndexLimits,
     build_lexical_index_segment,
 )
+from bijux_canon_index.domain.metadata_filters import MetadataValue
 from bijux_canon_index.infra.embeddings.local_model import EmbeddedBatch
 from bijux_canon_ingest.application.canonical_ingest import (
     CanonicalIngestRequest,
@@ -63,7 +64,7 @@ class _IndexableChunk:
     document_id: str
     ordinal: int
     text: str
-    metadata: dict[str, object]
+    metadata: dict[str, MetadataValue]
 
 
 def _json_object(artifact: AddressedArtifact, contract_id: str) -> dict[str, object]:
@@ -184,10 +185,11 @@ def _indexable_chunks(snapshot: dict[str, object]) -> tuple[_IndexableChunk, ...
                     or hashlib.sha256(text.encode("utf-8")).hexdigest() != text_sha256
                 ):
                     raise ValueError
-                index_metadata: dict[str, object] = {
+                index_metadata: dict[str, MetadataValue] = {
                     "format": metadata["format_id"],
                     "path": metadata["relative_path"],
                     "source_id": document_id,
+                    "source_sha256": metadata["source_content_sha256"],
                     "source_text_sha256": text_sha256,
                     "source_uri": source_uri,
                 }

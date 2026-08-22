@@ -6,6 +6,8 @@
 from __future__ import annotations
 
 from dataclasses import replace
+import hashlib
+import json
 from pathlib import Path
 
 import pytest
@@ -18,11 +20,12 @@ from bijux_canon_index.infra.embeddings.local_model import EmbeddedBatch
 from bijux_canon_runtime.application.request_planner import RuntimeRequestPlanner
 from bijux_canon_runtime.model.execution.request_plan import (
     ExecutionProfile,
+    RetrievalFilters,
     RuntimeOperationRequest,
     RuntimeRequestBudget,
     RuntimeRequestOperation,
 )
-from bijux_canon_runtime.ontology.ids import RequestID
+from bijux_canon_runtime.ontology.ids import ArtifactID, RequestID
 from bijux_canon_runtime.ontology.public import ReplayMode
 from bijux_canon_runtime.runtime.execution.installed_operation_adapters import (
     CanonicalDenseIndexOperationAdapter,
@@ -30,6 +33,9 @@ from bijux_canon_runtime.runtime.execution.installed_operation_adapters import (
     CanonicalIngestOperationAdapter,
     CanonicalLexicalIndexOperationAdapter,
     CanonicalSnapshotOperationAdapter,
+)
+from bijux_canon_runtime.runtime.execution.installed_retrieval_adapter import (
+    CanonicalRetrievalOperationAdapter,
 )
 from bijux_canon_runtime.runtime.execution.application_executor import (
     RuntimeFirstExecutionService,
@@ -58,6 +64,14 @@ class _Embedding:
             for index, _ in enumerate(texts)
         )
         return EmbeddedBatch(vectors, self.model_lock_id, "cpu", 8)
+
+
+class _UnexpectedEmbedding:
+    model_lock_id = "sha256:" + "b" * 64
+
+    def embed(self, texts: tuple[str, ...]) -> EmbeddedBatch:
+        del texts
+        raise AssertionError("offline lexical retrieval must not embed the query")
 
 
 def _budget() -> RuntimeRequestBudget:
@@ -191,6 +205,72 @@ def test_installed_ingest_and_index_adapters_persist_restartable_payloads(
     assert [attempt.attempt_number for attempt in retried_inspection.attempts] == [1, 2]
     assert retried_inspection.attempts[-1].relation == "retry"
     assert retried_inspection.attempts[-1].source_attempt_id == execution["attempt_id"]
+
+    retrieval_request = RuntimeOperationRequest(
+        request_id=RequestID("request-retrieve"),
+        operation=RuntimeRequestOperation.RETRIEVE,
+        execution_profile=ExecutionProfile.LOCAL_HYBRID_ANN,
+        budget=_budget(),
+        replay_mode=ReplayMode.STRICT,
+        scope="local",
+        query="What evidence do ancient genomes preserve?",
+        index_id=composite.artifact_id,
+        top_k=1,
+    )
+    retrieval = RuntimeFirstExecutionService(
+        store=store,
+        dispatcher=OperationDispatcher(
+            (
+                CanonicalRetrievalOperationAdapter(
+                    store=store,
+                    index=index_service,
+                    embedding=_Embedding(),
+                    vex_store_root=tmp_path / "runtime" / "vex",
+                ),
+            )
+        ),
+        process_id="installed-retrieval-test",
+    ).execute(retrieval_request, lambda: False)
+    terminal_ids = retrieval["terminal_artifact_ids"]
+    assert isinstance(terminal_ids, list) and len(terminal_ids) == 1
+    evidence_artifact = store.load(ArtifactID(terminal_ids[0]))
+    evidence = json.loads(evidence_artifact.canonical_bytes)
+    assert evidence["status"] == "success"
+    assert evidence["retrieval_mode"] == "local-hybrid-ann"
+    assert evidence["vex_execution"]["decision"]["status"] == "admitted"
+    assert len(evidence["hits"]) == 1
+    hit = evidence["hits"][0]
+    assert hit["verbatim_text"].startswith("# Ancient DNA")
+    assert (
+        hit["content_sha256"]
+        == hashlib.sha256(hit["verbatim_text"].encode("utf-8")).hexdigest()
+    )
+    assert len(hit["source"]["source_content_sha256"]) == 64
+    assert hit["mapping_ids"]
+    assert hit["channels"]
+
+    offline_request = replace(
+        retrieval_request,
+        request_id=RequestID("request-retrieve-filtered"),
+        execution_profile=ExecutionProfile.OFFLINE_LEXICAL,
+        filters=RetrievalFilters(document_ids=("missing-document",)),
+    )
+    offline_result = OperationDispatcher(
+        (
+            CanonicalRetrievalOperationAdapter(
+                store=store,
+                index=index_service,
+                embedding=_UnexpectedEmbedding(),
+                vex_store_root=tmp_path / "runtime" / "vex",
+            ),
+        )
+    ).dispatch_plan(planner.plan(offline_request))[-1]
+    offline = json.loads(offline_result.artifacts[0].payload)
+    assert offline["status"] == "insufficient"
+    assert offline["retrieval_mode"] == "lexical"
+    assert offline["hits"] == []
+    assert offline["retrieval"]["dense"] is None
+    assert offline["vex_execution"] is None
 
     replay = RuntimeReplayService(store).replay(
         run_id=str(retry["run_id"]),
