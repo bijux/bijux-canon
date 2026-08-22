@@ -5,8 +5,8 @@
 
 from __future__ import annotations
 
-from hypothesis import given
 import hypothesis.strategies as st
+from hypothesis import given
 
 from bijux_canon_ingest import ffilter, flatmap, fmap, identity, pipe
 

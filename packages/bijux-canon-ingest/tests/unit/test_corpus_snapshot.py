@@ -3,9 +3,9 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable
 import hashlib
 import json
+from collections.abc import Callable
 from pathlib import Path
 
 import pytest

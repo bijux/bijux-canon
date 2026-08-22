@@ -8,10 +8,10 @@ from __future__ import annotations
 import hashlib
 import json
 import os
-from pathlib import Path
 import shutil
-from typing import Final
 import uuid
+from pathlib import Path
+from typing import Final
 
 from bijux_canon_ingest.domain.corpus_publication import (
     PublishedCorpusSnapshot,

@@ -6,8 +6,8 @@ from __future__ import annotations
 from collections.abc import Callable
 from dataclasses import dataclass
 
-from hypothesis import given, settings
 import hypothesis.strategies as st
+from hypothesis import given, settings
 
 from bijux_canon_ingest.fp.effects.reader import Reader, ask, local, pure
 

@@ -5,8 +5,8 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterator
 import os
+from collections.abc import Iterator
 
 from bijux_canon_ingest.core.types import Chunk
 from bijux_canon_ingest.domain.idempotent import AtomicWriteCap

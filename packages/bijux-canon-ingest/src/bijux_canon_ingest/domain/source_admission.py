@@ -5,11 +5,11 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 import hashlib
 import json
 import math
 import re
+from dataclasses import dataclass
 from typing import Literal, get_args
 
 from bijux_canon_ingest.domain.source_discovery import DiscoveredSource

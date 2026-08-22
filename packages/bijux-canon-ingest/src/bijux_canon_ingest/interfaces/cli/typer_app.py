@@ -5,8 +5,8 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable
 import importlib
+from collections.abc import Callable
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Protocol, TypeVar, cast
 

@@ -5,9 +5,9 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 import hashlib
 import json
+from dataclasses import dataclass
 from typing import Literal
 
 TombstoneReason = Literal["deleted", "modified"]

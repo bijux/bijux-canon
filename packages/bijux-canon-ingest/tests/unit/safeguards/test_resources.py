@@ -5,9 +5,9 @@ from __future__ import annotations
 
 import contextlib
 
+import pytest
 from hypothesis import given
 from hypothesis import strategies as st
-import pytest
 
 from bijux_canon_ingest.result import Err, Ok
 from bijux_canon_ingest.safeguards.breakers import short_circuit_on_err_truncate

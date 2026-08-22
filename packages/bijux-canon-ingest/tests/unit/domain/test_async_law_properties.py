@@ -5,9 +5,9 @@ from __future__ import annotations
 
 import asyncio
 
+import pytest
 from hypothesis import given, settings
 from hypothesis import strategies as st
-import pytest
 
 from bijux_canon_ingest.domain.effects.asyncio import (
     AsyncGen,

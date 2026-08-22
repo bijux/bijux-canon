@@ -23,9 +23,10 @@ import json
 from pathlib import Path
 from typing import Any
 
+import pytest
+
 from bijux_canon_ingest_e2e_support import get_value as _get
 from bijux_canon_ingest_e2e_support import unwrap_ok as _unwrap_ok
-import pytest
 
 
 def _load_query_ids() -> list[str]:

@@ -11,13 +11,13 @@ This adapter is resource-safe:
 
 from __future__ import annotations
 
-from collections.abc import Iterator
-from contextlib import ExitStack, suppress
 import csv
-from dataclasses import asdict
 import json
 import os
 import tempfile
+from collections.abc import Iterator
+from contextlib import ExitStack, suppress
+from dataclasses import asdict
 
 from bijux_canon_ingest.core.types import Chunk, RawDoc
 from bijux_canon_ingest.domain.capabilities import Storage

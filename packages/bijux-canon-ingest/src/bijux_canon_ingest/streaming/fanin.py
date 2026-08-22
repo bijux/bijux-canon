@@ -5,8 +5,8 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable, Iterator, Sequence
 import heapq
+from collections.abc import Callable, Iterator, Sequence
 from typing import Any, TypeVar
 
 from .types import Source

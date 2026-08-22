@@ -3,8 +3,8 @@
 
 from __future__ import annotations
 
-from hypothesis import given, settings
 import hypothesis.strategies as st
+from hypothesis import given, settings
 
 from bijux_canon_ingest.core.types import RawDoc
 from bijux_canon_ingest.domain.capabilities import StorageRead

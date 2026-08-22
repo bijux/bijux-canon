@@ -6,7 +6,6 @@ from __future__ import annotations
 import asyncio
 from dataclasses import dataclass
 
-from bijux_canon_ingest_async_support import collect
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
@@ -17,6 +16,7 @@ from bijux_canon_ingest.domain.effects.asyncio import (
     async_gen_using,
 )
 from bijux_canon_ingest.result.types import Err, ErrInfo, Ok
+from bijux_canon_ingest_async_support import collect
 
 
 @given(x=st.integers())

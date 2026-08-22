@@ -3,8 +3,8 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 import re
+from pathlib import Path
 
 _BANNED_PATTERNS: tuple[tuple[str, str], ...] = (
     (r"\bBijux RAG\b", "legacy package label"),

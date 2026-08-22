@@ -15,15 +15,15 @@ If these fixtures fail, it means bijux-rag is still 'ingestion-only' and not a R
 
 from __future__ import annotations
 
-from collections.abc import Iterable
 import json
+from collections.abc import Iterable
 from pathlib import Path
 from typing import Any
 
-from bijux_canon_ingest_e2e_support import unwrap_ok
 import pytest
 
 from bijux_canon_ingest.core.types import RawDoc
+from bijux_canon_ingest_e2e_support import unwrap_ok
 
 
 def _load_jsonl(path: Path) -> list[dict[str, Any]]:

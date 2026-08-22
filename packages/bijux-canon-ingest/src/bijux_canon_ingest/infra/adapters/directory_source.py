@@ -5,12 +5,12 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 import fnmatch
 import hashlib
 import os
-from pathlib import Path, PurePosixPath
 import stat
+from dataclasses import dataclass
+from pathlib import Path, PurePosixPath
 
 from bijux_canon_ingest.domain.source_discovery import (
     DiscoveredSource,

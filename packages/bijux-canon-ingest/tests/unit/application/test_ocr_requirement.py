@@ -6,8 +6,8 @@ from __future__ import annotations
 import hashlib
 from pathlib import Path
 
-from pypdf import PdfWriter
 import pytest
+from pypdf import PdfWriter
 
 from bijux_canon_ingest import (
     DiscoveredSource,

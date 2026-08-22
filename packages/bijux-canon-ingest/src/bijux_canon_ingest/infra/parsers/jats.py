@@ -5,10 +5,10 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterable
 import hashlib
 import re
 import xml.etree.ElementTree as ET
+from collections.abc import Iterable
 
 from bijux_canon_ingest.domain.document_extraction import (
     BlockRole,
