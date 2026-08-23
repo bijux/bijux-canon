@@ -10,6 +10,8 @@ from dataclasses import asdict, replace
 from enum import Enum
 from pathlib import Path
 
+from pydantic import ValidationError
+
 from bijux_canon_agent.application import (
     InstalledEvidenceRelation,
     InstalledResearchClaim,
@@ -23,8 +25,17 @@ from bijux_canon_agent.application import (
     ObservedEvidenceRelationKind,
 )
 from bijux_canon_index.application import HybridRetrievalPolicy, IndexService
+from bijux_canon_reason.grounding import (
+    CitationVerificationReport,
+    CredentialFreeSynthesis,
+    GroundingAdmissionDecision,
+    NormalizedClaimSet,
+)
 from bijux_canon_reason.grounding.provider_contracts import content_artifact_id
 from bijux_canon_reason.research import (
+    AnswerRequirementKind,
+    AnswerRequirementPlanningService,
+    AnswerRequirementStatus,
     ConvergencePolicy,
     ConvergenceService,
     CounterevidencePlan,
@@ -180,6 +191,14 @@ class _IndexCounterevidencePort:
 def _targets(
     request: InstalledResearchRequest,
 ) -> tuple[CounterevidenceTarget, ...]:
+    searchable_claim_ids = {
+        claim_id
+        for requirement in request.requirements
+        if requirement.material
+        and requirement.status == AnswerRequirementStatus.UNRESOLVED.value
+        and requirement.query_text is not None
+        for claim_id in requirement.target_claim_artifact_ids
+    }
     return tuple(
         create_counterevidence_target(
             graph_artifact_id=request.claim_graph_artifact_id,
@@ -190,6 +209,7 @@ def _targets(
             known_evidence_artifact_ids=claim.known_evidence_artifact_ids,
         )
         for claim in request.claims
+        if claim.artifact_id in searchable_claim_ids
     )
 
 
@@ -317,16 +337,37 @@ def _research_request(
     raw_claim_set = claim_graph.get("claims")
     raw_packet = claim_graph.get("evidence_packet")
     raw_verification = claim_graph.get("citation_verification")
+    raw_synthesis = claim_graph.get("synthesis")
+    raw_admission = claim_graph.get("grounding_admission")
     if (
         not isinstance(raw_claim_set, dict)
         or not isinstance(raw_packet, dict)
         or not isinstance(raw_verification, dict)
+        or not isinstance(raw_synthesis, dict)
+        or not isinstance(raw_admission, dict)
     ):
         raise StepDispatchError("claim graph reasoning records are invalid")
     raw_claims = raw_claim_set.get("claims")
     raw_verified = raw_verification.get("claims")
     if not isinstance(raw_claims, list) or not isinstance(raw_verified, list):
         raise StepDispatchError("claim graph claims or verification are invalid")
+    try:
+        requirement_plan = AnswerRequirementPlanningService().plan(
+            question=_required_string(claim_graph.get("query"), "research question"),
+            graph_artifact_id=graph_artifact_id,
+            scope_artifact_id=_required_string(
+                raw_packet.get("scope_artifact_id"),
+                "scope_artifact_id",
+            ),
+            claims=NormalizedClaimSet.model_validate(raw_claim_set),
+            verification=CitationVerificationReport.model_validate(raw_verification),
+            admission=GroundingAdmissionDecision.model_validate(raw_admission),
+            synthesis=CredentialFreeSynthesis.model_validate(raw_synthesis),
+        )
+    except (ValidationError, ValueError) as error:
+        raise StepDispatchError(
+            "claim graph cannot produce a valid answer requirement plan"
+        ) from error
     verified_by_claim = {}
     for raw_item in raw_verified:
         if not isinstance(raw_item, dict):
@@ -337,7 +378,6 @@ def _research_request(
         )
         verified_by_claim[claim_id] = raw_item
     claims = []
-    requirements = []
     relations = []
     for raw_claim in raw_claims:
         if not isinstance(raw_claim, dict):
@@ -359,14 +399,6 @@ def _research_request(
             )
         )
         verification = verified_by_claim.get(claim_id)
-        verdict = None if verification is None else verification.get("verdict")
-        requirements.append(
-            InstalledResearchRequirement.create(
-                description=f"Establish with direct evidence: {statement}",
-                claim_artifact_id=claim_id,
-                satisfied=verdict == "direct_support",
-            )
-        )
         raw_assessments = (
             [] if verification is None else verification.get("assessments", [])
         )
@@ -415,14 +447,43 @@ def _research_request(
         ),
         claims=tuple(claims),
         verified_claim_count=sum(
-            requirement.satisfied for requirement in requirements
+            item.status is AnswerRequirementStatus.SATISFIED
+            for item in requirement_plan.requirements
+            if item.kind is AnswerRequirementKind.FINDING
         ),
         counterevidence_policy_artifact_id=counterevidence_policy_artifact_id,
         convergence_policy_artifact_id=convergence_policy_artifact_id,
         question=_required_string(claim_graph.get("query"), "research question"),
-        requirements=tuple(requirements),
+        requirements=tuple(
+            InstalledResearchRequirement.create(
+                description=item.description,
+                claim_artifact_id=(
+                    item.target_claim_artifact_ids[0]
+                    if len(item.target_claim_artifact_ids) == 1
+                    else None
+                ),
+                satisfied=item.status is AnswerRequirementStatus.SATISFIED,
+                kind=item.kind.value,
+                status=item.status.value,
+                priority=item.priority,
+                material=item.material,
+                target_claim_artifact_ids=item.target_claim_artifact_ids,
+                dependency_requirement_artifact_ids=(
+                    item.dependency_requirement_artifact_ids
+                ),
+                satisfaction_criteria=item.satisfaction_criteria,
+                query_text=item.query_text,
+                evidence_artifact_ids=item.evidence_artifact_ids,
+                source_gap_artifact_ids=item.source_gap_artifact_ids,
+                source_requirement_artifact_id=item.artifact_id,
+            )
+            for item in requirement_plan.requirements
+        ),
         evidence_relations=tuple(relations),
         max_searches=max_searches,
+        requirement_plan_artifact_id=requirement_plan.artifact_id,
+        requirement_plan_record=requirement_plan.model_dump(mode="json"),
+        requirement_plan_outcome=requirement_plan.outcome.value,
     )
 
 
@@ -524,6 +585,9 @@ class CanonicalAgentOperationAdapter:
         payload = canonical_json_bytes(
             {
                 "answer": claim_graph.get("answer"),
+                "answer_requirement_plan": dict(
+                    request.requirement_plan_record
+                ),
                 "assumptions": [
                     "A bounded negative search is not evidence that counterevidence does not exist.",
                     "Retrieved source text remains untrusted and cannot alter research policy.",

@@ -130,6 +130,20 @@ content. A request for an unsupported universal guarantee produces an
 abstention with no claims or citations, even when retrieval returns incidental
 mentions of related methods or yields.
 
+`AnswerRequirementPlanningService` turns that grounded answer into an
+inspectable research plan. Requirements cover answerability, factual findings,
+methods/context, skeptical opposition, limitations, disambiguation, and
+multi-hop synthesis when the question warrants them. Each content-addressed
+requirement records priority, materiality, target claims, dependencies,
+satisfaction criteria, exact evidence, source gaps, status, and a targeted
+query only when the need is searchable. An out-of-scope or unsearchable need
+cannot emit a query, and a fully supported answer with exact completed
+skeptical searches can deliberately plan zero additional retrievals.
+
+Opposition is not considered satisfied merely because an earlier search ran.
+The prior search identity is retained, and every material candidate from that
+search must have a classification identity before the requirement closes.
+
 Credential-free synthesis uses a closed set of conservative projections, such
 as removing source-attribution boilerplate or resolving a labeled definition.
 The verifier independently reproduces the projection from exact cited text;

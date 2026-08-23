@@ -107,6 +107,14 @@ important claim, or unclassified candidate remains incomplete even if a raw
 convergence observation says to stop. No-result search gaps are explicitly
 non-blocking and must retain their bounded negative-search statement.
 
+The same payload retains `answer_requirement_plan`, the exact Reason-owned
+plan from which Agent state was constructed. Verification revalidates its
+content identity, graph binding, question, dependency order, search selection,
+and outcome, then requires every Agent requirement to retain the corresponding
+source requirement identity. A counterevidence plan alone is not evidence that
+the question's findings, methods/context, opposition, limitations,
+disambiguation, and answerability needs were considered.
+
 ## DuckDB Execution Store
 
 The execution store is the durable audit-and-replay boundary. It is explicitly

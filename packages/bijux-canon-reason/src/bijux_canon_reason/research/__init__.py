@@ -19,6 +19,16 @@ from bijux_canon_reason.research.assumptions_insufficiency import (
     ResearchDeficiencyStatus,
     create_assumption_candidate,
 )
+from bijux_canon_reason.research.answer_requirements import (
+    AnswerRequirementKind,
+    AnswerRequirementPlan,
+    AnswerRequirementPlanOutcome,
+    AnswerRequirementPlanningService,
+    AnswerRequirementStatus,
+    PlannedAnswerRequirement,
+    SkepticalSearchCompletion,
+    create_skeptical_search_completion,
+)
 from bijux_canon_reason.research.claim_merging import (
     CanonicalClaimVariant,
     CanonicalDerivationDependency,
@@ -156,6 +166,11 @@ from bijux_canon_reason.research.replay_comparison import (
 )
 
 __all__ = [
+    "AnswerRequirementKind",
+    "AnswerRequirementPlan",
+    "AnswerRequirementPlanOutcome",
+    "AnswerRequirementPlanningService",
+    "AnswerRequirementStatus",
     "AssumptionCandidate",
     "AssumptionImpact",
     "AssumptionInsufficiencyDelta",
@@ -225,6 +240,8 @@ __all__ = [
     "GraphInsufficiency",
     "InsufficiencyOutcome",
     "MergeableClaim",
+    "PlannedAnswerRequirement",
+    "SkepticalSearchCompletion",
     "QuestionDecomposer",
     "QuestionDecompositionDecision",
     "QuestionDecompositionError",
@@ -276,6 +293,7 @@ __all__ = [
     "create_deficiency_gap_candidate",
     "create_gap_filling_candidate",
     "create_assumption_candidate",
+    "create_skeptical_search_completion",
     "create_counterevidence_target",
     "create_convergence_observation",
     "create_mergeable_claim",

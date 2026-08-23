@@ -74,6 +74,9 @@ class InstalledResearchRequest:
     requirements: tuple[InstalledResearchRequirement, ...]
     evidence_relations: tuple[InstalledEvidenceRelation, ...]
     max_searches: int
+    requirement_plan_artifact_id: str
+    requirement_plan_record: Mapping[str, object]
+    requirement_plan_outcome: str
 
     def __post_init__(self) -> None:
         for value, field in (
@@ -81,6 +84,7 @@ class InstalledResearchRequest:
             (self.scope_artifact_id, "scope artifact_id"),
             (self.counterevidence_policy_artifact_id, "counterevidence policy"),
             (self.convergence_policy_artifact_id, "convergence policy"),
+            (self.requirement_plan_artifact_id, "requirement plan artifact_id"),
         ):
             _require_artifact_id(value, field)
         if self.verified_claim_count < 0:
@@ -90,21 +94,43 @@ class InstalledResearchRequest:
         if self.max_searches < 0:
             raise ValueError("maximum searches must not be negative")
         claim_ids = {claim.artifact_id for claim in self.claims}
-        requirement_claim_ids = tuple(
-            item.claim_artifact_id for item in self.requirements
+        finding_claim_ids = tuple(
+            item.claim_artifact_id
+            for item in self.requirements
+            if item.kind == "finding" and item.claim_artifact_id is not None
         )
-        if set(requirement_claim_ids) != claim_ids or len(
-            requirement_claim_ids
-        ) != len(set(requirement_claim_ids)):
-            raise ValueError("research requirements must cover every claim exactly once")
+        if set(finding_claim_ids) != claim_ids or len(finding_claim_ids) != len(
+            set(finding_claim_ids)
+        ):
+            raise ValueError(
+                "finding requirements must cover every claim exactly once"
+            )
         if self.verified_claim_count != sum(
-            item.satisfied for item in self.requirements
+            item.satisfied for item in self.requirements if item.kind == "finding"
         ):
             raise ValueError("verified claim count must match satisfied requirements")
+        if any(
+            claim_id not in claim_ids
+            for item in self.requirements
+            for claim_id in item.target_claim_artifact_ids
+        ):
+            raise ValueError("research requirement references an unknown claim")
         if any(
             item.claim_artifact_id not in claim_ids for item in self.evidence_relations
         ):
             raise ValueError("evidence relation references an unknown claim")
+        if not isinstance(self.requirement_plan_record, Mapping):
+            raise TypeError("requirement plan record must be a mapping")
+        if not self.requirement_plan_outcome:
+            raise ValueError("requirement plan outcome must not be empty")
+        if self.requirement_plan_record.get("artifact_id") not in {
+            None,
+            self.requirement_plan_artifact_id,
+        } or self.requirement_plan_record.get("outcome") not in {
+            None,
+            self.requirement_plan_outcome,
+        }:
+            raise ValueError("requirement plan summary differs from its identity")
 
 
 @dataclass(frozen=True, slots=True)

@@ -27,6 +27,7 @@ from bijux_canon_reason.grounding import (
     render_grounded_answer,
 )
 from bijux_canon_reason.research import (
+    AnswerRequirementPlan,
     ConvergenceDecision,
     CounterevidencePlan,
     CounterevidenceSearchRun,
@@ -214,6 +215,9 @@ def _verify_claim_graph(subject: Mapping[str, object]) -> tuple[str, ...]:
 
 def _verify_research_trace(subject: Mapping[str, object]) -> tuple[str, ...]:
     try:
+        requirements = AnswerRequirementPlan.model_validate(
+            subject["answer_requirement_plan"]
+        )
         plan = CounterevidencePlan.model_validate(subject["counterevidence_plan"])
         raw_run = subject.get("counterevidence_run")
         run = (
@@ -224,6 +228,7 @@ def _verify_research_trace(subject: Mapping[str, object]) -> tuple[str, ...]:
         convergence = ConvergenceDecision.model_validate(subject["termination"])
         raw_events = subject["causal_events"]
         raw_trace = _object(subject["causal_trace"], "causal_trace")
+        raw_state = _object(subject["research_state"], "research_state")
         if not isinstance(raw_events, list):
             raise TypeError
         events = tuple(_event(item) for item in raw_events)
@@ -231,6 +236,23 @@ def _verify_research_trace(subject: Mapping[str, object]) -> tuple[str, ...]:
         raise StepDispatchError("research trace records are invalid") from error
     if run is not None and run.plan_artifact_id != plan.artifact_id:
         raise StepDispatchError("counterevidence run refers to another plan")
+    if requirements.graph_artifact_id != subject.get("claim_graph_artifact_id"):
+        raise StepDispatchError("answer requirement plan refers to another graph")
+    raw_requirements = raw_state.get("requirements")
+    if not isinstance(raw_requirements, list) or any(
+        not isinstance(item, dict) for item in raw_requirements
+    ):
+        raise StepDispatchError("research state requirements are invalid")
+    source_requirement_ids = tuple(
+        item.get("source_requirement_artifact_id")
+        for item in raw_requirements
+        if isinstance(item, dict)
+    )
+    if raw_state.get("question") != requirements.question or (
+        source_requirement_ids
+        != tuple(item.artifact_id for item in requirements.requirements)
+    ):
+        raise StepDispatchError("research state differs from its answer requirements")
     trace = ResearchCausalTrace.create(events)
     if raw_trace != {
         "artifact_id": trace.artifact_id,
@@ -250,6 +272,7 @@ def _verify_research_trace(subject: Mapping[str, object]) -> tuple[str, ...]:
     ):
         raise StepDispatchError("research opposition candidates do not match search")
     return (
+        "answer-requirement-plan-identity",
         "counterevidence-plan-identity",
         "counterevidence-search-lineage",
         "unclassified-opposition-preservation",

@@ -155,6 +155,11 @@ from bijux_canon_reason.grounding import (
     response_schema_sha256,
 )
 from bijux_canon_reason.research import (
+    AnswerRequirementKind,
+    AnswerRequirementPlan,
+    AnswerRequirementPlanOutcome,
+    AnswerRequirementPlanningService,
+    AnswerRequirementStatus,
     AssumptionCandidate,
     AssumptionImpact,
     AssumptionInsufficiencyDelta,
@@ -218,6 +223,8 @@ from bijux_canon_reason.research import (
     GraphAssumption,
     GraphConfidenceBasis,
     GraphEvidenceRelation,
+    PlannedAnswerRequirement,
+    SkepticalSearchCompletion,
     GraphInsufficiency,
     GraphSynthesisError,
     GraphSynthesisErrorCode,
@@ -274,6 +281,7 @@ from bijux_canon_reason.research import (
     create_assumption_candidate,
     create_convergence_observation,
     create_counterevidence_target,
+    create_skeptical_search_completion,
     create_deficiency_gap_candidate,
     create_gap_filling_candidate,
     create_gap_retrieval_request,
@@ -286,6 +294,11 @@ from bijux_canon_reason.research import (
 )
 
 __all__ = [
+    "AnswerRequirementKind",
+    "AnswerRequirementPlan",
+    "AnswerRequirementPlanOutcome",
+    "AnswerRequirementPlanningService",
+    "AnswerRequirementStatus",
     "__version__",
     "AtomicClaim",
     "AtomicClaimNormalizer",
@@ -313,6 +326,8 @@ __all__ = [
     "ClaimProvenanceResolution",
     "ClaimType",
     "ClaimSourceCoverage",
+    "PlannedAnswerRequirement",
+    "SkepticalSearchCompletion",
     "ConvergenceDecision",
     "ConvergenceError",
     "ConvergenceErrorCode",
@@ -534,6 +549,7 @@ __all__ = [
     "create_gap_filling_candidate",
     "create_assumption_candidate",
     "create_counterevidence_target",
+    "create_skeptical_search_completion",
     "create_convergence_observation",
     "create_mergeable_claim",
     "create_retrieval_evidence_batch",

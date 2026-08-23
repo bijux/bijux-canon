@@ -835,6 +835,22 @@ def _verify_reason_and_agent(grounded: _GroundedRuntime) -> None:
         "used": 1,
     }
     assert research_trace["research_state"]["gaps"]
+    requirement_plan = research_trace["answer_requirement_plan"]
+    assert requirement_plan["question"] == (
+        "What evidence do ancient genomes preserve?"
+    )
+    assert requirement_plan["outcome"] == "search_required"
+    requirement_kinds = {
+        item["kind"] for item in requirement_plan["requirements"]
+    }
+    assert requirement_kinds >= {
+        "answerability",
+        "finding",
+        "method_context",
+        "opposition",
+        "limitation",
+    }
+    assert requirement_plan["search_requirement_artifact_ids"]
     assert (
         research_trace["causal_trace"]["head_artifact_id"]
         == (research_trace["causal_events"][-1]["artifact_id"])
@@ -1085,6 +1101,11 @@ def test_installed_ingest_and_index_adapters_persist_restartable_payloads(
         "What evidence do ancient genomes preserve?"
     )
     assert delegated_requests[0].requirements
+    assert delegated_requests[0].requirement_plan_outcome == "search_required"
+    assert all(
+        requirement.source_requirement_artifact_id is not None
+        for requirement in delegated_requests[0].requirements
+    )
     assert delegated_requests[0].evidence_relations
     _verify_linked_runs(grounded)
     assert len(delegated_requests) == 2

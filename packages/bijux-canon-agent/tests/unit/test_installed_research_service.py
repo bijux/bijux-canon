@@ -76,6 +76,9 @@ def _request(
         requirements=(requirement,),
         evidence_relations=(evidence_relation,),
         max_searches=1,
+        requirement_plan_artifact_id=_PLAN,
+        requirement_plan_record={"outcome": "search_required"},
+        requirement_plan_outcome="search_required",
     )
 
 

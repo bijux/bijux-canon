@@ -54,20 +54,78 @@ class InstalledResearchRequirement:
 
     artifact_id: str
     description: str
-    claim_artifact_id: str
+    claim_artifact_id: str | None
     satisfied: bool
+    kind: str
+    status: str
+    priority: int
+    material: bool
+    target_claim_artifact_ids: tuple[str, ...]
+    dependency_requirement_artifact_ids: tuple[str, ...]
+    satisfaction_criteria: tuple[str, ...]
+    query_text: str | None
+    evidence_artifact_ids: tuple[str, ...]
+    source_gap_artifact_ids: tuple[str, ...]
+    source_requirement_artifact_id: str | None
 
     def __post_init__(self) -> None:
-        _require_artifact_id(self.claim_artifact_id, "requirement claim artifact_id")
+        if self.claim_artifact_id is not None:
+            _require_artifact_id(
+                self.claim_artifact_id, "requirement claim artifact_id"
+            )
+        if self.source_requirement_artifact_id is not None:
+            _require_artifact_id(
+                self.source_requirement_artifact_id,
+                "source requirement artifact_id",
+            )
         if not self.description or self.description != " ".join(
             self.description.split()
         ):
             raise ValueError("research requirement description is not normalized")
+        if not self.kind or not self.status or not 1 <= self.priority <= 100:
+            raise ValueError("research requirement kind, status, or priority is invalid")
+        if self.satisfied != (self.status == "satisfied"):
+            raise ValueError("research requirement satisfaction status diverges")
+        identity_groups = (
+            self.target_claim_artifact_ids,
+            self.dependency_requirement_artifact_ids,
+            self.evidence_artifact_ids,
+            self.source_gap_artifact_ids,
+        )
+        if any(len(items) != len(set(items)) for items in identity_groups):
+            raise ValueError("research requirement identities must be unique")
+        for items in identity_groups:
+            for artifact_id in items:
+                _require_artifact_id(artifact_id, "research requirement artifact_id")
+        if (
+            self.claim_artifact_id is not None
+            and self.claim_artifact_id not in self.target_claim_artifact_ids
+        ):
+            raise ValueError("primary requirement claim is absent from its targets")
+        if not self.satisfaction_criteria:
+            raise ValueError("research requirement needs satisfaction criteria")
         expected = _artifact_id(
             {
                 "claim_artifact_id": self.claim_artifact_id,
                 "description": self.description,
+                "dependency_requirement_artifact_ids": list(
+                    self.dependency_requirement_artifact_ids
+                ),
+                "evidence_artifact_ids": list(self.evidence_artifact_ids),
+                "kind": self.kind,
+                "material": self.material,
+                "priority": self.priority,
+                "query_text": self.query_text,
                 "satisfied": self.satisfied,
+                "satisfaction_criteria": list(self.satisfaction_criteria),
+                "source_gap_artifact_ids": list(self.source_gap_artifact_ids),
+                "source_requirement_artifact_id": (
+                    self.source_requirement_artifact_id
+                ),
+                "status": self.status,
+                "target_claim_artifact_ids": list(
+                    self.target_claim_artifact_ids
+                ),
             }
         )
         if self.artifact_id != expected:
@@ -78,23 +136,74 @@ class InstalledResearchRequirement:
         cls,
         *,
         description: str,
-        claim_artifact_id: str,
+        claim_artifact_id: str | None,
         satisfied: bool,
+        kind: str = "finding",
+        status: str | None = None,
+        priority: int = 100,
+        material: bool = True,
+        target_claim_artifact_ids: tuple[str, ...] | None = None,
+        dependency_requirement_artifact_ids: tuple[str, ...] = (),
+        satisfaction_criteria: tuple[str, ...] = (
+            "Direct evidence satisfies the declared answer need.",
+        ),
+        query_text: str | None = None,
+        evidence_artifact_ids: tuple[str, ...] = (),
+        source_gap_artifact_ids: tuple[str, ...] = (),
+        source_requirement_artifact_id: str | None = None,
     ) -> InstalledResearchRequirement:
         normalized = " ".join(description.split())
-        _require_artifact_id(claim_artifact_id, "requirement claim artifact_id")
+        if claim_artifact_id is not None:
+            _require_artifact_id(claim_artifact_id, "requirement claim artifact_id")
+        if source_requirement_artifact_id is not None:
+            _require_artifact_id(
+                source_requirement_artifact_id,
+                "source requirement artifact_id",
+            )
         if not normalized:
             raise ValueError("research requirement description must not be empty")
+        resolved_status = status or ("satisfied" if satisfied else "unresolved")
+        targets = (
+            (() if claim_artifact_id is None else (claim_artifact_id,))
+            if target_claim_artifact_ids is None
+            else target_claim_artifact_ids
+        )
         payload = {
             "claim_artifact_id": claim_artifact_id,
             "description": normalized,
+            "dependency_requirement_artifact_ids": list(
+                dependency_requirement_artifact_ids
+            ),
+            "evidence_artifact_ids": list(evidence_artifact_ids),
+            "kind": kind,
+            "material": material,
+            "priority": priority,
+            "query_text": query_text,
             "satisfied": satisfied,
+            "satisfaction_criteria": list(satisfaction_criteria),
+            "source_gap_artifact_ids": list(source_gap_artifact_ids),
+            "source_requirement_artifact_id": source_requirement_artifact_id,
+            "status": resolved_status,
+            "target_claim_artifact_ids": list(targets),
         }
         return cls(
             artifact_id=_artifact_id(payload),
             description=normalized,
             claim_artifact_id=claim_artifact_id,
             satisfied=satisfied,
+            kind=kind,
+            status=resolved_status,
+            priority=priority,
+            material=material,
+            target_claim_artifact_ids=targets,
+            dependency_requirement_artifact_ids=(
+                dependency_requirement_artifact_ids
+            ),
+            satisfaction_criteria=satisfaction_criteria,
+            query_text=query_text,
+            evidence_artifact_ids=evidence_artifact_ids,
+            source_gap_artifact_ids=source_gap_artifact_ids,
+            source_requirement_artifact_id=source_requirement_artifact_id,
         )
 
 
@@ -258,7 +367,7 @@ class ObservedResearchState:
 
     artifact_id: str
     question: str
-    requirement_artifact_ids: tuple[str, ...]
+    requirements: tuple[InstalledResearchRequirement, ...]
     claim_artifact_ids: tuple[str, ...]
     evidence_relations: tuple[InstalledEvidenceRelation, ...]
     gaps: tuple[ObservedResearchGap, ...]
@@ -310,6 +419,11 @@ class ObservedResearchState:
         """Return unresolved gaps that prevent a completed answer."""
         return tuple(gap for gap in self.gaps if gap.blocking)
 
+    @property
+    def requirement_artifact_ids(self) -> tuple[str, ...]:
+        """Return stable requirement identities for causal guards."""
+        return tuple(item.artifact_id for item in self.requirements)
+
     def to_record(self) -> dict[str, object]:
         """Return canonical JSON-compatible state for durable inspection."""
         return {
@@ -346,6 +460,36 @@ class ObservedResearchState:
             ],
             "question": self.question,
             "requirement_artifact_ids": list(self.requirement_artifact_ids),
+            "requirements": [
+                {
+                    "artifact_id": requirement.artifact_id,
+                    "dependency_requirement_artifact_ids": list(
+                        requirement.dependency_requirement_artifact_ids
+                    ),
+                    "description": requirement.description,
+                    "evidence_artifact_ids": list(
+                        requirement.evidence_artifact_ids
+                    ),
+                    "kind": requirement.kind,
+                    "material": requirement.material,
+                    "priority": requirement.priority,
+                    "query_text": requirement.query_text,
+                    "satisfaction_criteria": list(
+                        requirement.satisfaction_criteria
+                    ),
+                    "source_gap_artifact_ids": list(
+                        requirement.source_gap_artifact_ids
+                    ),
+                    "source_requirement_artifact_id": (
+                        requirement.source_requirement_artifact_id
+                    ),
+                    "status": requirement.status,
+                    "target_claim_artifact_ids": list(
+                        requirement.target_claim_artifact_ids
+                    ),
+                }
+                for requirement in self.requirements
+            ],
             "search_budget": {
                 "limit": self.search_budget_limit,
                 "used": self.search_budget_used,
@@ -380,7 +524,7 @@ class ObservedResearchStateMachine:
                 subject_artifact_id=requirement.artifact_id,
             )
             for requirement in requirements
-            if not requirement.satisfied
+            if requirement.material and not requirement.satisfied
         ]
         for relation in evidence_relations:
             kind = {
@@ -403,7 +547,7 @@ class ObservedResearchStateMachine:
                 )
         return cls._create(
             question=normalized_question,
-            requirement_artifact_ids=tuple(item.artifact_id for item in requirements),
+            requirements=requirements,
             claim_artifact_ids=claim_artifact_ids,
             evidence_relations=evidence_relations,
             gaps=tuple(gaps),
@@ -441,7 +585,7 @@ class ObservedResearchStateMachine:
             raise ValueError("terminal observed research state cannot transition")
         return cls._create(
             question=state.question,
-            requirement_artifact_ids=state.requirement_artifact_ids,
+            requirements=state.requirements,
             claim_artifact_ids=state.claim_artifact_ids,
             evidence_relations=(
                 state.evidence_relations
@@ -459,7 +603,7 @@ class ObservedResearchStateMachine:
     def _create(
         *,
         question: str,
-        requirement_artifact_ids: tuple[str, ...],
+        requirements: tuple[InstalledResearchRequirement, ...],
         claim_artifact_ids: tuple[str, ...],
         evidence_relations: tuple[InstalledEvidenceRelation, ...],
         gaps: tuple[ObservedResearchGap, ...],
@@ -476,7 +620,7 @@ class ObservedResearchStateMachine:
             ],
             "gap_artifact_ids": [item.artifact_id for item in gaps],
             "question": question,
-            "requirement_artifact_ids": list(requirement_artifact_ids),
+            "requirement_artifact_ids": [item.artifact_id for item in requirements],
             "search_budget_limit": search_budget_limit,
             "search_budget_used": search_budget_used,
             "terminal_status": terminal_status,
@@ -484,7 +628,7 @@ class ObservedResearchStateMachine:
         return ObservedResearchState(
             artifact_id=_artifact_id(payload),
             question=question,
-            requirement_artifact_ids=requirement_artifact_ids,
+            requirements=requirements,
             claim_artifact_ids=claim_artifact_ids,
             evidence_relations=evidence_relations,
             gaps=gaps,

@@ -115,5 +115,12 @@ artifact/run custody in Runtime. Runtime may serialize the returned state and
 events into its versioned artifact, but it must not synthesize missing Agent
 events or promote a blocking gap to completion.
 
+Before Agent selects an action, Reason derives a question-specific answer
+requirement plan from the actual grounded claims, semantic citation verdicts,
+admission gaps, synthesis roles, and any exact prior skeptical-search closure.
+Runtime maps that typed plan without inventing requirements. Agent retains the
+full requirement semantics in observed state and permits search only for
+material unresolved requirements with a query and an in-scope claim target.
+
 See [configuration](../interfaces/configuration-surface.md) for precedence and
 [artifact contracts](../interfaces/artifact-contracts.md) for evidence fields.
