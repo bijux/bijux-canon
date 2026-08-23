@@ -28,6 +28,18 @@ def build_parser(*, prog_name: str) -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(dest="command")
     add_v2_commands(subparsers)
 
+    init_parser = subparsers.add_parser(
+        "init",
+        help="Atomically initialize or validate a local Runtime workspace.",
+    )
+    init_parser.add_argument("--workspace", required=True)
+    init_parser.add_argument(
+        "--model",
+        required=True,
+        help="Path to a materialized model directory containing model.lock.json.",
+    )
+    init_parser.add_argument("--json", action="store_true")
+
     run_parser = subparsers.add_parser(
         RUN_COMMAND,
         help=(

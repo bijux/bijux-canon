@@ -149,6 +149,26 @@ class DuckDBExecutionStore:
             lease.release()
         self._lease = None
 
+    def validate_schema(self) -> None:
+        """Validate the complete migration and schema contract without mutation."""
+        migrations = self._load_migrations()
+        expected = {
+            version: schema_contracts.hash_payload(statement)
+            for version, statement in migrations.items()
+        }
+        try:
+            applied = {
+                int(row[0]): str(row[1])
+                for row in self._connection.execute(
+                    "SELECT version, checksum FROM schema_migrations"
+                ).fetchall()
+            }
+        except Exception as exc:
+            raise RuntimeError("Schema migrations are unreadable.") from exc
+        if applied != expected:
+            raise RuntimeError("Schema migrations are out of sync with code.")
+        self._assert_schema_contract(max(migrations.keys(), default=0))
+
     def __del__(self) -> None:
         """Internal helper; not part of the public API."""
         with suppress(Exception):
@@ -1275,7 +1295,7 @@ class DuckDBExecutionStore:
             )
         if not applied and self._can_bootstrap_latest_schema():
             self._bootstrap_latest_schema(migrations)
-            self._assert_schema_contract(latest_version)
+            self.validate_schema()
             return
         for version, statement in migrations.items():
             checksum = schema_contracts.hash_payload(statement)
@@ -1299,15 +1319,7 @@ class DuckDBExecutionStore:
             except Exception:
                 self._connection.execute("ROLLBACK")
                 raise
-        final_versions = {
-            int(row[0])
-            for row in self._connection.execute(
-                "SELECT version FROM schema_migrations"
-            ).fetchall()
-        }
-        if final_versions != set(migrations.keys()):
-            raise RuntimeError("Schema migrations are out of sync with code.")
-        self._assert_schema_contract(latest_version)
+        self.validate_schema()
 
     def _can_bootstrap_latest_schema(self) -> bool:
         """Return whether a fresh database can safely use the canonical schema."""

@@ -24,6 +24,7 @@ from bijux_canon_runtime.interfaces.cli.store_commands import (
     validate_db,
 )
 from bijux_canon_runtime.interfaces.cli.v2_commands import run_v2_command
+from bijux_canon_runtime.interfaces.cli.workspace_commands import initialize_workspace
 
 _load_manifest = load_manifest
 _load_policy = load_policy
@@ -51,6 +52,8 @@ def main(
     )
     parser = build_parser(prog_name=prog_name)
     args = parser.parse_args()
+    if args.command == "init":
+        raise SystemExit(initialize_workspace(args))
     if args.command == "v2":
         services = application_services or _v2_application_services
         raise SystemExit(run_v2_command(args, services=services))

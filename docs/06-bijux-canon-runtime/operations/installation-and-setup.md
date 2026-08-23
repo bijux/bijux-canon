@@ -38,6 +38,30 @@ python -c "from bijux_canon_runtime import FlowManifest, RunMode, execute_flow; 
 bijux-canon-runtime --help
 ```
 
+## Initialize a local workspace
+
+Materialize a supported embedding model into a durable local cache first. The
+model directory passed to Runtime is the revision directory containing the
+canonical `model.lock.json` and all artifacts named by that lock. Workspace
+initialization is deliberately offline and verifies every locked artifact.
+
+```bash
+WORKSPACE=/srv/bijux-canon/research
+MODEL=/srv/bijux-models/local-minilm-384/<locked-revision>
+
+bijux-canon-runtime init \
+  --workspace "$WORKSPACE" \
+  --model "$MODEL" \
+  --json
+```
+
+The first call atomically activates a complete workspace. Repeating the same
+command returns `unchanged` and leaves all state bytes untouched. Do not
+pre-create the workspace directory: an existing directory without the
+canonical manifest is treated as partial state and refused rather than filled
+in. Preserve the whole workspace for restart, inspection, replay, and backup;
+the DuckDB file alone is not the complete authority.
+
 Install `bijux-canon` or `agentic-flows` only when an application still needs a
 compatibility import or command. New code should install the canonical runtime.
 
