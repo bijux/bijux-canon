@@ -447,6 +447,15 @@ class DuckDBMetadataAuthority:
                 "payload metadata references an unknown dependency"
             ) from exc
 
+    def payload_ids(self) -> frozenset[ArtifactID]:
+        """Return every immutable payload identity known to the authority."""
+        return frozenset(
+            ArtifactID(row[0])
+            for row in self._connection.execute(
+                "SELECT artifact_id FROM artifact_payloads"
+            ).fetchall()
+        )
+
     def record_run_revision(self, record: RunRevisionRecord) -> None:
         self._insert_record(
             table="run_revisions",

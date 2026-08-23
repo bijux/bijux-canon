@@ -9,8 +9,10 @@ from concurrent.futures import ThreadPoolExecutor
 import hashlib
 import json
 from pathlib import Path
+import sqlite3
 import threading
 
+import duckdb
 import pytest
 
 from bijux_canon_index.domain.embedding import LOCAL_MINILM_PROFILE
@@ -133,6 +135,32 @@ def test_composed_corpus_job_survives_application_restart_without_model_load(
         assert corpus["byte_length"] > 0
 
     layout = configuration.require_workspace_layout()
+    with duckdb.connect(str(layout.database_path), read_only=True) as authority:
+        job_row = authority.execute(
+            """
+            SELECT request_artifact_id, result_artifact_id
+            FROM runtime_jobs WHERE job_id = ?
+            """,
+            (submitted.job_id,),
+        ).fetchone()
+        assert job_row == (
+            completed.request_artifact_id,
+            completed.result_artifact_id,
+        )
+        assert authority.execute(
+            """
+            SELECT count(*) FROM artifact_payloads
+            WHERE artifact_id IN (?, ?)
+            """,
+            job_row,
+        ).fetchone() == (2,)
+    with sqlite3.connect(
+        f"{layout.job_store_path.as_uri()}?mode=ro",
+        uri=True,
+    ) as legacy_jobs:
+        assert legacy_jobs.execute(
+            "SELECT count(*) FROM runtime_jobs"
+        ).fetchone() == (0,)
     lock = load_model_lock(layout.model_lock_path)
     (layout.model_root / lock.artifacts[0].path).unlink()
 

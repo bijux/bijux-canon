@@ -6,9 +6,15 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from collections.abc import Iterator
 from dataclasses import dataclass
+from pathlib import Path
+from typing import Protocol
 
-from bijux_canon_runtime.model.artifact import AddressedArtifact
+from bijux_canon_runtime.model.artifact import (
+    AddressedArtifact,
+    ImmutableArtifactDescriptor,
+)
 from bijux_canon_runtime.ontology.ids import ArtifactID, TenantID
 
 
@@ -23,6 +29,31 @@ class PayloadBinding:
     tenant_id: TenantID
     logical_artifact_id: ArtifactID
     target_artifact_id: ArtifactID
+
+
+class DurableArtifactPayloadStore(Protocol):
+    """Structural contract for an inspectable filesystem-backed CAS."""
+
+    @property
+    def root(self) -> Path:
+        """Return the bounded storage authority root."""
+        ...
+
+    def put(self, artifact: AddressedArtifact) -> None:
+        """Publish one immutable payload."""
+        ...
+
+    def load(self, artifact_id: ArtifactID) -> AddressedArtifact:
+        """Load and validate one immutable payload."""
+        ...
+
+    def load_descriptor(self, artifact_id: ArtifactID) -> ImmutableArtifactDescriptor:
+        """Load and validate one immutable descriptor."""
+        ...
+
+    def iter_artifact_ids(self) -> Iterator[ArtifactID]:
+        """Iterate every admitted payload identity."""
+        ...
 
 
 class ArtifactPayloadStore(ABC):
@@ -127,6 +158,7 @@ class InMemoryArtifactPayloadStore(ArtifactPayloadStore):
 
 __all__ = [
     "ArtifactPayloadStore",
+    "DurableArtifactPayloadStore",
     "InMemoryArtifactPayloadStore",
     "PayloadBinding",
     "PayloadCollisionError",

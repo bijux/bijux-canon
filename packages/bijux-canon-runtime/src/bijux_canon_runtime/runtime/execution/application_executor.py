@@ -39,8 +39,8 @@ from bijux_canon_runtime.runtime.execution.runtime_event_ledger import (
 )
 from bijux_canon_runtime.runtime.inspection import RuntimeRunInspector
 from bijux_canon_runtime.runtime.inspection.models import InspectedAttempt
-from bijux_canon_runtime.runtime.persistence.filesystem_payload_store import (
-    AtomicFilesystemArtifactPayloadStore,
+from bijux_canon_runtime.runtime.persistence.payload_store import (
+    DurableArtifactPayloadStore,
 )
 
 _PROCESS_RUN_LOCKS: dict[Path, threading.Lock] = {}
@@ -62,7 +62,7 @@ class RuntimeExecutionService:
     def __init__(
         self,
         *,
-        store: AtomicFilesystemArtifactPayloadStore,
+        store: DurableArtifactPayloadStore,
         dispatcher: OperationDispatcher,
         process_id: str,
         configuration_identity_sha256: str,

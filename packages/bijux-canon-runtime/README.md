@@ -260,9 +260,13 @@ boundary.
   presenting an incomplete run as complete
 
 The installed local composition stores immutable payloads in the workspace CAS
-and binds their hashes into Runtime manifests and DuckDB records. Moving or
-restoring a workspace therefore requires the governed backup/restore path; a
-database file without its verified CAS is not a complete Runtime authority.
+and registers every verified descriptor and dependency in the same DuckDB that
+owns durable jobs and execution metadata. Job requests and results are CAS
+objects linked by foreign keys, not private JSON in a second live database. A
+legacy `jobs.sqlite` file is read only as migration input; new job transitions
+are authoritative in `runtime.duckdb`. Moving or restoring a workspace therefore
+requires the governed backup/restore path; a database file without its verified
+CAS is not a complete Runtime authority.
 
 ## Source Map
 

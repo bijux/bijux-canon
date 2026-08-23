@@ -7,11 +7,21 @@ from __future__ import annotations
 
 from collections.abc import Callable, Mapping
 from concurrent.futures import ThreadPoolExecutor
+import json
 from pathlib import Path
+import sqlite3
 import threading
 from time import sleep
 
 import pytest
+
+from bijux_canon_runtime.ontology.ids import ArtifactID
+from bijux_canon_runtime.runtime.persistence.authoritative_payload_store import (
+    AuthoritativeArtifactPayloadStore,
+)
+from bijux_canon_runtime.runtime.persistence.filesystem_payload_store import (
+    AtomicFilesystemArtifactPayloadStore,
+)
 
 from bijux_canon_runtime.runtime.execution.durable_jobs import (
     DurableJobCapacityError,
@@ -68,6 +78,8 @@ def test_job_submission_is_idempotent_and_survives_restart(
         assert submitted.job_id == request.job_id
         assert completed.status is JobStatus.SUCCEEDED
         assert completed.attempt_count == 1
+        assert completed.request_artifact_id.startswith("sha256:")
+        assert completed.result_artifact_id is not None
         assert repeated == completed
         assert manager.result(request.job_id) == {"accepted": "evidence"}
         assert calls == ["stable-submission"]
@@ -81,6 +93,72 @@ def test_job_submission_is_idempotent_and_survives_restart(
         assert restarted.status(request.job_id) == completed
         assert restarted.result(request.job_id) == {"accepted": "evidence"}
         assert calls == ["stable-submission"]
+
+
+def test_legacy_sqlite_jobs_migrate_to_duckdb_and_cas(tmp_path: Path) -> None:
+    legacy_path = tmp_path / "jobs.sqlite"
+    request = _request("legacy-completed")
+    result = {"accepted": "legacy evidence"}
+    with sqlite3.connect(legacy_path) as legacy:
+        legacy.execute(
+            """
+            CREATE TABLE runtime_jobs (
+                job_id TEXT PRIMARY KEY, kind TEXT NOT NULL,
+                idempotency_key TEXT NOT NULL UNIQUE,
+                request_sha256 TEXT NOT NULL, payload_json TEXT NOT NULL,
+                status TEXT NOT NULL, cancel_requested INTEGER NOT NULL,
+                attempt_count INTEGER NOT NULL, submitted_at TEXT NOT NULL,
+                started_at TEXT, finished_at TEXT, result_json TEXT,
+                error_type TEXT, error_message TEXT
+            )
+            """
+        )
+        legacy.execute(
+            """
+            INSERT INTO runtime_jobs VALUES (
+                ?, ?, ?, ?, ?, 'succeeded', 0, 1, ?, ?, ?, ?, NULL, NULL
+            )
+            """,
+            (
+                request.job_id,
+                request.kind.value,
+                request.idempotency_key,
+                request.request_sha256,
+                request.payload_json,
+                "2026-08-22T00:00:00+00:00",
+                "2026-08-22T00:00:01+00:00",
+                "2026-08-22T00:00:02+00:00",
+                json.dumps(result, sort_keys=True, separators=(",", ":")),
+            ),
+        )
+    database_path = tmp_path / "runtime.duckdb"
+    filesystem = AtomicFilesystemArtifactPayloadStore(tmp_path / "cas")
+    payload_store = AuthoritativeArtifactPayloadStore(
+        payload_store=filesystem,
+        database_path=database_path,
+    )
+
+    with DurableJobManager(
+        database_path,
+        handlers=_handlers(lambda _request, _cancelled: {}),
+        payload_store=payload_store,
+        legacy_database_path=legacy_path,
+    ) as manager:
+        snapshot = manager.status(request.job_id)
+        assert snapshot.status is JobStatus.SUCCEEDED
+        assert snapshot.result == result
+        assert filesystem.load(
+            ArtifactID(snapshot.request_artifact_id)
+        ).descriptor.schema_id == "bijux.runtime.durable-job-request.v1"
+        assert snapshot.result_artifact_id is not None
+
+    legacy_path.unlink()
+    with DurableJobManager(
+        database_path,
+        handlers=_handlers(lambda _request, _cancelled: {}),
+        payload_store=payload_store,
+    ) as restarted:
+        assert restarted.result(request.job_id) == result
 
 
 def test_failed_job_retains_exact_error_and_attempt_count(tmp_path: Path) -> None:

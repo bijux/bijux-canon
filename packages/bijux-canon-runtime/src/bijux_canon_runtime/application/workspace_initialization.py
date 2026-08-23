@@ -44,6 +44,9 @@ from bijux_canon_runtime.runtime.execution.durable_jobs import (
     DurableJobManager,
     JobKind,
 )
+from bijux_canon_runtime.runtime.persistence.authoritative_payload_store import (
+    AuthoritativeArtifactPayloadStore,
+)
 from bijux_canon_runtime.runtime.persistence.filesystem_payload_store import (
     AtomicFilesystemArtifactPayloadStore,
 )
@@ -1009,15 +1012,48 @@ def _initialize_staging(
     )
     for path in directory_paths:
         _staged_path(layout, staging, path).mkdir(parents=True, exist_ok=False)
-    AtomicFilesystemArtifactPayloadStore(_staged_path(layout, staging, layout.cas_root))
+    filesystem_store = AtomicFilesystemArtifactPayloadStore(
+        _staged_path(layout, staging, layout.cas_root)
+    )
     IndexService(_staged_path(layout, staging, layout.index_root))
-    database = DuckDBExecutionStore(_staged_path(layout, staging, layout.database_path))
+    database_path = _staged_path(layout, staging, layout.database_path)
+    database = DuckDBExecutionStore(database_path)
     database.close()
+    legacy_jobs_path = _staged_path(layout, staging, layout.job_store_path)
+    with sqlite3.connect(legacy_jobs_path) as legacy_jobs:
+        legacy_jobs.execute(
+            """
+            CREATE TABLE runtime_jobs (
+                job_id TEXT PRIMARY KEY,
+                kind TEXT NOT NULL,
+                idempotency_key TEXT NOT NULL UNIQUE,
+                request_sha256 TEXT NOT NULL,
+                payload_json TEXT NOT NULL,
+                status TEXT NOT NULL,
+                cancel_requested INTEGER NOT NULL,
+                attempt_count INTEGER NOT NULL,
+                submitted_at TEXT NOT NULL,
+                started_at TEXT,
+                finished_at TEXT,
+                deadline_at TEXT,
+                timeout_seconds REAL,
+                result_json TEXT,
+                error_type TEXT,
+                error_message TEXT
+            )
+            """
+        )
     handler: DurableJobHandler = _NoopDurableJobHandler()
     handlers = {kind: handler for kind in JobKind}
+    payload_store = AuthoritativeArtifactPayloadStore(
+        payload_store=filesystem_store,
+        database_path=database_path,
+    )
     with DurableJobManager(
-        _staged_path(layout, staging, layout.job_store_path),
+        database_path,
         handlers=handlers,
+        payload_store=payload_store,
+        legacy_database_path=legacy_jobs_path,
         max_workers=1,
     ):
         pass

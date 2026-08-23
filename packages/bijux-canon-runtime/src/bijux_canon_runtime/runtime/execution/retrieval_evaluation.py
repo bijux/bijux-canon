@@ -33,8 +33,8 @@ from bijux_canon_runtime.runtime.execution.application_executor import (
     RuntimeExecutionService,
     RuntimeFirstExecutionError,
 )
-from bijux_canon_runtime.runtime.persistence.filesystem_payload_store import (
-    AtomicFilesystemArtifactPayloadStore,
+from bijux_canon_runtime.runtime.persistence.payload_store import (
+    DurableArtifactPayloadStore,
 )
 
 
@@ -45,7 +45,7 @@ class InstalledRetrievalEvaluationExecutor:
         self,
         *,
         execution: RuntimeExecutionService,
-        store: AtomicFilesystemArtifactPayloadStore,
+        store: DurableArtifactPayloadStore,
         index: IndexService,
     ) -> None:
         self._execution = execution

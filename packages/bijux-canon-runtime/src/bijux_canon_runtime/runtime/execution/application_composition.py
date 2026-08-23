@@ -74,6 +74,9 @@ from bijux_canon_runtime.runtime.inspection import RuntimeRunInspector
 from bijux_canon_runtime.runtime.persistence.filesystem_payload_store import (
     AtomicFilesystemArtifactPayloadStore,
 )
+from bijux_canon_runtime.runtime.persistence.authoritative_payload_store import (
+    AuthoritativeArtifactPayloadStore,
+)
 from bijux_canon_runtime.runtime.replay.models import ReplayNetworkPolicy
 from bijux_canon_runtime.runtime.replay.service import RuntimeReplayService
 
@@ -169,7 +172,12 @@ def compose_runtime_application_services(
         layout = configuration.require_workspace_layout()
     except ConfigurationError as exc:
         raise ApplicationCapabilityError(str(exc)) from exc
-    store = AtomicFilesystemArtifactPayloadStore(layout.cas_root)
+    filesystem_store = AtomicFilesystemArtifactPayloadStore(layout.cas_root)
+    store = AuthoritativeArtifactPayloadStore(
+        payload_store=filesystem_store,
+        database_path=layout.database_path,
+    )
+    store.reconcile_inventory()
     index = IndexService(layout.index_root)
     embedding = _LazyLocalEmbeddingModel(layout.model_root)
     try:
@@ -248,11 +256,13 @@ def compose_runtime_application_services(
         }
 
     jobs = DurableJobManager(
-        layout.job_store_path,
+        layout.database_path,
         handlers=build_runtime_job_handlers(
             execute=execution.execute,
             replay=execute_replay,
         ),
+        payload_store=store,
+        legacy_database_path=layout.job_store_path,
         max_workers=max_workers,
     )
     inspector = RuntimeRunInspector(store)

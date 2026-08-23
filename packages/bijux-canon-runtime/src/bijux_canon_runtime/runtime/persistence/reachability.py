@@ -56,6 +56,7 @@ class ArtifactReachabilityValidator:
         "run_policies",
         "run_publications",
         "run_revisions",
+        "runtime_jobs",
     }
 
     def __init__(
@@ -206,6 +207,8 @@ class ArtifactReachabilityValidator:
             "SELECT failure_artifact_id FROM run_attempts WHERE failure_artifact_id IS NOT NULL",
             "SELECT manifest_artifact_id FROM run_publications WHERE publication_state = 'admitted'",
             "SELECT receipt_artifact_id FROM run_publications WHERE publication_state = 'admitted'",
+            "SELECT request_artifact_id FROM runtime_jobs",
+            "SELECT result_artifact_id FROM runtime_jobs WHERE result_artifact_id IS NOT NULL",
         )
         roots: set[ArtifactID] = set()
         for query in queries:

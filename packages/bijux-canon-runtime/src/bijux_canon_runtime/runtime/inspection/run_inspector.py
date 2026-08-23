@@ -40,8 +40,10 @@ from bijux_canon_runtime.runtime.inspection.validation import (
     validate_plan,
 )
 from bijux_canon_runtime.runtime.persistence.filesystem_payload_store import (
-    AtomicFilesystemArtifactPayloadStore,
     PayloadCorruptionError,
+)
+from bijux_canon_runtime.runtime.persistence.payload_store import (
+    DurableArtifactPayloadStore,
 )
 
 
@@ -61,7 +63,7 @@ class RuntimeRunInspector:
 
     def __init__(
         self,
-        store: AtomicFilesystemArtifactPayloadStore,
+        store: DurableArtifactPayloadStore,
         *,
         limits: RuntimeInspectionLimits = _DEFAULT_RUNTIME_INSPECTION_LIMITS,
     ) -> None:

@@ -11,6 +11,9 @@ from bijux_canon_runtime.runtime.persistence.artifact_inspection import (
     LogicalArtifactResolution,
     RuntimeArtifactInspector,
 )
+from bijux_canon_runtime.runtime.persistence.authoritative_payload_store import (
+    AuthoritativeArtifactPayloadStore,
+)
 from bijux_canon_runtime.runtime.persistence.backup_restore import (
     BackupIntegrityError,
     RuntimeBackupManager,
@@ -47,6 +50,7 @@ from bijux_canon_runtime.runtime.persistence.metadata_authority import (
 )
 from bijux_canon_runtime.runtime.persistence.payload_store import (
     ArtifactPayloadStore,
+    DurableArtifactPayloadStore,
     InMemoryArtifactPayloadStore,
     PayloadBinding,
     PayloadCollisionError,
@@ -81,10 +85,12 @@ __all__ = [
     "ArtifactReferenceView",
     "ArtifactVerificationRecord",
     "AtomicFilesystemArtifactPayloadStore",
+    "AuthoritativeArtifactPayloadStore",
     "AttemptStatus",
     "BackupIntegrityError",
     "CheckStatus",
     "DuckDBMetadataAuthority",
+    "DurableArtifactPayloadStore",
     "EvidenceBundleExporter",
     "EvidenceBundleIntegrityError",
     "EvidenceBundleLimits",

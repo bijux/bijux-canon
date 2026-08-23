@@ -17,11 +17,17 @@ the CLI does not infer missing governance from ambient defaults.
 
 A local Runtime workspace has one versioned layout. Its manifest binds the
 effective configuration identity, layout identity, locked embedding model,
-CAS, DuckDB execution store, durable job store, persistent index root, locks,
+CAS, DuckDB execution and durable-job authority, legacy job-import path,
+persistent index root, locks,
 staging, process state, VEX records, operations, backups, and the ordered
 workspace-migration ledger. Runtime-owned state must remain below the workspace
 root. A locked model directory may be external so one verified local cache can
 serve multiple isolated workspaces.
+
+`runtime.duckdb` is the live authority for job lifecycle rows and their CAS
+request/result identities. `jobs.sqlite` remains in compatible layouts only so
+older job rows can be validated and imported idempotently; workers never append
+new state there.
 
 Initialize or validate the layout before admitting documents:
 

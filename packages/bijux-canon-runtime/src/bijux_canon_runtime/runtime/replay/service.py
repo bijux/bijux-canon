@@ -37,8 +37,8 @@ from bijux_canon_runtime.runtime.inspection.parsing import (
     required_object,
     required_string,
 )
-from bijux_canon_runtime.runtime.persistence.filesystem_payload_store import (
-    AtomicFilesystemArtifactPayloadStore,
+from bijux_canon_runtime.runtime.persistence.payload_store import (
+    DurableArtifactPayloadStore,
 )
 from bijux_canon_runtime.runtime.replay.models import (
     ReplayNetworkPolicy,
@@ -59,7 +59,7 @@ from bijux_canon_runtime.runtime.replay.recorded_adapter import (
 class RuntimeReplayService:
     """Reconstruct, execute, persist, and compare one linked replay attempt."""
 
-    def __init__(self, store: AtomicFilesystemArtifactPayloadStore) -> None:
+    def __init__(self, store: DurableArtifactPayloadStore) -> None:
         self._store = store
         self._inspector = RuntimeRunInspector(store)
 

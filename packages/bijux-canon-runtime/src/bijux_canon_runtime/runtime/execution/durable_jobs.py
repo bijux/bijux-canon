@@ -1,12 +1,13 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Asynchronous restart-safe run and replay jobs backed by SQLite."""
+"""Asynchronous restart-safe jobs backed by the Runtime DuckDB authority."""
 
 from __future__ import annotations
 
 from collections.abc import Callable, Mapping
 from concurrent.futures import ThreadPoolExecutor
+from contextlib import contextmanager
 from dataclasses import dataclass, field
 from datetime import UTC, datetime, timedelta
 from enum import StrEnum
@@ -15,9 +16,22 @@ import json
 from pathlib import Path
 import sqlite3
 import threading
-from typing import Protocol
+from typing import Iterator, Protocol
 
-from bijux_canon_runtime.model.artifact import canonical_json_bytes
+import duckdb
+
+from bijux_canon_runtime.model.artifact import AddressedArtifact, canonical_json_bytes
+from bijux_canon_runtime.observability.storage.execution_store import (
+    DuckDBExecutionStore,
+)
+from bijux_canon_runtime.ontology.ids import ArtifactID
+from bijux_canon_runtime.runtime.persistence.authoritative_payload_store import (
+    AuthoritativeArtifactPayloadStore,
+)
+from bijux_canon_runtime.runtime.persistence.filesystem_payload_store import (
+    AtomicFilesystemArtifactPayloadStore,
+)
+from bijux_canon_runtime.runtime.persistence.payload_store import ArtifactPayloadStore
 
 MAX_DURABLE_JOB_REQUEST_BYTES = 1_000_000
 
@@ -148,6 +162,8 @@ class DurableJobSnapshot:
     finished_at: str | None
     deadline_at: str | None
     timeout_seconds: float | None
+    request_artifact_id: str
+    result_artifact_id: str | None
     result: dict[str, object] | None
     error_type: str | None
     error_message: str | None
@@ -177,6 +193,8 @@ class DurableJobManager:
         database_path: Path,
         *,
         handlers: Mapping[JobKind, DurableJobHandler],
+        payload_store: ArtifactPayloadStore | None = None,
+        legacy_database_path: Path | None = None,
         max_workers: int = 4,
         max_pending_jobs: int = 128,
         max_request_bytes: int = MAX_DURABLE_JOB_REQUEST_BYTES,
@@ -184,6 +202,8 @@ class DurableJobManager:
     ) -> None:
         if not database_path.is_absolute():
             raise ValueError("durable job database path must be absolute")
+        if legacy_database_path is not None and not legacy_database_path.is_absolute():
+            raise ValueError("legacy durable job database path must be absolute")
         if max_workers < 1:
             raise ValueError("durable job worker count must be positive")
         if min(max_pending_jobs, max_request_bytes, max_result_bytes) < 1:
@@ -200,15 +220,24 @@ class DurableJobManager:
             )
         self._path = database_path
         self._path.parent.mkdir(parents=True, exist_ok=True)
+        self._payload_store = payload_store or AuthoritativeArtifactPayloadStore(
+            payload_store=AtomicFilesystemArtifactPayloadStore(
+                database_path.parent / f"{database_path.name}.cas"
+            ),
+            database_path=database_path,
+        )
+        self._legacy_database_path = legacy_database_path
         self._handlers = dict(handlers)
         self._max_pending_jobs = max_pending_jobs
         self._max_request_bytes = max_request_bytes
         self._max_result_bytes = max_result_bytes
         self._executor = ThreadPoolExecutor(max_workers=max_workers)
         self._condition = threading.Condition()
+        self._authority_lock = threading.RLock()
         self._scheduled: set[str] = set()
         self._closed = False
         self._initialize()
+        self._import_legacy_jobs()
         self._recover_interrupted_jobs()
 
     def submit(self, request: DurableJobRequest) -> DurableJobSnapshot:
@@ -219,11 +248,13 @@ class DurableJobManager:
             raise DurableJobCapacityError(
                 f"job request exceeds max_request_bytes={self._max_request_bytes}"
             )
+        request_artifact = self._request_artifact(request)
+        self._payload_store.put(request_artifact)
         with self._connect() as connection:
-            connection.execute("BEGIN IMMEDIATE")
+            connection.execute("BEGIN TRANSACTION")
             existing = connection.execute(
                 """
-                SELECT job_id, kind, request_sha256, payload_json,
+                SELECT job_id, kind, request_sha256, request_artifact_id,
                        timeout_seconds
                 FROM runtime_jobs WHERE idempotency_key = ?
                 """,
@@ -234,7 +265,7 @@ class DurableJobManager:
                     request.job_id,
                     request.kind.value,
                     request.request_sha256,
-                    payload_json,
+                    str(request_artifact.descriptor.artifact_id),
                     request.timeout_seconds,
                 ):
                     connection.execute("ROLLBACK")
@@ -246,10 +277,12 @@ class DurableJobManager:
                 if not snapshot.status.terminal:
                     self._schedule(request.job_id)
                 return snapshot
-            pending_count = connection.execute(
+            pending_row = connection.execute(
                 "SELECT count(*) FROM runtime_jobs "
                 "WHERE status IN ('queued', 'running')"
-            ).fetchone()[0]
+            ).fetchone()
+            assert pending_row is not None
+            pending_count = int(pending_row[0])
             if pending_count >= self._max_pending_jobs:
                 connection.execute("ROLLBACK")
                 raise DurableJobCapacityError(
@@ -268,10 +301,11 @@ class DurableJobManager:
             connection.execute(
                 """
                 INSERT INTO runtime_jobs (
-                    job_id, kind, idempotency_key, request_sha256, payload_json,
+                    job_id, kind, idempotency_key, request_sha256,
+                    request_artifact_id,
                     status, cancel_requested, attempt_count, submitted_at,
                     started_at, finished_at, deadline_at, timeout_seconds,
-                    result_json, error_type, error_message
+                    result_artifact_id, error_type, error_message
                 ) VALUES (
                     ?, ?, ?, ?, ?, 'queued', 0, 0, ?, NULL, NULL, ?, ?,
                     NULL, NULL, NULL
@@ -282,7 +316,7 @@ class DurableJobManager:
                     request.kind.value,
                     request.idempotency_key,
                     request.request_sha256,
-                    payload_json,
+                    str(request_artifact.descriptor.artifact_id),
                     submitted_at,
                     deadline_at,
                     request.timeout_seconds,
@@ -300,14 +334,31 @@ class DurableJobManager:
                 """
                 SELECT job_id, kind, idempotency_key, request_sha256, status,
                        cancel_requested, attempt_count, submitted_at, started_at,
-                       finished_at, deadline_at, timeout_seconds, result_json,
-                       error_type, error_message
+                       finished_at, deadline_at, timeout_seconds,
+                       request_artifact_id, result_artifact_id, error_type,
+                       error_message
                 FROM runtime_jobs WHERE job_id = ?
                 """,
                 (job_id,),
             ).fetchone()
         if row is None:
             raise KeyError(f"durable job not found: {job_id}")
+        request_artifact_id = ArtifactID(row[12])
+        request = self._load_request(
+            request_artifact_id,
+            expected_sha256=row[3],
+        )
+        if (
+            request.job_id != row[0]
+            or request.kind.value != row[1]
+            or request.idempotency_key != row[2]
+            or request.timeout_seconds != row[11]
+        ):
+            raise DurableJobError("durable job row conflicts with its request artifact")
+        result = self._load_result(
+            row[13],
+            expected_request_artifact_id=request_artifact_id,
+        )
         return DurableJobSnapshot(
             job_id=row[0],
             kind=JobKind(row[1]),
@@ -321,9 +372,11 @@ class DurableJobManager:
             finished_at=row[9],
             deadline_at=row[10],
             timeout_seconds=row[11],
-            result=None if row[12] is None else json.loads(row[12]),
-            error_type=row[13],
-            error_message=row[14],
+            request_artifact_id=row[12],
+            result_artifact_id=row[13],
+            result=result,
+            error_type=row[14],
+            error_message=row[15],
         )
 
     def result(self, job_id: str) -> dict[str, object]:
@@ -342,7 +395,7 @@ class DurableJobManager:
     def cancel(self, job_id: str) -> DurableJobSnapshot:
         """Persist cancellation and signal a running handler cooperatively."""
         with self._connect() as connection:
-            connection.execute("BEGIN IMMEDIATE")
+            connection.execute("BEGIN TRANSACTION")
             row = connection.execute(
                 "SELECT status FROM runtime_jobs WHERE job_id = ?",
                 (job_id,),
@@ -416,77 +469,12 @@ class DurableJobManager:
 
     def _initialize(self) -> None:
         with self._connect() as connection:
-            connection.execute("PRAGMA journal_mode=WAL")
-            connection.execute("PRAGMA synchronous=FULL")
-            existing = connection.execute(
-                "SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'runtime_jobs'"
-            ).fetchone()
-            if existing is None:
-                connection.execute(self._table_sql())
-                return
-            columns = {
-                row[1]
-                for row in connection.execute(
-                    "PRAGMA table_info(runtime_jobs)"
-                ).fetchall()
-            }
-            if {"deadline_at", "timeout_seconds"}.issubset(columns) and (
-                "timed_out" in str(existing[0])
-            ):
-                return
-            connection.execute("BEGIN IMMEDIATE")
-            connection.execute("ALTER TABLE runtime_jobs RENAME TO runtime_jobs_legacy")
-            connection.execute(self._table_sql())
-            connection.execute(
-                """
-                INSERT INTO runtime_jobs (
-                    job_id, kind, idempotency_key, request_sha256, payload_json,
-                    status, cancel_requested, attempt_count, submitted_at,
-                    started_at, finished_at, deadline_at, timeout_seconds,
-                    result_json, error_type, error_message
-                )
-                SELECT job_id, kind, idempotency_key, request_sha256, payload_json,
-                       status, cancel_requested, attempt_count, submitted_at,
-                       started_at, finished_at, NULL, NULL, result_json,
-                       error_type, error_message
-                FROM runtime_jobs_legacy
-                """
-            )
-            connection.execute("DROP TABLE runtime_jobs_legacy")
-            connection.execute("COMMIT")
-
-    @staticmethod
-    def _table_sql() -> str:
-        return """
-            CREATE TABLE runtime_jobs (
-                job_id TEXT PRIMARY KEY,
-                kind TEXT NOT NULL CHECK (kind IN ('run', 'replay')),
-                idempotency_key TEXT NOT NULL UNIQUE,
-                request_sha256 TEXT NOT NULL,
-                payload_json TEXT NOT NULL,
-                status TEXT NOT NULL CHECK (
-                    status IN (
-                        'queued', 'running', 'succeeded', 'failed',
-                        'cancelled', 'timed_out'
-                    )
-                ),
-                cancel_requested INTEGER NOT NULL CHECK (cancel_requested IN (0, 1)),
-                attempt_count INTEGER NOT NULL,
-                submitted_at TEXT NOT NULL,
-                started_at TEXT,
-                finished_at TEXT,
-                deadline_at TEXT,
-                timeout_seconds REAL,
-                result_json TEXT,
-                error_type TEXT,
-                error_message TEXT
-            )
-        """
+            connection.execute("SELECT job_id FROM runtime_jobs LIMIT 0")
 
     def _recover_interrupted_jobs(self) -> None:
         now = _now()
         with self._connect() as connection:
-            connection.execute("BEGIN IMMEDIATE")
+            connection.execute("BEGIN TRANSACTION")
             connection.execute(
                 """
                 UPDATE runtime_jobs SET
@@ -583,28 +571,16 @@ class DurableJobManager:
 
     def _claim(self, job_id: str) -> DurableJobRequest | None:
         with self._connect() as connection:
-            connection.execute("BEGIN IMMEDIATE")
+            connection.execute("BEGIN TRANSACTION")
             row = connection.execute(
                 """
-                SELECT kind, idempotency_key, payload_json, status,
+                SELECT kind, idempotency_key, request_artifact_id, status,
                        cancel_requested, timeout_seconds, deadline_at
                 FROM runtime_jobs WHERE job_id = ?
                 """,
                 (job_id,),
             ).fetchone()
             if row is None or row[3] != JobStatus.QUEUED.value or bool(row[4]):
-                connection.execute("COMMIT")
-                return None
-            if row[6] is not None and row[6] <= _now():
-                connection.execute(
-                    """
-                    UPDATE runtime_jobs
-                    SET status = 'timed_out', finished_at = ?, error_type = ?,
-                        error_message = 'durable job deadline expired before execution'
-                    WHERE job_id = ? AND status = 'queued'
-                    """,
-                    (_now(), DurableJobTimedOut.__name__, job_id),
-                )
                 connection.execute("COMMIT")
                 return None
             connection.execute(
@@ -616,24 +592,23 @@ class DurableJobManager:
                 (_now(), job_id),
             )
             connection.execute("COMMIT")
-        return DurableJobRequest(
-            JobKind(row[0]),
-            row[1],
-            json.loads(row[2]),
-            row[5],
+        return self._load_request(
+            ArtifactID(row[2]),
+            expected_sha256=self._request_sha256(job_id),
         )
 
     def _finish_success(self, job_id: str, result: dict[str, object]) -> None:
-        result_json = json.dumps(
+        request_artifact_id = self._request_artifact_id(job_id)
+        result_artifact = AddressedArtifact.from_json(
             result,
-            sort_keys=True,
-            separators=(",", ":"),
-            ensure_ascii=False,
-            allow_nan=False,
+            schema_id="bijux.runtime.durable-job-result.v1",
+            producer="bijux-canon-runtime:durable-jobs",
+            dependencies=(request_artifact_id,),
         )
+        self._payload_store.put(result_artifact)
         finished_at = _now()
         with self._connect() as connection:
-            connection.execute("BEGIN IMMEDIATE")
+            connection.execute("BEGIN TRANSACTION")
             cancellation = connection.execute(
                 """
                 SELECT cancel_requested, deadline_at
@@ -641,6 +616,7 @@ class DurableJobManager:
                 """,
                 (job_id,),
             ).fetchone()
+            assert cancellation is not None
             cancelled = bool(cancellation[0])
             timed_out = cancellation[1] is not None and cancellation[1] <= finished_at
             status = (
@@ -653,13 +629,13 @@ class DurableJobManager:
             connection.execute(
                 """
                 UPDATE runtime_jobs SET
-                    status = ?, result_json = ?, finished_at = ?,
+                    status = ?, result_artifact_id = ?, finished_at = ?,
                     error_type = ?, error_message = ?
                 WHERE job_id = ? AND status = 'running'
                 """,
                 (
                     status.value,
-                    result_json,
+                    str(result_artifact.descriptor.artifact_id),
                     finished_at,
                     (
                         DurableJobCancelled.__name__
@@ -685,7 +661,7 @@ class DurableJobManager:
     def _finish_failed(self, job_id: str, error: Exception) -> None:
         finished_at = _now()
         with self._connect() as connection:
-            connection.execute("BEGIN IMMEDIATE")
+            connection.execute("BEGIN TRANSACTION")
             cancellation = connection.execute(
                 """
                 SELECT cancel_requested, deadline_at
@@ -693,6 +669,7 @@ class DurableJobManager:
                 """,
                 (job_id,),
             ).fetchone()
+            assert cancellation is not None
             cancelled = bool(cancellation[0])
             timed_out = cancellation[1] is not None and cancellation[1] <= finished_at
             status = (
@@ -745,10 +722,241 @@ class DurableJobManager:
             ).fetchone()
         return row is None or bool(row[0]) or (row[1] is not None and row[1] <= _now())
 
-    def _connect(self) -> sqlite3.Connection:
-        connection = sqlite3.connect(self._path, timeout=5.0)
-        connection.execute("PRAGMA foreign_keys=ON")
-        return connection
+    @staticmethod
+    def _request_artifact(request: DurableJobRequest) -> AddressedArtifact:
+        return AddressedArtifact.from_json(
+            {
+                "idempotency_key": request.idempotency_key,
+                "kind": request.kind.value,
+                "payload": dict(request.payload),
+                "request_sha256": request.request_sha256,
+                "schema_version": "bijux.runtime.durable-job-request.v1",
+                "timeout_seconds": request.timeout_seconds,
+            },
+            schema_id="bijux.runtime.durable-job-request.v1",
+            producer="bijux-canon-runtime:durable-jobs",
+        )
+
+    def _load_request(
+        self,
+        artifact_id: ArtifactID,
+        *,
+        expected_sha256: str | None,
+    ) -> DurableJobRequest:
+        try:
+            artifact = self._payload_store.load(artifact_id)
+        except (KeyError, ValueError) as exc:
+            raise DurableJobError(
+                "durable job request artifact is missing or corrupt"
+            ) from exc
+        if artifact.descriptor.schema_id != "bijux.runtime.durable-job-request.v1":
+            raise DurableJobError("durable job request artifact schema is invalid")
+        try:
+            payload = json.loads(artifact.canonical_bytes)
+            if not isinstance(payload, dict) or not isinstance(
+                payload.get("payload"), dict
+            ):
+                raise TypeError
+            request = DurableJobRequest(
+                kind=JobKind(payload["kind"]),
+                idempotency_key=payload["idempotency_key"],
+                payload=payload["payload"],
+                timeout_seconds=payload["timeout_seconds"],
+            )
+        except (KeyError, TypeError, ValueError, json.JSONDecodeError) as exc:
+            raise DurableJobError(
+                "durable job request artifact cannot be decoded"
+            ) from exc
+        if (
+            payload.get("schema_version")
+            != "bijux.runtime.durable-job-request.v1"
+            or payload.get("request_sha256") != request.request_sha256
+            or (expected_sha256 is not None and request.request_sha256 != expected_sha256)
+            or self._request_artifact(request) != artifact
+        ):
+            raise DurableJobError("durable job request artifact identity is invalid")
+        return request
+
+    def _load_result(
+        self,
+        artifact_id: str | None,
+        *,
+        expected_request_artifact_id: ArtifactID,
+    ) -> dict[str, object] | None:
+        if artifact_id is None:
+            return None
+        try:
+            artifact = self._payload_store.load(ArtifactID(artifact_id))
+        except (KeyError, ValueError) as exc:
+            raise DurableJobError(
+                "durable job result artifact is missing or corrupt"
+            ) from exc
+        if artifact.descriptor.schema_id != "bijux.runtime.durable-job-result.v1":
+            raise DurableJobError("durable job result artifact schema is invalid")
+        if artifact.descriptor.dependencies != (expected_request_artifact_id,):
+            raise DurableJobError(
+                "durable job result is not linked to its request artifact"
+            )
+        try:
+            result = json.loads(artifact.canonical_bytes)
+        except json.JSONDecodeError as exc:
+            raise DurableJobError("durable job result artifact is invalid JSON") from exc
+        if not isinstance(result, dict):
+            raise DurableJobError("durable job result artifact must be an object")
+        return result
+
+    def _request_artifact_id(self, job_id: str) -> ArtifactID:
+        with self._connect() as connection:
+            row = connection.execute(
+                "SELECT request_artifact_id FROM runtime_jobs WHERE job_id = ?",
+                (job_id,),
+            ).fetchone()
+        if row is None:
+            raise KeyError(f"durable job not found: {job_id}")
+        return ArtifactID(row[0])
+
+    def _request_sha256(self, job_id: str) -> str:
+        with self._connect() as connection:
+            row = connection.execute(
+                "SELECT request_sha256 FROM runtime_jobs WHERE job_id = ?",
+                (job_id,),
+            ).fetchone()
+        if row is None:
+            raise KeyError(f"durable job not found: {job_id}")
+        return str(row[0])
+
+    def _import_legacy_jobs(self) -> None:
+        legacy_path = self._legacy_database_path
+        if legacy_path is None or legacy_path == self._path or not legacy_path.is_file():
+            return
+        try:
+            with sqlite3.connect(
+                f"{legacy_path.as_uri()}?mode=ro",
+                uri=True,
+            ) as legacy:
+                columns = {
+                    str(row[1])
+                    for row in legacy.execute(
+                        "PRAGMA table_info(runtime_jobs)"
+                    ).fetchall()
+                }
+                deadline_column = (
+                    "deadline_at" if "deadline_at" in columns else "NULL"
+                )
+                timeout_column = (
+                    "timeout_seconds" if "timeout_seconds" in columns else "NULL"
+                )
+                rows = legacy.execute(
+                    f"""
+                    SELECT job_id, kind, idempotency_key, request_sha256,
+                           payload_json, status, cancel_requested, attempt_count,
+                           submitted_at, started_at, finished_at, {deadline_column},
+                           {timeout_column}, result_json, error_type, error_message
+                    FROM runtime_jobs ORDER BY submitted_at, job_id
+                    """
+                ).fetchall()
+        except sqlite3.DatabaseError as exc:
+            raise DurableJobError("legacy durable job database is corrupt") from exc
+        prepared: list[tuple[object, ...]] = []
+        for row in rows:
+            try:
+                payload = json.loads(row[4])
+                request = DurableJobRequest(
+                    kind=JobKind(row[1]),
+                    idempotency_key=row[2],
+                    payload=payload,
+                    timeout_seconds=row[12],
+                )
+                result = None if row[13] is None else json.loads(row[13])
+            except (TypeError, ValueError, json.JSONDecodeError) as exc:
+                raise DurableJobError("legacy durable job payload is invalid") from exc
+            if (
+                request.job_id != row[0]
+                or request.request_sha256 != row[3]
+                or not isinstance(payload, dict)
+                or (result is not None and not isinstance(result, dict))
+            ):
+                raise DurableJobError("legacy durable job identity is invalid")
+            request_artifact = self._request_artifact(request)
+            self._payload_store.put(request_artifact)
+            result_artifact_id: str | None = None
+            if result is not None:
+                result_artifact = AddressedArtifact.from_json(
+                    result,
+                    schema_id="bijux.runtime.durable-job-result.v1",
+                    producer="bijux-canon-runtime:durable-jobs",
+                    dependencies=(request_artifact.descriptor.artifact_id,),
+                )
+                self._payload_store.put(result_artifact)
+                result_artifact_id = str(result_artifact.descriptor.artifact_id)
+            prepared.append(
+                (
+                    row[0],
+                    row[1],
+                    row[2],
+                    row[3],
+                    str(request_artifact.descriptor.artifact_id),
+                    row[5],
+                    bool(row[6]),
+                    row[7],
+                    row[8],
+                    row[9],
+                    row[10],
+                    row[11],
+                    row[12],
+                    result_artifact_id,
+                    row[14],
+                    row[15],
+                )
+            )
+        if not prepared:
+            return
+        with self._connect() as connection:
+            connection.execute("BEGIN TRANSACTION")
+            try:
+                for values in prepared:
+                    existing = connection.execute(
+                        """
+                        SELECT job_id, kind, idempotency_key, request_sha256,
+                               request_artifact_id, status, cancel_requested,
+                               attempt_count, submitted_at, started_at, finished_at,
+                               deadline_at, timeout_seconds, result_artifact_id,
+                               error_type, error_message
+                        FROM runtime_jobs WHERE job_id = ? OR idempotency_key = ?
+                        """,
+                        (values[0], values[2]),
+                    ).fetchone()
+                    if existing is not None:
+                        if tuple(existing) != values:
+                            raise DurableJobError(
+                                "legacy durable job conflicts with DuckDB authority"
+                            )
+                        continue
+                    connection.execute(
+                        """
+                        INSERT INTO runtime_jobs (
+                            job_id, kind, idempotency_key, request_sha256,
+                            request_artifact_id, status, cancel_requested,
+                            attempt_count, submitted_at, started_at, finished_at,
+                            deadline_at, timeout_seconds, result_artifact_id,
+                            error_type, error_message
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        """,
+                        values,
+                    )
+                connection.execute("COMMIT")
+            except Exception:
+                connection.execute("ROLLBACK")
+                raise
+
+    @contextmanager
+    def _connect(self) -> Iterator[duckdb.DuckDBPyConnection]:
+        with self._authority_lock:
+            store = DuckDBExecutionStore(self._path)
+            try:
+                yield store._connection
+            finally:
+                store.close()
 
     def _ensure_open(self) -> None:
         with self._condition:

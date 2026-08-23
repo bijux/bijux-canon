@@ -84,7 +84,7 @@ from bijux_canon_runtime.ontology.public import (
     ReplayMode,
 )
 
-SCHEMA_VERSION = 6
+SCHEMA_VERSION = 7
 DEFAULT_MIGRATIONS_DIR = default_migrations_dir()
 DEFAULT_SCHEMA_CONTRACT_PATH = default_schema_contract_path()
 DEFAULT_SCHEMA_HASH_PATH = default_schema_hash_path()
