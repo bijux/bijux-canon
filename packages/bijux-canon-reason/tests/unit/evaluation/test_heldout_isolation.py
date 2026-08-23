@@ -49,24 +49,17 @@ def _identities() -> EvaluationPartitionIdentities:
                 for key, value in row.items()
                 if key
                 not in {
-                    "claim_class",
-                    "claim_truth_id",
-                    "labels",
-                    "qrel_id",
-                    "review_status",
-                    "reviewer_id",
+                    "case_identity_sha256",
+                    "partition_review_sha256",
+                    "question_label_sha256",
                 }
             }
         )
         labels.append(
             {
                 "case_id": row["case_id"],
-                "claim_class": row["claim_class"],
-                "claim_truth_id": row["claim_truth_id"],
-                "labels": row["labels"],
-                "qrel_id": row["qrel_id"],
-                "review_status": row["review_status"],
-                "reviewer_id": row["reviewer_id"],
+                "partition_review_sha256": row["partition_review_sha256"],
+                "question_label_sha256": row["question_label_sha256"],
             }
         )
     development_inputs, development_labels = partitions["development"]

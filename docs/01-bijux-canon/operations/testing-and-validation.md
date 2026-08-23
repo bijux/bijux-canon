@@ -63,6 +63,30 @@ its public guarantees to those suites:
 Run package-local checks when behavior is contained by one package. Escalate
 to a consumer only when the producer's externally visible contract changed.
 
+The root Makefile exposes stable names for those five owner lanes:
+
+```bash
+make test-focused-ingest
+make test-focused-index
+make test-focused-reason
+make test-focused-agent
+make test-focused-runtime
+```
+
+Four bounded vertical lanes prove the product seams used most often during
+implementation without silently expanding into the complete repository suite:
+
+| Target | Product evidence |
+| --- | --- |
+| `test-vertical-document-formats` | real-format admission, OCR refusal, locators, locks, and citation lineage |
+| `test-vertical-research-content` | reviewed content questions, qrels, retrieval metrics, and citation integrity |
+| `test-vertical-runtime-local` | capability truth, readiness, persistence adapters, backup, and restart replay |
+| `test-vertical-release-install` | distribution compatibility, wheel inventory, and source-independent installation contracts |
+
+Use `make --dry-run <target>` to inspect the exact package or test paths before
+launching a lane. Every vertical names its bounded evidence explicitly; none is
+an alias for `test-all`.
+
 ## Repository validation
 
 Repository-owned tests in `bijux-canon-dev` protect seams that no product
@@ -101,3 +125,19 @@ A trustworthy change records four facts: the claim that changed, its owning
 boundary, the focused check that proves it, and any broader check intentionally
 required by the affected seam. Expensive unrelated lanes add elapsed time but
 do not make an unowned claim more credible.
+
+## Frozen-gate checkpoints
+
+Broad repository gates run only against an immutable tracked revision. Launch
+one non-overlapping gate with `make test-all-frozen`, `make tox-frozen`, or
+`make ci-github-frozen`, record the reported PID and status paths, and continue
+independent product work. At a natural checkpoint at least five minutes later,
+inspect the status without scanning the log:
+
+```bash
+make frozen-status FROZEN_REF=<commit> GATE=<gate>
+```
+
+If the gate failed, `make frozen-summary` adds only a bounded failure tail.
+Do not relaunch the same gate for the same commit, idle while it runs, or treat
+a pass from an older revision as evidence for the current candidate.

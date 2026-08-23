@@ -31,6 +31,7 @@ FREEZE_PYTHON ?= $(if $(wildcard $(ROOT_CHECK_PYTHON)),$(ROOT_CHECK_PYTHON),$(PY
 FROZEN_REF ?= HEAD
 GATE ?= test-all
 FROZEN_GATE_PYTHON ?= $(if $(wildcard $(ROOT_CHECK_PYTHON)),$(ROOT_CHECK_PYTHON),$(PYTHON))
+ROOT_VERTICAL_PYTEST = PYTHONPYCACHEPREFIX="$(PROJECT_ARTIFACTS_DIR)/cache/python" "$(ROOT_CHECK_PYTHON)" -m pytest -q -p no:cacheprovider
 # Guard against stale local stamp state so root docs and helper lanes can
 # recreate the shared check environment when the interpreter path was removed.
 ROOT_CHECK_ENV_COMMAND = @test -x "$(ROOT_CHECK_PYTHON)" || { \
@@ -42,7 +43,11 @@ ROOT_CHECK_ENV_COMMAND = @test -x "$(ROOT_CHECK_PYTHON)" || { \
 
 include $(ROOT_MAKEFILE_DIR)/bijux-py/repository/root.mk
 
-.PHONY: all-frozen ci-github-frozen freeze frozen-status frozen-summary quality-dead-code test-all-frozen tox-frozen
+.PHONY: all-frozen ci-github-frozen freeze frozen-status frozen-summary quality-dead-code \
+	test-all-frozen test-focused-agent test-focused-index test-focused-ingest \
+	test-focused-reason test-focused-runtime test-vertical-document-formats \
+	test-vertical-release-install test-vertical-research-content \
+	test-vertical-runtime-local tox-frozen
 
 quality: quality-dead-code
 
@@ -92,6 +97,57 @@ check: lock-check lint test quality security docs api build sbom ## Run the full
 test-all: ## Run every repository test surface, including slow, evaluation, and real-local tests
 test-all-plus-run-time: ## Run every repository test surface and report per-test durations
 coverage-core: ## Enforce measured canonical-package coverage floors
+test-focused-agent: ## Run the agent package test lane
+	@$(MAKE) test PACKAGE=bijux-canon-agent
+test-focused-index: ## Run the index package test lane
+	@$(MAKE) test PACKAGE=bijux-canon-index
+test-focused-ingest: ## Run the ingest package test lane
+	@$(MAKE) test PACKAGE=bijux-canon-ingest
+test-focused-reason: ## Run the reason package test lane
+	@$(MAKE) test PACKAGE=bijux-canon-reason
+test-focused-runtime: ## Run the runtime package test lane
+	@$(MAKE) test PACKAGE=bijux-canon-runtime
+test-vertical-document-formats: root-check-env ## Prove real-format admission and exact citation lineage
+	@$(ROOT_VERTICAL_PYTEST) \
+		packages/bijux-canon-dev/tests/test_parser_admission.py \
+		packages/bijux-canon-dev/tests/test_parser_locator_truth.py \
+		packages/bijux-canon-ingest/tests/unit/application/test_document_extraction.py \
+		packages/bijux-canon-ingest/tests/unit/application/test_document_inputs.py \
+		packages/bijux-canon-ingest/tests/unit/application/test_docx_extraction.py \
+		packages/bijux-canon-ingest/tests/unit/application/test_html_extraction.py \
+		packages/bijux-canon-ingest/tests/unit/application/test_ocr_requirement.py \
+		packages/bijux-canon-ingest/tests/unit/application/test_pdf_extraction.py \
+		packages/bijux-canon-ingest/tests/unit/application/test_text_extraction.py \
+		packages/bijux-canon-ingest/tests/unit/test_citation_lineage.py \
+		packages/bijux-canon-ingest/tests/unit/test_corpus_lock.py
+test-vertical-research-content: root-check-env ## Prove content-first research truth, retrieval, and citation metrics
+	@$(ROOT_VERTICAL_PYTEST) \
+		packages/bijux-canon-dev/tests/test_evaluation_anti_gaming.py \
+		packages/bijux-canon-dev/tests/test_research_claim_truth.py \
+		packages/bijux-canon-dev/tests/test_research_corpus_lock.py \
+		packages/bijux-canon-dev/tests/test_research_evaluation_split.py \
+		packages/bijux-canon-dev/tests/test_research_locator_truth.py \
+		packages/bijux-canon-dev/tests/test_research_qrels.py \
+		packages/bijux-canon-dev/tests/test_research_questions.py \
+		packages/bijux-canon-dev/tests/test_research_truth_audit.py \
+		packages/bijux-canon-index/tests/unit/evaluation/test_retrieval_metrics.py \
+		packages/bijux-canon-reason/tests/unit/evaluation/test_citation_integrity_metrics.py \
+		packages/bijux-canon-reason/tests/unit/evaluation/test_heldout_isolation.py
+test-vertical-runtime-local: root-check-env ## Prove local capability, persistence, backup, and restart behavior
+	@$(ROOT_VERTICAL_PYTEST) \
+		packages/bijux-canon-runtime/tests/unit/interfaces/test_capability_discovery.py \
+		packages/bijux-canon-runtime/tests/unit/interfaces/test_v2_readiness.py \
+		packages/bijux-canon-runtime/tests/unit/runtime/test_application_composition.py \
+		packages/bijux-canon-runtime/tests/unit/runtime/test_backup_restore.py \
+		packages/bijux-canon-runtime/tests/unit/runtime/test_installed_operation_adapters.py \
+		packages/bijux-canon-runtime/tests/regression/test_replay_across_process_boundary.py
+test-vertical-release-install: root-check-env ## Prove wheel inventory and source-independent installation contracts
+	@$(ROOT_VERTICAL_PYTEST) \
+		packages/bijux-canon-dev/tests/test_extras_matrix.py \
+		packages/bijux-canon-dev/tests/test_family_compatibility.py \
+		packages/bijux-canon-dev/tests/test_installation_matrix.py \
+		packages/bijux-canon-dev/tests/test_wheel_inventory.py \
+		packages/bijux-canon-dev/tests/test_workspace_install.py
 list: ## List primary package slugs
 list-all: ## List every canonical package slug
 install: ## Sync the shared root uv environment from pyproject.toml and uv.lock
