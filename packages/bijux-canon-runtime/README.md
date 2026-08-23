@@ -276,6 +276,14 @@ hash behind supporting, opposing, limiting, irrelevant, ambiguous, or
 unclassified evidence; a completed state cannot conceal material unclassified
 content.
 
+The research artifact separates Agent disposition from Reason's convergence
+observation. Its `status` is the typed Agent outcome, while
+`convergence_status` and the bound convergence record retain the underlying
+Reason decision. Runtime verification reconstructs the content-addressed
+remaining-work record from observed requirements, material candidate
+classifications, blocking gaps, and important unsearched claims; a coherent
+but incomplete run cannot erase that work by relabeling itself completed.
+
 ## Source Map
 
 - [`src/bijux_canon_runtime/model`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-runtime/src/bijux_canon_runtime/model) for durable runtime models

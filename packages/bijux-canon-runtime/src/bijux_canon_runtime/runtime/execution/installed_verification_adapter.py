@@ -9,6 +9,11 @@ from collections.abc import Mapping
 
 from pydantic import ValidationError
 
+from bijux_canon_agent.application import (
+    InstalledResearchTerminalKind,
+    InstalledResearchTerminalOutcome,
+    RemainingResearchWork,
+)
 from bijux_canon_agent.contracts import CausalDecisionEvent, ResearchCausalTrace
 from bijux_canon_reason.grounding import (
     AtomicClaimNormalizer,
@@ -229,16 +234,71 @@ def _verify_research_trace(subject: Mapping[str, object]) -> tuple[str, ...]:
             else CounterevidenceSearchRun.model_validate(raw_run)
         )
         convergence = ConvergenceDecision.model_validate(subject["termination"])
+        raw_research_outcome = _object(subject["research_outcome"], "research_outcome")
+        raw_remaining_work = _object(
+            raw_research_outcome["remaining_work"], "remaining_work"
+        )
+        remaining_work = RemainingResearchWork(
+            artifact_id=str(raw_remaining_work["artifact_id"]),
+            unsatisfied_requirement_artifact_ids=_strings(
+                raw_remaining_work["unsatisfied_requirement_artifact_ids"],
+                "unsatisfied_requirement_artifact_ids",
+            ),
+            unresolved_evidence_artifact_ids=_strings(
+                raw_remaining_work["unresolved_evidence_artifact_ids"],
+                "unresolved_evidence_artifact_ids",
+            ),
+            unresolved_gap_artifact_ids=_strings(
+                raw_remaining_work["unresolved_gap_artifact_ids"],
+                "unresolved_gap_artifact_ids",
+            ),
+            unsearched_important_claim_artifact_ids=_strings(
+                raw_remaining_work["unsearched_important_claim_artifact_ids"],
+                "unsearched_important_claim_artifact_ids",
+            ),
+            descriptions=_strings(
+                raw_remaining_work["descriptions"], "remaining_work descriptions"
+            ),
+        )
+        research_outcome = InstalledResearchTerminalOutcome(
+            artifact_id=str(raw_research_outcome["artifact_id"]),
+            kind=InstalledResearchTerminalKind(str(raw_research_outcome["kind"])),
+            convergence_artifact_id=str(
+                raw_research_outcome["convergence_artifact_id"]
+            ),
+            convergence_outcome=str(raw_research_outcome["convergence_outcome"]),
+            remaining_work=remaining_work,
+            exhausted_budget_dimensions=_strings(
+                raw_research_outcome["exhausted_budget_dimensions"],
+                "exhausted_budget_dimensions",
+            ),
+            cancellation_artifact_id=(
+                None
+                if raw_research_outcome["cancellation_artifact_id"] is None
+                else str(raw_research_outcome["cancellation_artifact_id"])
+            ),
+            failure_artifact_ids=_strings(
+                raw_research_outcome["failure_artifact_ids"],
+                "failure_artifact_ids",
+            ),
+        )
         raw_events = subject["causal_events"]
         raw_trace = _object(subject["causal_trace"], "causal_trace")
         raw_state = _object(subject["research_state"], "research_state")
         if not isinstance(raw_events, list):
             raise TypeError
         events = tuple(_event(item) for item in raw_events)
-    except (KeyError, TypeError, ValidationError) as error:
+    except (KeyError, TypeError, ValueError, ValidationError) as error:
         raise StepDispatchError("research trace records are invalid") from error
     if run is not None and run.plan_artifact_id != plan.artifact_id:
         raise StepDispatchError("counterevidence run refers to another plan")
+    if (
+        research_outcome.convergence_artifact_id != convergence.artifact_id
+        or research_outcome.convergence_outcome != convergence.outcome.value
+        or subject.get("status") != research_outcome.kind.value
+        or subject.get("convergence_status") != convergence.outcome.value
+    ):
+        raise StepDispatchError("research terminal outcome differs from convergence")
     raw_targeted = subject.get("targeted_search_plan")
     if not isinstance(raw_targeted, dict):
         raise StepDispatchError("targeted search plan is missing or invalid")
@@ -395,6 +455,53 @@ def _verify_research_trace(subject: Mapping[str, object]) -> tuple[str, ...]:
     }
     if raw_state.get("terminal_status") == "completed" and material_unresolved:
         raise StepDispatchError("completed research retains unresolved evidence")
+    expected_unsatisfied_requirements = tuple(
+        str(item["artifact_id"])
+        for item in raw_requirements
+        if item.get("material") is True and item.get("status") != "satisfied"
+    )
+    raw_gaps = raw_state.get("gaps")
+    if not isinstance(raw_gaps, list) or any(
+        not isinstance(item, dict) for item in raw_gaps
+    ):
+        raise StepDispatchError("research state gaps are invalid")
+    expected_unresolved_gaps = tuple(
+        str(item["artifact_id"]) for item in raw_gaps if item.get("blocking") is True
+    )
+    classified_candidate_ids = {
+        classification.evidence_artifact_id for classification in classifications
+    }
+    expected_unresolved_evidence = tuple(
+        dict.fromkeys(
+            tuple(
+                classification.evidence_artifact_id
+                for classification in classifications
+                if classification.material
+                and classification.relation.value in {"ambiguous", "unclassified"}
+            )
+            + tuple(
+                artifact_id
+                for artifact_id in candidate_ids
+                if artifact_id not in classified_candidate_ids
+            )
+        )
+    )
+    expected_unsearched = tuple(
+        dict.fromkeys(
+            artifact_id
+            for history_run in counter_runs
+            for artifact_id in history_run.unsearched_important_claim_artifact_ids
+        )
+    )
+    if (
+        remaining_work.unsatisfied_requirement_artifact_ids
+        != expected_unsatisfied_requirements
+        or remaining_work.unresolved_evidence_artifact_ids
+        != expected_unresolved_evidence
+        or remaining_work.unresolved_gap_artifact_ids != expected_unresolved_gaps
+        or remaining_work.unsearched_important_claim_artifact_ids != expected_unsearched
+    ):
+        raise StepDispatchError("research terminal remaining work is incomplete")
     return (
         "answer-requirement-plan-identity",
         "targeted-search-plan-identity",
@@ -403,6 +510,7 @@ def _verify_research_trace(subject: Mapping[str, object]) -> tuple[str, ...]:
         "counterevidence-search-lineage",
         "semantic-candidate-adjudication",
         "bounded-convergence-decision",
+        "typed-terminal-outcome",
         "causal-event-chain",
     )
 

@@ -265,6 +265,12 @@ def test_service_owns_search_decision_and_causal_trace() -> None:
         )
     assert result.final_state.terminal_status == "incomplete"
     assert result.final_state.search_budget_used == 1
+    assert result.terminal_outcome.kind == "incomplete_budget"
+    assert result.terminal_outcome.exhausted_budget_dimensions == ("retrievals",)
+    assert result.terminal_outcome.remaining_work.pending
+    assert result.terminal_outcome.remaining_work.unresolved_evidence_artifact_ids == (
+        _CANDIDATE,
+    )
     assert any(
         gap.kind is ObservedResearchGapKind.UNCLASSIFIED_EVIDENCE
         for gap in result.final_state.blocking_gaps
@@ -291,6 +297,8 @@ def test_service_skips_search_when_plan_has_no_requests() -> None:
     assert result.relation_status == "sufficient-evidence"
     assert result.final_state.terminal_status == "completed"
     assert result.final_state.search_budget_used == 0
+    assert result.terminal_outcome.kind == "converged"
+    assert not result.terminal_outcome.remaining_work.pending
 
 
 def test_material_opposition_remains_a_blocking_observed_gap() -> None:
@@ -324,6 +332,7 @@ def test_semantically_classified_support_resolves_the_searched_requirement() -> 
     assert all(requirement.satisfied for requirement in result.final_state.requirements)
     assert not result.final_state.blocking_gaps
     assert result.targeted_search_observations[0].outcome == "support"
+    assert result.terminal_outcome.kind == "converged"
 
 
 def test_semantically_classified_opposition_blocks_completion() -> None:
@@ -341,6 +350,8 @@ def test_semantically_classified_opposition_blocks_completion() -> None:
         for gap in result.final_state.blocking_gaps
     )
     assert result.targeted_search_observations[0].outcome == "opposition"
+    assert result.terminal_outcome.kind == "abstained"
+    assert result.terminal_outcome.remaining_work.unresolved_gap_artifact_ids
 
 
 def test_ambiguous_search_takes_the_adjudication_branch() -> None:
@@ -413,6 +424,8 @@ def test_no_results_cause_a_distinct_second_query_before_candidates_stop() -> No
     ]
     assert result.final_state.search_budget_used == 2
     assert result.final_state.terminal_status == "incomplete"
+    assert result.terminal_outcome.kind == "incomplete_budget"
+    assert result.terminal_outcome.remaining_work.unsatisfied_requirement_artifact_ids
 
 
 def test_search_tool_failure_is_an_incomplete_data_dependent_branch() -> None:
@@ -430,6 +443,8 @@ def test_search_tool_failure_is_an_incomplete_data_dependent_branch() -> None:
         "retain_incomplete_research",
     ]
     assert "secret-bearing" not in str(result.final_state.to_record())
+    assert result.terminal_outcome.kind == "failed"
+    assert result.terminal_outcome.failure_artifact_ids
 
 
 def test_unsatisfied_requirement_without_a_search_is_not_completed() -> None:

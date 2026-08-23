@@ -30,6 +30,11 @@ from bijux_canon_agent.application.research_workflow.targeted_search import (
     TargetedSearchPlanningService,
     TargetedSearchPolicy,
 )
+from bijux_canon_agent.application.research_workflow.terminal_outcome import (
+    InstalledResearchTerminalKind,
+    InstalledResearchTerminalOutcome,
+    RemainingResearchWork,
+)
 
 
 def _canonical(value: object) -> bytes:
@@ -85,6 +90,7 @@ class InstalledResearchRequest:
     requirement_plan_artifact_id: str
     requirement_plan_record: Mapping[str, object]
     requirement_plan_outcome: str
+    grounding_admission_outcome: str = "admitted"
 
     def __post_init__(self) -> None:
         for value, field in (
@@ -129,6 +135,12 @@ class InstalledResearchRequest:
             raise TypeError("requirement plan record must be a mapping")
         if not self.requirement_plan_outcome:
             raise ValueError("requirement plan outcome must not be empty")
+        if self.grounding_admission_outcome not in {
+            "admitted",
+            "partially_admitted",
+            "abstained",
+        }:
+            raise ValueError("grounding admission outcome is invalid")
         if self.requirement_plan_record.get("artifact_id") not in {
             None,
             self.requirement_plan_artifact_id,
@@ -333,6 +345,7 @@ class InstalledResearchResult:
     plan_history: tuple[InstalledResearchPlan, ...]
     search_history: tuple[InstalledResearchSearch, ...]
     targeted_search_observations: tuple[TargetedSearchObservation, ...]
+    terminal_outcome: InstalledResearchTerminalOutcome
 
 
 class InstalledResearchService:
@@ -570,6 +583,39 @@ class InstalledResearchService:
             terminal_status=terminal_status,
         )
         insufficiencies = self._insufficiencies(state, search, candidates)
+        remaining_work = self._remaining_work(
+            state=state,
+            searches=tuple(searches),
+            insufficiencies=insufficiencies,
+        )
+        exhausted_dimensions = (
+            ("retrievals",)
+            if remaining_work.pending
+            and state.search_budget_used >= state.search_budget_limit
+            and (
+                remaining_work.unsatisfied_requirement_artifact_ids
+                or remaining_work.unsearched_important_claim_artifact_ids
+            )
+            else ()
+        )
+        if tool_failure_ids:
+            terminal_kind = InstalledResearchTerminalKind.FAILED
+        elif exhausted_dimensions:
+            terminal_kind = InstalledResearchTerminalKind.INCOMPLETE_BUDGET
+        elif (
+            request.grounding_admission_outcome == "abstained" or remaining_work.pending
+        ):
+            terminal_kind = InstalledResearchTerminalKind.ABSTAINED
+        else:
+            terminal_kind = InstalledResearchTerminalKind.CONVERGED
+        terminal_outcome = InstalledResearchTerminalOutcome.create(
+            kind=terminal_kind,
+            convergence_artifact_id=convergence.artifact_id,
+            convergence_outcome=convergence.outcome,
+            remaining_work=remaining_work,
+            exhausted_budget_dimensions=exhausted_dimensions,
+            failure_artifact_ids=tool_failure_ids,
+        )
         causal_events = tuple(events)
         return InstalledResearchResult(
             plan=plan,
@@ -586,6 +632,60 @@ class InstalledResearchService:
             plan_history=tuple(plans),
             search_history=tuple(searches),
             targeted_search_observations=tuple(targeted_observations),
+            terminal_outcome=terminal_outcome,
+        )
+
+    @staticmethod
+    def _remaining_work(
+        *,
+        state: ObservedResearchState,
+        searches: tuple[InstalledResearchSearch, ...],
+        insufficiencies: tuple[str, ...],
+    ) -> RemainingResearchWork:
+        unresolved_evidence = tuple(
+            dict.fromkeys(
+                classification.evidence_artifact_id
+                for search in searches
+                for record in search.records
+                for classification in record.classifications
+                if classification.material
+                and classification.relation in {"ambiguous", "unclassified"}
+            )
+        )
+        classified_evidence = {
+            classification.evidence_artifact_id
+            for search in searches
+            for record in search.records
+            for classification in record.classifications
+        }
+        unresolved_evidence += tuple(
+            dict.fromkeys(
+                artifact_id
+                for search in searches
+                for record in search.records
+                for artifact_id in record.candidate_evidence_artifact_ids
+                if artifact_id not in classified_evidence
+                and artifact_id not in unresolved_evidence
+            )
+        )
+        return RemainingResearchWork.create(
+            unsatisfied_requirement_artifact_ids=tuple(
+                item.artifact_id
+                for item in state.requirements
+                if item.material and not item.satisfied
+            ),
+            unresolved_evidence_artifact_ids=unresolved_evidence,
+            unresolved_gap_artifact_ids=tuple(
+                item.artifact_id for item in state.blocking_gaps
+            ),
+            unsearched_important_claim_artifact_ids=tuple(
+                dict.fromkeys(
+                    artifact_id
+                    for search in searches
+                    for artifact_id in search.unsearched_important_claim_artifact_ids
+                )
+            ),
+            descriptions=insufficiencies,
         )
 
     @staticmethod

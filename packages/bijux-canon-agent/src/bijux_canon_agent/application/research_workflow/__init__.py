@@ -29,6 +29,11 @@ from bijux_canon_agent.application.research_workflow.targeted_search import (
     TargetedSearchTrigger,
     query_equivalence_key,
 )
+from bijux_canon_agent.application.research_workflow.terminal_outcome import (
+    InstalledResearchTerminalKind,
+    InstalledResearchTerminalOutcome,
+    RemainingResearchWork,
+)
 from bijux_canon_agent.application.research_workflow.state_machine import (
     ResearchCheckpoint,
     ResearchCheckpointPort,
@@ -47,6 +52,8 @@ __all__ = [
     "AgentBehaviorReport",
     "InstalledEvidenceRelation",
     "InstalledResearchRequirement",
+    "InstalledResearchTerminalKind",
+    "InstalledResearchTerminalOutcome",
     "ObservedEvidenceRelationKind",
     "ObservedResearchDecision",
     "ObservedResearchGap",
@@ -60,6 +67,7 @@ __all__ = [
     "ResearchOperationRecord",
     "ResearchRole",
     "ResearchRoleMachine",
+    "RemainingResearchWork",
     "ResearchTransition",
     "TargetedSearchAttempt",
     "TargetedSearchDecision",

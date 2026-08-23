@@ -804,7 +804,12 @@ def _verify_reason_and_agent(grounded: _GroundedRuntime) -> None:
         )
     ).dispatch(agent_step, (agent_upstream,))
     research_trace = json.loads(research.artifacts[0].payload)
-    assert research_trace["status"] == "insufficient"
+    assert research_trace["status"] == "abstained"
+    assert research_trace["convergence_status"] == "insufficient"
+    assert research_trace["research_outcome"]["kind"] == "abstained"
+    assert research_trace["research_outcome"]["remaining_work"][
+        "unsatisfied_requirement_artifact_ids"
+    ]
     assert research_trace["termination"]["stop"] is True
     assert research_trace["termination"]["reasons"] == ["explicit_insufficiency"]
     assert research_trace["counterevidence_plan"]["requests"]
@@ -896,6 +901,31 @@ def _verify_reason_and_agent(grounded: _GroundedRuntime) -> None:
         research_trace["causal_trace"]["head_artifact_id"]
         == (research_trace["causal_events"][-1]["artifact_id"])
     )
+    tampered_trace = json.loads(research.artifacts[0].payload)
+    tampered_trace["research_outcome"]["remaining_work"][
+        "unsatisfied_requirement_artifact_ids"
+    ] = []
+    tampered_research = StepOutputArtifact(
+        contract_id="agent.research-trace.v1",
+        producer_step_id="agent",
+        producer_operation=DagOperation.AGENT,
+        artifact=AddressedArtifact.from_json(
+            tampered_trace,
+            schema_id="agent.research-trace.v1",
+            producer="bijux-canon-runtime:agent",
+            dependencies=research.artifacts[0].artifact.descriptor.dependencies,
+        ),
+    )
+    research_verification_step = next(
+        step
+        for step in planner.plan(research_request).steps
+        if step.operation is DagOperation.VERIFY
+    )
+    with pytest.raises(StepDispatchError, match="research trace records are invalid"):
+        OperationDispatcher((CanonicalVerificationOperationAdapter(),)).dispatch(
+            research_verification_step,
+            (tampered_research,),
+        )
 
 
 def _verify_linked_runs(grounded: _GroundedRuntime) -> None:

@@ -610,6 +610,10 @@ def _research_request(
         requirement_plan_artifact_id=requirement_plan.artifact_id,
         requirement_plan_record=requirement_plan.model_dump(mode="json"),
         requirement_plan_outcome=requirement_plan.outcome.value,
+        grounding_admission_outcome=_required_string(
+            raw_admission.get("outcome"),
+            "grounding admission outcome",
+        ),
     )
 
 
@@ -776,8 +780,10 @@ class CanonicalAgentOperationAdapter:
                 "research_state_history": [
                     state.to_record() for state in research.state_history
                 ],
+                "research_outcome": research.terminal_outcome.to_record(),
                 "schema_version": "bijux.canon.agent.research_trace.v1",
-                "status": research.convergence.outcome,
+                "status": research.terminal_outcome.kind.value,
+                "convergence_status": research.convergence.outcome,
                 "termination": dict(research.convergence.record),
                 "tool_failure_artifact_ids": list(research.tool_failure_artifact_ids),
             }
