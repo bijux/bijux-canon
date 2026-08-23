@@ -61,6 +61,12 @@ def test_package_tox_uses_cached_uv_install_fallback() -> None:
     assert "UV = {tox_root}/makes/tooling/uv-cache-fallback.sh" in environment
 
 
+def test_index_tox_installs_its_vector_database_test_extra() -> None:
+    environment = _tox_config()["testenv"]["setenv"]
+
+    assert "test-index: INSTALL_EXTRAS = dev,vdb" in environment
+
+
 def test_root_make_declares_shared_maintainer_commands() -> None:
     root_make = (REPO_ROOT / "makes" / "root.mk").read_text(encoding="utf-8")
 
