@@ -53,12 +53,23 @@ class FusionChannelRanking:
     query_text_sha256: str
     channel: RetrievalChannel
     candidates: tuple[RankedChannelCandidate, ...]
+    filter_sha256: str = hashlib.sha256(b"{}").hexdigest()
+    authorization_scope_id: str | None = None
 
     def __post_init__(self) -> None:
         if not self.generation_id or len(self.query_text_sha256) != 64:
             raise ValueError("fusion ranking identities must be complete")
         if not isinstance(self.channel, RetrievalChannel):
             raise ValueError("fusion ranking channel is unsupported")
+        if len(self.filter_sha256) != 64 or any(
+            character not in "0123456789abcdef" for character in self.filter_sha256
+        ):
+            raise ValueError("fusion ranking filter identity is invalid")
+        if self.authorization_scope_id is not None and (
+            not self.authorization_scope_id.startswith("sha256:")
+            or len(self.authorization_scope_id) != 71
+        ):
+            raise ValueError("fusion ranking authorization identity is invalid")
         ranks = tuple(candidate.rank for candidate in self.candidates)
         if ranks != tuple(range(1, len(ranks) + 1)):
             raise ValueError("fusion channel ranks must be unique and contiguous")
@@ -88,6 +99,8 @@ class FusionChannelRanking:
                 for candidate in batch.candidates
                 if candidate.output_rank is not None
             ),
+            filter_sha256=batch.filter_sha256,
+            authorization_scope_id=batch.authorization_scope_id,
         )
 
     @classmethod
@@ -111,6 +124,8 @@ class FusionChannelRanking:
                 )
                 for candidate in batch.candidates
             ),
+            filter_sha256=batch.filter_sha256,
+            authorization_scope_id=batch.authorization_scope_id,
         )
 
 
@@ -182,6 +197,8 @@ class RrfFusionBatch:
     policy_sha256: str
     channel_rankings_sha256: str
     hits: tuple[FusedCandidate, ...]
+    filter_sha256: str = hashlib.sha256(b"{}").hexdigest()
+    authorization_scope_id: str | None = None
 
 
 def _sha256_json(value: object) -> str:
@@ -221,6 +238,12 @@ def reciprocal_rank_fusion(
         raise ValueError("fusion rankings must use the same generation")
     if len(query_hashes) != 1:
         raise ValueError("fusion rankings must use the same query identity")
+    filter_hashes = {ranking.filter_sha256 for ranking in rankings}
+    if len(filter_hashes) != 1:
+        raise ValueError("fusion rankings must use the same effective filter")
+    authorization_scope_ids = {ranking.authorization_scope_id for ranking in rankings}
+    if len(authorization_scope_ids) != 1:
+        raise ValueError("fusion rankings must use the same authorization scope")
 
     accumulated: dict[str, list[tuple[RankedChannelCandidate, RrfContribution]]] = {}
     ranking_payload = []
@@ -293,6 +316,8 @@ def reciprocal_rank_fusion(
         policy_sha256=_sha256_json(asdict(resolved_policy)),
         channel_rankings_sha256=_sha256_json(ranking_payload),
         hits=tuple(hits),
+        filter_sha256=next(iter(filter_hashes)),
+        authorization_scope_id=next(iter(authorization_scope_ids)),
     )
 
 

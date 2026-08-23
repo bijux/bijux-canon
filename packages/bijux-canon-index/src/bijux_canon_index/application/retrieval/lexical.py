@@ -17,6 +17,10 @@ from bijux_canon_index.application.index_audit import IndexCompatibility
 from bijux_canon_index.application.index_resource_cache import (
     IndexGenerationResourceCache,
 )
+from bijux_canon_index.contracts.authz import (
+    RetrievalAuthorizationScope,
+    authorize_retrieval_filter,
+)
 from bijux_canon_index.domain.metadata_filters import (
     MetadataFilter,
 )
@@ -67,6 +71,7 @@ class LexicalCandidateBatch:
     candidate_limit: int
     outcome: LexicalCandidateOutcome
     decisions: tuple[LexicalCandidateDecision, ...]
+    authorization_scope_id: str | None = None
 
     @property
     def candidates(self) -> tuple[LexicalCandidateDecision, ...]:
@@ -126,6 +131,7 @@ class LexicalCandidateService:
         top_k: int,
         candidate_limit: int,
         metadata_filter: MetadataFilter | None = None,
+        authorization_scope: RetrievalAuthorizationScope | None = None,
     ) -> LexicalCandidateBatch:
         """Generate bounded BM25 candidates with every selection decision."""
 
@@ -133,11 +139,19 @@ class LexicalCandidateService:
             raise ValueError("lexical top_k must be between 1 and 1000")
         if not top_k <= candidate_limit <= 1000:
             raise ValueError("lexical candidate_limit must be within [top_k,1000]")
-        query_sha256 = hashlib.sha256(query_text.encode("utf-8")).hexdigest()
-        filter_sha256 = _sha256_json(
-            {} if metadata_filter is None else asdict(metadata_filter)
-        )
         with self._registry.lease(generation_id) as generation:
+            effective_filter = authorize_retrieval_filter(
+                authorization_scope,
+                generation_id=generation.manifest.generation_id,
+                requested=metadata_filter,
+            )
+            query_sha256 = hashlib.sha256(query_text.encode("utf-8")).hexdigest()
+            filter_sha256 = _sha256_json(
+                {} if effective_filter is None else asdict(effective_filter)
+            )
+            authorization_scope_id = (
+                None if authorization_scope is None else authorization_scope.artifact_id
+            )
             manifest = generation.lexical.manifest
             if not query_text.strip():
                 return LexicalCandidateBatch(
@@ -153,11 +167,12 @@ class LexicalCandidateService:
                     candidate_limit=candidate_limit,
                     outcome=LexicalCandidateOutcome.empty_query,
                     decisions=(),
+                    authorization_scope_id=authorization_scope_id,
                 )
             matches = generation.lexical.query(
                 query_text,
                 top_k=candidate_limit,
-                metadata_filter=metadata_filter,
+                metadata_filter=effective_filter,
             )
             decisions = []
             output_rank = 0
@@ -185,7 +200,7 @@ class LexicalCandidateService:
                 )
             if output_rank:
                 outcome = LexicalCandidateOutcome.success
-            elif metadata_filter is not None:
+            elif effective_filter is not None:
                 unfiltered_probe = generation.lexical.query(query_text, top_k=1)
                 outcome = (
                     LexicalCandidateOutcome.filtered_empty
@@ -207,6 +222,7 @@ class LexicalCandidateService:
                 candidate_limit=candidate_limit,
                 outcome=outcome,
                 decisions=tuple(decisions),
+                authorization_scope_id=authorization_scope_id,
             )
 
 

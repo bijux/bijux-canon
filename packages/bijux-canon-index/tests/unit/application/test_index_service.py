@@ -22,6 +22,7 @@ from bijux_canon_index.application import (
     LexicalIndexLimits,
     build_lexical_index_segment,
 )
+from bijux_canon_index.contracts.authz import RetrievalAuthorizationScope
 from bijux_canon_index.domain.metadata_filters import MetadataFilter
 from bijux_canon_index.infra.adapters.faiss.hnsw import HnswParameters
 
@@ -133,6 +134,86 @@ def test_query_request_refuses_mixed_missing_and_unbounded_inputs() -> None:
             query_text="evidence",
             top_k=1001,
         )
+
+
+def test_retrieval_scope_filters_every_backend_before_limit_and_survives_restart(
+    tmp_path: Path,
+) -> None:
+    service = _service(tmp_path / "scoped-registry")
+    report = service.build(
+        (
+            AdmittedIndexChunk(
+                "chunk-a",
+                "paper-a",
+                0,
+                "Ancient DNA evidence",
+                (1.0, 0.0, 0.0),
+                {"source_id": "paper-a", "path": "paper-a/article.xml"},
+            ),
+            AdmittedIndexChunk(
+                "chunk-b",
+                "paper-b",
+                0,
+                "Ancient DNA evidence",
+                (0.9, 0.1, 0.0),
+                {"source_id": "paper-b", "path": "paper-b/article.xml"},
+            ),
+        ),
+        snapshot_artifact_id="sha256:snapshot",
+        model_lock_artifact_id="sha256:model-lock",
+        limits=IndexBuildLimits(10, 10_000, 10_000, 10_000),
+        hnsw_parameters=HnswParameters(m=2, ef_construction=8, ef_search=8, seed=17),
+        activate=True,
+    )
+    scope = RetrievalAuthorizationScope(
+        generation_ids=(report.generation_id,),
+        source_ids=("paper-b",),
+        actor="researcher",
+    )
+    requests = (
+        IndexQueryRequest(
+            IndexQueryChannel.lexical,
+            1,
+            query_text="ancient DNA",
+            authorization_scope=scope,
+        ),
+        IndexQueryRequest(
+            IndexQueryChannel.dense_exact,
+            1,
+            query_vector=(1.0, 0.0, 0.0),
+            authorization_scope=scope,
+        ),
+        IndexQueryRequest(
+            IndexQueryChannel.dense_hnsw,
+            1,
+            query_vector=(1.0, 0.0, 0.0),
+            authorization_scope=scope,
+        ),
+    )
+
+    first = tuple(service.query(request) for request in requests)
+    service.close()
+    restarted = _service(tmp_path / "scoped-registry")
+    repeated = tuple(restarted.query(request) for request in requests)
+
+    assert first == repeated
+    assert [[hit.chunk_id for hit in item.hits] for item in first] == [
+        ["chunk-b"],
+        ["chunk-b"],
+        ["chunk-b"],
+    ]
+    assert {item.authorization_scope_id for item in first} == {scope.artifact_id}
+    outside = restarted.query(
+        IndexQueryRequest(
+            IndexQueryChannel.lexical,
+            1,
+            query_text="ancient DNA",
+            metadata_filter=MetadataFilter(source_ids=("paper-a",)),
+            authorization_scope=scope,
+        )
+    )
+    assert outside.hits == ()
+    assert outside.authorization_scope_id == scope.artifact_id
 
 
 def test_failed_build_leaves_no_partial_generation(tmp_path: Path) -> None:

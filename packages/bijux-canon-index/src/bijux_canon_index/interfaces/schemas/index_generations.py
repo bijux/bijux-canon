@@ -286,6 +286,7 @@ class IndexQueryResponse(StrictModel):
     channel: IndexQueryChannel
     chunk_set_sha256: str
     hits: tuple[IndexQueryHitPayload, ...]
+    authorization_scope_id: str | None = None
 
     @classmethod
     def from_report(cls, report: IndexQueryReport) -> IndexQueryResponse:

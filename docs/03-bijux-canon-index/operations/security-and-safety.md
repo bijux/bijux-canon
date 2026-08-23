@@ -4,7 +4,7 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-index-docs
-last_reviewed: 2026-07-22
+last_reviewed: 2026-08-24
 ---
 
 # Security and Safety
@@ -34,6 +34,15 @@ default is allow-all unless `BIJUX_CANON_INDEX_AUTHZ_MODE` selects `deny` or
 `deny_all`. That switch is a package policy primitive, not user authentication
 or tenant isolation. A network deployment must provide identity, per-operation
 authorization, transport security, and audit controls outside the package.
+
+Canonical generation queries can additionally carry a content-addressed
+`RetrievalAuthorizationScope`. It names the admitted generation and allowed
+source or path identities. Index intersects that authority with the caller's
+metadata filter before the result limit on lexical, exact-dense, and ANN
+backends. A disjoint source request becomes a scope-bound empty result, while a
+generation outside the declared authority is denied. The effective filter and
+authorization identity must remain identical through fusion, reranking, and
+citation resolution; mixed lineage is refused rather than merged.
 
 Read-only mode can prevent mutation at configured boundaries. Enable it for
 inspection and replay consumers that do not need corpus or artifact writes.

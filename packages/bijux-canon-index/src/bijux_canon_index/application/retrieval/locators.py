@@ -381,6 +381,8 @@ class CitationCandidate:
     ordinal: int
     source_text_sha256: str
     channels: tuple[CitationChannelProvenance, ...]
+    filter_sha256: str = hashlib.sha256(b"{}").hexdigest()
+    authorization_scope_id: str | None = None
 
     def __post_init__(self) -> None:
         if self.rank <= 0 or self.retrieval_rank <= 0 or self.ordinal < 0:
@@ -393,6 +395,12 @@ class CitationCandidate:
             raise ValueError("citation candidate scores must be finite")
         if not _is_sha256(self.source_text_sha256):
             raise ValueError("citation candidate text identity must be a SHA-256")
+        if not _is_sha256(self.filter_sha256):
+            raise ValueError("citation candidate filter identity must be a SHA-256")
+        if self.authorization_scope_id is not None and not _is_artifact_id(
+            self.authorization_scope_id
+        ):
+            raise ValueError("citation candidate authorization identity is invalid")
         channel_names = tuple(channel.channel for channel in self.channels)
         if not channel_names or len(channel_names) != len(set(channel_names)):
             raise ValueError("citation candidate channels must be unique and non-empty")
@@ -434,6 +442,8 @@ class CitationResolutionBatch:
     retrieval_mode: CitationRetrievalMode
     locator_catalog_id: str
     hits: tuple[CitationReadyHit, ...]
+    filter_sha256: str = hashlib.sha256(b"{}").hexdigest()
+    authorization_scope_id: str | None = None
 
 
 def _direct_candidate_id(
@@ -493,6 +503,8 @@ def citation_candidates_from_lexical(
                         candidate_id,
                     ),
                 ),
+                filter_sha256=batch.filter_sha256,
+                authorization_scope_id=batch.authorization_scope_id,
             )
         )
     return tuple(result)
@@ -536,6 +548,8 @@ def citation_candidates_from_dense(
                     batch.artifact_id,
                 ),
             ),
+            filter_sha256=batch.filter_sha256,
+            authorization_scope_id=batch.authorization_scope_id,
         )
         for item in batch.candidates[: batch.requested_top_k]
     )
@@ -587,6 +601,8 @@ def citation_candidates_from_fusion(
             ordinal=hit.ordinal,
             source_text_sha256=hit.source_text_sha256,
             channels=channels,
+            filter_sha256=fusion.filter_sha256,
+            authorization_scope_id=fusion.authorization_scope_id,
         )
         for hit, channels in zip(fusion.hits, channel_sets, strict=True)
     )
@@ -630,6 +646,8 @@ def citation_candidates_from_rerank(
                 ordinal=item.candidate.ordinal,
                 source_text_sha256=item.candidate.source_text_sha256,
                 channels=channels,
+                filter_sha256=batch.filter_sha256,
+                authorization_scope_id=batch.authorization_scope_id,
             )
         )
     return tuple(result)
@@ -699,6 +717,15 @@ class CitationLocatorService:
             raise CitationResolutionError(
                 CitationResolutionErrorCode.candidate_set_invalid,
                 "citation channel provenance does not match retrieval mode",
+            )
+        filter_sha256s = {candidate.filter_sha256 for candidate in candidates}
+        authorization_scope_ids = {
+            candidate.authorization_scope_id for candidate in candidates
+        }
+        if len(filter_sha256s) > 1 or len(authorization_scope_ids) > 1:
+            raise CitationResolutionError(
+                CitationResolutionErrorCode.candidate_set_invalid,
+                "citation candidates mix filter or authorization scopes",
             )
 
         records_by_chunk: dict[str, CitationLocatorRecord] = {}
@@ -829,6 +856,16 @@ class CitationLocatorService:
             retrieval_mode=retrieval_mode,
             locator_catalog_id=catalog.catalog_id,
             hits=tuple(hits),
+            filter_sha256=(
+                hashlib.sha256(b"{}").hexdigest()
+                if not filter_sha256s
+                else next(iter(filter_sha256s))
+            ),
+            authorization_scope_id=(
+                None
+                if not authorization_scope_ids
+                else next(iter(authorization_scope_ids))
+            ),
         )
 
 

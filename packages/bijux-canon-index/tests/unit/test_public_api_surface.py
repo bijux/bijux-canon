@@ -75,7 +75,13 @@ EXPECTED = {
         "ExecutionLedger",
     },
     "bijux_canon_index.contracts.tx": {"Tx"},
-    "bijux_canon_index.contracts.authz": {"Authz", "AllowAllAuthz", "DenyAllAuthz"},
+    "bijux_canon_index.contracts.authz": {
+        "Authz",
+        "AllowAllAuthz",
+        "DenyAllAuthz",
+        "RetrievalAuthorizationScope",
+        "authorize_retrieval_filter",
+    },
     "bijux_canon_index.application.engine": {"VectorExecutionEngine"},
 }
 

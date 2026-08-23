@@ -560,8 +560,19 @@ def test_witnessed_ann_refusal_uses_one_bounded_exact_fallback(
     assert final_comparison["recall_at_k"] == 1.0
     assert final_comparison["candidates"]
     dense = retrieval["dense"]
+    lexical = retrieval["lexical"]
+    fusion = retrieval["fusion"]
+    rerank = retrieval["rerank"]
     vex_execution = evidence["vex_execution"]
-    assert isinstance(dense, dict) and isinstance(vex_execution, dict)
+    assert all(
+        isinstance(item, dict)
+        for item in (dense, lexical, fusion, rerank, vex_execution)
+    )
+    scope_id = evidence["authorization_scope_id"]
+    assert isinstance(scope_id, str) and scope_id.startswith("sha256:")
+    typed_lineage = [dense, lexical, fusion, rerank]
+    assert all(item["authorization_scope_id"] == scope_id for item in typed_lineage)
+    assert len({item["filter_sha256"] for item in typed_lineage}) == 1
     assert dense["artifact_id"] == final["artifact_id"]
     assert vex_execution["artifact_id"] == final["artifact_id"]
     assert evidence["refusal"] is None
@@ -1130,6 +1141,9 @@ def _verify_offline_boundaries(grounded: _GroundedRuntime) -> None:
     assert offline["resource_reuse"]["archive_status"] == "warm"
     assert offline["resource_reuse"]["generation"]["load_count"] == 1
     assert offline["hits"] == []
+    scope_id = offline["authorization_scope_id"]
+    assert isinstance(scope_id, str) and scope_id.startswith("sha256:")
+    assert offline["retrieval"]["lexical"]["authorization_scope_id"] == scope_id
     assert offline["retrieval"]["dense"] is None
     assert offline["vex_execution"] is None
 

@@ -10,6 +10,7 @@ from dataclasses import asdict, dataclass
 from datetime import date
 from enum import Enum, StrEnum
 import hashlib
+import json
 from pathlib import Path
 import platform
 from time import perf_counter
@@ -37,6 +38,10 @@ from bijux_canon_index.application.vex import (
     VexPolicyDecision,
     VexPolicyStatus,
     evaluate_vex_budget,
+)
+from bijux_canon_index.contracts.authz import (
+    RetrievalAuthorizationScope,
+    authorize_retrieval_filter,
 )
 from bijux_canon_index.domain.metadata_filters import MetadataFilter
 from bijux_canon_index.infra.embeddings.local_model import EmbeddedBatch
@@ -100,6 +105,8 @@ class DenseCandidateBatch:
     execution_id: str
     artifact_id: str
     decision: VexPolicyDecision
+    filter_sha256: str = hashlib.sha256(b"{}").hexdigest()
+    authorization_scope_id: str | None = None
 
     @property
     def candidates(self) -> tuple[DenseCandidate, ...]:
@@ -181,6 +188,7 @@ class DenseCandidateService:
         candidate_limit: int,
         budget: VexExecutionBudget,
         metadata_filter: MetadataFilter | None = None,
+        authorization_scope: RetrievalAuthorizationScope | None = None,
         inspection: IndexInspectionReport | None = None,
     ) -> DenseCandidateBatch:
         """Embed and execute one bounded dense query with an exact witness."""
@@ -199,6 +207,11 @@ class DenseCandidateService:
             raise DenseCandidateCompatibilityError(
                 "prepared inspection does not match selected generation"
             )
+        effective_filter = authorize_retrieval_filter(
+            authorization_scope,
+            generation_id=generation_id,
+            requested=metadata_filter,
+        )
         with self._registry.lease(generation_id) as generation:
             manifest = generation.manifest
             hnsw_parameters = manifest.hnsw_parameters
@@ -238,7 +251,8 @@ class DenseCandidateService:
                 channel=channel,
                 query_vector=query_vector,
                 top_k=candidate_limit,
-                metadata_filter=metadata_filter,
+                metadata_filter=effective_filter,
+                authorization_scope=authorization_scope,
             )
             search_started = perf_counter()
             report = self._index.query(request, generation_id=generation_id)
@@ -297,9 +311,14 @@ class DenseCandidateService:
         query_text_sha256 = hashlib.sha256(query_text.encode("utf-8")).hexdigest()
         artifact = VexExecutionArtifact(
             request={
+                "authorization_scope_id": (
+                    None
+                    if authorization_scope is None
+                    else authorization_scope.artifact_id
+                ),
                 "budget": asdict(budget),
                 "candidate_limit": candidate_limit,
-                "filter": _filter_payload(metadata_filter),
+                "filter": _filter_payload(effective_filter),
                 "generation_id": report.generation_id,
                 "model_lock_artifact_id": (selected_inspection.model_lock_artifact_id),
                 "query_text_sha256": query_text_sha256,
@@ -369,6 +388,18 @@ class DenseCandidateService:
             execution_id=artifact.execution_id,
             artifact_id=stored.artifact_id,
             decision=decision,
+            filter_sha256=hashlib.sha256(
+                json.dumps(
+                    _filter_payload(effective_filter),
+                    sort_keys=True,
+                    separators=(",", ":"),
+                    ensure_ascii=False,
+                    allow_nan=False,
+                ).encode("utf-8")
+            ).hexdigest(),
+            authorization_scope_id=(
+                None if authorization_scope is None else authorization_scope.artifact_id
+            ),
         )
 
 

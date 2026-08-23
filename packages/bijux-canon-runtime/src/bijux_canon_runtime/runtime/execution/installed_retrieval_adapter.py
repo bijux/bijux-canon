@@ -40,6 +40,7 @@ from bijux_canon_index.application import (
     rerank_planned_evidence,
     resolve_hybrid_retrieval_policy,
 )
+from bijux_canon_index.contracts.authz import RetrievalAuthorizationScope
 from bijux_canon_index.domain.metadata_filters import (
     MetadataFilter,
     MetadataOperator,
@@ -93,6 +94,23 @@ def _retrieval_filter(step: ConcreteDagStep) -> MetadataFilter | None:
         )
     )
     return MetadataFilter(source_ids=filters.document_ids, user=user)
+
+
+def _retrieval_authorization_scope(
+    *,
+    generation_id: str,
+    catalog: CitationLocatorCatalog,
+) -> RetrievalAuthorizationScope:
+    """Bind retrieval authority to the selected generation and admitted sources."""
+
+    allowed = {record.source.source_id for record in catalog.records}
+    if not allowed:
+        raise StepDispatchError("retrieval authorization scope selects no sources")
+    return RetrievalAuthorizationScope(
+        generation_ids=(generation_id,),
+        source_ids=tuple(sorted(allowed)),
+        actor="bijux-canon-runtime",
+    )
 
 
 def _optional_string(value: object) -> str | None:
@@ -616,12 +634,17 @@ class CanonicalRetrievalOperationAdapter:
             else min(1000, max(top_k, top_k * 4))
         )
         metadata_filter = _retrieval_filter(step)
+        authorization_scope = _retrieval_authorization_scope(
+            generation_id=inspection.generation_id,
+            catalog=catalog,
+        )
         lexical = self._lexical.generate(
             query,
             generation_id=inspection.generation_id,
             top_k=(self._policy.lexical_limit(top_k) if hybrid else top_k),
             candidate_limit=candidate_limit,
             metadata_filter=metadata_filter,
+            authorization_scope=authorization_scope,
         )
         dense = None
         dense_attempts: list[dict[str, object]] = []
@@ -653,6 +676,7 @@ class CanonicalRetrievalOperationAdapter:
                     max_candidates=candidate_limit,
                 ),
                 metadata_filter=metadata_filter,
+                authorization_scope=authorization_scope,
                 inspection=inspection,
             )
             dense_attempts.append(asdict(dense))
@@ -683,6 +707,7 @@ class CanonicalRetrievalOperationAdapter:
                         max_candidates=candidate_limit,
                     ),
                     metadata_filter=metadata_filter,
+                    authorization_scope=authorization_scope,
                     inspection=inspection,
                 )
                 dense_attempts.append(asdict(dense))
@@ -722,6 +747,7 @@ class CanonicalRetrievalOperationAdapter:
                                 top_k=self._policy.lexical_limit(top_k),
                                 candidate_limit=candidate_limit,
                                 metadata_filter=metadata_filter,
+                                authorization_scope=authorization_scope,
                             )
                             expansion_lexical.append(batch)
                         lexical_by_subquery_id[subquery.subquery_id] = batch
@@ -799,6 +825,7 @@ class CanonicalRetrievalOperationAdapter:
             _json_value(
                 {
                     "content_trust": "untrusted-source-text",
+                    "authorization_scope_id": authorization_scope.artifact_id,
                     "filters": {
                         "document_ids": list(
                             ()

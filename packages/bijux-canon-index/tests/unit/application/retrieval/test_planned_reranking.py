@@ -73,7 +73,7 @@ def _lexical(query_hash: str, ordered: tuple[str, ...]) -> LexicalCandidateBatch
         "segment",
         "tokenizer",
         query_hash,
-        "filter",
+        hashlib.sha256(b"{}").hexdigest(),
         len(ordered),
         len(ordered),
         LexicalCandidateOutcome.success,
@@ -92,6 +92,8 @@ def _passages() -> tuple[EvidencePassageContext, ...]:
         )
         for hit in _fusion().hits
     )
+
+
 def test_planned_rerank_routes_facets_then_selects_answer_bearing_passages() -> None:
     plan = plan_evidence_query(
         "Across alpha material, beta material, and gamma material, what results "

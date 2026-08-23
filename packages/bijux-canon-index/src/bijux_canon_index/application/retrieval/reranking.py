@@ -130,6 +130,8 @@ class RerankBatch:
     latency_ms: float
     failure_kind: str | None
     candidates: tuple[RerankedCandidate, ...]
+    filter_sha256: str = hashlib.sha256(b"{}").hexdigest()
+    authorization_scope_id: str | None = None
 
 
 def _sha256_json(value: object) -> str:
@@ -183,6 +185,8 @@ def _failure(
         latency_ms=latency_ms,
         failure_kind=failure_kind,
         candidates=_retrieval_order(fusion.hits, policy.top_k) if fallback else (),
+        filter_sha256=fusion.filter_sha256,
+        authorization_scope_id=fusion.authorization_scope_id,
     )
 
 
@@ -209,6 +213,8 @@ def rerank_candidates(
             latency_ms=0.0,
             failure_kind=None,
             candidates=_retrieval_order(fusion.hits, policy.top_k),
+            filter_sha256=fusion.filter_sha256,
+            authorization_scope_id=fusion.authorization_scope_id,
         )
     if reranker is None:
         raise ValueError("enabled reranking requires an injected reranker")
@@ -285,6 +291,8 @@ def rerank_candidates(
         latency_ms=latency_ms,
         failure_kind=None,
         candidates=candidates,
+        filter_sha256=fusion.filter_sha256,
+        authorization_scope_id=fusion.authorization_scope_id,
     )
 
 

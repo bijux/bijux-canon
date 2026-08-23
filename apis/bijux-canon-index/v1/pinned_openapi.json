@@ -1562,6 +1562,17 @@
         "additionalProperties": false,
         "description": "Normalized content-bound query results from every persistent channel.",
         "properties": {
+          "authorization_scope_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Authorization Scope Id"
+          },
           "channel": {
             "$ref": "#/components/schemas/IndexQueryChannel"
           },
@@ -2750,7 +2761,7 @@
                 }
               }
             },
-            "description": "Unprocessable Content"
+            "description": "Unprocessable Entity"
           }
         },
         "summary": "Execute a vector query",

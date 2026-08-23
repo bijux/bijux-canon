@@ -35,6 +35,10 @@ from bijux_canon_index.application.vex.witnesses import (
     ExactSearchWitness,
     build_exact_search_witness,
 )
+from bijux_canon_index.contracts.authz import (
+    RetrievalAuthorizationScope,
+    authorize_retrieval_filter,
+)
 from bijux_canon_index.domain.metadata_filters import MetadataFilter
 from bijux_canon_index.infra.adapters.faiss.hnsw import HnswParameters
 
@@ -56,6 +60,7 @@ class IndexQueryRequest:
     query_text: str | None = None
     query_vector: Sequence[float] | None = None
     metadata_filter: MetadataFilter | None = None
+    authorization_scope: RetrievalAuthorizationScope | None = None
 
     def __post_init__(self) -> None:
         if not isinstance(self.channel, IndexQueryChannel):
@@ -95,6 +100,7 @@ class IndexQueryReport:
     channel: IndexQueryChannel
     chunk_set_sha256: str
     hits: tuple[IndexQueryHit, ...]
+    authorization_scope_id: str | None = None
 
 
 class IndexPreparationCacheStatus(StrEnum):
@@ -296,13 +302,18 @@ class IndexService:
         """Query one verified generation through a normalized application contract."""
 
         with self._registry.lease(generation_id) as generation:
+            effective_filter = authorize_retrieval_filter(
+                request.authorization_scope,
+                generation_id=generation.manifest.generation_id,
+                requested=request.metadata_filter,
+            )
             chunks = {chunk.chunk_id: chunk for chunk in generation.lexical.chunks()}
             if request.channel is IndexQueryChannel.lexical:
                 assert request.query_text is not None
                 raw_hits = generation.lexical.query(
                     request.query_text,
                     top_k=request.top_k,
-                    metadata_filter=request.metadata_filter,
+                    metadata_filter=effective_filter,
                 )
                 hits = tuple(
                     IndexQueryHit(
@@ -321,13 +332,13 @@ class IndexService:
                     generation.exact.query(
                         request.query_vector,
                         top_k=request.top_k,
-                        metadata_filter=request.metadata_filter,
+                        metadata_filter=effective_filter,
                     )
                     if request.channel is IndexQueryChannel.dense_exact
                     else generation.hnsw.query(
                         request.query_vector,
                         top_k=request.top_k,
-                        metadata_filter=request.metadata_filter,
+                        metadata_filter=effective_filter,
                     )
                 )
                 hits = tuple(
@@ -347,6 +358,11 @@ class IndexService:
                 channel=request.channel,
                 chunk_set_sha256=generation.manifest.chunk_set_sha256,
                 hits=hits,
+                authorization_scope_id=(
+                    None
+                    if request.authorization_scope is None
+                    else request.authorization_scope.artifact_id
+                ),
             )
 
     def exact_witness(
@@ -361,11 +377,16 @@ class IndexService:
             raise ValueError("exact witnesses require a dense query")
         assert request.query_vector is not None
         with self._registry.lease(generation_id) as generation:
+            effective_filter = authorize_retrieval_filter(
+                request.authorization_scope,
+                generation_id=generation.manifest.generation_id,
+                requested=request.metadata_filter,
+            )
             return build_exact_search_witness(
                 generation,
                 tuple(request.query_vector),
                 top_k=request.top_k,
-                metadata_filter=request.metadata_filter,
+                metadata_filter=effective_filter,
             )
 
     def close(self) -> None:

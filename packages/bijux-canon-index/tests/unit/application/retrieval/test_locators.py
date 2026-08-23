@@ -465,6 +465,39 @@ def test_locator_resolution_refuses_snapshot_source_and_channel_drift(
     assert channel.value.code is CitationResolutionErrorCode.candidate_set_invalid
 
 
+def test_locator_resolution_refuses_mixed_filter_or_authorization_lineage(
+    tmp_path: Path,
+) -> None:
+    root, generation_id, compatibility = _registry(tmp_path)
+    service = CitationLocatorService(root, compatibility=compatibility)
+    first = _candidate(channel=CitationChannel.lexical)
+    second = replace(
+        _candidate(
+            channel=CitationChannel.lexical,
+            chunk_id="chunk-b",
+            text="Contamination constrains interpretation.",
+        ),
+        rank=2,
+        retrieval_rank=2,
+        filter_sha256="b" * 64,
+        authorization_scope_id="sha256:" + "c" * 64,
+    )
+
+    with pytest.raises(CitationResolutionError) as mixed_filter:
+        service.resolve(
+            (first, second),
+            generation_id=generation_id,
+            query_text_sha256=_QUERY_SHA,
+            retrieval_mode=CitationRetrievalMode.lexical,
+            catalog=_catalog(
+                _record("chunk-a", 0, "Ancient DNA preserves direct evidence."),
+                _record("chunk-b", 1, "Contamination constrains interpretation."),
+            ),
+        )
+
+    assert mixed_filter.value.code is CitationResolutionErrorCode.candidate_set_invalid
+
+
 def test_locator_values_validate_content_lineage_and_span_bounds() -> None:
     with pytest.raises(ValueError, match="content hash"):
         replace(

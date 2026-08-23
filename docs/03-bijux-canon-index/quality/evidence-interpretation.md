@@ -4,7 +4,7 @@ audience: mixed
 type: reference
 status: canonical
 owner: bijux-canon-index-docs
-last_reviewed: 2026-08-23
+last_reviewed: 2026-08-24
 ---
 
 # Interpreting Retrieval Evidence
@@ -72,7 +72,10 @@ failed executions in the same unique-query denominator as successful results.
 
 The report retains generation, model, configuration, Runtime run, VEX, raw
 rank, score, content hash, and exact locator-segment lineage for every observed
-hit. It reports per-query Recall@5, reciprocal rank at 10, and nDCG@10; macro
+hit. Installed Runtime retrieval also retains the generation-bound
+authorization-scope identity and the effective filter identity through fusion,
+reranking, and locator resolution. It reports per-query Recall@5, reciprocal
+rank at 10, and nDCG@10; macro
 samples and confidence intervals; pooled relevant-qrel arithmetic; refusal and
 failure counts; and the five worst query identities. Metadata coverage or a
 caller-authored ranking cannot satisfy this boundary.

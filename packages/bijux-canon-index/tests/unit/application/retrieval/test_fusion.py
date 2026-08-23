@@ -123,6 +123,34 @@ def test_rrf_refuses_generation_query_and_chunk_identity_drift() -> None:
         reciprocal_rank_fusion((lexical, drifted))
 
 
+def test_rrf_refuses_filter_or_authorization_scope_drift() -> None:
+    scope_id = "sha256:" + "c" * 64
+    lexical = replace(
+        _ranking(RetrievalChannel.lexical, (_candidate(1, "chunk-a"),)),
+        filter_sha256="d" * 64,
+        authorization_scope_id=scope_id,
+    )
+    dense = replace(
+        _ranking(RetrievalChannel.dense, (_candidate(1, "chunk-a"),)),
+        filter_sha256="d" * 64,
+        authorization_scope_id=scope_id,
+    )
+
+    admitted = reciprocal_rank_fusion((lexical, dense))
+
+    assert admitted.filter_sha256 == "d" * 64
+    assert admitted.authorization_scope_id == scope_id
+    with pytest.raises(ValueError, match="same effective filter"):
+        reciprocal_rank_fusion((lexical, replace(dense, filter_sha256="e" * 64)))
+    with pytest.raises(ValueError, match="same authorization scope"):
+        reciprocal_rank_fusion(
+            (
+                lexical,
+                replace(dense, authorization_scope_id="sha256:" + "f" * 64),
+            )
+        )
+
+
 def test_rrf_validates_channel_ranks_weights_and_bounds() -> None:
     with pytest.raises(ValueError, match="contiguous"):
         _ranking(RetrievalChannel.lexical, (_candidate(2, "chunk-a"),))

@@ -120,6 +120,8 @@ def rerank_planned_evidence(
     if any(
         batch.generation_id != fusion.generation_id
         or batch.query_text_sha256 != subquery.text_sha256
+        or batch.filter_sha256 != fusion.filter_sha256
+        or batch.authorization_scope_id != fusion.authorization_scope_id
         for subquery in subqueries
         for batch in (lexical_by_subquery_id[subquery.subquery_id],)
     ):
@@ -283,6 +285,8 @@ def rerank_planned_evidence(
         latency_ms=0.0,
         failure_kind=None,
         candidates=candidates,
+        filter_sha256=fusion.filter_sha256,
+        authorization_scope_id=fusion.authorization_scope_id,
     )
 
 

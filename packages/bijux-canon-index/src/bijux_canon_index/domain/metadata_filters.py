@@ -141,8 +141,11 @@ class MetadataFilter:
     tags: tuple[str, ...] = ()
     languages: tuple[str, ...] = ()
     user: tuple[UserMetadataPredicate, ...] = ()
+    match_none: bool = False
 
     def __post_init__(self) -> None:
+        if not isinstance(self.match_none, bool):
+            raise ValueError("metadata match_none must be boolean")
         for field_name in (
             "source_ids",
             "dois",
@@ -265,7 +268,8 @@ def matches_metadata_filter(
         ("language", spec.languages),
     )
     return (
-        all(_matches_choices(metadata, key, values) for key, values in choices)
+        not spec.match_none
+        and all(_matches_choices(metadata, key, values) for key, values in choices)
         and _matches_date(metadata, spec)
         and _matches_tags(metadata, spec.tags)
         and all(_matches_user_predicate(metadata, predicate) for predicate in spec.user)
