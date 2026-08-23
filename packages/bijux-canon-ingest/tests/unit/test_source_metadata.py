@@ -372,7 +372,7 @@ def test_retains_deterministic_conflict_provenance() -> None:
         ),
         (
             SourceMetadataRecord(provenance="bad", publication_date="2025-02-30"),
-            "day is out of range",
+            "publication date must be a valid ISO-8601 calendar date",
         ),
         (
             SourceMetadataRecord(provenance="bad", relative_path="../escape.txt"),

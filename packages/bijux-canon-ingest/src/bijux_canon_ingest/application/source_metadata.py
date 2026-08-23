@@ -231,13 +231,23 @@ def _date(value: str) -> str:
             raise ValueError("publication year must be positive")
         return normalized
     if re.fullmatch(r"\d{4}-\d{2}", normalized):
-        date.fromisoformat(f"{normalized}-01")
+        try:
+            date.fromisoformat(f"{normalized}-01")
+        except ValueError:
+            raise ValueError(
+                "publication date must be a valid ISO-8601 calendar date"
+            ) from None
         return normalized
     candidate = normalized.replace("Z", "+00:00")
     try:
         return datetime.fromisoformat(candidate).date().isoformat()
     except ValueError:
-        return date.fromisoformat(normalized).isoformat()
+        try:
+            return date.fromisoformat(normalized).isoformat()
+        except ValueError:
+            raise ValueError(
+                "publication date must be a valid ISO-8601 calendar date"
+            ) from None
 
 
 def _language(value: str) -> str:
