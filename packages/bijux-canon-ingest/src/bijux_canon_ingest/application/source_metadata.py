@@ -39,6 +39,8 @@ _SPDX_NAMES = {
     "apache-2.0": "Apache-2.0",
     "cc-by-4.0": "CC-BY-4.0",
     "cc0-1.0": "CC0-1.0",
+    "creative commons attribution 4.0 international": "CC-BY-4.0",
+    "creative commons attribution 4.0 international (cc by 4.0)": "CC-BY-4.0",
     "ietf-trust-tlp-5.0": "IETF-Trust-TLP-5.0",
     "ogl-uk-3.0": "OGL-UK-3.0",
 }

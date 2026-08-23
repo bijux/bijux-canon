@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import shutil
 from pathlib import Path
 
 import pytest
@@ -21,6 +22,24 @@ REAL_CORPUS = Path(__file__).parents[4] / "examples/document-formats/corpus"
 RESEARCH_CORPUS = (
     Path(__file__).parents[4] / "examples/ancient-dna-research/corpus/sources"
 )
+RESEARCH_LOCK = RESEARCH_CORPUS.parents[1] / "corpus.lock.json"
+FORMAT_PARSER_TITLES = {
+    "docx": "Guide to Preparing an Assurance Review Report",
+    "html": (
+        "Ancient RNA from Late Pleistocene permafrost and historical canids "
+        "shows tissue-specific transcriptome survival"
+    ),
+    "jats": (
+        "Ancient RNA from Late Pleistocene permafrost and historical canids "
+        "shows tissue-specific transcriptome survival"
+    ),
+    "markdown": "Select a storage driver",
+    "pdf-digital": (
+        "Ancient RNA from Late Pleistocene permafrost and historical canids "
+        "shows tissue-specific transcriptome survival"
+    ),
+    "text": "HTTP Semantics",
+}
 
 
 def test_canonical_runtime_ingests_real_format_corpus(tmp_path: Path) -> None:
@@ -71,7 +90,70 @@ def test_canonical_runtime_ingests_real_format_corpus(tmp_path: Path) -> None:
     assert {record.source for record in jats.metadata.provenance_records} >= {
         "corpus_lock",
         "acquisition_receipt",
+        "embedded_parser",
     }
+
+
+def test_canonical_runtime_merges_parser_metadata_for_every_real_format() -> None:
+    preparation = prepare_corpus(
+        CanonicalIngestRequest(
+            root_path=REAL_CORPUS,
+            root_name="real-formats",
+            configuration=CorpusSnapshotConfiguration(corpus_name="real-formats"),
+        )
+    )
+    assert {document.admission.format_id for document in preparation.documents} == set(
+        FORMAT_PARSER_TITLES
+    )
+    for document in preparation.documents:
+        format_id = document.admission.format_id
+        assert format_id is not None
+        parser_records = [
+            record
+            for record in document.metadata.provenance_records
+            if record.source == "embedded_parser"
+        ]
+        parser_titles = [
+            value.normalized_value
+            for value in document.metadata.raw_values
+            if value.field == "title" and value.source == "embedded_parser"
+        ]
+        assert len(parser_records) == 1, format_id
+        assert parser_records[0].source_content_sha256 == (
+            document.admission.source.content_sha256
+        )
+        assert parser_records[0].source_byte_length == (
+            document.admission.source.byte_length
+        )
+        assert parser_titles == [FORMAT_PARSER_TITLES[format_id]], format_id
+
+
+def test_unlocked_real_formats_select_parser_titles(tmp_path: Path) -> None:
+    root = tmp_path / "unlocked-formats"
+    shutil.copytree(REAL_CORPUS, root)
+    preparation = prepare_corpus(
+        CanonicalIngestRequest(
+            root_path=root,
+            root_name="unlocked-formats",
+            configuration=CorpusSnapshotConfiguration(corpus_name="unlocked-formats"),
+        )
+    )
+
+    assert preparation.corpus_lock is None
+    for document in preparation.documents:
+        format_id = document.admission.format_id
+        assert format_id is not None
+        assert document.metadata.title == FORMAT_PARSER_TITLES[format_id]
+        selected_title = next(
+            value
+            for value in document.metadata.selected_values
+            if value.field == "title"
+        )
+        assert selected_title.source == "embedded_parser", format_id
+        assert all(
+            record.source != "filename_fallback"
+            for record in document.metadata.provenance_records
+        )
 
 
 def test_canonical_runtime_automatically_uses_research_corpus_lock() -> None:
@@ -134,6 +216,29 @@ def test_canonical_runtime_automatically_uses_research_corpus_lock() -> None:
             "10.1371/journal.pone.0256353",
         ),
     }
+    lock = json.loads(RESEARCH_LOCK.read_text(encoding="utf-8"))
+    locked_by_sha256 = {source["sha256"]: source for source in lock["sources"]}
+    assert len(locked_by_sha256) == 8
+    for document in preparation.documents:
+        expected = locked_by_sha256[document.admission.source.content_sha256]
+        metadata = document.metadata
+        assert metadata.title == expected["title"]
+        assert metadata.doi == expected["doi"]
+        assert metadata.authors == tuple(expected["authors"])
+        assert metadata.journal == expected["journal"]
+        assert metadata.license_expression == "CC-BY-4.0"
+        assert metadata.license_url == expected["license"]["url"]
+        assert any(
+            value.field == "license_expression"
+            and value.source == "corpus_lock"
+            and value.value == expected["license"]["expression"]
+            for value in metadata.raw_values
+        )
+        assert {record.source for record in metadata.provenance_records} >= {
+            "corpus_lock",
+            "acquisition_receipt",
+            "embedded_parser",
+        }
 
 
 def test_canonical_runtime_result_is_deterministic() -> None:

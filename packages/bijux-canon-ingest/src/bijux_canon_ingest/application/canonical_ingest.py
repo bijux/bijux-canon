@@ -26,6 +26,9 @@ from bijux_canon_ingest.application.document_extraction import (
     parse_pdf,
     parse_text,
 )
+from bijux_canon_ingest.application.parsed_metadata import (
+    metadata_record_from_parsed_document,
+)
 from bijux_canon_ingest.application.semantic_chunking import chunk_document_mappings
 from bijux_canon_ingest.application.source_admission import admit_sources
 from bijux_canon_ingest.application.source_discovery import discover_sources
@@ -308,9 +311,15 @@ class CanonicalIngestRuntime:
                 admission.source,
                 format_id=admission.format_id,
                 records=(
-                    corpus_lock.records_for(admission.source)
-                    if corpus_lock is not None
-                    else ()
+                    *(
+                        corpus_lock.records_for(admission.source)
+                        if corpus_lock is not None
+                        else ()
+                    ),
+                    metadata_record_from_parsed_document(
+                        parsed,
+                        source_byte_length=admission.source.byte_length,
+                    ),
                 ),
             )
             mappings = build_document_span_mappings(content, parsed)

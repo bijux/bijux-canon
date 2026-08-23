@@ -214,6 +214,10 @@ LAZY_EXPORTS: dict[str, LazyExport] = {
     ),
     "make_chunk_stream_fn": (".config.ingest", "make_chunk_stream_fn"),
     "make_ingest_fn": (".config.ingest", "make_ingest_fn"),
+    "metadata_record_from_parsed_document": (
+        ".application.parsed_metadata",
+        "metadata_record_from_parsed_document",
+    ),
     "normalize_source_metadata": (
         ".application.source_metadata",
         "normalize_source_metadata",
@@ -327,6 +331,7 @@ PUBLIC_API = [
     "publish_corpus_snapshot",
     "read_published_corpus_snapshot",
     "recover_corpus_snapshot_store",
+    "metadata_record_from_parsed_document",
     "normalize_source_metadata",
     "parse_docx",
     "parse_html",

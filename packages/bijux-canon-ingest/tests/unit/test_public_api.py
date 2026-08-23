@@ -32,6 +32,7 @@ def test_root_package_declares_lazy_exports_in_dir() -> None:
     assert "CorpusLockError" in exported_names
     assert "VerifiedCorpusLock" in exported_names
     assert "load_verified_corpus_lock" in exported_names
+    assert "metadata_record_from_parsed_document" in exported_names
     assert "build_chunk_span_mapping" in exported_names
     assert "build_document_span_mappings" in exported_names
     assert "chunk_document_mappings" in exported_names

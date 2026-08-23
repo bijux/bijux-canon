@@ -50,14 +50,23 @@ identify different works are rejected with `MetadataIntegrityError`; ordinary
 metadata disagreement remains visible as a conflict rather than being
 overwritten.
 
+Every supported parser contributes one `embedded_parser` record bound to its
+parser manifest, source hash, format, and byte length. JATS and HTML contribute
+their structured citation fields; PDF and DOCX contribute embedded properties
+and semantic titles; Markdown contributes bounded top-level front-matter
+fields; and plain text contributes an identified title block when present.
+These records use the same resolver as reviewed records, so an unlocked corpus
+selects real parser truth while a lock can override it without erasing the
+parser value or disagreement.
+
 ### Corpus Lock Resolution
 
 Canonical directory ingest checks for `corpus.lock.json` in the document root,
 its parent, and—when ingesting a conventional `corpus/sources` directory—the
 portfolio root. `corpus_lock_path` (Python and HTTP) or `--corpus-lock` (CLI)
 selects an explicit lock. When no lock is present, ingest remains available and
-the metadata manifest shows only its lower-provenance discovery and filename
-records.
+the metadata manifest retains lower-provenance discovery and parser records,
+using the filename only when no parser or supplied record exposes a title.
 
 The loader accepts the governed parser-source and research-corpus lock schemas.
 Before parsing, it verifies the canonical lock identity, aggregate and per-file

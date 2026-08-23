@@ -19,6 +19,10 @@ _LAZY_EXPORTS: dict[str, LazyExport] = {
     "VerifiedCorpusLock": (".corpus_lock", "VerifiedCorpusLock"),
     "VerifiedLockedSource": (".corpus_lock", "VerifiedLockedSource"),
     "load_verified_corpus_lock": (".corpus_lock", "load_verified_corpus_lock"),
+    "metadata_record_from_parsed_document": (
+        ".parsed_metadata",
+        "metadata_record_from_parsed_document",
+    ),
     "CanonicalIngestError": (".canonical_ingest", "CanonicalIngestError"),
     "CanonicalIngestRequest": (".canonical_ingest", "CanonicalIngestRequest"),
     "CanonicalIngestResult": (".canonical_ingest", "CanonicalIngestResult"),
@@ -165,6 +169,7 @@ __all__ = [
     "MetadataIntegrityCode",
     "MetadataIntegrityError",
     "normalize_source_metadata",
+    "metadata_record_from_parsed_document",
     "load_verified_corpus_lock",
     "parse_docx",
     "parse_html",

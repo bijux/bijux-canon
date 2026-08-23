@@ -309,6 +309,9 @@ def test_canonicalizes_equivalent_values_without_identity_loss() -> None:
                 provenance="embedded-jats",
                 doi="10.1371/journal.pbio.3000166",
                 publication_date="2019",
+                license_expression=(
+                    "Creative Commons Attribution 4.0 International (CC BY 4.0)"
+                ),
             ),
         ),
     )
