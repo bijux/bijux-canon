@@ -27,6 +27,7 @@ from bijux_canon_ingest.domain.semantic_chunking import (
     SemanticChunkingPolicy,
 )
 from bijux_canon_ingest.domain.source_admission import AdmissionBudgets, AdmissionResult
+from bijux_canon_ingest.domain.source_discovery import DiscoveryLimits
 from bijux_canon_ingest.domain.source_mapping import NormalizedSpanMapping
 from bijux_canon_ingest.domain.source_metadata import CanonicalSourceMetadata
 
@@ -60,6 +61,7 @@ class CorpusSnapshotConfiguration:
     """All policies that can affect canonical corpus membership or content."""
 
     corpus_name: str
+    discovery_limits: DiscoveryLimits = DiscoveryLimits()
     admission_budgets: AdmissionBudgets = AdmissionBudgets()
     chunking_policy: SemanticChunkingPolicy = SemanticChunkingPolicy()
 
@@ -78,7 +80,8 @@ class CorpusSnapshotConfiguration:
             "admission_budgets": self.admission_budgets.identity_payload(),
             "chunking_policy": self.chunking_policy.manifest(),
             "corpus_name": self.corpus_name,
-            "schema_version": "bijux.canon.ingest.corpus_snapshot_configuration.v1",
+            "discovery_limits": self.discovery_limits.identity_payload(),
+            "schema_version": "bijux.canon.ingest.corpus_snapshot_configuration.v2",
         }
 
 

@@ -7,14 +7,19 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
 from typing import Literal, get_args
 
 SymlinkPolicy = Literal["reject", "files_within_root", "all_within_root"]
 DiscoveryIssueCode = Literal[
+    "depth_limit_exceeded",
     "directory_inaccessible",
+    "entry_limit_exceeded",
     "file_inaccessible",
+    "file_count_limit_exceeded",
+    "file_size_limit_exceeded",
     "non_regular_file",
     "root_inaccessible",
     "root_missing",
@@ -23,16 +28,24 @@ DiscoveryIssueCode = Literal[
     "symlink_cycle",
     "symlink_escape",
     "symlink_forbidden",
+    "time_limit_exceeded",
+    "total_bytes_limit_exceeded",
 ]
 
 _INCOMPLETE_CODES: frozenset[DiscoveryIssueCode] = frozenset(
     {
+        "depth_limit_exceeded",
         "directory_inaccessible",
+        "entry_limit_exceeded",
         "file_inaccessible",
+        "file_count_limit_exceeded",
+        "file_size_limit_exceeded",
         "root_inaccessible",
         "root_missing",
         "root_not_directory",
         "source_changed",
+        "time_limit_exceeded",
+        "total_bytes_limit_exceeded",
     }
 )
 _ISSUE_CODES: frozenset[str] = frozenset(get_args(DiscoveryIssueCode))
@@ -79,6 +92,49 @@ class DiscoveryRoot:
 
 
 @dataclass(frozen=True, slots=True)
+class DiscoveryLimits:
+    """Finite traversal and byte budgets applied before parser admission."""
+
+    max_depth: int = 64
+    max_entries: int = 100_000
+    max_files: int = 50_000
+    max_file_bytes: int = 64 * 1024 * 1024
+    max_total_bytes: int = 2 * 1024 * 1024 * 1024
+    max_seconds: float = 300.0
+
+    def __post_init__(self) -> None:
+        integer_values = {
+            "max_depth": self.max_depth,
+            "max_entries": self.max_entries,
+            "max_files": self.max_files,
+            "max_file_bytes": self.max_file_bytes,
+            "max_total_bytes": self.max_total_bytes,
+        }
+        for name, value in integer_values.items():
+            if isinstance(value, bool) or not isinstance(value, int) or value <= 0:
+                raise ValueError(f"DiscoveryLimits.{name} must be positive")
+        if (
+            isinstance(self.max_seconds, bool)
+            or not isinstance(self.max_seconds, int | float)
+            or not math.isfinite(self.max_seconds)
+            or self.max_seconds <= 0
+        ):
+            raise ValueError("DiscoveryLimits.max_seconds must be positive and finite")
+
+    def identity_payload(self) -> dict[str, int | float]:
+        """Return every behavior-affecting discovery limit."""
+
+        return {
+            "max_depth": self.max_depth,
+            "max_entries": self.max_entries,
+            "max_file_bytes": self.max_file_bytes,
+            "max_files": self.max_files,
+            "max_seconds": self.max_seconds,
+            "max_total_bytes": self.max_total_bytes,
+        }
+
+
+@dataclass(frozen=True, slots=True)
 class DiscoveryPolicy:
     """Portable include, exclude, and symlink rules for one discovery pass."""
 
@@ -86,6 +142,7 @@ class DiscoveryPolicy:
     include: tuple[str, ...] = ("**/*",)
     exclude: tuple[str, ...] = ()
     symlink_policy: SymlinkPolicy = "reject"
+    limits: DiscoveryLimits = DiscoveryLimits()
 
     def __post_init__(self) -> None:
         if not self.roots:
@@ -236,6 +293,7 @@ class DiscoveryResult:
     issues: tuple[DiscoveryIssue, ...]
     scanned_entry_count: int
     ignored_entry_count: int
+    admitted_byte_count: int
 
     def __post_init__(self) -> None:
         source_order = [(item.root_name, item.relative_path) for item in self.sources]
@@ -246,8 +304,16 @@ class DiscoveryResult:
             raise ValueError("DiscoveryResult.sources must use canonical order")
         if issue_order != sorted(issue_order):
             raise ValueError("DiscoveryResult.issues must use canonical order")
-        if self.scanned_entry_count < 0 or self.ignored_entry_count < 0:
+        if (
+            self.scanned_entry_count < 0
+            or self.ignored_entry_count < 0
+            or self.admitted_byte_count < 0
+        ):
             raise ValueError("discovery counts must not be negative")
+        if self.admitted_byte_count != sum(
+            source.byte_length for source in self.sources
+        ):
+            raise ValueError("admitted byte count does not match discovered sources")
 
     @property
     def complete(self) -> bool:
@@ -265,6 +331,7 @@ class DiscoveryResult:
         """Return a relocation-independent canonical discovery manifest."""
 
         payload: dict[str, object] = {
+            "admitted_byte_count": self.admitted_byte_count,
             "complete": self.complete,
             "ignored_entry_count": self.ignored_entry_count,
             "issues": [issue.identity_payload() for issue in self.issues],
@@ -273,9 +340,10 @@ class DiscoveryResult:
                 "include": list(self.policy.include),
                 "root_names": sorted(root.name for root in self.policy.roots),
                 "symlink_policy": self.policy.symlink_policy,
+                "limits": self.policy.limits.identity_payload(),
             },
             "scanned_entry_count": self.scanned_entry_count,
-            "schema_version": "bijux.canon.ingest.discovery.v1",
+            "schema_version": "bijux.canon.ingest.discovery.v2",
             "sources": [source.identity_payload() for source in self.sources],
         }
         return {"manifest_sha256": _sha256_identity(payload), **payload}
@@ -285,6 +353,7 @@ __all__ = [
     "DiscoveredSource",
     "DiscoveryIssue",
     "DiscoveryIssueCode",
+    "DiscoveryLimits",
     "DiscoveryPolicy",
     "DiscoveryResult",
     "DiscoveryRoot",

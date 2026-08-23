@@ -9,6 +9,8 @@ import fnmatch
 import hashlib
 import os
 import stat
+import time
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
 
@@ -23,6 +25,8 @@ from bijux_canon_ingest.domain.source_discovery import (
 
 _READ_SIZE = 1024 * 1024
 _SNIFF_SIZE = 8192
+_OPEN_SUPPORTS_DIR_FD = os.open in os.supports_dir_fd
+_SCANDIR_SUPPORTS_FD = os.scandir in os.supports_fd
 
 
 @dataclass(frozen=True, slots=True)
@@ -37,8 +41,12 @@ class _ScanState:
     sources: list[DiscoveredSource]
     issues: list[DiscoveryIssue]
     content_locations: dict[tuple[str, int], str]
+    monotonic: Callable[[], float]
+    started_at: float
     scanned_entry_count: int = 0
     ignored_entry_count: int = 0
+    admitted_byte_count: int = 0
+    terminated: bool = False
 
 
 def _portable_order(value: str) -> bytes:
@@ -98,21 +106,66 @@ def _issue(
 def _read_file(
     path: Path,
     expected_stat: os.stat_result,
+    *,
+    directory_descriptor: int | None,
+    entry_name: str | None,
+    state: _ScanState,
+    policy: DiscoveryPolicy,
 ) -> tuple[_FileIdentity | None, DiscoveryIssueCode | None]:
     digest = hashlib.sha256()
+    digest_length = 0
     prefix = bytearray()
     try:
-        with path.open("rb") as handle:
+        flags = (
+            os.O_RDONLY
+            | getattr(os, "O_BINARY", 0)
+            | getattr(os, "O_NOFOLLOW", 0)
+            | getattr(os, "O_NONBLOCK", 0)
+        )
+        descriptor = (
+            os.open(path, flags)
+            if directory_descriptor is None
+            or entry_name is None
+            or not _OPEN_SUPPORTS_DIR_FD
+            else os.open(entry_name, flags, dir_fd=directory_descriptor)
+        )
+        with os.fdopen(descriptor, "rb") as handle:
             before = os.fstat(handle.fileno())
+            if not stat.S_ISREG(before.st_mode):
+                return None, "non_regular_file"
             while True:
+                if state.monotonic() - state.started_at > policy.limits.max_seconds:
+                    return None, "time_limit_exceeded"
                 chunk = handle.read(_READ_SIZE)
                 if not chunk:
                     break
+                if digest_length + len(chunk) > policy.limits.max_file_bytes:
+                    return None, "file_size_limit_exceeded"
+                if (
+                    state.admitted_byte_count + digest_length + len(chunk)
+                    > policy.limits.max_total_bytes
+                ):
+                    return None, "total_bytes_limit_exceeded"
                 digest.update(chunk)
+                digest_length += len(chunk)
                 if len(prefix) < _SNIFF_SIZE:
                     prefix.extend(chunk[: _SNIFF_SIZE - len(prefix)])
             after = os.fstat(handle.fileno())
     except OSError:
+        try:
+            current = path.lstat()
+        except OSError:
+            current = None
+        stable_fields = ("st_dev", "st_ino", "st_size", "st_mtime_ns", "st_ctime_ns")
+        if (
+            current is None
+            or stat.S_ISLNK(current.st_mode)
+            or any(
+                getattr(expected_stat, field) != getattr(current, field)
+                for field in stable_fields
+            )
+        ):
+            return None, "source_changed"
         return None, "file_inaccessible"
     stable_fields = ("st_dev", "st_ino", "st_size", "st_mtime_ns", "st_ctime_ns")
     if any(
@@ -169,9 +222,52 @@ def _admit_file(
     expected_stat: os.stat_result,
     is_symlink: bool,
     target_relative_path: str | None,
+    directory_descriptor: int | None,
+    entry_name: str | None,
     state: _ScanState,
+    policy: DiscoveryPolicy,
 ) -> None:
-    identity, failure = _read_file(filesystem_path, expected_stat)
+    limits = policy.limits
+    if expected_stat.st_size > limits.max_file_bytes:
+        state.issues.append(
+            _issue(
+                root,
+                relative_path,
+                "file_size_limit_exceeded",
+                f"file exceeds max_file_bytes={limits.max_file_bytes}",
+            )
+        )
+        return
+    if len(state.sources) >= limits.max_files:
+        state.issues.append(
+            _issue(
+                root,
+                relative_path,
+                "file_count_limit_exceeded",
+                f"discovery exceeds max_files={limits.max_files}",
+            )
+        )
+        state.terminated = True
+        return
+    if state.admitted_byte_count + expected_stat.st_size > limits.max_total_bytes:
+        state.issues.append(
+            _issue(
+                root,
+                relative_path,
+                "total_bytes_limit_exceeded",
+                f"discovery exceeds max_total_bytes={limits.max_total_bytes}",
+            )
+        )
+        state.terminated = True
+        return
+    identity, failure = _read_file(
+        filesystem_path,
+        expected_stat,
+        directory_descriptor=directory_descriptor,
+        entry_name=entry_name,
+        state=state,
+        policy=policy,
+    )
     if identity is None:
         assert failure is not None
         state.issues.append(
@@ -179,11 +275,23 @@ def _admit_file(
                 root,
                 relative_path,
                 failure,
-                "file changed while it was read"
-                if failure == "source_changed"
-                else "file could not be read completely",
+                {
+                    "file_size_limit_exceeded": (
+                        f"file exceeds max_file_bytes={limits.max_file_bytes}"
+                    ),
+                    "non_regular_file": "path changed to a non-regular file",
+                    "source_changed": "file changed while it was read",
+                    "time_limit_exceeded": (
+                        f"discovery exceeds max_seconds={limits.max_seconds}"
+                    ),
+                    "total_bytes_limit_exceeded": (
+                        f"discovery exceeds max_total_bytes={limits.max_total_bytes}"
+                    ),
+                }.get(failure, "file could not be read completely"),
             )
         )
+        if failure in {"time_limit_exceeded", "total_bytes_limit_exceeded"}:
+            state.terminated = True
         return
     content_key = (identity.sha256, identity.byte_length)
     duplicate_of = state.content_locations.get(content_key)
@@ -199,6 +307,7 @@ def _admit_file(
         duplicate_of_location_id=duplicate_of,
     )
     state.sources.append(source)
+    state.admitted_byte_count += identity.byte_length
     state.content_locations.setdefault(content_key, source.location_id)
 
 
@@ -207,22 +316,165 @@ def _scan_directory(
     root: DiscoveryRoot,
     root_path: Path,
     directory_path: Path,
+    expected_directory_stat: os.stat_result,
     relative_directory: PurePosixPath,
     policy: DiscoveryPolicy,
     directory_ancestors: frozenset[tuple[int, int]],
     state: _ScanState,
 ) -> None:
+    """Open one exact directory identity without following a raced symlink."""
+
+    if state.terminated:
+        return
     relative_value = relative_directory.as_posix()
-    try:
-        with os.scandir(directory_path) as directory_entries:
-            entries = sorted(
-                directory_entries, key=lambda entry: _portable_order(entry.name)
+    issue_path = "." if relative_value == "." else relative_value
+    if not _SCANDIR_SUPPORTS_FD:
+        try:
+            current = directory_path.lstat()
+        except OSError:
+            current = None
+        if (
+            current is None
+            or stat.S_ISLNK(current.st_mode)
+            or not stat.S_ISDIR(current.st_mode)
+            or (current.st_dev, current.st_ino)
+            != (expected_directory_stat.st_dev, expected_directory_stat.st_ino)
+        ):
+            state.issues.append(
+                _issue(
+                    root,
+                    issue_path,
+                    "source_changed",
+                    "directory identity changed before enumeration",
+                )
             )
+            return
+        _scan_open_directory(
+            root=root,
+            root_path=root_path,
+            directory_path=directory_path,
+            directory_descriptor=None,
+            relative_directory=relative_directory,
+            policy=policy,
+            directory_ancestors=directory_ancestors,
+            state=state,
+        )
+        return
+    flags = (
+        os.O_RDONLY
+        | getattr(os, "O_BINARY", 0)
+        | getattr(os, "O_DIRECTORY", 0)
+        | getattr(os, "O_NOFOLLOW", 0)
+    )
+    try:
+        descriptor = os.open(directory_path, flags)
+    except OSError:
+        try:
+            current = directory_path.lstat()
+        except OSError:
+            current = None
+        code: DiscoveryIssueCode = (
+            "source_changed"
+            if current is None
+            or stat.S_ISLNK(current.st_mode)
+            or (current.st_dev, current.st_ino)
+            != (expected_directory_stat.st_dev, expected_directory_stat.st_ino)
+            else "directory_inaccessible"
+        )
+        state.issues.append(
+            _issue(
+                root,
+                issue_path,
+                code,
+                "directory identity changed before enumeration"
+                if code == "source_changed"
+                else "directory could not be opened safely",
+            )
+        )
+        return
+    try:
+        opened = os.fstat(descriptor)
+        if not stat.S_ISDIR(opened.st_mode) or (
+            opened.st_dev,
+            opened.st_ino,
+        ) != (expected_directory_stat.st_dev, expected_directory_stat.st_ino):
+            state.issues.append(
+                _issue(
+                    root,
+                    issue_path,
+                    "source_changed",
+                    "directory identity changed before enumeration",
+                )
+            )
+            return
+        _scan_open_directory(
+            root=root,
+            root_path=root_path,
+            directory_path=directory_path,
+            directory_descriptor=descriptor,
+            relative_directory=relative_directory,
+            policy=policy,
+            directory_ancestors=directory_ancestors,
+            state=state,
+        )
+    finally:
+        os.close(descriptor)
+
+
+def _scan_open_directory(
+    *,
+    root: DiscoveryRoot,
+    root_path: Path,
+    directory_path: Path,
+    directory_descriptor: int | None,
+    relative_directory: PurePosixPath,
+    policy: DiscoveryPolicy,
+    directory_ancestors: frozenset[tuple[int, int]],
+    state: _ScanState,
+) -> None:
+    if state.terminated:
+        return
+    relative_value = relative_directory.as_posix()
+    issue_path = "." if relative_value == "." else relative_value
+    entries: list[os.DirEntry[str]] = []
+    remaining_entries = policy.limits.max_entries - state.scanned_entry_count
+    try:
+        with os.scandir(
+            directory_path if directory_descriptor is None else directory_descriptor
+        ) as directory_entries:
+            for entry in directory_entries:
+                if state.monotonic() - state.started_at > policy.limits.max_seconds:
+                    state.issues.append(
+                        _issue(
+                            root,
+                            issue_path,
+                            "time_limit_exceeded",
+                            (
+                                "discovery exceeds "
+                                f"max_seconds={policy.limits.max_seconds}"
+                            ),
+                        )
+                    )
+                    state.terminated = True
+                    return
+                if len(entries) >= remaining_entries:
+                    state.issues.append(
+                        _issue(
+                            root,
+                            issue_path,
+                            "entry_limit_exceeded",
+                            f"discovery exceeds max_entries={policy.limits.max_entries}",
+                        )
+                    )
+                    state.terminated = True
+                    return
+                entries.append(entry)
+            entries.sort(key=lambda entry: _portable_order(entry.name))
     except OSError:
         state.issues.append(
             _issue(
                 root,
-                "." if relative_value == "." else relative_value,
+                issue_path,
                 "directory_inaccessible",
                 "directory entries could not be enumerated",
             )
@@ -230,9 +482,22 @@ def _scan_directory(
         return
 
     for entry in entries:
-        state.scanned_entry_count += 1
+        if state.terminated:
+            return
+        if state.monotonic() - state.started_at > policy.limits.max_seconds:
+            state.issues.append(
+                _issue(
+                    root,
+                    "." if relative_value == "." else relative_value,
+                    "time_limit_exceeded",
+                    f"discovery exceeds max_seconds={policy.limits.max_seconds}",
+                )
+            )
+            state.terminated = True
+            return
         relative = relative_directory / entry.name
         relative_path = relative.as_posix()
+        state.scanned_entry_count += 1
         try:
             entry_stat = entry.stat(follow_symlinks=False)
         except OSError:
@@ -252,7 +517,7 @@ def _scan_directory(
             state.ignored_entry_count += 1
             continue
 
-        entry_path = Path(entry.path)
+        entry_path = directory_path / entry.name
         if is_link:
             try:
                 resolved = entry_path.resolve(strict=True)
@@ -303,6 +568,16 @@ def _scan_directory(
                         )
                     )
                     continue
+                if len(relative.parts) > policy.limits.max_depth:
+                    state.issues.append(
+                        _issue(
+                            root,
+                            relative_path,
+                            "depth_limit_exceeded",
+                            f"path exceeds max_depth={policy.limits.max_depth}",
+                        )
+                    )
+                    continue
                 directory_key = (target_stat.st_dev, target_stat.st_ino)
                 if directory_key in directory_ancestors:
                     state.issues.append(
@@ -318,6 +593,7 @@ def _scan_directory(
                     root=root,
                     root_path=root_path,
                     directory_path=resolved,
+                    expected_directory_stat=target_stat,
                     relative_directory=relative,
                     policy=policy,
                     directory_ancestors=directory_ancestors | {directory_key},
@@ -354,11 +630,24 @@ def _scan_directory(
                 expected_stat=target_stat,
                 is_symlink=True,
                 target_relative_path=target_relative,
+                directory_descriptor=None,
+                entry_name=None,
                 state=state,
+                policy=policy,
             )
             continue
 
         if is_directory:
+            if len(relative.parts) > policy.limits.max_depth:
+                state.issues.append(
+                    _issue(
+                        root,
+                        relative_path,
+                        "depth_limit_exceeded",
+                        f"path exceeds max_depth={policy.limits.max_depth}",
+                    )
+                )
+                continue
             directory_key = (entry_stat.st_dev, entry_stat.st_ino)
             if directory_key in directory_ancestors:
                 state.issues.append(
@@ -374,6 +663,7 @@ def _scan_directory(
                 root=root,
                 root_path=root_path,
                 directory_path=entry_path,
+                expected_directory_stat=entry_stat,
                 relative_directory=relative,
                 policy=policy,
                 directory_ancestors=directory_ancestors | {directory_key},
@@ -400,15 +690,30 @@ def _scan_directory(
             expected_stat=entry_stat,
             is_symlink=False,
             target_relative_path=None,
+            directory_descriptor=directory_descriptor,
+            entry_name=entry.name,
             state=state,
+            policy=policy,
         )
 
 
-def discover_directory_sources(policy: DiscoveryPolicy) -> DiscoveryResult:
+def discover_directory_sources(
+    policy: DiscoveryPolicy,
+    *,
+    monotonic: Callable[[], float] = time.monotonic,
+) -> DiscoveryResult:
     """Walk all declared roots without silently omitting inaccessible paths."""
 
-    state = _ScanState(sources=[], issues=[], content_locations={})
+    state = _ScanState(
+        sources=[],
+        issues=[],
+        content_locations={},
+        monotonic=monotonic,
+        started_at=monotonic(),
+    )
     for root in sorted(policy.roots, key=lambda item: _portable_order(item.name)):
+        if state.terminated:
+            break
         try:
             root_path = root.path.resolve(strict=True)
         except FileNotFoundError:
@@ -452,6 +757,7 @@ def discover_directory_sources(policy: DiscoveryPolicy) -> DiscoveryResult:
             root=root,
             root_path=root_path,
             directory_path=root_path,
+            expected_directory_stat=root_stat,
             relative_directory=PurePosixPath(),
             policy=policy,
             directory_ancestors=frozenset({(root_stat.st_dev, root_stat.st_ino)}),
@@ -481,6 +787,7 @@ def discover_directory_sources(policy: DiscoveryPolicy) -> DiscoveryResult:
         ),
         scanned_entry_count=state.scanned_entry_count,
         ignored_entry_count=state.ignored_entry_count,
+        admitted_byte_count=state.admitted_byte_count,
     )
 
 

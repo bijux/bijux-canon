@@ -216,6 +216,36 @@ components:
           minItems: 1
           title: Include
           type: array
+        max_depth:
+          default: 64
+          exclusiveMinimum: 0.0
+          title: Max Depth
+          type: integer
+        max_entries:
+          default: 100000
+          exclusiveMinimum: 0.0
+          title: Max Entries
+          type: integer
+        max_file_bytes:
+          default: 67108864
+          exclusiveMinimum: 0.0
+          title: Max File Bytes
+          type: integer
+        max_files:
+          default: 50000
+          exclusiveMinimum: 0.0
+          title: Max Files
+          type: integer
+        max_seconds:
+          default: 300.0
+          exclusiveMinimum: 0.0
+          title: Max Seconds
+          type: number
+        max_total_bytes:
+          default: 2147483648
+          exclusiveMinimum: 0.0
+          title: Max Total Bytes
+          type: integer
         publication_root:
           anyOf:
           - type: string

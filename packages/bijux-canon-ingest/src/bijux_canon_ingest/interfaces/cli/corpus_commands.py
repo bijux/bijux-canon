@@ -16,6 +16,7 @@ from bijux_canon_ingest.application.canonical_ingest import (
     CanonicalIngestRuntime,
     CorpusSnapshotConfiguration,
 )
+from bijux_canon_ingest.domain.source_discovery import DiscoveryLimits
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -33,6 +34,13 @@ def _parser() -> argparse.ArgumentParser:
         default="reject",
     )
     build.add_argument("--publish-root", type=Path)
+    defaults = DiscoveryLimits()
+    build.add_argument("--max-depth", type=int, default=defaults.max_depth)
+    build.add_argument("--max-entries", type=int, default=defaults.max_entries)
+    build.add_argument("--max-files", type=int, default=defaults.max_files)
+    build.add_argument("--max-file-bytes", type=int, default=defaults.max_file_bytes)
+    build.add_argument("--max-total-bytes", type=int, default=defaults.max_total_bytes)
+    build.add_argument("--max-seconds", type=float, default=defaults.max_seconds)
     build.add_argument(
         "--corpus-lock",
         type=Path,
@@ -51,7 +59,17 @@ def run_corpus_commands(argv: list[str]) -> int:
             CanonicalIngestRequest(
                 root_path=args.root,
                 root_name=args.root_name,
-                configuration=CorpusSnapshotConfiguration(corpus_name=args.corpus_name),
+                configuration=CorpusSnapshotConfiguration(
+                    corpus_name=args.corpus_name,
+                    discovery_limits=DiscoveryLimits(
+                        max_depth=args.max_depth,
+                        max_entries=args.max_entries,
+                        max_files=args.max_files,
+                        max_file_bytes=args.max_file_bytes,
+                        max_total_bytes=args.max_total_bytes,
+                        max_seconds=args.max_seconds,
+                    ),
+                ),
                 include=tuple(args.include) or ("**/*",),
                 exclude=tuple(args.exclude),
                 symlink_policy=args.symlink_policy,

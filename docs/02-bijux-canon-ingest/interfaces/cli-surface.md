@@ -57,6 +57,13 @@ stderr. Successful JSON includes a portable `corpus_lock` summary with the
 verified schema, identity, source count, and discovery mode, or `status` equal
 to `absent` for an unlocked directory.
 
+Directory traversal is bounded by default. Use `--max-depth`, `--max-entries`,
+`--max-files`, `--max-file-bytes`, `--max-total-bytes`, and `--max-seconds` to
+select stricter or explicitly reviewed limits. A limit refusal exits with
+status `2` and its stable `*_limit_exceeded` code; it never publishes the files
+seen before exhaustion as a complete snapshot. `--symlink-policy` defaults to
+`reject`; the two within-root modes still reject escapes and cycles.
+
 ## Configured Document Pipeline
 
 ```bash

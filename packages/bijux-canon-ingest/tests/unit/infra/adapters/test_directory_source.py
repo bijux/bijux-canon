@@ -4,14 +4,21 @@
 from __future__ import annotations
 
 import os
+import tempfile
 from pathlib import Path
 
 import pytest
+from hypothesis import given, settings
+from hypothesis import strategies as st
 
 from bijux_canon_ingest import (
+    DiscoveryLimits,
     DiscoveryPolicy,
     DiscoveryRoot,
     discover_sources,
+)
+from bijux_canon_ingest.infra.adapters.directory_source import (
+    discover_directory_sources,
 )
 
 
@@ -212,18 +219,24 @@ def test_discovery_rejects_file_swapped_to_external_symlink_before_read(
     source.write_text("authorized bytes", encoding="utf-8")
     outside = tmp_path / "outside.txt"
     outside.write_text("unauthorized bytes", encoding="utf-8")
-    original_open = Path.open
+    original_open = os.open
     swapped = False
 
-    def swap_before_open(path: Path, *args: object, **kwargs: object):
+    def swap_before_open(
+        path: str | bytes | os.PathLike[str], *args: object, **kwargs: object
+    ):
         nonlocal swapped
-        if path == source and not swapped:
+        if (
+            Path(path).name == source.name
+            and kwargs.get("dir_fd") is not None
+            and not swapped
+        ):
             swapped = True
             source.unlink()
             source.symlink_to(outside)
         return original_open(path, *args, **kwargs)
 
-    monkeypatch.setattr(Path, "open", swap_before_open)
+    monkeypatch.setattr(os, "open", swap_before_open)
     result = discover_sources(DiscoveryPolicy(roots=(DiscoveryRoot("research", root),)))
 
     assert swapped is True
@@ -231,3 +244,177 @@ def test_discovery_rejects_file_swapped_to_external_symlink_before_read(
     assert [(issue.relative_path, issue.code) for issue in result.issues] == [
         ("paper.txt", "source_changed")
     ]
+
+
+def test_directory_swapped_to_external_symlink_is_never_enumerated(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    root = tmp_path / "documents"
+    child = root / "child"
+    child.mkdir(parents=True)
+    (child / "paper.txt").write_text("authorized", encoding="utf-8")
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    (outside / "secret.txt").write_text("must not be read", encoding="utf-8")
+    moved = root / "moved-child"
+    original_open = os.open
+    swapped = False
+
+    def swap_directory_before_open(
+        path: str | bytes | os.PathLike[str], *args: object, **kwargs: object
+    ) -> int:
+        nonlocal swapped
+        if Path(path) == child and not swapped:
+            swapped = True
+            child.rename(moved)
+            child.symlink_to(outside, target_is_directory=True)
+        if Path(path).name == "secret.txt":
+            raise AssertionError("escaped directory content must never be opened")
+        return original_open(path, *args, **kwargs)
+
+    monkeypatch.setattr(os, "open", swap_directory_before_open)
+    result = discover_sources(DiscoveryPolicy(roots=(DiscoveryRoot("research", root),)))
+
+    assert swapped is True
+    assert result.sources == ()
+    assert [(issue.relative_path, issue.code) for issue in result.issues] == [
+        ("child", "source_changed")
+    ]
+
+
+def test_discovery_limits_validate_positive_finite_values() -> None:
+    with pytest.raises(ValueError, match="max_depth"):
+        DiscoveryLimits(max_depth=0)
+    with pytest.raises(ValueError, match="max_seconds"):
+        DiscoveryLimits(max_seconds=float("inf"))
+
+
+def test_oversize_sparse_file_is_refused_before_content_open(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    root = tmp_path / "documents"
+    root.mkdir()
+    sparse = root / "sparse.bin"
+    with sparse.open("wb") as stream:
+        stream.seek(1_000_000)
+        stream.write(b"x")
+    original_open = os.open
+
+    def refuse_content_open(
+        path: str | bytes | os.PathLike[str], *args: object, **kwargs: object
+    ) -> int:
+        if Path(path) == sparse:
+            raise AssertionError("oversize file content must not be opened")
+        return original_open(path, *args, **kwargs)
+
+    monkeypatch.setattr(os, "open", refuse_content_open)
+    result = discover_sources(
+        DiscoveryPolicy(
+            roots=(DiscoveryRoot("research", root),),
+            limits=DiscoveryLimits(max_file_bytes=4_096),
+        )
+    )
+
+    assert result.complete is False
+    assert result.sources == ()
+    assert [(issue.relative_path, issue.code) for issue in result.issues] == [
+        ("sparse.bin", "file_size_limit_exceeded")
+    ]
+
+
+@pytest.mark.parametrize(
+    ("limits", "expected_sources", "issue_path", "issue_code"),
+    (
+        (DiscoveryLimits(max_entries=2), (), ".", "entry_limit_exceeded"),
+        (
+            DiscoveryLimits(max_files=1),
+            ("a.txt",),
+            "b.txt",
+            "file_count_limit_exceeded",
+        ),
+        (
+            DiscoveryLimits(max_total_bytes=3),
+            ("a.txt",),
+            "b.txt",
+            "total_bytes_limit_exceeded",
+        ),
+    ),
+)
+def test_global_discovery_limits_stop_with_typed_incomplete_evidence(
+    tmp_path: Path,
+    limits: DiscoveryLimits,
+    expected_sources: tuple[str, ...],
+    issue_path: str,
+    issue_code: str,
+) -> None:
+    root = tmp_path / "documents"
+    root.mkdir()
+    for name in ("a.txt", "b.txt", "c.txt"):
+        (root / name).write_text(name[0] * 2, encoding="utf-8")
+
+    result = discover_sources(
+        DiscoveryPolicy(roots=(DiscoveryRoot("research", root),), limits=limits)
+    )
+
+    assert tuple(source.relative_path for source in result.sources) == expected_sources
+    assert result.complete is False
+    assert [(issue.relative_path, issue.code) for issue in result.issues] == [
+        (issue_path, issue_code)
+    ]
+
+
+def test_depth_and_time_limits_bound_recursion_and_enumeration(tmp_path: Path) -> None:
+    root = tmp_path / "documents"
+    deepest = root / "one" / "two"
+    deepest.mkdir(parents=True)
+    (deepest / "paper.txt").write_text("paper", encoding="utf-8")
+    depth_result = discover_sources(
+        DiscoveryPolicy(
+            roots=(DiscoveryRoot("research", root),),
+            limits=DiscoveryLimits(max_depth=1),
+        )
+    )
+    ticks = iter((0.0, 1.0))
+    time_result = discover_directory_sources(
+        DiscoveryPolicy(
+            roots=(DiscoveryRoot("research", root),),
+            limits=DiscoveryLimits(max_seconds=0.5),
+        ),
+        monotonic=lambda: next(ticks),
+    )
+
+    assert [(issue.relative_path, issue.code) for issue in depth_result.issues] == [
+        ("one/two", "depth_limit_exceeded")
+    ]
+    assert depth_result.complete is False
+    assert [(issue.relative_path, issue.code) for issue in time_result.issues] == [
+        (".", "time_limit_exceeded")
+    ]
+    assert time_result.complete is False
+
+
+@settings(max_examples=20, deadline=None)
+@given(
+    st.lists(
+        st.from_regex(r"[a-z]{1,5}", fullmatch=True),
+        min_size=1,
+        max_size=20,
+        unique=True,
+    )
+)
+def test_discovery_order_is_portable_for_generated_file_sets(names: list[str]) -> None:
+    with tempfile.TemporaryDirectory(prefix="bijux-discovery-order-") as directory:
+        root = Path(directory)
+        for name in reversed(names):
+            (root / f"{name}.txt").write_text(name, encoding="utf-8")
+
+        result = discover_sources(
+            DiscoveryPolicy(roots=(DiscoveryRoot("research", root),))
+        )
+
+    expected = sorted(
+        (f"{name}.txt" for name in names), key=lambda value: value.encode()
+    )
+    assert [source.relative_path for source in result.sources] == expected

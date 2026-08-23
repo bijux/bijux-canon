@@ -279,6 +279,7 @@ class CanonicalIngestRuntime:
                 include=request.include,
                 exclude=tuple(exclude),
                 symlink_policy=request.symlink_policy,
+                limits=request.configuration.discovery_limits,
             )
         )
         if not discovery.complete:

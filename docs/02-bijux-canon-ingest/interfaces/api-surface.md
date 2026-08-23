@@ -48,6 +48,11 @@ without it, the same adjacent-lock discovery used by Python and CLI applies.
 Malformed or contradictory lock/acquisition evidence returns `400` with the
 stable `CorpusLockError` issue code in `detail`. A successful response includes
 the portable `corpus_lock` verification summary without exposing its host path.
+The request also accepts `max_depth`, `max_entries`, `max_files`,
+`max_file_bytes`, `max_total_bytes`, and `max_seconds`. Defaults match the
+Python and CLI discovery policy. Invalid limits fail request validation;
+exhausted limits return `400` with the same typed incomplete-discovery code as
+the installed CLI.
 
 ```bash
 curl --fail-with-body http://127.0.0.1:8000/v1/index/build \

@@ -84,6 +84,23 @@ preparations as unlocked legacy inputs. Ingest result manifests expose the same
 portable lock summary, or `{"status": "absent"}`; neither persisted form
 leaks the host path of the selected lock.
 
+### Bounded Directory Discovery
+
+`bijux.canon.ingest.discovery.v2` records the include/exclude and symlink
+policy together with the exact maximum depth, enumerated entries, admitted
+files, bytes per file, total admitted bytes, and elapsed seconds. These limits
+also appear in `bijux.canon.ingest.corpus_snapshot_configuration.v2`, so a
+snapshot identity cannot silently reuse content discovered under a different
+resource policy.
+
+Traversal opens directories and regular files without following a path that
+was replaced by a symlink after enumeration. It compares device/inode and
+size/time identity around reads, resolves permitted symlinks strictly within
+the canonical root, detects directory cycles, rejects special files, and orders
+portable relative names by UTF-8 bytes. Oversize files are refused from stat
+evidence before their content is opened. Exhausting any traversal budget is an
+incomplete typed discovery outcome, never a smaller successful corpus.
+
 ## Canonical Corpus Snapshot
 
 Every admitted snapshot document carries an ingest-owned

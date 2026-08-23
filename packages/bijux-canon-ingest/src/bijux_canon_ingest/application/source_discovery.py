@@ -9,6 +9,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from bijux_canon_ingest.domain.source_discovery import (
+    DiscoveryLimits,
     DiscoveryPolicy,
     DiscoveryResult,
     DiscoveryRoot,
@@ -28,6 +29,7 @@ class SourceDiscoveryRequest:
     include: tuple[str, ...] = ("**/*",)
     exclude: tuple[str, ...] = ()
     symlink_policy: SymlinkPolicy = "reject"
+    limits: DiscoveryLimits = DiscoveryLimits()
 
 
 @dataclass(frozen=True, slots=True)
@@ -55,6 +57,7 @@ def discover_source_directory(
             include=request.include,
             exclude=request.exclude,
             symlink_policy=request.symlink_policy,
+            limits=request.limits,
         )
     )
     return SourceDiscoveryOutcome(

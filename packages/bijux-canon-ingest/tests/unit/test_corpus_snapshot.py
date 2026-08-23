@@ -15,6 +15,7 @@ from bijux_canon_ingest import (
     CorpusSnapshotConfiguration,
     CorpusSnapshotDocument,
     DiscoveredSource,
+    DiscoveryLimits,
     ParsedDocument,
     ParsedDocxDocument,
     ParsedHtmlDocument,
@@ -186,6 +187,28 @@ def test_snapshot_identity_changes_with_declared_configuration(
     )
 
     assert first.snapshot_id != second.snapshot_id
+
+
+def test_snapshot_identity_binds_discovery_limits(
+    real_documents: tuple[CorpusSnapshotDocument, ...],
+) -> None:
+    default = build_corpus_snapshot(
+        CorpusSnapshotConfiguration(
+            corpus_name="parser-qualification",
+            chunking_policy=POLICY,
+        ),
+        real_documents,
+    )
+    bounded = build_corpus_snapshot(
+        CorpusSnapshotConfiguration(
+            corpus_name="parser-qualification",
+            discovery_limits=DiscoveryLimits(max_files=100),
+            chunking_policy=POLICY,
+        ),
+        real_documents,
+    )
+
+    assert default.snapshot_id != bounded.snapshot_id
 
 
 def test_snapshot_rejects_duplicate_source_locations(

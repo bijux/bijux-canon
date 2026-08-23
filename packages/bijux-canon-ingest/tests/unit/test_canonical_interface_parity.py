@@ -10,8 +10,10 @@ import pytest
 from fastapi.testclient import TestClient
 
 from bijux_canon_ingest import (
+    CanonicalIngestError,
     CanonicalIngestRequest,
     CorpusSnapshotConfiguration,
+    DiscoveryLimits,
     ingest_corpus,
 )
 from bijux_canon_ingest.interfaces.cli.entrypoint import main
@@ -102,3 +104,53 @@ def test_cli_and_http_share_explicit_lock_refusal(
     assert "malformed_lock" in cli_error
     assert response.status_code == 400
     assert "malformed_lock" in response.json()["detail"]
+
+
+def test_python_cli_and_http_share_discovery_limit_refusal(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    sources = tmp_path / "sources"
+    sources.mkdir()
+    (sources / "a.txt").write_text("first", encoding="utf-8")
+    (sources / "b.txt").write_text("second", encoding="utf-8")
+    request = CanonicalIngestRequest(
+        root_path=sources,
+        root_name="bounded-evidence",
+        configuration=CorpusSnapshotConfiguration(
+            corpus_name="bounded-evidence",
+            discovery_limits=DiscoveryLimits(max_files=1),
+        ),
+    )
+
+    with pytest.raises(CanonicalIngestError, match="file_count_limit_exceeded"):
+        ingest_corpus(request)
+    exit_code = main(
+        [
+            "corpus",
+            "build",
+            "--root",
+            str(sources),
+            "--root-name",
+            "bounded-evidence",
+            "--corpus-name",
+            "bounded-evidence",
+            "--max-files",
+            "1",
+        ]
+    )
+    cli_error = capsys.readouterr().err
+    response = TestClient(create_app()).post(
+        "/v1/corpora/ingest",
+        json={
+            "root_path": str(sources),
+            "root_name": "bounded-evidence",
+            "corpus_name": "bounded-evidence",
+            "max_files": 1,
+        },
+    )
+
+    assert exit_code == 2
+    assert "file_count_limit_exceeded" in cli_error
+    assert response.status_code == 400
+    assert "file_count_limit_exceeded" in response.json()["detail"]
