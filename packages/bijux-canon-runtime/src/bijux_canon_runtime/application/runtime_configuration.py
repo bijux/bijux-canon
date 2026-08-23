@@ -8,6 +8,9 @@ from __future__ import annotations
 from collections.abc import Mapping
 from dataclasses import dataclass
 from enum import StrEnum
+import hashlib
+from itertools import combinations
+import json
 from pathlib import Path
 import re
 from typing import cast
@@ -44,6 +47,154 @@ class SecretReference:
         return bool(environment.get(self.environment_variable))
 
 
+def _record_sha256(record: Mapping[str, object]) -> str:
+    payload = json.dumps(
+        record,
+        ensure_ascii=False,
+        separators=(",", ":"),
+        sort_keys=True,
+    ).encode("utf-8")
+    return hashlib.sha256(payload).hexdigest()
+
+
+def _effective_path(root: Path, configured: Path | None, default: Path) -> Path:
+    candidate = default if configured is None else configured.expanduser()
+    if not candidate.is_absolute():
+        candidate = root / candidate
+    return candidate.resolve()
+
+
+@dataclass(frozen=True)
+class RuntimeWorkspaceLayout:
+    """Versioned effective paths for one isolated Runtime workspace."""
+
+    root: Path
+    manifest_path: Path
+    cas_root: Path
+    database_path: Path
+    job_store_path: Path
+    model_root: Path
+    model_lock_path: Path
+    index_root: Path
+    active_generation_path: Path
+    operations_root: Path
+    vex_root: Path
+    locks_root: Path
+    staging_root: Path
+    temporary_root: Path
+    backup_root: Path
+    schema_version: str = "bijux.runtime.workspace-layout.v1"
+    workspace_version: int = 1
+
+    @classmethod
+    def resolve(
+        cls,
+        *,
+        working_root: Path,
+        database_path: Path | None,
+        model_root: Path | None,
+        index_root: Path | None,
+    ) -> RuntimeWorkspaceLayout:
+        """Resolve defaults and explicit overrides without touching the filesystem."""
+        root = working_root.expanduser().resolve()
+        cas_root = (root / "cas").resolve()
+        database = _effective_path(root, database_path, root / "runtime.duckdb")
+        jobs = (root / "jobs.sqlite").resolve()
+        model = _effective_path(root, model_root, root / "models" / "local")
+        index = _effective_path(root, index_root, root / "indexes")
+        directory_roles = {
+            "cas_root": cas_root,
+            "index_root": index,
+            "model_root": model,
+            "operations_root": (root / "operations").resolve(),
+            "vex_root": (root / "vex").resolve(),
+            "locks_root": (root / "locks").resolve(),
+            "staging_root": (root / "staging").resolve(),
+            "temporary_root": (root / "process").resolve(),
+            "backup_root": (root / "backups").resolve(),
+        }
+        collisions: dict[Path, list[str]] = {}
+        for role, path in directory_roles.items():
+            collisions.setdefault(path, []).append(role)
+        duplicate_roles = next(
+            (roles for roles in collisions.values() if len(roles) > 1),
+            None,
+        )
+        if duplicate_roles is not None:
+            raise ConfigurationError(
+                "runtime workspace directory roles collide: "
+                + ", ".join(sorted(duplicate_roles))
+            )
+        for (left_role, left), (right_role, right) in combinations(
+            directory_roles.items(),
+            2,
+        ):
+            if left in right.parents or right in left.parents:
+                raise ConfigurationError(
+                    "runtime workspace directory roles overlap: "
+                    f"{left_role}, {right_role}"
+                )
+        if database == jobs:
+            raise ConfigurationError("runtime database and job store paths collide")
+        for role, directory in directory_roles.items():
+            if (
+                database == directory
+                or directory in database.parents
+                or jobs == directory
+                or directory in jobs.parents
+            ):
+                raise ConfigurationError(
+                    f"runtime state file collides with workspace directory: {role}"
+                )
+        return cls(
+            root=root,
+            manifest_path=root / "workspace.json",
+            cas_root=cas_root,
+            database_path=database,
+            job_store_path=jobs,
+            model_root=model,
+            model_lock_path=model / "model.lock.json",
+            index_root=index,
+            active_generation_path=index / "active.json",
+            operations_root=directory_roles["operations_root"],
+            vex_root=directory_roles["vex_root"],
+            locks_root=directory_roles["locks_root"],
+            staging_root=directory_roles["staging_root"],
+            temporary_root=directory_roles["temporary_root"],
+            backup_root=directory_roles["backup_root"],
+        )
+
+    @property
+    def identity_sha256(self) -> str:
+        """Return the deterministic identity of this effective layout."""
+        return _record_sha256(self.record(include_identity=False))
+
+    def record(self, *, include_identity: bool = True) -> dict[str, object]:
+        """Return a stable JSON-compatible representation."""
+        record: dict[str, object] = {
+            "active_generation_path": str(self.active_generation_path),
+            "backup_root": str(self.backup_root),
+            "cas_root": str(self.cas_root),
+            "database_path": str(self.database_path),
+            "index_root": str(self.index_root),
+            "job_store_path": str(self.job_store_path),
+            "locks_root": str(self.locks_root),
+            "manifest_path": str(self.manifest_path),
+            "model_lock_path": str(self.model_lock_path),
+            "model_root": str(self.model_root),
+            "operations_root": str(self.operations_root),
+            "root": str(self.root),
+            "schema_version": self.schema_version,
+            "staging_root": str(self.staging_root),
+            "temporary_root": str(self.temporary_root),
+            "vex_root": str(self.vex_root),
+            "workspace_version": self.workspace_version,
+        }
+        if include_identity:
+            record["identity_sha256"] = self.identity_sha256
+        return record
+
+
 @dataclass(frozen=True)
 class RuntimeConfiguration:
     """Validated behavior-affecting runtime configuration."""
@@ -57,6 +208,37 @@ class RuntimeConfiguration:
     resource_budget: ExecutionBudget
     provider_api_key: SecretReference | None
     origins: tuple[tuple[str, ConfigurationSource], ...]
+
+    @property
+    def schema_version(self) -> str:
+        """Return the effective configuration schema identity."""
+        return "bijux.runtime.effective-configuration.v1"
+
+    @property
+    def workspace_layout(self) -> RuntimeWorkspaceLayout | None:
+        """Resolve the sole workspace path authority when a root is configured."""
+        if self.working_root is None:
+            return None
+        return RuntimeWorkspaceLayout.resolve(
+            working_root=self.working_root,
+            database_path=self.database_path,
+            model_root=self.embedding_model_path,
+            index_root=self.retrieval_index_path,
+        )
+
+    def require_workspace_layout(self) -> RuntimeWorkspaceLayout:
+        """Return the effective workspace or fail with actionable configuration."""
+        layout = self.workspace_layout
+        if layout is None:
+            raise ConfigurationError(
+                "working_root is required to resolve the Runtime workspace layout"
+            )
+        return layout
+
+    @property
+    def identity_sha256(self) -> str:
+        """Return a deterministic identity for behavior-affecting configuration."""
+        return _record_sha256(self._identity_record())
 
     def __post_init__(self) -> None:
         """Enforce configuration invariants at the ownership boundary."""
@@ -89,6 +271,8 @@ class RuntimeConfiguration:
     def redacted_record(self) -> dict[str, object]:
         """Return auditable settings without resolving or exposing secret values."""
         return {
+            "schema_version": self.schema_version,
+            "identity_sha256": self.identity_sha256,
             "database_path": str(self.database_path) if self.database_path else None,
             "embedding_model_path": (
                 str(self.embedding_model_path) if self.embedding_model_path else None
@@ -109,6 +293,29 @@ class RuntimeConfiguration:
                 else None
             ),
             "origins": {name: source.value for name, source in self.origins},
+            "workspace_layout": (
+                None
+                if self.workspace_layout is None
+                else self.workspace_layout.record()
+            ),
+        }
+
+    def _identity_record(self) -> dict[str, object]:
+        layout = self.workspace_layout
+        return {
+            "offline": self.offline,
+            "provider_api_key_ref": (
+                self.provider_api_key.environment_variable
+                if self.provider_api_key is not None
+                else None
+            ),
+            "resource_budget": {
+                field_name: getattr(self.resource_budget, field_name)
+                for field_name in _BUDGET_FIELDS
+            },
+            "schema_version": self.schema_version,
+            "strict_determinism": self.strict_determinism,
+            "workspace_layout": None if layout is None else layout.record(),
         }
 
 
@@ -324,6 +531,7 @@ def resolve_runtime_configuration(
 __all__ = [
     "ConfigurationSource",
     "RuntimeConfiguration",
+    "RuntimeWorkspaceLayout",
     "SecretReference",
     "resolve_runtime_configuration",
 ]

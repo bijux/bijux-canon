@@ -7,6 +7,7 @@ import pytest
 
 from bijux_canon_runtime.application.runtime_configuration import (
     ConfigurationSource,
+    RuntimeWorkspaceLayout,
     resolve_runtime_configuration,
 )
 from bijux_canon_runtime.core.errors import ConfigurationError
@@ -82,3 +83,96 @@ def test_secret_reference_is_validated_and_redacted() -> None:
     assert "sensitive-value" not in repr(configuration.redacted_record())
     with pytest.raises(ConfigurationError, match="uppercase environment variable"):
         resolve_runtime_configuration(explicit={"provider_api_key_ref": "not-safe"})
+
+
+def test_workspace_layout_resolves_every_runtime_authority(tmp_path: Path) -> None:
+    workspace = tmp_path / "workspace"
+    configuration = resolve_runtime_configuration(explicit={"working_root": workspace})
+
+    layout = configuration.require_workspace_layout()
+
+    assert layout == RuntimeWorkspaceLayout.resolve(
+        working_root=workspace,
+        database_path=None,
+        model_root=None,
+        index_root=None,
+    )
+    assert layout.root == workspace.resolve()
+    assert layout.manifest_path == workspace / "workspace.json"
+    assert layout.cas_root == workspace / "cas"
+    assert layout.database_path == workspace / "runtime.duckdb"
+    assert layout.job_store_path == workspace / "jobs.sqlite"
+    assert layout.model_root == workspace / "models" / "local"
+    assert layout.model_lock_path == workspace / "models" / "local" / "model.lock.json"
+    assert layout.index_root == workspace / "indexes"
+    assert layout.active_generation_path == workspace / "indexes" / "active.json"
+    assert layout.locks_root == workspace / "locks"
+    assert layout.staging_root == workspace / "staging"
+    assert layout.temporary_root == workspace / "process"
+    assert layout.backup_root == workspace / "backups"
+    assert layout.schema_version == "bijux.runtime.workspace-layout.v1"
+    assert layout.workspace_version == 1
+    assert len(layout.identity_sha256) == 64
+
+
+def test_workspace_layout_normalizes_overrides_against_root(tmp_path: Path) -> None:
+    configuration = resolve_runtime_configuration(
+        explicit={
+            "working_root": tmp_path / "workspace" / ".." / "workspace",
+            "database_path": Path("state/metadata.duckdb"),
+            "embedding_model_path": Path("models/locked"),
+            "retrieval_index_path": Path("retrieval"),
+        }
+    )
+
+    layout = configuration.require_workspace_layout()
+
+    assert layout.database_path == (layout.root / "state" / "metadata.duckdb")
+    assert layout.model_root == layout.root / "models" / "locked"
+    assert layout.index_root == layout.root / "retrieval"
+    equivalent = resolve_runtime_configuration(
+        explicit={
+            "working_root": layout.root,
+            "database_path": layout.root / "state" / "metadata.duckdb",
+            "embedding_model_path": layout.root / "models" / "locked",
+            "retrieval_index_path": layout.root / "retrieval",
+        }
+    )
+    changed = resolve_runtime_configuration(
+        explicit={
+            "working_root": layout.root,
+            "retrieval_index_path": layout.root / "other-retrieval",
+        }
+    )
+    assert configuration.identity_sha256 == equivalent.identity_sha256
+    assert configuration.identity_sha256 != changed.identity_sha256
+    assert configuration.redacted_record()["workspace_layout"] == layout.record()
+
+
+def test_workspace_layout_rejects_role_collisions(tmp_path: Path) -> None:
+    configuration = resolve_runtime_configuration(
+        explicit={
+            "working_root": tmp_path / "workspace",
+            "embedding_model_path": Path("cas"),
+        }
+    )
+
+    with pytest.raises(ConfigurationError, match="directory roles collide"):
+        configuration.require_workspace_layout()
+
+    overlapping = resolve_runtime_configuration(
+        explicit={
+            "working_root": tmp_path / "workspace",
+            "retrieval_index_path": Path("cas/indexes"),
+        }
+    )
+    with pytest.raises(ConfigurationError, match="directory roles overlap"):
+        overlapping.require_workspace_layout()
+
+
+def test_workspace_layout_requires_a_configured_root() -> None:
+    configuration = resolve_runtime_configuration()
+
+    assert configuration.workspace_layout is None
+    with pytest.raises(ConfigurationError, match="working_root is required"):
+        configuration.require_workspace_layout()
