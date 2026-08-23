@@ -17,16 +17,19 @@ pytest.importorskip("faiss")
 
 from bijux_canon_index.application import (
     CONTENT_EVIDENCE_RETRIEVAL_POLICY_ID,
+    HybridRetrievalPolicy,
     IndexGenerationArchive,
     IndexQueryChannel,
     IndexQueryRequest,
     IndexService,
+    VexArtifactStore,
     resolve_hybrid_retrieval_policy,
 )
 from bijux_canon_index.evaluation import (
     PublicRetrievalEvaluationRequest,
     PublicRetrievalEvaluator,
     PublicRetrievalMode,
+    RetrievalExecutionStatus,
     ReviewedRetrievalQrel,
     ReviewedRetrievalQuery,
 )
@@ -473,6 +476,265 @@ def _retrieve_and_reason(indexed: _IndexedRuntime) -> _GroundedRuntime:
         reason_upstream=reason_upstream,
         reason_artifact=reason.artifacts[0],
     )
+
+
+def _retrieval_evidence(
+    indexed: _IndexedRuntime,
+    *,
+    policy: HybridRetrievalPolicy,
+    request_id: str,
+    vex_root: Path,
+) -> dict[str, object]:
+    request = RuntimeOperationRequest(
+        request_id=RequestID(request_id),
+        operation=RuntimeRequestOperation.RETRIEVE,
+        execution_profile=ExecutionProfile.LOCAL_HYBRID_ANN,
+        budget=_budget(),
+        replay_mode=ReplayMode.STRICT,
+        scope="local",
+        query="What evidence do ancient genomes preserve?",
+        index_id=indexed.composite.artifact_id,
+        top_k=1,
+    )
+    result = OperationDispatcher(
+        (
+            CanonicalRetrievalOperationAdapter(
+                store=indexed.store,
+                index=indexed.index_service,
+                embedding=_Embedding(),
+                vex_store_root=vex_root,
+                policy=policy,
+            ),
+        )
+    ).dispatch_plan(indexed.planner.plan(request))[-1]
+    parsed = json.loads(result.artifacts[0].payload)
+    assert isinstance(parsed, dict)
+    return parsed
+
+
+def test_witnessed_ann_refusal_uses_one_bounded_exact_fallback(
+    tmp_path: Path,
+) -> None:
+    indexed = _build_indexed_runtime(tmp_path)
+    policy = replace(
+        resolve_hybrid_retrieval_policy(CONTENT_EVIDENCE_RETRIEVAL_POLICY_ID),
+        policy_id="bijux.canon.index.hybrid-retrieval.test-bounded-fallback",
+        vex_max_ef_search=1,
+    )
+    vex_root = tmp_path / "runtime" / "vex-bounded-fallback"
+
+    evidence = _retrieval_evidence(
+        indexed,
+        policy=policy,
+        request_id="request-vex-bounded-fallback",
+        vex_root=vex_root,
+    )
+
+    retrieval = evidence["retrieval"]
+    assert isinstance(retrieval, dict)
+    attempts = retrieval["vex_attempts"]
+    assert isinstance(attempts, list) and len(attempts) == 2
+    first = attempts[0]
+    final = attempts[1]
+    assert isinstance(first, dict) and isinstance(final, dict)
+    first_comparison = first["exact_comparison"]
+    final_comparison = final["exact_comparison"]
+    assert isinstance(first_comparison, dict)
+    assert isinstance(final_comparison, dict)
+    assert evidence["status"] == "success"
+    assert evidence["retrieval_mode"] == "local-hybrid-exact"
+    assert retrieval["fallback_action"] == "bounded-exact-after-ann-refusal"
+    assert first["mode"] == "dense-ann"
+    assert first["outcome"] == "refused"
+    assert "ef_search_budget_exceeded" in first["violations"]
+    assert final["mode"] == "dense-exact"
+    assert final["outcome"] == "success"
+    assert final_comparison["recall_at_k"] == 1.0
+    assert final_comparison["candidates"]
+    dense = retrieval["dense"]
+    vex_execution = evidence["vex_execution"]
+    assert isinstance(dense, dict) and isinstance(vex_execution, dict)
+    assert dense["artifact_id"] == final["artifact_id"]
+    assert vex_execution["artifact_id"] == final["artifact_id"]
+    assert evidence["refusal"] is None
+
+    first_artifact_id = first["artifact_id"]
+    assert isinstance(first_artifact_id, str)
+    assert VexArtifactStore(vex_root).load(first_artifact_id).record
+
+
+def test_exhausted_vex_fallback_returns_run_linkable_typed_refusal(
+    tmp_path: Path,
+) -> None:
+    indexed = _build_indexed_runtime(tmp_path)
+    policy = replace(
+        resolve_hybrid_retrieval_policy(CONTENT_EVIDENCE_RETRIEVAL_POLICY_ID),
+        policy_id="bijux.canon.index.hybrid-retrieval.test-refusal",
+        vex_max_memory_bytes=1,
+    )
+    vex_root = tmp_path / "runtime" / "vex-refusal"
+
+    evidence = _retrieval_evidence(
+        indexed,
+        policy=policy,
+        request_id="request-vex-refusal",
+        vex_root=vex_root,
+    )
+
+    retrieval = evidence["retrieval"]
+    refusal = evidence["refusal"]
+    assert isinstance(retrieval, dict)
+    assert isinstance(refusal, dict)
+    attempts = retrieval["vex_attempts"]
+    assert isinstance(attempts, list) and len(attempts) == 2
+    assert all(isinstance(attempt, dict) for attempt in attempts)
+    typed_attempts = [attempt for attempt in attempts if isinstance(attempt, dict)]
+    assert evidence["status"] == "refused"
+    assert evidence["hits"] == []
+    assert evidence["locator_catalog_id"] is None
+    assert retrieval["fusion"] is None
+    assert retrieval["rerank"] is None
+    assert all(attempt["outcome"] == "refused" for attempt in typed_attempts)
+    assert all(
+        "memory_budget_exceeded" in attempt["violations"] for attempt in typed_attempts
+    )
+    assert refusal["code"] == "dense_vex_policy_refused"
+    assert refusal["attempt_artifact_ids"] == [
+        attempt["artifact_id"] for attempt in typed_attempts
+    ]
+    assert "exact retrieval profile" in refusal["remediation"]
+    vex_execution = evidence["vex_execution"]
+    assert isinstance(vex_execution, dict)
+    assert vex_execution["artifact_id"] == typed_attempts[-1]["artifact_id"]
+
+    ask_request = RuntimeOperationRequest(
+        request_id=RequestID("request-ask-after-vex-refusal"),
+        operation=RuntimeRequestOperation.ASK,
+        execution_profile=ExecutionProfile.LOCAL_HYBRID_ANN,
+        budget=_budget(),
+        replay_mode=ReplayMode.STRICT,
+        scope="local",
+        query="What evidence do ancient genomes preserve?",
+        index_id=indexed.composite.artifact_id,
+        top_k=1,
+        provider="local-recorded",
+        output_policy=RuntimeOutputPolicy(
+            require_citations=True,
+            permit_insufficient_answer=True,
+            publish=True,
+        ),
+    )
+    reason_step = next(
+        step
+        for step in indexed.planner.plan(ask_request).steps
+        if step.operation is DagOperation.REASON
+    )
+    refused_upstream = StepOutputArtifact(
+        contract_id="index.evidence-set.v1",
+        producer_step_id="retrieve",
+        producer_operation=DagOperation.RETRIEVE,
+        artifact=AddressedArtifact.from_json(
+            evidence,
+            schema_id="index.evidence-set.v1",
+            producer="bijux-canon-runtime:retrieve",
+        ),
+    )
+    reason_result = OperationDispatcher((CanonicalReasonOperationAdapter(),)).dispatch(
+        reason_step,
+        (refused_upstream,),
+    )
+    refused_answer = json.loads(reason_result.artifacts[0].payload)
+    assert refused_answer["answer_disposition"] == "abstained"
+    assert refused_answer["claims"]["claims"] == []
+    assert refused_answer["citations"]["links"] == []
+    assert "Ancient genomes preserve" not in refused_answer["answer"]
+
+    query = ReviewedRetrievalQuery(
+        query_id="refused-content-question",
+        query_text="What evidence do ancient genomes preserve?",
+        input_identity_sha256="a" * 64,
+        qrels=(
+            ReviewedRetrievalQrel(
+                qrel_id="refused-content-question::qrel",
+                chunk_id="not-returned",
+                relevance_grade=3,
+                relation="supports",
+                qrel_identity_sha256="b" * 64,
+            ),
+        ),
+    )
+    request = PublicRetrievalEvaluationRequest.create(
+        index_artifact_id=str(indexed.composite.artifact_id),
+        split="development",
+        mode=PublicRetrievalMode.hybrid_ann,
+        queries=(query,),
+    )
+    execution = RuntimeFirstExecutionService(
+        store=indexed.store,
+        dispatcher=OperationDispatcher(
+            (
+                CanonicalRetrievalOperationAdapter(
+                    store=indexed.store,
+                    index=indexed.index_service,
+                    embedding=_Embedding(),
+                    vex_store_root=tmp_path / "runtime" / "vex-evaluation-refusal",
+                    policy=policy,
+                ),
+            )
+        ),
+        process_id="installed-refused-retrieval-evaluation-test",
+        configuration_identity_sha256="1" * 64,
+    )
+    observation = InstalledRetrievalEvaluationExecutor(
+        execution=execution,
+        store=indexed.store,
+        index=indexed.index_service,
+    ).execute(request, query)
+
+    assert observation.status is RetrievalExecutionStatus.refused
+    assert observation.hits == ()
+    assert observation.run_id is not None
+    assert observation.attempt_id is not None
+    assert observation.vex_artifact_id is not None
+    assert observation.policy_action == "refused"
+    assert observation.fallback_action == "bounded-exact-after-ann-refusal"
+    assert observation.stages is None
+    assert observation.failure is not None
+    assert "memory_budget_exceeded" in observation.failure
+    assert "Remediation:" in observation.failure
+
+
+def test_policy_without_exact_fallback_refuses_after_one_witnessed_attempt(
+    tmp_path: Path,
+) -> None:
+    indexed = _build_indexed_runtime(tmp_path)
+    policy = replace(
+        resolve_hybrid_retrieval_policy(CONTENT_EVIDENCE_RETRIEVAL_POLICY_ID),
+        policy_id="bijux.canon.index.hybrid-retrieval.test-no-fallback",
+        fallback_to_exact_on_ann_refusal=False,
+        maximum_dense_attempts=1,
+        vex_max_ef_search=1,
+    )
+
+    evidence = _retrieval_evidence(
+        indexed,
+        policy=policy,
+        request_id="request-vex-no-fallback",
+        vex_root=tmp_path / "runtime" / "vex-no-fallback",
+    )
+
+    retrieval = evidence["retrieval"]
+    assert isinstance(retrieval, dict)
+    attempts = retrieval["vex_attempts"]
+    assert isinstance(attempts, list) and len(attempts) == 1
+    attempt = attempts[0]
+    assert isinstance(attempt, dict)
+    assert evidence["status"] == "refused"
+    assert evidence["retrieval_mode"] == "local-hybrid-ann"
+    assert evidence["hits"] == []
+    assert retrieval["fallback_action"] == "none"
+    assert attempt["mode"] == "dense-ann"
+    assert "ef_search_budget_exceeded" in attempt["violations"]
 
 
 def _verify_reason_and_agent(grounded: _GroundedRuntime) -> None:

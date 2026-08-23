@@ -171,7 +171,15 @@ def _observation(
     if requested_mode is not None and requested_mode != request.mode.value:
         raise RuntimeError("retrieval evaluation request provenance diverged")
     dense = retrieval.get("dense")
-    stages = _stage_evidence(retrieval)
+    stages = (
+        None
+        if status
+        in {
+            RetrievalExecutionStatus.refused,
+            RetrievalExecutionStatus.failed,
+        }
+        else _stage_evidence(retrieval)
+    )
     vex_artifact_id: str | None = None
     policy_action = "not-applicable"
     if dense is not None:
@@ -190,6 +198,31 @@ def _observation(
     attempt_id = result.get("attempt_id")
     if not isinstance(run_id, str) or not isinstance(attempt_id, str):
         raise RuntimeError("retrieval evaluation Runtime lineage is invalid")
+    failure = None
+    if status is RetrievalExecutionStatus.refused:
+        refusal = evidence.get("refusal")
+        if not isinstance(refusal, dict) or refusal.get("schema_version") != (
+            "bijux.canon.index.vex-refusal.v1"
+        ):
+            raise RuntimeError("retrieval evaluation refusal evidence is invalid")
+        detail = _required_string(refusal, "detail")
+        remediation = _required_string(refusal, "remediation")
+        violations = refusal.get("violations")
+        attempt_ids = refusal.get("attempt_artifact_ids")
+        if (
+            not isinstance(violations, list)
+            or not violations
+            or any(not isinstance(item, str) or not item for item in violations)
+            or not isinstance(attempt_ids, list)
+            or not attempt_ids
+            or any(not isinstance(item, str) or not item for item in attempt_ids)
+        ):
+            raise RuntimeError("retrieval evaluation refusal lineage is invalid")
+        failure = (
+            f"{detail} Remediation: {remediation} Violations: {', '.join(violations)}."
+        )
+    elif status is RetrievalExecutionStatus.failed:
+        raise RuntimeError("completed retrieval evidence cannot report failed status")
     return RetrievalExecutionObservation(
         query_id=query.query_id,
         query_text_sha256=_required_string(evidence, "query_text_sha256"),
@@ -205,7 +238,7 @@ def _observation(
         policy_action=policy_action,
         fallback_action=fallback_action,
         stages=stages,
-        failure=None,
+        failure=failure,
     )
 
 
@@ -286,9 +319,7 @@ def _stage_evidence(retrieval: Mapping[str, object]) -> RetrievalStageEvidence:
             )
             for value in raw_fusion
         ),
-        rerank_candidates=tuple(
-            _rerank_candidate(value) for value in raw_rerank
-        ),
+        rerank_candidates=tuple(_rerank_candidate(value) for value in raw_rerank),
     )
 
 

@@ -18,6 +18,7 @@ from bijux_canon_index.application import (
     CitationLocatorService,
     CitationRetrievalMode,
     CitationSourceMetadata,
+    DenseCandidateBatch,
     DenseCandidateMode,
     DenseCandidateOutcome,
     DenseCandidateService,
@@ -119,6 +120,37 @@ def _embedding_cache_observation(embedding: object) -> dict[str, object] | None:
     if not isinstance(value, dict) or any(not isinstance(key, str) for key in value):
         raise StepDispatchError("embedding cache observation is invalid")
     return value
+
+
+def _dense_attempt_evidence(
+    batch: DenseCandidateBatch,
+    record: Mapping[str, object],
+) -> dict[str, object]:
+    """Retain the measured exact comparison behind one dense policy decision."""
+
+    metrics = record.get("metrics")
+    witness = record.get("witness")
+    if not isinstance(metrics, dict) or not isinstance(witness, dict):
+        raise StepDispatchError("persisted VEX attempt evidence is incomplete")
+    exact_candidates = witness.get("candidates")
+    if not isinstance(exact_candidates, list):
+        raise StepDispatchError("persisted VEX exact comparison sample is invalid")
+    return {
+        "artifact_id": batch.artifact_id,
+        "decision": asdict(batch.decision),
+        "exact_comparison": {
+            "candidate_order_sha256": witness.get("candidate_order_sha256"),
+            "candidates": exact_candidates,
+            "recall_at_k": metrics.get("recall_at_k"),
+            "result_sha256": witness.get("result_sha256"),
+            "top_k": witness.get("top_k"),
+            "witness_id": witness.get("witness_id"),
+        },
+        "execution_id": batch.execution_id,
+        "mode": batch.mode.value,
+        "outcome": batch.outcome.value,
+        "violations": tuple(item.value for item in batch.decision.violations),
+    }
 
 
 def _required_object(value: object) -> dict[str, object]:
@@ -593,6 +625,7 @@ class CanonicalRetrievalOperationAdapter:
         )
         dense = None
         dense_attempts: list[dict[str, object]] = []
+        vex_attempts: list[dict[str, object]] = []
         fusion = None
         rerank = None
         query_plan = None
@@ -623,6 +656,14 @@ class CanonicalRetrievalOperationAdapter:
                 inspection=inspection,
             )
             dense_attempts.append(asdict(dense))
+            vex_attempts.append(
+                _dense_attempt_evidence(
+                    dense,
+                    VexArtifactStore(self._vex_store_root)
+                    .load(dense.artifact_id)
+                    .record,
+                )
+            )
             if (
                 dense.outcome is DenseCandidateOutcome.refused
                 and dense_mode is DenseCandidateMode.ann
@@ -645,66 +686,75 @@ class CanonicalRetrievalOperationAdapter:
                     inspection=inspection,
                 )
                 dense_attempts.append(asdict(dense))
+                vex_attempts.append(
+                    _dense_attempt_evidence(
+                        dense,
+                        VexArtifactStore(self._vex_store_root)
+                        .load(dense.artifact_id)
+                        .record,
+                    )
+                )
             if dense.outcome is DenseCandidateOutcome.refused:
-                raise StepDispatchError("dense VEX policy refused retrieval evidence")
-            fusion = reciprocal_rank_fusion(
-                (
-                    FusionChannelRanking.from_lexical(lexical),
-                    FusionChannelRanking.from_dense(dense),
-                ),
-                policy=self._policy.fusion_policy(top_k=top_k),
-            )
-            if self._policy.uses_evidence_planning and fusion.hits:
-                query_plan = plan_evidence_query(
-                    query,
-                    max_subqueries=8,
-                    per_query_top_k=candidate_limit,
-                    top_k=min(top_k, len(fusion.hits)),
-                )
-                lexical_by_subquery_id = {}
-                for subquery in query_plan.multi_query.subqueries:
-                    if subquery.text_sha256 == lexical.query_text_sha256:
-                        batch = lexical
-                    else:
-                        batch = self._lexical.generate(
-                            subquery.text,
-                            generation_id=inspection.generation_id,
-                            top_k=self._policy.lexical_limit(top_k),
-                            candidate_limit=candidate_limit,
-                            metadata_filter=metadata_filter,
-                        )
-                        expansion_lexical.append(batch)
-                    lexical_by_subquery_id[subquery.subquery_id] = batch
-                fused_chunk_ids = {candidate.chunk_id for candidate in fusion.hits}
-                rerank = rerank_planned_evidence(
-                    fusion,
-                    plan=query_plan,
-                    lexical_by_subquery_id=lexical_by_subquery_id,
-                    passages=tuple(
-                        item
-                        for item in passages
-                        if item.chunk_id in fused_chunk_ids
-                    ),
-                    top_k=min(top_k, len(fusion.hits)),
-                )
+                candidates = ()
             else:
-                rerank = rerank_candidates(
-                    fusion,
-                    policy=RerankPolicy(
-                        enabled=False,
-                        candidate_limit=candidate_limit,
-                        top_k=top_k,
-                        timeout_ms=max(
-                            1,
-                            int(step.inputs.budget.timeout_seconds * 1000.0),
-                        ),
-                        failure_policy=RerankFailurePolicy.retain_retrieval_order,
+                fusion = reciprocal_rank_fusion(
+                    (
+                        FusionChannelRanking.from_lexical(lexical),
+                        FusionChannelRanking.from_dense(dense),
                     ),
+                    policy=self._policy.fusion_policy(top_k=top_k),
                 )
-            candidates = citation_candidates_from_rerank(
-                rerank,
-                dense_mode=dense_mode,
-            )
+                if self._policy.uses_evidence_planning and fusion.hits:
+                    query_plan = plan_evidence_query(
+                        query,
+                        max_subqueries=8,
+                        per_query_top_k=candidate_limit,
+                        top_k=min(top_k, len(fusion.hits)),
+                    )
+                    lexical_by_subquery_id = {}
+                    for subquery in query_plan.multi_query.subqueries:
+                        if subquery.text_sha256 == lexical.query_text_sha256:
+                            batch = lexical
+                        else:
+                            batch = self._lexical.generate(
+                                subquery.text,
+                                generation_id=inspection.generation_id,
+                                top_k=self._policy.lexical_limit(top_k),
+                                candidate_limit=candidate_limit,
+                                metadata_filter=metadata_filter,
+                            )
+                            expansion_lexical.append(batch)
+                        lexical_by_subquery_id[subquery.subquery_id] = batch
+                    fused_chunk_ids = {candidate.chunk_id for candidate in fusion.hits}
+                    rerank = rerank_planned_evidence(
+                        fusion,
+                        plan=query_plan,
+                        lexical_by_subquery_id=lexical_by_subquery_id,
+                        passages=tuple(
+                            item
+                            for item in passages
+                            if item.chunk_id in fused_chunk_ids
+                        ),
+                        top_k=min(top_k, len(fusion.hits)),
+                    )
+                else:
+                    rerank = rerank_candidates(
+                        fusion,
+                        policy=RerankPolicy(
+                            enabled=False,
+                            candidate_limit=candidate_limit,
+                            top_k=top_k,
+                            timeout_ms=max(
+                                1,
+                                int(step.inputs.budget.timeout_seconds * 1000.0),
+                            ),
+                            failure_policy=(RerankFailurePolicy.retain_retrieval_order),
+                        ),
+                    )
+                candidates = citation_candidates_from_rerank(
+                    rerank,
+                    dense_mode=dense_mode,
+                )
             retrieval_mode = (
                 CitationRetrievalMode.local_hybrid_exact
                 if dense_mode is DenseCandidateMode.exact
@@ -713,13 +763,38 @@ class CanonicalRetrievalOperationAdapter:
             vex_record = (
                 VexArtifactStore(self._vex_store_root).load(dense.artifact_id).record
             )
-        resolution = self._locators.resolve(
-            candidates,
-            generation_id=inspection.generation_id,
-            query_text_sha256=lexical.query_text_sha256,
-            retrieval_mode=retrieval_mode,
-            catalog=catalog,
+        refused = dense is not None and dense.outcome is DenseCandidateOutcome.refused
+        resolution = (
+            None
+            if refused
+            else self._locators.resolve(
+                candidates,
+                generation_id=inspection.generation_id,
+                query_text_sha256=lexical.query_text_sha256,
+                retrieval_mode=retrieval_mode,
+                catalog=catalog,
+            )
         )
+        refusal = None
+        if refused:
+            assert dense is not None
+            refusal = {
+                "attempt_artifact_ids": [
+                    attempt["artifact_id"] for attempt in vex_attempts
+                ],
+                "code": "dense_vex_policy_refused",
+                "detail": (
+                    "Dense retrieval and every policy-permitted exact fallback "
+                    "failed the configured VEX quality or effort contract."
+                ),
+                "remediation": (
+                    "Use the exact retrieval profile with sufficient declared "
+                    "effort, rebuild a compatible index, or change to another "
+                    "versioned retrieval policy."
+                ),
+                "schema_version": "bijux.canon.index.vex-refusal.v1",
+                "violations": [item.value for item in dense.decision.violations],
+            }
         payload = canonical_json_bytes(
             _json_value(
                 {
@@ -737,9 +812,15 @@ class CanonicalRetrievalOperationAdapter:
                         ),
                     },
                     "generation_id": inspection.generation_id,
-                    "hits": [asdict(hit) for hit in resolution.hits],
+                    "hits": (
+                        []
+                        if resolution is None
+                        else [asdict(hit) for hit in resolution.hits]
+                    ),
                     "index_artifact_id": str(index_artifact.descriptor.artifact_id),
-                    "locator_catalog_id": resolution.locator_catalog_id,
+                    "locator_catalog_id": (
+                        None if resolution is None else resolution.locator_catalog_id
+                    ),
                     "query_text_sha256": lexical.query_text_sha256,
                     "requested_retrieval_mode": step.inputs.execution_profile.value,
                     "retrieval": {
@@ -756,7 +837,9 @@ class CanonicalRetrievalOperationAdapter:
                             None if query_plan is None else asdict(query_plan)
                         ),
                         "rerank": None if rerank is None else asdict(rerank),
+                        "vex_attempts": vex_attempts,
                     },
+                    "refusal": refusal,
                     "resource_reuse": {
                         "archive_content_sha256": prepared.archive_content_sha256,
                         "archive_preparation_ms": prepared.preparation_ms,
@@ -768,7 +851,13 @@ class CanonicalRetrievalOperationAdapter:
                     "retrieval_mode": retrieval_mode.value,
                     "schema_version": "bijux.canon.index.evidence_set.v1",
                     "snapshot_artifact_id": inspection.snapshot_artifact_id,
-                    "status": "success" if resolution.hits else "insufficient",
+                    "status": (
+                        "refused"
+                        if refused
+                        else "success"
+                        if resolution is not None and resolution.hits
+                        else "insufficient"
+                    ),
                     "vex_execution": vex_record,
                 }
             )

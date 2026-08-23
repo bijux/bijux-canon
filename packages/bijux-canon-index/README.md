@@ -115,6 +115,14 @@ passages using source structure such as abstract, result, discussion, and
 limitation sections. It cannot introduce a chunk absent from the fused
 candidate set.
 
+Each dense attempt retains the exact comparison candidates, witness and result
+identities, measured recall, observed effort, policy violations, and selected
+action. A refused ANN attempt may execute one policy-bounded exact fallback.
+Only an admitted final attempt can contribute hits. If exact fallback is not
+permitted or also fails policy, retrieval returns a typed refusal with zero
+hits, every attempt artifact ID, and operator remediation; evaluations retain
+that refusal and its Runtime lineage in the query denominator.
+
 The evidence planner is deterministic and identity-free: it derives bounded
 method, result, comparison, limitation, and counterevidence needs from the
 question text. It does not contain reviewed query IDs, document IDs, source
