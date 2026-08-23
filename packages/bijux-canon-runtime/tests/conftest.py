@@ -164,8 +164,10 @@ def execution_store(tmp_path: Path) -> DuckDBExecutionWriteStore:
 
 
 @pytest.fixture
-def execution_read_store(tmp_path: Path) -> DuckDBExecutionReadStore:
-    return DuckDBExecutionReadStore(tmp_path / "execution.duckdb")
+def execution_read_store(
+    execution_store: DuckDBExecutionWriteStore,
+) -> DuckDBExecutionReadStore:
+    return DuckDBExecutionReadStore(execution_store.path)
 
 
 @pytest.fixture
