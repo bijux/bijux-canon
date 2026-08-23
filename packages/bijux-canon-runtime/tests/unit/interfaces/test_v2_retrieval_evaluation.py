@@ -180,3 +180,31 @@ def test_human_summary_discloses_denominators_and_worst_queries() -> None:
     assert "Stage recall: candidate-depth=29/29 (1.000000)" in output
     assert "Stage adna-ambiguous-damage-authentication:" in output
     assert "Worst queries:" in output
+
+
+def test_configuration_search_cli_retains_development_denominators() -> None:
+    args = build_parser(prog_name="bijux-canon-runtime").parse_args(
+        [
+            "v2",
+            "search-retrieval-configurations",
+            "--cases",
+            str(TRUTH_ROOT / "evaluation-cases.jsonl"),
+            "--qrels",
+            str(TRUTH_ROOT / "qrels.jsonl"),
+            "--index-id",
+            INDEX_ID,
+        ]
+    )
+    stdout = StringIO()
+    with redirect_stdout(stdout):
+        assert run_v2_command(args, services=_services()) == 0
+
+    payload = json.loads(stdout.getvalue())
+    assert payload["schema_version"] == (
+        "bijux.canon.index.retrieval-config-search.v1"
+    )
+    assert payload["split"] == "development"
+    assert payload["query_count"] == 12
+    assert payload["qrel_count"] == 29
+    assert payload["selected_configuration_id"] is not None
+    assert payload["results"]

@@ -11,7 +11,7 @@ from enum import Enum
 from pathlib import Path
 
 from bijux_canon_agent.contracts import CausalDecisionEvent, ResearchCausalTrace
-from bijux_canon_index.application import IndexService
+from bijux_canon_index.application import HybridRetrievalPolicy, IndexService
 from bijux_canon_reason.grounding.provider_contracts import content_artifact_id
 from bijux_canon_reason.research import (
     ConvergencePolicy,
@@ -304,6 +304,7 @@ class CanonicalAgentOperationAdapter:
         index: IndexService,
         embedding: CanonicalEmbeddingService,
         vex_store_root: Path,
+        retrieval_policy: HybridRetrievalPolicy | None = None,
     ) -> None:
         self._store = store
         self._retrieval = CanonicalRetrievalOperationAdapter(
@@ -311,6 +312,7 @@ class CanonicalAgentOperationAdapter:
             index=index,
             embedding=embedding,
             vex_store_root=vex_store_root,
+            policy=retrieval_policy,
         )
 
     def execute(

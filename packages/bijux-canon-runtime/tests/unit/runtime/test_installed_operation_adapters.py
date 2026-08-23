@@ -16,10 +16,12 @@ import pytest
 pytest.importorskip("faiss")
 
 from bijux_canon_index.application import (
+    CONTENT_EVIDENCE_RETRIEVAL_POLICY_ID,
     IndexGenerationArchive,
     IndexQueryChannel,
     IndexQueryRequest,
     IndexService,
+    resolve_hybrid_retrieval_policy,
 )
 from bijux_canon_index.evaluation import (
     PublicRetrievalEvaluationRequest,
@@ -820,6 +822,9 @@ def test_public_retrieval_evaluation_executes_the_persistent_installed_path(
                     index=indexed.index_service,
                     embedding=_Embedding(),
                     vex_store_root=tmp_path / "runtime" / "vex-evaluation",
+                    policy=resolve_hybrid_retrieval_policy(
+                        CONTENT_EVIDENCE_RETRIEVAL_POLICY_ID
+                    ),
                 ),
             )
         ),
@@ -841,6 +846,10 @@ def test_public_retrieval_evaluation_executes_the_persistent_installed_path(
     assert report.observations[0].vex_artifact_id is not None
     assert report.observations[0].hits[0].chunk_id == expected.chunk_id
     assert report.observations[0].hits[0].locator_segments
+    stages = report.observations[0].stages
+    assert stages is not None
+    assert all(item.output_rank is not None for item in stages.lexical_candidates)
+    assert len(stages.lexical_candidates) == len(stages.dense_candidates)
     persisted = RuntimeRunInspector(indexed.store).inspect(
         str(report.observations[0].run_id)
     )

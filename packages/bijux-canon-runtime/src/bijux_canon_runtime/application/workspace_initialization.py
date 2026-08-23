@@ -116,7 +116,8 @@ class WorkspaceInitializationResult:
 
 
 _MIGRATION_LEDGER_SCHEMA = "bijux.runtime.workspace-migrations.v1"
-_WORKSPACE_MANIFEST_SCHEMA = "bijux.runtime.workspace.v2"
+_WORKSPACE_MANIFEST_SCHEMA = "bijux.runtime.workspace.v3"
+_LEGACY_V2_WORKSPACE_MANIFEST_SCHEMA = "bijux.runtime.workspace.v2"
 _LEGACY_WORKSPACE_MANIFEST_SCHEMA = "bijux.runtime.workspace.v1"
 _V1_TO_V2_MIGRATION_RECORD = {
     "from_version": 1,
@@ -128,6 +129,20 @@ _V1_TO_V2_MIGRATION_ID = (
     "sha256:"
     + hashlib.sha256(canonical_json_bytes(_V1_TO_V2_MIGRATION_RECORD)).hexdigest()
 )
+_V2_TO_V3_MIGRATION_RECORD = {
+    "from_version": 2,
+    "name": "bind-retrieval-policy-configuration",
+    "schema_version": "bijux.runtime.workspace-migration.v1",
+    "to_version": 3,
+}
+_V2_TO_V3_MIGRATION_ID = (
+    "sha256:"
+    + hashlib.sha256(canonical_json_bytes(_V2_TO_V3_MIGRATION_RECORD)).hexdigest()
+)
+_MIGRATION_IDS = {
+    1: _V1_TO_V2_MIGRATION_ID,
+    2: _V2_TO_V3_MIGRATION_ID,
+}
 
 
 def _content_sha256(content: bytes) -> str:
@@ -199,6 +214,7 @@ def _configuration_authority_record(value: object) -> dict[str, object]:
         "offline",
         "provider_api_key_ref",
         "resource_budget",
+        "retrieval_policy_id",
         "schema_version",
         "strict_determinism",
         "workspace_layout",
@@ -276,15 +292,18 @@ def _load_migration_ledger(path: Path, *, workspace_id: str) -> dict[str, object
             "workspace migration ledger identity is invalid",
             "restore the workspace manifest and migration ledger from one backup",
         )
-    expected_from = 1
-    for index, migration in enumerate(migrations):
+    expected_from: int | None = None
+    for migration in migrations:
         if not isinstance(migration, dict):
             raise WorkspaceInitializationError(
                 WorkspaceInitializationErrorCode.CORRUPT_MANIFEST,
                 "workspace migration ledger record is invalid",
                 "restore the workspace manifest and migration ledger from one backup",
             )
-        expected_id = _V1_TO_V2_MIGRATION_ID if index == 0 else None
+        from_version = migration.get("from_version")
+        if expected_from is None and isinstance(from_version, int):
+            expected_from = from_version
+        expected_id = _MIGRATION_IDS.get(expected_from or -1)
         if (
             set(migration)
             != {
@@ -296,9 +315,10 @@ def _load_migration_ledger(path: Path, *, workspace_id: str) -> dict[str, object
                 "source_manifest_sha256",
                 "to_version",
             }
+            or expected_id is None
             or migration.get("migration_id") != expected_id
-            or migration.get("from_version") != expected_from
-            or migration.get("to_version") != expected_from + 1
+            or from_version != expected_from
+            or migration.get("to_version") != (expected_from or -1) + 1
             or not all(
                 isinstance(migration.get(field), str) and migration.get(field)
                 for field in (
@@ -314,6 +334,7 @@ def _load_migration_ledger(path: Path, *, workspace_id: str) -> dict[str, object
                 "workspace migration order or identity is invalid",
                 "restore the workspace manifest and migration ledger from one backup",
             )
+        assert expected_from is not None
         expected_from += 1
     return ledger
 
@@ -349,19 +370,26 @@ def _validate_migration_backups(
             backup_sha256 = unsigned.pop("backup_manifest_sha256", None)
             source_manifest_path = backup_manifest_path.parent / "workspace.json"
             state_sha256 = backup.get("state_sha256")
+            common_keys = {
+                "backup_id",
+                "backup_manifest_sha256",
+                "created_at",
+                "migration_id",
+                "schema_version",
+                "source_manifest_sha256",
+                "state_sha256",
+            }
+            schema_version = backup.get("schema_version")
+            expected_keys = set(common_keys)
+            if schema_version == "bijux.runtime.workspace-migration-backup.v2":
+                expected_keys.add("source_migration_ledger_sha256")
             if (
-                set(backup)
-                != {
-                    "backup_id",
-                    "backup_manifest_sha256",
-                    "created_at",
-                    "migration_id",
-                    "schema_version",
-                    "source_manifest_sha256",
-                    "state_sha256",
+                set(backup) != expected_keys
+                or schema_version
+                not in {
+                    "bijux.runtime.workspace-migration-backup.v1",
+                    "bijux.runtime.workspace-migration-backup.v2",
                 }
-                or backup.get("schema_version")
-                != "bijux.runtime.workspace-migration-backup.v1"
                 or not isinstance(state_sha256, dict)
                 or any(
                     not isinstance(name, str) or not isinstance(identity, str)
@@ -376,6 +404,14 @@ def _validate_migration_backups(
                 != migration["source_manifest_sha256"]
             ):
                 raise ValueError
+            if schema_version == "bijux.runtime.workspace-migration-backup.v2":
+                source_ledger_path = (
+                    backup_manifest_path.parent / "workspace-migrations.json"
+                )
+                if _hash_file(source_ledger_path) != backup.get(
+                    "source_migration_ledger_sha256"
+                ):
+                    raise ValueError
         except (OSError, ValueError, WorkspaceInitializationError) as exc:
             raise WorkspaceInitializationError(
                 WorkspaceInitializationErrorCode.CORRUPT_STATE,
@@ -445,11 +481,23 @@ def _legacy_layout_record(layout: RuntimeWorkspaceLayout) -> dict[str, object]:
     return record
 
 
+def _legacy_v2_layout_record(layout: RuntimeWorkspaceLayout) -> dict[str, object]:
+    record = layout.record(include_identity=False)
+    record["schema_version"] = "bijux.runtime.workspace-layout.v2"
+    record["workspace_version"] = 2
+    record["identity_sha256"] = _hex_record_identity(record)
+    return record
+
+
 def _legacy_configuration_record(
     configuration: RuntimeConfiguration,
     legacy_layout: Mapping[str, object],
 ) -> dict[str, object]:
     record = configuration.redacted_record()
+    record.pop("retrieval_policy_id")
+    origins = record.get("origins")
+    if isinstance(origins, dict):
+        origins.pop("retrieval_policy_id", None)
     identity_record: dict[str, object] = {
         "offline": configuration.offline,
         "provider_api_key_ref": (
@@ -467,6 +515,13 @@ def _legacy_configuration_record(
     return record
 
 
+def _legacy_v2_configuration_record(
+    configuration: RuntimeConfiguration,
+    legacy_layout: Mapping[str, object],
+) -> dict[str, object]:
+    return _legacy_configuration_record(configuration, legacy_layout)
+
+
 def _legacy_workspace_id(
     *,
     configuration_identity_sha256: str,
@@ -480,6 +535,25 @@ def _legacy_workspace_id(
             "model_lock_artifact_id": model_lock_id,
             "schema_version": "bijux.runtime.workspace-identity.v1",
             "workspace_version": 1,
+        }
+    )
+    return "workspace_v1_" + hashlib.sha256(payload).hexdigest()
+
+
+def _workspace_id_for_version(
+    *,
+    configuration_identity_sha256: str,
+    layout_identity_sha256: str,
+    model_lock_id: str,
+    workspace_version: int,
+) -> str:
+    payload = canonical_json_bytes(
+        {
+            "configuration_identity_sha256": configuration_identity_sha256,
+            "layout_identity_sha256": layout_identity_sha256,
+            "model_lock_artifact_id": model_lock_id,
+            "schema_version": "bijux.runtime.workspace-identity.v1",
+            "workspace_version": workspace_version,
         }
     )
     return "workspace_v1_" + hashlib.sha256(payload).hexdigest()
@@ -587,6 +661,131 @@ def _validate_legacy_v1(
             "workspace migration requires zero queued or running jobs",
             "stop Runtime workers and finish or cancel active jobs before retrying",
         )
+
+
+def _legacy_v2_manifest_record(
+    configuration: RuntimeConfiguration,
+    layout: RuntimeWorkspaceLayout,
+    model_lock_id: str,
+    migration_ledger_sha256: str,
+    *,
+    created_at: str,
+) -> dict[str, object]:
+    legacy_layout = _legacy_v2_layout_record(layout)
+    legacy_configuration = _legacy_v2_configuration_record(
+        configuration,
+        legacy_layout,
+    )
+    configuration_id = str(legacy_configuration["identity_sha256"])
+    layout_id = str(legacy_layout["identity_sha256"])
+    return {
+        "configuration": legacy_configuration,
+        "configuration_identity_sha256": configuration_id,
+        "created_at": created_at,
+        "layout": legacy_layout,
+        "layout_identity_sha256": layout_id,
+        "migration_ledger_sha256": migration_ledger_sha256,
+        "model_lock_artifact_id": model_lock_id,
+        "schema_version": _LEGACY_V2_WORKSPACE_MANIFEST_SCHEMA,
+        "workspace_id": _workspace_id_for_version(
+            configuration_identity_sha256=configuration_id,
+            layout_identity_sha256=layout_id,
+            model_lock_id=model_lock_id,
+            workspace_version=2,
+        ),
+        "workspace_version": 2,
+    }
+
+
+def _validate_legacy_v2(
+    configuration: RuntimeConfiguration,
+    layout: RuntimeWorkspaceLayout,
+    model_lock_id: str,
+    manifest: Mapping[str, object],
+    *,
+    ledger_path: Path | None = None,
+) -> dict[str, object]:
+    expected_keys = {
+        "configuration",
+        "configuration_identity_sha256",
+        "created_at",
+        "layout",
+        "layout_identity_sha256",
+        "migration_ledger_sha256",
+        "model_lock_artifact_id",
+        "schema_version",
+        "workspace_id",
+        "workspace_version",
+    }
+    if set(manifest) != expected_keys or not isinstance(
+        manifest.get("created_at"), str
+    ):
+        raise WorkspaceInitializationError(
+            WorkspaceInitializationErrorCode.CORRUPT_MANIFEST,
+            "version-2 workspace manifest fields are invalid",
+            "restore a verified backup before retrying migration",
+        )
+    workspace_id = manifest.get("workspace_id")
+    if not isinstance(workspace_id, str):
+        raise WorkspaceInitializationError(
+            WorkspaceInitializationErrorCode.CORRUPT_MANIFEST,
+            "version-2 workspace identity is invalid",
+            "restore a verified backup before retrying migration",
+        )
+    ledger = _load_migration_ledger(
+        layout.migration_ledger_path if ledger_path is None else ledger_path,
+        workspace_id=workspace_id,
+    )
+    _validate_migration_backups(layout, ledger)
+    expected = _legacy_v2_manifest_record(
+        configuration,
+        layout,
+        model_lock_id,
+        str(ledger["ledger_sha256"]),
+        created_at=str(manifest["created_at"]),
+    )
+    if _configuration_authority_record(
+        manifest.get("configuration")
+    ) != _configuration_authority_record(expected["configuration"]):
+        raise WorkspaceInitializationError(
+            WorkspaceInitializationErrorCode.INCOMPATIBLE_CONFIGURATION,
+            "version-2 workspace identity or effective configuration differs",
+            "use the original settings or restore the complete workspace",
+        )
+    compatible_fields = (
+        "configuration_identity_sha256",
+        "layout",
+        "layout_identity_sha256",
+        "migration_ledger_sha256",
+        "model_lock_artifact_id",
+        "schema_version",
+        "workspace_id",
+        "workspace_version",
+    )
+    if any(manifest.get(field) != expected[field] for field in compatible_fields):
+        raise WorkspaceInitializationError(
+            WorkspaceInitializationErrorCode.INCOMPATIBLE_CONFIGURATION,
+            "version-2 workspace identity or effective configuration differs",
+            "use the original settings or restore the complete workspace",
+        )
+    _validate_workspace_state_paths(layout)
+    with sqlite3.connect(
+        f"{layout.job_store_path.as_uri()}?mode=ro",
+        uri=True,
+    ) as jobs:
+        active_jobs = int(
+            jobs.execute(
+                "SELECT count(*) FROM runtime_jobs "
+                "WHERE status IN ('queued', 'running')"
+            ).fetchone()[0]
+        )
+    if active_jobs:
+        raise WorkspaceInitializationError(
+            WorkspaceInitializationErrorCode.WORKSPACE_BUSY,
+            "workspace migration requires zero queued or running jobs",
+            "stop Runtime workers and finish or cancel active jobs before retrying",
+        )
+    return ledger
 
 
 class _NoopDurableJobHandler:
@@ -816,11 +1015,36 @@ def _migration_state_identities(layout: RuntimeWorkspaceLayout) -> dict[str, str
         layout.database_path,
         layout.job_store_path,
     ]
+    if layout.migration_ledger_path.is_file():
+        paths.append(layout.migration_ledger_path)
     if layout.active_generation_path.is_file():
         paths.append(layout.active_generation_path)
     return {
         path.relative_to(layout.root).as_posix(): _hash_file(path) for path in paths
     }
+
+
+def _migration_source_state_matches(
+    layout: RuntimeWorkspaceLayout,
+    backup_path: Path,
+    backup: Mapping[str, object],
+) -> bool:
+    identities = backup.get("state_sha256")
+    if not isinstance(identities, dict):
+        return False
+    for relative_name, expected_identity in identities.items():
+        if not isinstance(relative_name, str) or not isinstance(expected_identity, str):
+            return False
+        if (
+            relative_name
+            == layout.migration_ledger_path.relative_to(layout.root).as_posix()
+        ):
+            candidate = backup_path / "workspace-migrations.json"
+        else:
+            candidate = layout.root / relative_name
+        if not candidate.is_file() or _hash_file(candidate) != expected_identity:
+            return False
+    return True
 
 
 def _ensure_v1_migration_backup(
@@ -867,8 +1091,8 @@ def _ensure_v1_migration_backup(
                 or backup_sha256 != _record_identity(existing_unsigned)
                 or backup.get("migration_id") != _V1_TO_V2_MIGRATION_ID
                 or backup.get("source_manifest_sha256") != source_manifest_sha256
-                or backup.get("state_sha256") != _migration_state_identities(layout)
                 or (generation / "workspace.json").read_bytes() != source_manifest
+                or not _migration_source_state_matches(layout, generation, backup)
             ):
                 raise ValueError
             return generation, backup
@@ -911,7 +1135,239 @@ def _ensure_v1_migration_backup(
     return generation, backup
 
 
-def _migrate_workspace_v1_to_v2(
+def _ensure_v2_migration_backup(
+    layout: RuntimeWorkspaceLayout,
+    source_manifest: bytes,
+    source_ledger: bytes,
+) -> tuple[Path, dict[str, object]]:
+    source_manifest_sha256 = _content_sha256(source_manifest)
+    source_ledger_sha256 = _content_sha256(source_ledger)
+    backup_id = "workspace-v2-" + source_manifest_sha256.removeprefix("sha256:")[:16]
+    migration_root = layout.backup_root / "workspace-migrations"
+    if migration_root.exists() and (
+        migration_root.is_symlink() or not migration_root.is_dir()
+    ):
+        raise WorkspaceInitializationError(
+            WorkspaceInitializationErrorCode.UNSAFE_PATH,
+            "workspace migration backup root is not a real directory",
+            "restore a real backup directory beneath the workspace backup root",
+        )
+    generation = migration_root / "generations" / backup_id
+    if generation.exists():
+        if generation.is_symlink() or not generation.is_dir():
+            raise WorkspaceInitializationError(
+                WorkspaceInitializationErrorCode.UNSAFE_PATH,
+                "workspace migration backup generation is not a real directory",
+                "restore a real backup beneath the workspace backup root",
+            )
+        try:
+            backup = _load_manifest(generation / "backup.json")
+            existing_unsigned = dict(backup)
+            backup_sha256 = existing_unsigned.pop("backup_manifest_sha256", None)
+            if (
+                set(backup)
+                != {
+                    "backup_id",
+                    "backup_manifest_sha256",
+                    "created_at",
+                    "migration_id",
+                    "schema_version",
+                    "source_manifest_sha256",
+                    "source_migration_ledger_sha256",
+                    "state_sha256",
+                }
+                or backup.get("backup_id") != backup_id
+                or backup.get("schema_version")
+                != "bijux.runtime.workspace-migration-backup.v2"
+                or backup_sha256 != _record_identity(existing_unsigned)
+                or backup.get("migration_id") != _V2_TO_V3_MIGRATION_ID
+                or backup.get("source_manifest_sha256") != source_manifest_sha256
+                or backup.get("source_migration_ledger_sha256") != source_ledger_sha256
+                or (generation / "workspace.json").read_bytes() != source_manifest
+                or (generation / "workspace-migrations.json").read_bytes()
+                != source_ledger
+                or not _migration_source_state_matches(layout, generation, backup)
+            ):
+                raise ValueError
+            return generation, backup
+        except (OSError, ValueError, WorkspaceInitializationError) as exc:
+            raise WorkspaceInitializationError(
+                WorkspaceInitializationErrorCode.CORRUPT_STATE,
+                "existing workspace migration backup is invalid",
+                "preserve the workspace and restore a verified migration backup",
+            ) from exc
+    staging_root = migration_root / "staging"
+    staging_root.mkdir(parents=True, exist_ok=True)
+    if staging_root.is_symlink() or not staging_root.is_dir():
+        raise WorkspaceInitializationError(
+            WorkspaceInitializationErrorCode.UNSAFE_PATH,
+            "workspace migration staging root is not a real directory",
+            "restore a real staging directory beneath the workspace backup root",
+        )
+    staging = Path(
+        tempfile.mkdtemp(prefix=f"{backup_id}.", suffix=".building", dir=staging_root)
+    )
+    try:
+        _write_durable(staging / "workspace.json", source_manifest)
+        _write_durable(staging / "workspace-migrations.json", source_ledger)
+        unsigned: dict[str, object] = {
+            "backup_id": backup_id,
+            "created_at": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
+            "migration_id": _V2_TO_V3_MIGRATION_ID,
+            "schema_version": "bijux.runtime.workspace-migration-backup.v2",
+            "source_manifest_sha256": source_manifest_sha256,
+            "source_migration_ledger_sha256": source_ledger_sha256,
+            "state_sha256": _migration_state_identities(layout),
+        }
+        backup = {**unsigned, "backup_manifest_sha256": _record_identity(unsigned)}
+        _write_durable(staging / "backup.json", canonical_json_bytes(backup))
+        _fsync_directory(staging)
+        generation.parent.mkdir(parents=True, exist_ok=True)
+        os.rename(staging, generation)
+        _fsync_directory(generation.parent)
+    finally:
+        if staging.exists():
+            shutil.rmtree(staging)
+    return generation, backup
+
+
+def _migrate_workspace_v2_to_v3(
+    configuration: RuntimeConfiguration,
+    layout: RuntimeWorkspaceLayout,
+    model_lock_id: str,
+    source_manifest: dict[str, object],
+) -> WorkspaceInitializationResult:
+    target_workspace_id = _workspace_identity(configuration, layout, model_lock_id)
+    source_ledger_path = layout.migration_ledger_path
+    try:
+        source_ledger = _validate_legacy_v2(
+            configuration,
+            layout,
+            model_lock_id,
+            source_manifest,
+        )
+    except WorkspaceInitializationError as source_error:
+        try:
+            interrupted_ledger = _load_migration_ledger(
+                layout.migration_ledger_path,
+                workspace_id=target_workspace_id,
+            )
+            _validate_migration_backups(layout, interrupted_ledger)
+            migrations = interrupted_ledger["migrations"]
+            if not isinstance(migrations, list) or not migrations:
+                raise ValueError
+            latest = migrations[-1]
+            if (
+                not isinstance(latest, dict)
+                or latest.get("migration_id") != _V2_TO_V3_MIGRATION_ID
+                or latest.get("source_manifest_sha256")
+                != _content_sha256(canonical_json_bytes(source_manifest))
+            ):
+                raise ValueError
+            source_ledger_path = (
+                layout.root / str(latest["backup_manifest_path"])
+            ).parent / "workspace-migrations.json"
+            source_ledger = _validate_legacy_v2(
+                configuration,
+                layout,
+                model_lock_id,
+                source_manifest,
+                ledger_path=source_ledger_path,
+            )
+        except (OSError, ValueError, WorkspaceInitializationError):
+            raise source_error
+    source_content = canonical_json_bytes(source_manifest)
+    source_ledger_content = canonical_json_bytes(source_ledger)
+    source_manifest_sha256 = _content_sha256(source_content)
+    backup_path, backup = _ensure_v2_migration_backup(
+        layout,
+        source_content,
+        source_ledger_content,
+    )
+    backup_manifest_path = (
+        (backup_path / "backup.json").relative_to(layout.root).as_posix()
+    )
+    source_migrations = source_ledger["migrations"]
+    assert isinstance(source_migrations, list)
+    migration = {
+        "applied_at": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
+        "backup_manifest_path": backup_manifest_path,
+        "backup_manifest_sha256": backup["backup_manifest_sha256"],
+        "from_version": 2,
+        "migration_id": _V2_TO_V3_MIGRATION_ID,
+        "source_manifest_sha256": source_manifest_sha256,
+        "to_version": 3,
+    }
+    ledger = _migration_ledger(
+        workspace_id=target_workspace_id,
+        migrations=[*source_migrations, migration],
+    )
+    if layout.migration_ledger_path != source_ledger_path:
+        interrupted = _load_migration_ledger(
+            layout.migration_ledger_path,
+            workspace_id=target_workspace_id,
+        )
+        interrupted_migrations = interrupted["migrations"]
+        if (
+            not isinstance(interrupted_migrations, list)
+            or len(interrupted_migrations) != len(source_migrations) + 1
+        ):
+            raise WorkspaceInitializationError(
+                WorkspaceInitializationErrorCode.CORRUPT_MANIFEST,
+                "interrupted version-3 migration ledger is invalid",
+                "restore workspace authority from the recorded migration backup",
+            )
+        migration = interrupted_migrations[-1]
+        if not isinstance(migration, dict):
+            raise WorkspaceInitializationError(
+                WorkspaceInitializationErrorCode.CORRUPT_MANIFEST,
+                "interrupted version-3 migration record is invalid",
+                "restore workspace authority from the recorded migration backup",
+            )
+        ledger = interrupted
+    target_manifest = _manifest_record(
+        configuration,
+        layout,
+        model_lock_id,
+        str(ledger["ledger_sha256"]),
+        created_at=str(source_manifest["created_at"]),
+    )
+    if not _migration_source_state_matches(layout, backup_path, backup):
+        raise WorkspaceInitializationError(
+            WorkspaceInitializationErrorCode.WORKSPACE_BUSY,
+            "workspace state changed after migration backup preflight",
+            "stop every Runtime writer and retry from the unchanged workspace",
+        )
+    staging = Path(
+        tempfile.mkdtemp(
+            prefix="workspace-v2-v3.",
+            suffix=".migrating",
+            dir=layout.staging_root,
+        )
+    )
+    try:
+        staged_ledger = staging / "workspace-migrations.json"
+        staged_manifest = staging / "workspace.json"
+        _write_durable(staged_ledger, canonical_json_bytes(ledger))
+        _write_durable(staged_manifest, canonical_json_bytes(target_manifest))
+        _fsync_directory(staging)
+        os.replace(staged_ledger, layout.migration_ledger_path)
+        _fsync_directory(layout.root)
+        os.replace(staged_manifest, layout.manifest_path)
+        _fsync_directory(layout.root)
+    finally:
+        shutil.rmtree(staging, ignore_errors=True)
+    _validate_existing(configuration, layout, model_lock_id)
+    return _result(
+        target_manifest,
+        layout,
+        WorkspaceInitializationStatus.MIGRATED,
+        applied_migration_ids=(_V2_TO_V3_MIGRATION_ID,),
+        rollback_backup_path=str(backup_path),
+    )
+
+
+def _migrate_workspace_v1_to_v3(
     configuration: RuntimeConfiguration,
     layout: RuntimeWorkspaceLayout,
     model_lock_id: str,
@@ -926,7 +1382,17 @@ def _migrate_workspace_v1_to_v2(
     source_content = canonical_json_bytes(source_manifest)
     source_manifest_sha256 = _content_sha256(source_content)
     backup_path, backup = _ensure_v1_migration_backup(layout, source_content)
-    target_workspace_id = _workspace_identity(configuration, layout, model_lock_id)
+    legacy_v2_layout = _legacy_v2_layout_record(layout)
+    legacy_v2_configuration = _legacy_v2_configuration_record(
+        configuration,
+        legacy_v2_layout,
+    )
+    target_workspace_id = _workspace_id_for_version(
+        configuration_identity_sha256=str(legacy_v2_configuration["identity_sha256"]),
+        layout_identity_sha256=str(legacy_v2_layout["identity_sha256"]),
+        model_lock_id=model_lock_id,
+        workspace_version=2,
+    )
     backup_manifest_path = (
         (backup_path / "backup.json").relative_to(layout.root).as_posix()
     )
@@ -978,14 +1444,14 @@ def _migrate_workspace_v1_to_v2(
                 "restore workspace.json and workspace-migrations.json from one backup",
             )
         ledger = existing_ledger
-    target_manifest = _manifest_record(
+    target_manifest = _legacy_v2_manifest_record(
         configuration,
         layout,
         model_lock_id,
         str(ledger["ledger_sha256"]),
         created_at=str(source_manifest["created_at"]),
     )
-    if backup.get("state_sha256") != _migration_state_identities(layout):
+    if not _migration_source_state_matches(layout, backup_path, backup):
         raise WorkspaceInitializationError(
             WorkspaceInitializationErrorCode.WORKSPACE_BUSY,
             "workspace state changed after migration backup preflight",
@@ -1010,12 +1476,24 @@ def _migrate_workspace_v1_to_v2(
         _fsync_directory(layout.root)
     finally:
         shutil.rmtree(staging, ignore_errors=True)
-    _validate_existing(configuration, layout, model_lock_id)
-    return _result(
-        target_manifest,
+    migrated = _migrate_workspace_v2_to_v3(
+        configuration,
         layout,
-        WorkspaceInitializationStatus.MIGRATED,
-        applied_migration_ids=(_V1_TO_V2_MIGRATION_ID,),
+        model_lock_id,
+        target_manifest,
+    )
+    return WorkspaceInitializationResult(
+        configuration_identity_sha256=migrated.configuration_identity_sha256,
+        layout_identity_sha256=migrated.layout_identity_sha256,
+        model_lock_artifact_id=migrated.model_lock_artifact_id,
+        status=WorkspaceInitializationStatus.MIGRATED,
+        workspace_id=migrated.workspace_id,
+        workspace_root=migrated.workspace_root,
+        workspace_version=migrated.workspace_version,
+        applied_migration_ids=(
+            _V1_TO_V2_MIGRATION_ID,
+            _V2_TO_V3_MIGRATION_ID,
+        ),
         rollback_backup_path=str(backup_path),
     )
 
@@ -1069,7 +1547,14 @@ def initialize_runtime_workspace(
                 ):
                     existing_manifest = _load_manifest(layout.manifest_path)
                     if existing_manifest.get("workspace_version") == 1:
-                        return _migrate_workspace_v1_to_v2(
+                        return _migrate_workspace_v1_to_v3(
+                            configuration,
+                            layout,
+                            model_lock_id,
+                            existing_manifest,
+                        )
+                    if existing_manifest.get("workspace_version") == 2:
+                        return _migrate_workspace_v2_to_v3(
                             configuration,
                             layout,
                             model_lock_id,

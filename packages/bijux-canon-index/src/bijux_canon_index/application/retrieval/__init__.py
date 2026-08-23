@@ -66,6 +66,12 @@ from .multi_query import (
     execute_multi_query,
     plan_subqueries,
 )
+from .policy import (
+    CONTENT_EVIDENCE_RETRIEVAL_POLICY_ID,
+    HybridRetrievalPolicy,
+    LEGACY_RETRIEVAL_POLICY_ID,
+    resolve_hybrid_retrieval_policy,
+)
 from .outcomes import (
     ChannelRunner,
     RetrievalChannelResult,
@@ -132,6 +138,7 @@ __all__ = [
     "CitationResolutionErrorCode",
     "CitationRetrievalMode",
     "CitationSourceMetadata",
+    "CONTENT_EVIDENCE_RETRIEVAL_POLICY_ID",
     "ChannelRunner",
     "DeduplicationKey",
     "DenseCandidate",
@@ -149,12 +156,14 @@ __all__ = [
     "EvidenceSelectionPolicy",
     "FusedCandidate",
     "FusionChannelRanking",
+    "HybridRetrievalPolicy",
     "ExactSourceLocator",
     "LexicalCandidateBatch",
     "LexicalCandidateDecision",
     "LexicalCandidateDisposition",
     "LexicalCandidateOutcome",
     "LexicalCandidateService",
+    "LEGACY_RETRIEVAL_POLICY_ID",
     "LocatorValue",
     "MultiQueryBatch",
     "MultiQueryExecutor",
@@ -212,6 +221,7 @@ __all__ = [
     "lexical_channel_result",
     "plan_subqueries",
     "reciprocal_rank_fusion",
+    "resolve_hybrid_retrieval_policy",
     "retrieval_filter_capability",
     "rerank_candidates",
     "replay_retrieval_trace",

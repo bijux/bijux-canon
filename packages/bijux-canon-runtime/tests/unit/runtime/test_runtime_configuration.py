@@ -12,6 +12,8 @@ from bijux_canon_runtime.application.runtime_configuration import (
 )
 from bijux_canon_runtime.core.errors import ConfigurationError
 
+from bijux_canon_index.application import CONTENT_EVIDENCE_RETRIEVAL_POLICY_ID
+
 
 def test_configuration_precedence_and_origins_are_explicit() -> None:
     configuration = resolve_runtime_configuration(
@@ -29,6 +31,7 @@ def test_configuration_precedence_and_origins_are_explicit() -> None:
             "BIJUX_CANON_RUNTIME_STRICT": "1",
             "BIJUX_CANON_RUNTIME_STEP_LIMIT": "5",
             "BIJUX_CANON_RUNTIME_RETRIEVAL_INDEX_PATH": "index.msgpack",
+            "BIJUX_CANON_RUNTIME_RETRIEVAL_POLICY_ID": "retrieval-policy-test",
             "BIJUX_CANON_RUNTIME_WORKING_ROOT": "workspace",
         },
         explicit={"database_path": Path("explicit.duckdb")},
@@ -39,6 +42,7 @@ def test_configuration_precedence_and_origins_are_explicit() -> None:
     assert configuration.resource_budget.step_limit == 5
     assert configuration.resource_budget.token_limit == 40
     assert configuration.retrieval_index_path == Path("index.msgpack")
+    assert configuration.retrieval_policy_id == "retrieval-policy-test"
     assert configuration.embedding_model_path == Path("models/minilm")
     assert configuration.working_root == Path("workspace")
     assert configuration.source_for("database_path") is ConfigurationSource.EXPLICIT
@@ -47,6 +51,23 @@ def test_configuration_precedence_and_origins_are_explicit() -> None:
         is ConfigurationSource.ENVIRONMENT
     )
     assert configuration.source_for("token_limit") is ConfigurationSource.FILE
+    assert (
+        configuration.source_for("retrieval_policy_id")
+        is ConfigurationSource.ENVIRONMENT
+    )
+
+
+def test_retrieval_policy_is_defaulted_recorded_and_identity_affecting() -> None:
+    default = resolve_runtime_configuration()
+    alternate = resolve_runtime_configuration(
+        explicit={"retrieval_policy_id": "alternate-policy"}
+    )
+
+    assert default.retrieval_policy_id == CONTENT_EVIDENCE_RETRIEVAL_POLICY_ID
+    assert default.redacted_record()["retrieval_policy_id"] == (
+        CONTENT_EVIDENCE_RETRIEVAL_POLICY_ID
+    )
+    assert default.identity_sha256 != alternate.identity_sha256
 
 
 def test_configuration_rejects_unknown_and_invalid_budget_fields() -> None:
@@ -111,8 +132,8 @@ def test_workspace_layout_resolves_every_runtime_authority(tmp_path: Path) -> No
     assert layout.staging_root == workspace / "staging"
     assert layout.temporary_root == workspace / "process"
     assert layout.backup_root == workspace / "backups"
-    assert layout.schema_version == "bijux.runtime.workspace-layout.v2"
-    assert layout.workspace_version == 2
+    assert layout.schema_version == "bijux.runtime.workspace-layout.v3"
+    assert layout.workspace_version == 3
     assert len(layout.identity_sha256) == 64
 
 

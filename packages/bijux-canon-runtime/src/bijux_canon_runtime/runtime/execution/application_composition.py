@@ -14,7 +14,11 @@ from pathlib import Path
 import threading
 from time import perf_counter
 
-from bijux_canon_index.application import IndexGenerationArchive, IndexService
+from bijux_canon_index.application import (
+    IndexGenerationArchive,
+    IndexService,
+    resolve_hybrid_retrieval_policy,
+)
 from bijux_canon_index.evaluation import PublicRetrievalEvaluator
 from bijux_canon_index.infra.embeddings.local_model import (
     EmbeddedBatch,
@@ -168,6 +172,12 @@ def compose_runtime_application_services(
     store = AtomicFilesystemArtifactPayloadStore(layout.cas_root)
     index = IndexService(layout.index_root)
     embedding = _LazyLocalEmbeddingModel(layout.model_root)
+    try:
+        retrieval_policy = resolve_hybrid_retrieval_policy(
+            configuration.retrieval_policy_id
+        )
+    except ValueError as exc:
+        raise ApplicationCapabilityError(str(exc)) from exc
     dispatcher = OperationDispatcher(
         (
             CanonicalIngestOperationAdapter(),
@@ -186,6 +196,7 @@ def compose_runtime_application_services(
                 index=index,
                 embedding=embedding,
                 vex_store_root=layout.vex_root,
+                policy=retrieval_policy,
             ),
             CanonicalReasonOperationAdapter(),
             CanonicalAgentOperationAdapter(
@@ -193,6 +204,7 @@ def compose_runtime_application_services(
                 index=index,
                 embedding=embedding,
                 vex_store_root=layout.vex_root,
+                retrieval_policy=retrieval_policy,
             ),
             CanonicalVerificationOperationAdapter(),
             CanonicalPersistenceOperationAdapter(store=store),

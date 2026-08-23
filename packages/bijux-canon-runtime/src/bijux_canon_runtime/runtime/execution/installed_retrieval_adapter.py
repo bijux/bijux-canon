@@ -23,14 +23,18 @@ from bijux_canon_index.application import (
     DenseCandidateService,
     ExactSourceLocator,
     FusionChannelRanking,
+    HybridRetrievalPolicy,
     IndexService,
+    LEGACY_RETRIEVAL_POLICY_ID,
     LexicalCandidateService,
-    RrfFusionPolicy,
+    RerankFailurePolicy,
+    RerankPolicy,
     VexArtifactStore,
-    VexExecutionBudget,
-    citation_candidates_from_fusion,
     citation_candidates_from_lexical,
+    citation_candidates_from_rerank,
     reciprocal_rank_fusion,
+    rerank_candidates,
+    resolve_hybrid_retrieval_policy,
 )
 from bijux_canon_index.domain.metadata_filters import (
     MetadataFilter,
@@ -462,11 +466,15 @@ class CanonicalRetrievalOperationAdapter:
         index: IndexService,
         embedding: CanonicalEmbeddingService,
         vex_store_root: Path,
+        policy: HybridRetrievalPolicy | None = None,
     ) -> None:
         self._store = store
         self._index = index
         self._embedding = embedding
         self._vex_store_root = vex_store_root
+        self._policy = policy or resolve_hybrid_retrieval_policy(
+            LEGACY_RETRIEVAL_POLICY_ID
+        )
         resource_cache = index.resource_cache
         self._lexical = LexicalCandidateService(
             index.registry_root,
@@ -518,18 +526,26 @@ class CanonicalRetrievalOperationAdapter:
         catalog = _citation_catalog(snapshot_artifact, snapshot)
         query = step.inputs.query
         top_k = step.inputs.top_k
-        candidate_limit = min(1000, max(top_k, top_k * 4))
+        hybrid = step.inputs.execution_profile is not ExecutionProfile.OFFLINE_LEXICAL
+        candidate_limit = (
+            self._policy.candidate_limit(top_k)
+            if hybrid
+            else min(1000, max(top_k, top_k * 4))
+        )
         metadata_filter = _retrieval_filter(step)
         lexical = self._lexical.generate(
             query,
             generation_id=inspection.generation_id,
-            top_k=top_k,
+            top_k=(self._policy.lexical_limit(top_k) if hybrid else top_k),
             candidate_limit=candidate_limit,
             metadata_filter=metadata_filter,
         )
         dense = None
+        dense_attempts: list[dict[str, object]] = []
         fusion = None
+        rerank = None
         vex_record = None
+        fallback_action = "none"
         if step.inputs.execution_profile is ExecutionProfile.OFFLINE_LEXICAL:
             retrieval_mode = CitationRetrievalMode.lexical
             candidates = citation_candidates_from_lexical(lexical)
@@ -546,17 +562,36 @@ class CanonicalRetrievalOperationAdapter:
                 mode=dense_mode,
                 top_k=top_k,
                 candidate_limit=candidate_limit,
-                budget=VexExecutionBudget(
+                budget=self._policy.vex_budget(
                     max_latency_ms=step.inputs.budget.timeout_seconds * 1000.0,
-                    max_memory_bytes=512 * 1024 * 1024,
                     max_candidates=candidate_limit,
-                    max_ef_search=10_000,
-                    minimum_recall=0.9,
-                    require_witness=True,
                 ),
                 metadata_filter=metadata_filter,
                 inspection=inspection,
             )
+            dense_attempts.append(asdict(dense))
+            if (
+                dense.outcome is DenseCandidateOutcome.refused
+                and dense_mode is DenseCandidateMode.ann
+                and self._policy.fallback_to_exact_on_ann_refusal
+                and len(dense_attempts) < self._policy.maximum_dense_attempts
+            ):
+                dense_mode = DenseCandidateMode.exact
+                fallback_action = "bounded-exact-after-ann-refusal"
+                dense = self._dense.generate(
+                    query,
+                    generation_id=inspection.generation_id,
+                    mode=dense_mode,
+                    top_k=candidate_limit,
+                    candidate_limit=candidate_limit,
+                    budget=self._policy.vex_budget(
+                        max_latency_ms=step.inputs.budget.timeout_seconds * 1000.0,
+                        max_candidates=candidate_limit,
+                    ),
+                    metadata_filter=metadata_filter,
+                    inspection=inspection,
+                )
+                dense_attempts.append(asdict(dense))
             if dense.outcome is DenseCandidateOutcome.refused:
                 raise StepDispatchError("dense VEX policy refused retrieval evidence")
             fusion = reciprocal_rank_fusion(
@@ -564,10 +599,23 @@ class CanonicalRetrievalOperationAdapter:
                     FusionChannelRanking.from_lexical(lexical),
                     FusionChannelRanking.from_dense(dense),
                 ),
-                policy=RrfFusionPolicy(top_k=top_k),
+                policy=self._policy.fusion_policy(top_k=top_k),
             )
-            candidates = citation_candidates_from_fusion(
+            rerank = rerank_candidates(
                 fusion,
+                policy=RerankPolicy(
+                    enabled=False,
+                    candidate_limit=candidate_limit,
+                    top_k=top_k,
+                    timeout_ms=max(
+                        1,
+                        int(step.inputs.budget.timeout_seconds * 1000.0),
+                    ),
+                    failure_policy=RerankFailurePolicy.retain_retrieval_order,
+                ),
+            )
+            candidates = citation_candidates_from_rerank(
+                rerank,
                 dense_mode=dense_mode,
             )
             retrieval_mode = (
@@ -606,10 +654,15 @@ class CanonicalRetrievalOperationAdapter:
                     "index_artifact_id": str(index_artifact.descriptor.artifact_id),
                     "locator_catalog_id": resolution.locator_catalog_id,
                     "query_text_sha256": lexical.query_text_sha256,
+                    "requested_retrieval_mode": step.inputs.execution_profile.value,
                     "retrieval": {
                         "dense": None if dense is None else asdict(dense),
+                        "dense_attempts": dense_attempts,
+                        "fallback_action": fallback_action,
                         "fusion": None if fusion is None else asdict(fusion),
                         "lexical": asdict(lexical),
+                        "policy": self._policy.record(top_k=top_k),
+                        "rerank": None if rerank is None else asdict(rerank),
                     },
                     "resource_reuse": {
                         "archive_content_sha256": prepared.archive_content_sha256,

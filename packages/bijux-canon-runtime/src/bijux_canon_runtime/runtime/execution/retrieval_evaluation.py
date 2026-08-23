@@ -14,6 +14,7 @@ from bijux_canon_index.evaluation import (
     ObservedRetrievalHit,
     ObservedStageCandidate,
     PublicRetrievalEvaluationRequest,
+    PublicRetrievalMode,
     RetrievalExecutionObservation,
     RetrievalExecutionStatus,
     RetrievalStage,
@@ -142,8 +143,6 @@ def _observation(
     if (
         evidence.get("schema_version") != "bijux.canon.index.evidence_set.v1"
         or evidence.get("generation_id") != generation_id
-        or evidence.get("retrieval_mode")
-        != request.mode.value.replace("offline-lexical", "lexical")
     ):
         raise RuntimeError("retrieval evaluation evidence provenance diverged")
     raw_hits = evidence.get("hits")
@@ -158,6 +157,19 @@ def _observation(
     retrieval = evidence.get("retrieval")
     if not isinstance(retrieval, dict):
         raise RuntimeError("retrieval evaluation channel evidence is invalid")
+    fallback_action = _required_string(retrieval, "fallback_action")
+    expected_mode = request.mode.value.replace("offline-lexical", "lexical")
+    if fallback_action == "bounded-exact-after-ann-refusal":
+        if request.mode is not PublicRetrievalMode.hybrid_ann:
+            raise RuntimeError("exact fallback was not requested from ANN retrieval")
+        expected_mode = PublicRetrievalMode.hybrid_exact.value
+    elif fallback_action != "none":
+        raise RuntimeError("retrieval evaluation fallback action is unsupported")
+    if evidence.get("retrieval_mode") != expected_mode:
+        raise RuntimeError("retrieval evaluation evidence provenance diverged")
+    requested_mode = evidence.get("requested_retrieval_mode")
+    if requested_mode is not None and requested_mode != request.mode.value:
+        raise RuntimeError("retrieval evaluation request provenance diverged")
     dense = retrieval.get("dense")
     stages = _stage_evidence(retrieval)
     vex_artifact_id: str | None = None
@@ -191,7 +203,7 @@ def _observation(
         attempt_id=attempt_id,
         vex_artifact_id=vex_artifact_id,
         policy_action=policy_action,
-        fallback_action="none",
+        fallback_action=fallback_action,
         stages=stages,
         failure=None,
     )

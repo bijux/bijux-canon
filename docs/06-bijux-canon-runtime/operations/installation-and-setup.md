@@ -65,14 +65,17 @@ the DuckDB file alone is not the complete authority.
 ### Workspace migration and rollback
 
 Stop Runtime workers before running `init` against an older workspace. The
-current Runtime recognizes the exact version-1 layout, validates its manifest,
-model, DuckDB migrations, durable-job schema, CAS, and index structure before
-changing anything, and creates a content-bound rollback generation below
-`backups/workspace-migrations/generations/`. It then writes the ordered
-`workspace-migrations.json` ledger and activates the version-2
-`workspace.json` last. A successful upgrade reports `migrated`, the applied
-migration identity, and the exact rollback backup path. Repeating `init` does
-not append or reapply that migration.
+current Runtime recognizes exact version-1 and version-2 layouts, validates the
+manifest, model, DuckDB migrations, durable-job schema, CAS, and index structure
+before changing anything, and creates content-bound rollback generations below
+`backups/workspace-migrations/generations/`. Version 2 to version 3 binds the
+Index-owned retrieval policy into effective configuration identity; its backup
+contains both the source `workspace.json` and `workspace-migrations.json`.
+Version 1 workspaces apply the two ordered migrations. Runtime writes the
+updated migration ledger first and activates the version-3 `workspace.json`
+last. A successful upgrade reports `migrated`, the applied migration identities,
+and the exact rollback backup path. Repeating `init` does not append or reapply
+a migration.
 
 If the process stops after ledger publication but before manifest activation,
 repeat the same `init` command. Runtime verifies the source manifest and
@@ -80,13 +83,14 @@ rollback backup identities and resumes the same migration. Do not delete the
 ledger or edit either checksum. A newer workspace or a layout older than the
 supported migration floor is refused before a backup or state mutation.
 
-For an immediate rollback before admitting new work, stop Runtime, preserve the
-failed/upgraded workspace, verify the reported backup generation, restore its
-exact `workspace.json`, remove only the version-2 `workspace-migrations.json`,
-and reopen with the prior Runtime release that owns workspace version 1. If any
-work was admitted after migration, restore a complete pre-upgrade workspace
-backup instead; the manifest-only rollback generation covers the files changed
-by this metadata migration, not later application writes.
+For an immediate rollback before admitting new work, stop Runtime and preserve
+the failed/upgraded workspace. For version 3 to version 2, verify the reported
+backup generation and restore both its exact `workspace.json` and
+`workspace-migrations.json`, then reopen with the prior Runtime release. A
+version-1 rollback similarly restores its manifest and removes the version-2
+ledger that did not exist at the source version. If any work was admitted after
+migration, restore a complete pre-upgrade workspace backup instead; migration
+rollback generations cover workspace authority, not later application writes.
 
 Verify the exact operation boundary before submitting work:
 

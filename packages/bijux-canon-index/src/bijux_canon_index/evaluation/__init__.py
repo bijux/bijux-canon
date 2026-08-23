@@ -3,6 +3,16 @@
 
 """Deterministic retrieval evaluation over independently reviewed qrels."""
 
+from bijux_canon_index.evaluation.configuration_search import (
+    RetrievalConfigurationResult,
+    RetrievalConfigurationSearchError,
+    RetrievalConfigurationSearchReport,
+    RetrievalQualityFloor,
+    RetrievalSearchConfiguration,
+    default_retrieval_search_configurations,
+    search_retrieval_configurations,
+)
+
 from bijux_canon_index.evaluation.public_path import (
     ObservedLocatorSegment,
     ObservedRetrievalHit,
@@ -66,6 +76,9 @@ __all__ = [
     "QueryStageDiagnostics",
     "QueryRetrievalMetrics",
     "RankedRetrievalHit",
+    "RetrievalConfigurationResult",
+    "RetrievalConfigurationSearchError",
+    "RetrievalConfigurationSearchReport",
     "RetrievalComparisonReport",
     "RetrievalEvaluationCase",
     "RetrievalEvaluationError",
@@ -77,7 +90,9 @@ __all__ = [
     "RetrievalDiagnosticError",
     "RetrievalQualityCheck",
     "RetrievalQualityComparator",
+    "RetrievalQualityFloor",
     "RetrievalQualityPolicy",
+    "RetrievalSearchConfiguration",
     "RetrievalStage",
     "RetrievalStageAnalysis",
     "RetrievalStageEvidence",
@@ -88,5 +103,7 @@ __all__ = [
     "ReviewedRetrievalQuery",
     "aggregate_stage_analysis",
     "analyze_query_stages",
+    "default_retrieval_search_configurations",
     "load_reviewed_retrieval_request",
+    "search_retrieval_configurations",
 ]

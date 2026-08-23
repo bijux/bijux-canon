@@ -92,6 +92,41 @@ def _install_known_v1_layout(configuration) -> bytes:
     return content
 
 
+def _install_known_v2_layout(configuration) -> tuple[bytes, bytes]:
+    layout = configuration.require_workspace_layout()
+    current = json.loads(layout.manifest_path.read_bytes())
+    legacy_layout = workspace_initialization._legacy_v2_layout_record(layout)
+    legacy_configuration = workspace_initialization._legacy_v2_configuration_record(
+        configuration,
+        legacy_layout,
+    )
+    configuration_id = str(legacy_configuration["identity_sha256"])
+    layout_id = str(legacy_layout["identity_sha256"])
+    model_lock_id = str(current["model_lock_artifact_id"])
+    workspace_id = workspace_initialization._workspace_id_for_version(
+        configuration_identity_sha256=configuration_id,
+        layout_identity_sha256=layout_id,
+        model_lock_id=model_lock_id,
+        workspace_version=2,
+    )
+    ledger = workspace_initialization._migration_ledger(
+        workspace_id=workspace_id,
+        migrations=[],
+    )
+    manifest = workspace_initialization._legacy_v2_manifest_record(
+        configuration,
+        layout,
+        model_lock_id,
+        str(ledger["ledger_sha256"]),
+        created_at=str(current["created_at"]),
+    )
+    manifest_content = canonical_json_bytes(manifest)
+    ledger_content = canonical_json_bytes(ledger)
+    layout.manifest_path.write_bytes(manifest_content)
+    layout.migration_ledger_path.write_bytes(ledger_content)
+    return manifest_content, ledger_content
+
+
 def test_fresh_initialization_is_atomic_and_repeat_is_exact_noop(
     tmp_path: Path,
 ) -> None:
@@ -153,13 +188,13 @@ def test_known_v1_workspace_is_backed_up_migrated_and_not_reapplied(
     migration_ledger = json.loads(ledger_after)
 
     assert migrated.status is WorkspaceInitializationStatus.MIGRATED
-    assert migrated.workspace_version == 2
-    assert len(migrated.applied_migration_ids) == 1
+    assert migrated.workspace_version == 3
+    assert len(migrated.applied_migration_ids) == 2
     assert migrated.rollback_backup_path is not None
     backup = Path(migrated.rollback_backup_path)
     assert (backup / "workspace.json").read_bytes() == legacy_manifest
     assert (backup / "backup.json").is_file()
-    assert len(migration_ledger["migrations"]) == 1
+    assert len(migration_ledger["migrations"]) == 2
     assert (
         migration_ledger["migrations"][0]["migration_id"]
         == migrated.applied_migration_ids[0]
@@ -173,7 +208,7 @@ def test_known_v1_workspace_is_backed_up_migrated_and_not_reapplied(
     assert layout.migration_ledger_path.read_bytes() == ledger_after
     assert (
         len(tuple((layout.backup_root / "workspace-migrations/generations").iterdir()))
-        == 1
+        == 2
     )
 
 
@@ -208,7 +243,90 @@ def test_interrupted_manifest_activation_resumes_from_bound_backup(
     monkeypatch.setattr(os, "replace", real_replace)
     recovered = initialize_runtime_workspace(configuration)
     assert recovered.status is WorkspaceInitializationStatus.MIGRATED
-    assert validate_runtime_workspace(configuration).workspace_version == 2
+    assert validate_runtime_workspace(configuration).workspace_version == 3
+
+
+def test_known_v2_workspace_is_backed_up_and_binds_retrieval_policy(
+    tmp_path: Path,
+) -> None:
+    model = _materialized_model(tmp_path)
+    workspace = tmp_path / "workspace"
+    configuration = _configuration(workspace, model)
+    initialize_runtime_workspace(configuration)
+    layout = configuration.require_workspace_layout()
+    legacy_manifest, legacy_ledger = _install_known_v2_layout(configuration)
+
+    migrated = initialize_runtime_workspace(configuration)
+
+    assert migrated.status is WorkspaceInitializationStatus.MIGRATED
+    assert migrated.workspace_version == 3
+    assert len(migrated.applied_migration_ids) == 1
+    assert migrated.rollback_backup_path is not None
+    backup = Path(migrated.rollback_backup_path)
+    assert (backup / "workspace.json").read_bytes() == legacy_manifest
+    assert (backup / "workspace-migrations.json").read_bytes() == legacy_ledger
+    manifest = json.loads(layout.manifest_path.read_bytes())
+    assert manifest["configuration"]["retrieval_policy_id"] == (
+        configuration.retrieval_policy_id
+    )
+    assert validate_runtime_workspace(configuration).workspace_version == 3
+
+
+def test_interrupted_v2_policy_migration_resumes_from_bound_backup(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    model = _materialized_model(tmp_path)
+    workspace = tmp_path / "workspace"
+    configuration = _configuration(workspace, model)
+    initialize_runtime_workspace(configuration)
+    layout = configuration.require_workspace_layout()
+    legacy_manifest, _legacy_ledger = _install_known_v2_layout(configuration)
+    real_replace = os.replace
+    replacements = 0
+
+    def interrupt_second_replace(source: Path, destination: Path) -> None:
+        nonlocal replacements
+        replacements += 1
+        if replacements == 2:
+            raise OSError("simulated policy manifest activation interruption")
+        real_replace(source, destination)
+
+    monkeypatch.setattr(os, "replace", interrupt_second_replace)
+    with pytest.raises(WorkspaceInitializationError) as raised:
+        initialize_runtime_workspace(configuration)
+
+    assert raised.value.code is WorkspaceInitializationErrorCode.PARTIAL_WORKSPACE
+    assert layout.manifest_path.read_bytes() == legacy_manifest
+
+    monkeypatch.setattr(os, "replace", real_replace)
+    recovered = initialize_runtime_workspace(configuration)
+    assert recovered.status is WorkspaceInitializationStatus.MIGRATED
+    assert recovered.workspace_version == 3
+    assert validate_runtime_workspace(configuration).status is (
+        WorkspaceInitializationStatus.UNCHANGED
+    )
+
+
+def test_v2_policy_migration_refuses_other_configuration_drift(
+    tmp_path: Path,
+) -> None:
+    model = _materialized_model(tmp_path)
+    workspace = tmp_path / "workspace"
+    original = _configuration(workspace, model)
+    initialize_runtime_workspace(original)
+    layout = original.require_workspace_layout()
+    legacy_manifest, legacy_ledger = _install_known_v2_layout(original)
+
+    with pytest.raises(WorkspaceInitializationError) as raised:
+        initialize_runtime_workspace(_configuration(workspace, model, offline=False))
+
+    assert (
+        raised.value.code is WorkspaceInitializationErrorCode.INCOMPATIBLE_CONFIGURATION
+    )
+    assert layout.manifest_path.read_bytes() == legacy_manifest
+    assert layout.migration_ledger_path.read_bytes() == legacy_ledger
+    assert not (layout.backup_root / "workspace-migrations").exists()
 
 
 def test_v1_migration_refuses_active_durable_jobs_before_backup(tmp_path: Path) -> None:

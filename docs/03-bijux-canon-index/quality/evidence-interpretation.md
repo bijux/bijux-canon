@@ -87,6 +87,14 @@ channel admission, fusion at ten, final at ten, and final at five. Use these
 traces to repair admission, chunk identity, or locator defects before tuning
 retrieval parameters.
 
+The versioned configuration search reuses those observed channel candidates
+and is development-only. It evaluates candidate depth, asymmetric versus
+symmetric lexical admission, RRF constants, and lexical/dense weights through
+general parameters whose identities are content-addressed. Refused and failed
+queries remain in every configuration's denominator. A search report stores
+all per-query tradeoffs and has no selected configuration unless all three
+fixed quality floors pass.
+
 For a configured Runtime workspace and persisted index artifact:
 
 ```console
@@ -96,6 +104,19 @@ bijux-canon-runtime v2 evaluate-retrieval \
   --index-id sha256:INDEX_ARTIFACT \
   --split development \
   --mode local-hybrid-ann
+```
+
+To compare the bounded general configuration space over the same installed
+executions:
+
+```console
+bijux-canon-runtime v2 search-retrieval-configurations \
+  --cases examples/ancient-dna-research/truth/evaluation-cases.jsonl \
+  --qrels examples/ancient-dna-research/truth/qrels.jsonl \
+  --index-id sha256:INDEX_ARTIFACT \
+  --split development \
+  --mode local-hybrid-ann \
+  --human
 ```
 
 Use `--human` for the bounded operator summary. JSON is the stable evidence

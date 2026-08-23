@@ -15,6 +15,8 @@ from pathlib import Path
 import re
 from typing import cast
 
+from bijux_canon_index.application import CONTENT_EVIDENCE_RETRIEVAL_POLICY_ID
+
 from bijux_canon_runtime.core.errors import ConfigurationError
 from bijux_canon_runtime.runtime.budget import ExecutionBudget
 
@@ -84,8 +86,8 @@ class RuntimeWorkspaceLayout:
     staging_root: Path
     temporary_root: Path
     backup_root: Path
-    schema_version: str = "bijux.runtime.workspace-layout.v2"
-    workspace_version: int = 2
+    schema_version: str = "bijux.runtime.workspace-layout.v3"
+    workspace_version: int = 3
 
     @classmethod
     def resolve(
@@ -211,6 +213,7 @@ class RuntimeConfiguration:
     resource_budget: ExecutionBudget
     provider_api_key: SecretReference | None
     origins: tuple[tuple[str, ConfigurationSource], ...]
+    retrieval_policy_id: str = CONTENT_EVIDENCE_RETRIEVAL_POLICY_ID
 
     @property
     def schema_version(self) -> str:
@@ -247,6 +250,8 @@ class RuntimeConfiguration:
         """Enforce configuration invariants at the ownership boundary."""
         if self.database_path is not None and not str(self.database_path):
             raise ConfigurationError("database_path must not be empty")
+        if not self.retrieval_policy_id.strip():
+            raise ConfigurationError("retrieval_policy_id must not be empty")
         for field_name in _BUDGET_FIELDS:
             value = getattr(self.resource_budget, field_name)
             if value is not None and value < 0:
@@ -283,6 +288,7 @@ class RuntimeConfiguration:
             "retrieval_index_path": (
                 str(self.retrieval_index_path) if self.retrieval_index_path else None
             ),
+            "retrieval_policy_id": self.retrieval_policy_id,
             "working_root": str(self.working_root) if self.working_root else None,
             "strict_determinism": self.strict_determinism,
             "offline": self.offline,
@@ -318,6 +324,7 @@ class RuntimeConfiguration:
             },
             "schema_version": self.schema_version,
             "strict_determinism": self.strict_determinism,
+            "retrieval_policy_id": self.retrieval_policy_id,
             "workspace_layout": None if layout is None else layout.record(),
         }
 
@@ -334,6 +341,7 @@ _FIELDS = {
     "database_path",
     "embedding_model_path",
     "retrieval_index_path",
+    "retrieval_policy_id",
     "working_root",
     "strict_determinism",
     "offline",
@@ -344,6 +352,7 @@ _CANONICAL_ENVIRONMENT = {
     "database_path": "BIJUX_CANON_RUNTIME_DB_PATH",
     "embedding_model_path": "BIJUX_CANON_RUNTIME_EMBEDDING_MODEL_PATH",
     "retrieval_index_path": "BIJUX_CANON_RUNTIME_RETRIEVAL_INDEX_PATH",
+    "retrieval_policy_id": "BIJUX_CANON_RUNTIME_RETRIEVAL_POLICY_ID",
     "working_root": "BIJUX_CANON_RUNTIME_WORKING_ROOT",
     "strict_determinism": "BIJUX_CANON_RUNTIME_STRICT",
     "offline": "BIJUX_CANON_RUNTIME_OFFLINE",
@@ -366,6 +375,7 @@ def _normalize_file_values(values: Mapping[str, object]) -> dict[str, object]:
         "database_path",
         "embedding_model_path",
         "retrieval_index_path",
+        "retrieval_policy_id",
         "working_root",
         "strict_determinism",
         "offline",
@@ -445,6 +455,10 @@ def _normalized_value(field_name: str, value: object) -> object:
         if not isinstance(value, str):
             raise ConfigurationError("provider_api_key_ref must be a string")
         return SecretReference(value)
+    if field_name == "retrieval_policy_id":
+        if not isinstance(value, str) or not value.strip():
+            raise ConfigurationError("retrieval_policy_id must be a non-empty string")
+        return value
     raise ConfigurationError(f"unknown normalized configuration field: {field_name}")
 
 
@@ -459,6 +473,7 @@ def resolve_runtime_configuration(
         "database_path": None,
         "embedding_model_path": None,
         "retrieval_index_path": None,
+        "retrieval_policy_id": CONTENT_EVIDENCE_RETRIEVAL_POLICY_ID,
         "working_root": None,
         "strict_determinism": False,
         "offline": True,
@@ -512,6 +527,7 @@ def resolve_runtime_configuration(
     retrieval_index_path = values["retrieval_index_path"]
     working_root = values["working_root"]
     provider_api_key = values["provider_api_key_ref"]
+    retrieval_policy_id = values["retrieval_policy_id"]
     return RuntimeConfiguration(
         database_path=database_path if isinstance(database_path, Path) else None,
         embedding_model_path=(
@@ -528,6 +544,7 @@ def resolve_runtime_configuration(
             provider_api_key if isinstance(provider_api_key, SecretReference) else None
         ),
         origins=tuple(sorted(origins.items())),
+        retrieval_policy_id=str(retrieval_policy_id),
     )
 
 

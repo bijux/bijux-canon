@@ -17,9 +17,12 @@ from typing import TypeVar
 from pydantic import BaseModel, ValidationError
 
 from bijux_canon_index.evaluation import (
+    RetrievalConfigurationSearchReport,
     PublicRetrievalEvaluationReport,
     PublicRetrievalMode,
+    default_retrieval_search_configurations,
     load_reviewed_retrieval_request,
+    search_retrieval_configurations,
 )
 from bijux_canon_ingest.application.source_discovery import (
     SourceDiscoveryRequest,
@@ -149,7 +152,10 @@ def run_v2_command(
                 )
             )
             return 0
-        if args.v2_command == "evaluate-retrieval":
+        if args.v2_command in {
+            "evaluate-retrieval",
+            "search-retrieval-configurations",
+        }:
             evaluation_request = load_reviewed_retrieval_request(
                 cases_path=Path(args.cases),
                 qrels_path=Path(args.qrels),
@@ -159,6 +165,34 @@ def run_v2_command(
                 top_k=args.top_k,
             )
             evaluation = service.evaluate_retrieval(evaluation_request)
+            if args.v2_command == "search-retrieval-configurations":
+                observed_depth = max(
+                    args.top_k,
+                    max(
+                        (
+                            max(
+                                len(observation.stages.lexical_candidates),
+                                len(observation.stages.dense_candidates),
+                            )
+                            for observation in evaluation.observations
+                            if observation.stages is not None
+                        ),
+                        default=args.top_k,
+                    ),
+                )
+                search = search_retrieval_configurations(
+                    request=evaluation_request,
+                    observations=evaluation.observations,
+                    configurations=default_retrieval_search_configurations(
+                        observed_candidate_depth=observed_depth,
+                        top_k=args.top_k,
+                    ),
+                )
+                if args.human:
+                    _write_configuration_search_human(search)
+                else:
+                    _write(asdict(search))
+                return 0
             if args.human:
                 _write_retrieval_evaluation_human(evaluation)
             else:
@@ -569,6 +603,46 @@ def _write_retrieval_evaluation_human(
             f"final={query.final_count}; {losses}"
         )
     print("Worst queries: " + ", ".join(report.worst_query_ids))
+    print(f"Evidence: {report.evidence_sha256}")
+
+
+def _write_configuration_search_human(
+    report: RetrievalConfigurationSearchReport,
+) -> None:
+    ranked = sorted(
+        report.results,
+        key=lambda result: (
+            -sum(metric.value for metric in result.metrics.metrics),
+            result.configuration.configuration_id,
+        ),
+    )
+    print(f"Queries: {report.query_count}")
+    print(f"Reviewed qrels: {report.qrel_count}")
+    print(f"Configurations: {len(report.results)}")
+    print(f"Selected: {report.selected_configuration_id or 'none'}")
+    for result in ranked[:10]:
+        metrics = {item.metric_id: item.value for item in result.metrics.metrics}
+        print(
+            f"Configuration {result.configuration.configuration_id}: "
+            f"depth={result.configuration.candidate_depth}, "
+            f"lexical={result.configuration.lexical_admission_limit}, "
+            f"dense={result.configuration.dense_admission_limit}, "
+            f"k={result.configuration.rank_constant}, "
+            f"weights={result.configuration.lexical_weight}:"
+            f"{result.configuration.dense_weight}; "
+            f"Recall@5={metrics['recall-at-5']:.6f}, "
+            f"MRR@10={metrics['mrr-at-10']:.6f}, "
+            f"nDCG@10={metrics['ndcg-at-10']:.6f}; "
+            f"failed={','.join(result.failed_metrics) or 'none'}"
+        )
+    best = ranked[0]
+    for query in best.metrics.queries:
+        print(
+            f"Best tradeoff {query.query_id}: "
+            f"Recall@5={query.recall_at_5:.6f}, "
+            f"MRR@10={query.reciprocal_rank_at_10:.6f}, "
+            f"nDCG@10={query.ndcg_at_10:.6f}"
+        )
     print(f"Evidence: {report.evidence_sha256}")
 
 

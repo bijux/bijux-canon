@@ -43,6 +43,9 @@ unrecognized state.
 The canonical environment names begin with `BIJUX_CANON_RUNTIME_`. In
 particular, `WORKING_ROOT`, `DB_PATH`, `EMBEDDING_MODEL_PATH`, and
 `RETRIEVAL_INDEX_PATH` participate in the recorded effective configuration.
+`BIJUX_CANON_RUNTIME_RETRIEVAL_POLICY_ID` selects one Index-owned versioned
+hybrid policy and also participates in that identity. Unknown policy IDs are
+refused during composition rather than interpreted as ambient parameters.
 Explicit `--workspace` and `--model` init arguments take precedence over their
 environment counterparts; other configured fields remain part of the exact
 workspace identity.
