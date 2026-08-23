@@ -806,21 +806,20 @@ def _verify_reason_and_agent(grounded: _GroundedRuntime) -> None:
     research_trace = json.loads(research.artifacts[0].payload)
     assert research_trace["status"] == "insufficient"
     assert research_trace["termination"]["stop"] is True
-    assert research_trace["termination"]["reasons"] == [
-        "explicit_insufficiency"
-    ]
+    assert research_trace["termination"]["reasons"] == ["explicit_insufficiency"]
     assert research_trace["counterevidence_plan"]["requests"]
     targeted_search = research_trace["targeted_search_plan"]
     assert targeted_search["attempt"]["intent"] == "opposition"
     assert targeted_search["attempt"]["trigger"] == "initial_gap"
-    assert targeted_search["attempt"]["requirement_artifact_id"] in (
-        research_trace["answer_requirement_plan"][
-            "search_requirement_artifact_ids"
-        ]
-    ) or targeted_search["attempt"]["source_requirement_artifact_id"] in (
-        research_trace["answer_requirement_plan"][
-            "search_requirement_artifact_ids"
-        ]
+    assert (
+        targeted_search["attempt"]["requirement_artifact_id"]
+        in (
+            research_trace["answer_requirement_plan"]["search_requirement_artifact_ids"]
+        )
+        or targeted_search["attempt"]["source_requirement_artifact_id"]
+        in (
+            research_trace["answer_requirement_plan"]["search_requirement_artifact_ids"]
+        )
     )
     assert research_trace["counterevidence_plan"]["requests"][0][
         "query_text"
@@ -833,6 +832,25 @@ def _verify_reason_and_agent(grounded: _GroundedRuntime) -> None:
         "candidate_evidence_found"
     )
     assert research_trace["opposition_candidates"]
+    assert (
+        research_trace["research_candidates"] == research_trace["opposition_candidates"]
+    )
+    adjudications = research_trace["candidate_adjudications"]
+    classifications = research_trace["candidate_classifications"]
+    assert adjudications
+    assert classifications
+    assert {
+        artifact_id
+        for report in adjudications
+        for artifact_id in report["input_evidence_artifact_ids"]
+    } == set(research_trace["research_candidates"])
+    assert {
+        item["artifact_id"]
+        for report in adjudications
+        for item in report["classifications"]
+    } == {item["artifact_id"] for item in classifications}
+    assert all(item["locator_artifact_id"] for item in classifications)
+    assert all(len(item["exact_text_sha256"]) == 64 for item in classifications)
     counterevidence_ids = research_trace["counterevidence_retrieval_artifact_ids"]
     assert counterevidence_ids
     assert len(counterevidence_ids) == len(set(counterevidence_ids))
@@ -865,9 +883,7 @@ def _verify_reason_and_agent(grounded: _GroundedRuntime) -> None:
         "What evidence do ancient genomes preserve?"
     )
     assert requirement_plan["outcome"] == "search_required"
-    requirement_kinds = {
-        item["kind"] for item in requirement_plan["requirements"]
-    }
+    requirement_kinds = {item["kind"] for item in requirement_plan["requirements"]}
     assert requirement_kinds >= {
         "answerability",
         "finding",

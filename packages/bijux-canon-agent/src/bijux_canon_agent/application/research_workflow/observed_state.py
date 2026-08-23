@@ -29,6 +29,7 @@ class ObservedEvidenceRelationKind(StrEnum):
 
     SUPPORT = "support"
     OPPOSITION = "opposition"
+    LIMITATION = "limitation"
     AMBIGUITY = "ambiguity"
     IRRELEVANCE = "irrelevance"
     INSUFFICIENCY = "insufficiency"
@@ -40,6 +41,7 @@ class ObservedResearchGapKind(StrEnum):
 
     UNSATISFIED_REQUIREMENT = "unsatisfied_requirement"
     MATERIAL_OPPOSITION = "material_opposition"
+    MATERIAL_LIMITATION = "material_limitation"
     AMBIGUOUS_EVIDENCE = "ambiguous_evidence"
     UNCLASSIFIED_EVIDENCE = "unclassified_evidence"
     NO_RESULTS = "no_results"
@@ -83,7 +85,9 @@ class InstalledResearchRequirement:
         ):
             raise ValueError("research requirement description is not normalized")
         if not self.kind or not self.status or not 1 <= self.priority <= 100:
-            raise ValueError("research requirement kind, status, or priority is invalid")
+            raise ValueError(
+                "research requirement kind, status, or priority is invalid"
+            )
         if self.satisfied != (self.status == "satisfied"):
             raise ValueError("research requirement satisfaction status diverges")
         identity_groups = (
@@ -119,13 +123,9 @@ class InstalledResearchRequirement:
                 "satisfied": self.satisfied,
                 "satisfaction_criteria": list(self.satisfaction_criteria),
                 "source_gap_artifact_ids": list(self.source_gap_artifact_ids),
-                "source_requirement_artifact_id": (
-                    self.source_requirement_artifact_id
-                ),
+                "source_requirement_artifact_id": (self.source_requirement_artifact_id),
                 "status": self.status,
-                "target_claim_artifact_ids": list(
-                    self.target_claim_artifact_ids
-                ),
+                "target_claim_artifact_ids": list(self.target_claim_artifact_ids),
             }
         )
         if self.artifact_id != expected:
@@ -196,9 +196,7 @@ class InstalledResearchRequirement:
             priority=priority,
             material=material,
             target_claim_artifact_ids=targets,
-            dependency_requirement_artifact_ids=(
-                dependency_requirement_artifact_ids
-            ),
+            dependency_requirement_artifact_ids=(dependency_requirement_artifact_ids),
             satisfaction_criteria=satisfaction_criteria,
             query_text=query_text,
             evidence_artifact_ids=evidence_artifact_ids,
@@ -312,7 +310,9 @@ class ObservedResearchDecision:
 
     def __post_init__(self) -> None:
         if not self.role or not self.operation or not self.rationale:
-            raise ValueError("research decisions require role, operation, and rationale")
+            raise ValueError(
+                "research decisions require role, operation, and rationale"
+            )
         if self.rationale != " ".join(self.rationale.split()):
             raise ValueError("research decision rationale is not normalized")
         if not self.cause_artifact_ids:
@@ -341,7 +341,9 @@ class ObservedResearchDecision:
     ) -> ObservedResearchDecision:
         normalized_rationale = " ".join(rationale.split())
         if not role or not operation or not normalized_rationale:
-            raise ValueError("research decisions require role, operation, and rationale")
+            raise ValueError(
+                "research decisions require role, operation, and rationale"
+            )
         if not cause_artifact_ids:
             raise ValueError("research decisions require observed causes")
         for artifact_id in cause_artifact_ids:
@@ -381,7 +383,12 @@ class ObservedResearchState:
             raise ValueError("observed research question is not normalized")
         if not 0 <= self.search_budget_used <= self.search_budget_limit:
             raise ValueError("observed research search budget is invalid")
-        if self.terminal_status not in {None, "completed", "incomplete", "insufficient"}:
+        if self.terminal_status not in {
+            None,
+            "completed",
+            "incomplete",
+            "insufficient",
+        }:
             raise ValueError("observed research terminal status is invalid")
         identity_groups = (
             self.requirement_artifact_ids,
@@ -397,9 +404,7 @@ class ObservedResearchState:
         expected = _artifact_id(
             {
                 "claim_artifact_ids": list(self.claim_artifact_ids),
-                "decision_artifact_ids": [
-                    item.artifact_id for item in self.decisions
-                ],
+                "decision_artifact_ids": [item.artifact_id for item in self.decisions],
                 "evidence_relation_artifact_ids": [
                     item.artifact_id for item in self.evidence_relations
                 ],
@@ -467,16 +472,12 @@ class ObservedResearchState:
                         requirement.dependency_requirement_artifact_ids
                     ),
                     "description": requirement.description,
-                    "evidence_artifact_ids": list(
-                        requirement.evidence_artifact_ids
-                    ),
+                    "evidence_artifact_ids": list(requirement.evidence_artifact_ids),
                     "kind": requirement.kind,
                     "material": requirement.material,
                     "priority": requirement.priority,
                     "query_text": requirement.query_text,
-                    "satisfaction_criteria": list(
-                        requirement.satisfaction_criteria
-                    ),
+                    "satisfaction_criteria": list(requirement.satisfaction_criteria),
                     "source_gap_artifact_ids": list(
                         requirement.source_gap_artifact_ids
                     ),
@@ -564,6 +565,7 @@ class ObservedResearchStateMachine:
         decision: ObservedResearchDecision,
         *,
         evidence_relations: tuple[InstalledEvidenceRelation, ...] | None = None,
+        requirements: tuple[InstalledResearchRequirement, ...] | None = None,
         gaps: tuple[ObservedResearchGap, ...] | None = None,
         consume_search: bool = False,
         terminal_status: str | None = None,
@@ -585,7 +587,7 @@ class ObservedResearchStateMachine:
             raise ValueError("terminal observed research state cannot transition")
         return cls._create(
             question=state.question,
-            requirements=state.requirements,
+            requirements=state.requirements if requirements is None else requirements,
             claim_artifact_ids=state.claim_artifact_ids,
             evidence_relations=(
                 state.evidence_relations

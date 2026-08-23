@@ -194,8 +194,12 @@ This installed service is credential-free and Runtime-neutral. It imports no
 Ingest, Index, Reason, or Runtime implementation. Its port records retain the
 exact plan, retrieval, candidate-evidence, policy, and convergence artifact
 identities needed by Runtime persistence. A material candidate remains
-explicitly unclassified until a later Agent decision classifies and uses it;
-retrieval alone is not opposition and does not revise an answer.
+explicitly unresolved until Reason classifies its exact text against the
+current requirement and claim. Agent retains supporting, opposing, limiting,
+irrelevant, ambiguous, or unclassified relations in observed state; retrieval
+query intent alone is never interpreted as opposition. Resolved search needs
+can close, while material opposition, limitations, ambiguity, or missing
+classification remain blocking inputs to answer revision.
 Different observations produce different role paths: already-sufficient
 evidence can skip search, no-result searches remain bounded negative evidence,
 and opposition, ambiguity, refusal, tool failure, or unclassified material

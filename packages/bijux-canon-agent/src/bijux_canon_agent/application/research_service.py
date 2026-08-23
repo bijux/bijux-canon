@@ -110,9 +110,7 @@ class InstalledResearchRequest:
         if set(finding_claim_ids) != claim_ids or len(finding_claim_ids) != len(
             set(finding_claim_ids)
         ):
-            raise ValueError(
-                "finding requirements must cover every claim exactly once"
-            )
+            raise ValueError("finding requirements must cover every claim exactly once")
         if self.verified_claim_count != sum(
             item.satisfied for item in self.requirements if item.kind == "finding"
         ):
@@ -176,6 +174,7 @@ class InstalledResearchSearchRecord:
     requirement_artifact_id: str | None = None
     target_claim_artifact_ids: tuple[str, ...] | None = None
     attempt_artifact_id: str | None = None
+    classifications: tuple[InstalledCandidateClassification, ...] = ()
 
     def __post_init__(self) -> None:
         _require_artifact_id(self.claim_artifact_id, "searched claim artifact_id")
@@ -184,13 +183,25 @@ class InstalledResearchSearchRecord:
         for artifact_id in self.candidate_evidence_artifact_ids:
             _require_artifact_id(artifact_id, "candidate evidence artifact_id")
         for artifact_id in (
-            (() if self.requirement_artifact_id is None else (self.requirement_artifact_id,))
-            + (() if self.target_claim_artifact_ids is None else self.target_claim_artifact_ids)
+            (
+                ()
+                if self.requirement_artifact_id is None
+                else (self.requirement_artifact_id,)
+            )
+            + (
+                ()
+                if self.target_claim_artifact_ids is None
+                else self.target_claim_artifact_ids
+            )
             + (() if self.attempt_artifact_id is None else (self.attempt_artifact_id,))
         ):
             _require_artifact_id(artifact_id, "targeted search record reference")
         if not isinstance(self.record, Mapping):
             raise TypeError("research search record must be a mapping")
+        candidate_ids = set(self.candidate_evidence_artifact_ids)
+        classified_ids = {item.evidence_artifact_id for item in self.classifications}
+        if self.classifications and classified_ids != candidate_ids:
+            raise ValueError("research candidate classifications are incomplete")
 
     @property
     def effective_target_claim_artifact_ids(self) -> tuple[str, ...]:
@@ -203,6 +214,41 @@ class InstalledResearchSearchRecord:
 
 
 @dataclass(frozen=True, slots=True)
+class InstalledCandidateClassification:
+    """Reason-owned candidate relation projected into Agent workflow state."""
+
+    artifact_id: str
+    requirement_artifact_id: str
+    claim_artifact_id: str | None
+    evidence_artifact_id: str
+    relation: str
+    rationale: str
+    method: str
+    confidence: float
+    material: bool
+    record: Mapping[str, object]
+
+    def __post_init__(self) -> None:
+        for value, field in (
+            (self.artifact_id, "candidate classification artifact_id"),
+            (self.requirement_artifact_id, "classified requirement artifact_id"),
+            (self.evidence_artifact_id, "classified evidence artifact_id"),
+        ):
+            _require_artifact_id(value, field)
+        if self.claim_artifact_id is not None:
+            _require_artifact_id(self.claim_artifact_id, "classified claim artifact_id")
+        if (
+            not self.relation
+            or not self.rationale
+            or not self.method
+            or not 0 <= self.confidence <= 1
+        ):
+            raise ValueError("candidate classification semantics are invalid")
+        if not isinstance(self.record, Mapping):
+            raise TypeError("candidate classification record must be a mapping")
+
+
+@dataclass(frozen=True, slots=True)
 class InstalledResearchSearch:
     """Complete search output plus persisted Runtime retrieval artifacts."""
 
@@ -212,6 +258,7 @@ class InstalledResearchSearch:
     retrieval_artifact_ids: tuple[str, ...]
     retrieval_records: tuple[Mapping[str, object], ...]
     record: Mapping[str, object]
+    adjudication_records: tuple[Mapping[str, object], ...] = ()
 
     def __post_init__(self) -> None:
         _require_artifact_id(self.artifact_id, "research search artifact_id")
@@ -223,6 +270,8 @@ class InstalledResearchSearch:
             raise TypeError("research retrieval records must be mappings")
         if not isinstance(self.record, Mapping):
             raise TypeError("research search output must be a mapping")
+        if any(not isinstance(item, Mapping) for item in self.adjudication_records):
+            raise TypeError("research adjudication records must be mappings")
 
 
 @dataclass(frozen=True, slots=True)
@@ -335,7 +384,7 @@ class InstalledResearchService:
                 None
                 if targeted_planner is None
                 else targeted_planner.plan(
-                    request.requirements,
+                    state.requirements,
                     attempts=tuple(attempts),
                     observations=tuple(targeted_observations),
                 )
@@ -412,7 +461,9 @@ class InstalledResearchService:
             try:
                 search = port.search(request, plan)
                 if not isinstance(search, InstalledResearchSearch):
-                    raise TypeError("installed research port returned an invalid search")
+                    raise TypeError(
+                        "installed research port returned an invalid search"
+                    )
             except Exception as error:
                 failure_id = _artifact_id(
                     {
@@ -476,7 +527,9 @@ class InstalledResearchService:
                 candidates=search_candidates,
                 policy_ids=policy_ids,
             )
-            attempt = None if targeted_search_plan is None else targeted_search_plan.attempt
+            attempt = (
+                None if targeted_search_plan is None else targeted_search_plan.attempt
+            )
             if attempt is None:
                 raise TypeError("executed research plan has no targeted search attempt")
             attempts.append(attempt)
@@ -547,7 +600,33 @@ class InstalledResearchService:
             for artifact_id in record.candidate_evidence_artifact_ids
         )
         evidence: tuple[str, ...]
-        if any("ambigu" in outcome for outcome in outcomes):
+        classifications = tuple(
+            item for record in search.records for item in record.classifications
+        )
+        if classifications and all(
+            item.relation not in {"ambiguous", "unclassified"}
+            for item in classifications
+        ):
+            opposing = tuple(
+                item.evidence_artifact_id
+                for item in classifications
+                if item.relation == "opposing" and item.material
+            )
+            supporting = tuple(
+                item.evidence_artifact_id
+                for item in classifications
+                if item.relation in {"supporting", "limiting"} and item.material
+            )
+            if opposing:
+                outcome = TargetedSearchOutcome.OPPOSITION
+                evidence = opposing
+            elif supporting:
+                outcome = TargetedSearchOutcome.SUPPORT
+                evidence = supporting
+            else:
+                outcome = TargetedSearchOutcome.NO_RESULTS
+                evidence = ()
+        elif any("ambigu" in outcome for outcome in outcomes):
             outcome = TargetedSearchOutcome.AMBIGUOUS
             evidence = ()
         elif candidates:
@@ -581,6 +660,7 @@ class InstalledResearchService:
         policy_ids: tuple[str, ...],
         budget_decision_ids: tuple[str, ...] = (),
         evidence_relations: tuple[InstalledEvidenceRelation, ...] | None = None,
+        requirements: tuple[InstalledResearchRequirement, ...] | None = None,
         gaps: tuple[ObservedResearchGap, ...] | None = None,
         consume_search: bool = False,
         terminal_status: str | None = None,
@@ -595,6 +675,7 @@ class InstalledResearchService:
             state,
             decision,
             evidence_relations=evidence_relations,
+            requirements=requirements,
             gaps=gaps,
             consume_search=consume_search,
             terminal_status=terminal_status,
@@ -646,37 +727,126 @@ class InstalledResearchService:
         outcomes = {record.outcome for record in search.records}
         if candidates:
             for record in search.records:
-                relation_kind = (
-                    ObservedEvidenceRelationKind.AMBIGUITY
-                    if "ambigu" in record.outcome
-                    else ObservedEvidenceRelationKind.UNCLASSIFIED
-                )
-                gap_kind = (
-                    ObservedResearchGapKind.AMBIGUOUS_EVIDENCE
-                    if relation_kind is ObservedEvidenceRelationKind.AMBIGUITY
-                    else ObservedResearchGapKind.UNCLASSIFIED_EVIDENCE
-                )
-                for evidence_id in record.candidate_evidence_artifact_ids:
-                    record_relations = tuple(
-                        InstalledEvidenceRelation.create(
-                            claim_artifact_id=claim_id,
-                            evidence_artifact_id=evidence_id,
-                            kind=relation_kind,
-                            material=True,
-                        )
-                        for claim_id in record.effective_target_claim_artifact_ids
+                classifications = record.classifications or tuple(
+                    InstalledCandidateClassification(
+                        artifact_id=_artifact_id(
+                            {
+                                "evidence_artifact_id": evidence_id,
+                                "relation": "unclassified",
+                                "requirement_artifact_id": (
+                                    record.requirement_artifact_id
+                                    or record.claim_artifact_id
+                                ),
+                            }
+                        ),
+                        requirement_artifact_id=(
+                            record.requirement_artifact_id or record.claim_artifact_id
+                        ),
+                        claim_artifact_id=(
+                            record.effective_target_claim_artifact_ids[0]
+                            if record.effective_target_claim_artifact_ids
+                            else None
+                        ),
+                        evidence_artifact_id=evidence_id,
+                        relation=(
+                            "ambiguous"
+                            if "ambigu" in record.outcome
+                            else "unclassified"
+                        ),
+                        rationale=(
+                            "candidate was explicitly reported as ambiguous"
+                            if "ambigu" in record.outcome
+                            else "candidate has no semantic classification record"
+                        ),
+                        method=(
+                            "compatibility_ambiguous"
+                            if "ambigu" in record.outcome
+                            else "compatibility_unclassified"
+                        ),
+                        confidence=0.0,
+                        material=True,
+                        record={},
                     )
-                    relations.extend(record_relations)
-                    gaps.append(
-                        ObservedResearchGap.create(
-                            kind=gap_kind,
-                            subject_artifact_id=(
-                                record_relations[0].artifact_id
-                                if record_relations
-                                else evidence_id
+                    for evidence_id in record.candidate_evidence_artifact_ids
+                )
+                for classification in classifications:
+                    relation_kind = {
+                        "supporting": ObservedEvidenceRelationKind.SUPPORT,
+                        "opposing": ObservedEvidenceRelationKind.OPPOSITION,
+                        "limiting": ObservedEvidenceRelationKind.LIMITATION,
+                        "irrelevant": ObservedEvidenceRelationKind.IRRELEVANCE,
+                        "ambiguous": ObservedEvidenceRelationKind.AMBIGUITY,
+                        "unclassified": ObservedEvidenceRelationKind.UNCLASSIFIED,
+                    }[classification.relation]
+                    record_relations = (
+                        ()
+                        if classification.claim_artifact_id is None
+                        else (
+                            InstalledEvidenceRelation.create(
+                                claim_artifact_id=classification.claim_artifact_id,
+                                evidence_artifact_id=classification.evidence_artifact_id,
+                                kind=relation_kind,
+                                material=classification.material,
                             ),
                         )
                     )
+                    relations.extend(record_relations)
+                    gap_kind = {
+                        ObservedEvidenceRelationKind.OPPOSITION: (
+                            ObservedResearchGapKind.MATERIAL_OPPOSITION
+                        ),
+                        ObservedEvidenceRelationKind.LIMITATION: (
+                            ObservedResearchGapKind.MATERIAL_LIMITATION
+                        ),
+                        ObservedEvidenceRelationKind.AMBIGUITY: (
+                            ObservedResearchGapKind.AMBIGUOUS_EVIDENCE
+                        ),
+                        ObservedEvidenceRelationKind.UNCLASSIFIED: (
+                            ObservedResearchGapKind.UNCLASSIFIED_EVIDENCE
+                        ),
+                    }.get(relation_kind)
+                    if classification.material and gap_kind is not None:
+                        gaps.append(
+                            ObservedResearchGap.create(
+                                kind=gap_kind,
+                                subject_artifact_id=classification.artifact_id,
+                            )
+                        )
+            requirements = cls._classified_requirements(state, search)
+            resolved_requirement_ids = {
+                previous.artifact_id
+                for previous, current in zip(
+                    state.requirements,
+                    requirements,
+                    strict=True,
+                )
+                if not previous.satisfied and current.satisfied
+            }
+            resolved_claim_ids = {
+                claim_id
+                for previous, current in zip(
+                    state.requirements,
+                    requirements,
+                    strict=True,
+                )
+                if not previous.satisfied and current.satisfied
+                for claim_id in previous.target_claim_artifact_ids
+            }
+            resolved_insufficiency_relation_ids = {
+                relation.artifact_id
+                for relation in state.evidence_relations
+                if relation.kind is ObservedEvidenceRelationKind.INSUFFICIENCY
+                and relation.claim_artifact_id in resolved_claim_ids
+            }
+            gaps = [
+                gap
+                for gap in gaps
+                if not (
+                    gap.kind is ObservedResearchGapKind.UNSATISFIED_REQUIREMENT
+                    and gap.subject_artifact_id
+                    in resolved_requirement_ids | resolved_insufficiency_relation_ids
+                )
+            ]
             state = cls._record_decision(
                 events,
                 state_machine=state_machine,
@@ -685,25 +855,36 @@ class InstalledResearchService:
                 role="skeptic",
                 operation="inspect_material_counterevidence",
                 rationale=(
-                    "material retrieved candidates require explicit semantic relation "
-                    "assessment"
+                    "classify every material candidate against the exact claim and scope"
                 ),
                 observation_ids=(search.artifact_id,),
                 evidence_ids=candidates,
                 policy_ids=policy_ids,
                 evidence_relations=tuple(relations),
+                requirements=requirements,
                 gaps=tuple(gaps),
             )
+            unclassified = any(
+                classification.relation in {"ambiguous", "unclassified"}
+                and classification.material
+                for record in search.records
+                for classification in record.classifications
+            ) or any(not record.classifications for record in search.records)
             return cls._record_decision(
                 events,
                 state_machine=state_machine,
                 state=state,
                 state_history=state_history,
                 role="adjudicator",
-                operation="retain_unclassified_material_evidence",
+                operation=(
+                    "retain_unclassified_material_evidence"
+                    if unclassified
+                    else "retain_adjudicated_material_evidence"
+                ),
                 rationale=(
-                    "do not revise or complete the answer until every material "
-                    "candidate has a classified relation"
+                    "do not complete while a material candidate lacks a resolved relation"
+                    if unclassified
+                    else "retain classified candidate relations for claim-graph revision"
                 ),
                 observation_ids=tuple(gap.artifact_id for gap in state.blocking_gaps),
                 evidence_ids=candidates,
@@ -778,6 +959,59 @@ class InstalledResearchService:
         )
 
     @staticmethod
+    def _classified_requirements(
+        state: ObservedResearchState,
+        search: InstalledResearchSearch,
+    ) -> tuple[InstalledResearchRequirement, ...]:
+        resolved_ids = {
+            record.requirement_artifact_id
+            for record in search.records
+            if record.requirement_artifact_id is not None
+            and record.classifications
+            and all(
+                item.relation not in {"ambiguous", "unclassified"}
+                for item in record.classifications
+            )
+        }
+        classification_ids = {
+            record.requirement_artifact_id: tuple(
+                item.artifact_id for item in record.classifications
+            )
+            for record in search.records
+            if record.requirement_artifact_id is not None
+        }
+        return tuple(
+            requirement
+            if requirement.artifact_id not in resolved_ids
+            else InstalledResearchRequirement.create(
+                description=requirement.description,
+                claim_artifact_id=requirement.claim_artifact_id,
+                satisfied=True,
+                kind=requirement.kind,
+                status="satisfied",
+                priority=requirement.priority,
+                material=requirement.material,
+                target_claim_artifact_ids=requirement.target_claim_artifact_ids,
+                dependency_requirement_artifact_ids=(
+                    requirement.dependency_requirement_artifact_ids
+                ),
+                satisfaction_criteria=requirement.satisfaction_criteria,
+                query_text=None,
+                evidence_artifact_ids=tuple(
+                    dict.fromkeys(
+                        requirement.evidence_artifact_ids
+                        + classification_ids.get(requirement.artifact_id, ())
+                    )
+                ),
+                source_gap_artifact_ids=requirement.source_gap_artifact_ids,
+                source_requirement_artifact_id=(
+                    requirement.source_requirement_artifact_id
+                ),
+            )
+            for requirement in state.requirements
+        )
+
+    @staticmethod
     def _relation_status(
         state: ObservedResearchState,
         search: InstalledResearchSearch | None,
@@ -789,15 +1023,19 @@ class InstalledResearchService:
         if ObservedEvidenceRelationKind.UNCLASSIFIED in kinds:
             return "unclassified"
         if ObservedEvidenceRelationKind.AMBIGUITY in kinds or any(
-            gap.kind is ObservedResearchGapKind.AMBIGUOUS_EVIDENCE
-            for gap in state.gaps
+            gap.kind is ObservedResearchGapKind.AMBIGUOUS_EVIDENCE for gap in state.gaps
         ):
             return "ambiguous"
         if any(
-            gap.kind is ObservedResearchGapKind.RETRIEVAL_REFUSED
-            for gap in state.gaps
+            gap.kind is ObservedResearchGapKind.RETRIEVAL_REFUSED for gap in state.gaps
         ):
             return "retrieval-refused"
+        if ObservedEvidenceRelationKind.OPPOSITION in kinds:
+            return "opposing"
+        if ObservedEvidenceRelationKind.LIMITATION in kinds:
+            return "limiting"
+        if ObservedEvidenceRelationKind.SUPPORT in kinds and search is not None:
+            return "supporting"
         if search is None and not state.blocking_gaps:
             return "sufficient-evidence"
         return "no-new-counterevidence"
@@ -824,7 +1062,16 @@ class InstalledResearchService:
             for record in (() if search is None else search.records)
             if record.negative_search_statement is not None
         )
-        if candidates:
+        unresolved_candidates = search is not None and any(
+            not record.classifications
+            or any(
+                item.material and item.relation in {"ambiguous", "unclassified"}
+                for item in record.classifications
+            )
+            for record in search.records
+            if record.candidate_evidence_artifact_ids
+        )
+        if candidates and unresolved_candidates:
             findings += (
                 "Counterevidence candidates require relation classification before use.",
             )
@@ -838,6 +1085,9 @@ class InstalledResearchService:
             ),
             ObservedResearchGapKind.MATERIAL_OPPOSITION: (
                 "Material opposition remains unresolved."
+            ),
+            ObservedResearchGapKind.MATERIAL_LIMITATION: (
+                "A material limitation requires answer revision."
             ),
             ObservedResearchGapKind.AMBIGUOUS_EVIDENCE: (
                 "Ambiguous evidence requires adjudication."
@@ -866,6 +1116,7 @@ class InstalledResearchService:
 
 
 __all__ = [
+    "InstalledCandidateClassification",
     "InstalledResearchClaim",
     "InstalledResearchConvergence",
     "InstalledResearchPlan",

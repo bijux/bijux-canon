@@ -268,6 +268,14 @@ are authoritative in `runtime.duckdb`. Moving or restoring a workspace therefore
 requires the governed backup/restore path; a database file without its verified
 CAS is not a complete Runtime authority.
 
+Installed research traces persist the complete candidate-adjudication reports,
+not merely retrieval hit identifiers. Verification recomputes each report and
+classification identity and requires coverage of every candidate across the
+search history. The trace therefore retains the exact citation locator and text
+hash behind supporting, opposing, limiting, irrelevant, ambiguous, or
+unclassified evidence; a completed state cannot conceal material unclassified
+content.
+
 ## Source Map
 
 - [`src/bijux_canon_runtime/model`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-runtime/src/bijux_canon_runtime/model) for durable runtime models

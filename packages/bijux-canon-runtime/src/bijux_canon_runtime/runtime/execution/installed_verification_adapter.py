@@ -29,9 +29,11 @@ from bijux_canon_reason.grounding import (
 from bijux_canon_reason.grounding.provider_contracts import content_artifact_id
 from bijux_canon_reason.research import (
     AnswerRequirementPlan,
+    CandidateAdjudicationReport,
     ConvergenceDecision,
     CounterevidencePlan,
     CounterevidenceSearchRun,
+    ResearchCandidateClassification,
 )
 from bijux_canon_runtime.model.artifact import canonical_json_bytes
 from bijux_canon_runtime.model.execution.request_plan import (
@@ -256,9 +258,9 @@ def _verify_research_trace(subject: Mapping[str, object]) -> tuple[str, ...]:
         ):
             raise StepDispatchError("retrieval plan targets another answer requirement")
         query_text = raw_attempt.get("query_text")
-        if not isinstance(query_text, str) or not plan.requests[0].query_text.startswith(
-            query_text
-        ):
+        if not isinstance(query_text, str) or not plan.requests[
+            0
+        ].query_text.startswith(query_text):
             raise StepDispatchError("retrieval query differs from targeted search")
     raw_targeted_plans = subject.get("targeted_search_plans")
     raw_counter_plans = subject.get("counterevidence_plans")
@@ -288,9 +290,7 @@ def _verify_research_trace(subject: Mapping[str, object]) -> tuple[str, ...]:
         raise StepDispatchError("terminal counterevidence run differs from history")
     attempt_ids: list[object] = []
     equivalence_ids: list[object] = []
-    for targeted, counter_plan in zip(
-        raw_targeted_plans, counter_plans, strict=True
-    ):
+    for targeted, counter_plan in zip(raw_targeted_plans, counter_plans, strict=True):
         if not isinstance(targeted, dict):
             raise StepDispatchError("targeted search history entry is invalid")
         if targeted.get("artifact_id") != content_artifact_id(
@@ -352,13 +352,56 @@ def _verify_research_trace(subject: Mapping[str, object]) -> tuple[str, ...]:
         candidate_ids
     ):
         raise StepDispatchError("research opposition candidates do not match search")
+    if _strings(subject.get("research_candidates"), "research_candidates") != (
+        candidate_ids
+    ):
+        raise StepDispatchError("research candidates do not match search")
+    raw_adjudications = subject.get("candidate_adjudications")
+    raw_classifications = subject.get("candidate_classifications")
+    if not isinstance(raw_adjudications, list) or not isinstance(
+        raw_classifications, list
+    ):
+        raise StepDispatchError("research candidate adjudication is missing")
+    try:
+        adjudications = tuple(
+            CandidateAdjudicationReport.model_validate(item)
+            for item in raw_adjudications
+        )
+        classifications = tuple(
+            ResearchCandidateClassification.model_validate(item)
+            for item in raw_classifications
+        )
+    except ValidationError as error:
+        raise StepDispatchError("research candidate adjudication is invalid") from error
+    report_classifications = tuple(
+        classification
+        for report in adjudications
+        for classification in report.classifications
+    )
+    if report_classifications != classifications:
+        raise StepDispatchError("candidate classifications differ from reports")
+    reported_candidate_ids = {
+        artifact_id
+        for report in adjudications
+        for artifact_id in report.input_evidence_artifact_ids
+    }
+    if reported_candidate_ids != set(candidate_ids):
+        raise StepDispatchError("candidate adjudication coverage is incomplete")
+    material_unresolved = {
+        classification.evidence_artifact_id
+        for classification in classifications
+        if classification.material
+        and classification.relation.value in {"ambiguous", "unclassified"}
+    }
+    if raw_state.get("terminal_status") == "completed" and material_unresolved:
+        raise StepDispatchError("completed research retains unresolved evidence")
     return (
         "answer-requirement-plan-identity",
         "targeted-search-plan-identity",
         "targeted-search-history-lineage",
         "counterevidence-plan-identity",
         "counterevidence-search-lineage",
-        "unclassified-opposition-preservation",
+        "semantic-candidate-adjudication",
         "bounded-convergence-decision",
         "causal-event-chain",
     )

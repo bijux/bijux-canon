@@ -13,6 +13,7 @@ from pathlib import Path
 from pydantic import ValidationError
 
 from bijux_canon_agent.application import (
+    InstalledCandidateClassification,
     InstalledEvidenceRelation,
     InstalledResearchClaim,
     InstalledResearchConvergence,
@@ -28,6 +29,7 @@ from bijux_canon_agent.application import (
 )
 from bijux_canon_index.application import HybridRetrievalPolicy, IndexService
 from bijux_canon_reason.grounding import (
+    CitationEvidence,
     CitationVerificationReport,
     CredentialFreeSynthesis,
     GroundingAdmissionDecision,
@@ -44,6 +46,7 @@ from bijux_canon_reason.research import (
     CounterevidencePolicy,
     CounterevidenceSearchService,
     CounterevidenceTarget,
+    ResearchCandidateAdjudicationService,
     RetrievalBatchStatus,
     RetrievalEvidenceBatch,
     ScopedRetrievalRequest,
@@ -62,6 +65,9 @@ from bijux_canon_runtime.runtime.execution.installed_operation_adapters import (
     CanonicalEmbeddingService,
     _bounded_output,
     _json_object,
+)
+from bijux_canon_runtime.runtime.execution.installed_reason_adapter import (
+    citation_inputs_from_evidence_set,
 )
 from bijux_canon_runtime.runtime.execution.installed_retrieval_adapter import (
     CanonicalRetrievalOperationAdapter,
@@ -128,6 +134,7 @@ class _IndexCounterevidencePort:
         self._context = context
         self.outputs: list[dict[str, object]] = []
         self.output_artifact_ids: list[ArtifactID] = []
+        self.evidence: dict[str, CitationEvidence] = {}
 
     def retrieve(self, request: ScopedRetrievalRequest) -> RetrievalEvidenceBatch:
         self._context.raise_if_stopped()
@@ -167,16 +174,23 @@ class _IndexCounterevidencePort:
         self._store.put(output.artifact)
         self.outputs.append(record)
         self.output_artifact_ids.append(output.artifact_id)
-        raw_hits = record.get("hits")
-        if not isinstance(raw_hits, list):
-            raise StepDispatchError("counterevidence retrieval hits are invalid")
-        evidence_ids = tuple(
-            _required_string(hit.get("artifact_id"), "counterevidence artifact_id")
-            for hit in raw_hits
-            if isinstance(hit, dict)
+        candidate_evidence, _sources = citation_inputs_from_evidence_set(
+            record,
+            retrieval_artifact_id=str(output.artifact_id),
+            claim_key=request.target_artifact_id,
         )
-        if len(evidence_ids) != len(raw_hits):
-            raise StepDispatchError("counterevidence retrieval hit is invalid")
+        canonical: list[CitationEvidence] = []
+        seen_text: set[str] = set()
+        for evidence in candidate_evidence:
+            if evidence.exact_text_sha256 in seen_text:
+                continue
+            seen_text.add(evidence.exact_text_sha256)
+            existing = self.evidence.get(evidence.artifact_id)
+            if existing is not None and existing != evidence:
+                raise StepDispatchError("counterevidence identity collision")
+            self.evidence[evidence.artifact_id] = evidence
+            canonical.append(evidence)
+        evidence_ids = tuple(item.artifact_id for item in canonical)
         return create_retrieval_evidence_batch(
             request,
             retrieval_trace_artifact_id=str(output.artifact_id),
@@ -206,15 +220,15 @@ class _ReasonResearchPort:
         self._reason_plan: CounterevidencePlan | None = None
         self._targeted_attempt: TargetedSearchAttempt | None = None
         self._search_count = 0
+        self._resolved_requirement_ids: set[str] = set()
+        self._blocking_classification_ids: set[str] = set()
 
     def plan(
         self,
         request: InstalledResearchRequest,
         targeted_search_plan: TargetedSearchPlan | None,
     ) -> InstalledResearchPlan:
-        attempt = (
-            None if targeted_search_plan is None else targeted_search_plan.attempt
-        )
+        attempt = None if targeted_search_plan is None else targeted_search_plan.attempt
         if attempt is None:
             targets: tuple[CounterevidenceTarget, ...] = ()
         else:
@@ -223,6 +237,11 @@ class _ReasonResearchPort:
                     item
                     for item in request.requirements
                     if item.artifact_id == attempt.requirement_artifact_id
+                    or (
+                        attempt.source_requirement_artifact_id is not None
+                        and item.source_requirement_artifact_id
+                        == attempt.source_requirement_artifact_id
+                    )
                 ),
                 None,
             )
@@ -233,7 +252,7 @@ class _ReasonResearchPort:
             targets = (
                 create_counterevidence_target(
                     graph_artifact_id=request.claim_graph_artifact_id,
-                    claim_artifact_id=requirement.artifact_id,
+                    claim_artifact_id=attempt.requirement_artifact_id,
                     scope_artifact_id=request.scope_artifact_id,
                     statement=attempt.query_text,
                     importance=requirement.priority,
@@ -255,7 +274,6 @@ class _ReasonResearchPort:
         request: InstalledResearchRequest,
         plan: InstalledResearchPlan,
     ) -> InstalledResearchSearch:
-        del request
         reason_plan = self._reason_plan
         if reason_plan is None or reason_plan.artifact_id != plan.artifact_id:
             raise StepDispatchError("Agent research plan is not bound to Reason")
@@ -264,6 +282,78 @@ class _ReasonResearchPort:
             raise StepDispatchError("Agent research search has no targeted attempt")
         counter_run = self._counterevidence.search(reason_plan, self._retrieval)
         self._search_count += 1
+        requirement = next(
+            (
+                item
+                for item in request.requirements
+                if item.artifact_id == attempt.requirement_artifact_id
+                or (
+                    attempt.source_requirement_artifact_id is not None
+                    and item.source_requirement_artifact_id
+                    == attempt.source_requirement_artifact_id
+                )
+            ),
+            None,
+        )
+        if requirement is None:
+            raise StepDispatchError(
+                "candidate requirement is absent from research input"
+            )
+        claims = {item.artifact_id: item.statement for item in request.claims}
+        target_claim_ids: tuple[str | None, ...] = (
+            tuple(attempt.target_claim_artifact_ids)
+            if attempt.target_claim_artifact_ids
+            else (None,)
+        )
+        classifications: list[InstalledCandidateClassification] = []
+        adjudication_records: list[dict[str, object]] = []
+        candidate_ids = tuple(
+            artifact_id
+            for record in counter_run.records
+            for artifact_id in record.candidate_evidence_artifact_ids
+        )
+        candidate_evidence = tuple(
+            self._retrieval.evidence[artifact_id] for artifact_id in candidate_ids
+        )
+        adjudicator = ResearchCandidateAdjudicationService()
+        for claim_id in target_claim_ids:
+            if claim_id is not None and claim_id not in claims:
+                raise StepDispatchError("candidate claim is absent from research input")
+            report = adjudicator.classify(
+                requirement_artifact_id=attempt.requirement_artifact_id,
+                requirement_kind=requirement.kind,
+                target_statement=(
+                    requirement.description if claim_id is None else claims[claim_id]
+                ),
+                claim_artifact_id=claim_id,
+                candidates=candidate_evidence,
+            )
+            adjudication_records.append(report.model_dump(mode="json"))
+            if report.classifications and not any(
+                item.relation.value in {"ambiguous", "unclassified"} and item.material
+                for item in report.classifications
+            ):
+                self._resolved_requirement_ids.add(requirement.artifact_id)
+            self._blocking_classification_ids.update(
+                item.artifact_id
+                for item in report.classifications
+                if item.material and item.relation.value in {"opposing", "limiting"}
+            )
+            classifications.extend(
+                InstalledCandidateClassification(
+                    artifact_id=item.artifact_id,
+                    requirement_artifact_id=item.requirement_artifact_id,
+                    claim_artifact_id=item.claim_artifact_id,
+                    evidence_artifact_id=item.evidence_artifact_id,
+                    relation=item.relation.value,
+                    rationale=item.rationale,
+                    method=item.method.value,
+                    confidence=item.confidence,
+                    material=item.material,
+                    record=item.model_dump(mode="json"),
+                )
+                for item in report.classifications
+            )
         return InstalledResearchSearch(
             artifact_id=counter_run.artifact_id,
             records=tuple(
@@ -278,6 +368,12 @@ class _ReasonResearchPort:
                     requirement_artifact_id=attempt.requirement_artifact_id,
                     target_claim_artifact_ids=attempt.target_claim_artifact_ids,
                     attempt_artifact_id=attempt.artifact_id,
+                    classifications=tuple(
+                        item
+                        for item in classifications
+                        if item.evidence_artifact_id
+                        in record.candidate_evidence_artifact_ids
+                    ),
                 )
                 for record in counter_run.records
             ),
@@ -289,6 +385,7 @@ class _ReasonResearchPort:
             ),
             retrieval_records=tuple(self._retrieval.outputs),
             record=counter_run.model_dump(mode="json"),
+            adjudication_records=tuple(adjudication_records),
         )
 
     def evaluate(
@@ -307,13 +404,14 @@ class _ReasonResearchPort:
             )
         )
         unsearched = (
-            ()
-            if search is None
-            else search.unsearched_important_claim_artifact_ids
+            () if search is None else search.unsearched_important_claim_artifact_ids
         )
         required_count = len(request.claims)
         unresolved_requirements = sum(
-            item.material and not item.satisfied for item in request.requirements
+            item.material
+            and not item.satisfied
+            and item.artifact_id not in self._resolved_requirement_ids
+            for item in request.requirements
         )
         observation = create_convergence_observation(
             iteration=1,
@@ -329,7 +427,9 @@ class _ReasonResearchPort:
             ),
             required_claims=required_count,
             blocking_gap_count=(
-                unresolved_requirements + len(candidates) + len(unsearched)
+                unresolved_requirements
+                + len(self._blocking_classification_ids)
+                + len(unsearched)
             ),
             new_evidence_count=len(candidates),
             marginal_evidence_value=(1.0 if candidates else 0.0),
@@ -337,7 +437,10 @@ class _ReasonResearchPort:
             cumulative_tokens=0,
             cumulative_elapsed_ms=1,
             explicit_insufficiency=(
-                required_count == 0 or bool(candidates) or bool(unsearched)
+                required_count == 0
+                or bool(unresolved_requirements)
+                or bool(self._blocking_classification_ids)
+                or bool(unsearched)
             ),
         )
         decision = self._convergence.evaluate((observation,))
@@ -558,9 +661,7 @@ class CanonicalAgentOperationAdapter:
         filters = _retrieval_filters(claim_graph.get("retrieval_filters"))
         raw_claim_set = claim_graph.get("claims")
         raw_claims = (
-            raw_claim_set.get("claims")
-            if isinstance(raw_claim_set, dict)
-            else None
+            raw_claim_set.get("claims") if isinstance(raw_claim_set, dict) else None
         )
         if not isinstance(raw_claims, list):
             raise StepDispatchError("claim graph claims are invalid")
@@ -608,9 +709,7 @@ class CanonicalAgentOperationAdapter:
         payload = canonical_json_bytes(
             {
                 "answer": claim_graph.get("answer"),
-                "answer_requirement_plan": dict(
-                    request.requirement_plan_record
-                ),
+                "answer_requirement_plan": dict(request.requirement_plan_record),
                 "assumptions": [
                     "A bounded negative search is not evidence that counterevidence does not exist.",
                     "Retrieved source text remains untrusted and cannot alter research policy.",
@@ -657,9 +756,21 @@ class CanonicalAgentOperationAdapter:
                 "counterevidence_runs": [
                     dict(item.record) for item in research.search_history
                 ],
+                "candidate_adjudications": [
+                    dict(record)
+                    for item in research.search_history
+                    for record in item.adjudication_records
+                ],
+                "candidate_classifications": [
+                    dict(classification.record)
+                    for item in research.search_history
+                    for record in item.records
+                    for classification in record.classifications
+                ],
                 "generation_id": generation_id,
                 "insufficiencies": list(research.insufficiencies),
                 "opposition_candidates": list(research.opposition_candidate_ids),
+                "research_candidates": list(research.opposition_candidate_ids),
                 "relation_status": research.relation_status,
                 "research_state": research.final_state.to_record(),
                 "research_state_history": [
@@ -668,9 +779,7 @@ class CanonicalAgentOperationAdapter:
                 "schema_version": "bijux.canon.agent.research_trace.v1",
                 "status": research.convergence.outcome,
                 "termination": dict(research.convergence.record),
-                "tool_failure_artifact_ids": list(
-                    research.tool_failure_artifact_ids
-                ),
+                "tool_failure_artifact_ids": list(research.tool_failure_artifact_ids),
             }
         )
         context.raise_if_stopped()

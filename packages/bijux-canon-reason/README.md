@@ -143,6 +143,13 @@ skeptical searches can deliberately plan zero additional retrievals.
 Opposition is not considered satisfied merely because an earlier search ran.
 The prior search identity is retained, and every material candidate from that
 search must have a classification identity before the requirement closes.
+`ResearchCandidateAdjudicationService` binds that classification to the exact
+requirement, optional atomic claim, citation evidence, locator, and text hash.
+It reports supporting, opposing, limiting, irrelevant, ambiguous, or
+unclassified relations with method, confidence, rationale, and materiality.
+Duplicate text is recorded explicitly, evaluator disagreement remains
+unclassified, and a query framed as contradiction cannot turn supporting text
+into opposition.
 
 Credential-free synthesis uses a closed set of conservative projections, such
 as removing source-attribution boilerplate or resolving a labeled definition.

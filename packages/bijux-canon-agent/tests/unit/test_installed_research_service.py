@@ -7,6 +7,7 @@ from dataclasses import dataclass, field
 import pytest
 
 from bijux_canon_agent.application import (
+    InstalledCandidateClassification,
     InstalledEvidenceRelation,
     InstalledResearchClaim,
     InstalledResearchConvergence,
@@ -34,6 +35,7 @@ _CANDIDATE = "sha256:" + "a" * 64
 _RETRIEVAL = "sha256:" + "b" * 64
 _CONVERGENCE = "sha256:" + "c" * 64
 _REQUIREMENT = "sha256:" + "d" * 64
+_CLASSIFICATION = "sha256:" + "e" * 64
 
 
 def _request(
@@ -115,6 +117,8 @@ class _Port:
     search_error: Exception | None = None
     search_outcomes: tuple[str, ...] = ()
     candidate_sequences: tuple[tuple[str, ...], ...] = ()
+    classification_relation: str | None = None
+    classification_material: bool = True
     calls: list[str] = field(default_factory=list)
 
     def plan(
@@ -158,6 +162,34 @@ class _Port:
             if search_index < len(self.candidate_sequences)
             else self.candidates
         )
+        attempt = (
+            None
+            if plan.targeted_search_plan is None
+            else plan.targeted_search_plan.attempt
+        )
+        classifications = (
+            ()
+            if self.classification_relation is None
+            else tuple(
+                InstalledCandidateClassification(
+                    artifact_id=_CLASSIFICATION,
+                    requirement_artifact_id=(
+                        _REQUIREMENT
+                        if attempt is None
+                        else attempt.requirement_artifact_id
+                    ),
+                    claim_artifact_id=_CLAIM,
+                    evidence_artifact_id=candidate,
+                    relation=self.classification_relation,
+                    rationale="candidate was classified against the exact claim",
+                    method="deterministic_semantic",
+                    confidence=0.9,
+                    material=self.classification_material,
+                    record={"artifact_id": _CLASSIFICATION},
+                )
+                for candidate in candidates
+            )
+        )
         return InstalledResearchSearch(
             artifact_id=_SEARCH,
             records=(
@@ -171,6 +203,14 @@ class _Port:
                         else "No new counterevidence was found within this search."
                     ),
                     record={"outcome": outcome},
+                    requirement_artifact_id=(
+                        None if attempt is None else attempt.requirement_artifact_id
+                    ),
+                    target_claim_artifact_ids=(_CLAIM,),
+                    attempt_artifact_id=(
+                        None if attempt is None else attempt.artifact_id
+                    ),
+                    classifications=classifications,
                 ),
             ),
             unsearched_important_claim_artifact_ids=(),
@@ -217,7 +257,9 @@ def test_service_owns_search_decision_and_causal_trace() -> None:
     assert len(result.state_history) == len(result.causal_events) + 1
     for index, event in enumerate(result.causal_events):
         assert event.state_before_artifact_id == result.state_history[index].artifact_id
-        assert event.state_after_artifact_id == result.state_history[index + 1].artifact_id
+        assert (
+            event.state_after_artifact_id == result.state_history[index + 1].artifact_id
+        )
         assert event.operation_artifact_id == (
             result.state_history[index + 1].decisions[-1].artifact_id
         )
@@ -267,6 +309,38 @@ def test_material_opposition_remains_a_blocking_observed_gap() -> None:
         gap.kind is ObservedResearchGapKind.MATERIAL_OPPOSITION
         for gap in result.final_state.blocking_gaps
     )
+
+
+def test_semantically_classified_support_resolves_the_searched_requirement() -> None:
+    port = _Port(
+        classification_relation="supporting",
+        convergence_outcome="converged",
+    )
+
+    result = InstalledResearchService().research(_request(), port)
+
+    assert result.relation_status == "supporting"
+    assert result.final_state.terminal_status == "completed"
+    assert all(requirement.satisfied for requirement in result.final_state.requirements)
+    assert not result.final_state.blocking_gaps
+    assert result.targeted_search_observations[0].outcome == "support"
+
+
+def test_semantically_classified_opposition_blocks_completion() -> None:
+    port = _Port(
+        classification_relation="opposing",
+        convergence_outcome="insufficient",
+    )
+
+    result = InstalledResearchService().research(_request(), port)
+
+    assert result.relation_status == "opposing"
+    assert result.final_state.terminal_status == "insufficient"
+    assert any(
+        gap.kind is ObservedResearchGapKind.MATERIAL_OPPOSITION
+        for gap in result.final_state.blocking_gaps
+    )
+    assert result.targeted_search_observations[0].outcome == "opposition"
 
 
 def test_ambiguous_search_takes_the_adjudication_branch() -> None:

@@ -148,7 +148,9 @@ class TargetedSearchAttempt:
         if query_equivalence_key(self.query_text) != self.query_equivalence_sha256:
             raise ValueError("targeted search query equivalence identity differs")
         if not self.rationale or not self.satisfaction_criteria:
-            raise ValueError("targeted search needs rationale and satisfaction criteria")
+            raise ValueError(
+                "targeted search needs rationale and satisfaction criteria"
+            )
         expected = _artifact_id(asdict(self) | {"artifact_id": None})
         if self.artifact_id != expected:
             raise ValueError("targeted search attempt identity does not match")
@@ -213,7 +215,9 @@ class TargetedSearchDecision:
     attempt_artifact_id: str | None
 
     def __post_init__(self) -> None:
-        _require_artifact_id(self.requirement_artifact_id, "search decision requirement")
+        _require_artifact_id(
+            self.requirement_artifact_id, "search decision requirement"
+        )
         if self.attempt_artifact_id is not None:
             _require_artifact_id(self.attempt_artifact_id, "search decision attempt")
         if not self.rationale:
@@ -238,7 +242,8 @@ class TargetedSearchPlan:
         _require_artifact_id(self.artifact_id, "targeted search plan artifact_id")
         _require_artifact_id(self.policy_artifact_id, "targeted search policy")
         selected = tuple(
-            item for item in self.decisions
+            item
+            for item in self.decisions
             if item.disposition is TargetedSearchDisposition.SELECTED
         )
         if len(selected) != int(self.attempt is not None):
@@ -273,8 +278,19 @@ class TargetedSearchPlanningService:
         attempt_ids = tuple(item.artifact_id for item in attempts)
         if len(attempt_ids) != len(set(attempt_ids)):
             raise ValueError("targeted search attempts must be unique")
-        if any(item.requirement_artifact_id not in requirement_ids for item in attempts):
-            raise ValueError("targeted search attempt references an unknown requirement")
+        current_source_ids = {
+            item.source_requirement_artifact_id
+            for item in requirements
+            if item.source_requirement_artifact_id is not None
+        }
+        if any(
+            item.requirement_artifact_id not in requirement_ids
+            and item.source_requirement_artifact_id not in current_source_ids
+            for item in attempts
+        ):
+            raise ValueError(
+                "targeted search attempt references an unknown requirement"
+            )
         by_attempt = {item.artifact_id: item for item in attempts}
         observed: dict[str, TargetedSearchObservation] = {}
         for observation in observations:
@@ -285,7 +301,9 @@ class TargetedSearchPlanningService:
             observed[observation.attempt_artifact_id] = observation
 
         policy_id = _artifact_id(asdict(self.policy))
-        ordered = sorted(requirements, key=lambda item: (-item.priority, item.artifact_id))
+        ordered = sorted(
+            requirements, key=lambda item: (-item.priority, item.artifact_id)
+        )
         if len(attempts) >= self.policy.max_attempts:
             budget_decisions = tuple(
                 TargetedSearchDecision(
@@ -311,16 +329,16 @@ class TargetedSearchPlanningService:
             if proposal is not None:
                 if proposal.query_equivalence_sha256 in known_equivalence:
                     disposition = TargetedSearchDisposition.EQUIVALENT_QUERY
-                    rationale = (
-                        "the proposed query is equivalent to a prior attempt and cannot run"
-                    )
+                    rationale = "the proposed query is equivalent to a prior attempt and cannot run"
                     proposal = None
                 elif selected is None:
                     selected = proposal
                     known_equivalence.add(proposal.query_equivalence_sha256)
                 else:
                     disposition = TargetedSearchDisposition.TOTAL_BUDGET
-                    rationale = "another higher-priority requirement owns this next call"
+                    rationale = (
+                        "another higher-priority requirement owns this next call"
+                    )
                     proposal = None
             decisions.append(
                 TargetedSearchDecision(
@@ -343,7 +361,11 @@ class TargetedSearchPlanningService:
         if requirement.satisfied:
             return TargetedSearchDisposition.SATISFIED, "requirement is satisfied", None
         if not requirement.material:
-            return TargetedSearchDisposition.NON_MATERIAL, "requirement is non-material", None
+            return (
+                TargetedSearchDisposition.NON_MATERIAL,
+                "requirement is non-material",
+                None,
+            )
         if requirement.status != "unresolved" or requirement.query_text is None:
             return (
                 TargetedSearchDisposition.NOT_SEARCHABLE,
@@ -365,8 +387,14 @@ class TargetedSearchPlanningService:
                 None,
             )
         prior = tuple(
-            item for item in attempts
+            item
+            for item in attempts
             if item.requirement_artifact_id == requirement.artifact_id
+            or (
+                requirement.source_requirement_artifact_id is not None
+                and item.source_requirement_artifact_id
+                == requirement.source_requirement_artifact_id
+            )
         )
         if len(prior) >= self.policy.max_attempts_per_requirement:
             return (

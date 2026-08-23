@@ -1,6 +1,7 @@
 """Application services for Bijux Canon Agent."""
 
 from bijux_canon_agent.application.research_service import (
+    InstalledCandidateClassification,
     InstalledResearchClaim,
     InstalledResearchConvergence,
     InstalledResearchPlan,
@@ -80,6 +81,7 @@ __all__ = [
     "CancellationSignal",
     "InjectedResearchServices",
     "InstalledEvidenceRelation",
+    "InstalledCandidateClassification",
     "InstalledResearchClaim",
     "InstalledResearchConvergence",
     "InstalledResearchPlan",

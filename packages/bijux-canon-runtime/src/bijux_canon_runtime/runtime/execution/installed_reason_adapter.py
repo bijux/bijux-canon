@@ -167,7 +167,7 @@ def _locator_evidence_segments(
     )
 
 
-def _citation_inputs(
+def citation_inputs_from_evidence_set(
     evidence_set: dict[str, object],
     *,
     retrieval_artifact_id: str,
@@ -301,7 +301,7 @@ class CanonicalReasonOperationAdapter:
                 "scope": step.inputs.scope,
             }
         )
-        candidates, sources = _citation_inputs(
+        candidates, sources = citation_inputs_from_evidence_set(
             evidence_set,
             retrieval_artifact_id=str(retrieval_artifact.descriptor.artifact_id),
             claim_key=question_id,
@@ -372,4 +372,4 @@ class CanonicalReasonOperationAdapter:
         )
 
 
-__all__ = ["CanonicalReasonOperationAdapter"]
+__all__ = ["CanonicalReasonOperationAdapter", "citation_inputs_from_evidence_set"]
