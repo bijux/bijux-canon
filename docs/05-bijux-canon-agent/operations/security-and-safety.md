@@ -50,6 +50,14 @@ cannot select a remote provider or arbitrary filesystem path.
 - Keep model temperature at zero for replayable traces and preserve the input,
   configuration, model, prompt, pipeline-definition, and convergence hashes.
 
+The installed research registry is default-deny and read-only. Source text
+cannot register a tool, select an implementation or version, change schemas or
+capabilities, widen corpus/filesystem scope, increase cost/timeout limits, or
+choose replay behavior. Tool records store exact request/result identities and
+fixed safe summaries, not raw payloads or exception messages. Treat any new
+summary field as a disclosure-boundary change and test it against credential,
+secret, document-text, and path fixtures.
+
 The built-in key validator requires all registered provider keys even when a
 particular CLI run is local. This is an availability constraint; it must not be
 worked around by committing dummy secrets.

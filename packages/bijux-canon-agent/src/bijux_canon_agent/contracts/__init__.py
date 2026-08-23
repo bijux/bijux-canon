@@ -48,6 +48,12 @@ from .runtime_models import (
     AgentScore,
     RunMetadata,
 )
+from .tool_execution import (
+    ResearchToolDescriptor,
+    ToolExecutionRecord,
+    ToolExecutionStatus,
+    ToolReplayPolicy,
+)
 from .tool_policy import (
     ResearchTool,
     ResearchToolOperation,
@@ -88,6 +94,7 @@ __all__ = [
     "ResearchFailureKind",
     "ResearchFailureRecord",
     "ResearchTool",
+    "ResearchToolDescriptor",
     "ResearchToolOperation",
     "ReasonerPort",
     "ReasoningPortRequest",
@@ -97,10 +104,13 @@ __all__ = [
     "RunMetadata",
     "ServicePortDescriptor",
     "ToolGrant",
+    "ToolExecutionRecord",
+    "ToolExecutionStatus",
     "ToolInvocation",
     "ToolPolicy",
     "ToolPolicyAction",
     "ToolPolicyDecision",
     "ToolPolicyReason",
+    "ToolReplayPolicy",
     "plan_sha256",
 ]

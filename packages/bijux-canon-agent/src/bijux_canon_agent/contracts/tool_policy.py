@@ -30,6 +30,7 @@ class ResearchTool(StrEnum):
     """Tools the Agent contract can explicitly authorize."""
 
     RETRIEVE = "bijux-canon-index.retrieve"
+    INSPECT = "bijux-canon-runtime.inspect"
     REASON = "bijux-canon-reason.reason"
     FILESYSTEM_READ = "filesystem.read"
 
@@ -38,6 +39,7 @@ class ResearchToolOperation(StrEnum):
     """Single operations exposed by declared research tools."""
 
     RETRIEVE = "retrieve"
+    INSPECT = "inspect"
     REASON = "reason"
     READ = "read"
 
@@ -66,6 +68,7 @@ class ToolPolicyReason(StrEnum):
 
 _EXPECTED_OPERATION = {
     ResearchTool.RETRIEVE: ResearchToolOperation.RETRIEVE,
+    ResearchTool.INSPECT: ResearchToolOperation.INSPECT,
     ResearchTool.REASON: ResearchToolOperation.REASON,
     ResearchTool.FILESYSTEM_READ: ResearchToolOperation.READ,
 }
@@ -135,6 +138,13 @@ class ToolInvocation:
     scope: tuple[str, ...]
     filesystem_paths: tuple[str, ...]
     timeout_ms: int
+    tool_version: str = "1.0"
+    input_schema_id: str = "policy-only.request.v1"
+    output_schema_id: str = "policy-only.result.v1"
+    capability: str = "policy-authorized-call"
+    cost_units: int = 1
+    idempotency_key: str | None = None
+    replay_requested: bool = False
 
     def __post_init__(self) -> None:
         for name in (
@@ -155,6 +165,22 @@ class ToolInvocation:
             raise ValueError("tool invocation scope must be nonempty and unique")
         if self.timeout_ms < 1:
             raise ValueError("tool invocation timeout_ms must be positive")
+        for name in (
+            "tool_version",
+            "input_schema_id",
+            "output_schema_id",
+            "capability",
+        ):
+            if not str(getattr(self, name)).strip():
+                raise ValueError(f"tool invocation {name} must not be empty")
+        if self.cost_units < 1:
+            raise ValueError("tool invocation cost_units must be positive")
+        if self.idempotency_key is not None:
+            value = self.idempotency_key
+            if len(value) != 64 or any(
+                char not in "0123456789abcdef" for char in value
+            ):
+                raise ValueError("tool invocation idempotency_key must be SHA-256")
         normalized_paths = tuple(
             _normalize_path(path) for path in self.filesystem_paths
         )
@@ -174,6 +200,13 @@ class ToolInvocation:
             "scope": list(self.scope),
             "filesystem_paths": list(self.filesystem_paths),
             "timeout_ms": self.timeout_ms,
+            "tool_version": self.tool_version,
+            "input_schema_id": self.input_schema_id,
+            "output_schema_id": self.output_schema_id,
+            "capability": self.capability,
+            "cost_units": self.cost_units,
+            "idempotency_key": self.idempotency_key,
+            "replay_requested": self.replay_requested,
         }
 
 
