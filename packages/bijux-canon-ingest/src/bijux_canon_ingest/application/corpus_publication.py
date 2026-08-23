@@ -32,6 +32,14 @@ def read_published_corpus_snapshot(
     return CorpusSnapshotStore(root).read_active()
 
 
+def read_published_snapshot_reuse_bundles(
+    root: str | Path,
+) -> tuple[dict[str, object], ...]:
+    """Read verified restart-reuse bundles from the active generation."""
+
+    return CorpusSnapshotStore(root).read_active_reuse_bundles()
+
+
 def recover_corpus_snapshot_store(root: str | Path) -> SnapshotRecovery:
     """Reconcile interrupted staging and restore the last admitted snapshot."""
 
@@ -41,5 +49,6 @@ def recover_corpus_snapshot_store(root: str | Path) -> SnapshotRecovery:
 __all__ = [
     "publish_corpus_snapshot",
     "read_published_corpus_snapshot",
+    "read_published_snapshot_reuse_bundles",
     "recover_corpus_snapshot_store",
 ]

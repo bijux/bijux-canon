@@ -80,9 +80,19 @@ SHA-256-addressed objects. A content-addressed relation binds those objects to
 one snapshot identity. Publication serializes writers, persists and verifies
 the objects, relation, and immutable generation, and replaces `active.json`
 last. Readers consequently observe the prior complete generation until the new
-one is fully durable. Repeating the same snapshot is a no-op, and recovery may
-remove abandoned staging entries or restore `previous.json`; it never promotes
-staged content.
+one is fully durable. Integrity-bound reuse bundles reconstruct prior typed
+documents after process restart. Ingest still rediscovers and read-admits the
+current directory, then reuses a derivation only when source bytes, format,
+parser contract, and the relevant configuration identity agree. Metadata is
+resolved again from current reviewed truth; chunk-policy changes rebuild
+chunks without reparsing content, while parser-contract changes reparse only
+the affected formats.
+
+Repeating the same snapshot returns an explicit `unchanged` result and an empty
+identity-bound delta. Add, modification, delete, and rename transitions publish
+a new immutable generation with tombstones and affected chunk identities while
+leaving every prior generation byte-identical. Recovery may remove abandoned
+staging entries or restore `previous.json`; it never promotes staged content.
 
 ## Cache Identity
 

@@ -10,12 +10,18 @@ import json
 from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Literal
 
+from bijux_canon_ingest.application.corpus_delta import plan_corpus_delta
 from bijux_canon_ingest.application.corpus_lock import (
     VerifiedCorpusLock,
     load_verified_corpus_lock,
 )
-from bijux_canon_ingest.application.corpus_publication import publish_corpus_snapshot
+from bijux_canon_ingest.application.corpus_publication import (
+    publish_corpus_snapshot,
+    read_published_corpus_snapshot,
+    read_published_snapshot_reuse_bundles,
+)
 from bijux_canon_ingest.application.corpus_snapshot import build_corpus_snapshot
 from bijux_canon_ingest.application.document_extraction import (
     assess_ocr_requirement,
@@ -30,6 +36,10 @@ from bijux_canon_ingest.application.parsed_metadata import (
     metadata_record_from_parsed_document,
 )
 from bijux_canon_ingest.application.semantic_chunking import chunk_document_mappings
+from bijux_canon_ingest.application.snapshot_reuse import (
+    SnapshotReuseError,
+    restore_published_corpus_snapshot,
+)
 from bijux_canon_ingest.application.source_admission import admit_sources
 from bijux_canon_ingest.application.source_discovery import discover_sources
 from bijux_canon_ingest.application.source_mapping import (
@@ -37,6 +47,7 @@ from bijux_canon_ingest.application.source_mapping import (
     build_document_span_mappings,
 )
 from bijux_canon_ingest.application.source_metadata import normalize_source_metadata
+from bijux_canon_ingest.domain.corpus_delta import CorpusDelta
 from bijux_canon_ingest.domain.corpus_publication import PublishedCorpusSnapshot
 from bijux_canon_ingest.domain.corpus_snapshot import (
     CorpusSnapshot,
@@ -53,6 +64,11 @@ from bijux_canon_ingest.domain.source_discovery import (
     SymlinkPolicy,
 )
 from bijux_canon_ingest.infra.adapters.file_admission import read_current_source
+from bijux_canon_ingest.infra.parsers.docx import parser_identity as docx_identity
+from bijux_canon_ingest.infra.parsers.html import parser_identity as html_identity
+from bijux_canon_ingest.infra.parsers.jats import parser_identity as jats_identity
+from bijux_canon_ingest.infra.parsers.pdf import parser_identity as pdf_identity
+from bijux_canon_ingest.infra.parsers.text import parser_identity as text_identity
 
 
 class CanonicalIngestError(RuntimeError):
@@ -60,6 +76,7 @@ class CanonicalIngestError(RuntimeError):
 
 
 _DEFAULT_DISCOVERY_LIMITS = DiscoveryLimits()
+IngestDisposition = Literal["initial", "unchanged", "changed"]
 
 
 @dataclass(frozen=True, slots=True)
@@ -267,6 +284,23 @@ class CanonicalIngestResult:
     ocr_required: tuple[OcrRequiredOutcome, ...]
     publication: PublishedCorpusSnapshot | None
     corpus_lock: VerifiedCorpusLock | None
+    disposition: IngestDisposition = "initial"
+    delta: CorpusDelta | None = None
+
+    def __post_init__(self) -> None:
+        if self.disposition == "initial":
+            if self.delta is not None:
+                raise ValueError("initial ingest result cannot declare a delta")
+            return
+        if (
+            self.delta is None
+            or self.delta.current_snapshot_id != self.snapshot.snapshot_id
+        ):
+            raise ValueError("incremental ingest result requires its exact delta")
+        if self.delta.is_noop != (self.disposition == "unchanged"):
+            raise ValueError(
+                "ingest disposition does not match its snapshot transition"
+            )
 
     def manifest(self) -> dict[str, object]:
         formats: dict[str, int] = {}
@@ -284,14 +318,16 @@ class CanonicalIngestResult:
             "configuration_sha256": self.snapshot.configuration.configuration_sha256,
             "corpus_lock": _corpus_lock_manifest(self.corpus_lock),
             "discovery_issue_count": len(self.discovery.issues),
+            "disposition": self.disposition,
             "document_count": len(self.snapshot.documents),
+            "delta": self.delta.manifest() if self.delta is not None else None,
             "formats": dict(sorted(formats.items())),
             "ocr_required_count": len(self.ocr_required),
             "publication": (
                 self.publication.manifest() if self.publication is not None else None
             ),
             "rejection_count": len(self.snapshot.rejections),
-            "schema_version": "bijux.canon.ingest.result.v1",
+            "schema_version": "bijux.canon.ingest.result.v2",
             "snapshot_id": self.snapshot.snapshot_id,
         }
 
@@ -314,10 +350,67 @@ def _parse(admission: AdmissionResult) -> ParsedSourceDocument:
     )
 
 
+def _parser_identity(format_id: str) -> tuple[str, str, str]:
+    if format_id == "docx":
+        return docx_identity()
+    if format_id == "html":
+        return html_identity()
+    if format_id == "jats":
+        return jats_identity()
+    if format_id in {"markdown", "text"}:
+        return text_identity(format_id)
+    if format_id == "pdf-digital":
+        return pdf_identity()
+    raise CanonicalIngestError(f"no canonical parser identity for format {format_id!r}")
+
+
+def _document_parser_identity(
+    document: ParsedSourceDocument,
+) -> tuple[str, str, str]:
+    manifest = document.manifest()
+    parser = manifest.get("parser")
+    schema_version = manifest.get("schema_version")
+    if not isinstance(parser, dict) or not isinstance(schema_version, str):
+        raise CanonicalIngestError("persisted parser identity is invalid")
+    name = parser.get("name")
+    version = parser.get("version")
+    if not isinstance(name, str) or not isinstance(version, str):
+        raise CanonicalIngestError("persisted parser identity is invalid")
+    return name, version, schema_version
+
+
 class CanonicalIngestRuntime:
     """Runtime adapter around the canonical application service."""
 
-    def prepare(self, request: CanonicalIngestRequest) -> CanonicalCorpusPreparation:
+    @staticmethod
+    def _previous_snapshot(
+        request: CanonicalIngestRequest,
+    ) -> CorpusSnapshot | None:
+        if request.publication_root is None:
+            return None
+        publication = read_published_corpus_snapshot(request.publication_root)
+        if publication is None:
+            return None
+        bundles = read_published_snapshot_reuse_bundles(request.publication_root)
+        if not bundles:
+            return None
+        try:
+            return restore_published_corpus_snapshot(
+                publication,
+                bundles,
+                root_path=request.root_path,
+            )
+        except SnapshotReuseError as error:
+            raise CanonicalIngestError(
+                "published snapshot reuse integrity failed"
+            ) from error
+
+    def prepare(
+        self,
+        request: CanonicalIngestRequest,
+        *,
+        previous_snapshot: CorpusSnapshot | None = None,
+    ) -> CanonicalCorpusPreparation:
         """Discover, admit, extract, and chunk without assembling a snapshot."""
         exclude = list(request.exclude)
         if "corpus.lock.json" not in exclude:
@@ -357,6 +450,22 @@ class CanonicalIngestRuntime:
         documents: list[CorpusSnapshotDocument] = []
         rejections: list[AdmissionResult] = []
         ocr_required: list[OcrRequiredOutcome] = []
+        previous_by_location = {
+            document.admission.source.location_id: document
+            for document in (
+                previous_snapshot.documents if previous_snapshot is not None else ()
+            )
+        }
+        previous_by_content: dict[tuple[str, str], list[CorpusSnapshotDocument]] = {}
+        for document in previous_by_location.values():
+            format_id = document.admission.format_id
+            if format_id is None:
+                continue
+            previous_by_content.setdefault(
+                (document.admission.source.content_sha256, format_id), []
+            ).append(document)
+        for candidates in previous_by_content.values():
+            candidates.sort(key=lambda item: item.admission.source.location_id)
         for admission in admissions:
             if not admission.admitted:
                 rejections.append(admission)
@@ -366,7 +475,25 @@ class CanonicalIngestRuntime:
                 continue
             if admission.format_id is None:
                 raise CanonicalIngestError("admitted source has no format identity")
-            parsed = _parse(admission)
+            previous_document = previous_by_location.get(admission.source.location_id)
+            if (
+                previous_document is None
+                or previous_document.admission.source.content_sha256
+                != admission.source.content_sha256
+                or previous_document.admission.format_id != admission.format_id
+            ):
+                candidates = previous_by_content.get(
+                    (admission.source.content_sha256, admission.format_id), []
+                )
+                previous_document = candidates[0] if candidates else None
+            parser_reused = previous_document is not None and _document_parser_identity(
+                previous_document.document
+            ) == _parser_identity(admission.format_id)
+            parsed = (
+                previous_document.document
+                if parser_reused and previous_document is not None
+                else _parse(admission)
+            )
             content = read_current_source(admission.source, admission.budgets)
             metadata = normalize_source_metadata(
                 admission.source,
@@ -383,12 +510,26 @@ class CanonicalIngestRuntime:
                     ),
                 ),
             )
-            mappings = build_document_span_mappings(content, parsed)
-            chunks = chunk_document_mappings(
-                parsed,
-                mappings,
-                policy=request.configuration.chunking_policy,
-            )
+            derivation_reused = parser_reused and previous_document is not None
+            if derivation_reused:
+                assert previous_document is not None
+                mappings = previous_document.mappings
+            else:
+                mappings = build_document_span_mappings(content, parsed)
+            if (
+                derivation_reused
+                and previous_snapshot is not None
+                and previous_snapshot.configuration.chunking_policy
+                == request.configuration.chunking_policy
+            ):
+                assert previous_document is not None
+                chunks = previous_document.chunks
+            else:
+                chunks = chunk_document_mappings(
+                    parsed,
+                    mappings,
+                    policy=request.configuration.chunking_policy,
+                )
             documents.append(
                 CorpusSnapshotDocument(
                     admission,
@@ -411,8 +552,21 @@ class CanonicalIngestRuntime:
 
     def ingest(self, request: CanonicalIngestRequest) -> CanonicalIngestResult:
         """Preserve the one-call installed API over distinct internal operations."""
-        preparation = self.prepare(request)
+        previous_snapshot = self._previous_snapshot(request)
+        preparation = self.prepare(request, previous_snapshot=previous_snapshot)
         snapshot = preparation.snapshot()
+        delta = (
+            plan_corpus_delta(previous_snapshot, snapshot)
+            if previous_snapshot is not None
+            else None
+        )
+        disposition: IngestDisposition = (
+            "initial"
+            if previous_snapshot is None
+            else "unchanged"
+            if previous_snapshot.snapshot_id == snapshot.snapshot_id
+            else "changed"
+        )
         publication = (
             publish_corpus_snapshot(request.publication_root, snapshot)
             if request.publication_root is not None
@@ -424,6 +578,8 @@ class CanonicalIngestRuntime:
             preparation.ocr_required,
             publication,
             preparation.corpus_lock,
+            disposition,
+            delta,
         )
 
 

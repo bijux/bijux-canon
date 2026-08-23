@@ -55,7 +55,12 @@ with explicitly lower discovery/filename provenance. Invalid or contradictory
 lock evidence exits with status `2` and includes its stable refusal code on
 stderr. Successful JSON includes a portable `corpus_lock` summary with the
 verified schema, identity, source count, and discovery mode, or `status` equal
-to `absent` for an unlocked directory.
+to `absent` for an unlocked directory. With `--publish-root`, the result also
+declares `disposition` as `initial`, `unchanged`, or `changed`. A restorable
+prior generation supplies an exact `delta`; unchanged runs reuse every eligible
+document after restart without invoking its parser, while changed runs name
+the precise additions, modifications, deletions, renames, tombstones, and
+chunk invalidations.
 
 Directory traversal is bounded by default. Use `--max-depth`, `--max-entries`,
 `--max-files`, `--max-file-bytes`, `--max-total-bytes`, and `--max-seconds` to

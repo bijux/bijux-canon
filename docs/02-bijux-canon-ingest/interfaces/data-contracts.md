@@ -89,7 +89,7 @@ leaks the host path of the selected lock.
 `bijux.canon.ingest.discovery.v2` records the include/exclude and symlink
 policy together with the exact maximum depth, enumerated entries, admitted
 files, bytes per file, total admitted bytes, and elapsed seconds. These limits
-also appear in `bijux.canon.ingest.corpus_snapshot_configuration.v2`, so a
+also appear in `bijux.canon.ingest.corpus_snapshot_configuration.v3`, so a
 snapshot identity cannot silently reuse content discovered under a different
 resource policy.
 
@@ -144,6 +144,21 @@ only after canonical JSON, snapshot identity, relation identity, entry counts,
 every reachable object digest, and the snapshot-object binding all verify.
 Version 1 generation manifests remain readable for existing stores but do not
 claim the version 2 relation guarantees.
+
+The relation also retains integrity-bound snapshot-reuse bundles. They carry
+the complete logical source identity and every typed parser, metadata, mapping,
+and chunk member needed to reconstruct unchanged documents after restart.
+Restoration must reproduce the exact snapshot bytes and identity; missing,
+ambiguous, or altered members refuse reuse. Existing generations without these
+bundles remain readable and replayable, but the first ingest after upgrade
+performs a full derivation into the reuse-capable configuration identity.
+
+`bijux.canon.ingest.result.v2` reports `initial`, `unchanged`, or `changed` in
+`disposition`. When an active prior generation was restorable, `delta` binds
+the previous and current snapshot identities and canonically records added and
+deleted documents, source modifications, renames, tombstones, chunk
+invalidations/additions, and rejection changes. An unchanged result has equal
+snapshot identities and empty change sets; it is not inferred from timestamps.
 
 ## Source Record
 

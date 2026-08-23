@@ -26,6 +26,12 @@ _PARSER_NAME = "bijux-canon-ingest-docx"
 _PARSER_VERSION = "1"
 
 
+def parser_identity() -> tuple[str, str, str]:
+    """Return the extraction contract that governs DOCX reuse."""
+
+    return _PARSER_NAME, _PARSER_VERSION, "bijux.canon.ingest.parsed_docx_document.v1"
+
+
 def _local_name(tag: str) -> str:
     return tag.rsplit("}", 1)[-1]
 
@@ -297,4 +303,4 @@ def parse_docx_content(
     )
 
 
-__all__ = ["parse_docx_content"]
+__all__ = ["parse_docx_content", "parser_identity"]

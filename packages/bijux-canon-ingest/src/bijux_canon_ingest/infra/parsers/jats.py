@@ -29,6 +29,12 @@ _EXCLUDED_PARAGRAPH_ANCESTORS = frozenset(
 )
 
 
+def parser_identity() -> tuple[str, str, str]:
+    """Return the extraction contract that governs JATS reuse."""
+
+    return _PARSER_NAME, _PARSER_VERSION, "bijux.canon.ingest.parsed_document.v1"
+
+
 def _local_name(element: ET.Element) -> str:
     return element.tag.rsplit("}", 1)[-1]
 
@@ -263,4 +269,4 @@ def parse_jats_content(content: bytes, *, source_content_sha256: str) -> ParsedD
     )
 
 
-__all__ = ["parse_jats_content"]
+__all__ = ["parse_jats_content", "parser_identity"]

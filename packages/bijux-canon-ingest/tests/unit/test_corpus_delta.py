@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import hashlib
+from dataclasses import replace
 from pathlib import Path
 
 import pytest
@@ -188,3 +189,20 @@ def test_delta_rejects_wrong_starting_snapshot(tmp_path: Path) -> None:
 
     with pytest.raises(ValueError, match="does not start"):
         apply_corpus_delta(current, delta, CONFIGURATION, current_documents)
+
+
+def test_noop_delta_has_equal_identities_and_cannot_claim_changes(
+    tmp_path: Path,
+) -> None:
+    root = tmp_path / "documents"
+    root.mkdir()
+    source = root / "stable.txt"
+    _write(source, "stable")
+    snapshot = build_corpus_snapshot(CONFIGURATION, (_document(source, root),))
+
+    delta = plan_corpus_delta(snapshot, snapshot)
+
+    assert delta.is_noop
+    assert delta.previous_snapshot_id == delta.current_snapshot_id
+    with pytest.raises(ValueError, match="no-op corpus delta"):
+        replace(delta, added_document_ids=(snapshot.documents[0].document_id,))

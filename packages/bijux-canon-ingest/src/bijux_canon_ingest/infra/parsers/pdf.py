@@ -23,6 +23,12 @@ from bijux_canon_ingest.domain.document_extraction import (
 _PARSER_NAME = "pypdf"
 
 
+def parser_identity() -> tuple[str, str, str]:
+    """Return the extraction contract that governs digital-PDF reuse."""
+
+    return _PARSER_NAME, pypdf.__version__, "bijux.canon.ingest.parsed_pdf_document.v1"
+
+
 def _metadata(reader: PdfReader) -> PdfDocumentMetadata:
     embedded = reader.metadata
     raw_fields = tuple(
@@ -117,4 +123,4 @@ def parse_pdf_content(
     )
 
 
-__all__ = ["parse_pdf_content"]
+__all__ = ["parse_pdf_content", "parser_identity"]

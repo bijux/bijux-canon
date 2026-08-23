@@ -20,13 +20,19 @@ from bijux_canon_ingest.domain.corpus_publication import (
     PublishedCorpusSnapshot,
     SnapshotRecovery,
 )
-from bijux_canon_ingest.domain.corpus_snapshot import CorpusSnapshot
+from bijux_canon_ingest.domain.corpus_snapshot import (
+    CorpusSnapshot,
+    CorpusSnapshotDocument,
+)
+from bijux_canon_ingest.domain.document_extraction import ParsedTextDocument
+from bijux_canon_ingest.domain.source_admission import AdmissionResult
 
 ACTIVE_MANIFEST: Final = "active.json"
 PREVIOUS_MANIFEST: Final = "previous.json"
 GENERATION_MANIFEST: Final = "manifest.json"
 SNAPSHOT_DOCUMENT: Final = "snapshot.json"
 RELATION_DOCUMENT: Final = "relation.json"
+REUSE_BUNDLE_SCHEMA: Final = "bijux.canon.ingest.snapshot_reuse_bundle.v1"
 
 
 class PublicationCheckpoint(StrEnum):
@@ -185,6 +191,50 @@ class CorpusSnapshotStore:
             "ordinal": ordinal,
         }
 
+    @staticmethod
+    def _reuse_identity(payload: Mapping[str, object]) -> str:
+        return f"sha256:{hashlib.sha256(_canonical_json(payload)[:-1]).hexdigest()}"
+
+    @classmethod
+    def _document_reuse_bundle(
+        cls,
+        snapshot_document: CorpusSnapshotDocument,
+    ) -> dict[str, object]:
+        admission = snapshot_document.admission
+        payload: dict[str, object] = {
+            "chunk_mappings": [
+                mapping.manifest()
+                for _, mapping in sorted(
+                    {
+                        mapping.mapping_sha256: mapping
+                        for chunk in snapshot_document.chunks
+                        for mapping in chunk.mappings
+                    }.items()
+                )
+            ],
+            "kind": "document",
+            "schema_version": REUSE_BUNDLE_SCHEMA,
+            "snapshot_document": snapshot_document.manifest(),
+            "source": admission.source.identity_payload(),
+        }
+        parsed = snapshot_document.document
+        if isinstance(parsed, ParsedTextDocument):
+            payload["restoration"] = {"normalized_text": parsed.normalized_text}
+        return {"bundle_id": cls._reuse_identity(payload), **payload}
+
+    @classmethod
+    def _rejection_reuse_bundle(
+        cls,
+        rejection: AdmissionResult,
+    ) -> dict[str, object]:
+        payload: dict[str, object] = {
+            "kind": "rejection",
+            "rejection": rejection.manifest(),
+            "schema_version": REUSE_BUNDLE_SCHEMA,
+            "source": rejection.source.identity_payload(),
+        }
+        return {"bundle_id": cls._reuse_identity(payload), **payload}
+
     def _snapshot_relation(
         self,
         snapshot: CorpusSnapshot,
@@ -293,6 +343,21 @@ class CorpusSnapshotStore:
                     domain_identity=chunk.chunk_id,
                     ordinal=chunk.chunk_index,
                 )
+            reuse_bundle = self._document_reuse_bundle(snapshot_document)
+            register(
+                _canonical_json(reuse_bundle),
+                kind="snapshot-reuse",
+                document_id=snapshot_document.document_id,
+                domain_identity=str(reuse_bundle["bundle_id"]),
+            )
+        for rejection in snapshot.rejections:
+            reuse_bundle = self._rejection_reuse_bundle(rejection)
+            register(
+                _canonical_json(reuse_bundle),
+                kind="snapshot-reuse",
+                document_id=None,
+                domain_identity=str(reuse_bundle["bundle_id"]),
+            )
 
         def entry_order(item: Mapping[str, object]) -> tuple[str, str, int, str]:
             ordinal = item["ordinal"]
@@ -744,6 +809,43 @@ class CorpusSnapshotStore:
 
         self._ensure_layout()
         return self._read_pointer(ACTIVE_MANIFEST)
+
+    def read_active_reuse_bundles(self) -> tuple[dict[str, object], ...]:
+        """Return integrity-checked bundles needed for selective restart reuse."""
+
+        self._ensure_layout()
+        publication = self._read_pointer(ACTIVE_MANIFEST)
+        if publication is None or publication.relation_sha256 is None:
+            return ()
+        relation = self._read_relation(publication.manifest())
+        entries = relation.get("objects")
+        if not isinstance(entries, list):
+            raise SnapshotPublicationError("snapshot object relation is invalid")
+        bundles: list[dict[str, object]] = []
+        for entry in entries:
+            if not isinstance(entry, dict) or entry.get("kind") != "snapshot-reuse":
+                continue
+            digest = entry.get("object_sha256")
+            if not isinstance(digest, str):
+                raise SnapshotPublicationError("snapshot reuse object is invalid")
+            try:
+                value = json.loads(self._object_path(digest).read_bytes())
+            except (OSError, UnicodeDecodeError, json.JSONDecodeError) as error:
+                raise SnapshotPublicationError(
+                    "snapshot reuse object is unreadable"
+                ) from error
+            if not isinstance(value, dict):
+                raise SnapshotPublicationError("snapshot reuse object is invalid")
+            payload = dict(value)
+            bundle_id = payload.pop("bundle_id", None)
+            if (
+                payload.get("schema_version") != REUSE_BUNDLE_SCHEMA
+                or bundle_id != self._reuse_identity(payload)
+                or entry.get("domain_identity") != bundle_id
+            ):
+                raise SnapshotPublicationError("snapshot reuse identity is invalid")
+            bundles.append(value)
+        return tuple(sorted(bundles, key=lambda item: str(item.get("bundle_id", ""))))
 
     def _recover_locked(self) -> SnapshotRecovery:
         self._ensure_layout()

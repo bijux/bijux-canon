@@ -18,7 +18,7 @@ published as `bijux_canon_ingest.interfaces.http.app:app`.
 | Method and path | Request | Success | Governed result |
 | --- | --- | --- | --- |
 | `GET /v1/healthz` | none | `200` | `{ "ok": true }` liveness response |
-| `POST /v1/corpora/ingest` | document root, names, optional lock/publication paths | `200` | canonical snapshot identity, format/count summary, and optional atomic publication |
+| `POST /v1/corpora/ingest` | document root, names, optional lock/publication paths | `200` | canonical snapshot identity, `initial`/`unchanged`/`changed` disposition, exact optional delta, format/count summary, and optional atomic publication |
 | `POST /v1/chunks` | documents, chunk size, overlap, embedding flag | `200` | chunks with source identity, offsets, metadata, and optional embeddings |
 | `POST /v1/index/build` | documents, `bm25` or `numpy-cosine`, chunk geometry | `200` | process-local `index_id`, content/configuration fingerprint, schema version |
 | `POST /v1/retrieve` | `index_id`, query, `top_k`, metadata filters | `200` | ranked candidates with scores and chunk metadata |

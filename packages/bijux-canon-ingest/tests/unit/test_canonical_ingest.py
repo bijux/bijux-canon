@@ -10,13 +10,17 @@ from pathlib import Path
 
 import pytest
 
+from bijux_canon_ingest.application import canonical_ingest
 from bijux_canon_ingest.application.canonical_ingest import (
     CanonicalIngestRequest,
+    CanonicalIngestRuntime,
     assemble_corpus_snapshot_manifest,
     ingest_corpus,
     prepare_corpus,
 )
+from bijux_canon_ingest.application.source_mapping import ParsedSourceDocument
 from bijux_canon_ingest.domain.corpus_snapshot import CorpusSnapshotConfiguration
+from bijux_canon_ingest.domain.source_admission import AdmissionResult
 
 REAL_CORPUS = Path(__file__).parents[4] / "examples/document-formats/corpus"
 RESEARCH_CORPUS = (
@@ -92,6 +96,37 @@ def test_canonical_runtime_ingests_real_format_corpus(tmp_path: Path) -> None:
         "acquisition_receipt",
         "embedded_parser",
     }
+
+
+def test_real_format_publication_reuses_every_parser_after_restart(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    request = CanonicalIngestRequest(
+        root_path=REAL_CORPUS,
+        root_name="real-formats",
+        configuration=CorpusSnapshotConfiguration(corpus_name="real-formats"),
+        publication_root=tmp_path / "published",
+    )
+    initial = CanonicalIngestRuntime().ingest(request)
+    assert initial.disposition == "initial"
+    parse = canonical_ingest._parse
+    parse_calls: list[str] = []
+
+    def recording_parse(admission: AdmissionResult) -> ParsedSourceDocument:
+        parse_calls.append(admission.source.relative_path)
+        return parse(admission)
+
+    monkeypatch.setattr(canonical_ingest, "_parse", recording_parse)
+
+    unchanged = CanonicalIngestRuntime().ingest(request)
+
+    assert parse_calls == []
+    assert unchanged.disposition == "unchanged"
+    assert unchanged.snapshot.snapshot_id == initial.snapshot.snapshot_id
+    assert unchanged.snapshot.canonical_bytes == initial.snapshot.canonical_bytes
+    assert unchanged.delta is not None
+    assert unchanged.delta.previous_snapshot_id == unchanged.delta.current_snapshot_id
 
 
 def test_canonical_runtime_merges_parser_metadata_for_every_real_format() -> None:
@@ -249,6 +284,129 @@ def test_canonical_runtime_result_is_deterministic() -> None:
     )
 
     assert ingest_corpus(request).manifest() == ingest_corpus(request).manifest()
+
+
+def test_published_ingest_reuses_unchanged_work_and_audits_file_deltas(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    root = tmp_path / "corpus"
+    root.mkdir()
+    stable = root / "stable.txt"
+    changing = root / "changing.txt"
+    stable.write_text("Stable title\n\nStable evidence.", encoding="utf-8")
+    changing.write_text("Changing title\n\nOld evidence.", encoding="utf-8")
+    publication_root = tmp_path / "published"
+    request = CanonicalIngestRequest.for_directory(
+        root_path=root,
+        root_name="incremental",
+        corpus_name="incremental",
+        publication_root=publication_root,
+    )
+    parse_calls: list[str] = []
+    parse = canonical_ingest._parse
+
+    def recording_parse(admission: AdmissionResult) -> ParsedSourceDocument:
+        parse_calls.append(admission.source.relative_path)
+        return parse(admission)
+
+    monkeypatch.setattr(canonical_ingest, "_parse", recording_parse)
+    initial = CanonicalIngestRuntime().ingest(request)
+    assert initial.publication is not None
+    initial_generation = (
+        publication_root
+        / "generations"
+        / initial.publication.generation_name
+        / "snapshot.json"
+    )
+    initial_bytes = initial_generation.read_bytes()
+
+    unchanged = CanonicalIngestRuntime().ingest(request)
+    assert parse_calls == ["changing.txt", "stable.txt"]
+    assert unchanged.disposition == "unchanged"
+    assert unchanged.snapshot.snapshot_id == initial.snapshot.snapshot_id
+    assert unchanged.delta is not None
+    assert not unchanged.delta.added_document_ids
+    assert not unchanged.delta.deleted_document_ids
+    assert not unchanged.delta.modifications
+    assert not unchanged.delta.renames
+
+    changing.write_text("Changing title\n\nNew evidence.", encoding="utf-8")
+    modified = CanonicalIngestRuntime().ingest(request)
+    assert parse_calls[-1:] == ["changing.txt"]
+    assert modified.disposition == "changed"
+    assert modified.delta is not None and len(modified.delta.modifications) == 1
+
+    added_path = root / "added.txt"
+    added_path.write_text("Added title\n\nAdded evidence.", encoding="utf-8")
+    added = CanonicalIngestRuntime().ingest(request)
+    assert parse_calls[-1:] == ["added.txt"]
+    assert added.delta is not None and len(added.delta.added_document_ids) == 1
+
+    added_path.unlink()
+    deleted = CanonicalIngestRuntime().ingest(request)
+    assert parse_calls[-1:] == ["added.txt"]
+    assert deleted.delta is not None and len(deleted.delta.deleted_document_ids) == 1
+
+    renamed = root / "stable-renamed.txt"
+    stable.rename(renamed)
+    renamed_result = CanonicalIngestRuntime().ingest(request)
+    assert parse_calls[-1:] == ["added.txt"]
+    assert renamed_result.delta is not None
+    assert len(renamed_result.delta.renames) == 1
+    assert renamed_result.delta.renames[0].previous_relative_path == "stable.txt"
+    assert renamed_result.delta.renames[0].current_relative_path == (
+        "stable-renamed.txt"
+    )
+    assert initial_generation.read_bytes() == initial_bytes
+
+
+def test_parser_contract_change_reparses_only_affected_format(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    root = tmp_path / "corpus"
+    root.mkdir()
+    (root / "evidence.txt").write_text("Text title\n\nText evidence.", encoding="utf-8")
+    (root / "evidence.md").write_text(
+        "# Markdown title\n\nMarkdown evidence.", encoding="utf-8"
+    )
+    request = CanonicalIngestRequest.for_directory(
+        root_path=root,
+        root_name="parser-contract",
+        corpus_name="parser-contract",
+        publication_root=tmp_path / "published",
+    )
+    initial = CanonicalIngestRuntime().ingest(request)
+    assert initial.disposition == "initial"
+    original_identity = canonical_ingest._parser_identity
+    original_parse = canonical_ingest._parse
+    parse_calls: list[str] = []
+
+    def changed_identity(format_id: str) -> tuple[str, str, str]:
+        name, version, schema = original_identity(format_id)
+        return (
+            (name, f"{version}-changed", schema)
+            if format_id == "text"
+            else (
+                name,
+                version,
+                schema,
+            )
+        )
+
+    def recording_parse(admission: AdmissionResult) -> ParsedSourceDocument:
+        parse_calls.append(admission.source.relative_path)
+        return original_parse(admission)
+
+    monkeypatch.setattr(canonical_ingest, "_parser_identity", changed_identity)
+    monkeypatch.setattr(canonical_ingest, "_parse", recording_parse)
+
+    result = CanonicalIngestRuntime().ingest(request)
+
+    assert parse_calls == ["evidence.txt"]
+    assert result.disposition == "unchanged"
+    assert result.delta is not None and not result.delta.modifications
 
 
 def test_preparation_and_snapshot_are_distinct_restart_safe_operations() -> None:

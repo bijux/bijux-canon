@@ -291,9 +291,22 @@ components:
           additionalProperties: true
           title: Corpus Lock
           type: object
+        delta:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Delta
         discovery_issue_count:
           title: Discovery Issue Count
           type: integer
+        disposition:
+          enum:
+          - initial
+          - unchanged
+          - changed
+          title: Disposition
+          type: string
         document_count:
           title: Document Count
           type: integer
@@ -315,7 +328,7 @@ components:
           title: Rejection Count
           type: integer
         schema_version:
-          const: bijux.canon.ingest.result.v1
+          const: bijux.canon.ingest.result.v2
           title: Schema Version
           type: string
         snapshot_id:
@@ -327,7 +340,9 @@ components:
       - chunk_count
       - configuration_sha256
       - corpus_lock
+      - delta
       - discovery_issue_count
+      - disposition
       - document_count
       - formats
       - ocr_required_count

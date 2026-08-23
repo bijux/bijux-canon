@@ -37,20 +37,9 @@ def _document_signature(document: CorpusSnapshotDocument) -> tuple[object, ...]:
 
 
 def _rename_signature(document: CorpusSnapshotDocument) -> tuple[object, ...]:
-    metadata = document.metadata
     return (
         document.admission.source.content_sha256,
         document.document.manifest()["manifest_sha256"],
-        metadata.doi,
-        metadata.canonical_uri,
-        metadata.authors,
-        metadata.publication_date,
-        metadata.title,
-        metadata.journal,
-        metadata.language,
-        metadata.license_expression,
-        metadata.license_url,
-        metadata.media_type,
         _chunks(document),
     )
 

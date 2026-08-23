@@ -218,13 +218,15 @@ class CorpusIngestResponse(BaseModel):
     chunk_count: int
     configuration_sha256: str
     corpus_lock: dict[str, Any]
+    delta: dict[str, Any] | None
     discovery_issue_count: int
+    disposition: Literal["initial", "unchanged", "changed"]
     document_count: int
     formats: dict[str, int]
     ocr_required_count: int
     publication: dict[str, Any] | None
     rejection_count: int
-    schema_version: Literal["bijux.canon.ingest.result.v1"]
+    schema_version: Literal["bijux.canon.ingest.result.v2"]
     snapshot_id: str
 
 

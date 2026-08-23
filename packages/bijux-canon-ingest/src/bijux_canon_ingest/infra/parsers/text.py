@@ -19,6 +19,22 @@ from bijux_canon_ingest.domain.document_extraction import (
 )
 
 _PARSER_VERSION = "1"
+
+
+def parser_identity(format_id: str) -> tuple[str, str, str]:
+    """Return the extraction contract governing Markdown or text reuse."""
+
+    names = {
+        "markdown": "bijux-canon-ingest-markdown",
+        "text": "bijux-canon-ingest-text",
+    }
+    try:
+        name = names[format_id]
+    except KeyError as error:
+        raise ValueError(f"unsupported text parser format: {format_id}") from error
+    return name, _PARSER_VERSION, "bijux.canon.ingest.parsed_text_document.v1"
+
+
 _MARKDOWN_HEADING = re.compile(r"^ {0,3}(#{1,6})(?:[ \t]+|$)")
 _MARKDOWN_FENCE = re.compile(r"^ {0,3}(`{3,}|~{3,})")
 _MARKDOWN_LIST = re.compile(r"^ {0,3}(?:[-+*]|\d+[.)])[ \t]+")
@@ -506,4 +522,4 @@ def parse_text_content(
     )
 
 
-__all__ = ["parse_markdown_content", "parse_text_content"]
+__all__ = ["parse_markdown_content", "parse_text_content", "parser_identity"]

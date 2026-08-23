@@ -210,6 +210,26 @@ class CorpusDelta:
             self.tombstones, key=lambda item: (item.location_id, item.reason)
         ):
             raise ValueError("corpus delta tombstones must use canonical order")
+        if self.previous_snapshot_id == self.current_snapshot_id and any(
+            (
+                self.added_document_ids,
+                self.deleted_document_ids,
+                self.modifications,
+                self.renames,
+                self.tombstones,
+                self.added_chunk_ids,
+                self.invalidated_chunk_ids,
+                self.added_rejection_ids,
+                self.removed_rejection_ids,
+            )
+        ):
+            raise ValueError("no-op corpus delta cannot declare changes")
+
+    @property
+    def is_noop(self) -> bool:
+        """Whether this transition preserves the exact logical snapshot."""
+
+        return self.previous_snapshot_id == self.current_snapshot_id
 
     @property
     def delta_id(self) -> str:

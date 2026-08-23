@@ -28,6 +28,12 @@ from bijux_canon_ingest import (
     read_published_corpus_snapshot,
     recover_corpus_snapshot_store,
 )
+from bijux_canon_ingest.application.corpus_publication import (
+    read_published_snapshot_reuse_bundles,
+)
+from bijux_canon_ingest.application.snapshot_reuse import (
+    restore_published_corpus_snapshot,
+)
 from bijux_canon_ingest.infra import corpus_snapshot_store
 from bijux_canon_ingest.infra.corpus_snapshot_store import PublicationCheckpoint
 
@@ -99,6 +105,28 @@ def test_publish_activates_complete_canonical_generation(tmp_path: Path) -> None
     assert published.manifest()["schema_version"] == (
         "bijux.canon.ingest.corpus_publication.v2"
     )
+
+
+def test_published_snapshot_restores_exact_typed_members_after_restart(
+    tmp_path: Path,
+) -> None:
+    sources = tmp_path / "sources"
+    store = tmp_path / "store"
+    snapshot = _snapshot(sources, "Restart restoration preserves exact text.")
+    publication = publish_corpus_snapshot(store, snapshot)
+
+    restarted_publication = read_published_corpus_snapshot(store)
+    assert restarted_publication == publication
+    assert restarted_publication is not None
+    restored = restore_published_corpus_snapshot(
+        restarted_publication,
+        read_published_snapshot_reuse_bundles(store),
+        root_path=sources,
+    )
+
+    assert restored == snapshot
+    assert restored.canonical_bytes == snapshot.canonical_bytes
+    assert restored.documents[0].document == snapshot.documents[0].document
 
 
 def test_activation_manifest_is_replaced_last(

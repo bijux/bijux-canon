@@ -81,7 +81,7 @@ class CorpusSnapshotConfiguration:
             "chunking_policy": self.chunking_policy.manifest(),
             "corpus_name": self.corpus_name,
             "discovery_limits": self.discovery_limits.identity_payload(),
-            "schema_version": "bijux.canon.ingest.corpus_snapshot_configuration.v2",
+            "schema_version": "bijux.canon.ingest.corpus_snapshot_configuration.v3",
         }
 
 

@@ -22,6 +22,14 @@ from bijux_canon_ingest.domain.document_extraction import (
 
 _PARSER_NAME = "bijux-canon-ingest-html"
 _PARSER_VERSION = "1"
+
+
+def parser_identity() -> tuple[str, str, str]:
+    """Return the extraction contract that governs HTML reuse."""
+
+    return _PARSER_NAME, _PARSER_VERSION, "bijux.canon.ingest.parsed_html_document.v1"
+
+
 _VOID_ELEMENTS = frozenset(
     {
         "area",
@@ -315,4 +323,4 @@ def parse_html_content(
     )
 
 
-__all__ = ["parse_html_content"]
+__all__ = ["parse_html_content", "parser_identity"]
