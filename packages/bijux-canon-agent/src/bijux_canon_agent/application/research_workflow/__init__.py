@@ -16,6 +16,19 @@ from bijux_canon_agent.application.research_workflow.observed_state import (
     ObservedResearchState,
     ObservedResearchStateMachine,
 )
+from bijux_canon_agent.application.research_workflow.targeted_search import (
+    TargetedSearchAttempt,
+    TargetedSearchDecision,
+    TargetedSearchDisposition,
+    TargetedSearchIntent,
+    TargetedSearchObservation,
+    TargetedSearchOutcome,
+    TargetedSearchPlan,
+    TargetedSearchPlanningService,
+    TargetedSearchPolicy,
+    TargetedSearchTrigger,
+    query_equivalence_key,
+)
 from bijux_canon_agent.application.research_workflow.state_machine import (
     ResearchCheckpoint,
     ResearchCheckpointPort,
@@ -48,4 +61,15 @@ __all__ = [
     "ResearchRole",
     "ResearchRoleMachine",
     "ResearchTransition",
+    "TargetedSearchAttempt",
+    "TargetedSearchDecision",
+    "TargetedSearchDisposition",
+    "TargetedSearchIntent",
+    "TargetedSearchObservation",
+    "TargetedSearchOutcome",
+    "TargetedSearchPlan",
+    "TargetedSearchPlanningService",
+    "TargetedSearchPolicy",
+    "TargetedSearchTrigger",
+    "query_equivalence_key",
 ]
