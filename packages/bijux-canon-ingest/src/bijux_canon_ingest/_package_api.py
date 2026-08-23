@@ -48,6 +48,11 @@ LAZY_EXPORTS: dict[str, LazyExport] = {
         "CorpusSnapshotDocument",
     ),
     "CorpusDelta": (".domain.corpus_delta", "CorpusDelta"),
+    "CorpusLockError": (".application.corpus_lock", "CorpusLockError"),
+    "CorpusLockIssueCode": (
+        ".application.corpus_lock",
+        "CorpusLockIssueCode",
+    ),
     "PublishedCorpusSnapshot": (
         ".domain.corpus_publication",
         "PublishedCorpusSnapshot",
@@ -151,6 +156,11 @@ LAZY_EXPORTS: dict[str, LazyExport] = {
         ".application.source_metadata",
         "SourceMetadataRecord",
     ),
+    "VerifiedCorpusLock": (".application.corpus_lock", "VerifiedCorpusLock"),
+    "VerifiedLockedSource": (
+        ".application.corpus_lock",
+        "VerifiedLockedSource",
+    ),
     "admit_source": (".application.source_admission", "admit_source"),
     "assess_ocr_requirement": (
         ".application.document_extraction",
@@ -198,6 +208,10 @@ LAZY_EXPORTS: dict[str, LazyExport] = {
     ),
     "iter_ingest_pipeline": (".application.pipeline", "iter_ingest_pipeline"),
     "iter_ingest_pipeline_core": (".application.pipeline", "iter_ingest_pipeline_core"),
+    "load_verified_corpus_lock": (
+        ".application.corpus_lock",
+        "load_verified_corpus_lock",
+    ),
     "make_chunk_stream_fn": (".config.ingest", "make_chunk_stream_fn"),
     "make_ingest_fn": (".config.ingest", "make_ingest_fn"),
     "normalize_source_metadata": (
@@ -249,6 +263,8 @@ PUBLIC_API = [
     "CorpusSnapshotConfiguration",
     "CorpusSnapshotDocument",
     "CorpusDelta",
+    "CorpusLockError",
+    "CorpusLockIssueCode",
     "PublishedCorpusSnapshot",
     "DocumentMetadata",
     "DocumentParseError",
@@ -297,6 +313,8 @@ PUBLIC_API = [
     "TransformationOperation",
     "SourceFormat",
     "SourceMetadataRecord",
+    "VerifiedCorpusLock",
+    "VerifiedLockedSource",
     "admit_source",
     "assess_ocr_requirement",
     "admit_sources",
@@ -489,6 +507,7 @@ PUBLIC_API = [
     "gen_overlapping_chunks",
     "iter_ingest_pipeline",
     "iter_ingest_pipeline_core",
+    "load_verified_corpus_lock",
     "stream_chunks",
     "gen_stream_embedded",
     "gen_stream_deduped",

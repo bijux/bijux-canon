@@ -14,6 +14,11 @@ from typing import Any
 from bijux_canon_ingest._lazy_exports import LazyExport, resolve_lazy_export
 
 _LAZY_EXPORTS: dict[str, LazyExport] = {
+    "CorpusLockError": (".corpus_lock", "CorpusLockError"),
+    "CorpusLockIssueCode": (".corpus_lock", "CorpusLockIssueCode"),
+    "VerifiedCorpusLock": (".corpus_lock", "VerifiedCorpusLock"),
+    "VerifiedLockedSource": (".corpus_lock", "VerifiedLockedSource"),
+    "load_verified_corpus_lock": (".corpus_lock", "load_verified_corpus_lock"),
     "CanonicalIngestError": (".canonical_ingest", "CanonicalIngestError"),
     "CanonicalIngestRequest": (".canonical_ingest", "CanonicalIngestRequest"),
     "CanonicalIngestResult": (".canonical_ingest", "CanonicalIngestResult"),
@@ -104,6 +109,10 @@ __all__ = [
     "CanonicalIngestRequest",
     "CanonicalIngestResult",
     "CanonicalIngestRuntime",
+    "CorpusLockError",
+    "CorpusLockIssueCode",
+    "VerifiedCorpusLock",
+    "VerifiedLockedSource",
     "apply_corpus_delta",
     "assess_ocr_requirement",
     "iter_ingest_pipeline",
@@ -156,6 +165,7 @@ __all__ = [
     "MetadataIntegrityCode",
     "MetadataIntegrityError",
     "normalize_source_metadata",
+    "load_verified_corpus_lock",
     "parse_docx",
     "parse_html",
     "parse_jats",

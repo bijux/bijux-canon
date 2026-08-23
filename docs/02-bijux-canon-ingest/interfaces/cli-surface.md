@@ -4,33 +4,58 @@ audience: mixed
 type: reference
 status: canonical
 owner: bijux-canon-ingest-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-08-23
 ---
 
 # CLI Surface
 
-`bijux-canon-ingest` has two command shapes. If the first argument is `index`,
-`retrieve`, `ask`, or `eval`, the retrieval parser owns the invocation.
-Otherwise the command is interpreted as the configured document pipeline.
+`bijux-canon-ingest` supports canonical corpus ingestion, retrieval operations,
+and the configured document pipeline. If the first argument is `corpus`,
+`index`, `retrieve`, `ask`, or `eval`, that operation parser owns the
+invocation. Otherwise the command is interpreted as the configured document
+pipeline.
 
 ```mermaid
 flowchart LR
     CLI[bijux-canon-ingest] --> Dispatch{first argument}
+    Dispatch -->|corpus| Corpus[canonical directory ingest]
     Dispatch -->|index, retrieve, ask, eval| Retrieval[retrieval commands]
     Dispatch -->|anything else| Pipeline[document pipeline]
     Pipeline --> Chunks[chunk JSONL]
     Retrieval --> Index[index artifact or query output]
+    Corpus --> Snapshot[immutable corpus snapshot]
 ```
 
 ## Command Map
 
 | Form | Required inputs | Primary output |
 | --- | --- | --- |
+| `corpus build` | document root, logical root name, corpus name | canonical snapshot summary; optional atomic publication |
 | `INPUT.csv --config CONFIG` | CSV and pipeline JSON | validation/process outcome; optional chunk JSONL |
 | `index build` | CSV and output path | MessagePack index and fingerprint summary |
 | `retrieve` | index and query | ranked candidate JSON |
 | `ask` | index and query | extractive answer with citations in JSON or YAML |
 | `eval` | index and suite directory | recall-at-k metrics and regression status |
+
+## Build a Canonical Corpus
+
+```bash
+bijux-canon-ingest corpus build \
+  --root documents \
+  --root-name reviewed-documents \
+  --corpus-name reviewed-documents \
+  --publish-root artifacts/ingest/published
+```
+
+An adjacent `corpus.lock.json` is discovered automatically. Use
+`--corpus-lock /path/to/corpus.lock.json` to select an explicit verified lock.
+Lock and acquisition evidence is checked before parsing and retained in each
+document's canonical metadata. If no lock is present, the command still works
+with explicitly lower discovery/filename provenance. Invalid or contradictory
+lock evidence exits with status `2` and includes its stable refusal code on
+stderr. Successful JSON includes a portable `corpus_lock` summary with the
+verified schema, identity, source count, and discovery mode, or `status` equal
+to `absent` for an unlocked directory.
 
 ## Configured Document Pipeline
 

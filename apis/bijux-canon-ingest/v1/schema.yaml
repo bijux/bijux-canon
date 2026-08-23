@@ -1,121 +1,496 @@
-openapi: 3.1.0
+components:
+  schemas:
+    AskRequest:
+      properties:
+        filters:
+          additionalProperties:
+            type: string
+          description: Optional metadata filters applied before answer synthesis.
+          title: Filters
+          type: object
+        index_id:
+          description: Index identifier returned by the index build endpoint.
+          minLength: 1
+          title: Index Id
+          type: string
+        query:
+          description: Reader query text.
+          minLength: 1
+          title: Query
+          type: string
+        rerank:
+          default: true
+          description: Whether the answer flow should rerank retrieved candidates.
+          title: Rerank
+          type: boolean
+        top_k:
+          default: 5
+          description: Maximum number of retrieval candidates to use for answering.
+          minimum: 1.0
+          title: Top K
+          type: integer
+      required:
+      - index_id
+      - query
+      title: AskRequest
+      type: object
+    AskResponse:
+      properties:
+        answer:
+          description: Reader-facing answer synthesized by the API.
+          title: Answer
+          type: string
+        candidates:
+          description: Ranked candidates that informed the answer.
+          items:
+            $ref: '#/components/schemas/CandidateModel'
+          title: Candidates
+          type: array
+        citations:
+          description: Evidence citations supporting the returned answer.
+          items:
+            $ref: '#/components/schemas/CitationModel'
+          title: Citations
+          type: array
+      required:
+      - answer
+      - citations
+      - candidates
+      title: AskResponse
+      type: object
+    CandidateModel:
+      properties:
+        chunk:
+          description: Chunk payload associated with the candidate.
+          title: Chunk
+        metadata:
+          additionalProperties: true
+          description: Candidate metadata preserved from indexing time.
+          title: Metadata
+          type: object
+        score:
+          description: Score assigned to the retrieval candidate.
+          title: Score
+          type: number
+      required:
+      - score
+      - chunk
+      title: CandidateModel
+      type: object
+    ChunkOut:
+      properties:
+        chunk_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Stable chunk identifier when one has been materialized.
+          title: Chunk Id
+        doc_id:
+          description: Source document identifier for the chunk.
+          title: Doc Id
+          type: string
+        embedding:
+          anyOf:
+          - items:
+              type: number
+            type: array
+          - type: 'null'
+          description: Optional embedding values when embeddings are requested.
+          title: Embedding
+        end:
+          description: Exclusive character offset where the chunk ends.
+          title: End
+          type: integer
+        metadata:
+          additionalProperties: true
+          description: Chunk metadata preserved by the ingest pipeline.
+          title: Metadata
+          type: object
+        start:
+          description: Inclusive character offset where the chunk starts.
+          title: Start
+          type: integer
+        text:
+          description: Chunk text returned by the pipeline.
+          title: Text
+          type: string
+      required:
+      - doc_id
+      - text
+      - start
+      - end
+      title: ChunkOut
+      type: object
+    ChunkRequest:
+      properties:
+        chunk_size:
+          default: 128
+          description: Target chunk size used by the chunking stage.
+          minimum: 1.0
+          title: Chunk Size
+          type: integer
+        docs:
+          description: Documents that should be chunked by the API.
+          items:
+            $ref: '#/components/schemas/DocIn'
+          minItems: 1
+          title: Docs
+          type: array
+        include_embeddings:
+          default: true
+          description: Whether chunk embeddings should be included in the response.
+          title: Include Embeddings
+          type: boolean
+        overlap:
+          default: 0
+          description: Character overlap preserved between adjacent chunks.
+          minimum: 0.0
+          title: Overlap
+          type: integer
+      required:
+      - docs
+      title: ChunkRequest
+      type: object
+    ChunkResponse:
+      properties:
+        chunks:
+          description: Chunk sequence produced from the submitted documents.
+          items:
+            $ref: '#/components/schemas/ChunkOut'
+          title: Chunks
+          type: array
+      required:
+      - chunks
+      title: ChunkResponse
+      type: object
+    CitationModel:
+      properties:
+        chunk_id:
+          description: Chunk identifier cited by the answer.
+          title: Chunk Id
+          type: string
+        doc_id:
+          description: Source document identifier.
+          title: Doc Id
+          type: string
+        end:
+          description: Exclusive cited end offset.
+          title: End
+          type: integer
+        start:
+          description: Inclusive cited start offset.
+          title: Start
+          type: integer
+        text:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Optional cited text span carried with the citation.
+          title: Text
+      required:
+      - doc_id
+      - chunk_id
+      - start
+      - end
+      title: CitationModel
+      type: object
+    CorpusIngestRequest:
+      properties:
+        corpus_lock_path:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Corpus Lock Path
+        corpus_name:
+          minLength: 1
+          title: Corpus Name
+          type: string
+        exclude:
+          items:
+            type: string
+          title: Exclude
+          type: array
+        include:
+          items:
+            type: string
+          minItems: 1
+          title: Include
+          type: array
+        publication_root:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Publication Root
+        root_name:
+          minLength: 1
+          title: Root Name
+          type: string
+        root_path:
+          minLength: 1
+          title: Root Path
+          type: string
+        symlink_policy:
+          default: reject
+          enum:
+          - reject
+          - files_within_root
+          - all_within_root
+          title: Symlink Policy
+          type: string
+      required:
+      - root_path
+      - root_name
+      - corpus_name
+      title: CorpusIngestRequest
+      type: object
+    CorpusIngestResponse:
+      properties:
+        canonical_byte_length:
+          title: Canonical Byte Length
+          type: integer
+        canonical_sha256:
+          title: Canonical Sha256
+          type: string
+        chunk_count:
+          title: Chunk Count
+          type: integer
+        configuration_sha256:
+          title: Configuration Sha256
+          type: string
+        corpus_lock:
+          additionalProperties: true
+          title: Corpus Lock
+          type: object
+        discovery_issue_count:
+          title: Discovery Issue Count
+          type: integer
+        document_count:
+          title: Document Count
+          type: integer
+        formats:
+          additionalProperties:
+            type: integer
+          title: Formats
+          type: object
+        ocr_required_count:
+          title: Ocr Required Count
+          type: integer
+        publication:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Publication
+        rejection_count:
+          title: Rejection Count
+          type: integer
+        schema_version:
+          const: bijux.canon.ingest.result.v1
+          title: Schema Version
+          type: string
+        snapshot_id:
+          title: Snapshot Id
+          type: string
+      required:
+      - canonical_byte_length
+      - canonical_sha256
+      - chunk_count
+      - configuration_sha256
+      - corpus_lock
+      - discovery_issue_count
+      - document_count
+      - formats
+      - ocr_required_count
+      - publication
+      - rejection_count
+      - schema_version
+      - snapshot_id
+      title: CorpusIngestResponse
+      type: object
+    DocIn:
+      properties:
+        category:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Optional category label used for filtering or grouping.
+          title: Category
+        doc_id:
+          description: Stable document identifier.
+          minLength: 1
+          title: Doc Id
+          type: string
+        text:
+          description: Full document text to process.
+          minLength: 1
+          title: Text
+          type: string
+        title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Optional reader-facing title used for retrieval displays.
+          title: Title
+      required:
+      - doc_id
+      - text
+      title: DocIn
+      type: object
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          title: Detail
+          type: array
+      title: HTTPValidationError
+      type: object
+    HealthResponse:
+      properties:
+        ok:
+          description: Liveness indicator for the HTTP adapter.
+          title: Ok
+          type: boolean
+      required:
+      - ok
+      title: HealthResponse
+      type: object
+    IndexBuildRequest:
+      properties:
+        backend:
+          description: Retrieval backend used to build the index.
+          pattern: ^(bm25|numpy-cosine)$
+          title: Backend
+          type: string
+        chunk_size:
+          default: 512
+          description: Chunk size used during index construction.
+          minimum: 1.0
+          title: Chunk Size
+          type: integer
+        docs:
+          description: Documents that should be indexed into a retrievable store.
+          items:
+            $ref: '#/components/schemas/DocIn'
+          minItems: 1
+          title: Docs
+          type: array
+        overlap:
+          default: 50
+          description: Chunk overlap preserved during index construction.
+          minimum: 0.0
+          title: Overlap
+          type: integer
+      required:
+      - docs
+      - backend
+      title: IndexBuildRequest
+      type: object
+    IndexBuildResponse:
+      properties:
+        fingerprint:
+          description: Fingerprint of the built index contents and configuration.
+          title: Fingerprint
+          type: string
+        index_id:
+          description: Stable identifier assigned to the built index.
+          title: Index Id
+          type: string
+        schema_version:
+          description: Schema version emitted by the index representation.
+          title: Schema Version
+          type: integer
+      required:
+      - index_id
+      - fingerprint
+      - schema_version
+      title: IndexBuildResponse
+      type: object
+    RetrieveRequest:
+      properties:
+        filters:
+          additionalProperties:
+            type: string
+          description: Optional metadata filters applied during retrieval.
+          title: Filters
+          type: object
+        index_id:
+          description: Index identifier returned by the index build endpoint.
+          minLength: 1
+          title: Index Id
+          type: string
+        query:
+          description: Reader query text.
+          minLength: 1
+          title: Query
+          type: string
+        top_k:
+          default: 5
+          description: Maximum number of ranked retrieval candidates to return.
+          minimum: 1.0
+          title: Top K
+          type: integer
+      required:
+      - index_id
+      - query
+      title: RetrieveRequest
+      type: object
+    RetrieveResponse:
+      properties:
+        candidates:
+          description: Ranked retrieval candidates returned for the query.
+          items:
+            $ref: '#/components/schemas/CandidateModel'
+          title: Candidates
+          type: array
+      required:
+      - candidates
+      title: RetrieveResponse
+      type: object
+    ValidationError:
+      properties:
+        ctx:
+          title: Context
+          type: object
+        input:
+          title: Input
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          title: Location
+          type: array
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+      type: object
 info:
-  title: bijux-canon-ingest API
-  summary: Deterministic chunking, indexing, retrieval, and answer assembly.
+  contact:
+    name: Bijux
+    url: https://github.com/bijux/bijux-canon
   description: The bijux-canon-ingest HTTP API exposes the v1 ingest boundary for
     chunk generation, index construction, retrieval, and answer synthesis. It keeps
     the ingestion lifecycle explicit so operators can trace what was chunked, indexed,
     retrieved, and answered.
-  contact:
-    name: Bijux
-    url: https://github.com/bijux/bijux-canon
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0
+  summary: Deterministic chunking, indexing, retrieval, and answer assembly.
+  title: bijux-canon-ingest API
   version: v1
-servers:
-- url: /
+openapi: 3.1.0
 paths:
-  /v1/healthz:
-    get:
-      tags:
-      - Health
-      summary: Report adapter health
-      description: Return a lightweight liveness signal for the ingest HTTP adapter.
-      operationId: getIngestHealth
-      responses:
-        '200':
-          description: Successful Response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HealthResponse'
-  /v1/chunks:
-    post:
-      tags:
-      - Chunking
-      summary: Chunk documents
-      description: Split submitted documents into chunk payloads and optionally include
-        embeddings for each emitted chunk.
-      operationId: chunkDocuments
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ChunkRequest'
-        required: true
-      responses:
-        '200':
-          description: Successful Response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ChunkResponse'
-        '422':
-          description: Validation Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-  /v1/index/build:
-    post:
-      tags:
-      - Indexing
-      summary: Build an index
-      description: Chunk the submitted documents, build an index using the requested
-        backend, and return the stable identifier for later retrieval.
-      operationId: buildIndex
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/IndexBuildRequest'
-        required: true
-      responses:
-        '200':
-          description: Successful Response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/IndexBuildResponse'
-        '422':
-          description: Validation Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-  /v1/retrieve:
-    post:
-      tags:
-      - Retrieval
-      summary: Retrieve ranked candidates
-      description: Run retrieval against a built index and return the ranked candidate
-        chunks that satisfy the query and optional filters.
-      operationId: retrieveCandidates
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/RetrieveRequest'
-        required: true
-      responses:
-        '200':
-          description: Successful Response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RetrieveResponse'
-        '422':
-          description: Validation Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
   /v1/ask:
     post:
-      tags:
-      - Retrieval
-      summary: Answer a query from the index
       description: Retrieve candidates from the selected index, optionally rerank
         them, and return a synthesized answer with explicit citations.
       operationId: answerQuery
@@ -127,385 +502,148 @@ paths:
         required: true
       responses:
         '200':
-          description: Successful Response
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/AskResponse'
+          description: Successful Response
         '422':
-          description: Validation Error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
-components:
-  schemas:
-    AskRequest:
-      properties:
-        index_id:
-          type: string
-          minLength: 1
-          title: Index Id
-          description: Index identifier returned by the index build endpoint.
-        query:
-          type: string
-          minLength: 1
-          title: Query
-          description: Reader query text.
-        top_k:
-          type: integer
-          minimum: 1.0
-          title: Top K
-          description: Maximum number of retrieval candidates to use for answering.
-          default: 5
-        rerank:
-          type: boolean
-          title: Rerank
-          description: Whether the answer flow should rerank retrieved candidates.
-          default: true
-        filters:
-          additionalProperties:
-            type: string
-          type: object
-          title: Filters
-          description: Optional metadata filters applied before answer synthesis.
-      type: object
-      required:
-      - index_id
-      - query
-      title: AskRequest
-    AskResponse:
-      properties:
-        answer:
-          type: string
-          title: Answer
-          description: Reader-facing answer synthesized by the API.
-        citations:
-          items:
-            $ref: '#/components/schemas/CitationModel'
-          type: array
-          title: Citations
-          description: Evidence citations supporting the returned answer.
-        candidates:
-          items:
-            $ref: '#/components/schemas/CandidateModel'
-          type: array
-          title: Candidates
-          description: Ranked candidates that informed the answer.
-      type: object
-      required:
-      - answer
-      - citations
-      - candidates
-      title: AskResponse
-    CandidateModel:
-      properties:
-        score:
-          type: number
-          title: Score
-          description: Score assigned to the retrieval candidate.
-        chunk:
-          title: Chunk
-          description: Chunk payload associated with the candidate.
-        metadata:
-          additionalProperties: true
-          type: object
-          title: Metadata
-          description: Candidate metadata preserved from indexing time.
-      type: object
-      required:
-      - score
-      - chunk
-      title: CandidateModel
-    ChunkOut:
-      properties:
-        doc_id:
-          type: string
-          title: Doc Id
-          description: Source document identifier for the chunk.
-        text:
-          type: string
-          title: Text
-          description: Chunk text returned by the pipeline.
-        start:
-          type: integer
-          title: Start
-          description: Inclusive character offset where the chunk starts.
-        end:
-          type: integer
-          title: End
-          description: Exclusive character offset where the chunk ends.
-        metadata:
-          additionalProperties: true
-          type: object
-          title: Metadata
-          description: Chunk metadata preserved by the ingest pipeline.
-        embedding:
-          anyOf:
-          - items:
-              type: number
-            type: array
-          - type: 'null'
-          title: Embedding
-          description: Optional embedding values when embeddings are requested.
-        chunk_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Chunk Id
-          description: Stable chunk identifier when one has been materialized.
-      type: object
-      required:
-      - doc_id
-      - text
-      - start
-      - end
-      title: ChunkOut
-    ChunkRequest:
-      properties:
-        chunk_size:
-          type: integer
-          minimum: 1.0
-          title: Chunk Size
-          description: Target chunk size used by the chunking stage.
-          default: 128
-        overlap:
-          type: integer
-          minimum: 0.0
-          title: Overlap
-          description: Character overlap preserved between adjacent chunks.
-          default: 0
-        include_embeddings:
-          type: boolean
-          title: Include Embeddings
-          description: Whether chunk embeddings should be included in the response.
-          default: true
-        docs:
-          items:
-            $ref: '#/components/schemas/DocIn'
-          type: array
-          minItems: 1
-          title: Docs
-          description: Documents that should be chunked by the API.
-      type: object
-      required:
-      - docs
-      title: ChunkRequest
-    ChunkResponse:
-      properties:
-        chunks:
-          items:
-            $ref: '#/components/schemas/ChunkOut'
-          type: array
-          title: Chunks
-          description: Chunk sequence produced from the submitted documents.
-      type: object
-      required:
-      - chunks
-      title: ChunkResponse
-    CitationModel:
-      properties:
-        doc_id:
-          type: string
-          title: Doc Id
-          description: Source document identifier.
-        chunk_id:
-          type: string
-          title: Chunk Id
-          description: Chunk identifier cited by the answer.
-        start:
-          type: integer
-          title: Start
-          description: Inclusive cited start offset.
-        end:
-          type: integer
-          title: End
-          description: Exclusive cited end offset.
-        text:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Text
-          description: Optional cited text span carried with the citation.
-      type: object
-      required:
-      - doc_id
-      - chunk_id
-      - start
-      - end
-      title: CitationModel
-    DocIn:
-      properties:
-        doc_id:
-          type: string
-          minLength: 1
-          title: Doc Id
-          description: Stable document identifier.
-        text:
-          type: string
-          minLength: 1
-          title: Text
-          description: Full document text to process.
-        title:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Title
-          description: Optional reader-facing title used for retrieval displays.
-        category:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Category
-          description: Optional category label used for filtering or grouping.
-      type: object
-      required:
-      - doc_id
-      - text
-      title: DocIn
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    HealthResponse:
-      properties:
-        ok:
-          type: boolean
-          title: Ok
-          description: Liveness indicator for the HTTP adapter.
-      type: object
-      required:
-      - ok
-      title: HealthResponse
-    IndexBuildRequest:
-      properties:
-        docs:
-          items:
-            $ref: '#/components/schemas/DocIn'
-          type: array
-          minItems: 1
-          title: Docs
-          description: Documents that should be indexed into a retrievable store.
-        backend:
-          type: string
-          pattern: ^(bm25|numpy-cosine)$
-          title: Backend
-          description: Retrieval backend used to build the index.
-        chunk_size:
-          type: integer
-          minimum: 1.0
-          title: Chunk Size
-          description: Chunk size used during index construction.
-          default: 512
-        overlap:
-          type: integer
-          minimum: 0.0
-          title: Overlap
-          description: Chunk overlap preserved during index construction.
-          default: 50
-      type: object
-      required:
-      - docs
-      - backend
-      title: IndexBuildRequest
-    IndexBuildResponse:
-      properties:
-        index_id:
-          type: string
-          title: Index Id
-          description: Stable identifier assigned to the built index.
-        fingerprint:
-          type: string
-          title: Fingerprint
-          description: Fingerprint of the built index contents and configuration.
-        schema_version:
-          type: integer
-          title: Schema Version
-          description: Schema version emitted by the index representation.
-      type: object
-      required:
-      - index_id
-      - fingerprint
-      - schema_version
-      title: IndexBuildResponse
-    RetrieveRequest:
-      properties:
-        index_id:
-          type: string
-          minLength: 1
-          title: Index Id
-          description: Index identifier returned by the index build endpoint.
-        query:
-          type: string
-          minLength: 1
-          title: Query
-          description: Reader query text.
-        top_k:
-          type: integer
-          minimum: 1.0
-          title: Top K
-          description: Maximum number of ranked retrieval candidates to return.
-          default: 5
-        filters:
-          additionalProperties:
-            type: string
-          type: object
-          title: Filters
-          description: Optional metadata filters applied during retrieval.
-      type: object
-      required:
-      - index_id
-      - query
-      title: RetrieveRequest
-    RetrieveResponse:
-      properties:
-        candidates:
-          items:
-            $ref: '#/components/schemas/CandidateModel'
-          type: array
-          title: Candidates
-          description: Ranked retrieval candidates returned for the query.
-      type: object
-      required:
-      - candidates
-      title: RetrieveResponse
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
+          description: Validation Error
+      summary: Answer a query from the index
+      tags:
+      - Retrieval
+  /v1/chunks:
+    post:
+      description: Split submitted documents into chunk payloads and optionally include
+        embeddings for each emitted chunk.
+      operationId: chunkDocuments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChunkRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChunkResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Chunk documents
+      tags:
+      - Chunking
+  /v1/corpora/ingest:
+    post:
+      operationId: ingestCanonicalCorpus
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CorpusIngestRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CorpusIngestResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Ingest a canonical source corpus
+      tags:
+      - Chunking
+  /v1/healthz:
+    get:
+      description: Return a lightweight liveness signal for the ingest HTTP adapter.
+      operationId: getIngestHealth
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+          description: Successful Response
+      summary: Report adapter health
+      tags:
+      - Health
+  /v1/index/build:
+    post:
+      description: Chunk the submitted documents, build an index using the requested
+        backend, and return the stable identifier for later retrieval.
+      operationId: buildIndex
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IndexBuildRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IndexBuildResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Build an index
+      tags:
+      - Indexing
+  /v1/retrieve:
+    post:
+      description: Run retrieval against a built index and return the ranked candidate
+        chunks that satisfy the query and optional filters.
+      operationId: retrieveCandidates
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RetrieveRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetrieveResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Retrieve ranked candidates
+      tags:
+      - Retrieval
+servers:
+- url: /
 tags:
-- name: Chunking
-  description: Endpoints that split raw documents into chunk payloads.
-- name: Indexing
-  description: Endpoints that build and manage retrievable indexes.
-- name: Retrieval
-  description: Endpoints that retrieve evidence or synthesize answers.
-- name: Health
-  description: Operational health signals for the HTTP adapter.
+- description: Endpoints that split raw documents into chunk payloads.
+  name: Chunking
+- description: Endpoints that build and manage retrievable indexes.
+  name: Indexing
+- description: Endpoints that retrieve evidence or synthesize answers.
+  name: Retrieval
+- description: Operational health signals for the HTTP adapter.
+  name: Health

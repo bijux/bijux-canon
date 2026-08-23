@@ -11,6 +11,10 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
 
+from bijux_canon_ingest.application.corpus_lock import (
+    VerifiedCorpusLock,
+    load_verified_corpus_lock,
+)
 from bijux_canon_ingest.application.corpus_publication import publish_corpus_snapshot
 from bijux_canon_ingest.application.corpus_snapshot import build_corpus_snapshot
 from bijux_canon_ingest.application.document_extraction import (
@@ -61,6 +65,7 @@ class CanonicalIngestRequest:
     include: tuple[str, ...] = ("**/*",)
     exclude: tuple[str, ...] = ()
     symlink_policy: SymlinkPolicy = "reject"
+    corpus_lock_path: Path | None = None
     publication_root: Path | None = None
 
 
@@ -78,6 +83,10 @@ def _identity(value: object) -> str:
     return f"sha256:{hashlib.sha256(_canonical_json(value)).hexdigest()}"
 
 
+def _corpus_lock_manifest(lock: VerifiedCorpusLock | None) -> dict[str, object]:
+    return lock.manifest() if lock is not None else {"status": "absent"}
+
+
 @dataclass(frozen=True, slots=True)
 class CanonicalCorpusPreparation:
     """Validated source documents before immutable snapshot assembly."""
@@ -87,12 +96,17 @@ class CanonicalCorpusPreparation:
     rejections: tuple[AdmissionResult, ...]
     discovery: DiscoveryResult
     ocr_required: tuple[OcrRequiredOutcome, ...]
+    corpus_lock: VerifiedCorpusLock | None
 
     def __post_init__(self) -> None:
         if not self.documents:
             raise ValueError("corpus preparation requires admitted documents")
         if not self.discovery.complete:
             raise ValueError("corpus preparation requires complete discovery")
+        if self.corpus_lock is not None and len(self.corpus_lock.sources) != len(
+            self.discovery.sources
+        ):
+            raise ValueError("corpus preparation lock coverage is incomplete")
 
     def snapshot(self) -> CorpusSnapshot:
         """Assemble the distinct immutable snapshot operation in memory."""
@@ -107,11 +121,12 @@ class CanonicalCorpusPreparation:
         payload: dict[str, object] = {
             "configuration": self.configuration.manifest(),
             "configuration_sha256": self.configuration.configuration_sha256,
+            "corpus_lock": _corpus_lock_manifest(self.corpus_lock),
             "discovery": self.discovery.manifest(),
             "documents": [document.manifest() for document in self.documents],
             "ocr_required": [outcome.manifest() for outcome in self.ocr_required],
             "rejections": [rejection.manifest() for rejection in self.rejections],
-            "schema_version": "bijux.canon.ingest.corpus_preparation.v1",
+            "schema_version": "bijux.canon.ingest.corpus_preparation.v2",
         }
         return {"preparation_id": _identity(payload), **payload}
 
@@ -121,7 +136,11 @@ def assemble_corpus_snapshot_manifest(
 ) -> dict[str, object]:
     """Assemble and validate a snapshot manifest from persisted preparation."""
     record = dict(preparation)
-    if record.get("schema_version") != "bijux.canon.ingest.corpus_preparation.v1":
+    schema_version = record.get("schema_version")
+    if schema_version not in {
+        "bijux.canon.ingest.corpus_preparation.v1",
+        "bijux.canon.ingest.corpus_preparation.v2",
+    }:
         raise ValueError("corpus preparation schema is unsupported")
     preparation_id = record.pop("preparation_id", None)
     if preparation_id != _identity(record):
@@ -130,6 +149,7 @@ def assemble_corpus_snapshot_manifest(
     documents = record.get("documents")
     rejections = record.get("rejections")
     discovery = record.get("discovery")
+    corpus_lock = record.get("corpus_lock", {"status": "absent"})
     if not isinstance(configuration, dict):
         raise ValueError("corpus preparation configuration is invalid")
     if not isinstance(documents, list) or not documents:
@@ -138,6 +158,29 @@ def assemble_corpus_snapshot_manifest(
         raise ValueError("corpus preparation rejections are invalid")
     if not isinstance(discovery, dict) or discovery.get("complete") is not True:
         raise ValueError("corpus preparation discovery is incomplete")
+    if not isinstance(corpus_lock, dict) or corpus_lock.get("status") not in {
+        "absent",
+        "verified",
+    }:
+        raise ValueError("corpus preparation lock evidence is invalid")
+    if corpus_lock["status"] == "verified" and (
+        corpus_lock.get("schema_version")
+        not in {
+            "bijux.canon.parser_source_lock.v1",
+            "bijux.canon.research_corpus_lock.v1",
+        }
+        or corpus_lock.get("discovery") not in {"automatic", "explicit"}
+        or not isinstance(corpus_lock.get("source_count"), int)
+        or isinstance(corpus_lock.get("source_count"), bool)
+        or corpus_lock["source_count"] <= 0
+        or not isinstance(corpus_lock.get("lock_identity_sha256"), str)
+        or len(corpus_lock["lock_identity_sha256"]) != 64
+        or any(
+            character not in "0123456789abcdef"
+            for character in corpus_lock["lock_identity_sha256"]
+        )
+    ):
+        raise ValueError("corpus preparation verified lock evidence is invalid")
     if record.get("configuration_sha256") != _identity(configuration):
         raise ValueError("corpus preparation configuration identity is invalid")
     if any(not isinstance(item, dict) for item in documents + rejections):
@@ -160,6 +203,7 @@ class CanonicalIngestResult:
     discovery: DiscoveryResult
     ocr_required: tuple[OcrRequiredOutcome, ...]
     publication: PublishedCorpusSnapshot | None
+    corpus_lock: VerifiedCorpusLock | None
 
     def manifest(self) -> dict[str, object]:
         formats: dict[str, int] = {}
@@ -175,6 +219,7 @@ class CanonicalIngestResult:
                 len(document.chunks) for document in self.snapshot.documents
             ),
             "configuration_sha256": self.snapshot.configuration.configuration_sha256,
+            "corpus_lock": _corpus_lock_manifest(self.corpus_lock),
             "discovery_issue_count": len(self.discovery.issues),
             "document_count": len(self.snapshot.documents),
             "formats": dict(sorted(formats.items())),
@@ -211,17 +256,36 @@ class CanonicalIngestRuntime:
 
     def prepare(self, request: CanonicalIngestRequest) -> CanonicalCorpusPreparation:
         """Discover, admit, extract, and chunk without assembling a snapshot."""
+        exclude = list(request.exclude)
+        if "corpus.lock.json" not in exclude:
+            exclude.append("corpus.lock.json")
+        if request.corpus_lock_path is not None:
+            try:
+                lock_relative = request.corpus_lock_path.resolve().relative_to(
+                    request.root_path.resolve()
+                )
+            except ValueError:
+                pass
+            else:
+                lock_pattern = lock_relative.as_posix()
+                if lock_pattern not in exclude:
+                    exclude.append(lock_pattern)
         discovery = discover_sources(
             DiscoveryPolicy(
                 roots=(DiscoveryRoot(request.root_name, request.root_path),),
                 include=request.include,
-                exclude=request.exclude,
+                exclude=tuple(exclude),
                 symlink_policy=request.symlink_policy,
             )
         )
         if not discovery.complete:
             codes = ", ".join(sorted({issue.code for issue in discovery.issues}))
             raise CanonicalIngestError(f"source discovery is incomplete: {codes}")
+        corpus_lock = load_verified_corpus_lock(
+            request.root_path,
+            discovery.sources,
+            lock_path=request.corpus_lock_path,
+        )
         admissions = admit_sources(
             discovery.sources,
             budgets=request.configuration.admission_budgets,
@@ -243,6 +307,11 @@ class CanonicalIngestRuntime:
             metadata = normalize_source_metadata(
                 admission.source,
                 format_id=admission.format_id,
+                records=(
+                    corpus_lock.records_for(admission.source)
+                    if corpus_lock is not None
+                    else ()
+                ),
             )
             mappings = build_document_span_mappings(content, parsed)
             chunks = chunk_document_mappings(
@@ -267,6 +336,7 @@ class CanonicalIngestRuntime:
             tuple(rejections),
             discovery,
             tuple(ocr_required),
+            corpus_lock,
         )
 
     def ingest(self, request: CanonicalIngestRequest) -> CanonicalIngestResult:
@@ -283,6 +353,7 @@ class CanonicalIngestRuntime:
             preparation.discovery,
             preparation.ocr_required,
             publication,
+            preparation.corpus_lock,
         )
 
 

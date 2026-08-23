@@ -33,6 +33,11 @@ def _parser() -> argparse.ArgumentParser:
         default="reject",
     )
     build.add_argument("--publish-root", type=Path)
+    build.add_argument(
+        "--corpus-lock",
+        type=Path,
+        help="Explicit corpus.lock.json; adjacent locks are discovered automatically.",
+    )
     build.add_argument("--out", type=Path)
     return parser
 
@@ -50,6 +55,7 @@ def run_corpus_commands(argv: list[str]) -> int:
                 include=tuple(args.include) or ("**/*",),
                 exclude=tuple(args.exclude),
                 symlink_policy=args.symlink_policy,
+                corpus_lock_path=args.corpus_lock,
                 publication_root=args.publish_root,
             )
         )

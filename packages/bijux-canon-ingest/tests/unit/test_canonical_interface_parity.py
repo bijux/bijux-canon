@@ -61,3 +61,44 @@ def test_library_cli_runtime_and_http_share_result_schema(
     assert response.status_code == 200
     assert cli_payload == expected
     assert response.json() == expected
+
+
+def test_cli_and_http_share_explicit_lock_refusal(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    sources = tmp_path / "sources"
+    sources.mkdir()
+    (sources / "evidence.txt").write_text("locked evidence", encoding="utf-8")
+    lock_path = tmp_path / "corpus.lock.json"
+    lock_path.write_text("{", encoding="utf-8")
+
+    exit_code = main(
+        [
+            "corpus",
+            "build",
+            "--root",
+            str(sources),
+            "--root-name",
+            "locked-evidence",
+            "--corpus-name",
+            "locked-evidence",
+            "--corpus-lock",
+            str(lock_path),
+        ]
+    )
+    cli_error = capsys.readouterr().err
+    response = TestClient(create_app()).post(
+        "/v1/corpora/ingest",
+        json={
+            "root_path": str(sources),
+            "root_name": "locked-evidence",
+            "corpus_name": "locked-evidence",
+            "corpus_lock_path": str(lock_path),
+        },
+    )
+
+    assert exit_code == 2
+    assert "malformed_lock" in cli_error
+    assert response.status_code == 400
+    assert "malformed_lock" in response.json()["detail"]

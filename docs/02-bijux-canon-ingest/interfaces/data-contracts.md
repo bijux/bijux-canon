@@ -50,6 +50,31 @@ identify different works are rejected with `MetadataIntegrityError`; ordinary
 metadata disagreement remains visible as a conflict rather than being
 overwritten.
 
+### Corpus Lock Resolution
+
+Canonical directory ingest checks for `corpus.lock.json` in the document root,
+its parent, and—when ingesting a conventional `corpus/sources` directory—the
+portfolio root. `corpus_lock_path` (Python and HTTP) or `--corpus-lock` (CLI)
+selects an explicit lock. When no lock is present, ingest remains available and
+the metadata manifest shows only its lower-provenance discovery and filename
+records.
+
+The loader accepts the governed parser-source and research-corpus lock schemas.
+Before parsing, it verifies the canonical lock identity, aggregate and per-file
+counts and sizes, portable paths, exact source hashes, compatible media types,
+license expression and URL, and linked source/acquisition identities. The
+parser portfolio also verifies its source JSON, acquisition receipts, transport
+checksums, and license-evidence checksums. The research portfolio verifies its
+materialization manifest, exact manifest hash, portfolio identity, and linked
+acquisition identities. A stale, partial, extra, malformed, ambiguous, escaped,
+or tampered chain fails with `CorpusLockError` and a stable issue code.
+Preparation manifests use `bijux.canon.ingest.corpus_preparation.v2` and retain
+the portable lock schema, identity, source count, and automatic-or-explicit
+discovery mode. Snapshot assembly continues to accept identity-valid v1
+preparations as unlocked legacy inputs. Ingest result manifests expose the same
+portable lock summary, or `{"status": "absent"}`; neither persisted form
+leaks the host path of the selected lock.
+
 ## Source Record
 
 `RawDoc` represents one source row:

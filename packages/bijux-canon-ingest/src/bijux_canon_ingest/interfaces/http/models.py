@@ -202,6 +202,7 @@ class CorpusIngestRequest(BaseModel):
     include: list[str] = Field(default_factory=lambda: ["**/*"], min_length=1)
     exclude: list[str] = Field(default_factory=list)
     symlink_policy: Literal["reject", "files_within_root", "all_within_root"] = "reject"
+    corpus_lock_path: str | None = None
     publication_root: str | None = None
 
 
@@ -210,6 +211,7 @@ class CorpusIngestResponse(BaseModel):
     canonical_sha256: str
     chunk_count: int
     configuration_sha256: str
+    corpus_lock: dict[str, Any]
     discovery_issue_count: int
     document_count: int
     formats: dict[str, int]

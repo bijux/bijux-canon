@@ -125,6 +125,11 @@ def create_app() -> FastAPI:
                     include=tuple(req.include),
                     exclude=tuple(req.exclude),
                     symlink_policy=req.symlink_policy,
+                    corpus_lock_path=(
+                        Path(req.corpus_lock_path)
+                        if req.corpus_lock_path is not None
+                        else None
+                    ),
                     publication_root=(
                         Path(req.publication_root)
                         if req.publication_root is not None
