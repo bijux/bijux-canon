@@ -62,6 +62,19 @@ canonical manifest is treated as partial state and refused rather than filled
 in. Preserve the whole workspace for restart, inspection, replay, and backup;
 the DuckDB file alone is not the complete authority.
 
+Verify the exact operation boundary before submitting work:
+
+```bash
+BIJUX_CANON_RUNTIME_WORKING_ROOT="$WORKSPACE" \
+BIJUX_CANON_RUNTIME_EMBEDDING_MODEL_PATH="$MODEL" \
+  bijux-canon-runtime v2 ready --operation ingest
+```
+
+A new workspace is ready for ingest before it has an active index. Retrieval,
+answering, and research readiness remain degraded until a verified generation
+is active; this is an actionable capability result, not a process-health
+failure.
+
 Install `bijux-canon` or `agentic-flows` only when an application still needs a
 compatibility import or command. New code should install the canonical runtime.
 

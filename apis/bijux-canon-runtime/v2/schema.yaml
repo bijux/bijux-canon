@@ -641,12 +641,25 @@ components:
       - cause
       title: ProblemDetail
       type: object
+    ReadinessCapability:
+      description: Public capability whose exact dependencies are being checked.
+      enum:
+      - initialized
+      - ingest
+      - index
+      - retrieve
+      - ask
+      - research
+      - run
+      title: ReadinessCapability
+      type: string
     ReadinessCheckResponse:
       additionalProperties: false
       description: One safe typed dependency verdict.
       properties:
         name:
           enum:
+          - workspace-initialization
           - schema-migrations
           - artifact-store
           - active-generation
@@ -661,6 +674,8 @@ components:
         reason:
           anyOf:
           - enum:
+            - workspace-not-configured
+            - workspace-invalid
             - database-not-configured
             - schema-unavailable
             - artifact-store-not-configured
@@ -689,6 +704,17 @@ components:
       additionalProperties: false
       description: Conjunctive deep readiness with typed degraded reasons.
       properties:
+        capability:
+          enum:
+          - initialized
+          - ingest
+          - index
+          - retrieve
+          - ask
+          - research
+          - run
+          title: Capability
+          type: string
         checks:
           items:
             $ref: '#/components/schemas/ReadinessCheckResponse'
@@ -700,6 +726,8 @@ components:
         reasons:
           items:
             enum:
+            - workspace-not-configured
+            - workspace-invalid
             - database-not-configured
             - schema-unavailable
             - artifact-store-not-configured
@@ -713,7 +741,7 @@ components:
           title: Reasons
           type: array
         schema_version:
-          const: bijux.runtime.readiness.v1
+          const: bijux.runtime.readiness.v2
           title: Schema Version
           type: string
         status:
@@ -724,6 +752,7 @@ components:
           type: string
       required:
       - schema_version
+      - capability
       - ready
       - status
       - checks
@@ -1815,6 +1844,12 @@ paths:
     get:
       operationId: ready_api_v2_ready_get
       parameters:
+      - in: query
+        name: operation
+        required: false
+        schema:
+          $ref: '#/components/schemas/ReadinessCapability'
+          default: initialized
       - in: header
         name: Bijux-API-Version
         required: false

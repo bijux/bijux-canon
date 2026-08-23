@@ -72,7 +72,10 @@ class IndexGenerationRegistry:
         self.generations = self.root / GENERATIONS_NAME
         self.root.mkdir(parents=True, exist_ok=True)
         self.generations.mkdir(exist_ok=True)
-        (self.root / LOCK_NAME).touch(exist_ok=True)
+        try:
+            (self.root / LOCK_NAME).touch(exist_ok=False)
+        except FileExistsError:
+            pass
         self._compatibility = compatibility
 
     @contextmanager

@@ -40,12 +40,11 @@ flowchart LR
 | `observe` | supplied observations can be captured and evaluated without normal execution authority | cannot recover events the host did not provide |
 | `live` | runtime attempts authorized effects and durable recording | canonical lower-package root callables are currently missing; an explicit host adapter is required |
 | `unsafe` | reduced-guarantee execution is explicitly requested | CLI cannot currently supply its required verification policy; use the governed Python surface |
-| HTTP health/readiness | service process responds and the configured DuckDB store can be opened | run and replay routes validate contracts then return `501 Not Implemented` |
+| HTTP v2 liveness/readiness | process liveness plus initialized, ingest, index, retrieve, ask, research, or run dependency checks | readiness is scoped by the requested operation |
 
 Start with the strongest demonstrated surface that answers the operational
-question. Do not use dry-run success as a live readiness result, storage
-readiness as executor readiness, or a versioned HTTP schema as evidence of
-remote run availability.
+question. Do not use dry-run success as a live readiness result or one
+capability's readiness as evidence that a stronger operation is ready.
 
 ## Operational rules
 
@@ -82,7 +81,7 @@ remote run availability.
 | Strict replay differs | plan, tenant, environment, dataset, policy, envelope, events, artifacts, and entropy | retain the mismatch and refuse equivalence |
 | Bounded replay differs | structural blockers followed by declared variance categories | accept only differences the original envelope permitted |
 | DuckDB opens but evidence is incomplete | finalized flag, typed projections, schema hash, migrations, payload store | restore the governed retention set; readability is insufficient |
-| Readiness is green but execution fails | dataset, tools, providers, policy, and writable store authority | treat readiness as a storage-open probe only |
+| Readiness is green but execution fails | requested readiness capability, dataset, tools, and request policy | verify the probe used the same operation and effective workspace configuration as the request |
 
 ## Deployment boundary
 

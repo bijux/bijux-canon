@@ -48,6 +48,7 @@ from bijux_canon_runtime.application.problems import (
     runtime_problem_fields,
 )
 from bijux_canon_runtime.application.readiness import (
+    ReadinessCapability,
     RuntimeReadinessService,
     runtime_liveness,
 )
@@ -269,8 +270,14 @@ def create_app(
         response_model=ReadinessResponse,
         responses={503: {"model": ReadinessResponse, "description": "Degraded."}},
     )
-    def ready(_: Version, readiness_service: Readiness) -> JSONResponse:
-        report = readiness_service.evaluate()
+    def ready(
+        _: Version,
+        readiness_service: Readiness,
+        operation: Annotated[ReadinessCapability, Query()] = (
+            ReadinessCapability.INITIALIZED
+        ),
+    ) -> JSONResponse:
+        report = readiness_service.evaluate(operation)
         payload = ReadinessResponse.model_validate(asdict(report)).model_dump(
             mode="json"
         )

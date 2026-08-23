@@ -34,7 +34,20 @@ def add_v2_commands(
     )
 
     commands.add_parser("live", help="Report dependency-free process liveness.")
-    commands.add_parser("ready", help="Verify deep Runtime readiness.")
+    ready = commands.add_parser("ready", help="Verify capability-aware readiness.")
+    ready.add_argument(
+        "--operation",
+        choices=(
+            "initialized",
+            "ingest",
+            "index",
+            "retrieve",
+            "ask",
+            "research",
+            "run",
+        ),
+        default="initialized",
+    )
 
     for name in ("ingest", "index", "retrieve", "ask", "research", "run"):
         command = commands.add_parser(name, help=f"Submit the typed {name} operation.")

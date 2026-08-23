@@ -50,11 +50,6 @@ from bijux_canon_runtime.runtime.execution.runtime_event_ledger import (
     RuntimeEventLedger,
     RuntimeEventRecord,
 )
-from bijux_canon_runtime.runtime.execution.service_composition import (
-    CanonicalServiceComposition,
-    InstalledServiceCapability,
-    compose_canonical_services,
-)
 from bijux_canon_runtime.runtime.execution.step_executor import ExecutionOutcome
 from bijux_canon_runtime.runtime.inspection import (
     InspectedArtifact,
@@ -75,6 +70,11 @@ from bijux_canon_runtime.runtime.inspection import (
 if TYPE_CHECKING:
     from bijux_canon_runtime.runtime.execution.application_composition import (
         compose_runtime_application_services,
+    )
+    from bijux_canon_runtime.runtime.execution.service_composition import (
+        CanonicalServiceComposition,
+        InstalledServiceCapability,
+        compose_canonical_services,
     )
 
 __all__ = [
@@ -133,7 +133,7 @@ __all__ = [
 
 
 def __getattr__(name: str) -> Any:
-    """Load the application composition root only when explicitly requested."""
+    """Load composition roots only when explicitly requested."""
     if name == "compose_runtime_application_services":
         from bijux_canon_runtime.runtime.execution.application_composition import (
             compose_runtime_application_services,
@@ -141,6 +141,24 @@ def __getattr__(name: str) -> Any:
 
         globals()[name] = compose_runtime_application_services
         return compose_runtime_application_services
+    if name in {
+        "CanonicalServiceComposition",
+        "InstalledServiceCapability",
+        "compose_canonical_services",
+    }:
+        from bijux_canon_runtime.runtime.execution.service_composition import (
+            CanonicalServiceComposition,
+            InstalledServiceCapability,
+            compose_canonical_services,
+        )
+
+        exports = {
+            "CanonicalServiceComposition": CanonicalServiceComposition,
+            "InstalledServiceCapability": InstalledServiceCapability,
+            "compose_canonical_services": compose_canonical_services,
+        }
+        globals().update(exports)
+        return exports[name]
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 

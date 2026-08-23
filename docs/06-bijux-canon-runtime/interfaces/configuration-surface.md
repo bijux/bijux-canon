@@ -43,6 +43,23 @@ Explicit `--workspace` and `--model` init arguments take precedence over their
 environment counterparts; other configured fields remain part of the exact
 workspace identity.
 
+Readiness is capability-specific because ingest does not require an active
+index or a loaded model, while retrieval does. Query it explicitly:
+
+```bash
+bijux-canon-runtime v2 ready --operation ingest
+bijux-canon-runtime v2 ready --operation retrieve
+bijux-canon-runtime v2 ready --operation research
+```
+
+`initialized` and `ingest` validate the workspace, exact DuckDB schema, CAS,
+and write authority. `index` additionally verifies the locked local model.
+`retrieve` also requires an active, integrity-checked generation built with
+that exact model lock and dimension. `ask`, `research`, and `run` add provider
+configuration only when the effective profile explicitly enables online
+operation; the mandatory offline profile never requires provider credentials.
+The HTTP equivalent is `GET /api/v2/ready?operation=<name>`.
+
 ## Flow manifest
 
 A v1 manifest owns the identifiers and boundaries that must survive planning

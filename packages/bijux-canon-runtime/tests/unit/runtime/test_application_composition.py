@@ -11,7 +11,10 @@ from pathlib import Path
 import pytest
 
 from bijux_canon_index.domain.embedding import LOCAL_MINILM_PROFILE
-from bijux_canon_index.infra.embeddings.model_cache import materialize_model
+from bijux_canon_index.infra.embeddings.model_cache import (
+    load_model_lock,
+    materialize_model,
+)
 from bijux_canon_runtime.application.operations import ApplicationCapabilityError
 from bijux_canon_runtime.application.runtime_configuration import (
     RuntimeConfiguration,
@@ -124,6 +127,10 @@ def test_composed_corpus_job_survives_application_restart_without_model_load(
         assert corpus["schema_version"] == ("bijux.canon.ingest.corpus_publication.v1")
         assert isinstance(corpus["byte_length"], int)
         assert corpus["byte_length"] > 0
+
+    layout = configuration.require_workspace_layout()
+    lock = load_model_lock(layout.model_lock_path)
+    (layout.model_root / lock.artifacts[0].path).unlink()
 
     with compose_runtime_application_services(
         configuration=configuration,

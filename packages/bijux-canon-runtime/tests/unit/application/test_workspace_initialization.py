@@ -112,6 +112,26 @@ def test_existing_workspace_refuses_configuration_change_without_mutation(
     assert original.require_workspace_layout().manifest_path.read_bytes() == before
 
 
+def test_compatible_configuration_accepts_a_different_precedence_source(
+    tmp_path: Path,
+) -> None:
+    model = _materialized_model(tmp_path)
+    workspace = tmp_path / "workspace"
+    explicit = _configuration(workspace, model)
+    initialized = initialize_runtime_workspace(explicit)
+    from_environment = resolve_runtime_configuration(
+        environment={
+            "BIJUX_CANON_RUNTIME_EMBEDDING_MODEL_PATH": str(model),
+            "BIJUX_CANON_RUNTIME_WORKING_ROOT": str(workspace),
+        }
+    )
+
+    validated = validate_runtime_workspace(from_environment)
+
+    assert validated.workspace_id == initialized.workspace_id
+    assert validated.status is WorkspaceInitializationStatus.UNCHANGED
+
+
 def test_partial_workspace_is_refused_without_filling_missing_state(
     tmp_path: Path,
 ) -> None:

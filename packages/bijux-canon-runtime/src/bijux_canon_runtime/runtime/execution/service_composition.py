@@ -121,7 +121,7 @@ def compose_canonical_services(
     configuration: RuntimeConfiguration,
 ) -> CanonicalServiceComposition:
     """Bind exact installed application APIs and verify their declared contracts."""
-    validate_runtime_workspace(configuration)
+    validate_runtime_workspace(configuration, verify_model=False)
     layout = configuration.require_workspace_layout()
     assert_execution_abi()
     assert_system_contract()

@@ -100,7 +100,7 @@ def compose_runtime_application_services(
     if max_workers < 1:
         raise ValueError("Runtime application worker count must be positive")
     try:
-        validation = validate_runtime_workspace(configuration)
+        validation = validate_runtime_workspace(configuration, verify_model=False)
         layout = configuration.require_workspace_layout()
     except ConfigurationError as exc:
         raise ApplicationCapabilityError(str(exc)) from exc

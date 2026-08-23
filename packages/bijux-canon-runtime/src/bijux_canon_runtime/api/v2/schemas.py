@@ -15,6 +15,8 @@ ArtifactIdentity = Annotated[str, Field(pattern=r"^sha256:[0-9a-f]{64}$")]
 StableIdentity = Annotated[str, Field(min_length=1, max_length=200)]
 Cursor = Annotated[str, Field(min_length=1, max_length=4096)]
 ReadinessReasonValue = Literal[
+    "workspace-not-configured",
+    "workspace-invalid",
     "database-not-configured",
     "schema-unavailable",
     "artifact-store-not-configured",
@@ -250,6 +252,7 @@ class ReadinessCheckResponse(StrictModel):
     """One safe typed dependency verdict."""
 
     name: Literal[
+        "workspace-initialization",
         "schema-migrations",
         "artifact-store",
         "active-generation",
@@ -265,7 +268,10 @@ class ReadinessCheckResponse(StrictModel):
 class ReadinessResponse(StrictModel):
     """Conjunctive deep readiness with typed degraded reasons."""
 
-    schema_version: Literal["bijux.runtime.readiness.v1"]
+    schema_version: Literal["bijux.runtime.readiness.v2"]
+    capability: Literal[
+        "initialized", "ingest", "index", "retrieve", "ask", "research", "run"
+    ]
     ready: bool
     status: Literal["ready", "degraded"]
     checks: tuple[ReadinessCheckResponse, ...]

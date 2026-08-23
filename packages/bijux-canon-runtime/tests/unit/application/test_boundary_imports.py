@@ -39,3 +39,28 @@ def test_application_operations_are_importable_before_runtime_services(
     )
 
     assert completed.returncode == 0, completed.stderr
+
+
+def test_v2_api_is_importable_in_a_fresh_process(tmp_path: Path) -> None:
+    environment = dict(os.environ)
+    environment["PYTHONPATH"] = str(RUNTIME_SOURCE)
+    completed = subprocess.run(
+        [
+            sys.executable,
+            "-c",
+            (
+                "from bijux_canon_runtime.api.v2.app import create_app; "
+                "from bijux_canon_runtime.application.readiness import "
+                "ReadinessCapability; "
+                "assert create_app().openapi()['openapi'] == '3.1.0'; "
+                "assert ReadinessCapability.INGEST.value == 'ingest'"
+            ),
+        ],
+        cwd=tmp_path,
+        env=environment,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert completed.returncode == 0, completed.stderr

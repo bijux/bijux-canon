@@ -118,8 +118,14 @@ class DuckDBExecutionStore:
         lock_timeout_seconds: float = 5.0,
     ) -> None:
         """Internal helper; not part of the public API."""
+        if read_only and not path.is_file():
+            raise FileNotFoundError(f"Runtime execution store is absent: {path}")
         self._lock_path = path.with_suffix(f"{path.suffix}.lock")
-        lease_read_only = read_only and path.exists()
+        if read_only and not self._lock_path.is_file():
+            raise FileNotFoundError(
+                f"Runtime execution store lock is absent: {self._lock_path}"
+            )
+        lease_read_only = read_only
         self._lease: ExecutionStoreLease | None = _acquire_lock(
             self._lock_path,
             read_only=lease_read_only,

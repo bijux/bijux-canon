@@ -144,6 +144,21 @@ def _manifest_record(
     }
 
 
+def _configuration_authority_record(value: object) -> dict[str, object]:
+    if not isinstance(value, dict):
+        return {}
+    authority_fields = (
+        "identity_sha256",
+        "offline",
+        "provider_api_key_ref",
+        "resource_budget",
+        "schema_version",
+        "strict_determinism",
+        "workspace_layout",
+    )
+    return {field: value.get(field) for field in authority_fields}
+
+
 def _result(
     manifest: Mapping[str, object],
     layout: RuntimeWorkspaceLayout,
@@ -331,8 +346,15 @@ def _validate_existing(
             "use a supported migration or compatible Runtime release",
         )
     expected = _manifest_record(configuration, layout, model_lock_id)
+    if _configuration_authority_record(
+        manifest.get("configuration")
+    ) != _configuration_authority_record(expected["configuration"]):
+        raise WorkspaceInitializationError(
+            WorkspaceInitializationErrorCode.INCOMPATIBLE_CONFIGURATION,
+            "workspace effective configuration differs",
+            "use the original effective settings or initialize another workspace",
+        )
     compatible_fields = (
-        "configuration",
         "configuration_identity_sha256",
         "layout",
         "layout_identity_sha256",
@@ -499,6 +521,8 @@ def initialize_runtime_workspace(
 
 def validate_runtime_workspace(
     configuration: RuntimeConfiguration,
+    *,
+    verify_model: bool = True,
 ) -> WorkspaceInitializationResult:
     """Validate an initialized effective workspace without creating or repairing it."""
     configured_root = configuration.working_root
@@ -512,7 +536,18 @@ def validate_runtime_workspace(
     _validate_owned_paths(layout)
     if not layout.root.exists():
         return _validate_existing(configuration, layout, "")
-    model_lock_id = _verify_model(layout)
+    if verify_model:
+        model_lock_id = _verify_model(layout)
+    else:
+        manifest = _load_manifest(layout.manifest_path)
+        recorded_model_lock_id = manifest.get("model_lock_artifact_id")
+        if not isinstance(recorded_model_lock_id, str) or not recorded_model_lock_id:
+            raise WorkspaceInitializationError(
+                WorkspaceInitializationErrorCode.CORRUPT_MANIFEST,
+                "workspace manifest has an invalid model lock identity",
+                "restore a verified backup or select another workspace",
+            )
+        model_lock_id = recorded_model_lock_id
     return _validate_existing(configuration, layout, model_lock_id)
 
 

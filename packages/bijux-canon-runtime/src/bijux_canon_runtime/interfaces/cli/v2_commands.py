@@ -47,6 +47,7 @@ from bijux_canon_runtime.application.problems import (
     runtime_problem_fields,
 )
 from bijux_canon_runtime.application.readiness import (
+    ReadinessCapability,
     RuntimeReadinessService,
     runtime_liveness,
 )
@@ -101,7 +102,7 @@ def run_v2_command(
                 resolve_runtime_configuration(environment=os.environ),
                 environment=os.environ,
             )
-            report = readiness.evaluate()
+            report = readiness.evaluate(ReadinessCapability(args.operation))
             _write(report)
             return 0 if report.ready else EXIT_NOT_READY
         service = _require_services(services)

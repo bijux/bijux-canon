@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
-"""Typed shallow liveness and deep Runtime readiness checks."""
+"""Typed shallow liveness and capability-aware Runtime readiness checks."""
 
 from __future__ import annotations
 
@@ -12,18 +12,38 @@ from pathlib import Path
 import tempfile
 
 from bijux_canon_index.application import IndexService
-from bijux_canon_runtime.application.runtime_configuration import RuntimeConfiguration
+from bijux_canon_index.infra.embeddings.model_cache import (
+    load_model_lock,
+    verify_materialized_model,
+)
+from bijux_canon_runtime.application.runtime_configuration import (
+    RuntimeConfiguration,
+    RuntimeWorkspaceLayout,
+)
+from bijux_canon_runtime.application.workspace_initialization import (
+    validate_runtime_workspace,
+)
 from bijux_canon_runtime.observability.storage.execution_store import (
     DuckDBExecutionStore,
 )
-from bijux_canon_runtime.runtime.persistence import (
-    AtomicFilesystemArtifactPayloadStore,
-)
+
+
+class ReadinessCapability(StrEnum):
+    """Public capability whose exact dependencies are being checked."""
+
+    INITIALIZED = "initialized"
+    INGEST = "ingest"
+    INDEX = "index"
+    RETRIEVE = "retrieve"
+    ASK = "ask"
+    RESEARCH = "research"
+    RUN = "run"
 
 
 class ReadinessCheckName(StrEnum):
     """Stable dependency names reported to operators."""
 
+    WORKSPACE = "workspace-initialization"
     SCHEMA = "schema-migrations"
     ARTIFACT_STORE = "artifact-store"
     ACTIVE_GENERATION = "active-generation"
@@ -35,6 +55,8 @@ class ReadinessCheckName(StrEnum):
 class ReadinessReason(StrEnum):
     """Safe machine-readable reasons for a degraded Runtime."""
 
+    WORKSPACE_NOT_CONFIGURED = "workspace-not-configured"
+    WORKSPACE_INVALID = "workspace-invalid"
     DATABASE_NOT_CONFIGURED = "database-not-configured"
     SCHEMA_UNAVAILABLE = "schema-unavailable"
     ARTIFACT_STORE_NOT_CONFIGURED = "artifact-store-not-configured"
@@ -67,9 +89,10 @@ class ReadinessCheck:
 
 @dataclass(frozen=True, slots=True)
 class ReadinessReport:
-    """Conjunctive readiness with every degraded reason retained."""
+    """Conjunctive readiness for one named public capability."""
 
     schema_version: str
+    capability: ReadinessCapability
     ready: bool
     status: str
     checks: tuple[ReadinessCheck, ...]
@@ -81,8 +104,44 @@ def runtime_liveness() -> LivenessReport:
     return LivenessReport()
 
 
+_BASE_CHECKS = (
+    ReadinessCheckName.WORKSPACE,
+    ReadinessCheckName.SCHEMA,
+    ReadinessCheckName.ARTIFACT_STORE,
+    ReadinessCheckName.WRITABLE_STATE,
+)
+_CAPABILITY_CHECKS = {
+    ReadinessCapability.INITIALIZED: _BASE_CHECKS,
+    ReadinessCapability.INGEST: _BASE_CHECKS,
+    ReadinessCapability.INDEX: (*_BASE_CHECKS, ReadinessCheckName.MODEL),
+    ReadinessCapability.RETRIEVE: (
+        *_BASE_CHECKS,
+        ReadinessCheckName.ACTIVE_GENERATION,
+        ReadinessCheckName.MODEL,
+    ),
+    ReadinessCapability.ASK: (
+        *_BASE_CHECKS,
+        ReadinessCheckName.ACTIVE_GENERATION,
+        ReadinessCheckName.MODEL,
+        ReadinessCheckName.PROVIDER,
+    ),
+    ReadinessCapability.RESEARCH: (
+        *_BASE_CHECKS,
+        ReadinessCheckName.ACTIVE_GENERATION,
+        ReadinessCheckName.MODEL,
+        ReadinessCheckName.PROVIDER,
+    ),
+    ReadinessCapability.RUN: (
+        *_BASE_CHECKS,
+        ReadinessCheckName.ACTIVE_GENERATION,
+        ReadinessCheckName.MODEL,
+        ReadinessCheckName.PROVIDER,
+    ),
+}
+
+
 class RuntimeReadinessService:
-    """Verify every dependency required to accept production work."""
+    """Verify only the dependencies required by one public operation."""
 
     def __init__(
         self,
@@ -93,79 +152,131 @@ class RuntimeReadinessService:
         self._configuration = configuration
         self._environment = dict(environment or {})
 
-    def evaluate(self) -> ReadinessReport:
-        """Return all dependency verdicts without short-circuiting failures."""
+    def evaluate(
+        self,
+        capability: ReadinessCapability = ReadinessCapability.INITIALIZED,
+    ) -> ReadinessReport:
+        """Return all required dependency verdicts without hidden allocation."""
+        if not isinstance(capability, ReadinessCapability):
+            raise ValueError("readiness capability is unsupported")
+        layout = self._configuration.workspace_layout
+        generation: object | None = None
         checks: list[ReadinessCheck] = []
-        checks.append(self._schema_check())
-        artifact_store, artifact_check = self._artifact_store_check()
-        checks.append(artifact_check)
-        generation, generation_check = self._active_generation_check()
-        checks.append(generation_check)
-        checks.append(self._model_check(generation))
-        checks.append(self._provider_check())
-        checks.append(self._writable_state_check(artifact_store))
+        for name in _CAPABILITY_CHECKS[capability]:
+            if name is ReadinessCheckName.WORKSPACE:
+                check = self._workspace_check(layout)
+            elif name is ReadinessCheckName.SCHEMA:
+                check = self._schema_check(layout)
+            elif name is ReadinessCheckName.ARTIFACT_STORE:
+                check = self._artifact_store_check(layout)
+            elif name is ReadinessCheckName.WRITABLE_STATE:
+                check = self._writable_state_check(layout)
+            elif name is ReadinessCheckName.ACTIVE_GENERATION:
+                generation, check = self._active_generation_check(layout)
+            elif name is ReadinessCheckName.MODEL:
+                check = self._model_check(layout, generation)
+            else:
+                check = self._provider_check()
+            checks.append(check)
         reasons = tuple(check.reason for check in checks if check.reason is not None)
         ready = not reasons
         return ReadinessReport(
-            schema_version="bijux.runtime.readiness.v1",
+            schema_version="bijux.runtime.readiness.v2",
+            capability=capability,
             ready=ready,
             status="ready" if ready else "degraded",
             checks=tuple(checks),
             reasons=reasons,
         )
 
-    def _schema_check(self) -> ReadinessCheck:
-        database_path = self._configuration.database_path
-        if database_path is None:
+    def _workspace_check(
+        self,
+        layout: RuntimeWorkspaceLayout | None,
+    ) -> ReadinessCheck:
+        if layout is None:
+            return _degraded(
+                ReadinessCheckName.WORKSPACE,
+                ReadinessReason.WORKSPACE_NOT_CONFIGURED,
+                "Configure BIJUX_CANON_RUNTIME_WORKING_ROOT and initialize it.",
+            )
+        try:
+            validate_runtime_workspace(self._configuration, verify_model=False)
+        except Exception:
+            return _degraded(
+                ReadinessCheckName.WORKSPACE,
+                ReadinessReason.WORKSPACE_INVALID,
+                "Initialize the workspace or restore one verified compatible backup.",
+            )
+        return _ready(ReadinessCheckName.WORKSPACE)
+
+    @staticmethod
+    def _schema_check(layout: RuntimeWorkspaceLayout | None) -> ReadinessCheck:
+        if layout is None:
             return _degraded(
                 ReadinessCheckName.SCHEMA,
                 ReadinessReason.DATABASE_NOT_CONFIGURED,
-                "Configure BIJUX_CANON_RUNTIME_DB_PATH.",
+                "Configure and initialize a Runtime workspace.",
             )
         try:
-            store = DuckDBExecutionStore(database_path)
-            store.close()
+            store = DuckDBExecutionStore(layout.database_path, read_only=True)
+            try:
+                store.validate_schema()
+            finally:
+                store.close()
         except Exception:
             return _degraded(
                 ReadinessCheckName.SCHEMA,
                 ReadinessReason.SCHEMA_UNAVAILABLE,
-                "Apply Runtime migrations and verify database access.",
+                "Restore or migrate the initialized Runtime workspace.",
             )
         return _ready(ReadinessCheckName.SCHEMA)
 
+    @staticmethod
     def _artifact_store_check(
-        self,
-    ) -> tuple[AtomicFilesystemArtifactPayloadStore | None, ReadinessCheck]:
-        working_root = self._configuration.working_root
-        if working_root is None:
-            return None, _degraded(
+        layout: RuntimeWorkspaceLayout | None,
+    ) -> ReadinessCheck:
+        if layout is None:
+            return _degraded(
                 ReadinessCheckName.ARTIFACT_STORE,
                 ReadinessReason.ARTIFACT_STORE_NOT_CONFIGURED,
-                "Configure BIJUX_CANON_RUNTIME_WORKING_ROOT.",
+                "Configure and initialize a Runtime workspace.",
             )
-        try:
-            store = AtomicFilesystemArtifactPayloadStore(working_root / "cas")
-            next(store.iter_artifact_ids(), None)
-        except Exception:
-            return None, _degraded(
+        required = (
+            layout.cas_root,
+            layout.cas_root / "objects" / "sha256",
+            layout.cas_root / "staging",
+        )
+        if any(not path.is_dir() or path.is_symlink() for path in required):
+            return _degraded(
                 ReadinessCheckName.ARTIFACT_STORE,
                 ReadinessReason.ARTIFACT_STORE_UNAVAILABLE,
-                "Repair or restore the configured Runtime artifact store.",
+                "Restore the complete initialized Runtime workspace.",
             )
-        return store, _ready(ReadinessCheckName.ARTIFACT_STORE)
+        return _ready(ReadinessCheckName.ARTIFACT_STORE)
 
-    def _active_generation_check(self) -> tuple[object | None, ReadinessCheck]:
-        index_path = self._configuration.retrieval_index_path
-        if index_path is None:
+    @staticmethod
+    def _active_generation_check(
+        layout: RuntimeWorkspaceLayout | None,
+    ) -> tuple[object | None, ReadinessCheck]:
+        if layout is None:
             return None, _degraded(
                 ReadinessCheckName.ACTIVE_GENERATION,
                 ReadinessReason.INDEX_NOT_CONFIGURED,
-                "Configure BIJUX_CANON_RUNTIME_RETRIEVAL_INDEX_PATH.",
+                "Configure and initialize a Runtime workspace.",
+            )
+        required = (
+            layout.index_root,
+            layout.index_root / "generations",
+            layout.index_root / "registry.lock",
+        )
+        if any(not path.exists() or path.is_symlink() for path in required):
+            return None, _degraded(
+                ReadinessCheckName.ACTIVE_GENERATION,
+                ReadinessReason.ACTIVE_GENERATION_UNAVAILABLE,
+                "Build and activate a verified immutable index generation.",
             )
         try:
-            if not index_path.is_dir():
-                raise FileNotFoundError("configured index registry is absent")
-            report = IndexService(index_path).verify()
+            report = IndexService(layout.index_root).verify()
             if (
                 report.integrity.status != "verified"
                 or not report.activation.active
@@ -176,24 +287,34 @@ class RuntimeReadinessService:
             return None, _degraded(
                 ReadinessCheckName.ACTIVE_GENERATION,
                 ReadinessReason.ACTIVE_GENERATION_UNAVAILABLE,
-                "Activate a verified immutable index generation.",
+                "Build and activate a verified immutable index generation.",
             )
         return report, _ready(ReadinessCheckName.ACTIVE_GENERATION)
 
     @staticmethod
-    def _model_check(generation: object | None) -> ReadinessCheck:
-        dimension = getattr(generation, "dimension", None)
-        if (
-            generation is None
-            or not getattr(generation, "model_lock_artifact_id", "")
-            or isinstance(dimension, bool)
-            or not isinstance(dimension, int)
-            or dimension < 1
-        ):
+    def _model_check(
+        layout: RuntimeWorkspaceLayout | None,
+        generation: object | None,
+    ) -> ReadinessCheck:
+        if layout is None:
             return _degraded(
                 ReadinessCheckName.MODEL,
                 ReadinessReason.MODEL_CONFIGURATION_UNAVAILABLE,
-                "Activate an index built with a verified model lock and dimension.",
+                "Configure a verified locked local embedding model.",
+            )
+        try:
+            lock = load_model_lock(layout.model_lock_path)
+            verify_materialized_model(layout.model_root, lock)
+            if generation is not None and (
+                getattr(generation, "model_lock_artifact_id", None) != lock.lock_id
+                or getattr(generation, "dimension", None) != lock.profile.dimension
+            ):
+                raise ValueError("active generation and model lock differ")
+        except Exception:
+            return _degraded(
+                ReadinessCheckName.MODEL,
+                ReadinessReason.MODEL_CONFIGURATION_UNAVAILABLE,
+                "Restore the locked local model used by the active index.",
             )
         return _ready(ReadinessCheckName.MODEL)
 
@@ -205,29 +326,41 @@ class RuntimeReadinessService:
             return _degraded(
                 ReadinessCheckName.PROVIDER,
                 ReadinessReason.PROVIDER_CONFIGURATION_UNAVAILABLE,
-                "Configure the selected provider credential reference.",
+                "Configure the selected provider credential reference or use offline mode.",
             )
         return _ready(ReadinessCheckName.PROVIDER)
 
     def _writable_state_check(
         self,
-        artifact_store: AtomicFilesystemArtifactPayloadStore | None,
+        layout: RuntimeWorkspaceLayout | None,
     ) -> ReadinessCheck:
-        database_path = self._configuration.database_path
-        if database_path is None or artifact_store is None:
+        if layout is None:
             return _degraded(
                 ReadinessCheckName.WRITABLE_STATE,
                 ReadinessReason.STATE_NOT_WRITABLE,
-                "Configure writable Runtime database and artifact roots.",
+                "Configure and initialize writable Runtime state.",
             )
+        roots = {
+            layout.root,
+            layout.cas_root,
+            layout.database_path.parent,
+            layout.job_store_path.parent,
+            layout.index_root,
+            layout.operations_root,
+            layout.vex_root,
+            layout.locks_root,
+            layout.staging_root,
+            layout.temporary_root,
+            layout.backup_root,
+        }
         try:
-            self._write_probe(database_path.parent)
-            self._write_probe(artifact_store.root)
+            for root in sorted(roots):
+                self._write_probe(root)
         except Exception:
             return _degraded(
                 ReadinessCheckName.WRITABLE_STATE,
                 ReadinessReason.STATE_NOT_WRITABLE,
-                "Grant atomic write access to Runtime state roots.",
+                "Grant atomic write access to every initialized Runtime state root.",
             )
         return _ready(ReadinessCheckName.WRITABLE_STATE)
 
@@ -243,10 +376,13 @@ class RuntimeReadinessService:
 
 
 def runtime_store_is_ready(db_path: Path) -> bool:
-    """Return whether the configured execution store can be opened and closed."""
+    """Return whether an existing execution store has the exact current schema."""
     try:
-        store = DuckDBExecutionStore(db_path)
-        store.close()
+        store = DuckDBExecutionStore(db_path, read_only=True)
+        try:
+            store.validate_schema()
+        finally:
+            store.close()
     except Exception:
         return False
     return True
@@ -271,6 +407,7 @@ def _degraded(
 
 __all__ = [
     "LivenessReport",
+    "ReadinessCapability",
     "ReadinessCheck",
     "ReadinessCheckName",
     "ReadinessReason",
