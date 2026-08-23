@@ -299,6 +299,21 @@ def test_research_role_machine_executes_one_operation_per_legal_edge() -> None:
         ToolPolicyAction.ALLOW,
         ToolPolicyAction.ALLOW,
     ]
+    assert result.retrieval is not None
+    assert result.reasoning is not None
+    assert len(result.tool_descriptor_artifact_ids) == 2
+    assert len(result.tool_execution_records) == 2
+    assert [item.result_artifact_id for item in result.tool_execution_records] == [
+        result.retrieval.artifact_id,
+        result.reasoning.artifact_id,
+    ]
+    assert all("secret" not in repr(item) for item in result.tool_execution_records)
+    assert result.operations[1].payload["tool_execution_record_artifact_id"] == (
+        result.tool_execution_records[0].artifact_id
+    )
+    assert result.operations[5].payload["tool_execution_record_artifact_id"] == (
+        result.tool_execution_records[1].artifact_id
+    )
     assert result.tool_policy_artifact_id == tool_policy().artifact_id
     assert result.budget_policy_artifact_id == budget_policy().artifact_id
     assert not result.exhausted_budget_dimensions
@@ -314,6 +329,9 @@ def test_research_role_machine_executes_one_operation_per_legal_edge() -> None:
     assert result.terminal_outcome == "answered"
     assert len(checkpoints.persisted) == 8
     assert result.checkpoint_artifact_id == checkpoints.persisted[-1].artifact_id
+    assert checkpoints.persisted[-1].tool_execution_records == (
+        result.tool_execution_records
+    )
     assert len(result.causal_events) == 8
     assert result.causal_trace.event_artifact_ids == tuple(
         event.artifact_id for event in result.causal_events

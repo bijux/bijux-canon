@@ -124,14 +124,27 @@ class AgentBehaviorEvaluator:
 
     @staticmethod
     def _tool_policy(result: ResearchExecutionResult) -> AgentBehaviorOutcome:
-        passed = all(
-            "sha256:" + item.policy_sha256 == result.tool_policy_artifact_id
-            for item in result.tool_decisions
+        decisions = {item.artifact_id: item for item in result.tool_decisions}
+        passed = (
+            bool(result.tool_descriptor_artifact_ids)
+            and all(
+                "sha256:" + item.policy_sha256 == result.tool_policy_artifact_id
+                for item in result.tool_decisions
+            )
+            and all(
+                record.descriptor_artifact_id
+                in result.tool_descriptor_artifact_ids
+                and record.policy_decision_artifact_id in decisions
+                and decisions[record.policy_decision_artifact_id]
+                .invocation.request_sha256
+                == record.request_sha256
+                for record in result.tool_execution_records
+            )
         )
         return _outcome(
             AgentBehaviorDimension.tool_policy,
             passed,
-            "every tool decision is bound to the execution policy",
+            "every typed tool call binds its descriptor, request, result, and policy",
         )
 
     @staticmethod

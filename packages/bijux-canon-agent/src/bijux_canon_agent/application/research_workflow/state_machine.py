@@ -38,7 +38,12 @@ from bijux_canon_agent.contracts.research_ports import (
     ReasoningPortResult,
     RetrievalPortResult,
 )
-from bijux_canon_agent.contracts.tool_policy import ToolPolicy, ToolPolicyDecision
+from bijux_canon_agent.contracts.tool_execution import ToolExecutionRecord
+from bijux_canon_agent.contracts.tool_policy import (
+    ToolPolicy,
+    ToolPolicyAction,
+    ToolPolicyDecision,
+)
 
 
 def _canonical(value: object) -> bytes:
@@ -171,7 +176,9 @@ class ResearchCheckpoint:
     reasoning: ReasoningPortResult | None
     operations: tuple[ResearchOperationRecord, ...]
     transitions: tuple[ResearchTransition, ...]
+    tool_descriptor_artifact_ids: tuple[str, ...]
     tool_decisions: tuple[ToolPolicyDecision, ...]
+    tool_execution_records: tuple[ToolExecutionRecord, ...]
     budget_decisions: tuple[BudgetDecision, ...]
     causal_events: tuple[CausalDecisionEvent, ...]
     cancellation_signal: CancellationSignal | None
@@ -215,7 +222,9 @@ class ResearchExecutionResult:
     operations: tuple[ResearchOperationRecord, ...]
     transitions: tuple[ResearchTransition, ...]
     tool_policy_artifact_id: str
+    tool_descriptor_artifact_ids: tuple[str, ...]
     tool_decisions: tuple[ToolPolicyDecision, ...]
+    tool_execution_records: tuple[ToolExecutionRecord, ...]
     budget_policy_artifact_id: str
     budget_decisions: tuple[BudgetDecision, ...]
     budget_usage: BudgetDimensions
@@ -280,6 +289,7 @@ class ResearchRoleMachine:
             planning_input=planning_input,
             services=services,
             policy=tool_policy,
+            cancellation_port=cancellation_port,
         )
         if budget_policy.plan_sha256 != tool_policy.plan_sha256:
             raise ValueError("budget policy is not bound to the research plan")
@@ -365,7 +375,10 @@ class ResearchRoleMachine:
         machine._reasoning = checkpoint.reasoning
         machine._operations = list(checkpoint.operations)
         machine._transitions = list(checkpoint.transitions)
-        machine._services.restore(checkpoint.tool_decisions)
+        machine._services.restore(
+            checkpoint.tool_decisions,
+            checkpoint.tool_execution_records,
+        )
         machine._budget.restore(checkpoint.budget_decisions)
         machine._causal_events = list(checkpoint.causal_events)
         machine._cancellation_signal = checkpoint.cancellation_signal
@@ -477,8 +490,14 @@ class ResearchRoleMachine:
             "operation_artifact_ids": [item.artifact_id for item in self._operations],
             "transition_artifact_ids": [item.artifact_id for item in self._transitions],
             "tool_policy_artifact_id": self._services.policy.artifact_id,
+            "tool_descriptor_artifact_ids": [
+                item.artifact_id for item in self._services.tool_descriptors
+            ],
             "tool_decision_artifact_ids": [
                 item.artifact_id for item in self._services.decisions
+            ],
+            "tool_execution_record_artifact_ids": [
+                item.artifact_id for item in self._services.execution_records
             ],
             "budget_policy_artifact_id": self._budget.policy.artifact_id,
             "budget_decision_artifact_ids": [
@@ -510,7 +529,11 @@ class ResearchRoleMachine:
             operations=tuple(self._operations),
             transitions=tuple(self._transitions),
             tool_policy_artifact_id=self._services.policy.artifact_id,
+            tool_descriptor_artifact_ids=tuple(
+                item.artifact_id for item in self._services.tool_descriptors
+            ),
             tool_decisions=self._services.decisions,
+            tool_execution_records=self._services.execution_records,
             budget_policy_artifact_id=self._budget.policy.artifact_id,
             budget_decisions=self._budget.decisions,
             budget_usage=self._budget.global_usage,
@@ -599,6 +622,9 @@ class ResearchRoleMachine:
                 "tool_policy_decision_artifact_id": (
                     self._services.decisions[-1].artifact_id
                 ),
+                "tool_execution_record_artifact_id": (
+                    self._services.execution_records[-1].artifact_id
+                ),
             }
         elif operation is ResearchOperation.ANALYZE_EVIDENCE:
             retrieval = self._require_retrieval()
@@ -631,6 +657,9 @@ class ResearchRoleMachine:
                 "outcome": self._reasoning.outcome,
                 "tool_policy_decision_artifact_id": (
                     self._services.decisions[-1].artifact_id
+                ),
+                "tool_execution_record_artifact_id": (
+                    self._services.execution_records[-1].artifact_id
                 ),
             }
         elif operation is ResearchOperation.VERIFY_ANSWER:
@@ -739,7 +768,11 @@ class ResearchRoleMachine:
             reasoning=self._reasoning,
             operations=tuple(self._operations),
             transitions=tuple(self._transitions),
+            tool_descriptor_artifact_ids=tuple(
+                item.artifact_id for item in self._services.tool_descriptors
+            ),
             tool_decisions=self._services.decisions,
+            tool_execution_records=self._services.execution_records,
             budget_decisions=self._budget.decisions,
             causal_events=tuple(self._causal_events),
             cancellation_signal=self._cancellation_signal,
@@ -758,6 +791,9 @@ class ResearchRoleMachine:
                 _canonical(self._planning_input.model_dump(mode="json"))
             ).hexdigest(),
             "tool_policy_artifact_id": self._services.policy.artifact_id,
+            "tool_descriptor_artifact_ids": [
+                item.artifact_id for item in self._services.tool_descriptors
+            ],
             "budget_policy_artifact_id": self._budget.policy.artifact_id,
             "retriever_descriptor_sha256": hashlib.sha256(
                 _canonical(self._services.retriever_descriptor.model_dump(mode="json"))
@@ -780,6 +816,9 @@ class ResearchRoleMachine:
             "transition_artifact_ids": [item.artifact_id for item in self._transitions],
             "tool_decision_artifact_ids": [
                 item.artifact_id for item in self._services.decisions
+            ],
+            "tool_execution_record_artifact_ids": [
+                item.artifact_id for item in self._services.execution_records
             ],
             "budget_decision_artifact_ids": [
                 item.artifact_id for item in self._budget.decisions
@@ -895,6 +934,23 @@ class ResearchRoleMachine:
             )
             if failure != expected_failure:
                 raise ValueError("checkpoint failure identity is invalid")
+        allowed_decisions = {
+            item.artifact_id: item
+            for item in checkpoint.tool_decisions
+            if item.action is ToolPolicyAction.ALLOW
+        }
+        for sequence, record in enumerate(checkpoint.tool_execution_records):
+            if record.sequence != sequence:
+                raise ValueError("checkpoint tool executions are not contiguous")
+            if record.descriptor_artifact_id not in (
+                checkpoint.tool_descriptor_artifact_ids
+            ):
+                raise ValueError("checkpoint tool execution descriptor is unknown")
+            decision = allowed_decisions.get(record.policy_decision_artifact_id)
+            if decision is None:
+                raise ValueError("checkpoint tool execution lacks an allow decision")
+            if decision.invocation.request_sha256 != record.request_sha256:
+                raise ValueError("checkpoint tool execution request identity differs")
         lineage = checkpoint.cancellation_lineage + checkpoint.failure_lineage
         if any(
             len(item) != 71
@@ -911,6 +967,9 @@ class ResearchRoleMachine:
                 ),
                 "planning_input_sha256": checkpoint.planning_input_sha256,
                 "tool_policy_artifact_id": checkpoint.tool_policy_artifact_id,
+                "tool_descriptor_artifact_ids": list(
+                    checkpoint.tool_descriptor_artifact_ids
+                ),
                 "budget_policy_artifact_id": checkpoint.budget_policy_artifact_id,
                 "retriever_descriptor_sha256": (checkpoint.retriever_descriptor_sha256),
                 "reasoner_descriptor_sha256": checkpoint.reasoner_descriptor_sha256,
@@ -933,6 +992,9 @@ class ResearchRoleMachine:
                 ],
                 "tool_decision_artifact_ids": [
                     item.artifact_id for item in checkpoint.tool_decisions
+                ],
+                "tool_execution_record_artifact_ids": [
+                    item.artifact_id for item in checkpoint.tool_execution_records
                 ],
                 "budget_decision_artifact_ids": [
                     item.artifact_id for item in checkpoint.budget_decisions
@@ -965,6 +1027,10 @@ class ResearchRoleMachine:
         ):
             if current[field] != getattr(checkpoint, field):
                 raise ValueError(f"checkpoint dependency mismatch: {field}")
+        if current["tool_descriptor_artifact_ids"] != list(
+            checkpoint.tool_descriptor_artifact_ids
+        ):
+            raise ValueError("checkpoint dependency mismatch: tool descriptors")
 
     def _classify_failure(
         self, error: Exception, operation: ResearchOperation

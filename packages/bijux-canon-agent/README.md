@@ -171,6 +171,12 @@ Provider adapters remain edge integrations. Their presence does not authorize
 a provider, broaden the v1 HTTP contract, or transfer provider nondeterminism
 into the deterministic orchestration core.
 
+Installed retrieval and reasoning run through Agent's typed, default-deny
+research-tool registry. A registered tool binds versioned schemas, capability,
+implementation, scope, cost, timeout/cancellation, and replay policy. Durable
+Agent state retains request/result identities and fixed safe summaries without
+serializing source content, provider output, credentials, or exception text.
+
 ## Runtime Agent Adapter Status
 
 The installed runtime integration delegates research progression to
