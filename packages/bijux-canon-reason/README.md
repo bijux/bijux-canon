@@ -139,6 +139,15 @@ citation integrity from unassessed study quality, and conflict-oriented
 questions preserve divergent source-scoped claims without declaring a
 contradiction that has not been semantically verified.
 
+An explicitly selected structured provider resolves credentials only when its
+synthesis call begins. Its result binds provider, model, endpoint, complete
+configuration, policy, prompt, schema, evidence packet, bounded attempt usage,
+and secret-safe request/response receipts. Request bytes, response bytes,
+per-completion tokens, aggregate retry tokens, timeouts, repairs, attempts, and
+cancellation fail with typed outcomes. Answered or partial provider prose must
+be exactly covered by unique structured claim spans; an unknown citation or any
+unlinked answer text is repaired within budget or rejected before grounding.
+
 ## HTTP Contract
 
 The v1 API supports health, item CRUD, run creation, run lookup, manifest and

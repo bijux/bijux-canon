@@ -33,6 +33,7 @@ from bijux_canon_reason.grounding import (
     prompt_artifact_id,
     response_schema_sha256,
 )
+from bijux_canon_reason.grounding.provider_contracts import content_artifact_id
 
 
 def _sha(value: str) -> str:
@@ -87,7 +88,7 @@ def _candidate(citation_id: str, **changes: object) -> dict[str, object]:
     value: dict[str, object] = {
         "schema_version": "bijux.canon.reason.provider_synthesis_candidate.v1",
         "outcome": "answered",
-        "answer": "The source reports one scoped observation.",
+        "answer": "The study reports a scoped observation.",
         "claims": [
             {
                 "statement": "The study reports a scoped observation.",
@@ -185,6 +186,9 @@ def test_valid_candidate_records_secret_safe_usage_latency_and_schema() -> None:
     assert result.candidate.outcome is CandidateOutcome.answered
     assert result.prompt_artifact_id == prompt_artifact_id()
     assert result.response_schema_sha256 == response_schema_sha256()
+    assert result.schema_version.endswith(".v2")
+    assert result.configuration_artifact_id is not None
+    assert result.policy_artifact_id is not None
     assert result.attempts[0].status is ProviderAttemptStatus.accepted
     assert result.attempts[0].input_tokens == 100
     assert result.attempts[0].output_tokens == 40
@@ -225,6 +229,131 @@ def test_credentials_are_resolved_only_when_synthesis_runs() -> None:
 
     assert calls == 1
     assert caught.value.code is StructuredProviderErrorCode.attempts_exhausted
+
+
+def test_pre_cancelled_request_never_resolves_credentials_or_uses_transport() -> None:
+    credential_calls = 0
+
+    def credential() -> str:
+        nonlocal credential_calls
+        credential_calls += 1
+        return "test-secret"
+
+    transport = QueueTransport([])
+
+    with pytest.raises(StructuredProviderError) as caught:
+        _provider(transport, credential=credential).synthesize(
+            question="Question?",
+            evidence_packet=_packet()[0],
+            cancelled=lambda: True,
+        )
+
+    assert caught.value.code is StructuredProviderErrorCode.cancelled
+    assert caught.value.attempts == ()
+    assert credential_calls == 0
+    assert transport.requests == []
+
+
+def test_cancellation_after_transport_cannot_return_provider_answer() -> None:
+    packet, evidence = _packet()
+    transport = QueueTransport(
+        [_response(_envelope(json.dumps(_candidate(evidence.artifact_id))))]
+    )
+    checks = 0
+
+    def cancelled() -> bool:
+        nonlocal checks
+        checks += 1
+        return checks >= 3
+
+    with pytest.raises(StructuredProviderError) as caught:
+        _provider(transport).synthesize(
+            question="Question?", evidence_packet=packet, cancelled=cancelled
+        )
+
+    assert caught.value.code is StructuredProviderErrorCode.cancelled
+    assert caught.value.attempts[-1].status is ProviderAttemptStatus.cancelled
+    assert len(transport.requests) == 1
+
+
+def test_request_byte_budget_fails_before_transport() -> None:
+    transport = QueueTransport([])
+    policy = StructuredProviderPolicy(
+        max_attempts=1,
+        max_repairs=0,
+        max_request_bytes=1,
+    )
+
+    with pytest.raises(StructuredProviderError) as caught:
+        _provider(transport, policy=policy).synthesize(
+            question="Question?", evidence_packet=_packet()[0]
+        )
+
+    assert caught.value.code is StructuredProviderErrorCode.budget_exceeded
+    assert transport.requests == []
+
+
+def test_reported_completion_usage_cannot_exceed_requested_budget() -> None:
+    packet, evidence = _packet()
+    response = _response(
+        _envelope(
+            json.dumps(_candidate(evidence.artifact_id)),
+            input_tokens=5,
+            output_tokens=11,
+        )
+    )
+    policy = StructuredProviderPolicy(
+        max_attempts=1,
+        max_repairs=0,
+        max_completion_tokens=10,
+        max_total_tokens=100,
+    )
+
+    with pytest.raises(StructuredProviderError) as caught:
+        _provider(QueueTransport([response]), policy=policy).synthesize(
+            question="Question?", evidence_packet=packet
+        )
+
+    assert caught.value.code is StructuredProviderErrorCode.budget_exceeded
+    assert caught.value.attempts[-1].validation_error_codes == (
+        "completion_token_budget_exceeded",
+    )
+
+
+def test_repair_attempts_share_one_total_token_budget() -> None:
+    packet, evidence = _packet()
+    transport = QueueTransport(
+        [
+            _response(_envelope("bad", input_tokens=60, output_tokens=20)),
+            _response(
+                _envelope(
+                    json.dumps(_candidate(evidence.artifact_id)),
+                    input_tokens=60,
+                    output_tokens=20,
+                )
+            ),
+        ]
+    )
+    policy = StructuredProviderPolicy(
+        max_attempts=2,
+        max_repairs=1,
+        max_completion_tokens=50,
+        max_total_tokens=100,
+    )
+
+    with pytest.raises(StructuredProviderError) as caught:
+        _provider(transport, policy=policy).synthesize(
+            question="Question?", evidence_packet=packet
+        )
+
+    assert caught.value.code is StructuredProviderErrorCode.budget_exceeded
+    assert tuple(attempt.status for attempt in caught.value.attempts) == (
+        ProviderAttemptStatus.invalid_candidate,
+        ProviderAttemptStatus.rejected,
+    )
+    assert caught.value.attempts[-1].validation_error_codes == (
+        "total_token_budget_exceeded",
+    )
 
 
 def test_invalid_candidate_is_repaired_once() -> None:
@@ -270,6 +399,32 @@ def test_unknown_citation_is_repaired_before_acceptance() -> None:
     assert result.candidate.claims[0].citation_evidence_artifact_ids == (
         evidence.artifact_id,
     )
+
+
+def test_unlinked_answer_assertion_is_repaired_before_acceptance() -> None:
+    packet, evidence = _packet()
+    invalid = _candidate(
+        evidence.artifact_id,
+        answer=(
+            "The study reports a scoped observation. An uncited treatment always works."
+        ),
+    )
+    valid = _candidate(evidence.artifact_id)
+    transport = QueueTransport(
+        [
+            _response(_envelope(json.dumps(invalid))),
+            _response(_envelope(json.dumps(valid))),
+        ]
+    )
+
+    result = _provider(transport).synthesize(
+        question="Question?", evidence_packet=packet
+    )
+
+    assert result.attempts[0].validation_error_codes == (
+        "answer_contains_unlinked_text",
+    )
+    assert result.candidate.answer == "The study reports a scoped observation."
 
 
 def test_retryable_status_is_retried_without_using_repair_budget() -> None:
@@ -378,6 +533,27 @@ def test_result_is_content_addressed_and_restart_safe() -> None:
     drifted["artifact_id"] = _artifact("other-result")
     with pytest.raises(ValidationError, match="identity"):
         StructuredProviderSynthesis.model_validate(drifted)
+
+
+def test_historical_provider_synthesis_replays_with_legacy_identity() -> None:
+    packet, evidence = _packet()
+    response = _response(_envelope(json.dumps(_candidate(evidence.artifact_id))))
+    current = _provider(QueueTransport([response])).synthesize(
+        question="Question?", evidence_packet=packet
+    )
+    legacy = current.model_dump(mode="json")
+    legacy["schema_version"] = "bijux.canon.reason.structured_provider_synthesis.v1"
+    legacy.pop("configuration_artifact_id")
+    legacy.pop("policy_artifact_id")
+    legacy["artifact_id"] = content_artifact_id(
+        {key: value for key, value in legacy.items() if key != "artifact_id"}
+    )
+
+    restarted = StructuredProviderSynthesis.model_validate(legacy)
+
+    assert restarted.schema_version.endswith(".v1")
+    assert restarted.configuration_artifact_id is None
+    assert restarted.policy_artifact_id is None
 
 
 @pytest.mark.parametrize(

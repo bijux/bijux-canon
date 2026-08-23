@@ -31,6 +31,8 @@ from bijux_canon_reason.grounding import (
     NormalizedClaimSet,
     OpenAICompatibleStructuredSynthesizer,
     StructuredProviderConfiguration,
+    StructuredProviderError,
+    StructuredProviderErrorCode,
     StructuredProviderSynthesis,
 )
 from bijux_canon_reason.grounding.provider_contracts import content_artifact_id
@@ -345,26 +347,26 @@ def test_credential_free_points_keep_exact_answer_and_citation_spans() -> None:
     )
 
 
-def test_missing_provider_answer_span_fails_closed() -> None:
-    provider_result, _ = _provider_result(
-        "A candidate claim.", "An answer that omits the candidate."
+def test_missing_provider_answer_span_fails_at_provider_boundary() -> None:
+    with pytest.raises(StructuredProviderError) as caught:
+        _provider_result("A candidate claim.", "An answer that omits the candidate.")
+
+    assert caught.value.code is StructuredProviderErrorCode.attempts_exhausted
+    assert all(
+        attempt.validation_error_codes == ("answer_contains_unlinked_text",)
+        for attempt in caught.value.attempts
     )
 
-    with pytest.raises(ClaimNormalizationError) as caught:
-        AtomicClaimNormalizer().normalize_provider(provider_result)
 
-    assert caught.value.code is ClaimNormalizationErrorCode.answer_span_missing
+def test_repeated_provider_answer_span_fails_at_provider_boundary() -> None:
+    with pytest.raises(StructuredProviderError) as caught:
+        _provider_result("A repeated claim.", "A repeated claim. A repeated claim.")
 
-
-def test_repeated_provider_answer_span_fails_as_ambiguous() -> None:
-    provider_result, _ = _provider_result(
-        "A repeated claim.", "A repeated claim. A repeated claim."
+    assert caught.value.code is StructuredProviderErrorCode.attempts_exhausted
+    assert all(
+        attempt.validation_error_codes == ("answer_contains_unlinked_text",)
+        for attempt in caught.value.attempts
     )
-
-    with pytest.raises(ClaimNormalizationError) as caught:
-        AtomicClaimNormalizer().normalize_provider(provider_result)
-
-    assert caught.value.code is ClaimNormalizationErrorCode.answer_span_ambiguous
 
 
 def test_question_is_not_admitted_as_a_falsifiable_claim() -> None:

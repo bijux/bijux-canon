@@ -117,6 +117,9 @@ class StructuredSynthesisCandidate(StableModel):
         if self.outcome in {CandidateOutcome.answered, CandidateOutcome.partial}:
             if not self.claims:
                 raise ValueError("answered provider candidates require claims")
+            statements = tuple(claim.statement for claim in self.claims)
+            if len(statements) != len(set(statements)):
+                raise ValueError("provider candidate claims must be unique")
         elif self.claims:
             raise ValueError(
                 "abstained or refused provider candidates cannot expose claims"
@@ -142,6 +145,7 @@ class ProviderAttemptStatus(StrEnum):
     retryable_error = "retryable_error"
     rejected = "rejected"
     invalid_candidate = "invalid_candidate"
+    cancelled = "cancelled"
 
 
 class ProviderAttemptReceipt(StableModel):
@@ -201,6 +205,8 @@ class StructuredProviderSynthesis(StableModel):
     prompt_version: str
     response_schema_sha256: str
     evidence_packet_artifact_id: str
+    configuration_artifact_id: str | None = None
+    policy_artifact_id: str | None = None
     candidate: StructuredSynthesisCandidate
     attempts: tuple[ProviderAttemptReceipt, ...]
 
@@ -208,6 +214,11 @@ class StructuredProviderSynthesis(StableModel):
     @classmethod
     def _validate_artifact_id(cls, value: str) -> str:
         return require_artifact_id(value)
+
+    @field_validator("configuration_artifact_id", "policy_artifact_id")
+    @classmethod
+    def _validate_optional_artifact_id(cls, value: str | None) -> str | None:
+        return None if value is None else require_artifact_id(value)
 
     @field_validator("response_schema_sha256")
     @classmethod
@@ -228,8 +239,27 @@ class StructuredProviderSynthesis(StableModel):
             ProviderAttemptStatus.refused,
         }:
             raise ValueError("provider synthesis requires a terminal accepted attempt")
+        has_configuration = self.configuration_artifact_id is not None
+        has_policy = self.policy_artifact_id is not None
+        if has_configuration is not has_policy:
+            raise ValueError(
+                "provider configuration and policy identities are inseparable"
+            )
+        if self.schema_version.endswith(".v2") and not has_configuration:
+            raise ValueError("provider synthesis v2 requires configuration identities")
         payload = self.model_dump(mode="json", exclude={"artifact_id"})
-        if self.artifact_id != content_artifact_id(payload):
+        identity_matches = self.artifact_id == content_artifact_id(payload)
+        if not identity_matches and not has_configuration:
+            legacy_payload = self.model_dump(
+                mode="json",
+                exclude={
+                    "artifact_id",
+                    "configuration_artifact_id",
+                    "policy_artifact_id",
+                },
+            )
+            identity_matches = self.artifact_id == content_artifact_id(legacy_payload)
+        if not identity_matches:
             raise ValueError("provider synthesis identity does not match its payload")
         return self
 
