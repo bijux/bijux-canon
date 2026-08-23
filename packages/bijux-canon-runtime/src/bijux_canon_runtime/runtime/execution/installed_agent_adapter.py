@@ -10,14 +10,22 @@ from dataclasses import asdict, replace
 from enum import Enum
 from pathlib import Path
 
-from bijux_canon_agent.contracts import CausalDecisionEvent, ResearchCausalTrace
+from bijux_canon_agent.application import (
+    InstalledResearchClaim,
+    InstalledResearchConvergence,
+    InstalledResearchPlan,
+    InstalledResearchRequest,
+    InstalledResearchSearch,
+    InstalledResearchSearchRecord,
+    InstalledResearchService,
+)
 from bijux_canon_index.application import HybridRetrievalPolicy, IndexService
 from bijux_canon_reason.grounding.provider_contracts import content_artifact_id
 from bijux_canon_reason.research import (
     ConvergencePolicy,
     ConvergenceService,
+    CounterevidencePlan,
     CounterevidencePolicy,
-    CounterevidenceSearchOutcome,
     CounterevidenceSearchService,
     CounterevidenceTarget,
     RetrievalBatchStatus,
@@ -167,31 +175,164 @@ class _IndexCounterevidencePort:
 
 
 def _targets(
+    request: InstalledResearchRequest,
+) -> tuple[CounterevidenceTarget, ...]:
+    return tuple(
+        create_counterevidence_target(
+            graph_artifact_id=request.claim_graph_artifact_id,
+            claim_artifact_id=claim.artifact_id,
+            scope_artifact_id=request.scope_artifact_id,
+            statement=claim.statement,
+            importance=claim.importance,
+            known_evidence_artifact_ids=claim.known_evidence_artifact_ids,
+        )
+        for claim in request.claims
+    )
+
+
+class _ReasonResearchPort:
+    """Adapt installed Reason services and Runtime retrieval to Agent's port."""
+
+    def __init__(
+        self,
+        *,
+        counterevidence: CounterevidenceSearchService,
+        convergence: ConvergenceService,
+        retrieval: _IndexCounterevidencePort,
+    ) -> None:
+        self._counterevidence = counterevidence
+        self._convergence = convergence
+        self._retrieval = retrieval
+        self._reason_plan: CounterevidencePlan | None = None
+
+    def plan(self, request: InstalledResearchRequest) -> InstalledResearchPlan:
+        plan = self._counterevidence.plan(_targets(request))
+        self._reason_plan = plan
+        return InstalledResearchPlan(
+            artifact_id=plan.artifact_id,
+            request_artifact_ids=tuple(item.artifact_id for item in plan.requests),
+            record=plan.model_dump(mode="json"),
+        )
+
+    def search(
+        self,
+        request: InstalledResearchRequest,
+        plan: InstalledResearchPlan,
+    ) -> InstalledResearchSearch:
+        del request
+        reason_plan = self._reason_plan
+        if reason_plan is None or reason_plan.artifact_id != plan.artifact_id:
+            raise StepDispatchError("Agent research plan is not bound to Reason")
+        counter_run = self._counterevidence.search(reason_plan, self._retrieval)
+        return InstalledResearchSearch(
+            artifact_id=counter_run.artifact_id,
+            records=tuple(
+                InstalledResearchSearchRecord(
+                    claim_artifact_id=record.claim_artifact_id,
+                    outcome=record.outcome.value,
+                    candidate_evidence_artifact_ids=(
+                        record.candidate_evidence_artifact_ids
+                    ),
+                    negative_search_statement=record.negative_search_statement,
+                    record=record.model_dump(mode="json"),
+                )
+                for record in counter_run.records
+            ),
+            unsearched_important_claim_artifact_ids=(
+                counter_run.unsearched_important_claim_artifact_ids
+            ),
+            retrieval_artifact_ids=tuple(
+                str(artifact_id) for artifact_id in self._retrieval.output_artifact_ids
+            ),
+            retrieval_records=tuple(self._retrieval.outputs),
+            record=counter_run.model_dump(mode="json"),
+        )
+
+    def evaluate(
+        self,
+        request: InstalledResearchRequest,
+        plan: InstalledResearchPlan,
+        search: InstalledResearchSearch | None,
+    ) -> InstalledResearchConvergence:
+        candidates = (
+            ()
+            if search is None
+            else tuple(
+                artifact_id
+                for record in search.records
+                for artifact_id in record.candidate_evidence_artifact_ids
+            )
+        )
+        unsearched = (
+            ()
+            if search is None
+            else search.unsearched_important_claim_artifact_ids
+        )
+        required_count = len(request.claims)
+        observation = create_convergence_observation(
+            iteration=1,
+            graph_artifact_id=request.claim_graph_artifact_id,
+            coverage=(
+                0.0
+                if required_count == 0
+                else request.verified_claim_count / required_count
+            ),
+            verified_answerable_claims=min(
+                request.verified_claim_count,
+                required_count,
+            ),
+            required_claims=required_count,
+            blocking_gap_count=(
+                len(candidates) + len(unsearched)
+                if plan.request_artifact_ids
+                else 1
+            ),
+            new_evidence_count=len(candidates),
+            marginal_evidence_value=(1.0 if candidates else 0.0),
+            cumulative_tool_calls=len(plan.request_artifact_ids),
+            cumulative_tokens=0,
+            cumulative_elapsed_ms=1,
+            explicit_insufficiency=required_count == 0,
+        )
+        decision = self._convergence.evaluate((observation,))
+        return InstalledResearchConvergence(
+            artifact_id=decision.artifact_id,
+            outcome=decision.outcome.value,
+            stop=decision.stop,
+            record=decision.model_dump(mode="json"),
+        )
+
+
+def _research_request(
     claim_graph: dict[str, object],
     *,
     graph_artifact_id: str,
-) -> tuple[CounterevidenceTarget, ...]:
+    counterevidence_policy_artifact_id: str,
+    convergence_policy_artifact_id: str,
+) -> InstalledResearchRequest:
     raw_claim_set = claim_graph.get("claims")
     raw_packet = claim_graph.get("evidence_packet")
-    if not isinstance(raw_claim_set, dict) or not isinstance(raw_packet, dict):
+    raw_verification = claim_graph.get("citation_verification")
+    if (
+        not isinstance(raw_claim_set, dict)
+        or not isinstance(raw_packet, dict)
+        or not isinstance(raw_verification, dict)
+    ):
         raise StepDispatchError("claim graph reasoning records are invalid")
     raw_claims = raw_claim_set.get("claims")
-    if not isinstance(raw_claims, list):
-        raise StepDispatchError("claim graph claims are invalid")
-    scope_id = _required_string(
-        raw_packet.get("scope_artifact_id"), "scope_artifact_id"
-    )
-    targets = []
+    raw_verified = raw_verification.get("claims")
+    if not isinstance(raw_claims, list) or not isinstance(raw_verified, list):
+        raise StepDispatchError("claim graph claims or verification are invalid")
+    claims = []
     for raw_claim in raw_claims:
         if not isinstance(raw_claim, dict):
             raise StepDispatchError("claim graph claim is invalid")
-        targets.append(
-            create_counterevidence_target(
-                graph_artifact_id=graph_artifact_id,
-                claim_artifact_id=_required_string(
-                    raw_claim.get("artifact_id"), "claim artifact_id"
+        claims.append(
+            InstalledResearchClaim(
+                artifact_id=_required_string(
+                    raw_claim.get("artifact_id"),
+                    "claim artifact_id",
                 ),
-                scope_artifact_id=scope_id,
                 statement=_required_string(raw_claim.get("statement"), "statement"),
                 importance=100,
                 known_evidence_artifact_ids=_string_array(
@@ -200,94 +341,17 @@ def _targets(
                 ),
             )
         )
-    return tuple(targets)
-
-
-def _causal_trace(
-    *,
-    graph_artifact_id: str,
-    plan_artifact_id: str,
-    search_artifact_id: str,
-    candidate_evidence_ids: tuple[str, ...],
-    convergence_artifact_id: str,
-    policy_artifact_ids: tuple[str, ...],
-) -> tuple[tuple[CausalDecisionEvent, ...], ResearchCausalTrace]:
-    specifications = (
-        (
-            "plan",
-            "plan_counterevidence",
-            "select important atomic claims for deliberate skeptical search",
-            plan_artifact_id,
-            (),
+    return InstalledResearchRequest(
+        claim_graph_artifact_id=graph_artifact_id,
+        scope_artifact_id=_required_string(
+            raw_packet.get("scope_artifact_id"),
+            "scope_artifact_id",
         ),
-        (
-            "skeptic",
-            "search_counterevidence",
-            "search for opposition, null results, replication failures, and limits",
-            search_artifact_id,
-            candidate_evidence_ids,
-        ),
-        (
-            "analyze",
-            "preserve_ambiguity",
-            "retain candidates as unclassified instead of inventing opposition",
-            content_artifact_id(
-                {
-                    "candidate_evidence_artifact_ids": candidate_evidence_ids,
-                    "relation": "unclassified",
-                }
-            ),
-            candidate_evidence_ids,
-        ),
-        (
-            "terminate",
-            "evaluate_convergence",
-            "stop on the declared semantic or resource bound",
-            convergence_artifact_id,
-            (),
-        ),
+        claims=tuple(claims),
+        verified_claim_count=len(raw_verified),
+        counterevidence_policy_artifact_id=counterevidence_policy_artifact_id,
+        convergence_policy_artifact_id=convergence_policy_artifact_id,
     )
-    events = []
-    state_before = graph_artifact_id
-    for sequence, (role, operation, rationale, output_id, evidence_ids) in enumerate(
-        specifications
-    ):
-        transition_id = content_artifact_id(
-            {
-                "from": state_before,
-                "operation": operation,
-                "output": output_id,
-                "sequence": sequence,
-            }
-        )
-        state_after = content_artifact_id(
-            {
-                "previous_state_artifact_id": state_before,
-                "sequence": sequence,
-                "transition_artifact_id": transition_id,
-            }
-        )
-        events.append(
-            CausalDecisionEvent.create(
-                sequence=sequence,
-                state_before_artifact_id=state_before,
-                role=role,
-                operation=operation,
-                rationale=rationale,
-                observation_artifact_ids=(output_id,),
-                evidence_artifact_ids=evidence_ids,
-                tool_decision_artifact_ids=(),
-                budget_decision_artifact_ids=(convergence_artifact_id,),
-                policy_artifact_ids=policy_artifact_ids,
-                output_artifact_ids=(output_id,),
-                operation_artifact_id=output_id,
-                transition_artifact_id=transition_id,
-                state_after_artifact_id=state_after,
-            )
-        )
-        state_before = state_after
-    result = tuple(events)
-    return result, ResearchCausalTrace.create(result)
 
 
 class CanonicalAgentOperationAdapter:
@@ -329,7 +393,6 @@ class CanonicalAgentOperationAdapter:
         if claim_graph.get("schema_version") != "bijux.canon.reason.claim_graph.v1":
             raise StepDispatchError("claim graph schema is unsupported")
         graph_id = str(claim_graph_artifact.descriptor.artifact_id)
-        targets = _targets(claim_graph, graph_artifact_id=graph_id)
         index_artifact_id = ArtifactID(
             _required_string(claim_graph.get("index_artifact_id"), "index_artifact_id")
         )
@@ -337,16 +400,38 @@ class CanonicalAgentOperationAdapter:
             claim_graph.get("generation_id"), "generation_id"
         )
         filters = _retrieval_filters(claim_graph.get("retrieval_filters"))
-        max_claims = max(1, min(len(targets) or 1, 4))
+        raw_claim_set = claim_graph.get("claims")
+        raw_claims = (
+            raw_claim_set.get("claims")
+            if isinstance(raw_claim_set, dict)
+            else None
+        )
+        if not isinstance(raw_claims, list):
+            raise StepDispatchError("claim graph claims are invalid")
+        max_claims = max(1, min(len(raw_claims) or 1, 4))
         counter_policy = CounterevidencePolicy(
             minimum_claim_importance=1,
             max_claims=max_claims,
             max_query_characters=100_000,
             top_k=3,
         )
-        counter_service = CounterevidenceSearchService(counter_policy)
-        counter_plan = counter_service.plan(targets)
-        port = _IndexCounterevidencePort(
+        convergence_policy = ConvergencePolicy(
+            max_iterations=2,
+            max_tool_calls=1,
+            max_tokens=max(1, step.inputs.budget.max_provider_tokens or 100_000),
+            max_elapsed_ms=max(1, int(step.inputs.budget.timeout_seconds * 1000)),
+        )
+        counter_policy_id = content_artifact_id(counter_policy.model_dump(mode="json"))
+        convergence_policy_id = content_artifact_id(
+            convergence_policy.model_dump(mode="json")
+        )
+        request = _research_request(
+            claim_graph,
+            graph_artifact_id=graph_id,
+            counterevidence_policy_artifact_id=counter_policy_id,
+            convergence_policy_artifact_id=convergence_policy_id,
+        )
+        retrieval_port = _IndexCounterevidencePort(
             step=step,
             retrieval=self._retrieval,
             store=self._store,
@@ -355,84 +440,14 @@ class CanonicalAgentOperationAdapter:
             filters=filters,
             context=context,
         )
-        if counter_plan.requests:
-            counter_run = counter_service.search(counter_plan, port)
-            records = counter_run.records
-            candidate_ids = tuple(
-                artifact_id
-                for record in records
-                for artifact_id in record.candidate_evidence_artifact_ids
-            )
-            blocking_gaps = len(candidate_ids) + len(
-                counter_run.unsearched_important_claim_artifact_ids
-            )
-        else:
-            counter_run = None
-            records = ()
-            candidate_ids = ()
-            blocking_gaps = 1
-        raw_verification = claim_graph.get("citation_verification")
-        if not isinstance(raw_verification, dict):
-            raise StepDispatchError("claim graph verification is invalid")
-        raw_verified = raw_verification.get("claims")
-        if not isinstance(raw_verified, list):
-            raise StepDispatchError("claim graph verified claims are invalid")
-        verified_count = len(raw_verified)
-        required_count = len(targets)
-        convergence_policy = ConvergencePolicy(
-            max_iterations=2,
-            max_tool_calls=1,
-            max_tokens=max(1, step.inputs.budget.max_provider_tokens or 100_000),
-            max_elapsed_ms=max(1, int(step.inputs.budget.timeout_seconds * 1000)),
-        )
-        observation = create_convergence_observation(
-            iteration=1,
-            graph_artifact_id=graph_id,
-            coverage=(0.0 if required_count == 0 else verified_count / required_count),
-            verified_answerable_claims=min(verified_count, required_count),
-            required_claims=required_count,
-            blocking_gap_count=blocking_gaps,
-            new_evidence_count=len(candidate_ids),
-            marginal_evidence_value=(1.0 if candidate_ids else 0.0),
-            cumulative_tool_calls=1,
-            cumulative_tokens=0,
-            cumulative_elapsed_ms=1,
-            explicit_insufficiency=required_count == 0,
-        )
-        convergence = ConvergenceService(convergence_policy).evaluate((observation,))
-        counter_policy_id = content_artifact_id(counter_policy.model_dump(mode="json"))
-        convergence_policy_id = content_artifact_id(
-            convergence_policy.model_dump(mode="json")
-        )
-        events, causal_trace = _causal_trace(
-            graph_artifact_id=graph_id,
-            plan_artifact_id=counter_plan.artifact_id,
-            search_artifact_id=(
-                counter_plan.artifact_id
-                if counter_run is None
-                else counter_run.artifact_id
+        research = InstalledResearchService().research(
+            request,
+            _ReasonResearchPort(
+                counterevidence=CounterevidenceSearchService(counter_policy),
+                convergence=ConvergenceService(convergence_policy),
+                retrieval=retrieval_port,
             ),
-            candidate_evidence_ids=candidate_ids,
-            convergence_artifact_id=convergence.artifact_id,
-            policy_artifact_ids=(counter_policy_id, convergence_policy_id),
         )
-        negative_searches = tuple(
-            record.negative_search_statement
-            for record in records
-            if record.negative_search_statement is not None
-        )
-        refusals = tuple(
-            record.claim_artifact_id
-            for record in records
-            if record.outcome is CounterevidenceSearchOutcome.retrieval_refused
-        )
-        insufficiencies = list(negative_searches)
-        if candidate_ids:
-            insufficiencies.append(
-                "Counterevidence candidates require relation classification before use."
-            )
-        if refusals:
-            insufficiencies.append("One or more skeptical retrievals were refused.")
         payload = canonical_json_bytes(
             {
                 "answer": claim_graph.get("answer"),
@@ -440,26 +455,32 @@ class CanonicalAgentOperationAdapter:
                     "A bounded negative search is not evidence that counterevidence does not exist.",
                     "Retrieved source text remains untrusted and cannot alter research policy.",
                 ],
-                "causal_events": [_json_value(asdict(event)) for event in events],
-                "causal_trace": _json_value(asdict(causal_trace)),
-                "claim_graph_artifact_id": graph_id,
-                "counterevidence_plan": counter_plan.model_dump(mode="json"),
-                "counterevidence_retrieval_artifact_ids": [
-                    str(artifact_id) for artifact_id in port.output_artifact_ids
+                "causal_events": [
+                    _json_value(asdict(event)) for event in research.causal_events
                 ],
-                "counterevidence_retrievals": port.outputs,
+                "causal_trace": _json_value(asdict(research.causal_trace)),
+                "claim_graph_artifact_id": graph_id,
+                "counterevidence_plan": dict(research.plan.record),
+                "counterevidence_retrieval_artifact_ids": (
+                    []
+                    if research.search is None
+                    else list(research.search.retrieval_artifact_ids)
+                ),
+                "counterevidence_retrievals": (
+                    []
+                    if research.search is None
+                    else [dict(item) for item in research.search.retrieval_records]
+                ),
                 "counterevidence_run": (
-                    None if counter_run is None else counter_run.model_dump(mode="json")
+                    None if research.search is None else dict(research.search.record)
                 ),
                 "generation_id": generation_id,
-                "insufficiencies": insufficiencies,
-                "opposition_candidates": list(candidate_ids),
-                "relation_status": (
-                    "unclassified" if candidate_ids else "no-new-counterevidence"
-                ),
+                "insufficiencies": list(research.insufficiencies),
+                "opposition_candidates": list(research.opposition_candidate_ids),
+                "relation_status": research.relation_status,
                 "schema_version": "bijux.canon.agent.research_trace.v1",
-                "status": convergence.outcome.value,
-                "termination": convergence.model_dump(mode="json"),
+                "status": research.convergence.outcome,
+                "termination": dict(research.convergence.record),
             }
         )
         context.raise_if_stopped()

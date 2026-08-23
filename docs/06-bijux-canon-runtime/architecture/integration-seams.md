@@ -59,6 +59,13 @@ lifecycle.
 Pass stable identifiers, hashes, classifications, and complete artifacts. Display
 names and logs are not cross-package identity.
 
+The installed research executor constructs a Runtime-side implementation of
+Agent's typed research port. It adapts persistent Index retrieval and Reason
+counterevidence/convergence services, then delegates call selection and causal
+trace production to Agent's application service. Runtime retains and publishes
+the returned artifact graph; it does not hard-code a
+plan/skeptic/analyze/terminate script.
+
 ## Executor Admission
 
 ```mermaid

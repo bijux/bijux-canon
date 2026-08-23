@@ -103,5 +103,13 @@ state, and final result. It may accept, reject, and persist the wider run; it
 must not rewrite agent history, turn interruption into completion, or convert a
 verification veto into success.
 
+For the installed local research path, Runtime supplies an
+`InstalledResearchPort` that exposes Reason planning/convergence and persistent
+Index retrieval. `InstalledResearchService` decides whether the plan warrants
+search and emits the causal event chain. This keeps evidence semantics in
+Reason, retrieval semantics in Index, workflow decisions in Agent, and durable
+artifact/run custody in Runtime. Runtime may serialize the returned records
+into its versioned artifact, but it must not synthesize missing Agent events.
+
 See [configuration](../interfaces/configuration-surface.md) for precedence and
 [artifact contracts](../interfaces/artifact-contracts.md) for evidence fields.

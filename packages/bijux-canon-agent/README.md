@@ -173,31 +173,25 @@ into the deterministic orchestration core.
 
 ## Runtime Agent Adapter Status
 
-The live runtime integration currently asks the `bijux_canon_agent` package
-root for a `run` callable accepting an agent identifier, deterministic seed,
-input fingerprint, declared output types, and retrieved evidence. It expects a
-list of dictionaries containing `artifact_id`, `artifact_type`, and `content`,
-with optional parent-artifact identifiers.
+The installed runtime integration delegates research progression to
+`InstalledResearchService` from `bijux_canon_agent.application`. Agent decides
+whether a counterevidence plan justifies search, records the ordered causal
+events, and applies the supplied convergence decision. Runtime provides a
+typed port that adapts persistent Index retrieval and Reason planning and
+convergence; it then projects the Agent result into the versioned runtime
+artifact without inventing role history.
 
-The package root deliberately exports only `API_VERSION`; it does not export
-`run`. The package-native execution surface accepts a validated pipeline
-definition, configuration, and workflow inputs, and preserves the outcome as a
-`PipelineResult` with a `RunTrace`. Installing agent beside runtime therefore
-does not make this live adapter callable.
+This installed service is credential-free and Runtime-neutral. It imports no
+Ingest, Index, Reason, or Runtime implementation. Its port records retain the
+exact plan, retrieval, candidate-evidence, policy, and convergence artifact
+identities needed by Runtime persistence. A material candidate remains
+explicitly unclassified until a later Agent decision classifies and uses it;
+retrieval alone is not opposition and does not revise an answer.
 
-The durable adapter belongs at the runtime integration boundary. It must
-define how a runtime agent invocation selects a pipeline, how runtime evidence
-becomes traceable workflow input, and how pipeline results, failure artifacts,
-trace identity, content serialization, and parent relationships become
-runtime artifacts. A broad package-root shortcut that returns untyped content
-would bypass those decisions; runtime currently derives content hashes from
-`str(content)`, so canonical serialization must also be explicit.
-
-Live composition requires an installed-package test that resolves the adapter,
-executes it with representative evidence, validates the runtime artifact
-projection, and binds every projected artifact to its agent trace. The agent
-CLI, HTTP, and Python pipeline remain package-local supported surfaces in the
-meantime.
+The existing CLI, HTTP, and Python pipeline remain package-local supported
+surfaces. The package root still exports only `API_VERSION`; installed
+composition uses the explicit application facade rather than an untyped root
+`run` shortcut.
 
 ## Trace And Failure Guarantees
 

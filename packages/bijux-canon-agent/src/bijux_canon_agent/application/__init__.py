@@ -1,5 +1,16 @@
 """Application services for Bijux Canon Agent."""
 
+from bijux_canon_agent.application.research_service import (
+    InstalledResearchClaim,
+    InstalledResearchConvergence,
+    InstalledResearchPlan,
+    InstalledResearchPort,
+    InstalledResearchRequest,
+    InstalledResearchResult,
+    InstalledResearchSearch,
+    InstalledResearchSearchRecord,
+    InstalledResearchService,
+)
 from bijux_canon_agent.application.research_services import InjectedResearchServices
 from bijux_canon_agent.application.research_tool_gateway import (
     PolicyEnforcedResearchServices,
@@ -49,6 +60,15 @@ __all__ = [
     "CancellationPort",
     "CancellationSignal",
     "InjectedResearchServices",
+    "InstalledResearchClaim",
+    "InstalledResearchConvergence",
+    "InstalledResearchPlan",
+    "InstalledResearchPort",
+    "InstalledResearchRequest",
+    "InstalledResearchResult",
+    "InstalledResearchSearch",
+    "InstalledResearchSearchRecord",
+    "InstalledResearchService",
     "PolicyEnforcedResearchServices",
     "ResearchExecutionResult",
     "ResearchCheckpoint",

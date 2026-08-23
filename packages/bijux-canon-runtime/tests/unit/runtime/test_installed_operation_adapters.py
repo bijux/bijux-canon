@@ -15,6 +15,12 @@ import pytest
 
 pytest.importorskip("faiss")
 
+from bijux_canon_agent.application import (
+    InstalledResearchPort,
+    InstalledResearchRequest,
+    InstalledResearchResult,
+    InstalledResearchService,
+)
 from bijux_canon_index.application import (
     CONTENT_EVIDENCE_RETRIEVAL_POLICY_ID,
     HybridRetrievalPolicy,
@@ -1040,12 +1046,28 @@ def _verify_replay(indexed: _IndexedRuntime) -> None:
 
 def test_installed_ingest_and_index_adapters_persist_restartable_payloads(
     tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    delegated_requests: list[InstalledResearchRequest] = []
+    original_research = InstalledResearchService.research
+
+    def record_agent_delegation(
+        self: InstalledResearchService,
+        request: InstalledResearchRequest,
+        port: InstalledResearchPort,
+    ) -> InstalledResearchResult:
+        delegated_requests.append(request)
+        return original_research(self, request, port)
+
+    monkeypatch.setattr(InstalledResearchService, "research", record_agent_delegation)
     indexed = _build_indexed_runtime(tmp_path)
     grounded = _retrieve_and_reason(indexed)
 
     _verify_reason_and_agent(grounded)
+    assert len(delegated_requests) == 1
+    assert delegated_requests[0].claims
     _verify_linked_runs(grounded)
+    assert len(delegated_requests) == 2
     _verify_offline_boundaries(grounded)
     _verify_replay(indexed)
 
