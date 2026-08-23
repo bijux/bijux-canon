@@ -133,11 +133,17 @@ mentions of related methods or yields.
 Credential-free synthesis uses a closed set of conservative projections, such
 as removing source-attribution boilerplate or resolving a labeled definition.
 The verifier independently reproduces the projection from exact cited text;
-arbitrary paraphrases, lexical overlap, and same-document matches do not count
-as support. Provider paths are optional and lazy. Context records distinguish
-citation integrity from unassessed study quality, and conflict-oriented
-questions preserve divergent source-scoped claims without declaring a
-contradiction that has not been semantically verified.
+arbitrary lexical overlap and same-document matches do not count as support.
+For non-exact text, the credential-free verifier requires ordered proposition
+terms plus compatible entities, quantities, population boundaries, modality,
+and negation. It distinguishes direct support, opposite negation, ambiguity,
+irrelevance, and insufficient evidence. An optional typed semantic verifier can
+admit a paraphrase only above policy confidence with explicit entity, scope,
+negation, and qualifier alignment; its complete content-addressed decision is
+retained with the assessment. Context records distinguish citation integrity
+from unassessed study quality, and conflict-oriented questions preserve
+divergent source-scoped claims without declaring a contradiction that has not
+been semantically verified.
 
 An explicitly selected structured provider resolves credentials only when its
 synthesis call begins. Its result binds provider, model, endpoint, complete

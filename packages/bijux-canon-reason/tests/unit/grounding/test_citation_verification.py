@@ -12,6 +12,7 @@ from pydantic import ValidationError
 import pytest
 
 from bijux_canon_reason.grounding import (
+    AtomicClaim,
     AtomicClaimNormalizer,
     CitationEvidence,
     CitationIntegrityStatus,
@@ -22,6 +23,7 @@ from bijux_canon_reason.grounding import (
     CitationVerificationPolicy,
     CitationVerificationReport,
     ClaimCitationLinker,
+    ClaimCitationLink,
     ClaimCitationSet,
     CredentialFreeSynthesizer,
     DeterministicCitationVerifier,
@@ -33,6 +35,8 @@ from bijux_canon_reason.grounding import (
     NormalizedClaimSet,
     OpenAICompatibleStructuredSynthesizer,
     StructuredProviderConfiguration,
+    StructuredEntailmentDecision,
+    StructuredEntailmentVerifier,
 )
 
 
@@ -77,6 +81,7 @@ def _verification(
     evidence_text: str,
     *,
     polarity: str = "supports",
+    structured_verifier: StructuredEntailmentVerifier | None = None,
 ) -> tuple[CitationVerificationReport, NormalizedClaimSet, ClaimCitationSet]:
     source_content = f"Immutable source containing: {evidence_text}"
     evidence = CitationEvidence(
@@ -149,10 +154,50 @@ def _verification(
     citations = ClaimCitationLinker().link(
         claim_set=claims, evidence_packet=packet, sources=(source,)
     )
-    report = DeterministicCitationVerifier().verify(
-        claim_set=claims, citation_set=citations
-    )
+    report = DeterministicCitationVerifier(
+        structured_verifier=structured_verifier
+    ).verify(claim_set=claims, citation_set=citations)
     return report, claims, citations
+
+
+class _SemanticVerifier:
+    def __init__(
+        self,
+        *,
+        verdict: EntailmentVerdict,
+        confidence: float = 0.99,
+        entity_alignment: bool = True,
+        scope_alignment: bool = True,
+        negation_alignment: bool = True,
+        qualifier_alignment: bool = True,
+        wrong_claim: bool = False,
+    ) -> None:
+        self.verdict = verdict
+        self.confidence = confidence
+        self.entity_alignment = entity_alignment
+        self.scope_alignment = scope_alignment
+        self.negation_alignment = negation_alignment
+        self.qualifier_alignment = qualifier_alignment
+        self.wrong_claim = wrong_claim
+
+    def assess(
+        self, *, claim: AtomicClaim, citation: ClaimCitationLink
+    ) -> StructuredEntailmentDecision:
+        return StructuredEntailmentDecision.create(
+            verifier_id="deterministic-test-semantic-verifier",
+            verifier_configuration_artifact_id=_artifact("semantic-config"),
+            claim_artifact_id=(
+                _artifact("wrong-claim") if self.wrong_claim else claim.artifact_id
+            ),
+            claim_citation_link_artifact_id=citation.artifact_id,
+            verdict=self.verdict,
+            confidence=self.confidence,
+            entity_alignment=self.entity_alignment,
+            scope_alignment=self.scope_alignment,
+            negation_alignment=self.negation_alignment,
+            qualifier_alignment=self.qualifier_alignment,
+            rationale_code="reviewed_semantic_relation",
+        )
 
 
 def test_exact_evidence_span_is_direct_support_with_complete_integrity() -> None:
@@ -171,24 +216,58 @@ def test_exact_evidence_span_is_direct_support_with_complete_integrity() -> None
     assert assessment.exact_claim_span is True
 
 
-def test_high_overlap_with_opposite_negation_requires_semantic_verification() -> None:
+def test_exact_claim_words_inside_negated_evidence_are_opposition() -> None:
+    claim = "The control changed."
+    report, _, _ = _verification(
+        claim,
+        f"The study denied the following assertion: {claim}",
+    )
+
+    assessment = report.claims[0].assessments[0]
+    assert assessment.exact_claim_span is True
+    assert report.claims[0].verdict is EntailmentVerdict.opposition
+    assert assessment.rationale_code == "exact_claim_span_has_opposite_negation"
+
+
+def test_exact_claim_under_possible_negation_remains_ambiguous() -> None:
+    claim = "The control changed."
+    report, _, _ = _verification(
+        claim,
+        f"It may not be true that {claim}",
+    )
+
+    assert report.claims[0].verdict is EntailmentVerdict.ambiguity
+    assert report.claims[0].assessments[0].rationale_code == (
+        "exact_span_opposite_negation_below_claim_modality"
+    )
+
+
+def test_aligned_proposition_with_opposite_negation_is_opposition() -> None:
     report, _, _ = _verification(
         "The control did change.", "The control did not change."
     )
 
-    assert report.claims[0].verdict is EntailmentVerdict.insufficiency
+    assert report.claims[0].verdict is EntailmentVerdict.opposition
     assert report.claims[0].assessments[0].rationale_code == (
-        "semantic_entailment_not_deterministically_established"
+        "aligned_proposition_has_opposite_negation"
     )
 
 
-def test_related_nonexact_evidence_requires_semantic_verification() -> None:
+def test_possible_opposite_evidence_does_not_overstate_opposition() -> None:
+    report, _, _ = _verification(
+        "The control changed.", "The control may not have changed."
+    )
+
+    assert report.claims[0].verdict is EntailmentVerdict.ambiguity
+
+
+def test_weaker_modality_and_narrower_scope_remain_ambiguous() -> None:
     report, _, _ = _verification(
         "Ancient DNA fragments were shorter.",
         "Ancient DNA fragments may have been shorter in a subset.",
     )
 
-    assert report.claims[0].verdict is EntailmentVerdict.insufficiency
+    assert report.claims[0].verdict is EntailmentVerdict.ambiguity
 
 
 def test_reproducible_conservative_projection_is_direct_support() -> None:
@@ -209,7 +288,7 @@ def test_projection_does_not_accept_an_entity_or_number_swap() -> None:
         "Our results show that part C yields can remain below 1% in hot regions.",
     )
 
-    assert report.claims[0].verdict is EntailmentVerdict.insufficiency
+    assert report.claims[0].verdict is EntailmentVerdict.ambiguity
 
 
 def test_unrelated_citation_is_not_given_an_overlap_only_verdict() -> None:
@@ -218,7 +297,130 @@ def test_unrelated_citation_is_not_given_an_overlap_only_verdict() -> None:
         "Ancient DNA fragments degraded in the tested samples.",
     )
 
-    assert report.claims[0].verdict is EntailmentVerdict.insufficiency
+    assert report.claims[0].verdict is EntailmentVerdict.irrelevance
+
+
+def test_nonexact_ordered_claim_with_matching_qualifiers_is_direct_support() -> None:
+    report, _, _ = _verification(
+        "The control changed by 12% in tested samples.",
+        "In the experiment, the control changed by 12% in tested samples.",
+    )
+
+    assessment = report.claims[0].assessments[0]
+    assert report.claims[0].verdict is EntailmentVerdict.direct_support
+    assert assessment.rationale_code == "conservative_lexical_semantic_alignment"
+
+
+def test_reversed_entity_relation_is_not_supported_by_term_overlap() -> None:
+    report, _, _ = _verification(
+        "Part B exceeded part C.",
+        "Part C exceeded part B.",
+    )
+
+    assert report.claims[0].verdict is EntailmentVerdict.ambiguity
+
+
+def test_unmatched_population_boundary_is_not_supported() -> None:
+    report, _, _ = _verification(
+        "DNA recovery remained high.",
+        "DNA recovery remained high in only some tested samples.",
+    )
+
+    assert report.claims[0].verdict is EntailmentVerdict.ambiguity
+
+
+def test_unmatched_numeric_qualifier_is_not_supported() -> None:
+    report, _, _ = _verification(
+        "Endogenous yield exceeded 12%.",
+        "Endogenous yield exceeded 2%.",
+    )
+
+    assert report.claims[0].verdict is EntailmentVerdict.ambiguity
+
+
+def test_optional_structured_verifier_can_admit_aligned_paraphrase() -> None:
+    verifier = _SemanticVerifier(verdict=EntailmentVerdict.direct_support)
+    report, _, _ = _verification(
+        "DNA preservation declined in the sampled tissue.",
+        "Genetic material became less recoverable in the sampled tissue.",
+        structured_verifier=verifier,
+    )
+
+    assessment = report.claims[0].assessments[0]
+    restarted = CitationVerificationReport.model_validate_json(report.model_dump_json())
+    assert report.claims[0].verdict is EntailmentVerdict.direct_support
+    assert assessment.structured_decision is not None
+    assert assessment.structured_decision.verdict is EntailmentVerdict.direct_support
+    assert (
+        restarted.claims[0].assessments[0].structured_decision
+        == assessment.structured_decision
+    )
+
+
+@pytest.mark.parametrize(
+    "verifier",
+    (
+        _SemanticVerifier(
+            verdict=EntailmentVerdict.direct_support,
+            confidence=0.7,
+        ),
+        _SemanticVerifier(
+            verdict=EntailmentVerdict.direct_support,
+            scope_alignment=False,
+        ),
+        _SemanticVerifier(
+            verdict=EntailmentVerdict.direct_support,
+            qualifier_alignment=False,
+        ),
+        _SemanticVerifier(
+            verdict=EntailmentVerdict.direct_support,
+            negation_alignment=False,
+        ),
+    ),
+)
+def test_structured_support_requires_confidence_and_all_alignment(
+    verifier: _SemanticVerifier,
+) -> None:
+    report, _, _ = _verification(
+        "DNA preservation declined.",
+        "Genetic material became less recoverable.",
+        structured_verifier=verifier,
+    )
+
+    assert report.claims[0].verdict is EntailmentVerdict.ambiguity
+    assert report.claims[0].assessments[0].structured_decision is not None
+
+
+def test_structured_opposition_requires_explicit_negation_misalignment() -> None:
+    verifier = _SemanticVerifier(
+        verdict=EntailmentVerdict.opposition,
+        negation_alignment=False,
+    )
+    report, _, _ = _verification(
+        "The control changed.",
+        "The control remained stable.",
+        structured_verifier=verifier,
+    )
+
+    assert report.claims[0].verdict is EntailmentVerdict.opposition
+
+
+def test_structured_decision_for_other_inputs_fails_closed() -> None:
+    verifier = _SemanticVerifier(
+        verdict=EntailmentVerdict.direct_support,
+        wrong_claim=True,
+    )
+
+    with pytest.raises(CitationVerificationError) as caught:
+        _verification(
+            "DNA preservation declined.",
+            "Genetic material became less recoverable.",
+            structured_verifier=verifier,
+        )
+
+    assert (
+        caught.value.code is CitationVerificationErrorCode.structured_decision_invalid
+    )
 
 
 def test_too_little_evidence_is_insufficient_even_when_present() -> None:

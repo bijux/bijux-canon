@@ -33,6 +33,8 @@ from bijux_canon_reason.grounding.citation_verification import (
     DeterministicCitationVerifier,
     EntailmentVerdict,
     EvidenceEntailmentAssessment,
+    StructuredEntailmentDecision,
+    StructuredEntailmentVerifier,
     VerifiedAtomicClaim,
 )
 from bijux_canon_reason.grounding.claim_normalization import (
@@ -186,6 +188,8 @@ __all__ = [
     "EvidenceTrust",
     "EntailmentVerdict",
     "EvidenceEntailmentAssessment",
+    "StructuredEntailmentDecision",
+    "StructuredEntailmentVerifier",
     "EvidenceGap",
     "EvidenceGapCode",
     "ExtractiveSynthesisPoint",

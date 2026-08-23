@@ -6,8 +6,7 @@ from __future__ import annotations
 
 from enum import StrEnum
 import hashlib
-import re
-from typing import Self
+from typing import Protocol, Self
 
 from pydantic import field_validator, model_validator
 
@@ -24,47 +23,11 @@ from bijux_canon_reason.grounding.provider_contracts import (
     content_artifact_id,
     require_artifact_id,
 )
-from bijux_canon_reason.grounding.semantic_projection import (
-    EvidenceProjectionMethod,
-    project_evidence_text,
+from bijux_canon_reason.grounding.semantic_alignment import (
+    assess_conservative_alignment,
 )
 
-_WORD = re.compile(r"[^\W_]+", flags=re.UNICODE)
-_NEGATIONS = frozenset({"no", "not", "never", "neither", "nor", "without"})
-_STOP_WORDS = frozenset(
-    {
-        "a",
-        "an",
-        "and",
-        "are",
-        "as",
-        "at",
-        "be",
-        "been",
-        "by",
-        "did",
-        "do",
-        "does",
-        "for",
-        "from",
-        "had",
-        "has",
-        "have",
-        "in",
-        "is",
-        "it",
-        "of",
-        "on",
-        "or",
-        "that",
-        "the",
-        "this",
-        "to",
-        "was",
-        "were",
-        "with",
-    }
-)
+_STRUCTURED_DECISION_PREFIX = "bijux.canon.reason.structured-entailment-decision.v1:"
 
 
 class CitationIntegrityStatus(StrEnum):
@@ -96,6 +59,7 @@ class CitationVerificationErrorCode(StrEnum):
     claim_set_mismatch = "claim_set_mismatch"
     claim_identity_mismatch = "claim_identity_mismatch"
     integrity_failure = "integrity_failure"
+    structured_decision_invalid = "structured_decision_invalid"
 
 
 class CitationVerificationError(ValueError):
@@ -109,10 +73,12 @@ class CitationVerificationError(ValueError):
 class CitationVerificationPolicy(StableModel):
     """Versioned deterministic thresholds for conservative entailment."""
 
-    schema_version: str = "bijux.canon.reason.citation_verification_policy.v1"
+    schema_version: str = "bijux.canon.reason.citation_verification_policy.v2"
     minimum_evidence_terms: int = 2
     related_claim_term_coverage: float = 0.6
+    support_claim_term_coverage: float = 0.9
     opposition_claim_term_coverage: float = 0.8
+    structured_minimum_confidence: float = 0.95
 
     @model_validator(mode="after")
     def _validate_policy(self) -> Self:
@@ -122,10 +88,16 @@ class CitationVerificationPolicy(StableModel):
             raise ValueError("related claim coverage must be within (0, 1]")
         if not 0 < self.opposition_claim_term_coverage <= 1:
             raise ValueError("opposition claim coverage must be within (0, 1]")
+        if not 0 < self.support_claim_term_coverage <= 1:
+            raise ValueError("support claim coverage must be within (0, 1]")
+        if self.support_claim_term_coverage < self.related_claim_term_coverage:
+            raise ValueError("support coverage cannot be weaker than related coverage")
         if self.opposition_claim_term_coverage < self.related_claim_term_coverage:
             raise ValueError(
                 "opposition coverage cannot be weaker than related coverage"
             )
+        if not 0 < self.structured_minimum_confidence <= 1:
+            raise ValueError("structured confidence must be within (0, 1]")
         return self
 
     @property
@@ -133,6 +105,106 @@ class CitationVerificationPolicy(StableModel):
         """Return the immutable policy identity."""
 
         return content_artifact_id(self.model_dump(mode="json"))
+
+
+class StructuredEntailmentDecision(StableModel):
+    """Typed optional semantic-verifier decision bound to exact inputs."""
+
+    schema_version: str = "bijux.canon.reason.structured_entailment_decision.v1"
+    artifact_id: str
+    verifier_id: str
+    verifier_configuration_artifact_id: str
+    claim_artifact_id: str
+    claim_citation_link_artifact_id: str
+    verdict: EntailmentVerdict
+    confidence: float
+    entity_alignment: bool
+    scope_alignment: bool
+    negation_alignment: bool
+    qualifier_alignment: bool
+    rationale_code: str
+
+    @classmethod
+    def create(
+        cls,
+        *,
+        verifier_id: str,
+        verifier_configuration_artifact_id: str,
+        claim_artifact_id: str,
+        claim_citation_link_artifact_id: str,
+        verdict: EntailmentVerdict,
+        confidence: float,
+        entity_alignment: bool,
+        scope_alignment: bool,
+        negation_alignment: bool,
+        qualifier_alignment: bool,
+        rationale_code: str,
+    ) -> Self:
+        payload = {
+            "schema_version": "bijux.canon.reason.structured_entailment_decision.v1",
+            "verifier_id": verifier_id,
+            "verifier_configuration_artifact_id": verifier_configuration_artifact_id,
+            "claim_artifact_id": claim_artifact_id,
+            "claim_citation_link_artifact_id": claim_citation_link_artifact_id,
+            "verdict": verdict.value,
+            "confidence": confidence,
+            "entity_alignment": entity_alignment,
+            "scope_alignment": scope_alignment,
+            "negation_alignment": negation_alignment,
+            "qualifier_alignment": qualifier_alignment,
+            "rationale_code": rationale_code,
+        }
+        return cls(
+            artifact_id=content_artifact_id(payload),
+            verifier_id=verifier_id,
+            verifier_configuration_artifact_id=verifier_configuration_artifact_id,
+            claim_artifact_id=claim_artifact_id,
+            claim_citation_link_artifact_id=claim_citation_link_artifact_id,
+            verdict=verdict,
+            confidence=confidence,
+            entity_alignment=entity_alignment,
+            scope_alignment=scope_alignment,
+            negation_alignment=negation_alignment,
+            qualifier_alignment=qualifier_alignment,
+            rationale_code=rationale_code,
+        )
+
+    @field_validator(
+        "artifact_id",
+        "verifier_configuration_artifact_id",
+        "claim_artifact_id",
+        "claim_citation_link_artifact_id",
+    )
+    @classmethod
+    def _validate_artifact_id(cls, value: str) -> str:
+        return require_artifact_id(value)
+
+    @field_validator("verifier_id", "rationale_code")
+    @classmethod
+    def _validate_nonempty(cls, value: str) -> str:
+        if not value.strip():
+            raise ValueError(
+                "structured verifier identity and rationale cannot be empty"
+            )
+        return value
+
+    @model_validator(mode="after")
+    def _validate_decision(self) -> Self:
+        if not 0 <= self.confidence <= 1:
+            raise ValueError("structured verifier confidence must be within [0, 1]")
+        payload = self.model_dump(mode="json", exclude={"artifact_id"})
+        if self.artifact_id != content_artifact_id(payload):
+            raise ValueError("structured entailment decision identity does not match")
+        return self
+
+
+class StructuredEntailmentVerifier(Protocol):
+    """Optional bounded semantic verifier for deterministically unresolved links."""
+
+    def assess(
+        self, *, claim: AtomicClaim, citation: ClaimCitationLink
+    ) -> StructuredEntailmentDecision:
+        """Return one typed decision for the exact claim-citation pair."""
 
 
 class EvidenceEntailmentAssessment(StableModel):
@@ -150,6 +222,16 @@ class EvidenceEntailmentAssessment(StableModel):
     claim_negated: bool
     evidence_negated: bool
     rationale_code: str
+
+    @property
+    def structured_decision(self) -> StructuredEntailmentDecision | None:
+        """Decode the optional typed semantic decision retained in the rationale."""
+
+        if not self.rationale_code.startswith(_STRUCTURED_DECISION_PREFIX):
+            return None
+        return StructuredEntailmentDecision.model_validate_json(
+            self.rationale_code.removeprefix(_STRUCTURED_DECISION_PREFIX)
+        )
 
     @field_validator(
         "artifact_id",
@@ -265,8 +347,14 @@ class CitationVerificationReport(StableModel):
 class DeterministicCitationVerifier:
     """Verify link integrity and classify only deterministic textual evidence."""
 
-    def __init__(self, policy: CitationVerificationPolicy | None = None) -> None:
+    def __init__(
+        self,
+        policy: CitationVerificationPolicy | None = None,
+        *,
+        structured_verifier: StructuredEntailmentVerifier | None = None,
+    ) -> None:
         self._policy = policy or CitationVerificationPolicy()
+        self._structured_verifier = structured_verifier
 
     def verify(
         self,
@@ -358,31 +446,34 @@ class DeterministicCitationVerifier:
                 CitationVerificationErrorCode.integrity_failure,
                 "claim citation integrity verification failed",
             )
-        claim_words = _terms(claim.statement)
-        evidence_words = _terms(link.exact_text)
-        exact_span = claim.statement in link.exact_text
-        verified_projection = claim.statement in {
-            projection.statement
-            for projection in project_evidence_text(link.exact_text)
-            if projection.method is not EvidenceProjectionMethod.exact_clause
-        }
-        claim_negated = _negated(claim.statement)
-        evidence_negated = _negated(link.exact_text)
-        coverage = (
-            len(claim_words & evidence_words) / len(claim_words) if claim_words else 0.0
+        semantic = assess_conservative_alignment(
+            claim=claim.statement,
+            evidence=link.exact_text,
+            minimum_evidence_terms=self._policy.minimum_evidence_terms,
+            related_claim_term_coverage=self._policy.related_claim_term_coverage,
+            support_claim_term_coverage=self._policy.support_claim_term_coverage,
+            opposition_claim_term_coverage=(
+                self._policy.opposition_claim_term_coverage
+            ),
         )
-        if len(evidence_words) < self._policy.minimum_evidence_terms:
-            verdict = EntailmentVerdict.insufficiency
-            rationale = "evidence_below_minimum_terms"
-        elif exact_span:
-            verdict = EntailmentVerdict.direct_support
-            rationale = "claim_is_exact_evidence_span"
-        elif verified_projection:
-            verdict = EntailmentVerdict.direct_support
-            rationale = "claim_is_verified_conservative_projection"
-        else:
-            verdict = EntailmentVerdict.insufficiency
-            rationale = "semantic_entailment_not_deterministically_established"
+        verdict = EntailmentVerdict(semantic.relation.value)
+        rationale = semantic.rationale_code
+        if self._structured_verifier is not None and verdict in {
+            EntailmentVerdict.ambiguity,
+            EntailmentVerdict.irrelevance,
+            EntailmentVerdict.insufficiency,
+        }:
+            decision = self._structured_verifier.assess(claim=claim, citation=link)
+            if (
+                decision.claim_artifact_id != claim.artifact_id
+                or decision.claim_citation_link_artifact_id != link.artifact_id
+            ):
+                raise CitationVerificationError(
+                    CitationVerificationErrorCode.structured_decision_invalid,
+                    "structured verifier decision references different inputs",
+                )
+            verdict = _structured_verdict(decision, self._policy)
+            rationale = _encode_structured_decision(decision)
         payload = {
             "claim_artifact_id": claim.artifact_id,
             "claim_ordinal": claim.ordinal,
@@ -390,10 +481,10 @@ class DeterministicCitationVerifier:
             "citation_evidence_artifact_id": link.citation_evidence_artifact_id,
             "integrity": CitationIntegrityStatus.verified.value,
             "verdict": verdict.value,
-            "claim_term_coverage": coverage,
-            "exact_claim_span": exact_span,
-            "claim_negated": claim_negated,
-            "evidence_negated": evidence_negated,
+            "claim_term_coverage": semantic.claim_term_coverage,
+            "exact_claim_span": semantic.exact_claim_span,
+            "claim_negated": semantic.claim_negated,
+            "evidence_negated": semantic.evidence_negated,
             "rationale_code": rationale,
         }
         return EvidenceEntailmentAssessment(
@@ -404,20 +495,46 @@ class DeterministicCitationVerifier:
             citation_evidence_artifact_id=link.citation_evidence_artifact_id,
             integrity=CitationIntegrityStatus.verified,
             verdict=verdict,
-            claim_term_coverage=coverage,
-            exact_claim_span=exact_span,
-            claim_negated=claim_negated,
-            evidence_negated=evidence_negated,
+            claim_term_coverage=semantic.claim_term_coverage,
+            exact_claim_span=semantic.exact_claim_span,
+            claim_negated=semantic.claim_negated,
+            evidence_negated=semantic.evidence_negated,
             rationale_code=rationale,
         )
 
 
-def _terms(text: str) -> frozenset[str]:
-    return frozenset(
-        _stem(word)
-        for word in (item.casefold() for item in _WORD.findall(text))
-        if word not in _STOP_WORDS and word not in _NEGATIONS
+def _structured_verdict(
+    decision: StructuredEntailmentDecision, policy: CitationVerificationPolicy
+) -> EntailmentVerdict:
+    if decision.confidence < policy.structured_minimum_confidence:
+        return EntailmentVerdict.ambiguity
+    shared_alignment = (
+        decision.entity_alignment
+        and decision.scope_alignment
+        and decision.qualifier_alignment
     )
+    if (
+        decision.verdict is EntailmentVerdict.direct_support
+        and shared_alignment
+        and decision.negation_alignment
+    ):
+        return EntailmentVerdict.direct_support
+    if (
+        decision.verdict is EntailmentVerdict.opposition
+        and shared_alignment
+        and not decision.negation_alignment
+    ):
+        return EntailmentVerdict.opposition
+    if decision.verdict in {
+        EntailmentVerdict.irrelevance,
+        EntailmentVerdict.insufficiency,
+    }:
+        return decision.verdict
+    return EntailmentVerdict.ambiguity
+
+
+def _encode_structured_decision(decision: StructuredEntailmentDecision) -> str:
+    return _STRUCTURED_DECISION_PREFIX + decision.model_dump_json()
 
 
 def _locator_reachable(link: ClaimCitationLink) -> bool:
@@ -453,19 +570,6 @@ def _locator_reachable(link: ClaimCitationLink) -> bool:
     return span_reachable or bool(structural.intersection(selectors))
 
 
-def _stem(word: str) -> str:
-    for suffix in ("ing", "ed", "es", "s"):
-        if word.endswith(suffix) and len(word) > len(suffix) + 3:
-            return word[: -len(suffix)]
-    return word
-
-
-def _negated(text: str) -> bool:
-    return bool(
-        _NEGATIONS.intersection(item.casefold() for item in _WORD.findall(text))
-    )
-
-
 def _aggregate_verdict(
     verdicts: tuple[EntailmentVerdict, ...],
 ) -> EntailmentVerdict:
@@ -499,5 +603,7 @@ __all__ = [
     "DeterministicCitationVerifier",
     "EntailmentVerdict",
     "EvidenceEntailmentAssessment",
+    "StructuredEntailmentDecision",
+    "StructuredEntailmentVerifier",
     "VerifiedAtomicClaim",
 ]
