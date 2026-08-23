@@ -14,9 +14,8 @@ from bijux_canon_ingest.application.canonical_ingest import (
     CanonicalIngestError,
     CanonicalIngestRequest,
     CanonicalIngestRuntime,
-    CorpusSnapshotConfiguration,
+    CorpusDiscoveryLimits,
 )
-from bijux_canon_ingest.domain.source_discovery import DiscoveryLimits
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -34,7 +33,7 @@ def _parser() -> argparse.ArgumentParser:
         default="reject",
     )
     build.add_argument("--publish-root", type=Path)
-    defaults = DiscoveryLimits()
+    defaults = CorpusDiscoveryLimits()
     build.add_argument("--max-depth", type=int, default=defaults.max_depth)
     build.add_argument("--max-entries", type=int, default=defaults.max_entries)
     build.add_argument("--max-files", type=int, default=defaults.max_files)
@@ -56,19 +55,17 @@ def run_corpus_commands(argv: list[str]) -> int:
     args = _parser().parse_args(argv[1:])
     try:
         result = CanonicalIngestRuntime().ingest(
-            CanonicalIngestRequest(
+            CanonicalIngestRequest.for_directory(
                 root_path=args.root,
                 root_name=args.root_name,
-                configuration=CorpusSnapshotConfiguration(
-                    corpus_name=args.corpus_name,
-                    discovery_limits=DiscoveryLimits(
-                        max_depth=args.max_depth,
-                        max_entries=args.max_entries,
-                        max_files=args.max_files,
-                        max_file_bytes=args.max_file_bytes,
-                        max_total_bytes=args.max_total_bytes,
-                        max_seconds=args.max_seconds,
-                    ),
+                corpus_name=args.corpus_name,
+                discovery_limits=CorpusDiscoveryLimits(
+                    max_depth=args.max_depth,
+                    max_entries=args.max_entries,
+                    max_files=args.max_files,
+                    max_file_bytes=args.max_file_bytes,
+                    max_total_bytes=args.max_total_bytes,
+                    max_seconds=args.max_seconds,
                 ),
                 include=tuple(args.include) or ("**/*",),
                 exclude=tuple(args.exclude),

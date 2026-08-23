@@ -16,8 +16,25 @@ from bijux_canon_ingest import (
     DiscoveryLimits,
     ingest_corpus,
 )
+from bijux_canon_ingest.application import CorpusDiscoveryLimits
 from bijux_canon_ingest.interfaces.cli.entrypoint import main
 from bijux_canon_ingest.interfaces.http.app import create_app
+
+
+def test_application_translates_portable_discovery_limits() -> None:
+    request = CanonicalIngestRequest.for_directory(
+        root_path=Path("sources"),
+        root_name="bounded",
+        corpus_name="bounded",
+        discovery_limits=CorpusDiscoveryLimits(max_files=7, max_total_bytes=4096),
+    )
+
+    assert request.configuration.discovery_limits == DiscoveryLimits(
+        max_files=7,
+        max_total_bytes=4096,
+    )
+    with pytest.raises(ValueError, match="positive"):
+        CorpusDiscoveryLimits(max_files=0).to_domain()
 
 
 def test_library_cli_runtime_and_http_share_result_schema(

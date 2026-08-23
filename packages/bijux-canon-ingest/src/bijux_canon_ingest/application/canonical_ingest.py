@@ -46,6 +46,7 @@ from bijux_canon_ingest.domain.corpus_snapshot import (
 from bijux_canon_ingest.domain.document_extraction import OcrRequiredOutcome
 from bijux_canon_ingest.domain.source_admission import AdmissionResult
 from bijux_canon_ingest.domain.source_discovery import (
+    DiscoveryLimits,
     DiscoveryPolicy,
     DiscoveryResult,
     DiscoveryRoot,
@@ -56,6 +57,32 @@ from bijux_canon_ingest.infra.adapters.file_admission import read_current_source
 
 class CanonicalIngestError(RuntimeError):
     """A canonical corpus could not be assembled from the requested root."""
+
+
+_DEFAULT_DISCOVERY_LIMITS = DiscoveryLimits()
+
+
+@dataclass(frozen=True, slots=True)
+class CorpusDiscoveryLimits:
+    """Transport-neutral source bounds translated at the application boundary."""
+
+    max_depth: int = _DEFAULT_DISCOVERY_LIMITS.max_depth
+    max_entries: int = _DEFAULT_DISCOVERY_LIMITS.max_entries
+    max_files: int = _DEFAULT_DISCOVERY_LIMITS.max_files
+    max_file_bytes: int = _DEFAULT_DISCOVERY_LIMITS.max_file_bytes
+    max_total_bytes: int = _DEFAULT_DISCOVERY_LIMITS.max_total_bytes
+    max_seconds: float = _DEFAULT_DISCOVERY_LIMITS.max_seconds
+
+    def to_domain(self) -> DiscoveryLimits:
+        """Validate and return the domain-owned discovery limit value."""
+        return DiscoveryLimits(
+            max_depth=self.max_depth,
+            max_entries=self.max_entries,
+            max_files=self.max_files,
+            max_file_bytes=self.max_file_bytes,
+            max_total_bytes=self.max_total_bytes,
+            max_seconds=self.max_seconds,
+        )
 
 
 @dataclass(frozen=True, slots=True)
@@ -70,6 +97,39 @@ class CanonicalIngestRequest:
     symlink_policy: SymlinkPolicy = "reject"
     corpus_lock_path: Path | None = None
     publication_root: Path | None = None
+
+    @classmethod
+    def for_directory(
+        cls,
+        *,
+        root_path: Path,
+        root_name: str,
+        corpus_name: str,
+        discovery_limits: CorpusDiscoveryLimits | None = None,
+        include: tuple[str, ...] = ("**/*",),
+        exclude: tuple[str, ...] = (),
+        symlink_policy: SymlinkPolicy = "reject",
+        corpus_lock_path: Path | None = None,
+        publication_root: Path | None = None,
+    ) -> CanonicalIngestRequest:
+        """Translate portable directory inputs into the domain configuration."""
+        return cls(
+            root_path=root_path,
+            root_name=root_name,
+            configuration=CorpusSnapshotConfiguration(
+                corpus_name=corpus_name,
+                discovery_limits=(
+                    CorpusDiscoveryLimits()
+                    if discovery_limits is None
+                    else discovery_limits
+                ).to_domain(),
+            ),
+            include=include,
+            exclude=exclude,
+            symlink_policy=symlink_policy,
+            corpus_lock_path=corpus_lock_path,
+            publication_root=publication_root,
+        )
 
 
 def _canonical_json(value: object) -> bytes:
@@ -384,6 +444,7 @@ __all__ = [
     "CanonicalIngestResult",
     "CanonicalIngestRuntime",
     "CanonicalCorpusPreparation",
+    "CorpusDiscoveryLimits",
     "CorpusSnapshotConfiguration",
     "assemble_corpus_snapshot_manifest",
     "ingest_corpus",

@@ -13,12 +13,11 @@ from bijux_canon_ingest.application.canonical_ingest import (
     CanonicalIngestError,
     CanonicalIngestRequest,
     CanonicalIngestRuntime,
+    CorpusDiscoveryLimits,
 )
 from bijux_canon_ingest.application.service import (
     IngestService,
 )
-from bijux_canon_ingest.domain.corpus_snapshot import CorpusSnapshotConfiguration
-from bijux_canon_ingest.domain.source_discovery import DiscoveryLimits
 from bijux_canon_ingest.interfaces.http.mappers import (
     ask_response_from_payload,
     chunk_response_from_result,
@@ -117,19 +116,17 @@ def create_app() -> FastAPI:
     async def ingest_corpus(req: CorpusIngestRequest) -> CorpusIngestResponse:
         try:
             result = canonical_ingest.ingest(
-                CanonicalIngestRequest(
+                CanonicalIngestRequest.for_directory(
                     root_path=Path(req.root_path),
                     root_name=req.root_name,
-                    configuration=CorpusSnapshotConfiguration(
-                        corpus_name=req.corpus_name,
-                        discovery_limits=DiscoveryLimits(
-                            max_depth=req.max_depth,
-                            max_entries=req.max_entries,
-                            max_files=req.max_files,
-                            max_file_bytes=req.max_file_bytes,
-                            max_total_bytes=req.max_total_bytes,
-                            max_seconds=req.max_seconds,
-                        ),
+                    corpus_name=req.corpus_name,
+                    discovery_limits=CorpusDiscoveryLimits(
+                        max_depth=req.max_depth,
+                        max_entries=req.max_entries,
+                        max_files=req.max_files,
+                        max_file_bytes=req.max_file_bytes,
+                        max_total_bytes=req.max_total_bytes,
+                        max_seconds=req.max_seconds,
                     ),
                     include=tuple(req.include),
                     exclude=tuple(req.exclude),
