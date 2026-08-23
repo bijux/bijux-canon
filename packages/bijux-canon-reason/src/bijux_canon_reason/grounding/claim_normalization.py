@@ -25,8 +25,13 @@ from bijux_canon_reason.grounding.provider_contracts import (
     require_sha256,
 )
 
+_INDEPENDENT_VERB = (
+    r"(?:are|can|cannot|could|decreased|did|failed|found|had|has|have|increased|"
+    r"is|may|might|remained|reported|showed|was|were|will|would)"
+)
 _BOUNDARY = re.compile(
-    r"(?<=[.!?])\s+|;\s*|,\s+(?:but|whereas|while)\s+|\s+and\s+(?=(?:the|this|these|those|it|they|we|authors|researchers|study|no)\b)",
+    r"(?<=[.!?])\s+|;\s*|,\s+(?:but|whereas|while)\s+|"
+    rf"\s+and\s+(?=(?:(?:the|this|these|no)\s+)?[^\W_]+\s+{_INDEPENDENT_VERB}\b)",
     flags=re.IGNORECASE,
 )
 _WORD = re.compile(r"[^\W_]+", flags=re.UNICODE)

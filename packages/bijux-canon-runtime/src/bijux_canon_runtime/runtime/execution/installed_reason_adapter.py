@@ -8,16 +8,12 @@ from __future__ import annotations
 from pydantic import ValidationError
 
 from bijux_canon_reason.grounding import (
-    AtomicClaimNormalizer,
     CitationEvidence,
     CitationSourceDescriptor,
-    ClaimCitationLinker,
-    CredentialFreeSynthesisPolicy,
-    CredentialFreeSynthesizer,
-    DeterministicCitationVerifier,
     EvidencePacketBuilder,
     EvidencePacketPolicy,
     ImmutableEvidenceLocator,
+    LocalGroundedAnswerService,
     SynthesisOutcome,
 )
 from bijux_canon_reason.grounding.provider_contracts import content_artifact_id
@@ -36,6 +32,7 @@ from bijux_canon_runtime.runtime.execution.operation_dispatcher import (
     StepDispatchError,
     StepOutputArtifact,
 )
+
 
 def _required_string(value: object, field: str) -> str:
     if not isinstance(value, str) or not value:
@@ -328,33 +325,25 @@ class CanonicalReasonOperationAdapter:
             ),
             candidates=candidates,
         )
-        synthesis = CredentialFreeSynthesizer(
-            CredentialFreeSynthesisPolicy(
-                max_points=citation_budget,
-                required_sources=2,
-            )
-        ).synthesize(question=step.inputs.query, evidence_packet=packet)
+        grounded = LocalGroundedAnswerService().answer(
+            question=step.inputs.query,
+            evidence_packet=packet,
+            sources=sources,
+            max_points=min(citation_budget, 3),
+        )
         if (
-            synthesis.outcome is SynthesisOutcome.insufficient
+            grounded.synthesis.outcome is SynthesisOutcome.insufficient
             and not step.inputs.output_policy.permit_insufficient_answer
         ):
             raise StepDispatchError("grounded answer has insufficient evidence")
-        claims = AtomicClaimNormalizer().normalize_credential_free(synthesis)
-        citations = ClaimCitationLinker().link(
-            claim_set=claims,
-            evidence_packet=packet,
-            sources=sources,
-        )
-        verification = DeterministicCitationVerifier().verify(
-            claim_set=claims,
-            citation_set=citations,
-        )
         payload = canonical_json_bytes(
             {
-                "answer": synthesis.answer_text,
-                "citation_verification": verification.model_dump(mode="json"),
-                "citations": citations.model_dump(mode="json"),
-                "claims": claims.model_dump(mode="json"),
+                "answer": grounded.answer_text,
+                "answer_disposition": grounded.outcome.value,
+                "citation_verification": grounded.verification.model_dump(mode="json"),
+                "citations": grounded.citations.model_dump(mode="json"),
+                "claims": grounded.claims.model_dump(mode="json"),
+                "contextualized": grounded.contextualized.model_dump(mode="json"),
                 "evidence_packet": packet.model_dump(mode="json"),
                 "evidence_set_artifact_id": str(
                     retrieval_artifact.descriptor.artifact_id
@@ -366,9 +355,11 @@ class CanonicalReasonOperationAdapter:
                 "query": step.inputs.query,
                 "schema_version": "bijux.canon.reason.claim_graph.v1",
                 "retrieval_filters": evidence_set.get("filters"),
+                "grounding_admission": grounded.admission.model_dump(mode="json"),
+                "grounded_answer_artifact_id": grounded.artifact_id,
                 "sources": [source.model_dump(mode="json") for source in sources],
-                "status": synthesis.outcome.value,
-                "synthesis": synthesis.model_dump(mode="json"),
+                "status": grounded.synthesis.outcome.value,
+                "synthesis": grounded.synthesis.model_dump(mode="json"),
             }
         )
         context.raise_if_stopped()

@@ -445,8 +445,10 @@ def _retrieve_and_reason(indexed: _IndexedRuntime) -> _GroundedRuntime:
         (reason_upstream,),
     )
     claim_graph = json.loads(reason.artifacts[0].payload)
-    assert claim_graph["status"] == "partial"
+    assert claim_graph["status"] == "answered"
     assert "Ancient genomes preserve" in claim_graph["answer"]
+    assert "Answer:" in claim_graph["answer"]
+    assert "reports: “" not in claim_graph["answer"]
     segment_hashes = {
         segment["verbatim_text"]: segment["content_sha256"]
         for segment in hit["locator_segments"]
@@ -501,7 +503,7 @@ def _verify_reason_and_agent(grounded: _GroundedRuntime) -> None:
         for step in planner.plan(ask_request).steps
         if step.operation is DagOperation.VERIFY
     )
-    with pytest.raises(StepDispatchError, match="differs from its synthesis"):
+    with pytest.raises(StepDispatchError, match="differs from its admission"):
         OperationDispatcher((CanonicalVerificationOperationAdapter(),)).dispatch(
             verification_step,
             (tampered_reason,),

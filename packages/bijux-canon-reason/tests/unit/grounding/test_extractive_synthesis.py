@@ -14,12 +14,15 @@ from bijux_canon_reason.grounding import (
     CredentialFreeSynthesis,
     CredentialFreeSynthesisPolicy,
     CredentialFreeSynthesizer,
+    EvidenceRole,
     EvidencePacket,
     EvidencePacketBuilder,
     EvidencePacketPolicy,
     ImmutableEvidenceLocator,
     SynthesisOutcome,
     SynthesisStyle,
+    infer_synthesis_style,
+    required_source_count,
 )
 
 
@@ -99,6 +102,130 @@ def test_multi_source_synthesis_is_attributed_and_not_a_top_chunk_copy() -> None
     assert result.answer_text not in {first.exact_text, second.exact_text}
     assert result.provider is None
     assert result.network_required is False
+    assert "reports: “" not in result.answer_text
+    assert "Answer:" in result.answer_text
+
+
+def test_content_roles_surface_methods_and_limitations_separately() -> None:
+    result = CredentialFreeSynthesizer(
+        CredentialFreeSynthesisPolicy(required_sources=1)
+    ).synthesize(
+        question="Which extraction method was used and what limitation remained?",
+        evidence_packet=_packet(
+            _evidence(
+                "method",
+                "The study used a silica extraction protocol. However, endogenous DNA yield remained low.",
+            )
+        ),
+    )
+
+    assert {point.role for point in result.points} == {
+        EvidenceRole.method,
+        EvidenceRole.limitation,
+    }
+    assert "Methods:" in result.answer_text
+    assert "Limitations and counterevidence:" in result.answer_text
+
+
+def test_answer_bearing_results_outrank_study_aims_and_background() -> None:
+    result = CredentialFreeSynthesizer(
+        CredentialFreeSynthesisPolicy(max_points=3, required_sources=1)
+    ).synthesize(
+        question=(
+            "Which petrous-bone region produced the highest endogenous DNA yield, "
+            "and what quantitative advantage and hot-climate caveat were reported?"
+        ),
+        evidence_packet=_packet(
+            _evidence(
+                "aim",
+                "In this study we investigate whether different petrous parts give different percentages of endogenous DNA yields in hot environments.",
+                rank=2,
+            ),
+            _evidence(
+                "quantitative-result",
+                "Our results confirm that dense petrous part C can exceed part B by up to 65-fold and part A by up to 177-fold.",
+            ),
+            _evidence(
+                "hot-caveat",
+                "Our results also show that while yields from part C were lower than 1% in hot regions, damage patterns indicated ancient DNA molecules.",
+                rank=3,
+            ),
+            _evidence(
+                "region-definition",
+                "We sampled three regions: cortical bone (part A), the otic capsule edge (part B), and the dense part within the otic capsule (part C).",
+                rank=4,
+            ),
+        ),
+    )
+
+    statements = tuple(point.statement for point in result.points)
+    assert any(
+        "65-fold" in statement and "177-fold" in statement for statement in statements
+    )
+    assert any("lower than 1%" in statement for statement in statements)
+    assert any(
+        "part C" in statement and "otic capsule" in statement
+        for statement in statements
+    )
+    assert all("investigate whether" not in statement for statement in statements)
+    assert result.answer_text.index("65-fold") < result.answer_text.index(
+        "lower than 1%"
+    )
+
+
+def test_repeated_numeric_fact_from_one_source_is_not_repeated_in_answer() -> None:
+    first = _evidence(
+        "hot-primary",
+        "Our results show that part C yields were lower than 1% in hot regions.",
+    )
+    repeated = _evidence(
+        "hot-repeat",
+        "Finally, endogenous yields from part C in hot regions were lower than 1%.",
+        rank=2,
+    ).model_copy(update={"source_id": first.source_id})
+
+    result = CredentialFreeSynthesizer(
+        CredentialFreeSynthesisPolicy(required_sources=1)
+    ).synthesize(
+        question="What hot-climate caveat affected part C yield?",
+        evidence_packet=_packet(first, repeated),
+    )
+
+    assert sum("lower than 1%" in point.statement for point in result.points) == 1
+
+
+def test_unsupported_absolute_request_abstains_without_leaking_a_partial_answer() -> (
+    None
+):
+    result = CredentialFreeSynthesizer(
+        CredentialFreeSynthesisPolicy(required_sources=1)
+    ).synthesize(
+        question="Does this preservation method guarantee perfect DNA recovery?",
+        evidence_packet=_packet(
+            _evidence(
+                "bounded",
+                "DNA recovery varied among samples and was always below 1 percent in one context.",
+            )
+        ),
+    )
+
+    assert result.outcome is SynthesisOutcome.insufficient
+    assert result.points == ()
+    assert "Insufficient evidence" in result.answer_text
+    assert "DNA recovery varied" not in result.answer_text
+
+
+def test_question_policy_is_general_and_identity_free() -> None:
+    assert (
+        infer_synthesis_style("Which extraction methods differed between the studies?")
+        is SynthesisStyle.methods_comparison
+    )
+    assert (
+        infer_synthesis_style("What limitation and counterevidence remained?")
+        is SynthesisStyle.conflict_preserving
+    )
+    assert required_source_count("What did this study find?") == 1
+    assert required_source_count("What differed across the two studies?") == 2
 
 
 def test_best_query_relevant_clause_retains_exact_source_span() -> None:

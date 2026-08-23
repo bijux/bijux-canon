@@ -184,6 +184,27 @@ def test_noun_phrase_conjunction_is_not_split() -> None:
     assert result.claims[0].statement == statement
 
 
+def test_dependent_comparison_conjunction_is_not_split_into_an_orphan() -> None:
+    statement = "Part C exceeded part B by 65-fold and those from part A by 177-fold."
+    provider_result, _ = _provider_result(statement, statement)
+
+    result = AtomicClaimNormalizer().normalize_provider(provider_result)
+
+    assert tuple(claim.statement for claim in result.claims) == (statement,)
+
+
+def test_definition_list_is_not_split_into_a_noun_phrase() -> None:
+    statement = (
+        "The sampled areas were cortical bone (part A), the otic capsule edge "
+        "(part B), and the dense part within the otic capsule (part C)."
+    )
+    provider_result, _ = _provider_result(statement, statement)
+
+    result = AtomicClaimNormalizer().normalize_provider(provider_result)
+
+    assert tuple(claim.statement for claim in result.claims) == (statement,)
+
+
 def test_credential_free_points_keep_exact_answer_and_citation_spans() -> None:
     packet, evidence = _packet()
     synthesis = CredentialFreeSynthesizer().synthesize(

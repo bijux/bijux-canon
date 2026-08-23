@@ -112,6 +112,28 @@ The `eval` command loads a named suite from a declared suite root, retains every
 case run, and writes case and summary diagnostics. Those diagnostics do not
 replace reviewed retrieval, claim, citation, or refusal truth.
 
+## Local Grounded Answers
+
+`LocalGroundedAnswerService` owns the credential-free RAG boundary. It consumes
+retrieved document chunks, selects question-relevant finding, method,
+limitation, counterevidence, and definition clauses, removes repeated facts,
+normalizes atomic claims, binds exact locators and hashes, verifies direct
+support, records source-scoped context, and applies the grounding admission
+decision before rendering an answer.
+
+Bibliographic fields are integrity and discovery inputs; they are not answer
+evidence. An admitted local answer is derived from the retrieved publication
+content. A request for an unsupported universal guarantee produces an
+abstention with no claims or citations, even when retrieval returns incidental
+mentions of related methods or yields.
+
+Credential-free synthesis preserves exact source clauses and explicitly does
+not claim a broader semantic inference than those clauses establish. Provider
+paths are optional and lazy. Context records distinguish citation integrity
+from unassessed study quality, and conflict-oriented questions preserve
+divergent source-scoped claims without declaring a contradiction that has not
+been semantically verified.
+
 ## HTTP Contract
 
 The v1 API supports health, item CRUD, run creation, run lookup, manifest and
@@ -179,34 +201,21 @@ Downstream consumers should preserve the run manifest and exact support
 references. Rebuilding a citation from display text loses the byte-level
 contract that verification and replay depend on.
 
-## Runtime Reasoning Adapter Status
+## Runtime Reasoning Adapter
 
-The live runtime integration currently asks the `bijux_canon_reason` package
-root for a callable with this contract:
+Runtime adapts an installed retrieval evidence set into Reason's immutable
+evidence packet and calls `LocalGroundedAnswerService`. Reason owns synthesis,
+claim normalization, citation linking and verification, context, conflict
+representation, abstention, and the final safe answer text. Runtime persists
+the complete Reason artifacts and independently reproduces normalization,
+citation verification, grounding admission, and answer rendering before a run
+can complete.
 
-```python
-reason(agent_outputs=artifacts, evidence=retrieved_evidence, seed=seed)
-```
-
-That callable is not exported. The package-native contract instead produces
-reason-owned plans, claims, support references, traces, and verification
-reports. The runtime executor requires its adapter to return the runtime-owned
-`ReasoningBundle` type exactly. Installing both packages therefore proves
-dependency availability, not an executable reasoning handoff.
-
-A durable adapter belongs in runtime or in a separately owned integration
-boundary. Putting a runtime-shaped wrapper in this package would reverse the
-existing dependency direction: runtime already depends on reason. More
-importantly, an adapter must map claim identity, exact evidence support,
-verification status, reasoning steps, producer identity, and trace or manifest
-custody. Returning only generated statements would erase the evidence contract
-this package exists to protect.
-
-Treat live composition as established only when an installed-package test
-resolves the callable, executes a representative handoff, returns the required
-runtime type, and demonstrates that claim and evidence identities remain
-linked across the boundary. Package CLI, HTTP, and Python workflows remain
-independently usable without that runtime adapter.
+The adapter is exercised from the public `bijux-canon-runtime v2 ask` command.
+Its output retains the corpus, index generation, retrieval trace, evidence
+packet, source descriptors, claim graph, exact citations, admission decision,
+and content-addressed grounded-answer identity. Runtime composition does not
+replace Reason policy with runtime-owned generated prose.
 
 ## Verification And Failure Semantics
 

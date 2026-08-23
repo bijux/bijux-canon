@@ -19,7 +19,12 @@ from bijux_canon_reason.grounding import (
     CredentialFreeSynthesis,
     DeterministicCitationVerifier,
     EvidencePacket,
+    GroundingAdmissionDecision,
+    GroundingAdmissionService,
+    LocalGroundedAnswer,
     NormalizedClaimSet,
+    NuancedGroundingRepresentation,
+    render_grounded_answer,
 )
 from bijux_canon_reason.research import (
     ConvergenceDecision,
@@ -132,8 +137,9 @@ def _verify_claim_graph(subject: Mapping[str, object]) -> tuple[str, ...]:
         )
     except (KeyError, TypeError, ValidationError) as error:
         raise StepDispatchError("grounded claim graph records are invalid") from error
-    if subject.get("answer") != synthesis.answer_text:
-        raise StepDispatchError("grounded answer differs from its synthesis")
+    answer = subject.get("answer")
+    if not isinstance(answer, str):
+        raise StepDispatchError("grounded answer is invalid")
     if synthesis.evidence_packet_artifact_id != packet.artifact_id:
         raise StepDispatchError("grounded synthesis refers to another evidence packet")
     if AtomicClaimNormalizer().normalize_credential_free(synthesis) != claims:
@@ -155,9 +161,51 @@ def _verify_claim_graph(subject: Mapping[str, object]) -> tuple[str, ...]:
         != verification
     ):
         raise StepDispatchError("grounded citation verification is not reproducible")
+    if "grounded_answer_artifact_id" in subject:
+        try:
+            admission = GroundingAdmissionDecision.model_validate(
+                subject["grounding_admission"]
+            )
+            contextualized = NuancedGroundingRepresentation.model_validate(
+                subject["contextualized"]
+            )
+            expected_answer = render_grounded_answer(
+                synthesis=synthesis,
+                claims=claims,
+                citations=citations,
+                admission=admission,
+            )
+            if answer != expected_answer:
+                raise StepDispatchError("grounded answer differs from its admission")
+            if subject.get("answer_disposition") != admission.outcome.value:
+                raise StepDispatchError("grounded answer disposition differs")
+            LocalGroundedAnswer(
+                artifact_id=str(subject["grounded_answer_artifact_id"]),
+                answer_text=answer,
+                outcome=admission.outcome,
+                synthesis=synthesis,
+                claims=claims,
+                citations=citations,
+                verification=verification,
+                admission=admission,
+                contextualized=contextualized,
+            )
+        except (KeyError, TypeError, ValidationError) as error:
+            raise StepDispatchError("local grounded answer is invalid") from error
+        if (
+            GroundingAdmissionService().decide(
+                claim_set=claims,
+                citation_set=citations,
+                verification_report=verification,
+            )
+            != admission
+        ):
+            raise StepDispatchError("grounding admission is not reproducible")
+    elif answer != synthesis.answer_text:
+        raise StepDispatchError("grounded answer differs from its synthesis")
     return (
         "evidence-packet-identity",
-        "synthesis-answer-binding",
+        "grounding-admission-binding",
         "atomic-claim-normalization",
         "exact-citation-linking",
         "deterministic-entailment-verification",
