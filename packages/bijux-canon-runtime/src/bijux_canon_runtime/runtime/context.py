@@ -8,6 +8,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, cast
 
+from bijux_canon_runtime.core.errors import ConfigurationError
 from bijux_canon_runtime.core.authority import AuthorityToken
 from bijux_canon_runtime.model.artifact.artifact import Artifact
 from bijux_canon_runtime.model.artifact.entropy_usage import EntropyUsage
@@ -42,6 +43,9 @@ from bijux_canon_runtime.runtime.persistence import (
 )
 
 if TYPE_CHECKING:
+    from bijux_canon_runtime.application.runtime_configuration import (
+        RuntimeConfiguration,
+    )
     from bijux_canon_runtime.observability.storage.execution_store_protocol import (
         ExecutionWriteStoreProtocol,
     )
@@ -77,6 +81,7 @@ class ExecutionContext:
     initial_tool_invocations: list[ToolInvocation]
     _step_evidence: dict[int, tuple[RetrievedEvidence, ...]]
     _step_artifacts: dict[int, tuple[Artifact, ...]]
+    runtime_configuration: RuntimeConfiguration | None = None
     strict_determinism: bool = False
     observed_run: ObservedRun | None = None
     _cancelled: bool = False
@@ -135,6 +140,14 @@ class ExecutionContext:
             target_artifact_id=addressed.descriptor.artifact_id,
         )
         return addressed.descriptor.artifact_id
+
+    def require_runtime_configuration(self) -> RuntimeConfiguration:
+        """Return the one admitted configuration used by all integrations."""
+        if self.runtime_configuration is None:
+            raise ConfigurationError(
+                "runtime execution context has no effective configuration"
+            )
+        return self.runtime_configuration
 
     def record_evidence(
         self, step_index: int, evidence: list[RetrievedEvidence]

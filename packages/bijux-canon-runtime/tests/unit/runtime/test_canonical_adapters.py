@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
+import os
 from pathlib import Path
 
 import pytest
@@ -8,6 +9,9 @@ import pytest
 from bijux_canon_ingest.core.types import Chunk
 from bijux_canon_ingest.retrieval.indexes import build_bm25_index
 from bijux_canon_runtime.model.artifact.artifact import Artifact
+from bijux_canon_runtime.application.runtime_configuration import (
+    resolve_runtime_configuration,
+)
 from bijux_canon_runtime.model.artifact.retrieved_evidence import RetrievedEvidence
 from bijux_canon_runtime.ontology import (
     ArtifactScope,
@@ -57,8 +61,10 @@ def test_retrieval_and_contract_adapters_use_canonical_services(
     )
     index.save(str(index_path))
     monkeypatch.setenv("BIJUX_CANON_RUNTIME_RETRIEVAL_INDEX_PATH", str(index_path))
+    monkeypatch.setenv("BIJUX_CANON_RUNTIME_WORKING_ROOT", str(tmp_path))
+    configuration = resolve_runtime_configuration(environment=dict(os.environ))
 
-    records = integration_loaders.load_retrieval_runner()(
+    records = integration_loaders.load_retrieval_runner(configuration)(
         query="population continuity",
         top_k=1,
         scope="project",
@@ -73,6 +79,43 @@ def test_retrieval_and_contract_adapters_use_canonical_services(
     )
 
 
+def test_retrieval_adapter_uses_passed_configuration_after_environment_changes(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    index_path = tmp_path / "index.msgpack"
+    build_bm25_index(
+        chunks=[
+            Chunk(
+                doc_id="paper-1",
+                text="Configured retrieval authority.",
+                start=0,
+                end=31,
+                embedding=(),
+            )
+        ]
+    ).save(str(index_path))
+    configuration = resolve_runtime_configuration(
+        explicit={
+            "retrieval_index_path": index_path,
+            "working_root": tmp_path / "workspace",
+        }
+    )
+    monkeypatch.setenv(
+        "BIJUX_CANON_RUNTIME_RETRIEVAL_INDEX_PATH",
+        str(tmp_path / "wrong-index.msgpack"),
+    )
+
+    records = integration_loaders.load_retrieval_runner(configuration)(
+        query="configured authority",
+        top_k=1,
+        scope="project",
+        vector_contract_id=ContractID("contract-1"),
+    )
+
+    assert records[0]["content"] == "Configured retrieval authority."
+
+
 def test_reason_adapter_executes_canonical_typed_workflow() -> None:
     artifact = Artifact(
         spec_version="v1",
@@ -85,7 +128,7 @@ def test_reason_adapter_executes_canonical_typed_workflow() -> None:
         scope=ArtifactScope.WORKING,
     )
 
-    bundle = integration_loaders.load_reasoning_runner()(
+    bundle = integration_loaders.load_reasoning_runner(resolve_runtime_configuration())(
         agent_outputs=[artifact],
         evidence=[_evidence()],
         seed=7,
@@ -101,7 +144,9 @@ def test_agent_loader_executes_canonical_offline_service(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setenv("BIJUX_CANON_RUNTIME_WORKING_ROOT", str(tmp_path))
-    records = integration_loaders.load_agent_runner()(
+    records = integration_loaders.load_agent_runner(
+        resolve_runtime_configuration(environment=dict(os.environ))
+    )(
         agent_id=AgentID("researcher"),
         seed=3,
         inputs_fingerprint="input-fingerprint",

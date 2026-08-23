@@ -38,7 +38,7 @@ class AgentExecutor:
         if self._state_tracker is None:
             self._state_tracker = ExecutionStateTracker(context.seed)
         seed = deterministic_seed(step.step_index, step.inputs_fingerprint)
-        run_agent = load_agent_runner()
+        run_agent = load_agent_runner(context.require_runtime_configuration())
         evidence = list(context.evidence_for_step(step.step_index))
         outputs = run_agent(
             agent_id=step.agent_invocation.agent_id,

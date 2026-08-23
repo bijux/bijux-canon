@@ -28,6 +28,22 @@ def test_effective_execution_config_enables_resolved_strict_mode() -> None:
     assert updated.strict_determinism is True
 
 
+def test_effective_execution_config_resolves_one_default_authority(
+    tmp_path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("BIJUX_CANON_RUNTIME_WORKING_ROOT", str(tmp_path / "workspace"))
+
+    updated = effective_execution_config(
+        ExecutionConfig(mode=RunMode.LIVE, determinism_level=None)
+    )
+
+    assert updated.runtime_configuration is not None
+    assert (
+        updated.runtime_configuration.require_workspace_layout().root
+        == (tmp_path / "workspace").resolve()
+    )
+
+
 def test_strict_configuration_rejects_best_effort_modes() -> None:
     settings = resolve_runtime_configuration(environment={"AGENTIC_FLOWS_STRICT": "1"})
     config = ExecutionConfig(

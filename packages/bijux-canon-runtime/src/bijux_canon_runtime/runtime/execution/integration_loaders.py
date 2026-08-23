@@ -6,12 +6,10 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-import os
-from pathlib import Path
 from typing import Any
 
 from bijux_canon_runtime.application.runtime_configuration import (
-    resolve_runtime_configuration,
+    RuntimeConfiguration,
 )
 from bijux_canon_runtime.runtime.execution.canonical_adapters import (
     CanonicalAgentAdapterV1,
@@ -28,26 +26,30 @@ reasoning_runner_override: Callable[..., Any] | None = None
 vector_contract_enforcer_override: Callable[..., Any] | None = None
 
 
-def load_agent_runner() -> Callable[..., Any]:
+def load_agent_runner(
+    configuration: RuntimeConfiguration,
+) -> Callable[..., Any]:
     """Construct the declared canonical agent adapter."""
     if agent_runner_override is not None:
         return agent_runner_override
-    settings = resolve_runtime_configuration(environment=os.environ)
-    working_root = settings.working_root or Path.cwd()
+    working_root = configuration.require_workspace_layout().root
     return CanonicalAgentAdapterV1(working_root=working_root).run
 
 
-def load_retrieval_runner() -> Callable[..., Any]:
+def load_retrieval_runner(
+    configuration: RuntimeConfiguration,
+) -> Callable[..., Any]:
     """Construct the declared canonical persisted-index adapter."""
     if retrieval_runner_override is not None:
         return retrieval_runner_override
-    settings = resolve_runtime_configuration(environment=os.environ)
     return CanonicalRetrievalAdapterV1(
-        index_path=settings.retrieval_index_path
+        index_path=configuration.require_workspace_layout().index_root
     ).retrieve
 
 
-def load_reasoning_runner() -> Callable[..., Any]:
+def load_reasoning_runner(
+    _configuration: RuntimeConfiguration,
+) -> Callable[..., Any]:
     """Construct the declared canonical reason adapter."""
     if reasoning_runner_override is not None:
         return reasoning_runner_override

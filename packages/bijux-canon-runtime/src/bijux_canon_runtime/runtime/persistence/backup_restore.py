@@ -12,6 +12,7 @@ import os
 from pathlib import Path
 import shutil
 import tempfile
+from typing import TYPE_CHECKING
 
 from bijux_canon_runtime.observability.storage.execution_store import (
     DuckDBExecutionStore,
@@ -23,6 +24,11 @@ from bijux_canon_runtime.runtime.persistence.filesystem_payload_store import (
 from bijux_canon_runtime.runtime.persistence.reachability import (
     ArtifactReachabilityValidator,
 )
+
+if TYPE_CHECKING:
+    from bijux_canon_runtime.application.runtime_configuration import (
+        RuntimeConfiguration,
+    )
 
 
 class BackupIntegrityError(RuntimeError):
@@ -63,11 +69,25 @@ class RuntimeBackupManager:
     def __init__(
         self,
         *,
-        database_path: Path,
-        payload_store: AtomicFilesystemArtifactPayloadStore,
+        configuration: RuntimeConfiguration,
     ) -> None:
-        self._database_path = database_path.resolve()
-        self._payload_store = payload_store
+        layout = configuration.require_workspace_layout()
+        self._database_path = layout.database_path
+        self._payload_store = AtomicFilesystemArtifactPayloadStore(layout.cas_root)
+        self._backup_root = layout.backup_root
+
+    def create_workspace_backup(
+        self,
+        *,
+        backup_id: str,
+        created_at: str,
+    ) -> tuple[Path, RuntimeBackupManifest]:
+        """Create a backup at the configured workspace backup authority."""
+        return self.create_backup(
+            backup_id=backup_id,
+            destination_root=self._backup_root,
+            created_at=created_at,
+        )
 
     def create_backup(
         self,

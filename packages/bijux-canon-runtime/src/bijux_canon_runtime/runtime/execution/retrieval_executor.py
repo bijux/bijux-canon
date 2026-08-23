@@ -44,7 +44,7 @@ class RetrievalExecutor:
         if request is None:
             context.record_evidence(step.step_index, [])
             return []
-        retrieve = load_retrieval_runner()
+        retrieve = load_retrieval_runner(context.require_runtime_configuration())
         enforce_contract = load_vector_contract_enforcer()
         raw_evidence = retrieve(
             query=request.query,

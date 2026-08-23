@@ -24,7 +24,7 @@ class ReasoningExecutor:
 
     def execute(self, step: ResolvedStep, context: ExecutionContext) -> ReasoningBundle:
         """Execute execute and enforce its contract."""
-        reason = load_reasoning_runner()
+        reason = load_reasoning_runner(context.require_runtime_configuration())
         agent_outputs = list(context.artifacts_for_step(step.step_index))
         retrieved_evidence = list(context.evidence_for_step(step.step_index))
         seed = self._deterministic_seed(agent_outputs, retrieved_evidence)

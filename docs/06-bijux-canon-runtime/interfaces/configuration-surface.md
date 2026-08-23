@@ -43,6 +43,15 @@ Explicit `--workspace` and `--model` init arguments take precedence over their
 environment counterparts; other configured fields remain part of the exact
 workspace identity.
 
+Each executable surface resolves this configuration once. Composition,
+readiness, execution context, retrieval and agent adapters, inspection, and
+configured backup construction consume that same immutable object; adapters do
+not re-read environment paths during a run. Consequently, changing an
+environment variable after admission cannot redirect retrieval, CAS, DuckDB,
+jobs, model, index, or backup state for the admitted execution. A configured
+backup derives its database, CAS, and default backup generation root from the
+same workspace layout.
+
 Readiness is capability-specific because ingest does not require an active
 index or a loaded model, while retrieval does. Query it explicitly:
 

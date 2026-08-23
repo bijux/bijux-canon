@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import replace
+import os
 
 from bijux_canon_runtime.application.execution_persistence import (
     ResumeState,
@@ -19,6 +20,9 @@ from bijux_canon_runtime.application.flow_execution_models import (
     ExecutionStartState,
     PreparedFlow,
     _ExecutionStrategy,
+)
+from bijux_canon_runtime.application.runtime_configuration import (
+    resolve_runtime_configuration,
 )
 from bijux_canon_runtime.core.authority import authority_token
 from bijux_canon_runtime.core.errors import ConfigurationError
@@ -54,7 +58,7 @@ def effective_execution_config(execution_config: ExecutionConfig) -> ExecutionCo
     """Apply settings owned by the validated runtime configuration."""
     settings = execution_config.runtime_configuration
     if settings is None:
-        return execution_config
+        settings = resolve_runtime_configuration(environment=os.environ)
     if settings.strict_determinism and execution_config.mode in {
         RunMode.DRY_RUN,
         RunMode.UNSAFE,
@@ -66,6 +70,7 @@ def effective_execution_config(execution_config: ExecutionConfig) -> ExecutionCo
             execution_config.strict_determinism or settings.strict_determinism
         ),
         budget=execution_config.budget or settings.resource_budget,
+        runtime_configuration=settings,
     )
 
 
@@ -312,6 +317,7 @@ def build_execution_context(
         _step_artifacts={},
         observed_run=execution_config.observed_run,
         strict_determinism=execution_config.strict_determinism,
+        runtime_configuration=execution_config.runtime_configuration,
     )
 
 

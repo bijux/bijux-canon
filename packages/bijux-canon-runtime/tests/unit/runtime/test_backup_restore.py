@@ -4,6 +4,9 @@ from pathlib import Path
 
 import pytest
 
+from bijux_canon_runtime.application.runtime_configuration import (
+    resolve_runtime_configuration,
+)
 from bijux_canon_runtime.model.artifact import AddressedArtifact
 from bijux_canon_runtime.model.execution.run_mode import RunMode
 from bijux_canon_runtime.observability.storage.execution_store import (
@@ -22,7 +25,12 @@ def test_backup_restore_copies_only_reachable_payloads_and_verifies_identity(
     tmp_path: Path,
     resolved_flow,
 ) -> None:
-    db_path = tmp_path / "runtime.duckdb"
+    configuration = resolve_runtime_configuration(
+        explicit={"working_root": tmp_path / "workspace"}
+    )
+    layout = configuration.require_workspace_layout()
+    layout.root.mkdir()
+    db_path = layout.database_path
     execution = DuckDBExecutionWriteStore(db_path)
     run_id = execution.save_run(
         trace=None,
@@ -30,7 +38,7 @@ def test_backup_restore_copies_only_reachable_payloads_and_verifies_identity(
         mode=RunMode.DRY_RUN,
     )
     execution._store.close()
-    store = AtomicFilesystemArtifactPayloadStore(tmp_path / "cas")
+    store = AtomicFilesystemArtifactPayloadStore(layout.cas_root)
     first = AddressedArtifact.from_json(
         {"source": "ancient DNA"},
         schema_id="bijux.runtime.source.v1",
@@ -63,7 +71,7 @@ def test_backup_restore_copies_only_reachable_payloads_and_verifies_identity(
         producer="bijux-canon-runtime:test",
     )
     store.put(orphan)
-    manager = RuntimeBackupManager(database_path=db_path, payload_store=store)
+    manager = RuntimeBackupManager(configuration=configuration)
 
     generation, manifest = manager.create_backup(
         backup_id="backup-a",
@@ -93,7 +101,12 @@ def test_backup_restore_copies_only_reachable_payloads_and_verifies_identity(
 
 
 def test_restore_requires_clean_destination(tmp_path: Path, resolved_flow) -> None:
-    db_path = tmp_path / "runtime.duckdb"
+    configuration = resolve_runtime_configuration(
+        explicit={"working_root": tmp_path / "workspace"}
+    )
+    layout = configuration.require_workspace_layout()
+    layout.root.mkdir()
+    db_path = layout.database_path
     execution = DuckDBExecutionWriteStore(db_path)
     execution.save_run(
         trace=None,
@@ -101,10 +114,7 @@ def test_restore_requires_clean_destination(tmp_path: Path, resolved_flow) -> No
         mode=RunMode.DRY_RUN,
     )
     execution._store.close()
-    manager = RuntimeBackupManager(
-        database_path=db_path,
-        payload_store=AtomicFilesystemArtifactPayloadStore(tmp_path / "cas"),
-    )
+    manager = RuntimeBackupManager(configuration=configuration)
     generation, _manifest = manager.create_backup(
         backup_id="backup-empty",
         destination_root=tmp_path / "backups",
@@ -117,3 +127,32 @@ def test_restore_requires_clean_destination(tmp_path: Path, resolved_flow) -> No
             backup_generation=generation,
             restore_root=restore_root,
         )
+
+
+def test_configured_backup_uses_workspace_database_cas_and_backup_root(
+    tmp_path: Path,
+    resolved_flow,
+) -> None:
+    configuration = resolve_runtime_configuration(
+        explicit={"working_root": tmp_path / "workspace"}
+    )
+    layout = configuration.require_workspace_layout()
+    layout.root.mkdir()
+    execution = DuckDBExecutionWriteStore(layout.database_path)
+    execution.save_run(
+        trace=None,
+        plan=resolved_flow.plan,
+        mode=RunMode.DRY_RUN,
+    )
+    execution._store.close()
+
+    generation, manifest = RuntimeBackupManager(
+        configuration=configuration
+    ).create_workspace_backup(
+        backup_id="configured-backup",
+        created_at="2026-08-23T00:00:00+00:00",
+    )
+
+    assert generation == layout.backup_root / "generations" / "configured-backup"
+    assert manifest.backup_id == "configured-backup"
+    assert (generation / "runtime.duckdb").is_file()
