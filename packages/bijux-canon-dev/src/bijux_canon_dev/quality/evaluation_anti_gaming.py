@@ -17,6 +17,14 @@ class MetricTruthSource(StrEnum):
     system_output = "system-output"
 
 
+class MetricPopulation(StrEnum):
+    """Semantic unit over which one submitted metric is aggregated."""
+
+    query = "query"
+    claim = "claim"
+    evaluation_case = "evaluation-case"
+
+
 class AntiGamingViolation(StrEnum):
     """Stable reasons an evaluation submission cannot be admitted."""
 
@@ -26,6 +34,7 @@ class AntiGamingViolation(StrEnum):
     fixture_only = "fixture-only"
     stale_report = "stale-report"
     changed_denominator = "changed-denominator"
+    wrong_semantic_population = "wrong-semantic-population"
     missing_negative_case = "missing-negative-case"
     unreviewed_auto_label = "unreviewed-auto-label"
 
@@ -38,12 +47,20 @@ class SubmittedMetric:
     numerator: int
     denominator: int
     truth_source: MetricTruthSource
+    population: MetricPopulation
+    sample_ids: frozenset[str]
 
     def __post_init__(self) -> None:
-        if not self.metric_id or self.denominator <= 0:
+        if not self.metric_id or self.denominator <= 0 or not self.sample_ids:
             raise ValueError("submitted metric identity and denominator are required")
         if not 0 <= self.numerator <= self.denominator:
             raise ValueError("submitted metric arithmetic is invalid")
+        if self.denominator != len(self.sample_ids) or any(
+            not sample_id for sample_id in self.sample_ids
+        ):
+            raise ValueError(
+                "submitted metric denominator must equal unique semantic samples"
+            )
 
 
 @dataclass(frozen=True, slots=True)
@@ -60,6 +77,7 @@ class EvaluationSubmission:
     fixture_case_ids: frozenset[str]
     real_case_ids: frozenset[str]
     skipped_case_ids: frozenset[str]
+    expected_sample_ids: Mapping[MetricPopulation, frozenset[str]]
     declared_denominators: Mapping[str, int]
     metrics: tuple[SubmittedMetric, ...]
     minimum_case_count: int = 120
@@ -76,6 +94,20 @@ class EvaluationSubmission:
             "declared_denominators",
             MappingProxyType(dict(self.declared_denominators)),
         )
+        object.__setattr__(
+            self,
+            "expected_sample_ids",
+            MappingProxyType(
+                {
+                    population: frozenset(sample_ids)
+                    for population, sample_ids in self.expected_sample_ids.items()
+                }
+            ),
+        )
+        if set(self.expected_sample_ids) != set(MetricPopulation):
+            raise ValueError("every metric semantic population must be declared")
+        if any(not sample_ids for sample_ids in self.expected_sample_ids.values()):
+            raise ValueError("metric semantic populations must not be empty")
 
 
 @dataclass(frozen=True, slots=True)
@@ -124,6 +156,11 @@ class EvaluationAntiGamingGate:
             for item in submission.metrics
         ):
             violations.append(AntiGamingViolation.changed_denominator)
+        if any(
+            item.sample_ids != submission.expected_sample_ids[item.population]
+            for item in submission.metrics
+        ):
+            violations.append(AntiGamingViolation.wrong_semantic_population)
         if not submission.negative_case_ids.issubset(submission.evaluated_case_ids):
             violations.append(AntiGamingViolation.missing_negative_case)
         if (
@@ -142,6 +179,7 @@ __all__ = [
     "AntiGamingViolation",
     "EvaluationAntiGamingGate",
     "EvaluationSubmission",
+    "MetricPopulation",
     "MetricTruthSource",
     "SubmittedMetric",
 ]

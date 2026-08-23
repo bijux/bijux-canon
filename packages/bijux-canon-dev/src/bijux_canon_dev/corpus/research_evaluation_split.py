@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the frozen development and held-out research evaluation split."""
+"""Validate the frozen research evaluation case partition and disclose overlap."""
 
 from __future__ import annotations
 
@@ -226,7 +226,7 @@ def validate_split(
     research_root: Path,
     split_path: Path,
 ) -> dict[str, Any]:
-    """Validate all 120 truth combinations, strata, isolation, and hashes."""
+    """Validate all truth combinations, strata, partition indexes, and hashes."""
 
     if split_path.is_symlink() or not split_path.is_file():
         raise RuntimeError("research evaluation split must be a regular file")
@@ -293,6 +293,18 @@ def validate_split(
     observed_pairs: set[tuple[str, str]] = set()
     case_ids: set[str] = set()
     split_counts: Counter[str] = Counter()
+    partition_queries: dict[str, set[str]] = {
+        "development": set(),
+        "heldout": set(),
+    }
+    partition_qrels: dict[str, set[str]] = {
+        "development": set(),
+        "heldout": set(),
+    }
+    partition_claims: dict[str, set[str]] = {
+        "development": set(),
+        "heldout": set(),
+    }
     heldout_classes: Counter[str] = Counter()
     heldout_sources: Counter[str] = Counter()
     strata: dict[str, set[Any]] = {
@@ -355,6 +367,9 @@ def validate_split(
                 f"research evaluation case drift for {case_id}: {case_drift}"
             )
         split_counts[str(split)] += 1
+        partition_queries[str(split)].add(str(qrel["query_id"]))
+        partition_qrels[str(split)].add(str(qrel_id))
+        partition_claims[str(split)].add(str(claim_id))
         if split == "heldout":
             heldout_classes[claim["claim_class"]] += 1
             heldout_sources[qrel["source_id"]] += 1
@@ -392,12 +407,29 @@ def validate_split(
         raise RuntimeError("research evaluation case-set identity mismatch")
     if document.get("split_identity_sha256") != split_identity(document):
         raise RuntimeError("research evaluation split identity mismatch")
+    query_overlap = partition_queries["development"] & partition_queries["heldout"]
+    qrel_overlap = partition_qrels["development"] & partition_qrels["heldout"]
+    claim_overlap = partition_claims["development"] & partition_claims["heldout"]
     return {
         "case_count": len(cases),
+        "case_row_count": len(cases),
         "case_set_sha256": case_set_sha256,
+        "claim_truth_count": len(claims),
+        "claim_truth_overlap_count": len(claim_overlap),
         "development_case_count": split_counts["development"],
+        "development_claim_truth_count": len(partition_claims["development"]),
+        "development_qrel_count": len(partition_qrels["development"]),
+        "development_query_count": len(partition_queries["development"]),
         "heldout_case_count": split_counts["heldout"],
-        "source_count": len(strata["query_id"]),
+        "heldout_claim_truth_count": len(partition_claims["heldout"]),
+        "heldout_qrel_count": len(partition_qrels["heldout"]),
+        "heldout_query_count": len(partition_queries["heldout"]),
+        "leakage_free": not (query_overlap or qrel_overlap or claim_overlap),
+        "qrel_count": len(qrels),
+        "qrel_overlap_count": len(qrel_overlap),
+        "query_count": len(strata["query_id"]),
+        "query_overlap_count": len(query_overlap),
+        "source_count": len(observed_source_ids),
         "split_identity_sha256": document["split_identity_sha256"],
     }
 

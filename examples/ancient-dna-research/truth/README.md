@@ -54,11 +54,18 @@ python -m bijux_canon_dev.corpus.research_claim_truth \
 ```
 
 `split.json` freezes the complete same-source cross-product of 30 graded qrel
-judgments and four atomic claim classes into exactly 120 reviewed evaluation
-cases. The partition contains 80 development and 40 held-out cases, balances
-ten held-out cases per claim class, records query/evidence/conflict/negative/
-format/difficulty strata, prohibits tuning use of held-out labels, and hashes
-every case and the complete split.
+judgments and 32 atomic claims into exactly 120 reviewed execution rows. Those
+rows are not 120 independent questions or claims. The semantic populations are
+8 unique research questions, 30 qrels, 32 atomic claims, and 120 unique
+qrel/claim pairs. Metrics must declare which population they aggregate and use
+that population's unique identities as their denominator.
+
+The current row partition contains 80 development and 40 held-out rows and
+prohibits tuning use of held-out labels. It is not leakage-resistant: all 8
+query identities, 27 of 30 qrel identities, and all 32 claim identities occur
+in both partitions. A release-eligible held-out corpus must replace this split
+with disjoint reviewed semantic identities. Until then, these rows support
+development diagnostics but cannot prove held-out generalization.
 
 `evaluation-cases.jsonl` is the canonical line-oriented execution inventory for
 those 120 cases. Every row joins the frozen split to its reviewed question,
@@ -66,14 +73,21 @@ single-source corpus scope, source filter, answerability decision, and combined
 retrieval/claim rationale without consulting system output. Applicable cases
 embed their graded qrel, exact content-hashed chunk span, and adjudication
 lineage. Negative cases retain an explicit empty-qrel disposition rather than
-silently disappearing from metric denominators. The file is regenerated from
 silently disappearing from metric denominators. Each row also embeds its atomic
 claim class, exact claim-citation relation and span, conflict expectation, and
 abstention outcome. The file is regenerated from the validated split, qrels,
 and claim truth with `--cases-output`; byte drift fails the repository test
 suite.
 
-Validate the frozen case construction, strata, partition isolation, and hashes
+The qrels, claims, and split currently record primary manual review by
+`bijux-corpus-curation-primary` on 2026-08-22. Qrels use source-first
+adjudication before retrieval evaluation; claims use source-first atomic-claim
+and citation adjudication. Qrels explicitly record that system rankings were
+not consulted; the claim records do not carry an equivalent explicit field.
+Independent review is still required for release truth, so the audit marks that
+condition for review instead of inferring certainty from product output.
+
+Validate the frozen case construction, strata, partition indexes, and hashes
 with:
 
 ```console
@@ -85,4 +99,15 @@ python -m bijux_canon_dev.corpus.research_evaluation_split \
   --claim-truth examples/ancient-dna-research/truth/claim-truth.jsonl \
   --split examples/ancient-dna-research/truth/split.json \
   --cases-output examples/ancient-dna-research/truth/evaluation-cases.jsonl
+```
+
+Audit semantic denominators, duplicates, contradictions, reviewer provenance,
+source cross-products, and development/held-out overlap with:
+
+```console
+python -m bijux_canon_dev.corpus.research_truth_audit \
+  --qrels examples/ancient-dna-research/truth/qrels.jsonl \
+  --claim-truth examples/ancient-dna-research/truth/claim-truth.jsonl \
+  --split examples/ancient-dna-research/truth/split.json \
+  --cases examples/ancient-dna-research/truth/evaluation-cases.jsonl
 ```

@@ -1,4 +1,4 @@
-"""Coverage, balance, isolation, and identity checks for the research split."""
+"""Coverage, balance, overlap disclosure, and identity checks for the split."""
 
 from __future__ import annotations
 
@@ -57,6 +57,21 @@ def test_split_freezes_exactly_120_balanced_reviewed_cases() -> None:
     assert result["development_case_count"] == 80
     assert result["heldout_case_count"] == 40
     assert result["source_count"] == 8
+
+
+def test_split_reports_semantic_denominators_and_known_leakage() -> None:
+    result = _validate(_document())
+
+    assert result["case_row_count"] == 120
+    assert result["query_count"] == 8
+    assert result["qrel_count"] == 30
+    assert result["claim_truth_count"] == 32
+    assert result["development_query_count"] == 8
+    assert result["heldout_query_count"] == 8
+    assert result["query_overlap_count"] == 8
+    assert result["qrel_overlap_count"] == 27
+    assert result["claim_truth_overlap_count"] == 32
+    assert result["leakage_free"] is False
 
 
 def test_split_validation_is_restart_stable() -> None:

@@ -5,6 +5,7 @@ from bijux_canon_dev.quality.evaluation_anti_gaming import (
     AntiGamingViolation,
     EvaluationAntiGamingGate,
     EvaluationSubmission,
+    MetricPopulation,
     MetricTruthSource,
     SubmittedMetric,
 )
@@ -21,6 +22,7 @@ __all__ = [
     "AntiGamingViolation",
     "EvaluationAntiGamingGate",
     "EvaluationSubmission",
+    "MetricPopulation",
     "EvaluationEvidenceBook",
     "EvaluationEvidenceBookGenerator",
     "EvidenceBookAggregate",

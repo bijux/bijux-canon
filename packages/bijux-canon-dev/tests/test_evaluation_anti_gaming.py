@@ -13,6 +13,7 @@ from bijux_canon_dev.quality import (
     AntiGamingViolation,
     EvaluationAntiGamingGate,
     EvaluationSubmission,
+    MetricPopulation,
     MetricTruthSource,
     SubmittedMetric,
 )
@@ -24,6 +25,8 @@ SPLIT_PATH = REPO_ROOT / "examples/ancient-dna-research/truth/split.json"
 def _submission() -> EvaluationSubmission:
     rows = json.loads(SPLIT_PATH.read_text(encoding="utf-8"))["cases"]
     case_ids = frozenset(str(row["case_id"]) for row in rows)
+    query_ids = frozenset(str(row["query_id"]) for row in rows)
+    claim_ids = frozenset(str(row["claim_truth_id"]) for row in rows)
     hard = frozenset(
         str(row["case_id"])
         for row in rows
@@ -40,15 +43,19 @@ def _submission() -> EvaluationSubmission:
     metrics = (
         SubmittedMetric(
             metric_id="recall-at-5",
-            numerator=114,
-            denominator=len(case_ids),
+            numerator=8,
+            denominator=len(query_ids),
             truth_source=MetricTruthSource.reviewed_qrels,
+            population=MetricPopulation.query,
+            sample_ids=query_ids,
         ),
         SubmittedMetric(
             metric_id="claim-faithfulness",
-            numerator=116,
-            denominator=len(case_ids),
+            numerator=31,
+            denominator=len(claim_ids),
             truth_source=MetricTruthSource.reviewed_claim_relations,
+            population=MetricPopulation.claim,
+            sample_ids=claim_ids,
         ),
     )
     return EvaluationSubmission(
@@ -62,16 +69,25 @@ def _submission() -> EvaluationSubmission:
         fixture_case_ids=frozenset(),
         real_case_ids=case_ids,
         skipped_case_ids=frozenset(),
-        declared_denominators={item.metric_id: len(case_ids) for item in metrics},
+        expected_sample_ids={
+            MetricPopulation.query: query_ids,
+            MetricPopulation.claim: claim_ids,
+            MetricPopulation.evaluation_case: case_ids,
+        },
+        declared_denominators={item.metric_id: item.denominator for item in metrics},
         metrics=metrics,
     )
 
 
-def test_real_120_case_submission_passes_all_anti_gaming_rules() -> None:
-    report = EvaluationAntiGamingGate().evaluate(_submission())
+def test_truth_submission_uses_semantic_metric_populations() -> None:
+    submission = _submission()
+    report = EvaluationAntiGamingGate().evaluate(submission)
 
     assert report.passed
     assert report.violations == ()
+    assert submission.metrics[0].denominator == 8
+    assert submission.metrics[1].denominator == 32
+    assert len(submission.evaluated_case_ids) == 120
 
 
 @pytest.mark.parametrize(
@@ -126,6 +142,27 @@ def test_real_120_case_submission_passes_all_anti_gaming_rules() -> None:
         (
             lambda item: replace(
                 item,
+                metrics=(
+                    SubmittedMetric(
+                        metric_id=item.metrics[0].metric_id,
+                        numerator=120,
+                        denominator=len(item.evaluated_case_ids),
+                        truth_source=item.metrics[0].truth_source,
+                        population=MetricPopulation.query,
+                        sample_ids=item.evaluated_case_ids,
+                    ),
+                    item.metrics[1],
+                ),
+                declared_denominators={
+                    **item.declared_denominators,
+                    "recall-at-5": len(item.evaluated_case_ids),
+                },
+            ),
+            AntiGamingViolation.wrong_semantic_population,
+        ),
+        (
+            lambda item: replace(
+                item,
                 evaluated_case_ids=item.evaluated_case_ids - item.negative_case_ids,
             ),
             AntiGamingViolation.missing_negative_case,
@@ -155,3 +192,15 @@ def test_each_gaming_shortcut_is_rejected(
 
     assert not report.passed
     assert violation in report.violations
+
+
+def test_metric_denominator_must_equal_unique_semantic_samples() -> None:
+    with pytest.raises(ValueError, match="unique semantic samples"):
+        SubmittedMetric(
+            metric_id="recall-at-5",
+            numerator=8,
+            denominator=120,
+            truth_source=MetricTruthSource.reviewed_qrels,
+            population=MetricPopulation.query,
+            sample_ids=frozenset(f"query-{index}" for index in range(8)),
+        )
