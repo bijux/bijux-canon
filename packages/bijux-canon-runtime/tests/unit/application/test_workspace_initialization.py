@@ -22,6 +22,7 @@ from bijux_canon_runtime.application.workspace_initialization import (
     WorkspaceInitializationErrorCode,
     WorkspaceInitializationStatus,
     initialize_runtime_workspace,
+    validate_runtime_workspace,
 )
 from bijux_canon_runtime.model.artifact import canonical_json_bytes
 
@@ -74,9 +75,11 @@ def test_fresh_initialization_is_atomic_and_repeat_is_exact_noop(
         for path in workspace.rglob("*")
     }
     second = initialize_runtime_workspace(configuration)
+    validated = validate_runtime_workspace(configuration)
 
     assert first.status is WorkspaceInitializationStatus.INITIALIZED
     assert second.status is WorkspaceInitializationStatus.UNCHANGED
+    assert validated == second
     assert second.workspace_id == first.workspace_id
     assert second.model_lock_artifact_id == first.model_lock_artifact_id
     assert layout.manifest_path.read_bytes() == manifest_bytes

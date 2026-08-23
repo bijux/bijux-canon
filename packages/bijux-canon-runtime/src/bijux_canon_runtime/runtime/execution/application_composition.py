@@ -19,10 +19,16 @@ from bijux_canon_index.infra.embeddings.local_model import (
 )
 from bijux_canon_index.infra.embeddings.model_cache import load_model_lock
 from bijux_canon_runtime.application.operations import (
+    ApplicationCapabilityError,
     ReplayOperationRequest,
     RuntimeApplicationServicesV2,
     build_runtime_job_handlers,
 )
+from bijux_canon_runtime.application.runtime_configuration import RuntimeConfiguration
+from bijux_canon_runtime.application.workspace_initialization import (
+    validate_runtime_workspace,
+)
+from bijux_canon_runtime.core.errors import ConfigurationError
 from bijux_canon_runtime.ontology.ids import ArtifactID
 from bijux_canon_runtime.runtime.execution.application_executor import (
     RuntimeExecutionService,
@@ -87,19 +93,20 @@ class _LazyLocalEmbeddingModel:
 
 def compose_runtime_application_services(
     *,
-    working_root: Path,
-    model_root: Path,
+    configuration: RuntimeConfiguration,
     max_workers: int = 4,
 ) -> RuntimeApplicationServicesV2:
     """Bind installed owners, durable jobs, CAS, inspection, and replay."""
-    if not working_root.is_absolute() or not model_root.is_absolute():
-        raise ValueError("Runtime application roots must be absolute paths")
     if max_workers < 1:
         raise ValueError("Runtime application worker count must be positive")
-    working_root.mkdir(parents=True, exist_ok=True)
-    store = AtomicFilesystemArtifactPayloadStore(working_root / "cas")
-    index = IndexService(working_root / "indexes")
-    embedding = _LazyLocalEmbeddingModel(model_root)
+    try:
+        validation = validate_runtime_workspace(configuration)
+        layout = configuration.require_workspace_layout()
+    except ConfigurationError as exc:
+        raise ApplicationCapabilityError(str(exc)) from exc
+    store = AtomicFilesystemArtifactPayloadStore(layout.cas_root)
+    index = IndexService(layout.index_root)
+    embedding = _LazyLocalEmbeddingModel(layout.model_root)
     dispatcher = OperationDispatcher(
         (
             CanonicalIngestOperationAdapter(),
@@ -107,24 +114,24 @@ def compose_runtime_application_services(
             CanonicalEmbeddingOperationAdapter(store=store, embedding=embedding),
             CanonicalLexicalIndexOperationAdapter(
                 store=store,
-                working_root=working_root / "operations",
+                working_root=layout.operations_root,
             ),
             CanonicalDenseIndexOperationAdapter(
                 index=index,
-                working_root=working_root / "operations",
+                working_root=layout.operations_root,
             ),
             CanonicalRetrievalOperationAdapter(
                 store=store,
                 index=index,
                 embedding=embedding,
-                vex_store_root=working_root / "vex",
+                vex_store_root=layout.vex_root,
             ),
             CanonicalReasonOperationAdapter(),
             CanonicalAgentOperationAdapter(
                 store=store,
                 index=index,
                 embedding=embedding,
-                vex_store_root=working_root / "vex",
+                vex_store_root=layout.vex_root,
             ),
             CanonicalVerificationOperationAdapter(),
             CanonicalPersistenceOperationAdapter(store=store),
@@ -134,7 +141,7 @@ def compose_runtime_application_services(
     execution = RuntimeExecutionService(
         store=store,
         dispatcher=dispatcher,
-        process_id="bijux-canon-runtime-v2",
+        process_id=f"bijux-canon-runtime-v2:{validation.workspace_id}",
         max_workers=max_workers,
     )
     replay = RuntimeReplayService(store)
@@ -167,7 +174,7 @@ def compose_runtime_application_services(
         }
 
     jobs = DurableJobManager(
-        working_root / "jobs.sqlite",
+        layout.job_store_path,
         handlers=build_runtime_job_handlers(
             execute=execution.execute,
             replay=execute_replay,

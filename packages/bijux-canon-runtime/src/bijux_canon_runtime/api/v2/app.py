@@ -146,24 +146,11 @@ def create_app(
         configured = request.app.state.application_services
         if configured is None:
             configuration = resolve_runtime_configuration(environment=os.environ)
-            if configuration.working_root is None:
-                raise ApplicationCapabilityError(
-                    "BIJUX_CANON_RUNTIME_WORKING_ROOT is required for Runtime v2 operations"
-                )
-            if configuration.embedding_model_path is None:
-                raise ApplicationCapabilityError(
-                    "BIJUX_CANON_RUNTIME_EMBEDDING_MODEL_PATH is required for Runtime v2 operations"
-                )
             with request.app.state.application_services_lock:
                 configured = request.app.state.application_services
                 if configured is None:
                     configured = compose_runtime_application_services(
-                        working_root=(
-                            configuration.working_root.expanduser().resolve()
-                        ),
-                        model_root=(
-                            configuration.embedding_model_path.expanduser().resolve()
-                        ),
+                        configuration=configuration,
                     )
                     request.app.state.application_services = configured
         if not isinstance(configured, RuntimeApplicationServicesV2):

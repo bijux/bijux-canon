@@ -5,8 +5,21 @@
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
+import pytest
+
+from bijux_canon_index.domain.embedding import LOCAL_MINILM_PROFILE
+from bijux_canon_index.infra.embeddings.model_cache import materialize_model
+from bijux_canon_runtime.application.operations import ApplicationCapabilityError
+from bijux_canon_runtime.application.runtime_configuration import (
+    RuntimeConfiguration,
+    resolve_runtime_configuration,
+)
+from bijux_canon_runtime.application.workspace_initialization import (
+    initialize_runtime_workspace,
+)
 from bijux_canon_runtime.model.execution.request_plan import (
     ExecutionProfile,
     RuntimeOperationRequest,
@@ -21,6 +34,57 @@ from bijux_canon_runtime.runtime.execution.application_composition import (
 from bijux_canon_runtime.runtime.execution.durable_jobs import JobStatus
 
 
+def _materialized_model(tmp_path: Path) -> Path:
+    cache_root = tmp_path / "model-cache"
+    metadata: dict[str, object] = {
+        "sha": LOCAL_MINILM_PROFILE.revision,
+        "cardData": {"license": "apache-2.0"},
+        "siblings": [
+            {"rfilename": path} for path in LOCAL_MINILM_PROFILE.required_artifacts
+        ],
+    }
+
+    def fetch(_url: str, destination: Path) -> None:
+        destination.write_bytes(b"valid")
+
+    materialize_model(
+        LOCAL_MINILM_PROFILE,
+        cache_root,
+        library_versions=(("sentence-transformers", "5.1.0"),),
+        metadata_fetcher=lambda _url: metadata,
+        artifact_fetcher=fetch,
+    )
+    return cache_root / LOCAL_MINILM_PROFILE.profile_id / LOCAL_MINILM_PROFILE.revision
+
+
+def _initialized_configuration(
+    workspace: Path,
+    model: Path,
+    **overrides: object,
+) -> RuntimeConfiguration:
+    configuration = resolve_runtime_configuration(
+        explicit={
+            "embedding_model_path": model,
+            "working_root": workspace,
+            **overrides,
+        }
+    )
+    initialize_runtime_workspace(configuration)
+    return configuration
+
+
+def _corpus_request(source: Path, request_id: str) -> RuntimeOperationRequest:
+    return RuntimeOperationRequest(
+        request_id=RequestID(request_id),
+        operation=RuntimeRequestOperation.CORPUS_PREPARE,
+        execution_profile=ExecutionProfile.LOCAL_HYBRID_ANN,
+        budget=RuntimeRequestBudget(30.0, 10_000_000),
+        replay_mode=ReplayMode.STRICT,
+        scope="local",
+        source_directory=str(source),
+    )
+
+
 def test_composed_corpus_job_survives_application_restart_without_model_load(
     tmp_path: Path,
 ) -> None:
@@ -30,39 +94,131 @@ def test_composed_corpus_job_survives_application_restart_without_model_load(
         "# Evidence\n\nAncient genomes preserve direct population evidence.\n",
         encoding="utf-8",
     )
-    state = tmp_path / "runtime-state"
-    request = RuntimeOperationRequest(
-        request_id=RequestID("request-composed-corpus"),
-        operation=RuntimeRequestOperation.CORPUS_PREPARE,
-        execution_profile=ExecutionProfile.LOCAL_HYBRID_ANN,
-        budget=RuntimeRequestBudget(30.0, 10_000_000),
-        replay_mode=ReplayMode.STRICT,
-        scope="local",
-        source_directory=str(source),
+    configuration = _initialized_configuration(
+        tmp_path / "runtime-state",
+        _materialized_model(tmp_path),
     )
+    request = _corpus_request(source, "request-composed-corpus")
 
     with compose_runtime_application_services(
-        working_root=state,
-        model_root=tmp_path / "model-is-not-needed-for-corpus",
+        configuration=configuration,
         max_workers=2,
     ) as service:
         submitted = service.corpus(request, idempotency_key="corpus-once")
         completed = service.wait(submitted.job_id, timeout_seconds=10.0)
         result = service.result(submitted.job_id)
         inspection = service.inspect(str(result["run_id"]))
-        corpus_id = ArtifactID(str(result["terminal_artifact_ids"][0]))
+        terminal_artifact_ids = result["terminal_artifact_ids"]
+        assert isinstance(terminal_artifact_ids, list)
+        corpus_id = ArtifactID(str(terminal_artifact_ids[0]))
         corpus = service.inspect_corpus(corpus_id)
 
         assert completed.status is JobStatus.SUCCEEDED
         assert inspection.status.value == "completed"
+        workspace_manifest = json.loads(
+            configuration.require_workspace_layout().manifest_path.read_bytes()
+        )
+        assert inspection.attempts[0].process_id == (
+            f"bijux-canon-runtime-v2:{workspace_manifest['workspace_id']}"
+        )
         assert corpus["schema_version"] == ("bijux.canon.ingest.corpus_publication.v1")
+        assert isinstance(corpus["byte_length"], int)
         assert corpus["byte_length"] > 0
 
     with compose_runtime_application_services(
-        working_root=state,
-        model_root=tmp_path / "model-is-still-not-needed",
+        configuration=configuration,
         max_workers=2,
     ) as restarted:
         assert restarted.status(submitted.job_id).status is JobStatus.SUCCEEDED
         assert restarted.result(submitted.job_id) == result
         assert restarted.inspect(str(result["run_id"])) == inspection
+
+
+def test_composition_refuses_an_uninitialized_effective_workspace(
+    tmp_path: Path,
+) -> None:
+    configuration = resolve_runtime_configuration(
+        explicit={
+            "embedding_model_path": tmp_path / "missing-model",
+            "working_root": tmp_path / "missing-workspace",
+        }
+    )
+
+    with pytest.raises(ApplicationCapabilityError, match="not_initialized"):
+        compose_runtime_application_services(configuration=configuration)
+
+    assert not (tmp_path / "missing-workspace").exists()
+
+
+def test_two_composed_workspaces_cannot_cross_read_or_write(
+    tmp_path: Path,
+) -> None:
+    source = tmp_path / "papers"
+    source.mkdir()
+    (source / "evidence.md").write_text(
+        "# Evidence\n\nWorkspace isolation is observable.\n",
+        encoding="utf-8",
+    )
+    model = _materialized_model(tmp_path)
+    first_configuration = _initialized_configuration(
+        tmp_path / "workspace-a",
+        model,
+    )
+    second_configuration = _initialized_configuration(
+        tmp_path / "workspace-b",
+        model,
+    )
+
+    with (
+        compose_runtime_application_services(
+            configuration=first_configuration,
+            max_workers=1,
+        ) as first,
+        compose_runtime_application_services(
+            configuration=second_configuration,
+            max_workers=1,
+        ) as second,
+    ):
+        first_job = first.corpus(
+            _corpus_request(source, "request-workspace-a"),
+            idempotency_key="workspace-a",
+        )
+        second_job = second.corpus(
+            _corpus_request(source, "request-workspace-b"),
+            idempotency_key="workspace-b",
+        )
+        first.wait(first_job.job_id, timeout_seconds=10.0)
+        second.wait(second_job.job_id, timeout_seconds=10.0)
+
+        with pytest.raises(KeyError):
+            first.status(second_job.job_id)
+        with pytest.raises(KeyError):
+            second.status(first_job.job_id)
+
+    first_layout = first_configuration.require_workspace_layout()
+    second_layout = second_configuration.require_workspace_layout()
+    assert first_layout.cas_root != second_layout.cas_root
+    assert first_layout.job_store_path != second_layout.job_store_path
+    assert tuple(first_layout.cas_root.rglob("descriptor.json"))
+    assert tuple(second_layout.cas_root.rglob("descriptor.json"))
+
+
+def test_composition_uses_safe_explicit_database_and_index_overrides(
+    tmp_path: Path,
+) -> None:
+    workspace = tmp_path / "workspace"
+    configuration = _initialized_configuration(
+        workspace,
+        _materialized_model(tmp_path),
+        database_path=workspace / "metadata" / "execution.duckdb",
+        retrieval_index_path=workspace / "retrieval-index",
+    )
+    layout = configuration.require_workspace_layout()
+
+    with compose_runtime_application_services(configuration=configuration):
+        pass
+
+    assert layout.database_path.is_file()
+    assert (layout.index_root / "generations").is_dir()
+    assert not (workspace / "runtime.duckdb").exists()
+    assert not (workspace / "indexes").exists()

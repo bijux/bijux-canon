@@ -54,6 +54,7 @@ class WorkspaceInitializationErrorCode(StrEnum):
     INCOMPATIBLE_CONFIGURATION = "incompatible_configuration"
     INCOMPATIBLE_VERSION = "incompatible_version"
     MODEL_UNAVAILABLE = "model_unavailable"
+    NOT_INITIALIZED = "not_initialized"
     PARTIAL_WORKSPACE = "partial_workspace"
     UNSAFE_PATH = "unsafe_path"
     UNWRITABLE = "unwritable"
@@ -285,6 +286,12 @@ def _validate_existing(
     layout: RuntimeWorkspaceLayout,
     model_lock_id: str,
 ) -> WorkspaceInitializationResult:
+    if not layout.root.exists():
+        raise WorkspaceInitializationError(
+            WorkspaceInitializationErrorCode.NOT_INITIALIZED,
+            "workspace has not been initialized",
+            "run bijux-canon-runtime init with this workspace and locked model",
+        )
     if not layout.root.is_dir() or layout.root.is_symlink():
         raise WorkspaceInitializationError(
             WorkspaceInitializationErrorCode.UNSAFE_PATH,
@@ -490,8 +497,28 @@ def initialize_runtime_workspace(
     return _result(manifest, layout, WorkspaceInitializationStatus.INITIALIZED)
 
 
+def validate_runtime_workspace(
+    configuration: RuntimeConfiguration,
+) -> WorkspaceInitializationResult:
+    """Validate an initialized effective workspace without creating or repairing it."""
+    configured_root = configuration.working_root
+    if configured_root is not None and configured_root.expanduser().is_symlink():
+        raise WorkspaceInitializationError(
+            WorkspaceInitializationErrorCode.UNSAFE_PATH,
+            "workspace root must not be a symbolic link",
+            "select a non-symlink workspace path",
+        )
+    layout = configuration.require_workspace_layout()
+    _validate_owned_paths(layout)
+    if not layout.root.exists():
+        return _validate_existing(configuration, layout, "")
+    model_lock_id = _verify_model(layout)
+    return _validate_existing(configuration, layout, model_lock_id)
+
+
 __all__ = [
     "initialize_runtime_workspace",
+    "validate_runtime_workspace",
     "WorkspaceInitializationError",
     "WorkspaceInitializationErrorCode",
     "WorkspaceInitializationResult",

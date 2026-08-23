@@ -7,7 +7,6 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass
-from pathlib import Path
 
 from bijux_canon_agent.application.execution_service import run_offline_agent
 from bijux_canon_index.application import (
@@ -26,6 +25,10 @@ from bijux_canon_ingest.application.corpus_snapshot import build_corpus_snapshot
 from bijux_canon_ingest.domain.corpus_snapshot import CorpusSnapshot
 from bijux_canon_reason.application.run_workflow import run_app
 from bijux_canon_reason.core.system_contract import assert_system_contract
+from bijux_canon_runtime.application.runtime_configuration import RuntimeConfiguration
+from bijux_canon_runtime.application.workspace_initialization import (
+    validate_runtime_workspace,
+)
 from bijux_canon_runtime.core.package_versions import distribution_version
 from bijux_canon_runtime.model.execution.request_plan import DagOperation
 from bijux_canon_runtime.runtime.execution.canonical_adapters import (
@@ -115,12 +118,11 @@ class CanonicalServiceComposition:
 
 def compose_canonical_services(
     *,
-    working_root: Path,
-    index_registry_root: Path,
+    configuration: RuntimeConfiguration,
 ) -> CanonicalServiceComposition:
     """Bind exact installed application APIs and verify their declared contracts."""
-    if not working_root.is_absolute() or not index_registry_root.is_absolute():
-        raise ValueError("canonical service roots must be absolute paths")
+    validate_runtime_workspace(configuration)
+    layout = configuration.require_workspace_layout()
     assert_execution_abi()
     assert_system_contract()
     index_abi = execution_abi_payload()
@@ -247,13 +249,13 @@ def compose_canonical_services(
     composition = CanonicalServiceComposition(
         ingest=CanonicalIngestRuntime(),
         snapshot_builder=build_corpus_snapshot,
-        index=IndexService(index_registry_root),
+        index=IndexService(layout.index_root),
         lexical_retrieval_type=LexicalCandidateService,
         dense_retrieval_type=DenseCandidateService,
         retrieval_outcome_type=RetrievalOutcomeService,
         embedding_type=LocalEmbeddingModel,
         reason=CanonicalReasonAdapterV1(),
-        agent=CanonicalAgentAdapterV1(working_root=working_root),
+        agent=CanonicalAgentAdapterV1(working_root=layout.operations_root),
         capabilities=capabilities,
     )
     composition.require_operations(

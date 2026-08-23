@@ -23,6 +23,7 @@ from bijux_canon_runtime.application.problems import (
     runtime_problem,
     runtime_problem_fields,
 )
+from bijux_canon_runtime.application.runtime_configuration import RuntimeConfiguration
 from bijux_canon_runtime.interfaces.cli import v2_commands
 from bijux_canon_runtime.interfaces.cli.parser import build_parser
 from bijux_canon_runtime.interfaces.cli.v2_commands import run_v2_command
@@ -324,22 +325,53 @@ def test_process_owned_cli_services_finish_before_return(
     assert closed == [True]
 
 
+def test_cli_composition_receives_the_one_effective_configuration(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    service = _RecordingServices()
+    captured: list[RuntimeConfiguration] = []
+    workspace = tmp_path / "state"
+    model = tmp_path / "model"
+    monkeypatch.setenv("BIJUX_CANON_RUNTIME_WORKING_ROOT", str(workspace))
+    monkeypatch.setenv("BIJUX_CANON_RUNTIME_EMBEDDING_MODEL_PATH", str(model))
+    monkeypatch.setattr(v2_commands, "_default_application_services", None)
+    monkeypatch.setattr(service, "close", lambda: None)
+
+    def compose(*, configuration: RuntimeConfiguration) -> RuntimeApplicationServicesV2:
+        captured.append(configuration)
+        return service
+
+    monkeypatch.setattr(v2_commands, "compose_runtime_application_services", compose)
+
+    assert v2_commands._require_services(None) is service
+
+    assert len(captured) == 1
+    layout = captured[0].require_workspace_layout()
+    assert layout.root == workspace.resolve()
+    assert layout.model_root == model.resolve()
+    assert layout.job_store_path == workspace / "jobs.sqlite"
+    v2_commands._close_default_services(service)
+
+
 def test_process_owned_http_services_close_with_application(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     service = _RecordingServices()
     closed: list[bool] = []
+    captured: list[RuntimeConfiguration] = []
     monkeypatch.setenv("BIJUX_CANON_RUNTIME_WORKING_ROOT", str(tmp_path / "state"))
     monkeypatch.setenv(
         "BIJUX_CANON_RUNTIME_EMBEDDING_MODEL_PATH",
         str(tmp_path / "model"),
     )
-    monkeypatch.setattr(
-        v2_app_module,
-        "compose_runtime_application_services",
-        lambda **_: service,
-    )
+
+    def compose(*, configuration: RuntimeConfiguration) -> RuntimeApplicationServicesV2:
+        captured.append(configuration)
+        return service
+
+    monkeypatch.setattr(v2_app_module, "compose_runtime_application_services", compose)
     monkeypatch.setattr(service, "close", lambda: closed.append(True))
 
     with TestClient(create_app()) as client:
@@ -351,6 +383,8 @@ def test_process_owned_http_services_close_with_application(
         assert closed == []
 
     assert closed == [True]
+    assert len(captured) == 1
+    assert captured[0].require_workspace_layout().root == (tmp_path / "state").resolve()
 
 
 def test_replay_has_identical_request_and_response(tmp_path: Path) -> None:

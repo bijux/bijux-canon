@@ -217,17 +217,8 @@ def _require_services(
     if _default_application_services is not None:
         return _default_application_services
     configuration = resolve_runtime_configuration(environment=os.environ)
-    if configuration.working_root is None:
-        raise ApplicationCapabilityError(
-            "BIJUX_CANON_RUNTIME_WORKING_ROOT is required for Runtime v2 operations"
-        )
-    if configuration.embedding_model_path is None:
-        raise ApplicationCapabilityError(
-            "BIJUX_CANON_RUNTIME_EMBEDDING_MODEL_PATH is required for Runtime v2 operations"
-        )
     _default_application_services = compose_runtime_application_services(
-        working_root=configuration.working_root.expanduser().resolve(),
-        model_root=configuration.embedding_model_path.expanduser().resolve(),
+        configuration=configuration,
     )
     return _default_application_services
 
