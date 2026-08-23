@@ -113,6 +113,16 @@ class SourceLocator:
             or len(names) != len(set(names))
         ):
             raise ValueError("SourceLocator selectors must have unique non-empty names")
+        if any(
+            isinstance(value, bool)
+            or (isinstance(value, str) and not value)
+            or not isinstance(value, str | int)
+            for _, value in self.selectors
+        ):
+            raise ValueError(
+                "SourceLocator selector values must be strings or integers"
+            )
+        object.__setattr__(self, "selectors", tuple(sorted(self.selectors)))
 
     def get(self, name: str) -> LocatorValue | None:
         """Return one selector value when present."""

@@ -8,9 +8,13 @@ from __future__ import annotations
 import hashlib
 import json
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import TypeAlias
 
+from bijux_canon_ingest.domain.citation_lineage import (
+    DocumentCitationLineage,
+    build_document_citation_lineage,
+)
 from bijux_canon_ingest.domain.document_extraction import (
     ParsedDocument,
     ParsedDocxDocument,
@@ -87,6 +91,12 @@ class CorpusSnapshotDocument:
     metadata: CanonicalSourceMetadata
     mappings: tuple[NormalizedSpanMapping, ...]
     chunks: tuple[SemanticChunk, ...]
+    _document_id: str = field(init=False, repr=False, compare=False)
+    _citation_lineage: DocumentCitationLineage = field(
+        init=False,
+        repr=False,
+        compare=False,
+    )
 
     def __post_init__(self) -> None:
         source_sha256 = self.admission.source.content_sha256
@@ -124,10 +134,7 @@ class CorpusSnapshotDocument:
             raise ValueError(
                 "snapshot chunk mappings must descend from document mappings"
             )
-
-    @property
-    def document_id(self) -> str:
-        return _identity(
+        document_id = _identity(
             {
                 "extraction_manifest_sha256": self.document.manifest()[
                     "manifest_sha256"
@@ -136,10 +143,31 @@ class CorpusSnapshotDocument:
                 "source_content_sha256": self.admission.source.content_sha256,
             }
         )
+        object.__setattr__(self, "_document_id", document_id)
+        object.__setattr__(
+            self,
+            "_citation_lineage",
+            build_document_citation_lineage(
+                document=self.document,
+                document_id=document_id,
+                chunks=self.chunks,
+            ),
+        )
+
+    @property
+    def document_id(self) -> str:
+        return self._document_id
+
+    @property
+    def citation_lineage(self) -> DocumentCitationLineage:
+        """Return the ingest-owned exact locator graph for every chunk."""
+
+        return self._citation_lineage
 
     def manifest(self) -> dict[str, object]:
         return {
             "admission": self.admission.manifest(),
+            "citation_lineage": self.citation_lineage.manifest(),
             "chunks": [chunk.manifest() for chunk in self.chunks],
             "document": self.document.manifest(),
             "document_id": self.document_id,

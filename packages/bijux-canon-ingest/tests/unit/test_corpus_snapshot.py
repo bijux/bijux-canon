@@ -151,6 +151,20 @@ def test_snapshot_serialization_is_canonical_across_input_order(
     assert len(snapshot.rejections) == 1
     assert all(document.chunks for document in snapshot.documents)
     assert all(document.mappings for document in snapshot.documents)
+    assert all(
+        len(document.citation_lineage.records) == len(document.chunks)
+        for document in snapshot.documents
+    )
+    assert all(
+        document.citation_lineage.document_id == document.document_id
+        and document.citation_lineage.source_content_sha256
+        == document.admission.source.content_sha256
+        for document in snapshot.documents
+    )
+    assert all(
+        raw_document["citation_lineage"]["lineage_sha256"].startswith("sha256:")
+        for raw_document in snapshot.manifest()["documents"]
+    )
 
 
 def test_snapshot_identity_changes_with_declared_configuration(

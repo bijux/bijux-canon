@@ -9,9 +9,9 @@ last_reviewed: 2026-08-23
 
 # Data Contracts
 
-Ingest has four distinct contract layers: canonical source metadata, functional
-source records, in-process chunk values, and serialized boundary models. They
-are related, but they are not interchangeable.
+Ingest has five distinct contract layers: canonical source metadata, canonical
+corpus snapshots, functional source records, in-process chunk values, and
+serialized boundary models. They are related, but they are not interchangeable.
 
 ## Canonical Source Metadata
 
@@ -83,6 +83,32 @@ discovery mode. Snapshot assembly continues to accept identity-valid v1
 preparations as unlocked legacy inputs. Ingest result manifests expose the same
 portable lock summary, or `{"status": "absent"}`; neither persisted form
 leaks the host path of the selected lock.
+
+## Canonical Corpus Snapshot
+
+Every admitted snapshot document carries an ingest-owned
+`bijux.canon.ingest.document_citation_lineage.v1` graph. It binds the immutable
+source SHA-256, document identity, parser name/version and parser-manifest
+identity to every normalized mapping and semantic chunk. Each
+source-to-document, document-to-mapping, and mapping-to-chunk edge has its own
+content identity.
+
+A chunk can combine several semantic blocks. Its lineage therefore contains an
+ordered locator segment for every contributing mapping rather than inventing
+one locator for the combined text. Segment spans use Unicode code-point
+coordinates in the normalized chunk and retain the actual format locator:
+JATS element path, PDF page text span, HTML DOM path, Markdown or text line
+span, or OOXML package-part/block coordinates. Exact segment text remains in
+the sibling chunk record and is bound by SHA-256; repeated text is resolved by
+the structural locator, never by searching for the quotation.
+
+Resolution verifies the whole source payload identity, parser manifest,
+document and mapping identities, normalized offsets, exact text hash, and the
+format locator. Missing and multiply resolving locators are typed
+`locator_unavailable` and `locator_ambiguous` refusals. PDF and OOXML locators
+identify text in a deterministic parser representation bound to the exact
+source payload; they do not pretend compressed container bytes are direct text
+coordinates.
 
 ## Source Record
 
