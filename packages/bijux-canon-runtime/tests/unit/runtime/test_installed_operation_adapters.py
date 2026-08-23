@@ -337,6 +337,17 @@ def _retrieve_and_reason(indexed: _IndexedRuntime) -> _GroundedRuntime:
     assert len(hit["source"]["source_content_sha256"]) == 64
     assert hit["mapping_ids"]
     assert hit["channels"]
+    assert hit["locator_segments"]
+    assert hit["locator_scope"] == "first-segment-only"
+    assert all(
+        segment["locator"]["scheme"] == "markdown-line-span"
+        for segment in hit["locator_segments"]
+    )
+    assert all(
+        segment["content_sha256"]
+        == hashlib.sha256(segment["verbatim_text"].encode()).hexdigest()
+        for segment in hit["locator_segments"]
+    )
 
     ask_request = RuntimeOperationRequest(
         request_id=RequestID("request-ask"),
@@ -373,14 +384,22 @@ def _retrieve_and_reason(indexed: _IndexedRuntime) -> _GroundedRuntime:
     claim_graph = json.loads(reason.artifacts[0].payload)
     assert claim_graph["status"] == "partial"
     assert "Ancient genomes preserve" in claim_graph["answer"]
-    assert claim_graph["evidence_packet"]["selected"][0]["exact_text"].startswith(
-        "# Ancient DNA"
+    segment_hashes = {
+        segment["verbatim_text"]: segment["content_sha256"]
+        for segment in hit["locator_segments"]
+    }
+    selected_text = claim_graph["evidence_packet"]["selected"][0]["exact_text"]
+    assert selected_text in segment_hashes
+    for link in claim_graph["citations"]["links"]:
+        assert link["exact_text"] in segment_hashes
+        assert link["exact_text_sha256"] == segment_hashes[link["exact_text"]]
+        assert link["locator_scheme"] == "markdown-line-span"
+    assert claim_graph["citation_verification"]["integrity_verified_links"] == len(
+        claim_graph["citations"]["links"]
     )
-    assert (
-        claim_graph["citations"]["links"][0]["exact_text_sha256"]
-        == hit["content_sha256"]
+    assert claim_graph["citation_verification"]["integrity_verified_links"] == len(
+        hit["locator_segments"]
     )
-    assert claim_graph["citation_verification"]["integrity_verified_links"] == 1
 
     return _GroundedRuntime(
         indexed=indexed,
@@ -463,7 +482,9 @@ def _verify_reason_and_agent(grounded: _GroundedRuntime) -> None:
         "candidate_evidence_found"
     )
     assert research_trace["opposition_candidates"]
-    assert len(research_trace["counterevidence_retrieval_artifact_ids"]) == 1
+    counterevidence_ids = research_trace["counterevidence_retrieval_artifact_ids"]
+    assert counterevidence_ids
+    assert len(counterevidence_ids) == len(set(counterevidence_ids))
     assert "require relation classification" in research_trace["insufficiencies"][0]
     assert len(research_trace["causal_events"]) == 4
     assert (

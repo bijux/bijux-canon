@@ -46,6 +46,15 @@ python -m bijux_canon_dev.corpus.parser_locator_truth \
   --truth examples/document-formats/locator-truth.jsonl
 ```
 
+Canonical ingest snapshots also retain a hashed citation-lineage graph for
+every emitted chunk. The graph carries the real JATS, PDF, HTML, Markdown,
+text, or OOXML locator for each contributing segment; Runtime passes those
+segments to Index and Reason without replacing them with a generic window
+ordinal. The ingest citation-lineage tests exercise full and Unicode subspan
+round trips, duplicate text at distinct structural locators, stale source
+bytes, changed mappings, and typed unavailable/ambiguous locator refusals over
+these six admitted sources.
+
 Generated download logs and verification evidence are disposable and remain
 under the ignored repository `artifacts/` directory. They are never source
 inputs and are never tracked by Git.

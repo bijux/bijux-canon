@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from enum import Enum, StrEnum
 import hashlib
 import json
@@ -175,6 +175,48 @@ class ExactSourceLocator:
 
 
 @dataclass(frozen=True, slots=True)
+class CitationLocatorSegment:
+    """One exact chunk span resolved by one ingest format locator."""
+
+    ordinal: int
+    mapping_id: str
+    chunk_start: int
+    chunk_end: int
+    normalized_start: int
+    normalized_end: int
+    section_path: tuple[str, ...]
+    locator: ExactSourceLocator
+    verbatim_text: str
+    content_sha256: str
+
+    def __post_init__(self) -> None:
+        if (
+            self.ordinal < 0
+            or not _is_artifact_id(self.mapping_id)
+            or self.chunk_start < 0
+            or self.chunk_end <= self.chunk_start
+            or self.normalized_start < 0
+            or self.normalized_end <= self.normalized_start
+            or self.chunk_end - self.chunk_start != len(self.verbatim_text)
+            or self.normalized_end - self.normalized_start != len(self.verbatim_text)
+            or not self.verbatim_text
+            or not self.section_path
+            or any(not item for item in self.section_path)
+        ):
+            raise ValueError("citation locator segment coordinates are invalid")
+        if hashlib.sha256(self.verbatim_text.encode()).hexdigest() != (
+            self.content_sha256
+        ):
+            raise ValueError("citation locator segment text identity does not match")
+
+    @property
+    def segment_id(self) -> str:
+        """Return the complete segment content identity."""
+
+        return _artifact_id(asdict(self))
+
+
+@dataclass(frozen=True, slots=True)
 class CitationLocatorRecord:
     """Exact citation truth for one immutable chunk, supplied by ingest."""
 
@@ -188,6 +230,8 @@ class CitationLocatorRecord:
     content_sha256: str
     mapping_ids: tuple[str, ...]
     parent_chunk_ids: tuple[str, ...] = ()
+    locator_segments: tuple[CitationLocatorSegment, ...] = ()
+    locator_scope: str = field(init=False)
 
     def __post_init__(self) -> None:
         if not self.chunk_id or not self.document_id or self.ordinal < 0:
@@ -210,6 +254,55 @@ class CitationLocatorRecord:
             not item for item in self.parent_chunk_ids
         ):
             raise ValueError("citation parent chunk identities must be unique")
+        if not self.locator_segments:
+            object.__setattr__(
+                self,
+                "locator_segments",
+                (
+                    CitationLocatorSegment(
+                        ordinal=0,
+                        mapping_id=self.mapping_ids[0],
+                        chunk_start=0,
+                        chunk_end=len(self.verbatim_text),
+                        normalized_start=0,
+                        normalized_end=len(self.verbatim_text),
+                        section_path=self.section_path,
+                        locator=self.locator,
+                        verbatim_text=self.verbatim_text,
+                        content_sha256=self.content_sha256,
+                    ),
+                ),
+            )
+        if tuple(segment.ordinal for segment in self.locator_segments) != tuple(
+            range(len(self.locator_segments))
+        ) or any(
+            left.chunk_end > right.chunk_start
+            for left, right in zip(
+                self.locator_segments,
+                self.locator_segments[1:],
+                strict=False,
+            )
+        ):
+            raise ValueError("citation locator segments must be ordered and disjoint")
+        if tuple(segment.mapping_id for segment in self.locator_segments) != (
+            self.mapping_ids
+        ) or any(
+            self.verbatim_text[segment.chunk_start : segment.chunk_end]
+            != segment.verbatim_text
+            for segment in self.locator_segments
+        ):
+            raise ValueError("citation locator segments do not resolve record text")
+        if self.locator != self.locator_segments[0].locator:
+            raise ValueError("citation primary locator must be the first exact segment")
+        object.__setattr__(
+            self,
+            "locator_scope",
+            (
+                "complete-chunk"
+                if len(self.locator_segments) == 1
+                else "first-segment-only"
+            ),
+        )
 
     @property
     def locator_record_id(self) -> str:
@@ -317,6 +410,8 @@ class CitationReadyHit:
     source: CitationSourceMetadata
     section_path: tuple[str, ...]
     locator: ExactSourceLocator
+    locator_scope: str
+    locator_segments: tuple[CitationLocatorSegment, ...]
     verbatim_text: str
     content_sha256: str
     mapping_ids: tuple[str, ...]
@@ -711,6 +806,8 @@ class CitationLocatorService:
                     source=record.source,
                     section_path=record.section_path,
                     locator=record.locator,
+                    locator_scope=record.locator_scope,
+                    locator_segments=record.locator_segments,
                     verbatim_text=record.verbatim_text,
                     content_sha256=record.content_sha256,
                     mapping_ids=record.mapping_ids,
@@ -736,6 +833,7 @@ __all__ = [
     "CitationChannelProvenance",
     "CitationLocatorCatalog",
     "CitationLocatorRecord",
+    "CitationLocatorSegment",
     "CitationLocatorService",
     "CitationReadyHit",
     "CitationResolutionBatch",

@@ -18,6 +18,7 @@ from bijux_canon_index.application import (
     CitationChannelProvenance,
     CitationLocatorCatalog,
     CitationLocatorRecord,
+    CitationLocatorSegment,
     CitationLocatorService,
     CitationResolutionError,
     CitationResolutionErrorCode,
@@ -210,6 +211,80 @@ def test_lexical_hits_resolve_to_exact_source_text_and_lineage(tmp_path: Path) -
         )
         == batch
     )
+
+
+def test_multi_mapping_chunk_retains_each_exact_format_locator(tmp_path: Path) -> None:
+    root, generation_id, compatibility = _registry(tmp_path)
+    lexical = LexicalCandidateService(root, compatibility=compatibility).generate(
+        "ancient dna",
+        generation_id=generation_id,
+        top_k=1,
+        candidate_limit=2,
+    )
+    text = "Ancient DNA preserves direct evidence."
+    first_text = "Ancient DNA"
+    second_text = "preserves direct evidence."
+    mapping_ids = ("sha256:" + "1" * 64, "sha256:" + "2" * 64)
+    first_locator = ExactSourceLocator(
+        "jats-element-path",
+        (("element_path", "/article[1]/body[1]/p[1]"),),
+    )
+    second_locator = ExactSourceLocator(
+        "jats-element-path",
+        (("element_path", "/article[1]/body[1]/p[2]"),),
+    )
+    record = CitationLocatorRecord(
+        chunk_id="chunk-a",
+        document_id="paper-a",
+        ordinal=0,
+        source=_source(),
+        section_path=("article", "results"),
+        locator=first_locator,
+        verbatim_text=text,
+        content_sha256=_text_sha256(text),
+        mapping_ids=mapping_ids,
+        locator_segments=(
+            CitationLocatorSegment(
+                ordinal=0,
+                mapping_id=mapping_ids[0],
+                chunk_start=0,
+                chunk_end=len(first_text),
+                normalized_start=0,
+                normalized_end=len(first_text),
+                section_path=("article", "results"),
+                locator=first_locator,
+                verbatim_text=first_text,
+                content_sha256=_text_sha256(first_text),
+            ),
+            CitationLocatorSegment(
+                ordinal=1,
+                mapping_id=mapping_ids[1],
+                chunk_start=len(first_text) + 1,
+                chunk_end=len(text),
+                normalized_start=0,
+                normalized_end=len(second_text),
+                section_path=("article", "results"),
+                locator=second_locator,
+                verbatim_text=second_text,
+                content_sha256=_text_sha256(second_text),
+            ),
+        ),
+    )
+
+    batch = CitationLocatorService(root, compatibility=compatibility).resolve(
+        citation_candidates_from_lexical(lexical),
+        generation_id=generation_id,
+        query_text_sha256=lexical.query_text_sha256,
+        retrieval_mode=CitationRetrievalMode.lexical,
+        catalog=_catalog(record),
+    )
+
+    assert len(batch.hits[0].locator_segments) == 2
+    assert batch.hits[0].locator_scope == "first-segment-only"
+    assert [
+        dict(segment.locator.selectors)["element_path"]
+        for segment in batch.hits[0].locator_segments
+    ] == ["/article[1]/body[1]/p[1]", "/article[1]/body[1]/p[2]"]
 
 
 def test_dense_and_hybrid_modes_retain_exact_backend_provenance(

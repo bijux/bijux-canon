@@ -8,11 +8,13 @@ from __future__ import annotations
 from collections.abc import Mapping
 from dataclasses import asdict
 from enum import Enum
+import hashlib
 from pathlib import Path
 
 from bijux_canon_index.application import (
     CitationLocatorCatalog,
     CitationLocatorRecord,
+    CitationLocatorSegment,
     CitationLocatorService,
     CitationRetrievalMode,
     CitationSourceMetadata,
@@ -89,6 +91,161 @@ def _optional_string(value: object) -> str | None:
     return value if isinstance(value, str) and value else None
 
 
+def _content_id(value: object) -> str:
+    return f"sha256:{hashlib.sha256(canonical_json_bytes(value)).hexdigest()}"
+
+
+def _is_artifact_id(value: object) -> bool:
+    return (
+        isinstance(value, str)
+        and value.startswith("sha256:")
+        and len(value) == 71
+        and all(character in "0123456789abcdef" for character in value[7:])
+    )
+
+
+def _required_object(value: object) -> dict[str, object]:
+    if not isinstance(value, dict):
+        raise TypeError
+    return value
+
+
+def _required_integer(value: object) -> int:
+    if isinstance(value, bool) or not isinstance(value, int):
+        raise TypeError
+    return value
+
+
+def _exact_locator(value: object) -> ExactSourceLocator:
+    raw = _required_object(value)
+    scheme = raw.get("scheme")
+    selectors = raw.get("selectors")
+    if (
+        not isinstance(scheme, str)
+        or not scheme
+        or not isinstance(selectors, dict)
+        or not selectors
+        or any(
+            not isinstance(name, str)
+            or not name
+            or isinstance(item, bool)
+            or not isinstance(item, str | int)
+            for name, item in selectors.items()
+        )
+    ):
+        raise TypeError
+    return ExactSourceLocator(scheme, tuple(sorted(selectors.items())))
+
+
+def _lineage_segments(
+    *,
+    raw_record: Mapping[str, object],
+    chunk_id: str,
+    document_id: str,
+    source_sha256: str,
+    parser_manifest_sha256: str,
+    chunk_text: str,
+    mapping_ids: tuple[str, ...],
+    section_paths: tuple[tuple[str, ...], ...],
+) -> tuple[CitationLocatorSegment, ...]:
+    raw_segments = raw_record.get("segments")
+    if (
+        not isinstance(raw_segments, list)
+        or len(raw_segments) != len(mapping_ids)
+        or len(section_paths) != len(mapping_ids)
+    ):
+        raise TypeError
+    result: list[CitationLocatorSegment] = []
+    for ordinal, (raw_value, mapping_id) in enumerate(
+        zip(raw_segments, mapping_ids, strict=True)
+    ):
+        raw = _required_object(raw_value)
+        chunk_span = _required_object(raw.get("chunk_character_span"))
+        normalized_span = _required_object(raw.get("normalized_character_span"))
+        start = _required_integer(chunk_span.get("start"))
+        end = _required_integer(chunk_span.get("end"))
+        normalized_start = _required_integer(normalized_span.get("start"))
+        normalized_end = _required_integer(normalized_span.get("end"))
+        if (
+            raw.get("schema_version")
+            != "bijux.canon.ingest.citation_lineage_segment.v1"
+            or raw.get("chunk_id") != chunk_id
+            or raw.get("document_id") != document_id
+            or raw.get("source_content_sha256") != source_sha256
+            or raw.get("mapping_sha256") != mapping_id
+            or chunk_span.get("coordinate_system") != "unicode_code_point"
+            or normalized_span.get("coordinate_system") != "unicode_code_point"
+            or start < 0
+            or end <= start
+            or end > len(chunk_text)
+        ):
+            raise ValueError
+        exact_text = chunk_text[start:end]
+        exact_text_sha256 = hashlib.sha256(exact_text.encode()).hexdigest()
+        locator = _exact_locator(raw.get("locator"))
+        locator_sha256 = _content_id(
+            {"scheme": locator.scheme, "selectors": dict(locator.selectors)}
+        )
+        source_document_edge = _content_id(
+            {
+                "document_id": document_id,
+                "parser_manifest_sha256": parser_manifest_sha256,
+                "source_content_sha256": source_sha256,
+            }
+        )
+        document_mapping_edge = _content_id(
+            {
+                "document_id": document_id,
+                "locator_sha256": locator_sha256,
+                "mapping_sha256": mapping_id,
+                "parser_manifest_sha256": parser_manifest_sha256,
+            }
+        )
+        mapping_chunk_edge = _content_id(
+            {
+                "chunk_character_span": {"end": end, "start": start},
+                "chunk_id": chunk_id,
+                "mapping_sha256": mapping_id,
+                "normalized_text_sha256": exact_text_sha256,
+            }
+        )
+        source_span = _required_object(raw.get("source_span"))
+        source_span_start = _required_integer(source_span.get("start"))
+        source_span_end = _required_integer(source_span.get("end"))
+        if (
+            raw.get("normalized_text_sha256") != exact_text_sha256
+            or raw.get("parser_manifest_sha256") != parser_manifest_sha256
+            or raw.get("locator_sha256") != locator_sha256
+            or raw.get("source_document_edge_sha256") != source_document_edge
+            or raw.get("document_mapping_edge_sha256") != document_mapping_edge
+            or raw.get("mapping_chunk_edge_sha256") != mapping_chunk_edge
+            or source_span.get("coordinate_system") != "byte"
+            or source_span.get("selected_bytes_sha256") != source_sha256
+            or source_span_start < 0
+            or source_span_end <= source_span_start
+        ):
+            raise ValueError
+        payload = dict(raw)
+        segment_id = payload.pop("segment_sha256", None)
+        if segment_id != _content_id(payload):
+            raise ValueError
+        result.append(
+            CitationLocatorSegment(
+                ordinal=ordinal,
+                mapping_id=mapping_id,
+                chunk_start=start,
+                chunk_end=end,
+                normalized_start=normalized_start,
+                normalized_end=normalized_end,
+                section_path=section_paths[ordinal],
+                locator=locator,
+                verbatim_text=exact_text,
+                content_sha256=exact_text_sha256,
+            )
+        )
+    return tuple(result)
+
+
 def _first_section_path(value: object, fallback: str) -> tuple[str, ...]:
     if isinstance(value, list):
         for candidate in value:
@@ -116,10 +273,12 @@ def _citation_catalog(
             document_id = raw_document["document_id"]
             metadata = raw_document["metadata"]
             chunks = raw_document["chunks"]
+            lineage = raw_document.get("citation_lineage")
             if (
                 not isinstance(document_id, str)
                 or not isinstance(metadata, dict)
                 or not isinstance(chunks, list)
+                or not isinstance(lineage, dict)
             ):
                 raise TypeError
             relative_path = metadata["relative_path"]
@@ -130,6 +289,35 @@ def _citation_catalog(
                 for value in (relative_path, source_sha256, format_id)
             ):
                 raise TypeError
+            raw_lineage_records = lineage.get("records")
+            if (
+                lineage.get("schema_version")
+                != "bijux.canon.ingest.document_citation_lineage.v1"
+                or lineage.get("document_id") != document_id
+                or lineage.get("source_content_sha256") != source_sha256
+                or not isinstance(raw_lineage_records, list)
+                or not _is_artifact_id(lineage.get("parser_manifest_sha256"))
+            ):
+                raise TypeError
+            parser_manifest_sha256 = str(lineage["parser_manifest_sha256"])
+            lineage_payload = dict(lineage)
+            lineage_id = lineage_payload.pop("lineage_sha256", None)
+            if lineage_id != _content_id(lineage_payload):
+                raise ValueError
+            lineage_by_chunk: dict[str, dict[str, object]] = {}
+            for raw_lineage_record in raw_lineage_records:
+                record = _required_object(raw_lineage_record)
+                lineage_chunk_id = record.get("chunk_id")
+                if (
+                    not isinstance(lineage_chunk_id, str)
+                    or lineage_chunk_id in lineage_by_chunk
+                ):
+                    raise ValueError
+                record_payload = dict(record)
+                record_id = record_payload.pop("record_sha256", None)
+                if record_id != _content_id(record_payload):
+                    raise ValueError
+                lineage_by_chunk[lineage_chunk_id] = record
             source_uri = metadata.get("canonical_uri")
             if not isinstance(source_uri, str) or not source_uri:
                 source_uri = f"urn:bijux:source:{source_sha256}"
@@ -163,22 +351,82 @@ def _citation_catalog(
                     isinstance(item, str) and item for item in mapping_ids
                 ):
                     raise TypeError
+                raw_chunk_id = raw_chunk["chunk_id"]
+                raw_chunk_index = raw_chunk["chunk_index"]
+                raw_chunk_text = raw_chunk["normalized_text"]
+                raw_chunk_text_sha256 = raw_chunk["normalized_text_sha256"]
+                if (
+                    not _is_artifact_id(raw_chunk_id)
+                    or isinstance(raw_chunk_index, bool)
+                    or not isinstance(raw_chunk_index, int)
+                    or raw_chunk_index < 0
+                    or not isinstance(raw_chunk_text, str)
+                    or not raw_chunk_text
+                    or not isinstance(raw_chunk_text_sha256, str)
+                    or hashlib.sha256(raw_chunk_text.encode()).hexdigest()
+                    != raw_chunk_text_sha256
+                    or any(not _is_artifact_id(item) for item in mapping_ids)
+                ):
+                    raise ValueError
+                chunk_id = raw_chunk_id
+                chunk_index = raw_chunk_index
+                chunk_text = raw_chunk_text
+                chunk_text_sha256 = raw_chunk_text_sha256
+                raw_lineage_record = lineage_by_chunk.get(chunk_id)
+                if (
+                    raw_lineage_record is None
+                    or raw_lineage_record.get("schema_version")
+                    != "bijux.canon.ingest.citation_lineage_record.v1"
+                    or raw_lineage_record.get("document_id") != document_id
+                    or raw_lineage_record.get("chunk_index") != chunk_index
+                    or raw_lineage_record.get("normalized_text_sha256")
+                    != chunk_text_sha256
+                ):
+                    raise ValueError
+                raw_section_paths = raw_lineage_record.get("section_paths")
+                if not isinstance(raw_section_paths, list) or len(
+                    raw_section_paths
+                ) != len(mapping_ids):
+                    raise TypeError
+                segment_section_paths: list[tuple[str, ...]] = []
+                for raw_path in raw_section_paths:
+                    if not isinstance(raw_path, list) or any(
+                        not isinstance(item, str) or not item for item in raw_path
+                    ):
+                        raise TypeError
+                    segment_section_paths.append(
+                        tuple(raw_path) if raw_path else section_path
+                    )
+                locator_segments = _lineage_segments(
+                    raw_record=raw_lineage_record,
+                    chunk_id=chunk_id,
+                    document_id=document_id,
+                    source_sha256=source_sha256,
+                    parser_manifest_sha256=parser_manifest_sha256,
+                    chunk_text=chunk_text,
+                    mapping_ids=tuple(mapping_ids),
+                    section_paths=tuple(segment_section_paths),
+                )
                 records.append(
                     CitationLocatorRecord(
-                        chunk_id=str(raw_chunk["chunk_id"]),
+                        chunk_id=chunk_id,
                         document_id=document_id,
-                        ordinal=int(raw_chunk["chunk_index"]),
+                        ordinal=chunk_index,
                         source=source,
                         section_path=section_path,
-                        locator=ExactSourceLocator(
-                            "bijux-ingest-mapping-set",
-                            (("window_ordinal", int(raw_chunk["chunk_index"])),),
-                        ),
-                        verbatim_text=str(raw_chunk["normalized_text"]),
-                        content_sha256=str(raw_chunk["normalized_text_sha256"]),
+                        locator=locator_segments[0].locator,
+                        verbatim_text=chunk_text,
+                        content_sha256=chunk_text_sha256,
                         mapping_ids=tuple(mapping_ids),
+                        locator_segments=locator_segments,
                     )
                 )
+            if set(lineage_by_chunk) != {
+                str(raw_chunk["chunk_id"])
+                for raw_chunk in chunks
+                if isinstance(raw_chunk, dict) and "chunk_id" in raw_chunk
+            }:
+                raise ValueError
     except (KeyError, TypeError, ValueError) as error:
         raise StepDispatchError(
             "corpus snapshot citation records are invalid"

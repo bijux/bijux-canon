@@ -84,6 +84,94 @@ def _selectors(value: object) -> tuple[tuple[str, str | int], ...]:
     return tuple(result)
 
 
+def _locator_evidence_segments(
+    raw_hit: dict[str, object],
+    *,
+    fallback_section_path: tuple[str, ...],
+) -> tuple[
+    tuple[
+        dict[str, object],
+        tuple[str, ...],
+        str,
+        str,
+        str,
+        str,
+    ],
+    ...,
+]:
+    raw_segments = raw_hit.get("locator_segments")
+    if isinstance(raw_segments, list) and raw_segments:
+        result = []
+        hit_artifact_id = _required_string(raw_hit.get("artifact_id"), "artifact_id")
+        chunk_id = _required_string(raw_hit.get("chunk_id"), "chunk_id")
+        for ordinal, raw_segment in enumerate(raw_segments):
+            if not isinstance(raw_segment, dict):
+                raise StepDispatchError("retrieval locator segment is invalid")
+            raw_locator = raw_segment.get("locator")
+            raw_section = raw_segment.get("section_path")
+            if not isinstance(raw_locator, dict) or not isinstance(raw_section, list):
+                raise StepDispatchError("retrieval locator segment is invalid")
+            section_path = tuple(
+                _required_string(item, "segment.section_path") for item in raw_section
+            )
+            if not section_path:
+                section_path = fallback_section_path
+            exact_text = _required_string(
+                raw_segment.get("verbatim_text"), "segment.verbatim_text"
+            )
+            exact_text_sha256 = _required_string(
+                raw_segment.get("content_sha256"), "segment.content_sha256"
+            )
+            locator_artifact_id = content_artifact_id(
+                {
+                    "chunk_id": chunk_id,
+                    "chunk_span": {
+                        "end": _required_int(
+                            raw_segment.get("chunk_end"), "segment.chunk_end"
+                        ),
+                        "start": _required_int(
+                            raw_segment.get("chunk_start"), "segment.chunk_start"
+                        ),
+                    },
+                    "locator": raw_locator,
+                    "mapping_id": _required_string(
+                        raw_segment.get("mapping_id"), "segment.mapping_id"
+                    ),
+                }
+            )
+            evidence_artifact_id = content_artifact_id(
+                {
+                    "locator_artifact_id": locator_artifact_id,
+                    "ordinal": ordinal,
+                    "retrieval_hit_artifact_id": hit_artifact_id,
+                }
+            )
+            result.append(
+                (
+                    raw_locator,
+                    section_path,
+                    exact_text,
+                    exact_text_sha256,
+                    locator_artifact_id,
+                    evidence_artifact_id,
+                )
+            )
+        return tuple(result)
+    raw_locator = raw_hit.get("locator")
+    if not isinstance(raw_locator, dict):
+        raise StepDispatchError("retrieval citation locator is invalid")
+    return (
+        (
+            raw_locator,
+            fallback_section_path,
+            _required_string(raw_hit.get("verbatim_text"), "verbatim_text"),
+            _required_string(raw_hit.get("content_sha256"), "content_sha256"),
+            _required_string(raw_hit.get("locator_record_id"), "locator_record_id"),
+            _required_string(raw_hit.get("artifact_id"), "artifact_id"),
+        ),
+    )
+
+
 def _citation_inputs(
     evidence_set: dict[str, object],
     *,
@@ -100,11 +188,9 @@ def _citation_inputs(
             if not isinstance(raw_hit, dict):
                 raise StepDispatchError("retrieval evidence hit is invalid")
             raw_source = raw_hit.get("source")
-            raw_locator = raw_hit.get("locator")
             raw_section = raw_hit.get("section_path")
             if (
                 not isinstance(raw_source, dict)
-                or not isinstance(raw_locator, dict)
                 or not isinstance(raw_section, list)
                 or not raw_section
                 or any(not isinstance(item, str) or not item for item in raw_section)
@@ -130,45 +216,51 @@ def _citation_inputs(
             if existing is not None and existing != source:
                 raise StepDispatchError("retrieval source identities collide")
             sources[source_id] = source
-            exact_text = _required_string(raw_hit.get("verbatim_text"), "verbatim_text")
-            evidence.append(
-                CitationEvidence(
-                    artifact_id=_required_string(
-                        raw_hit.get("artifact_id"), "artifact_id"
-                    ),
-                    chunk_artifact_id=_artifact_id_from_digest(
-                        _required_string(raw_hit.get("chunk_id"), "chunk_id"),
-                        "chunk_id",
-                    ),
-                    retrieval_artifact_id=retrieval_artifact_id,
-                    document_id=_required_string(
-                        raw_hit.get("document_id"), "document_id"
-                    ),
-                    source_id=source_id,
-                    section_path=tuple(raw_section),
-                    locator=ImmutableEvidenceLocator(
-                        artifact_id=_required_string(
-                            raw_hit.get("locator_record_id"), "locator_record_id"
+            for (
+                raw_locator,
+                section_path,
+                exact_text,
+                exact_text_sha256,
+                locator_artifact_id,
+                evidence_artifact_id,
+            ) in _locator_evidence_segments(
+                raw_hit,
+                fallback_section_path=tuple(raw_section),
+            ):
+                evidence.append(
+                    CitationEvidence(
+                        artifact_id=evidence_artifact_id,
+                        chunk_artifact_id=_artifact_id_from_digest(
+                            _required_string(raw_hit.get("chunk_id"), "chunk_id"),
+                            "chunk_id",
                         ),
-                        source_artifact_id=_artifact_id_from_digest(
-                            source_sha256, "source_content_sha256"
+                        retrieval_artifact_id=retrieval_artifact_id,
+                        document_id=_required_string(
+                            raw_hit.get("document_id"), "document_id"
                         ),
-                        source_uri=source_uri,
-                        source_content_sha256=source_sha256,
-                        scheme=_required_string(raw_locator.get("scheme"), "scheme"),
-                        selectors=_selectors(raw_locator.get("selectors")),
-                    ),
-                    exact_text=exact_text,
-                    exact_text_sha256=_required_string(
-                        raw_hit.get("content_sha256"), "content_sha256"
-                    ),
-                    rank=_required_int(raw_hit.get("rank"), "rank"),
-                    relevance_score=_required_score(
-                        raw_hit.get("retrieval_score"), "retrieval_score"
-                    ),
-                    claim_keys=(claim_key,),
+                        source_id=source_id,
+                        section_path=section_path,
+                        locator=ImmutableEvidenceLocator(
+                            artifact_id=locator_artifact_id,
+                            source_artifact_id=_artifact_id_from_digest(
+                                source_sha256, "source_content_sha256"
+                            ),
+                            source_uri=source_uri,
+                            source_content_sha256=source_sha256,
+                            scheme=_required_string(
+                                raw_locator.get("scheme"), "scheme"
+                            ),
+                            selectors=_selectors(raw_locator.get("selectors")),
+                        ),
+                        exact_text=exact_text,
+                        exact_text_sha256=exact_text_sha256,
+                        rank=_required_int(raw_hit.get("rank"), "rank"),
+                        relevance_score=_required_score(
+                            raw_hit.get("retrieval_score"), "retrieval_score"
+                        ),
+                        claim_keys=(claim_key,),
+                    )
                 )
-            )
     except ValidationError as error:
         raise StepDispatchError(
             "retrieval evidence violates Reason contracts"
