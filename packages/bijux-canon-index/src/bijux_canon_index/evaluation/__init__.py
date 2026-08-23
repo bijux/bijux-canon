@@ -4,12 +4,14 @@
 """Deterministic retrieval evaluation over independently reviewed qrels."""
 
 from bijux_canon_index.evaluation.configuration_search import (
+    ObservedFinalizationConfiguration,
     RetrievalConfigurationResult,
     RetrievalConfigurationSearchError,
     RetrievalConfigurationSearchReport,
     RetrievalQualityFloor,
     RetrievalSearchConfiguration,
     default_retrieval_search_configurations,
+    observed_finalization_search_configuration,
     search_retrieval_configurations,
 )
 
@@ -65,6 +67,7 @@ __all__ = [
     "GradedQrel",
     "MetricConfidenceInterval",
     "ObservedLocatorSegment",
+    "ObservedFinalizationConfiguration",
     "ObservedRetrievalHit",
     "ObservedStageCandidate",
     "PooledRetrievalCounts",
@@ -105,5 +108,6 @@ __all__ = [
     "analyze_query_stages",
     "default_retrieval_search_configurations",
     "load_reviewed_retrieval_request",
+    "observed_finalization_search_configuration",
     "search_retrieval_configurations",
 ]

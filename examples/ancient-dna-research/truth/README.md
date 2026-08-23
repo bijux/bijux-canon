@@ -93,6 +93,21 @@ are absent. The release evaluator is the sole executable interface that joins
 a complete held-out submission to sealed labels, and it returns aggregates
 rather than the labels.
 
+Publication metadata is an integrity prerequisite, not research evidence.
+Checks for eight titles, DOIs, authors, journals, licenses, and provenance prove
+that ingest retained bibliographic truth; they do not prove retrieval or RAG.
+The primary product evidence is execution of the semantic questions against
+the installed persistent index. Each run must retrieve source content, retain
+exact chunk-to-document locators, and report every reviewed judgment in the
+denominator. The resulting stage analysis distinguishes raw candidate reach,
+fusion loss, content-aware reranking, and final top-five recall.
+
+RAG and RAR evaluation must consume these content-bearing chunks. Useful
+evidence includes atomic findings, methods, limitations, conflicts,
+cross-paper synthesis, and correct abstention. A list of bibliographic fields,
+the presence of a citation, or lexical overlap alone is never counted as an
+answered research question.
+
 Question and partition amendments require a source-first reviewer identity,
 date, method, and rationale different from the primary qrel/claim adjudicator.
 System output may not select questions, families, splits, answer points,

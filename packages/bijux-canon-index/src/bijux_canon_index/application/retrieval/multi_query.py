@@ -54,6 +54,7 @@ class SubqueryOrigin(StrEnum):
     original = "original"
     supplied = "supplied"
     generated_facet = "generated_facet"
+    generated_evidence_need = "generated_evidence_need"
 
 
 class SubqueryDisposition(StrEnum):
@@ -184,6 +185,7 @@ def plan_subqueries(
     policy: MultiQueryPolicy,
     supplied_subqueries: tuple[str, ...] = (),
     generated_facets: tuple[str, ...] = (),
+    generated_queries: tuple[tuple[str, str], ...] = (),
 ) -> MultiQueryPlan:
     """Create a transparent bounded plan without any provider dependency."""
 
@@ -201,6 +203,14 @@ def plan_subqueries(
             f"deterministic facet suffix: {facet.strip()}",
         )
         for facet in generated_facets
+    )
+    proposals.extend(
+        (
+            text,
+            SubqueryOrigin.generated_evidence_need,
+            derivation,
+        )
+        for text, derivation in generated_queries
     )
     included: list[PlannedSubquery] = []
     decisions: list[SubqueryPlanDecision] = []

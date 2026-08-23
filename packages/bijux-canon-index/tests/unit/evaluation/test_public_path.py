@@ -101,6 +101,7 @@ def _observation(
             lexical_outcome="success" if hit else "no_matches",
             dense_outcome="success" if hit else "no_matches",
             fusion_policy_sha256="9" * 64,
+            rerank_policy_sha256="8" * 64,
             lexical_candidates=tuple(
                 item for item in candidates if item.stage is RetrievalStage.lexical
             ),
@@ -109,6 +110,9 @@ def _observation(
             ),
             fusion_candidates=tuple(
                 item for item in candidates if item.stage is RetrievalStage.fusion
+            ),
+            rerank_candidates=tuple(
+                item for item in candidates if item.stage is RetrievalStage.rerank
             ),
         )
     return RetrievalExecutionObservation(
@@ -173,6 +177,68 @@ def test_public_evaluator_executes_every_unique_query_and_keeps_failures() -> No
     assert report.macro.metric("recall-at-5").value == 0.5
     assert report.worst_query_ids[0] == "query-refused"
     assert report.manifest()["evidence_sha256"] == report.evidence_sha256
+
+
+def test_public_metrics_preserve_installed_final_rank_after_reranking() -> None:
+    query = _query("query-reranked", "chunk-relevant")
+    request = PublicRetrievalEvaluationRequest.create(
+        index_artifact_id=INDEX_ID,
+        split="development",
+        mode=PublicRetrievalMode.hybrid_exact,
+        queries=(query,),
+    )
+    observation = _observation(query, hit=True)
+    relevant = observation.hits[0]
+    non_relevant = replace(
+        relevant,
+        rank=2,
+        retrieval_rank=1,
+        score=99.0,
+        chunk_id="chunk-non-relevant",
+        content_sha256="8" * 64,
+    )
+    stages = observation.stages
+    assert stages is not None
+    stage_values = tuple(
+        replace(
+            candidate,
+            chunk_id="chunk-non-relevant",
+            source_rank=2,
+            output_rank=2,
+            score=99.0,
+        )
+        for candidate in (
+            stages.lexical_candidates[0],
+                stages.dense_candidates[0],
+                stages.fusion_candidates[0],
+                stages.rerank_candidates[0],
+        )
+    )
+    observation = replace(
+        observation,
+        hits=(relevant, non_relevant),
+        stages=replace(
+            stages,
+            lexical_candidates=(
+                stages.lexical_candidates[0],
+                stage_values[0],
+            ),
+            dense_candidates=(stages.dense_candidates[0], stage_values[1]),
+            fusion_candidates=(stages.fusion_candidates[0], stage_values[2]),
+            rerank_candidates=(stages.rerank_candidates[0], stage_values[3]),
+        ),
+    )
+
+    report = PublicRetrievalEvaluator(
+        lambda _request, _query: observation
+    ).evaluate(request)
+
+    query_metrics = report.macro.queries[0]
+    assert query_metrics.ordered_evidence_ids[:2] == (
+        "chunk-relevant",
+        "chunk-non-relevant",
+    )
+    assert query_metrics.reciprocal_rank_at_10 == 1.0
 
 
 def test_reviewed_loader_uses_unique_semantic_questions_without_hit_input() -> None:

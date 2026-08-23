@@ -219,6 +219,9 @@ def _reconstruct_step(
             ),
             replay_attempt_id=(source_attempt_id if linkage_kind == "replay" else None),
             source_attempt_id=source_attempt_id,
+            execution_configuration_sha256=optional_string(
+                inputs, "execution_configuration_sha256"
+            ),
         ),
     )
 

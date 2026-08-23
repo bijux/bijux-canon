@@ -8,6 +8,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from enum import StrEnum
 from pathlib import Path
+import re
 
 from bijux_canon_runtime.ontology.ids import ArtifactID, RequestID
 from bijux_canon_runtime.ontology.public import ReplayMode
@@ -117,6 +118,7 @@ class RuntimeOperationRequest:
     provider: str | None = None
     output_policy: RuntimeOutputPolicy | None = None
     replay_attempt_id: str | None = None
+    execution_configuration_sha256: str | None = None
 
     def __post_init__(self) -> None:
         if not str(self.request_id).strip() or not self.scope.strip():
@@ -131,6 +133,10 @@ class RuntimeOperationRequest:
             raise ValueError("retrieval top_k must be between 1 and 1000")
         if self.provider is not None and not self.provider.strip():
             raise ValueError("provider identity must not be empty")
+        if self.execution_configuration_sha256 is not None and re.fullmatch(
+            r"[0-9a-f]{64}", self.execution_configuration_sha256
+        ) is None:
+            raise ValueError("execution configuration identity must be a sha256")
         self._validate_operation_inputs()
 
     def _validate_operation_inputs(self) -> None:
@@ -207,6 +213,7 @@ class ConcreteStepInputs:
     output_policy: RuntimeOutputPolicy | None = None
     replay_attempt_id: str | None = None
     source_attempt_id: str | None = None
+    execution_configuration_sha256: str | None = None
 
 
 @dataclass(frozen=True, slots=True)

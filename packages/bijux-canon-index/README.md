@@ -104,25 +104,34 @@ The root import deliberately exposes only `__version__`. Examples that import
 an imagined root-level engine or request facade do not describe a supported
 API, even if equivalent types exist deeper in the package.
 
-## Runtime Contract-Enforcement Status
+## Installed content retrieval
 
-Runtime's retrieval path attempts to call
-`bijux_canon_index.enforce_contract(vector_contract_id, evidence)` and expects a
-boolean decision. The canonical index root intentionally exposes only
-`__version__`, and no `enforce_contract` function with that contract currently
-exists in the index source tree.
+Runtime composes the canonical lexical and dense index owners through an
+installed adapter. A hybrid query retains the complete bounded lexical and
+dense candidate populations, measured VEX evidence, reciprocal-rank fusion,
+content-derived evidence needs, and the final rerank. The default content
+policy routes across relevant documents and then selects answer-bearing
+passages using source structure such as abstract, result, discussion, and
+limitation sections. It cannot introduce a chunk absent from the fused
+candidate set.
 
-Index's implemented authority is richer than that boolean seam:
-`ExecutionRequest`, capability resolution, execution mode, budget, backend
-identity, result provenance, and `ExecutionArtifact` jointly describe why an
-operation ran or was refused. A future runtime adapter must map runtime's
-contract identifier and normalized evidence into those declared types and
-retain the resulting execution evidence. A permissive boolean shim would hide
-the very policy and provenance this package exists to expose.
+The evidence planner is deterministic and identity-free: it derives bounded
+method, result, comparison, limitation, and counterevidence needs from the
+question text. It does not contain reviewed query IDs, document IDs, source
+IDs, or qrels. Every generated need records its exact derivation and every
+rerank records the immutable policy identity and candidate conservation.
 
-Use the application modules, explicit module command, or HTTP API for current
-index execution. Do not cite installation as proof that runtime is enforcing
-index contracts until an installed-package adapter test covers this seam.
+Development configuration search executes the installed retriever first. It
+then evaluates the observed finalization policy and bounded weighted-RRF
+alternatives against independently reviewed development qrels. Failed and
+refused executions remain in the denominator. Held-out labels are not an input
+to this search. The stage report separately exposes candidate-depth,
+channel-admitted, fusion, rerank, and final recall, so a passing final metric
+cannot be misattributed to an earlier stage.
+
+An installed retrieval artifact proves ranking behavior and exact source
+lineage for one question. It does not prove that downstream claims are
+entailed. That semantic responsibility belongs to `bijux-canon-reason`.
 
 ## HTTP Contract
 

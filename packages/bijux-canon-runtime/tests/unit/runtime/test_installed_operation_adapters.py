@@ -244,6 +244,7 @@ def _build_indexed_runtime(tmp_path: Path) -> _IndexedRuntime:
         store=store,
         dispatcher=corpus_dispatcher,
         process_id="installed-adapter-test",
+        configuration_identity_sha256="1" * 64,
         max_workers=2,
     ).execute(corpus_request, lambda: False)
     corpus_inspection = RuntimeRunInspector(store).inspect(
@@ -313,6 +314,7 @@ def _build_indexed_runtime(tmp_path: Path) -> _IndexedRuntime:
         store=store,
         dispatcher=index_dispatcher,
         process_id="installed-adapter-test",
+        configuration_identity_sha256="1" * 64,
         max_workers=2,
     )
     execution = execution_service.execute(index_request, lambda: False)
@@ -375,6 +377,7 @@ def _retrieve_and_reason(indexed: _IndexedRuntime) -> _GroundedRuntime:
             )
         ),
         process_id="installed-retrieval-test",
+        configuration_identity_sha256="1" * 64,
     ).execute(retrieval_request, lambda: False)
     terminal_ids = retrieval["terminal_artifact_ids"]
     assert isinstance(terminal_ids, list) and len(terminal_ids) == 1
@@ -589,6 +592,7 @@ def _verify_linked_runs(grounded: _GroundedRuntime) -> None:
         store=store,
         dispatcher=linked_dispatcher,
         process_id="installed-linked-research-test",
+        configuration_identity_sha256="1" * 64,
     ).execute(research_request, lambda: False)
     linked_inspection = RuntimeRunInspector(store).inspect(str(linked["run_id"]))
     assert linked["status"] == "completed"
@@ -621,6 +625,7 @@ def _verify_linked_runs(grounded: _GroundedRuntime) -> None:
         store=store,
         dispatcher=linked_dispatcher,
         process_id="installed-linked-ask-test",
+        configuration_identity_sha256="1" * 64,
     ).execute(
         replace(ask_request, request_id=RequestID("request-linked-ask")),
         lambda: False,
@@ -829,6 +834,7 @@ def test_public_retrieval_evaluation_executes_the_persistent_installed_path(
             )
         ),
         process_id="installed-retrieval-evaluation-test",
+        configuration_identity_sha256="1" * 64,
     )
     installed = InstalledRetrievalEvaluationExecutor(
         execution=execution,

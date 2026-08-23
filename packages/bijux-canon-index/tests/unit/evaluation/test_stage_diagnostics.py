@@ -52,12 +52,18 @@ def test_stage_analysis_classifies_each_first_loss_without_hiding_qrels() -> Non
         lexical_outcome="success",
         dense_outcome="no_matches",
         fusion_policy_sha256="a" * 64,
+        rerank_policy_sha256="b" * 64,
         lexical_candidates=lexical,
         dense_candidates=(),
         fusion_candidates=(
             _candidate(RetrievalStage.fusion, "retained", 1),
             _candidate(RetrievalStage.fusion, "below", 2),
             _candidate(RetrievalStage.fusion, "final-loss", 3),
+        ),
+        rerank_candidates=(
+            _candidate(RetrievalStage.rerank, "retained", 1),
+            _candidate(RetrievalStage.rerank, "below", 2),
+            _candidate(RetrievalStage.rerank, "final-loss", 3),
         ),
     )
     qrels = tuple(
@@ -96,6 +102,7 @@ def test_stage_analysis_classifies_each_first_loss_without_hiding_qrels() -> Non
         ("candidate-depth", 5),
         ("channel-admitted", 4),
         ("fusion-at-10", 3),
+        ("rerank-at-10", 3),
         ("final-at-10", 1),
         ("final-at-5", 1),
     )
@@ -106,9 +113,11 @@ def test_stage_analysis_rejects_candidates_invented_by_fusion() -> None:
         lexical_outcome="no_matches",
         dense_outcome="no_matches",
         fusion_policy_sha256="a" * 64,
+        rerank_policy_sha256="b" * 64,
         lexical_candidates=(),
         dense_candidates=(),
         fusion_candidates=(_candidate(RetrievalStage.fusion, "invented", 1),),
+        rerank_candidates=(),
     )
 
     with pytest.raises(RetrievalDiagnosticError, match="absent from both"):

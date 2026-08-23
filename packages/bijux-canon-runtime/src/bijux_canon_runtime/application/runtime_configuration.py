@@ -86,8 +86,8 @@ class RuntimeWorkspaceLayout:
     staging_root: Path
     temporary_root: Path
     backup_root: Path
-    schema_version: str = "bijux.runtime.workspace-layout.v3"
-    workspace_version: int = 3
+    schema_version: str = "bijux.runtime.workspace-layout.v4"
+    workspace_version: int = 4
 
     @classmethod
     def resolve(

@@ -177,6 +177,10 @@ def runtime_request_from_payload(
         replay_attempt_id=_optional_string(
             request.get("replay_attempt_id"), "request.replay_attempt_id"
         ),
+        execution_configuration_sha256=_optional_string(
+            request.get("execution_configuration_sha256"),
+            "request.execution_configuration_sha256",
+        ),
     )
 
 

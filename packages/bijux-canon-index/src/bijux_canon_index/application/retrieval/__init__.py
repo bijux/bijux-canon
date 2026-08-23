@@ -12,6 +12,11 @@ from .dense import (
     DenseCandidateService,
     QueryEmbeddingProvider,
 )
+from .evidence_planning import (
+    EVIDENCE_PLANNING_POLICY_ID,
+    EvidenceQueryPlan,
+    plan_evidence_query,
+)
 from .filters import RetrievalFilterCapability, retrieval_filter_capability
 from .fusion import (
     FusedCandidate,
@@ -68,9 +73,16 @@ from .multi_query import (
 )
 from .policy import (
     CONTENT_EVIDENCE_RETRIEVAL_POLICY_ID,
+    CONTENT_EVIDENCE_RETRIEVAL_POLICY_V1_ID,
     HybridRetrievalPolicy,
     LEGACY_RETRIEVAL_POLICY_ID,
     resolve_hybrid_retrieval_policy,
+)
+from .planned_reranking import (
+    EvidencePassageContext,
+    PLANNED_RERANK_POLICY_ID,
+    PlannedRerankPolicy,
+    rerank_planned_evidence,
 )
 from .outcomes import (
     ChannelRunner,
@@ -139,6 +151,7 @@ __all__ = [
     "CitationRetrievalMode",
     "CitationSourceMetadata",
     "CONTENT_EVIDENCE_RETRIEVAL_POLICY_ID",
+    "CONTENT_EVIDENCE_RETRIEVAL_POLICY_V1_ID",
     "ChannelRunner",
     "DeduplicationKey",
     "DenseCandidate",
@@ -147,9 +160,12 @@ __all__ = [
     "DenseCandidateMode",
     "DenseCandidateOutcome",
     "DenseCandidateService",
+    "EVIDENCE_PLANNING_POLICY_ID",
     "EvidenceDeduplicationPolicy",
     "EvidenceDiversityPolicy",
     "EvidenceLineage",
+    "EvidencePassageContext",
+    "EvidenceQueryPlan",
     "EvidenceSelectionBatch",
     "EvidenceSelectionDecision",
     "EvidenceSelectionDisposition",
@@ -171,7 +187,9 @@ __all__ = [
     "MultiQueryOutcome",
     "MultiQueryPlan",
     "MultiQueryPolicy",
+    "PLANNED_RERANK_POLICY_ID",
     "PlannedSubquery",
+    "PlannedRerankPolicy",
     "QueryEmbeddingProvider",
     "RankedChannelCandidate",
     "RetrievalChannel",
@@ -220,10 +238,12 @@ __all__ = [
     "execute_multi_query",
     "lexical_channel_result",
     "plan_subqueries",
+    "plan_evidence_query",
     "reciprocal_rank_fusion",
     "resolve_hybrid_retrieval_policy",
     "retrieval_filter_capability",
     "rerank_candidates",
+    "rerank_planned_evidence",
     "replay_retrieval_trace",
     "select_evidence",
 ]

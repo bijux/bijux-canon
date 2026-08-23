@@ -21,6 +21,7 @@ class RetrievalStage(StrEnum):
     lexical = "lexical"
     dense = "dense"
     fusion = "fusion"
+    rerank = "rerank"
 
 
 class RelevantEvidenceDisposition(StrEnum):
@@ -31,6 +32,7 @@ class RelevantEvidenceDisposition(StrEnum):
     absent_from_candidate_depth = "absent_from_candidate_depth"
     excluded_by_channel_limit = "excluded_by_channel_limit"
     lost_at_fusion_limit = "lost_at_fusion_limit"
+    lost_at_rerank_limit = "lost_at_rerank_limit"
     lost_at_finalization = "lost_at_finalization"
     execution_refused = "execution_refused"
     execution_failed = "execution_failed"
@@ -60,14 +62,16 @@ class ObservedStageCandidate:
 
 @dataclass(frozen=True, slots=True)
 class RetrievalStageEvidence:
-    """Raw lexical, dense, and fusion evidence for one installed query."""
+    """Raw channel, fusion, and final rerank evidence for one installed query."""
 
     lexical_outcome: str
     dense_outcome: str | None
     fusion_policy_sha256: str | None
+    rerank_policy_sha256: str | None
     lexical_candidates: tuple[ObservedStageCandidate, ...]
     dense_candidates: tuple[ObservedStageCandidate, ...]
     fusion_candidates: tuple[ObservedStageCandidate, ...]
+    rerank_candidates: tuple[ObservedStageCandidate, ...]
 
     def __post_init__(self) -> None:
         if not self.lexical_outcome.strip():
@@ -78,6 +82,7 @@ class RetrievalStageEvidence:
             (RetrievalStage.lexical, self.lexical_candidates),
             (RetrievalStage.dense, self.dense_candidates),
             (RetrievalStage.fusion, self.fusion_candidates),
+            (RetrievalStage.rerank, self.rerank_candidates),
         )
         for stage, candidates in expected:
             if any(candidate.stage is not stage for candidate in candidates):
@@ -98,7 +103,11 @@ class RetrievalStageEvidence:
         hybrid = self.dense_outcome is not None
         if hybrid != (self.fusion_policy_sha256 is not None):
             raise ValueError("hybrid retrieval requires a fusion policy identity")
-        if not hybrid and (self.dense_candidates or self.fusion_candidates):
+        if hybrid != (self.rerank_policy_sha256 is not None):
+            raise ValueError("hybrid retrieval requires a rerank policy identity")
+        if not hybrid and (
+            self.dense_candidates or self.fusion_candidates or self.rerank_candidates
+        ):
             raise ValueError(
                 "lexical retrieval cannot retain dense or fusion candidates"
             )
@@ -116,6 +125,7 @@ class RelevantEvidenceStageTrace:
     lexical_disposition: str | None
     dense_rank: int | None
     fusion_rank: int | None
+    rerank_rank: int | None
     final_rank: int | None
     disposition: RelevantEvidenceDisposition
 
@@ -135,6 +145,7 @@ class QueryStageDiagnostics:
     lexical_included_count: int
     dense_observed_count: int
     fusion_count: int
+    rerank_count: int
     final_count: int
     relevant_evidence: tuple[RelevantEvidenceStageTrace, ...]
 
@@ -147,6 +158,7 @@ class QueryStageDiagnostics:
                 self.lexical_included_count,
                 self.dense_observed_count,
                 self.fusion_count,
+                self.rerank_count,
                 self.final_count,
             )
             < 0
@@ -189,7 +201,7 @@ class RetrievalStageAnalysis:
     queries: tuple[QueryStageDiagnostics, ...]
 
     def __post_init__(self) -> None:
-        if self.schema_version != "bijux.canon.index.retrieval-stage-analysis.v1":
+        if self.schema_version != "bijux.canon.index.retrieval-stage-analysis.v2":
             raise ValueError("retrieval stage analysis schema is unsupported")
         if self.query_count != len(self.queries) or self.query_count < 1:
             raise ValueError("retrieval stage query denominator is invalid")
@@ -204,6 +216,7 @@ class RetrievalStageAnalysis:
             "candidate-depth",
             "channel-admitted",
             "fusion-at-10",
+            "rerank-at-10",
             "final-at-10",
             "final-at-5",
         ):
@@ -233,7 +246,7 @@ def analyze_query_stages(
             else RelevantEvidenceDisposition.execution_failed
         )
         traces = tuple(_trace(qrel, disposition=disposition) for qrel in qrels)
-        return QueryStageDiagnostics(query_id, 0, 0, 0, 0, 0, traces)
+        return QueryStageDiagnostics(query_id, 0, 0, 0, 0, 0, 0, traces)
     if stages is None:
         raise RetrievalDiagnosticError(
             "usable retrieval requires raw stage evidence for diagnosis"
@@ -242,6 +255,7 @@ def analyze_query_stages(
     lexical = {candidate.chunk_id: candidate for candidate in stages.lexical_candidates}
     dense = {candidate.chunk_id: candidate for candidate in stages.dense_candidates}
     fusion = {candidate.chunk_id: candidate for candidate in stages.fusion_candidates}
+    rerank = {candidate.chunk_id: candidate for candidate in stages.rerank_candidates}
     final = dict(final_ranks)
     if len(final) != len(final_ranks):
         raise RetrievalDiagnosticError("final retrieval identities must be unique")
@@ -256,7 +270,11 @@ def analyze_query_stages(
             raise RetrievalDiagnosticError(
                 "fusion contains a candidate absent from both input channels"
             )
-    final_predecessors = set(fusion) if fusion else preceding
+    if rerank and not set(rerank).issubset(set(fusion)):
+        raise RetrievalDiagnosticError("rerank contains a candidate absent from fusion")
+    final_predecessors = (
+        set(rerank) if rerank else (set(fusion) if fusion else preceding)
+    )
     if not set(final).issubset(final_predecessors):
         raise RetrievalDiagnosticError(
             "final retrieval contains a candidate absent from its prior stage"
@@ -268,6 +286,7 @@ def analyze_query_stages(
             lexical=lexical,
             dense=dense,
             fusion=fusion,
+            rerank=rerank,
             final=final,
         )
         for qrel in qrels
@@ -278,6 +297,7 @@ def analyze_query_stages(
         lexical_included_count=len(lexical_included),
         dense_observed_count=len(dense),
         fusion_count=len(fusion),
+        rerank_count=len(rerank),
         final_count=len(final),
         relevant_evidence=traces,
     )
@@ -326,6 +346,14 @@ def aggregate_stage_analysis(
             qrel_count,
         ),
         _recall(
+            "rerank-at-10",
+            sum(
+                trace.rerank_rank is not None and trace.rerank_rank <= 10
+                for trace in traces
+            ),
+            qrel_count,
+        ),
+        _recall(
             "final-at-10",
             sum(
                 trace.final_rank is not None and trace.final_rank <= 10
@@ -343,7 +371,7 @@ def aggregate_stage_analysis(
         ),
     )
     return RetrievalStageAnalysis(
-        schema_version="bijux.canon.index.retrieval-stage-analysis.v1",
+        schema_version="bijux.canon.index.retrieval-stage-analysis.v2",
         query_count=len(queries),
         qrel_count=qrel_count,
         recall=recall,
@@ -367,6 +395,7 @@ def _classify_qrel(
     lexical: dict[str, ObservedStageCandidate],
     dense: dict[str, ObservedStageCandidate],
     fusion: dict[str, ObservedStageCandidate],
+    rerank: dict[str, ObservedStageCandidate],
     final: dict[str, int],
 ) -> RelevantEvidenceStageTrace:
     qrel_id, chunk_id, grade = qrel
@@ -379,8 +408,10 @@ def _classify_qrel(
             if final_rank <= 5
             else RelevantEvidenceDisposition.final_below_5
         )
-    elif chunk_id in fusion:
+    elif chunk_id in rerank:
         disposition = RelevantEvidenceDisposition.lost_at_finalization
+    elif chunk_id in fusion:
+        disposition = RelevantEvidenceDisposition.lost_at_rerank_limit
     elif (
         lexical_candidate is not None
         and lexical_candidate.output_rank is None
@@ -396,6 +427,7 @@ def _classify_qrel(
         lexical=lexical_candidate,
         dense=dense_candidate,
         fusion=fusion.get(chunk_id),
+        rerank=rerank.get(chunk_id),
         final_rank=final_rank,
         disposition=disposition,
     )
@@ -407,6 +439,7 @@ def _trace(
     lexical: ObservedStageCandidate | None = None,
     dense: ObservedStageCandidate | None = None,
     fusion: ObservedStageCandidate | None = None,
+    rerank: ObservedStageCandidate | None = None,
     final_rank: int | None = None,
     disposition: RelevantEvidenceDisposition,
 ) -> RelevantEvidenceStageTrace:
@@ -420,6 +453,7 @@ def _trace(
         lexical_disposition=None if lexical is None else lexical.disposition,
         dense_rank=None if dense is None else dense.source_rank,
         fusion_rank=None if fusion is None else fusion.source_rank,
+        rerank_rank=None if rerank is None else rerank.source_rank,
         final_rank=final_rank,
         disposition=disposition,
     )

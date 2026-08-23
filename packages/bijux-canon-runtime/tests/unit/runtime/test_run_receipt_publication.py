@@ -30,6 +30,7 @@ from bijux_canon_runtime.runtime.execution.operation_dispatcher import (
     StepOutputArtifact,
     resolved_input_artifact_ids,
 )
+from bijux_canon_runtime.runtime.inspection import RuntimeRunInspector
 from bijux_canon_runtime.runtime.persistence import (
     AtomicFilesystemArtifactPayloadStore,
 )
@@ -80,6 +81,8 @@ class _SuccessfulAdapter:
 
 def _completed_run(
     root: Path,
+    *,
+    configuration_identity_sha256: str = "1" * 64,
 ) -> tuple[
     AtomicFilesystemArtifactPayloadStore,
     dict[str, object],
@@ -114,6 +117,7 @@ def _completed_run(
                 )
             ),
             process_id="publication-test",
+            configuration_identity_sha256=configuration_identity_sha256,
             max_workers=2,
         ).execute(request, lambda: False)
     )
@@ -125,6 +129,37 @@ def _completed_run(
         configuration_artifact_id=ArtifactID("sha256:" + "d" * 64),
     )
     return store, execution, bindings
+
+
+def test_execution_configuration_is_part_of_durable_run_identity(
+    tmp_path: Path,
+) -> None:
+    root = tmp_path / "runtime-store"
+    first_store, first, _ = _completed_run(
+        root,
+        configuration_identity_sha256="1" * 64,
+    )
+    second_store, second, _ = _completed_run(
+        root,
+        configuration_identity_sha256="2" * 64,
+    )
+
+    assert first["run_id"] != second["run_id"]
+    assert first["plan_sha256"] != second["plan_sha256"]
+    assert RuntimeRunInspector(first_store).inspect(
+        str(first["run_id"])
+    ).status.value == ("completed")
+    second_inspection = RuntimeRunInspector(second_store).inspect(str(second["run_id"]))
+    selected = next(
+        artifact.json_value
+        for artifact in second_inspection.artifacts
+        if artifact.schema_id == "bijux.runtime.execution-manifest.v1"
+    )
+    assert selected is not None
+    steps = selected["plan"]["steps"]
+    assert all(
+        step["inputs"]["execution_configuration_sha256"] == "2" * 64 for step in steps
+    )
 
 
 def _receipt(

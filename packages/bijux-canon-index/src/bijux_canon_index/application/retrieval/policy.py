@@ -11,10 +11,15 @@ import json
 import math
 
 from .fusion import RrfFusionPolicy
+from .evidence_planning import EVIDENCE_PLANNING_POLICY_ID
+from .planned_reranking import PlannedRerankPolicy
 from ..vex import VexExecutionBudget
 
 
 CONTENT_EVIDENCE_RETRIEVAL_POLICY_ID = (
+    "bijux.canon.index.hybrid-retrieval.content-evidence-v2"
+)
+CONTENT_EVIDENCE_RETRIEVAL_POLICY_V1_ID = (
     "bijux.canon.index.hybrid-retrieval.content-evidence-v1"
 )
 LEGACY_RETRIEVAL_POLICY_ID = "bijux.canon.index.hybrid-retrieval.legacy-v1"
@@ -66,13 +71,33 @@ class HybridRetrievalPolicy:
         """Bind every behavior-affecting parameter to one immutable identity."""
 
         raw = json.dumps(
-            asdict(self),
+            self.behavior_record(),
             sort_keys=True,
             separators=(",", ":"),
             ensure_ascii=False,
             allow_nan=False,
         )
         return hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+    @property
+    def uses_evidence_planning(self) -> bool:
+        """Return whether this version executes bounded content evidence needs."""
+
+        return self.policy_id == CONTENT_EVIDENCE_RETRIEVAL_POLICY_ID
+
+    def behavior_record(self) -> dict[str, object]:
+        """Return the complete symbolic policy without request-specific bounds."""
+
+        record: dict[str, object] = asdict(self)
+        if self.uses_evidence_planning:
+            record["evidence_planning"] = {
+                "max_subqueries": 8,
+                "per_query_top_k": "candidate_limit",
+                "planning_policy_id": EVIDENCE_PLANNING_POLICY_ID,
+                "top_k": "requested_top_k",
+            }
+            record["planned_rerank"] = asdict(PlannedRerankPolicy())
+        return record
 
     def candidate_limit(self, top_k: int) -> int:
         """Resolve the bounded candidate pool for a caller output limit."""
@@ -120,7 +145,7 @@ class HybridRetrievalPolicy:
         """Return public, secret-free effective policy evidence."""
 
         return {
-            **asdict(self),
+            **self.behavior_record(),
             "candidate_limit": self.candidate_limit(top_k),
             "identity_sha256": self.identity_sha256,
             "lexical_limit": self.lexical_limit(top_k),
@@ -132,6 +157,21 @@ class HybridRetrievalPolicy:
 _POLICIES = {
     CONTENT_EVIDENCE_RETRIEVAL_POLICY_ID: HybridRetrievalPolicy(
         policy_id=CONTENT_EVIDENCE_RETRIEVAL_POLICY_ID,
+        candidate_multiplier=50,
+        maximum_candidate_limit=500,
+        admit_full_lexical_pool=True,
+        rank_constant=1,
+        lexical_weight=1.0,
+        dense_weight=2.0,
+        fallback_to_exact_on_ann_refusal=True,
+        maximum_dense_attempts=2,
+        vex_max_memory_bytes=512 * 1024 * 1024,
+        vex_max_ef_search=10_000,
+        vex_minimum_recall=0.9,
+        vex_require_witness=True,
+    ),
+    CONTENT_EVIDENCE_RETRIEVAL_POLICY_V1_ID: HybridRetrievalPolicy(
+        policy_id=CONTENT_EVIDENCE_RETRIEVAL_POLICY_V1_ID,
         candidate_multiplier=50,
         maximum_candidate_limit=500,
         admit_full_lexical_pool=True,
@@ -174,6 +214,7 @@ def resolve_hybrid_retrieval_policy(policy_id: str) -> HybridRetrievalPolicy:
 
 __all__ = [
     "CONTENT_EVIDENCE_RETRIEVAL_POLICY_ID",
+    "CONTENT_EVIDENCE_RETRIEVAL_POLICY_V1_ID",
     "HybridRetrievalPolicy",
     "LEGACY_RETRIEVAL_POLICY_ID",
     "resolve_hybrid_retrieval_policy",

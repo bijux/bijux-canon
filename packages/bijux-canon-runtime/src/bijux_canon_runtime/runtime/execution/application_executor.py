@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Mapping
+from dataclasses import replace
 from pathlib import Path
 import threading
 
@@ -64,15 +65,22 @@ class RuntimeExecutionService:
         store: AtomicFilesystemArtifactPayloadStore,
         dispatcher: OperationDispatcher,
         process_id: str,
+        configuration_identity_sha256: str,
         max_workers: int = 4,
     ) -> None:
         if not process_id.strip():
             raise ValueError("Runtime execution process identity is required")
         if max_workers < 1:
             raise ValueError("Runtime execution worker count must be positive")
+        if len(configuration_identity_sha256) != 64 or any(
+            character not in "0123456789abcdef"
+            for character in configuration_identity_sha256
+        ):
+            raise ValueError("Runtime execution configuration identity is invalid")
         self._store = store
         self._dispatcher = dispatcher
         self._process_id = process_id
+        self._configuration_identity_sha256 = configuration_identity_sha256
         self._max_workers = max_workers
         self._planner = RuntimeRequestPlanner()
         self._inspector = RuntimeRunInspector(store)
@@ -83,6 +91,10 @@ class RuntimeExecutionService:
         is_cancelled: Callable[[], bool],
     ) -> Mapping[str, object]:
         """Execute one artifact-resolved request through its complete typed DAG."""
+        request = replace(
+            request,
+            execution_configuration_sha256=self._configuration_identity_sha256,
+        )
         source_selection: AddressedArtifact | None = None
         resolved_corpus_id = request.corpus_id
         if resolved_corpus_id is None and request.source_directory is not None:
@@ -111,6 +123,7 @@ class RuntimeExecutionService:
                 filters=request.filters,
                 top_k=request.top_k,
                 output_policy=request.output_policy,
+                execution_configuration_sha256=(request.execution_configuration_sha256),
             )
         )
         lock_path = self._store.root / "run-locks" / f"{run.run_id}.lock"

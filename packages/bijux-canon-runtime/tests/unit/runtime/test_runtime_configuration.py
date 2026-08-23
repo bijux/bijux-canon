@@ -132,8 +132,8 @@ def test_workspace_layout_resolves_every_runtime_authority(tmp_path: Path) -> No
     assert layout.staging_root == workspace / "staging"
     assert layout.temporary_root == workspace / "process"
     assert layout.backup_root == workspace / "backups"
-    assert layout.schema_version == "bijux.runtime.workspace-layout.v3"
-    assert layout.workspace_version == 3
+    assert layout.schema_version == "bijux.runtime.workspace-layout.v4"
+    assert layout.workspace_version == 4
     assert len(layout.identity_sha256) == 64
 
 

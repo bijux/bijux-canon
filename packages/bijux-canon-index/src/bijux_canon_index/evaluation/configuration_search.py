@@ -74,6 +74,37 @@ class RetrievalSearchConfiguration:
 
 
 @dataclass(frozen=True, slots=True)
+class ObservedFinalizationConfiguration:
+    """Installed evidence-planning policy replayed from observed final ranks."""
+
+    policy_sha256: str
+    top_k: int = 10
+    ranking_strategy: str = "installed-evidence-planning"
+
+    def __post_init__(self) -> None:
+        if (
+            len(self.policy_sha256) != 64
+            or any(
+                character not in "0123456789abcdef" for character in self.policy_sha256
+            )
+            or not 10 <= self.top_k <= 1000
+            or self.ranking_strategy != "installed-evidence-planning"
+        ):
+            raise ValueError("observed finalization configuration is invalid")
+
+    @property
+    def configuration_id(self) -> str:
+        """Return the content identity of the installed finalization behavior."""
+
+        return f"sha256:{_sha256(asdict(self))}"
+
+
+RetrievalConfiguration = (
+    RetrievalSearchConfiguration | ObservedFinalizationConfiguration
+)
+
+
+@dataclass(frozen=True, slots=True)
 class RetrievalQualityFloor:
     """Immutable metric floor applied without weakening during search."""
 
@@ -93,7 +124,7 @@ class RetrievalQualityFloor:
 class RetrievalConfigurationResult:
     """Metrics and per-query tradeoffs for one searched configuration."""
 
-    configuration: RetrievalSearchConfiguration
+    configuration: RetrievalConfiguration
     metrics: RetrievalEvaluationReport
     meets_floor: bool
     failed_metrics: tuple[str, ...]
@@ -152,7 +183,7 @@ def search_retrieval_configurations(
     *,
     request: PublicRetrievalEvaluationRequest,
     observations: tuple[RetrievalExecutionObservation, ...],
-    configurations: tuple[RetrievalSearchConfiguration, ...],
+    configurations: tuple[RetrievalConfiguration, ...],
     quality_floor: RetrievalQualityFloor = RetrievalQualityFloor(),
 ) -> RetrievalConfigurationSearchReport:
     """Rerank observed channel evidence without rerunning or consulting held-out truth."""
@@ -220,7 +251,7 @@ def _evaluate_configuration(
     *,
     request: PublicRetrievalEvaluationRequest,
     by_query: dict[str, RetrievalExecutionObservation],
-    configuration: RetrievalSearchConfiguration,
+    configuration: RetrievalConfiguration,
     quality_floor: RetrievalQualityFloor,
 ) -> RetrievalConfigurationResult:
     cases = []
@@ -241,8 +272,7 @@ def _evaluate_configuration(
                     for qrel in query.qrels
                 ),
                 hits=tuple(
-                    RankedRetrievalHit(chunk_id, score)
-                    for chunk_id, score in ranked
+                    RankedRetrievalHit(chunk_id, score) for chunk_id, score in ranked
                 ),
             )
         )
@@ -267,8 +297,18 @@ def _evaluate_configuration(
 
 def _rerank(
     observation: RetrievalExecutionObservation,
-    configuration: RetrievalSearchConfiguration,
+    configuration: RetrievalConfiguration,
 ) -> tuple[tuple[str, float], ...]:
+    if isinstance(configuration, ObservedFinalizationConfiguration):
+        stages = observation.stages
+        if stages is None or stages.rerank_policy_sha256 != configuration.policy_sha256:
+            raise RetrievalConfigurationSearchError(
+                "observed finalization configuration differs from installed evidence"
+            )
+        return tuple(
+            (candidate.chunk_id, 1.0 / candidate.source_rank)
+            for candidate in stages.rerank_candidates[: configuration.top_k]
+        )
     stages = observation.stages
     if stages is None or stages.dense_outcome is None:
         raise RetrievalConfigurationSearchError(
@@ -341,12 +381,34 @@ def default_retrieval_search_configurations(
     return tuple(configurations)
 
 
+def observed_finalization_search_configuration(
+    observations: tuple[RetrievalExecutionObservation, ...],
+    *,
+    top_k: int = 10,
+) -> ObservedFinalizationConfiguration:
+    """Bind one search candidate to the installed policy without consulting qrels."""
+
+    policies = {
+        observation.stages.rerank_policy_sha256
+        for observation in observations
+        if observation.stages is not None
+        and observation.stages.rerank_policy_sha256 is not None
+    }
+    if len(policies) != 1:
+        raise RetrievalConfigurationSearchError(
+            "installed observations require one finalization policy identity"
+        )
+    return ObservedFinalizationConfiguration(policies.pop(), top_k=top_k)
+
+
 __all__ = [
     "RetrievalConfigurationResult",
     "RetrievalConfigurationSearchError",
     "RetrievalConfigurationSearchReport",
     "RetrievalQualityFloor",
     "RetrievalSearchConfiguration",
+    "ObservedFinalizationConfiguration",
     "default_retrieval_search_configurations",
+    "observed_finalization_search_configuration",
     "search_retrieval_configurations",
 ]

@@ -397,7 +397,7 @@ class PublicRetrievalEvaluator:
                     for item in query.qrels
                 ),
                 hits=tuple(
-                    RankedRetrievalHit(hit.chunk_id, hit.score)
+                    RankedRetrievalHit(hit.chunk_id, 1.0 / hit.rank)
                     for hit in observation.hits
                 ),
             )

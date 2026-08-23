@@ -237,6 +237,9 @@ class RuntimeRequestPlanner:
             budget=request.budget,
             replay_mode=request.replay_mode,
             scope=request.scope,
+            execution_configuration_sha256=(
+                request.execution_configuration_sha256
+            ),
             replay_attempt_id=request.replay_attempt_id,
             source_attempt_id=request.replay_attempt_id,
         )

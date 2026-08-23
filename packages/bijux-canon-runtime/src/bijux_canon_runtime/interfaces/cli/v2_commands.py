@@ -17,11 +17,14 @@ from typing import TypeVar
 from pydantic import BaseModel, ValidationError
 
 from bijux_canon_index.evaluation import (
+    ObservedFinalizationConfiguration,
     RetrievalConfigurationSearchReport,
+    RetrievalSearchConfiguration,
     PublicRetrievalEvaluationReport,
     PublicRetrievalMode,
     default_retrieval_search_configurations,
     load_reviewed_retrieval_request,
+    observed_finalization_search_configuration,
     search_retrieval_configurations,
 )
 from bijux_canon_ingest.application.source_discovery import (
@@ -183,9 +186,15 @@ def run_v2_command(
                 search = search_retrieval_configurations(
                     request=evaluation_request,
                     observations=evaluation.observations,
-                    configurations=default_retrieval_search_configurations(
-                        observed_candidate_depth=observed_depth,
-                        top_k=args.top_k,
+                    configurations=(
+                        observed_finalization_search_configuration(
+                            evaluation.observations,
+                            top_k=args.top_k,
+                        ),
+                        *default_retrieval_search_configurations(
+                            observed_candidate_depth=observed_depth,
+                            top_k=args.top_k,
+                        ),
                     ),
                 )
                 if args.human:
@@ -624,12 +633,7 @@ def _write_configuration_search_human(
         metrics = {item.metric_id: item.value for item in result.metrics.metrics}
         print(
             f"Configuration {result.configuration.configuration_id}: "
-            f"depth={result.configuration.candidate_depth}, "
-            f"lexical={result.configuration.lexical_admission_limit}, "
-            f"dense={result.configuration.dense_admission_limit}, "
-            f"k={result.configuration.rank_constant}, "
-            f"weights={result.configuration.lexical_weight}:"
-            f"{result.configuration.dense_weight}; "
+            f"{_configuration_summary(result.configuration)}; "
             f"Recall@5={metrics['recall-at-5']:.6f}, "
             f"MRR@10={metrics['mrr-at-10']:.6f}, "
             f"nDCG@10={metrics['ndcg-at-10']:.6f}; "
@@ -644,6 +648,23 @@ def _write_configuration_search_human(
             f"nDCG@10={query.ndcg_at_10:.6f}"
         )
     print(f"Evidence: {report.evidence_sha256}")
+
+
+def _configuration_summary(
+    configuration: RetrievalSearchConfiguration | ObservedFinalizationConfiguration,
+) -> str:
+    if isinstance(configuration, ObservedFinalizationConfiguration):
+        return (
+            f"strategy={configuration.ranking_strategy}, "
+            f"policy={configuration.policy_sha256}, top_k={configuration.top_k}"
+        )
+    return (
+        f"strategy=weighted-rrf, depth={configuration.candidate_depth}, "
+        f"lexical={configuration.lexical_admission_limit}, "
+        f"dense={configuration.dense_admission_limit}, "
+        f"k={configuration.rank_constant}, "
+        f"weights={configuration.lexical_weight}:{configuration.dense_weight}"
+    )
 
 
 def _normalize(value: object) -> object:

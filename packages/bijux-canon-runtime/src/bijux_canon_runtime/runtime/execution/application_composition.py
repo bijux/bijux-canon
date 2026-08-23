@@ -215,6 +215,7 @@ def compose_runtime_application_services(
         store=store,
         dispatcher=dispatcher,
         process_id=f"bijux-canon-runtime-v2:{validation.workspace_id}",
+        configuration_identity_sha256=configuration.identity_sha256,
         max_workers=max_workers,
     )
     replay = RuntimeReplayService(store)

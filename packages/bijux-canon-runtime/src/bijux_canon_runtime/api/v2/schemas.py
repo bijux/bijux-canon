@@ -161,7 +161,7 @@ class RetrievalObservedHitResponse(StrictModel):
 class RetrievalStageCandidateResponse(StrictModel):
     """One raw channel candidate retained for development diagnosis."""
 
-    stage: Literal["lexical", "dense", "fusion"]
+    stage: Literal["lexical", "dense", "fusion", "rerank"]
     chunk_id: Annotated[str, Field(min_length=1)]
     source_rank: Annotated[int, Field(ge=1)]
     output_rank: Annotated[int | None, Field(ge=1)]
@@ -175,9 +175,11 @@ class RetrievalStageEvidenceResponse(StrictModel):
     lexical_outcome: Annotated[str, Field(min_length=1)]
     dense_outcome: str | None
     fusion_policy_sha256: ContentDigest | None
+    rerank_policy_sha256: ContentDigest | None
     lexical_candidates: tuple[RetrievalStageCandidateResponse, ...]
     dense_candidates: tuple[RetrievalStageCandidateResponse, ...]
     fusion_candidates: tuple[RetrievalStageCandidateResponse, ...]
+    rerank_candidates: tuple[RetrievalStageCandidateResponse, ...]
 
 
 class RetrievalExecutionObservationResponse(StrictModel):
@@ -293,6 +295,7 @@ class RelevantEvidenceStageTraceResponse(StrictModel):
     lexical_disposition: str | None
     dense_rank: Annotated[int | None, Field(ge=1)]
     fusion_rank: Annotated[int | None, Field(ge=1)]
+    rerank_rank: Annotated[int | None, Field(ge=1)]
     final_rank: Annotated[int | None, Field(ge=1)]
     disposition: Literal[
         "retained_at_5",
@@ -300,6 +303,7 @@ class RelevantEvidenceStageTraceResponse(StrictModel):
         "absent_from_candidate_depth",
         "excluded_by_channel_limit",
         "lost_at_fusion_limit",
+        "lost_at_rerank_limit",
         "lost_at_finalization",
         "execution_refused",
         "execution_failed",
@@ -314,6 +318,7 @@ class QueryStageDiagnosticsResponse(StrictModel):
     lexical_included_count: Annotated[int, Field(ge=0)]
     dense_observed_count: Annotated[int, Field(ge=0)]
     fusion_count: Annotated[int, Field(ge=0)]
+    rerank_count: Annotated[int, Field(ge=0)]
     final_count: Annotated[int, Field(ge=0)]
     relevant_evidence: Annotated[
         tuple[RelevantEvidenceStageTraceResponse, ...], Field(min_length=1)
@@ -327,6 +332,7 @@ class RetrievalStageRecallResponse(StrictModel):
         "candidate-depth",
         "channel-admitted",
         "fusion-at-10",
+        "rerank-at-10",
         "final-at-10",
         "final-at-5",
     ]
@@ -338,7 +344,7 @@ class RetrievalStageRecallResponse(StrictModel):
 class RetrievalStageAnalysisResponse(StrictModel):
     """Compact loss counts plus every per-query qrel trace."""
 
-    schema_version: Literal["bijux.canon.index.retrieval-stage-analysis.v1"]
+    schema_version: Literal["bijux.canon.index.retrieval-stage-analysis.v2"]
     query_count: Annotated[int, Field(ge=1)]
     qrel_count: Annotated[int, Field(ge=1)]
     recall: tuple[RetrievalStageRecallResponse, ...]

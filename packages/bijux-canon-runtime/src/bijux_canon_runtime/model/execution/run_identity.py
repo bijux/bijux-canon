@@ -44,6 +44,7 @@ class SemanticRunInputs:
     filters: RetrievalFilters
     top_k: int | None
     output_policy: RuntimeOutputPolicy | None
+    execution_configuration_sha256: str | None = None
 
     def __post_init__(self) -> None:
         if not self.scope.strip():
@@ -58,6 +59,10 @@ class SemanticRunInputs:
             raise ValueError(
                 "semantic run requires a resolved corpus or index artifact"
             )
+        if self.execution_configuration_sha256 is not None and re.fullmatch(
+            r"[0-9a-f]{64}", self.execution_configuration_sha256
+        ) is None:
+            raise ValueError("execution configuration identity must be a sha256")
 
     def identity_payload(self) -> dict[str, object]:
         """Return execution-independent canonical semantics for hashing."""
@@ -66,7 +71,7 @@ class SemanticRunInputs:
             if self.operation is RuntimeRequestOperation.REPLAY
             else self.operation
         )
-        return {
+        payload: dict[str, object] = {
             "corpus_artifact_id": self.corpus_artifact_id,
             "filters": {
                 "document_ids": list(self.filters.document_ids),
@@ -82,6 +87,12 @@ class SemanticRunInputs:
             "scope": self.scope,
             "top_k": self.top_k,
         }
+        if self.execution_configuration_sha256 is not None:
+            payload["execution_configuration_sha256"] = (
+                self.execution_configuration_sha256
+            )
+            payload["schema_version"] = "bijux.runtime.semantic-run-inputs.v2"
+        return payload
 
 
 @dataclass(frozen=True, slots=True)

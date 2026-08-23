@@ -241,6 +241,10 @@ boundary.
 ## Persistence And Replay Evidence
 
 - execution traces use stable event identity and causal ordering
+- semantic run and request-plan identities include the effective Runtime
+  configuration hash; changing retrieval policy, model, resource policy, or
+  workspace authority cannot reuse an older execution as if behavior were
+  unchanged
 - artifacts carry tenant, type, scope, producer, parent, and content-hash
   identity; the artifact model does not contain the content payload
 - the DuckDB execution store persists run and dataset identity, steps, events
@@ -255,11 +259,10 @@ boundary.
 - crash recovery and partial failure retain recorded state rather than
   presenting an incomplete run as complete
 
-The default artifact store is in memory and stores artifact metadata only.
-DuckDB also stores artifact and evidence hashes rather than their content
-payloads. A deployment that needs later content inspection or exact replay
-must retain those payloads in an external content store and bind that custody
-to the recorded hashes; database presence alone is not payload availability.
+The installed local composition stores immutable payloads in the workspace CAS
+and binds their hashes into Runtime manifests and DuckDB records. Moving or
+restoring a workspace therefore requires the governed backup/restore path; a
+database file without its verified CAS is not a complete Runtime authority.
 
 ## Source Map
 

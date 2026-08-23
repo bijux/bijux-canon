@@ -7,6 +7,7 @@ import pytest
 
 from bijux_canon_index.evaluation import (
     ObservedLocatorSegment,
+    ObservedFinalizationConfiguration,
     ObservedRetrievalHit,
     ObservedStageCandidate,
     PublicRetrievalEvaluationRequest,
@@ -20,6 +21,7 @@ from bijux_canon_index.evaluation import (
     ReviewedRetrievalQrel,
     ReviewedRetrievalQuery,
     default_retrieval_search_configurations,
+    observed_finalization_search_configuration,
     search_retrieval_configurations,
 )
 
@@ -81,6 +83,7 @@ def _observation(*, status: RetrievalExecutionStatus = RetrievalExecutionStatus.
             lexical_outcome="success",
             dense_outcome="success",
             fusion_policy_sha256="9" * 64,
+            rerank_policy_sha256="8" * 64,
             lexical_candidates=tuple(
                 _candidate(RetrievalStage.lexical, chunk_id, rank)
                 for rank, chunk_id in enumerate(("irrelevant", "relevant"), 1)
@@ -92,6 +95,10 @@ def _observation(*, status: RetrievalExecutionStatus = RetrievalExecutionStatus.
             fusion_candidates=tuple(
                 _candidate(RetrievalStage.fusion, chunk_id, rank)
                 for rank, chunk_id in enumerate(("irrelevant", "relevant"), 1)
+            ),
+            rerank_candidates=tuple(
+                _candidate(RetrievalStage.rerank, chunk_id, rank)
+                for rank, chunk_id in enumerate(("relevant", "irrelevant"), 1)
             ),
         ),
         failure="execution failed" if failed else None,
@@ -113,6 +120,22 @@ def test_configuration_search_reranks_raw_channels_and_selects_first_pass() -> N
     assert report.qrel_count == 1
     assert report.results[0].meets_floor is True
     assert report.selected_configuration_id == _configuration().configuration_id
+    assert report.results[0].metrics.queries[0].reciprocal_rank_at_10 == 1.0
+
+
+def test_configuration_search_can_select_observed_installed_finalization() -> None:
+    observation = _observation()
+    configuration = observed_finalization_search_configuration((observation,))
+
+    report = search_retrieval_configurations(
+        request=_request(),
+        observations=(observation,),
+        configurations=(configuration, _configuration()),
+    )
+
+    assert isinstance(configuration, ObservedFinalizationConfiguration)
+    assert configuration.policy_sha256 == "8" * 64
+    assert report.selected_configuration_id == configuration.configuration_id
     assert report.results[0].metrics.queries[0].reciprocal_rank_at_10 == 1.0
 
 

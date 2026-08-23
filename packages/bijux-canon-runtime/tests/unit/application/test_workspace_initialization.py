@@ -127,6 +127,47 @@ def _install_known_v2_layout(configuration) -> tuple[bytes, bytes]:
     return manifest_content, ledger_content
 
 
+def _install_known_v3_layout(configuration) -> tuple[bytes, bytes]:
+    layout = configuration.require_workspace_layout()
+    current = json.loads(layout.manifest_path.read_bytes())
+    model_lock_id = str(current["model_lock_artifact_id"])
+    legacy_layout = workspace_initialization._legacy_v3_layout_record(layout)
+    legacy_configuration = workspace_initialization._configuration_record_for_layout(
+        configuration,
+        legacy_layout,
+        retrieval_policy_id=(
+            "bijux.canon.index.hybrid-retrieval.content-evidence-v1"
+        ),
+    )
+    workspace_id = workspace_initialization._workspace_id_for_version(
+        configuration_identity_sha256=str(
+            legacy_configuration["identity_sha256"]
+        ),
+        layout_identity_sha256=str(legacy_layout["identity_sha256"]),
+        model_lock_id=model_lock_id,
+        workspace_version=3,
+    )
+    ledger = workspace_initialization._migration_ledger(
+        workspace_id=workspace_id,
+        migrations=[],
+    )
+    manifest = workspace_initialization._legacy_v3_manifest_record(
+        configuration,
+        layout,
+        model_lock_id,
+        str(ledger["ledger_sha256"]),
+        created_at=str(current["created_at"]),
+        retrieval_policy_id=(
+            "bijux.canon.index.hybrid-retrieval.content-evidence-v1"
+        ),
+    )
+    manifest_content = canonical_json_bytes(manifest)
+    ledger_content = canonical_json_bytes(ledger)
+    layout.manifest_path.write_bytes(manifest_content)
+    layout.migration_ledger_path.write_bytes(ledger_content)
+    return manifest_content, ledger_content
+
+
 def test_fresh_initialization_is_atomic_and_repeat_is_exact_noop(
     tmp_path: Path,
 ) -> None:
@@ -188,13 +229,13 @@ def test_known_v1_workspace_is_backed_up_migrated_and_not_reapplied(
     migration_ledger = json.loads(ledger_after)
 
     assert migrated.status is WorkspaceInitializationStatus.MIGRATED
-    assert migrated.workspace_version == 3
-    assert len(migrated.applied_migration_ids) == 2
+    assert migrated.workspace_version == 4
+    assert len(migrated.applied_migration_ids) == 3
     assert migrated.rollback_backup_path is not None
     backup = Path(migrated.rollback_backup_path)
     assert (backup / "workspace.json").read_bytes() == legacy_manifest
     assert (backup / "backup.json").is_file()
-    assert len(migration_ledger["migrations"]) == 2
+    assert len(migration_ledger["migrations"]) == 3
     assert (
         migration_ledger["migrations"][0]["migration_id"]
         == migrated.applied_migration_ids[0]
@@ -208,7 +249,7 @@ def test_known_v1_workspace_is_backed_up_migrated_and_not_reapplied(
     assert layout.migration_ledger_path.read_bytes() == ledger_after
     assert (
         len(tuple((layout.backup_root / "workspace-migrations/generations").iterdir()))
-        == 2
+        == 3
     )
 
 
@@ -243,7 +284,7 @@ def test_interrupted_manifest_activation_resumes_from_bound_backup(
     monkeypatch.setattr(os, "replace", real_replace)
     recovered = initialize_runtime_workspace(configuration)
     assert recovered.status is WorkspaceInitializationStatus.MIGRATED
-    assert validate_runtime_workspace(configuration).workspace_version == 3
+    assert validate_runtime_workspace(configuration).workspace_version == 4
 
 
 def test_known_v2_workspace_is_backed_up_and_binds_retrieval_policy(
@@ -259,8 +300,8 @@ def test_known_v2_workspace_is_backed_up_and_binds_retrieval_policy(
     migrated = initialize_runtime_workspace(configuration)
 
     assert migrated.status is WorkspaceInitializationStatus.MIGRATED
-    assert migrated.workspace_version == 3
-    assert len(migrated.applied_migration_ids) == 1
+    assert migrated.workspace_version == 4
+    assert len(migrated.applied_migration_ids) == 2
     assert migrated.rollback_backup_path is not None
     backup = Path(migrated.rollback_backup_path)
     assert (backup / "workspace.json").read_bytes() == legacy_manifest
@@ -269,7 +310,7 @@ def test_known_v2_workspace_is_backed_up_and_binds_retrieval_policy(
     assert manifest["configuration"]["retrieval_policy_id"] == (
         configuration.retrieval_policy_id
     )
-    assert validate_runtime_workspace(configuration).workspace_version == 3
+    assert validate_runtime_workspace(configuration).workspace_version == 4
 
 
 def test_interrupted_v2_policy_migration_resumes_from_bound_backup(
@@ -302,7 +343,71 @@ def test_interrupted_v2_policy_migration_resumes_from_bound_backup(
     monkeypatch.setattr(os, "replace", real_replace)
     recovered = initialize_runtime_workspace(configuration)
     assert recovered.status is WorkspaceInitializationStatus.MIGRATED
-    assert recovered.workspace_version == 3
+    assert recovered.workspace_version == 4
+    assert validate_runtime_workspace(configuration).status is (
+        WorkspaceInitializationStatus.UNCHANGED
+    )
+
+
+def test_known_v3_workspace_activates_content_evidence_policy_with_backup(
+    tmp_path: Path,
+) -> None:
+    model = _materialized_model(tmp_path)
+    workspace = tmp_path / "workspace"
+    configuration = _configuration(workspace, model)
+    initialize_runtime_workspace(configuration)
+    layout = configuration.require_workspace_layout()
+    legacy_manifest, legacy_ledger = _install_known_v3_layout(configuration)
+
+    migrated = initialize_runtime_workspace(configuration)
+
+    assert migrated.status is WorkspaceInitializationStatus.MIGRATED
+    assert migrated.workspace_version == 4
+    assert len(migrated.applied_migration_ids) == 1
+    assert migrated.rollback_backup_path is not None
+    backup = Path(migrated.rollback_backup_path)
+    assert (backup / "workspace.json").read_bytes() == legacy_manifest
+    assert (backup / "workspace-migrations.json").read_bytes() == legacy_ledger
+    manifest = json.loads(layout.manifest_path.read_bytes())
+    assert manifest["configuration"]["retrieval_policy_id"] == (
+        "bijux.canon.index.hybrid-retrieval.content-evidence-v2"
+    )
+    assert initialize_runtime_workspace(configuration).status is (
+        WorkspaceInitializationStatus.UNCHANGED
+    )
+
+
+def test_interrupted_v3_policy_activation_resumes_from_bound_backup(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    model = _materialized_model(tmp_path)
+    workspace = tmp_path / "workspace"
+    configuration = _configuration(workspace, model)
+    initialize_runtime_workspace(configuration)
+    layout = configuration.require_workspace_layout()
+    legacy_manifest, _legacy_ledger = _install_known_v3_layout(configuration)
+    real_replace = os.replace
+    replacements = 0
+
+    def interrupt_second_replace(source: Path, destination: Path) -> None:
+        nonlocal replacements
+        replacements += 1
+        if replacements == 2:
+            raise OSError("simulated content policy activation interruption")
+        real_replace(source, destination)
+
+    monkeypatch.setattr(os, "replace", interrupt_second_replace)
+    with pytest.raises(WorkspaceInitializationError) as raised:
+        initialize_runtime_workspace(configuration)
+
+    assert raised.value.code is WorkspaceInitializationErrorCode.PARTIAL_WORKSPACE
+    assert layout.manifest_path.read_bytes() == legacy_manifest
+
+    monkeypatch.setattr(os, "replace", real_replace)
+    recovered = initialize_runtime_workspace(configuration)
+    assert recovered.status is WorkspaceInitializationStatus.MIGRATED
+    assert recovered.workspace_version == 4
     assert validate_runtime_workspace(configuration).status is (
         WorkspaceInitializationStatus.UNCHANGED
     )

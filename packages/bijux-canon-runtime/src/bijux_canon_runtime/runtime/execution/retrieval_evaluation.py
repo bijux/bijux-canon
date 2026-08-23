@@ -236,20 +236,33 @@ def _stage_evidence(retrieval: Mapping[str, object]) -> RetrievalStageEvidence:
             lexical_outcome=_required_string(lexical, "outcome"),
             dense_outcome=None,
             fusion_policy_sha256=None,
+            rerank_policy_sha256=None,
             lexical_candidates=lexical_candidates,
             dense_candidates=(),
             fusion_candidates=(),
+            rerank_candidates=(),
         )
-    if not isinstance(dense, dict) or not isinstance(fusion, dict):
+    rerank = retrieval.get("rerank")
+    if (
+        not isinstance(dense, dict)
+        or not isinstance(fusion, dict)
+        or not isinstance(rerank, dict)
+    ):
         raise RuntimeError("hybrid retrieval stage evidence is invalid")
     raw_dense = dense.get("observed_candidates")
     raw_fusion = fusion.get("hits")
-    if not isinstance(raw_dense, list) or not isinstance(raw_fusion, list):
+    raw_rerank = rerank.get("candidates")
+    if (
+        not isinstance(raw_dense, list)
+        or not isinstance(raw_fusion, list)
+        or not isinstance(raw_rerank, list)
+    ):
         raise RuntimeError("hybrid retrieval candidates are invalid")
     return RetrievalStageEvidence(
         lexical_outcome=_required_string(lexical, "outcome"),
         dense_outcome=_required_string(dense, "outcome"),
         fusion_policy_sha256=_required_string(fusion, "policy_sha256"),
+        rerank_policy_sha256=_required_string(rerank, "policy_sha256"),
         lexical_candidates=lexical_candidates,
         dense_candidates=tuple(
             _stage_candidate(
@@ -273,6 +286,28 @@ def _stage_evidence(retrieval: Mapping[str, object]) -> RetrievalStageEvidence:
             )
             for value in raw_fusion
         ),
+        rerank_candidates=tuple(
+            _rerank_candidate(value) for value in raw_rerank
+        ),
+    )
+
+
+def _rerank_candidate(value: object) -> ObservedStageCandidate:
+    if not isinstance(value, dict):
+        raise RuntimeError("retrieval evaluation rerank candidate is invalid")
+    score = value.get("rerank_score")
+    if score is None:
+        score = value.get("fused_score")
+    if isinstance(score, bool) or not isinstance(score, int | float):
+        raise RuntimeError("retrieval evaluation rerank score is invalid")
+    rank = _required_int(value, "rank")
+    return ObservedStageCandidate(
+        stage=RetrievalStage.rerank,
+        chunk_id=_required_string(value, "chunk_id"),
+        source_rank=rank,
+        output_rank=rank,
+        score=float(score),
+        disposition="included",
     )
 
 

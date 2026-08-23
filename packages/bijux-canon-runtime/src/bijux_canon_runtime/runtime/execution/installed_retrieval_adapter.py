@@ -21,6 +21,7 @@ from bijux_canon_index.application import (
     DenseCandidateMode,
     DenseCandidateOutcome,
     DenseCandidateService,
+    EvidencePassageContext,
     ExactSourceLocator,
     FusionChannelRanking,
     HybridRetrievalPolicy,
@@ -34,6 +35,8 @@ from bijux_canon_index.application import (
     citation_candidates_from_rerank,
     reciprocal_rank_fusion,
     rerank_candidates,
+    plan_evidence_query,
+    rerank_planned_evidence,
     resolve_hybrid_retrieval_policy,
 )
 from bijux_canon_index.domain.metadata_filters import (
@@ -452,6 +455,53 @@ def _citation_catalog(
     )
 
 
+def _evidence_passage_contexts(
+    snapshot: Mapping[str, object],
+) -> tuple[EvidencePassageContext, ...]:
+    raw_documents = snapshot.get("documents")
+    if not isinstance(raw_documents, list):
+        raise StepDispatchError("snapshot documents cannot support evidence planning")
+    passages: list[EvidencePassageContext] = []
+    for raw_document in raw_documents:
+        if not isinstance(raw_document, dict):
+            raise StepDispatchError("snapshot document evidence context is invalid")
+        document_id = raw_document.get("document_id")
+        raw_chunks = raw_document.get("chunks")
+        if not isinstance(document_id, str) or not isinstance(raw_chunks, list):
+            raise StepDispatchError("snapshot document evidence context is invalid")
+        for raw_chunk in raw_chunks:
+            if not isinstance(raw_chunk, dict):
+                raise StepDispatchError("snapshot chunk evidence context is invalid")
+            chunk_id = raw_chunk.get("chunk_id")
+            ordinal = raw_chunk.get("chunk_index")
+            raw_roles = raw_chunk.get("block_roles")
+            raw_paths = raw_chunk.get("section_paths")
+            if (
+                not isinstance(chunk_id, str)
+                or isinstance(ordinal, bool)
+                or not isinstance(ordinal, int)
+                or not isinstance(raw_roles, list)
+                or any(not isinstance(item, str) for item in raw_roles)
+                or not isinstance(raw_paths, list)
+                or any(
+                    not isinstance(path, list)
+                    or any(not isinstance(item, str) for item in path)
+                    for path in raw_paths
+                )
+            ):
+                raise StepDispatchError("snapshot chunk evidence context is invalid")
+            passages.append(
+                EvidencePassageContext(
+                    chunk_id,
+                    document_id,
+                    ordinal,
+                    tuple(raw_roles),
+                    tuple(tuple(path) for path in raw_paths),
+                )
+            )
+    return tuple(passages)
+
+
 class CanonicalRetrievalOperationAdapter:
     """Retrieve citation-ready lexical and VEX evidence from one generation."""
 
@@ -524,6 +574,7 @@ class CanonicalRetrievalOperationAdapter:
             _json_object(snapshot_artifact, "ingest.corpus-snapshot.v1")
         )
         catalog = _citation_catalog(snapshot_artifact, snapshot)
+        passages = _evidence_passage_contexts(snapshot)
         query = step.inputs.query
         top_k = step.inputs.top_k
         hybrid = step.inputs.execution_profile is not ExecutionProfile.OFFLINE_LEXICAL
@@ -544,6 +595,8 @@ class CanonicalRetrievalOperationAdapter:
         dense_attempts: list[dict[str, object]] = []
         fusion = None
         rerank = None
+        query_plan = None
+        expansion_lexical = []
         vex_record = None
         fallback_action = "none"
         if step.inputs.execution_profile is ExecutionProfile.OFFLINE_LEXICAL:
@@ -601,19 +654,53 @@ class CanonicalRetrievalOperationAdapter:
                 ),
                 policy=self._policy.fusion_policy(top_k=top_k),
             )
-            rerank = rerank_candidates(
-                fusion,
-                policy=RerankPolicy(
-                    enabled=False,
-                    candidate_limit=candidate_limit,
-                    top_k=top_k,
-                    timeout_ms=max(
-                        1,
-                        int(step.inputs.budget.timeout_seconds * 1000.0),
+            if self._policy.uses_evidence_planning and fusion.hits:
+                query_plan = plan_evidence_query(
+                    query,
+                    max_subqueries=8,
+                    per_query_top_k=candidate_limit,
+                    top_k=min(top_k, len(fusion.hits)),
+                )
+                lexical_by_subquery_id = {}
+                for subquery in query_plan.multi_query.subqueries:
+                    if subquery.text_sha256 == lexical.query_text_sha256:
+                        batch = lexical
+                    else:
+                        batch = self._lexical.generate(
+                            subquery.text,
+                            generation_id=inspection.generation_id,
+                            top_k=self._policy.lexical_limit(top_k),
+                            candidate_limit=candidate_limit,
+                            metadata_filter=metadata_filter,
+                        )
+                        expansion_lexical.append(batch)
+                    lexical_by_subquery_id[subquery.subquery_id] = batch
+                fused_chunk_ids = {candidate.chunk_id for candidate in fusion.hits}
+                rerank = rerank_planned_evidence(
+                    fusion,
+                    plan=query_plan,
+                    lexical_by_subquery_id=lexical_by_subquery_id,
+                    passages=tuple(
+                        item
+                        for item in passages
+                        if item.chunk_id in fused_chunk_ids
                     ),
-                    failure_policy=RerankFailurePolicy.retain_retrieval_order,
-                ),
-            )
+                    top_k=min(top_k, len(fusion.hits)),
+                )
+            else:
+                rerank = rerank_candidates(
+                    fusion,
+                    policy=RerankPolicy(
+                        enabled=False,
+                        candidate_limit=candidate_limit,
+                        top_k=top_k,
+                        timeout_ms=max(
+                            1,
+                            int(step.inputs.budget.timeout_seconds * 1000.0),
+                        ),
+                        failure_policy=RerankFailurePolicy.retain_retrieval_order,
+                    ),
+                )
             candidates = citation_candidates_from_rerank(
                 rerank,
                 dense_mode=dense_mode,
@@ -661,7 +748,13 @@ class CanonicalRetrievalOperationAdapter:
                         "fallback_action": fallback_action,
                         "fusion": None if fusion is None else asdict(fusion),
                         "lexical": asdict(lexical),
+                        "lexical_expansions": [
+                            asdict(item) for item in expansion_lexical
+                        ],
                         "policy": self._policy.record(top_k=top_k),
+                        "query_plan": (
+                            None if query_plan is None else asdict(query_plan)
+                        ),
                         "rerank": None if rerank is None else asdict(rerank),
                     },
                     "resource_reuse": {

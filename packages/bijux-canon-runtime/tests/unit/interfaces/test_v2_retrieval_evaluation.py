@@ -93,6 +93,7 @@ def _observation(
             lexical_outcome="success",
             dense_outcome="success",
             fusion_policy_sha256="f" * 64,
+            rerank_policy_sha256="0" * 64,
             lexical_candidates=tuple(
                 item
                 for item in stage_candidates
@@ -103,6 +104,9 @@ def _observation(
             ),
             fusion_candidates=tuple(
                 item for item in stage_candidates if item.stage is RetrievalStage.fusion
+            ),
+            rerank_candidates=tuple(
+                item for item in stage_candidates if item.stage is RetrievalStage.rerank
             ),
         ),
         failure=None,
