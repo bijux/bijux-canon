@@ -130,7 +130,8 @@ subject and predicate bytes before attaching it.
 ## Disclosure and Closure
 
 Follow the private channels and response targets in the repository
-[Security Policy](../../../SECURITY.md). Do not publish exploit details before
+[Security Policy](https://github.com/bijux/bijux-canon/blob/main/SECURITY.md).
+Do not publish exploit details before
 affected users have a reasonable remediation path. A closure record should
 state affected and unaffected versions, severity rationale, compromise scope,
 credential and data actions, corrective commits, exact verification commands,
