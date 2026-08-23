@@ -9,6 +9,7 @@ TEST_EVALUATION_ARGS := -m "evaluation and not slow" --maxfail=1 -q
 TEST_REAL_LOCAL_ARGS := -m "real_local and not slow" -s -p no:cov
 TEST_COVERAGE_TARGETS := $(abspath tests/unit)
 TEST_COVERAGE_FAIL_UNDER := 70
+test-e2e test-regression: PYTEST_ADDOPTS_EXTRA = --no-cov
 
 SECURITY_EXTRA_CHECKS = $(MONOREPO_ROOT)/packages/bijux-canon-dev/src/bijux_canon_dev/packages/runtime/check_dependency_allowlist.py
 # The checked-in schema already includes the /api/v1 prefix in each path.

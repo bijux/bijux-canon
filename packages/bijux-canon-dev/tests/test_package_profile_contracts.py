@@ -24,6 +24,14 @@ def test_index_typing_resolves_package_local_test_namespace() -> None:
     assert "export MYPYPATH   := $(CURDIR)" in profile
 
 
+def test_runtime_category_lanes_do_not_apply_unit_coverage_floors() -> None:
+    profile = (REPO_ROOT / "makes" / "packages" / "bijux-canon-runtime.mk").read_text(
+        encoding="utf-8"
+    )
+
+    assert "test-e2e test-regression: PYTEST_ADDOPTS_EXTRA = --no-cov" in profile
+
+
 def test_compat_packages_install_security_tooling_without_stamp_shortcuts() -> None:
     profile = (REPO_ROOT / "makes" / "packages" / "compat-package.mk").read_text(
         encoding="utf-8"
