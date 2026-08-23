@@ -70,6 +70,7 @@ from .multi_query import (
     SubqueryPlanDecision,
     execute_multi_query,
     plan_subqueries,
+    query_equivalence_sha256,
 )
 from .policy import (
     CONTENT_EVIDENCE_RETRIEVAL_POLICY_ID,
@@ -238,6 +239,7 @@ __all__ = [
     "execute_multi_query",
     "lexical_channel_result",
     "plan_subqueries",
+    "query_equivalence_sha256",
     "plan_evidence_query",
     "reciprocal_rank_fusion",
     "resolve_hybrid_retrieval_policy",

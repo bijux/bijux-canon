@@ -10,6 +10,8 @@ from dataclasses import asdict, dataclass
 from enum import Enum, StrEnum
 import hashlib
 import json
+import re
+import unicodedata
 
 from .locators import (
     CitationReadyHit,
@@ -46,6 +48,16 @@ def _json_value(value: object) -> object:
 
 def _identity(value: object) -> str:
     return f"sha256:{hashlib.sha256(_canonical_json(value)).hexdigest()}"
+
+
+def query_equivalence_sha256(value: str) -> str:
+    """Hash normalized search terms to reject formatting-only query repeats."""
+
+    normalized = unicodedata.normalize("NFKC", value).casefold()
+    tokens = re.findall(r"[\w]+", normalized, flags=re.UNICODE)
+    if not tokens:
+        raise ValueError("multi-query proposal must contain searchable text")
+    return hashlib.sha256(" ".join(tokens).encode("utf-8")).hexdigest()
 
 
 class SubqueryOrigin(StrEnum):
@@ -103,6 +115,7 @@ class PlannedSubquery:
     subquery_id: str
     text: str
     text_sha256: str
+    equivalence_sha256: str
     origin: SubqueryOrigin
     derivation: str
 
@@ -114,6 +127,7 @@ class SubqueryPlanDecision:
     proposal_ordinal: int
     text: str
     text_sha256: str
+    equivalence_sha256: str
     origin: SubqueryOrigin
     derivation: str
     disposition: SubqueryDisposition
@@ -214,7 +228,7 @@ def plan_subqueries(
     )
     included: list[PlannedSubquery] = []
     decisions: list[SubqueryPlanDecision] = []
-    by_text: dict[str, str] = {}
+    by_equivalence: dict[str, str] = {}
     for proposal_ordinal, (text, origin, derivation) in enumerate(proposals, start=1):
         normalized = text.strip()
         if not normalized:
@@ -222,7 +236,8 @@ def plan_subqueries(
         if len(normalized) > policy.max_query_characters:
             raise ValueError("multi-query proposal exceeds the query text bound")
         text_sha256 = hashlib.sha256(normalized.encode("utf-8")).hexdigest()
-        duplicate_of = by_text.get(normalized)
+        equivalence_sha256 = query_equivalence_sha256(normalized)
+        duplicate_of = by_equivalence.get(equivalence_sha256)
         if duplicate_of is not None:
             disposition = SubqueryDisposition.duplicate
             subquery_id = None
@@ -245,17 +260,19 @@ def plan_subqueries(
                     subquery_id,
                     normalized,
                     text_sha256,
+                    equivalence_sha256,
                     origin,
                     derivation,
                 )
             )
-            by_text[normalized] = subquery_id
+            by_equivalence[equivalence_sha256] = subquery_id
             disposition = SubqueryDisposition.included
         decisions.append(
             SubqueryPlanDecision(
                 proposal_ordinal,
                 normalized,
                 text_sha256,
+                equivalence_sha256,
                 origin,
                 derivation,
                 disposition,
@@ -414,4 +431,5 @@ __all__ = [
     "SubqueryPlanDecision",
     "execute_multi_query",
     "plan_subqueries",
+    "query_equivalence_sha256",
 ]

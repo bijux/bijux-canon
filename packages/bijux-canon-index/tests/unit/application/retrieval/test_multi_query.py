@@ -25,6 +25,7 @@ from bijux_canon_index.application import (
     SubqueryOrigin,
     execute_multi_query,
     plan_subqueries,
+    query_equivalence_sha256,
 )
 
 _GENERATION_ID = "sha256:generation"
@@ -145,6 +146,33 @@ def test_plan_is_transparent_deterministic_and_bounds_fanout() -> None:
         first.decisions[2].duplicate_of_subquery_id == first.subqueries[0].subquery_id
     )
     assert "authentication" in first.subqueries[2].derivation
+
+
+def test_plan_rejects_case_unicode_whitespace_and_punctuation_equivalents() -> None:
+    policy = MultiQueryPolicy(max_subqueries=4, per_query_top_k=2, top_k=2)
+
+    plan = plan_subqueries(
+        "Petrous DNA evidence",
+        policy=policy,
+        supplied_subqueries=(
+            "  PETROUS   dna evidence! ",
+            "Ｐｅｔｒｏｕｓ DNA evidence",
+            "petrous DNA evidence boundary condition",
+        ),
+    )
+
+    assert len(plan.subqueries) == 2
+    assert [item.disposition for item in plan.decisions] == [
+        SubqueryDisposition.included,
+        SubqueryDisposition.duplicate,
+        SubqueryDisposition.duplicate,
+        SubqueryDisposition.included,
+    ]
+    assert plan.decisions[1].duplicate_of_subquery_id == plan.subqueries[0].subquery_id
+    assert plan.decisions[2].duplicate_of_subquery_id == plan.subqueries[0].subquery_id
+    assert query_equivalence_sha256("PETROUS dna evidence!") == (
+        plan.subqueries[0].equivalence_sha256
+    )
 
 
 def test_execution_deduplicates_content_and_attributes_every_subquery() -> None:
