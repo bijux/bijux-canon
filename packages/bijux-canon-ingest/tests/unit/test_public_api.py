@@ -26,6 +26,9 @@ def test_root_package_declares_lazy_exports_in_dir() -> None:
     assert "parse_pdf" in exported_names
     assert "parse_text" in exported_names
     assert "normalize_source_metadata" in exported_names
+    assert "MetadataIntegrityError" in exported_names
+    assert "MetadataProvenanceRecord" in exported_names
+    assert "MetadataSource" in exported_names
     assert "build_chunk_span_mapping" in exported_names
     assert "build_document_span_mappings" in exported_names
     assert "chunk_document_mappings" in exported_names

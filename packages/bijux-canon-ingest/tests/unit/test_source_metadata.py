@@ -10,11 +10,13 @@ from pathlib import Path
 import pytest
 
 from bijux_canon_ingest.application.source_metadata import (
+    MetadataIntegrityError,
     SourceMetadataRecord,
     normalize_source_metadata,
 )
 from bijux_canon_ingest.domain.source_admission import SourceFormat
 from bijux_canon_ingest.domain.source_discovery import DiscoveredSource
+from bijux_canon_ingest.domain.source_metadata import METADATA_SOURCE_PRECEDENCE
 
 REPOSITORY = Path(__file__).parents[4]
 EXAMPLES = REPOSITORY / "examples" / "document-formats"
@@ -26,6 +28,17 @@ FORMAT_IDS: tuple[SourceFormat, ...] = (
     "text",
     "docx",
 )
+
+
+def test_declares_complete_metadata_source_precedence() -> None:
+    assert METADATA_SOURCE_PRECEDENCE == (
+        "source_discovery",
+        "user_override",
+        "corpus_lock",
+        "acquisition_receipt",
+        "embedded_parser",
+        "filename_fallback",
+    )
 
 
 def _source(
@@ -66,6 +79,7 @@ def test_normalizes_real_admitted_source_metadata(format_id: SourceFormat) -> No
             SourceMetadataRecord.from_mapping(
                 receipt,
                 provenance=f"acquisition-receipt:{values['parser_source_id']}",
+                source="acquisition_receipt",
             ),
         ),
     )
@@ -80,6 +94,197 @@ def test_normalizes_real_admitted_source_metadata(format_id: SourceFormat) -> No
     assert result.media_type == source.media_type
     assert not result.conflicts
     assert result.manifest() == result.manifest()
+
+
+@pytest.mark.parametrize(
+    ("records", "expected_source", "expected_title"),
+    [
+        (
+            (
+                SourceMetadataRecord(
+                    provenance="parser", source="embedded_parser", title="Parser"
+                ),
+            ),
+            "embedded_parser",
+            "Parser",
+        ),
+        (
+            (
+                SourceMetadataRecord(
+                    provenance="parser", source="embedded_parser", title="Parser"
+                ),
+                SourceMetadataRecord(
+                    provenance="receipt",
+                    source="acquisition_receipt",
+                    title="Receipt",
+                ),
+            ),
+            "acquisition_receipt",
+            "Receipt",
+        ),
+        (
+            (
+                SourceMetadataRecord(
+                    provenance="receipt",
+                    source="acquisition_receipt",
+                    title="Receipt",
+                ),
+                SourceMetadataRecord(
+                    provenance="lock", source="corpus_lock", title="Lock"
+                ),
+            ),
+            "corpus_lock",
+            "Lock",
+        ),
+        (
+            (
+                SourceMetadataRecord(
+                    provenance="override",
+                    source="user_override",
+                    title="Override",
+                ),
+                SourceMetadataRecord(
+                    provenance="lock", source="corpus_lock", title="Lock"
+                ),
+            ),
+            "user_override",
+            "Override",
+        ),
+    ],
+)
+def test_resolves_declared_precedence_independent_of_input_order(
+    records: tuple[SourceMetadataRecord, ...],
+    expected_source: str,
+    expected_title: str,
+) -> None:
+    source, _, _ = _source("text")
+
+    forward = normalize_source_metadata(source, format_id="text", records=records)
+    reverse = normalize_source_metadata(
+        source, format_id="text", records=tuple(reversed(records))
+    )
+
+    assert forward.manifest() == reverse.manifest()
+    assert forward.title == expected_title
+    selected = next(
+        value for value in forward.selected_values if value.field == "title"
+    )
+    assert selected.source == expected_source
+
+
+def test_uses_identified_filename_only_when_no_metadata_title_exists() -> None:
+    source, _, _ = _source("markdown")
+
+    result = normalize_source_metadata(source, format_id="markdown")
+
+    assert result.title == "parser-markdown-real"
+    selected = next(value for value in result.selected_values if value.field == "title")
+    assert selected.source == "filename_fallback"
+    assert selected.provenance == f"filename:{source.relative_path}"
+
+
+def test_retains_record_hash_raw_and_normalized_multivalue_evidence() -> None:
+    source, _, _ = _source("jats")
+    values = {
+        "authors": [" Herve\N{COMBINING ACUTE ACCENT} Bocherens ", "Alice  Example"],
+        "canonical_uri": "HTTPS://DOI.ORG:443/10.1000/ABC",
+        "doi": "doi:10.1000/ABC",
+        "title": " Reviewed  title ",
+        "unused_review_note": "bound by the record hash",
+    }
+
+    record = SourceMetadataRecord.from_mapping(
+        values, provenance="corpus-lock:paper", source="corpus_lock"
+    )
+    result = normalize_source_metadata(source, format_id="jats", records=(record,))
+
+    evidence = next(
+        item
+        for item in result.provenance_records
+        if item.provenance == record.provenance
+    )
+    canonical = json.dumps(
+        values,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
+        allow_nan=False,
+    ).encode()
+    assert (
+        evidence.provenance_sha256 == f"sha256:{hashlib.sha256(canonical).hexdigest()}"
+    )
+    assert evidence.fields == ("authors", "canonical_uri", "doi", "title")
+    assert evidence.format_id is None
+    assert evidence.source_byte_length is None
+    authors = next(value for value in result.raw_values if value.field == "authors")
+    assert authors.value == (
+        " Herve\N{COMBINING ACUTE ACCENT} Bocherens ",
+        "Alice  Example",
+    )
+    assert authors.normalized_value == (
+        "Herv\N{LATIN SMALL LETTER E WITH ACUTE} Bocherens",
+        "Alice Example",
+    )
+    doi = next(value for value in result.raw_values if value.field == "doi")
+    assert doi.normalized_value == "10.1000/abc"
+    assert result.canonical_uri == "https://doi.org/10.1000/ABC"
+
+
+def test_rejects_declared_record_identity_contradiction() -> None:
+    _, values, _ = _source("jats")
+    tampered = {**values, "title": "Tampered after review"}
+
+    with pytest.raises(MetadataIntegrityError) as raised:
+        SourceMetadataRecord.from_mapping(
+            tampered, provenance="source-record:tampered", source="corpus_lock"
+        )
+
+    assert raised.value.code == "record_identity_mismatch"
+    assert raised.value.provenance == "source-record:tampered"
+
+
+@pytest.mark.parametrize(
+    ("values", "format_id", "code"),
+    [
+        ({"sha256": "0" * 64}, "jats", "content_checksum_mismatch"),
+        (
+            {
+                "sha256": "b530c246887c3341eacbe5b8e3a778dddb54662edb4d1d512908d100068d1665",
+                "byte_count": 1,
+            },
+            "jats",
+            "content_length_mismatch",
+        ),
+        ({"format_id": "text"}, "jats", "source_format_mismatch"),
+    ],
+)
+def test_rejects_source_identity_contradictions(
+    values: dict[str, object], format_id: SourceFormat, code: str
+) -> None:
+    source, _, _ = _source("jats")
+    record = SourceMetadataRecord.from_mapping(
+        values, provenance="corpus-lock:contradiction", source="corpus_lock"
+    )
+
+    with pytest.raises(MetadataIntegrityError) as raised:
+        normalize_source_metadata(source, format_id=format_id, records=(record,))
+
+    assert raised.value.code == code
+
+
+def test_rejects_doi_identity_contradiction_within_one_record() -> None:
+    source, _, _ = _source("jats")
+    record = SourceMetadataRecord(
+        provenance="user-override",
+        source="user_override",
+        doi="10.1000/one",
+        canonical_uri="https://doi.org/10.1000/two",
+    )
+
+    with pytest.raises(MetadataIntegrityError) as raised:
+        normalize_source_metadata(source, format_id="jats", records=(record,))
+
+    assert raised.value.code == "bibliographic_identity_mismatch"
 
 
 def test_canonicalizes_equivalent_values_without_identity_loss() -> None:

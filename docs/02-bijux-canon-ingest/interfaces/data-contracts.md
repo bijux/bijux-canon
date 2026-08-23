@@ -4,14 +4,51 @@ audience: mixed
 type: reference
 status: canonical
 owner: bijux-canon-ingest-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-08-23
 ---
 
 # Data Contracts
 
-Ingest has three distinct contract layers: source records, in-process chunk
-values, and serialized boundary models. They are related, but they are not
-interchangeable.
+Ingest has four distinct contract layers: canonical source metadata, functional
+source records, in-process chunk values, and serialized boundary models. They
+are related, but they are not interchangeable.
+
+## Canonical Source Metadata
+
+`normalize_source_metadata()` resolves bibliographic metadata by declared
+source type, never by mapping merge order or caller iteration order. For
+bibliographic fields the fixed precedence is:
+
+```text
+user override
+  > corpus lock
+  > acquisition receipt
+  > embedded/parser metadata
+  > filename fallback
+```
+
+Records at the same level are ordered by their provenance label and exact
+record hash, so changing input iteration order cannot change the result.
+
+Discovery remains authoritative for the admitted relative path, media type,
+content SHA-256, and byte length. A filename stem is used as a title only when
+no higher source supplied a title; reviewed metadata is therefore never
+replaced by a filename guess.
+
+The `bijux.canon.ingest.source_metadata.v2` manifest retains every contributing
+record's source type, label, exact record hash, optional source-content hash,
+and contributed fields. Each raw field also retains its original and normalized
+value. `selected_values` identifies the winning contribution for each field,
+while `conflicts` records every normalized disagreement with that selection.
+Equivalent Unicode, URI, DOI, date, language, license, and author forms do not
+create false conflicts.
+
+Identity evidence fails closed. A declared record identity must match its
+canonical record, and any supplied source format, hash, or byte length must
+match the admitted immutable source. A DOI and DOI-based canonical URI that
+identify different works are rejected with `MetadataIntegrityError`; ordinary
+metadata disagreement remains visible as a conflict rather than being
+overwritten.
 
 ## Source Record
 

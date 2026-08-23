@@ -80,9 +80,12 @@ from .source_mapping import (
     TransformationOperation,
 )
 from .source_metadata import (
+    METADATA_SOURCE_PRECEDENCE,
     CanonicalSourceMetadata,
     MetadataConflict,
     MetadataField,
+    MetadataProvenanceRecord,
+    MetadataSource,
     MetadataValue,
     RawMetadataValue,
 )
@@ -118,9 +121,12 @@ __all__ = [
     "DiscoveryRoot",
     "SymlinkPolicy",
     # Source metadata
+    "METADATA_SOURCE_PRECEDENCE",
     "CanonicalSourceMetadata",
     "MetadataConflict",
     "MetadataField",
+    "MetadataProvenanceRecord",
+    "MetadataSource",
     "MetadataValue",
     "RawMetadataValue",
     # Corpus snapshots

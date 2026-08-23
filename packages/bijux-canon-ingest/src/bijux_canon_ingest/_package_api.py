@@ -79,7 +79,24 @@ LAZY_EXPORTS: dict[str, LazyExport] = {
     "HtmlLink": (".domain.document_extraction", "HtmlLink"),
     "MetadataConflict": (".domain.source_metadata", "MetadataConflict"),
     "MetadataField": (".domain.source_metadata", "MetadataField"),
+    "METADATA_SOURCE_PRECEDENCE": (
+        ".domain.source_metadata",
+        "METADATA_SOURCE_PRECEDENCE",
+    ),
+    "MetadataProvenanceRecord": (
+        ".domain.source_metadata",
+        "MetadataProvenanceRecord",
+    ),
+    "MetadataSource": (".domain.source_metadata", "MetadataSource"),
     "MetadataValue": (".domain.source_metadata", "MetadataValue"),
+    "MetadataIntegrityCode": (
+        ".application.source_metadata",
+        "MetadataIntegrityCode",
+    ),
+    "MetadataIntegrityError": (
+        ".application.source_metadata",
+        "MetadataIntegrityError",
+    ),
     "NewlineStyle": (".domain.document_extraction", "NewlineStyle"),
     "NormalizedSpanMapping": (
         ".domain.source_mapping",
@@ -243,6 +260,11 @@ PUBLIC_API = [
     "HtmlLink",
     "MetadataConflict",
     "MetadataField",
+    "METADATA_SOURCE_PRECEDENCE",
+    "MetadataIntegrityCode",
+    "MetadataIntegrityError",
+    "MetadataProvenanceRecord",
+    "MetadataSource",
     "MetadataValue",
     "NewlineStyle",
     "NormalizedSpanMapping",
