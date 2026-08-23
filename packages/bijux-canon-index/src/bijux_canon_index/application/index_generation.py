@@ -20,20 +20,39 @@ from bijux_canon_index.domain.metadata_filters import (
     MetadataValue,
     validated_metadata,
 )
+from bijux_canon_index.infra.adapters.faiss import exact as exact_backend
+from bijux_canon_index.infra.adapters.faiss import hnsw as hnsw_backend
 from bijux_canon_index.infra.adapters.faiss.exact import (
+    BACKEND_ID as EXACT_BACKEND_ID,
+    INDEX_TYPE as EXACT_INDEX_TYPE,
+    METRIC as EXACT_METRIC,
+    NORMALIZATION as EXACT_NORMALIZATION,
+    SCHEMA_VERSION as EXACT_SCHEMA_VERSION,
     DenseVectorRecord,
     FaissExactIndex,
+    FaissExactIndexManifest,
 )
 from bijux_canon_index.infra.adapters.faiss.hnsw import (
+    BACKEND_ID as HNSW_BACKEND_ID,
+    INDEX_TYPE as HNSW_INDEX_TYPE,
+    METRIC as HNSW_METRIC,
+    NORMALIZATION as HNSW_NORMALIZATION,
+    SCHEMA_VERSION as HNSW_SCHEMA_VERSION,
     FaissHnswIndex,
+    FaissHnswIndexManifest,
     HnswParameters,
 )
+from bijux_canon_index.infra.adapters.sqlite import lexical as lexical_backend
 from bijux_canon_index.infra.adapters.sqlite.lexical import (
+    BACKEND_ID as LEXICAL_BACKEND_ID,
+    SCHEMA_VERSION as LEXICAL_SCHEMA_VERSION,
     LexicalChunk,
+    LexicalIndexManifest,
     SQLiteLexicalIndex,
 )
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
+LEGACY_SCHEMA_VERSION = 1
 MANIFEST_NAME = "generation.json"
 LEXICAL_NAME = "lexical.sqlite"
 EXACT_NAME = "dense-exact.sqlite"
@@ -68,6 +87,30 @@ def _sha256_file(path: Path) -> str:
         for block in iter(lambda: handle.read(1024 * 1024), b""):
             digest.update(block)
     return digest.hexdigest()
+
+
+def _is_sha256_identity(value: str) -> bool:
+    digest = value.removeprefix("sha256:")
+    return (
+        value.startswith("sha256:")
+        and len(digest) == 64
+        and all(character in "0123456789abcdef" for character in digest)
+    )
+
+
+def _current_build_code_id() -> str:
+    modules = (exact_backend, hnsw_backend, lexical_backend)
+    files = [("index_generation", Path(__file__))]
+    for module in modules:
+        source_path = getattr(module, "__file__", None)
+        if source_path is None:
+            raise RuntimeError("index build implementation source is unavailable")
+        files.append((module.__name__, Path(source_path)))
+    payload = [
+        {"module": name, "sha256": _sha256_file(path)}
+        for name, path in sorted(files)
+    ]
+    return f"sha256:{_sha256_bytes(_canonical_json(payload).encode('utf-8'))}"
 
 
 @dataclass(frozen=True, slots=True)
@@ -194,6 +237,61 @@ class IndexGenerationLineage:
 
 
 @dataclass(frozen=True, slots=True)
+class IndexBuildIdentity:
+    """Explicit code, schema, algorithm, and normalization build identity."""
+
+    schema_version: str
+    build_code_id: str
+    lexical_algorithm: str
+    lexical_schema_version: int
+    lexical_tokenizer: str
+    lexical_tokenizer_configuration_sha256: str
+    dense_exact_algorithm: str
+    dense_exact_schema_version: int
+    dense_exact_index_type: str
+    dense_approximate_algorithm: str
+    dense_approximate_schema_version: int
+    dense_approximate_index_type: str
+    vector_dtype: str
+    metric: str
+    normalization: str
+
+    def __post_init__(self) -> None:
+        if self.schema_version != "bijux.canon.index.build_identity.v1":
+            raise ValueError("index build identity schema is unsupported")
+        if not _is_sha256_identity(self.build_code_id):
+            raise ValueError("index build code identity must be content-addressed")
+        if len(self.lexical_tokenizer_configuration_sha256) != 64 or any(
+            character not in "0123456789abcdef"
+            for character in self.lexical_tokenizer_configuration_sha256
+        ):
+            raise ValueError("lexical tokenizer configuration identity is invalid")
+        if not all(
+            value
+            for value in (
+                self.build_code_id,
+                self.lexical_algorithm,
+                self.lexical_tokenizer,
+                self.lexical_tokenizer_configuration_sha256,
+                self.dense_exact_algorithm,
+                self.dense_exact_index_type,
+                self.dense_approximate_algorithm,
+                self.dense_approximate_index_type,
+                self.vector_dtype,
+                self.metric,
+                self.normalization,
+            )
+        ):
+            raise ValueError("index build identity fields must not be empty")
+        if min(
+            self.lexical_schema_version,
+            self.dense_exact_schema_version,
+            self.dense_approximate_schema_version,
+        ) <= 0:
+            raise ValueError("index build schema versions must be positive")
+
+
+@dataclass(frozen=True, slots=True)
 class IndexGenerationManifest:
     """Identity and receipts for one coherent three-segment generation."""
 
@@ -206,6 +304,8 @@ class IndexGenerationManifest:
     hnsw_parameters: HnswParameters
     chunk_set_sha256: str
     stages: tuple[IndexBuildStageReceipt, ...]
+    build_identity: IndexBuildIdentity | None = None
+    configuration_id: str | None = None
     lineage: IndexGenerationLineage | None = None
 
 
@@ -229,7 +329,7 @@ class IndexGenerationIntegrityError(ValueError):
 
 
 def _manifest_payload(manifest: IndexGenerationManifest) -> dict[str, object]:
-    return {
+    payload: dict[str, object] = {
         "chunk_set_sha256": manifest.chunk_set_sha256,
         "generation_id": manifest.generation_id,
         "hnsw_parameters": asdict(manifest.hnsw_parameters),
@@ -241,6 +341,12 @@ def _manifest_payload(manifest: IndexGenerationManifest) -> dict[str, object]:
         "stages": [asdict(receipt) for receipt in manifest.stages],
         "statistics": asdict(manifest.statistics),
     }
+    if manifest.schema_version >= SCHEMA_VERSION:
+        payload["build_identity"] = (
+            None if manifest.build_identity is None else asdict(manifest.build_identity)
+        )
+        payload["configuration_id"] = manifest.configuration_id
+    return payload
 
 
 def _generation_id(payload: Mapping[str, object]) -> str:
@@ -249,10 +355,78 @@ def _generation_id(payload: Mapping[str, object]) -> str:
     return f"sha256:{_sha256_bytes(_canonical_json(identity).encode('utf-8'))}"
 
 
+def _configuration_id(
+    build_identity: IndexBuildIdentity,
+    limits: IndexBuildLimits,
+    hnsw_parameters: HnswParameters,
+) -> str:
+    payload = {
+        "build_identity": asdict(build_identity),
+        "hnsw_parameters": asdict(hnsw_parameters),
+        "limits": asdict(limits),
+        "schema_version": "bijux.canon.index.generation_configuration.v1",
+    }
+    return f"sha256:{_sha256_bytes(_canonical_json(payload).encode('utf-8'))}"
+
+
+def _build_identity_from_manifests(
+    lexical: LexicalIndexManifest,
+    exact: FaissExactIndexManifest,
+    hnsw: FaissHnswIndexManifest,
+    *,
+    build_code_id: str,
+) -> IndexBuildIdentity:
+    if (
+        exact.index_type != EXACT_INDEX_TYPE
+        or hnsw.index_type != HNSW_INDEX_TYPE
+        or exact.metric != EXACT_METRIC
+        or hnsw.metric != HNSW_METRIC
+        or exact.normalization != EXACT_NORMALIZATION
+        or hnsw.normalization != HNSW_NORMALIZATION
+        or exact.metric != hnsw.metric
+        or exact.normalization != hnsw.normalization
+    ):
+        raise ValueError("dense index algorithms use incompatible vector semantics")
+    return IndexBuildIdentity(
+        schema_version="bijux.canon.index.build_identity.v1",
+        build_code_id=build_code_id,
+        lexical_algorithm=LEXICAL_BACKEND_ID,
+        lexical_schema_version=LEXICAL_SCHEMA_VERSION,
+        lexical_tokenizer=lexical.tokenizer,
+        lexical_tokenizer_configuration_sha256=(
+            lexical.tokenizer_configuration_sha256
+        ),
+        dense_exact_algorithm=EXACT_BACKEND_ID,
+        dense_exact_schema_version=EXACT_SCHEMA_VERSION,
+        dense_exact_index_type=exact.index_type,
+        dense_approximate_algorithm=HNSW_BACKEND_ID,
+        dense_approximate_schema_version=HNSW_SCHEMA_VERSION,
+        dense_approximate_index_type=hnsw.index_type,
+        vector_dtype="float32",
+        metric=exact.metric,
+        normalization=exact.normalization,
+    )
+
+
+def _build_identity(
+    lexical: SQLiteLexicalIndex,
+    exact: FaissExactIndex,
+    hnsw: FaissHnswIndex,
+    *,
+    build_code_id: str,
+) -> IndexBuildIdentity:
+    return _build_identity_from_manifests(
+        lexical.manifest,
+        exact.manifest,
+        hnsw.manifest,
+        build_code_id=build_code_id,
+    )
+
+
 def _parse_manifest(payload: object) -> IndexGenerationManifest:
     if not isinstance(payload, dict):
         raise ValueError("index generation manifest must be a JSON object")
-    expected = {
+    common_fields = {
         "chunk_set_sha256",
         "generation_id",
         "hnsw_parameters",
@@ -264,6 +438,13 @@ def _parse_manifest(payload: object) -> IndexGenerationManifest:
         "stages",
         "statistics",
     }
+    raw_schema_version = payload.get("schema_version")
+    if raw_schema_version == LEGACY_SCHEMA_VERSION:
+        expected = common_fields
+    elif raw_schema_version == SCHEMA_VERSION:
+        expected = common_fields | {"build_identity", "configuration_id"}
+    else:
+        raise ValueError("index generation manifest schema is unsupported")
     if set(payload) != expected:
         raise ValueError("index generation manifest fields are unsupported")
     try:
@@ -276,6 +457,12 @@ def _parse_manifest(payload: object) -> IndexGenerationManifest:
             if lineage_payload is None
             else IndexGenerationLineage(**lineage_payload)
         )
+        build_identity_payload = payload.get("build_identity")
+        build_identity = (
+            None
+            if build_identity_payload is None
+            else IndexBuildIdentity(**build_identity_payload)
+        )
         manifest = IndexGenerationManifest(
             schema_version=int(payload["schema_version"]),
             generation_id=str(payload["generation_id"]),
@@ -286,14 +473,29 @@ def _parse_manifest(payload: object) -> IndexGenerationManifest:
             hnsw_parameters=HnswParameters(**payload["hnsw_parameters"]),
             chunk_set_sha256=str(payload["chunk_set_sha256"]),
             stages=tuple(IndexBuildStageReceipt(**item) for item in stages_payload),
+            build_identity=build_identity,
+            configuration_id=(
+                None
+                if payload.get("configuration_id") is None
+                else str(payload["configuration_id"])
+            ),
             lineage=lineage,
         )
     except (KeyError, TypeError, ValueError) as error:
         raise ValueError("index generation manifest is invalid") from error
-    if manifest.schema_version != SCHEMA_VERSION:
-        raise ValueError("index generation manifest schema is unsupported")
     if not manifest.snapshot_artifact_id or not manifest.model_lock_artifact_id:
         raise ValueError("index generation input identities must not be empty")
+    if manifest.schema_version == SCHEMA_VERSION:
+        if manifest.build_identity is None or manifest.configuration_id is None:
+            raise ValueError("index generation build identity is incomplete")
+        if not _is_sha256_identity(manifest.configuration_id):
+            raise ValueError("index generation configuration identity is invalid")
+        if manifest.configuration_id != _configuration_id(
+            manifest.build_identity,
+            manifest.limits,
+            manifest.hnsw_parameters,
+        ):
+            raise ValueError("index generation configuration identity mismatches")
     if manifest.generation_id != _generation_id(payload):
         raise ValueError("index generation identity does not match its manifest")
     return manifest
@@ -553,6 +755,17 @@ class IndexGeneration:
                 raise IndexGenerationIntegrityError(
                     "HNSW segment does not match generation parameters"
                 )
+            if manifest.build_identity is not None:
+                expected_build_identity = _build_identity(
+                    lexical,
+                    exact,
+                    hnsw,
+                    build_code_id=manifest.build_identity.build_code_id,
+                )
+                if manifest.build_identity != expected_build_identity:
+                    raise IndexGenerationIntegrityError(
+                        "index generation build identity does not match its segments"
+                    )
         except BaseException:
             hnsw.close()
             exact.close()
@@ -669,6 +882,7 @@ class IndexGeneration:
         hnsw_parameters: HnswParameters | None,
         lineage: IndexGenerationLineage | None,
     ) -> IndexGeneration:
+        build_code_id = _current_build_code_id()
         parameters = hnsw_parameters or HnswParameters()
         expected_lexical_chunks = tuple(
             LexicalChunk(
@@ -720,6 +934,7 @@ class IndexGeneration:
                         lexical.manifest.chunk_count,
                     )
                 )
+                lexical_manifest = lexical.manifest
             stage = "dense_exact"
             with FaissExactIndex.build(
                 temporary / EXACT_NAME,
@@ -736,6 +951,7 @@ class IndexGeneration:
                         exact.manifest.vector_count,
                     )
                 )
+                exact_manifest = exact.manifest
             stage = "dense_hnsw"
             with FaissHnswIndex.build(
                 temporary / HNSW_NAME,
@@ -753,10 +969,22 @@ class IndexGeneration:
                         hnsw.manifest.vector_count,
                     )
                 )
+                hnsw_manifest = hnsw.manifest
             chunk_set_hashes = {receipt.chunk_set_sha256 for receipt in receipts}
             if len(chunk_set_hashes) != 1:
                 raise ValueError("index segments admitted different chunk sets")
             chunk_set_sha256 = chunk_set_hashes.pop()
+            build_identity = _build_identity_from_manifests(
+                lexical_manifest,
+                exact_manifest,
+                hnsw_manifest,
+                build_code_id=build_code_id,
+            )
+            configuration_id = _configuration_id(
+                build_identity,
+                limits,
+                parameters,
+            )
             initial = IndexGenerationManifest(
                 schema_version=SCHEMA_VERSION,
                 generation_id="",
@@ -767,6 +995,8 @@ class IndexGeneration:
                 hnsw_parameters=parameters,
                 chunk_set_sha256=chunk_set_sha256,
                 stages=tuple(receipts),
+                build_identity=build_identity,
+                configuration_id=configuration_id,
                 lineage=lineage,
             )
             payload = _manifest_payload(initial)
@@ -780,6 +1010,8 @@ class IndexGeneration:
                 hnsw_parameters=initial.hnsw_parameters,
                 chunk_set_sha256=initial.chunk_set_sha256,
                 stages=initial.stages,
+                build_identity=initial.build_identity,
+                configuration_id=initial.configuration_id,
                 lineage=initial.lineage,
             )
             manifest_path = temporary / MANIFEST_NAME
@@ -871,6 +1103,7 @@ def _stage_receipt(
 
 __all__ = [
     "AdmittedIndexChunk",
+    "IndexBuildIdentity",
     "IndexBuildLimits",
     "IndexBuildStageReceipt",
     "IndexBuildStatistics",

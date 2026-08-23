@@ -19,6 +19,7 @@ from bijux_canon_index.application.index_audit import (
 )
 from bijux_canon_index.application.index_generation import (
     AdmittedIndexChunk,
+    IndexBuildIdentity,
     IndexBuildLimits,
     IndexBuildStageReceipt,
     IndexBuildStatistics,
@@ -33,6 +34,7 @@ from bijux_canon_index.application.index_generation import (
 )
 from bijux_canon_index.application.index_inspection import (
     IndexActivationInspection,
+    IndexBuildInspection,
     IndexCompatibilityInspection,
     IndexFilterInspection,
     IndexInspectionReport,
@@ -229,6 +231,8 @@ __all__ = [
     "VexStoredArtifact",
     "IndexActivationError",
     "IndexActivationInspection",
+    "IndexBuildIdentity",
+    "IndexBuildInspection",
     "IndexBuildLimits",
     "IndexBuildStageReceipt",
     "IndexBuildStatistics",

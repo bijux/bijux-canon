@@ -13,6 +13,29 @@ Index evidence is split between the execution artifact, the run directory, and
 the result payload. Keeping those layers separate prevents a result list from
 being mistaken for a reproducible execution record.
 
+## Immutable Generation Envelope
+
+A persistent lexical-and-dense generation is identified by the canonical
+`generation.json` content, not its directory name or the mutable active
+pointer. The generation identity covers the corpus snapshot and exact chunk
+set; the content-addressed embedding model lock and vector dimension; lexical,
+exact-dense, and approximate-dense algorithms and schemas; tokenizer, metric,
+normalization, and vector dtype; HNSW parameters; build resource limits; and a
+content-addressed identity of the generation and three backend implementation
+modules. Each segment also contributes its own content hash, backend generation
+identity, runtime-library identity, and item count.
+
+`inspect` reports the resulting configuration identity and its constituent
+algorithm facts without exposing source text, metadata values, or local paths.
+An operator can configure a registry with the required model lock, dimension,
+and configuration identity. Admission and activation then refuse an
+incomplete generation or any mismatch before replacing `active.json`.
+
+Generation schema 1 remains readable so retained local data can be recovered,
+but it lacks the explicit build/configuration envelope and cannot be newly
+admitted or activated. Rebuild it from the pinned corpus snapshot and model
+lock to obtain a schema 2 generation.
+
 ## Execution Artifact
 
 `ExecutionArtifact` binds a vector corpus to an execution contract:

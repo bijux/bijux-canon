@@ -5,6 +5,8 @@
 
 from __future__ import annotations
 
+import hashlib
+import json
 from pathlib import Path
 
 import pytest
@@ -54,6 +56,7 @@ def test_audit_closes_every_generation_integrity_surface(tmp_path: Path) -> None
     assert report.chunk_count == 1
     assert set(report.checks) == {
         "canonical_generation_manifest",
+        "explicit_build_configuration_identity",
         "segment_file_hashes",
         "backend_schema_runtime_identity",
         "model_lock_consistency",
@@ -96,6 +99,28 @@ def test_registry_refuses_incompatible_generation_before_admission(
     assert list(registry.generations.iterdir()) == []
 
 
+def test_registry_refuses_incompatible_build_configuration_before_admission(
+    tmp_path: Path,
+) -> None:
+    with _build(tmp_path / "generation", "a") as generation:
+        configuration_id = generation.manifest.configuration_id
+        assert configuration_id is not None
+        registry = IndexGenerationRegistry(
+            tmp_path / "registry",
+            compatibility=IndexCompatibility(
+                "sha256:model",
+                3,
+                configuration_id="sha256:" + "f" * 64,
+            ),
+        )
+        with pytest.raises(
+            IndexGenerationIncompatibleError, match="configuration"
+        ):
+            registry.admit(generation.path)
+
+    assert list(registry.generations.iterdir()) == []
+
+
 def test_segment_tamper_is_refused_before_admission(tmp_path: Path) -> None:
     registry = IndexGenerationRegistry(tmp_path / "registry")
     with _build(tmp_path / "generation", "a") as generation:
@@ -109,4 +134,32 @@ def test_segment_tamper_is_refused_before_admission(tmp_path: Path) -> None:
 
     with pytest.raises(ValueError, match="segment hash mismatch"):
         registry.admit(path)
+    assert list(registry.generations.iterdir()) == []
+
+
+def test_registry_refuses_legacy_generation_without_explicit_identity(
+    tmp_path: Path,
+) -> None:
+    with _build(tmp_path / "generation", "a") as generation:
+        path = generation.path
+    manifest_path = path / "generation.json"
+    payload = json.loads(manifest_path.read_text(encoding="utf-8"))
+    payload.pop("build_identity")
+    payload.pop("configuration_id")
+    payload["schema_version"] = 1
+    identity = dict(payload)
+    identity.pop("generation_id")
+    canonical = json.dumps(
+        identity, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+    ).encode("utf-8")
+    payload["generation_id"] = f"sha256:{hashlib.sha256(canonical).hexdigest()}"
+    manifest_path.write_text(
+        json.dumps(payload, sort_keys=True, separators=(",", ":")) + "\n",
+        encoding="utf-8",
+    )
+    registry = IndexGenerationRegistry(tmp_path / "registry")
+
+    with pytest.raises(IndexGenerationIncompatibleError, match="rebuild"):
+        registry.admit(path)
+
     assert list(registry.generations.iterdir()) == []

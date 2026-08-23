@@ -33,6 +33,27 @@ class IndexSegmentInspection:
 
 
 @dataclass(frozen=True, slots=True)
+class IndexBuildInspection:
+    """Explicit reproducibility identities bound into the generation."""
+
+    configuration_id: str
+    build_code_id: str
+    lexical_algorithm: str
+    lexical_schema_version: int
+    lexical_tokenizer: str
+    lexical_tokenizer_configuration_sha256: str
+    dense_exact_algorithm: str
+    dense_exact_schema_version: int
+    dense_exact_index_type: str
+    dense_approximate_algorithm: str
+    dense_approximate_schema_version: int
+    dense_approximate_index_type: str
+    vector_dtype: str
+    metric: str
+    normalization: str
+
+
+@dataclass(frozen=True, slots=True)
 class IndexFilterInspection:
     """Filter contract shared by every generation segment."""
 
@@ -78,6 +99,7 @@ class IndexCompatibilityInspection:
     status: str
     requested_model_lock_artifact_id: str | None
     requested_dimension: int | None
+    requested_configuration_id: str | None
 
 
 @dataclass(frozen=True, slots=True)
@@ -94,6 +116,7 @@ class IndexInspectionReport:
     text_bytes: int
     vector_bytes: int
     metadata_bytes: int
+    build: IndexBuildInspection
     segments: tuple[IndexSegmentInspection, ...]
     filters: IndexFilterInspection
     lineage: IndexLineageInspection
@@ -114,6 +137,10 @@ def inspect_index_generation(
     audit = audit_index_generation(root, compatibility=compatibility)
     with IndexGeneration.open(root) as generation:
         manifest = generation.manifest
+        build_identity = manifest.build_identity
+        configuration_id = manifest.configuration_id
+        if build_identity is None or configuration_id is None:
+            raise ValueError("verified index generation lacks a build identity")
         segments = tuple(
             IndexSegmentInspection(
                 stage=receipt.stage,
@@ -139,6 +166,33 @@ def inspect_index_generation(
             text_bytes=statistics.text_bytes,
             vector_bytes=statistics.vector_bytes,
             metadata_bytes=statistics.metadata_bytes,
+            build=IndexBuildInspection(
+                configuration_id=configuration_id,
+                build_code_id=build_identity.build_code_id,
+                lexical_algorithm=build_identity.lexical_algorithm,
+                lexical_schema_version=build_identity.lexical_schema_version,
+                lexical_tokenizer=build_identity.lexical_tokenizer,
+                lexical_tokenizer_configuration_sha256=(
+                    build_identity.lexical_tokenizer_configuration_sha256
+                ),
+                dense_exact_algorithm=build_identity.dense_exact_algorithm,
+                dense_exact_schema_version=(
+                    build_identity.dense_exact_schema_version
+                ),
+                dense_exact_index_type=build_identity.dense_exact_index_type,
+                dense_approximate_algorithm=(
+                    build_identity.dense_approximate_algorithm
+                ),
+                dense_approximate_schema_version=(
+                    build_identity.dense_approximate_schema_version
+                ),
+                dense_approximate_index_type=(
+                    build_identity.dense_approximate_index_type
+                ),
+                vector_dtype=build_identity.vector_dtype,
+                metric=build_identity.metric,
+                normalization=build_identity.normalization,
+            ),
             segments=segments,
             filters=IndexFilterInspection(
                 governed_fields=GOVERNED_METADATA_FIELDS,
@@ -172,12 +226,18 @@ def inspect_index_generation(
                 requested_dimension=(
                     None if compatibility is None else compatibility.dimension
                 ),
+                requested_configuration_id=(
+                    None
+                    if compatibility is None
+                    else compatibility.configuration_id
+                ),
             ),
         )
 
 
 __all__ = [
     "IndexActivationInspection",
+    "IndexBuildInspection",
     "IndexCompatibilityInspection",
     "IndexFilterInspection",
     "IndexInspectionReport",

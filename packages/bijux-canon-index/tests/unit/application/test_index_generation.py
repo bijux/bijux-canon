@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 from dataclasses import replace
+import hashlib
 import json
 from pathlib import Path
 
@@ -23,6 +24,7 @@ from bijux_canon_index.application.index_generation import (
     LexicalIndexLimits,
     build_lexical_index_segment,
 )
+from bijux_canon_index.application import index_generation as index_generation_module
 from bijux_canon_index.infra.adapters.faiss.exact import FaissExactIndex
 from bijux_canon_index.infra.adapters.faiss.hnsw import HnswParameters
 
@@ -136,6 +138,83 @@ def test_clean_rebuild_identity_is_independent_of_input_order(tmp_path: Path) ->
     assert (tmp_path / "first" / "generation.json").read_bytes() == (
         tmp_path / "second" / "generation.json"
     ).read_bytes()
+
+
+def test_generation_exposes_complete_build_and_configuration_identity(
+    tmp_path: Path,
+) -> None:
+    with _build(tmp_path / "generation") as generation:
+        manifest = generation.manifest
+
+    assert manifest.configuration_id is not None
+    assert manifest.configuration_id.startswith("sha256:")
+    assert manifest.build_identity is not None
+    assert manifest.build_identity.build_code_id.startswith("sha256:")
+    assert len(manifest.build_identity.build_code_id) == 71
+    assert manifest.build_identity.lexical_algorithm == "sqlite-fts5"
+    assert manifest.build_identity.dense_exact_algorithm == "faiss-flat-ip"
+    assert manifest.build_identity.dense_approximate_algorithm == "faiss-hnsw"
+    assert manifest.build_identity.vector_dtype == "float32"
+    assert manifest.build_identity.metric == "inner_product"
+    assert manifest.build_identity.normalization == "l2-float32-v1"
+
+
+@pytest.mark.parametrize(
+    ("change", "expected_field"),
+    [
+        ("snapshot", "snapshot_artifact_id"),
+        ("model", "model_lock_artifact_id"),
+        ("limits", "configuration_id"),
+        ("algorithm_parameters", "configuration_id"),
+        ("build_code", "configuration_id"),
+    ],
+)
+def test_generation_identity_changes_with_every_reproducibility_input(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    change: str,
+    expected_field: str,
+) -> None:
+    with _build(tmp_path / "baseline") as baseline:
+        baseline_manifest = baseline.manifest
+
+    snapshot_artifact_id = "sha256:snapshot"
+    model_lock_artifact_id = "sha256:model-lock"
+    limits = _limits()
+    hnsw_parameters = HnswParameters(
+        m=2, ef_construction=8, ef_search=8, seed=7
+    )
+    if change == "snapshot":
+        snapshot_artifact_id = "sha256:changed-snapshot"
+    elif change == "model":
+        model_lock_artifact_id = "sha256:changed-model-lock"
+    elif change == "limits":
+        limits = replace(_limits(), max_chunks=11)
+    elif change == "algorithm_parameters":
+        hnsw_parameters = HnswParameters(
+            m=2, ef_construction=8, ef_search=7, seed=7
+        )
+    else:
+        monkeypatch.setattr(
+            index_generation_module,
+            "_current_build_code_id",
+            lambda: "sha256:" + "f" * 64,
+        )
+
+    with IndexGeneration.build(
+        tmp_path / "changed",
+        _chunks(),
+        snapshot_artifact_id=snapshot_artifact_id,
+        model_lock_artifact_id=model_lock_artifact_id,
+        limits=limits,
+        hnsw_parameters=hnsw_parameters,
+    ) as changed:
+        changed_manifest = changed.manifest
+
+    assert changed_manifest.generation_id != baseline_manifest.generation_id
+    assert getattr(changed_manifest, expected_field) != getattr(
+        baseline_manifest, expected_field
+    )
 
 
 def test_lexical_segment_is_independent_and_dense_assembly_reuses_it(
@@ -271,6 +350,45 @@ def test_manifest_corruption_fails_closed(tmp_path: Path) -> None:
 
     with pytest.raises(ValueError, match="identity"):
         IndexGeneration.open(destination)
+
+
+def test_legacy_manifest_remains_readable_for_recovery(tmp_path: Path) -> None:
+    destination = tmp_path / "generation"
+    with _build(destination):
+        pass
+    manifest_path = destination / "generation.json"
+    payload = json.loads(manifest_path.read_text(encoding="utf-8"))
+    payload.pop("build_identity")
+    payload.pop("configuration_id")
+    payload["schema_version"] = 1
+    identity_payload = dict(payload)
+    identity_payload.pop("generation_id")
+    canonical_identity = json.dumps(
+        identity_payload,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
+        allow_nan=False,
+    ).encode("utf-8")
+    payload["generation_id"] = (
+        f"sha256:{hashlib.sha256(canonical_identity).hexdigest()}"
+    )
+    manifest_path.write_text(
+        json.dumps(
+            payload,
+            sort_keys=True,
+            separators=(",", ":"),
+            ensure_ascii=False,
+            allow_nan=False,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    with IndexGeneration.open(destination) as legacy:
+        assert legacy.manifest.schema_version == 1
+        assert legacy.manifest.build_identity is None
+        assert legacy.lexical.query("ancient DNA")
 
 
 def test_segment_corruption_fails_before_backend_open(tmp_path: Path) -> None:

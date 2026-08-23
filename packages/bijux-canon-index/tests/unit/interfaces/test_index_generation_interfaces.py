@@ -18,6 +18,9 @@ from bijux_canon_index.application import (
     IndexCompatibility,
     IndexService,
 )
+from bijux_canon_index.application.surface_services import (
+    index_service_from_environment,
+)
 from bijux_canon_index.interfaces.cli.app import app as cli_app
 
 
@@ -57,6 +60,25 @@ def _build_payload(snapshot: str, *, activate: bool) -> dict[str, object]:
         },
         "activate": activate,
     }
+
+
+def test_surface_configuration_requires_a_complete_compatibility_profile(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv(
+        "BIJUX_CANON_INDEX_GENERATION_ROOT", str(tmp_path / "registry")
+    )
+    monkeypatch.setenv("BIJUX_CANON_INDEX_CONFIGURATION_ID", "sha256:" + "f" * 64)
+
+    with pytest.raises(ValueError, match="requires a model profile"):
+        index_service_from_environment()
+
+    monkeypatch.setenv("BIJUX_CANON_INDEX_MODEL_LOCK_ARTIFACT_ID", "sha256:model")
+    monkeypatch.setenv("BIJUX_CANON_INDEX_MODEL_DIMENSION", "3")
+    assert index_service_from_environment().registry_root == (
+        tmp_path / "registry"
+    ).resolve()
 
 
 def test_library_cli_runtime_and_http_share_generation_service(

@@ -21,12 +21,23 @@ class IndexCompatibility:
 
     model_lock_artifact_id: str
     dimension: int
+    configuration_id: str | None = None
 
     def __post_init__(self) -> None:
         if not self.model_lock_artifact_id:
             raise ValueError("index compatibility requires a model lock identity")
         if self.dimension <= 0:
             raise ValueError("index compatibility dimension must be positive")
+        if self.configuration_id is not None:
+            digest = self.configuration_id.removeprefix("sha256:")
+            if (
+                not self.configuration_id.startswith("sha256:")
+                or len(digest) != 64
+                or any(character not in "0123456789abcdef" for character in digest)
+            ):
+                raise ValueError(
+                    "index compatibility configuration identity is invalid"
+                )
 
 
 @dataclass(frozen=True, slots=True)
@@ -37,6 +48,7 @@ class IndexGenerationAuditReport:
     model_lock_artifact_id: str
     dimension: int
     chunk_count: int
+    configuration_id: str
     checks: tuple[str, ...]
 
 
@@ -49,6 +61,10 @@ def audit_index_generation(
 
     with IndexGeneration.open(path) as generation:
         manifest = generation.manifest
+        if manifest.build_identity is None or manifest.configuration_id is None:
+            raise IndexGenerationIncompatibleError(
+                "legacy index generation lacks an explicit build identity; rebuild it"
+            )
         lexical_ids = tuple(chunk.chunk_id for chunk in generation.lexical.chunks())
         exact_ids = tuple(record.chunk_id for record in generation.exact.records())
         hnsw_ids = generation.hnsw.chunk_ids()
@@ -69,13 +85,22 @@ def audit_index_generation(
                 raise IndexGenerationIncompatibleError(
                     "index generation vector dimension is incompatible"
                 )
+            if (
+                compatibility.configuration_id is not None
+                and manifest.configuration_id != compatibility.configuration_id
+            ):
+                raise IndexGenerationIncompatibleError(
+                    "index generation configuration is incompatible"
+                )
         return IndexGenerationAuditReport(
             generation_id=manifest.generation_id,
             model_lock_artifact_id=manifest.model_lock_artifact_id,
             dimension=manifest.statistics.dimension,
             chunk_count=manifest.statistics.chunk_count,
+            configuration_id=manifest.configuration_id,
             checks=(
                 "canonical_generation_manifest",
+                "explicit_build_configuration_identity",
                 "segment_file_hashes",
                 "backend_schema_runtime_identity",
                 "model_lock_consistency",

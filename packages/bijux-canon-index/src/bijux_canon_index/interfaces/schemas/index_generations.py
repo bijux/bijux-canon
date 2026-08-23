@@ -191,6 +191,24 @@ class IndexSegmentInspectionPayload(StrictModel):
     chunk_set_sha256: str
 
 
+class IndexBuildInspectionPayload(StrictModel):
+    configuration_id: str
+    build_code_id: str
+    lexical_algorithm: str
+    lexical_schema_version: int
+    lexical_tokenizer: str
+    lexical_tokenizer_configuration_sha256: str
+    dense_exact_algorithm: str
+    dense_exact_schema_version: int
+    dense_exact_index_type: str
+    dense_approximate_algorithm: str
+    dense_approximate_schema_version: int
+    dense_approximate_index_type: str
+    vector_dtype: str
+    metric: str
+    normalization: str
+
+
 class IndexFilterInspectionPayload(StrictModel):
     governed_fields: tuple[str, ...]
     user_predicates_supported: bool
@@ -222,6 +240,7 @@ class IndexCompatibilityInspectionPayload(StrictModel):
     status: str
     requested_model_lock_artifact_id: str | None
     requested_dimension: int | None
+    requested_configuration_id: str | None
 
 
 class IndexInspectionResponse(StrictModel):
@@ -237,6 +256,7 @@ class IndexInspectionResponse(StrictModel):
     text_bytes: int
     vector_bytes: int
     metadata_bytes: int
+    build: IndexBuildInspectionPayload
     segments: tuple[IndexSegmentInspectionPayload, ...]
     filters: IndexFilterInspectionPayload
     lineage: IndexLineageInspectionPayload

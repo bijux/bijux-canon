@@ -952,6 +952,90 @@
         "title": "IndexActivationRequestPayload",
         "type": "object"
       },
+      "IndexBuildInspectionPayload": {
+        "additionalProperties": false,
+        "properties": {
+          "build_code_id": {
+            "title": "Build Code Id",
+            "type": "string"
+          },
+          "configuration_id": {
+            "title": "Configuration Id",
+            "type": "string"
+          },
+          "dense_approximate_algorithm": {
+            "title": "Dense Approximate Algorithm",
+            "type": "string"
+          },
+          "dense_approximate_index_type": {
+            "title": "Dense Approximate Index Type",
+            "type": "string"
+          },
+          "dense_approximate_schema_version": {
+            "title": "Dense Approximate Schema Version",
+            "type": "integer"
+          },
+          "dense_exact_algorithm": {
+            "title": "Dense Exact Algorithm",
+            "type": "string"
+          },
+          "dense_exact_index_type": {
+            "title": "Dense Exact Index Type",
+            "type": "string"
+          },
+          "dense_exact_schema_version": {
+            "title": "Dense Exact Schema Version",
+            "type": "integer"
+          },
+          "lexical_algorithm": {
+            "title": "Lexical Algorithm",
+            "type": "string"
+          },
+          "lexical_schema_version": {
+            "title": "Lexical Schema Version",
+            "type": "integer"
+          },
+          "lexical_tokenizer": {
+            "title": "Lexical Tokenizer",
+            "type": "string"
+          },
+          "lexical_tokenizer_configuration_sha256": {
+            "title": "Lexical Tokenizer Configuration Sha256",
+            "type": "string"
+          },
+          "metric": {
+            "title": "Metric",
+            "type": "string"
+          },
+          "normalization": {
+            "title": "Normalization",
+            "type": "string"
+          },
+          "vector_dtype": {
+            "title": "Vector Dtype",
+            "type": "string"
+          }
+        },
+        "required": [
+          "configuration_id",
+          "build_code_id",
+          "lexical_algorithm",
+          "lexical_schema_version",
+          "lexical_tokenizer",
+          "lexical_tokenizer_configuration_sha256",
+          "dense_exact_algorithm",
+          "dense_exact_schema_version",
+          "dense_exact_index_type",
+          "dense_approximate_algorithm",
+          "dense_approximate_schema_version",
+          "dense_approximate_index_type",
+          "vector_dtype",
+          "metric",
+          "normalization"
+        ],
+        "title": "IndexBuildInspectionPayload",
+        "type": "object"
+      },
       "IndexBuildLimitsPayload": {
         "additionalProperties": false,
         "description": "Hard build limits supplied through an installed interface.",
@@ -1104,6 +1188,17 @@
       "IndexCompatibilityInspectionPayload": {
         "additionalProperties": false,
         "properties": {
+          "requested_configuration_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Requested Configuration Id"
+          },
           "requested_dimension": {
             "anyOf": [
               {
@@ -1134,7 +1229,8 @@
         "required": [
           "status",
           "requested_model_lock_artifact_id",
-          "requested_dimension"
+          "requested_dimension",
+          "requested_configuration_id"
         ],
         "title": "IndexCompatibilityInspectionPayload",
         "type": "object"
@@ -1185,6 +1281,9 @@
         "properties": {
           "activation": {
             "$ref": "#/components/schemas/IndexActivationInspectionPayload"
+          },
+          "build": {
+            "$ref": "#/components/schemas/IndexBuildInspectionPayload"
           },
           "chunk_count": {
             "title": "Chunk Count",
@@ -1257,6 +1356,7 @@
           "text_bytes",
           "vector_bytes",
           "metadata_bytes",
+          "build",
           "segments",
           "filters",
           "lineage",
@@ -2650,7 +2750,7 @@
                 }
               }
             },
-            "description": "Unprocessable Entity"
+            "description": "Unprocessable Content"
           }
         },
         "summary": "Execute a vector query",

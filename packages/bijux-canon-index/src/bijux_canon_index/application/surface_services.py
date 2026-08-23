@@ -38,14 +38,23 @@ def index_service_from_environment(
     )
     model_lock_artifact_id = os.getenv("BIJUX_CANON_INDEX_MODEL_LOCK_ARTIFACT_ID")
     raw_dimension = os.getenv("BIJUX_CANON_INDEX_MODEL_DIMENSION")
+    configuration_id = os.getenv("BIJUX_CANON_INDEX_CONFIGURATION_ID")
     if (model_lock_artifact_id is None) != (raw_dimension is None):
         raise ValueError(
             "generation compatibility requires both model lock and dimension"
         )
+    if configuration_id is not None and model_lock_artifact_id is None:
+        raise ValueError(
+            "generation configuration compatibility requires a model profile"
+        )
     compatibility = (
         None
         if model_lock_artifact_id is None
-        else IndexCompatibility(model_lock_artifact_id, int(raw_dimension or ""))
+        else IndexCompatibility(
+            model_lock_artifact_id,
+            int(raw_dimension or ""),
+            configuration_id=configuration_id,
+        )
     )
     return IndexService(root, compatibility=compatibility)
 
