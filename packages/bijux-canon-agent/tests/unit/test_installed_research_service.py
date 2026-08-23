@@ -18,6 +18,7 @@ from bijux_canon_agent.application import (
     InstalledResearchService,
     ObservedEvidenceRelationKind,
     ObservedResearchGapKind,
+    TargetedSearchPlan,
 )
 
 _GRAPH = "sha256:" + "1" * 64
@@ -32,17 +33,35 @@ _SEARCH = "sha256:" + "9" * 64
 _CANDIDATE = "sha256:" + "a" * 64
 _RETRIEVAL = "sha256:" + "b" * 64
 _CONVERGENCE = "sha256:" + "c" * 64
+_REQUIREMENT = "sha256:" + "d" * 64
 
 
 def _request(
     *,
     satisfied: bool = True,
     relation: ObservedEvidenceRelationKind | None = None,
+    include_opposition: bool = True,
+    max_searches: int = 1,
 ) -> InstalledResearchRequest:
     requirement = InstalledResearchRequirement.create(
         description="Establish whether the method improves endogenous DNA recovery.",
         claim_artifact_id=_CLAIM,
         satisfied=satisfied,
+        query_text=(
+            None
+            if satisfied
+            else "direct evidence for endogenous DNA recovery improvement"
+        ),
+        evidence_artifact_ids=(_KNOWN,) if satisfied else (),
+    )
+    opposition = InstalledResearchRequirement.create(
+        description="Search for material opposition to the recovery claim.",
+        claim_artifact_id=_CLAIM,
+        satisfied=False,
+        kind="opposition",
+        priority=90,
+        query_text="contradictory evidence for endogenous DNA recovery improvement",
+        source_requirement_artifact_id=_REQUIREMENT,
     )
     evidence_relation = InstalledEvidenceRelation.create(
         claim_artifact_id=_CLAIM,
@@ -73,9 +92,13 @@ def _request(
         counterevidence_policy_artifact_id=_COUNTER_POLICY,
         convergence_policy_artifact_id=_CONVERGENCE_POLICY,
         question="Does the method improve endogenous DNA recovery?",
-        requirements=(requirement,),
+        requirements=(
+            (requirement, opposition)
+            if satisfied and include_opposition
+            else (requirement,)
+        ),
         evidence_relations=(evidence_relation,),
-        max_searches=1,
+        max_searches=max_searches,
         requirement_plan_artifact_id=_PLAN,
         requirement_plan_record={"outcome": "search_required"},
         requirement_plan_outcome="search_required",
@@ -92,10 +115,25 @@ class _Port:
     search_error: Exception | None = None
     calls: list[str] = field(default_factory=list)
 
-    def plan(self, request: InstalledResearchRequest) -> InstalledResearchPlan:
+    def plan(
+        self,
+        request: InstalledResearchRequest,
+        targeted_search_plan: TargetedSearchPlan | None,
+    ) -> InstalledResearchPlan:
         assert request.claims[0].artifact_id == _CLAIM
         self.calls.append("plan")
-        return InstalledResearchPlan(_PLAN, self.requests, {"requests": []})
+        requests = (
+            self.requests
+            if targeted_search_plan is not None
+            and targeted_search_plan.attempt is not None
+            else ()
+        )
+        return InstalledResearchPlan(
+            _PLAN,
+            requests,
+            {"requests": []},
+            targeted_search_plan,
+        )
 
     def search(
         self,
@@ -184,7 +222,9 @@ def test_service_skips_search_when_plan_has_no_requests() -> None:
         convergence_outcome="converged",
         convergence_stop=True,
     )
-    result = InstalledResearchService().research(_request(), port)
+    result = InstalledResearchService().research(
+        _request(include_opposition=False), port
+    )
 
     assert port.calls == ["plan", "evaluate"]
     assert [event.role for event in result.causal_events] == [
@@ -231,7 +271,7 @@ def test_ambiguous_search_takes_the_adjudication_branch() -> None:
     )
 
 
-def test_no_results_are_retained_without_becoming_confirmation() -> None:
+def test_no_results_are_retained_without_closing_the_opposition_need() -> None:
     port = _Port(
         candidates=(),
         search_outcome="no_new_counterevidence_found",
@@ -245,7 +285,7 @@ def test_no_results_are_retained_without_becoming_confirmation() -> None:
         "verifier",
         "verifier",
     ]
-    assert result.final_state.terminal_status == "completed"
+    assert result.final_state.terminal_status == "incomplete"
     no_results = tuple(
         gap
         for gap in result.final_state.gaps
@@ -277,7 +317,9 @@ def test_unsatisfied_requirement_without_a_search_is_not_completed() -> None:
         requests=(),
         convergence_outcome="converged",
     )
-    result = InstalledResearchService().research(_request(satisfied=False), port)
+    result = InstalledResearchService().research(
+        _request(satisfied=False, max_searches=0), port
+    )
 
     assert port.calls == ["plan", "evaluate"]
     assert result.causal_events[1].role == "adjudicator"
@@ -286,7 +328,9 @@ def test_unsatisfied_requirement_without_a_search_is_not_completed() -> None:
 
 def test_service_rejects_an_untyped_port_result() -> None:
     port = _Port()
-    port.plan = lambda request: {"artifact_id": _PLAN}  # type: ignore[method-assign,assignment]
+    port.plan = lambda request, targeted: {  # type: ignore[method-assign,assignment]
+        "artifact_id": _PLAN
+    }
 
     with pytest.raises(TypeError, match="invalid plan"):
         InstalledResearchService().research(_request(), port)

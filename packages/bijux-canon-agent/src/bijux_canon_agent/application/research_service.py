@@ -22,6 +22,11 @@ from bijux_canon_agent.application.research_workflow.observed_state import (
     ObservedResearchState,
     ObservedResearchStateMachine,
 )
+from bijux_canon_agent.application.research_workflow.targeted_search import (
+    TargetedSearchPlan,
+    TargetedSearchPlanningService,
+    TargetedSearchPolicy,
+)
 
 
 def _canonical(value: object) -> bytes:
@@ -140,6 +145,7 @@ class InstalledResearchPlan:
     artifact_id: str
     request_artifact_ids: tuple[str, ...]
     record: Mapping[str, object]
+    targeted_search_plan: TargetedSearchPlan | None = None
 
     def __post_init__(self) -> None:
         _require_artifact_id(self.artifact_id, "research plan artifact_id")
@@ -147,6 +153,12 @@ class InstalledResearchPlan:
             _require_artifact_id(artifact_id, "research request artifact_id")
         if not isinstance(self.record, Mapping):
             raise TypeError("research plan record must be a mapping")
+        if self.targeted_search_plan is not None:
+            attempt = self.targeted_search_plan.attempt
+            if (attempt is None) != (not self.request_artifact_ids):
+                raise ValueError(
+                    "targeted search selection must match executable requests"
+                )
 
 
 @dataclass(frozen=True, slots=True)
@@ -158,6 +170,9 @@ class InstalledResearchSearchRecord:
     candidate_evidence_artifact_ids: tuple[str, ...]
     negative_search_statement: str | None
     record: Mapping[str, object]
+    requirement_artifact_id: str | None = None
+    target_claim_artifact_ids: tuple[str, ...] | None = None
+    attempt_artifact_id: str | None = None
 
     def __post_init__(self) -> None:
         _require_artifact_id(self.claim_artifact_id, "searched claim artifact_id")
@@ -165,8 +180,23 @@ class InstalledResearchSearchRecord:
             raise ValueError("research search outcome must not be empty")
         for artifact_id in self.candidate_evidence_artifact_ids:
             _require_artifact_id(artifact_id, "candidate evidence artifact_id")
+        for artifact_id in (
+            (() if self.requirement_artifact_id is None else (self.requirement_artifact_id,))
+            + (() if self.target_claim_artifact_ids is None else self.target_claim_artifact_ids)
+            + (() if self.attempt_artifact_id is None else (self.attempt_artifact_id,))
+        ):
+            _require_artifact_id(artifact_id, "targeted search record reference")
         if not isinstance(self.record, Mapping):
             raise TypeError("research search record must be a mapping")
+
+    @property
+    def effective_target_claim_artifact_ids(self) -> tuple[str, ...]:
+        """Return explicit claim targets or the compatibility claim target."""
+        return (
+            (self.claim_artifact_id,)
+            if self.target_claim_artifact_ids is None
+            else self.target_claim_artifact_ids
+        )
 
 
 @dataclass(frozen=True, slots=True)
@@ -213,7 +243,11 @@ class InstalledResearchConvergence:
 class InstalledResearchPort(Protocol):
     """Runtime-supplied Reason and retrieval operations used by Agent."""
 
-    def plan(self, request: InstalledResearchRequest) -> InstalledResearchPlan: ...
+    def plan(
+        self,
+        request: InstalledResearchRequest,
+        targeted_search_plan: TargetedSearchPlan | None,
+    ) -> InstalledResearchPlan: ...
 
     def search(
         self,
@@ -273,7 +307,17 @@ class InstalledResearchService:
             request.counterevidence_policy_artifact_id,
             request.convergence_policy_artifact_id,
         )
-        plan = port.plan(request)
+        targeted_search_plan = (
+            None
+            if request.max_searches == 0
+            else TargetedSearchPlanningService(
+                TargetedSearchPolicy(
+                    max_attempts=request.max_searches,
+                    max_attempts_per_requirement=min(2, request.max_searches),
+                )
+            ).plan(request.requirements)
+        )
+        plan = port.plan(request, targeted_search_plan)
         if not isinstance(plan, InstalledResearchPlan):
             raise TypeError("installed research port returned an invalid plan")
         state = self._record_decision(
@@ -520,17 +564,24 @@ class InstalledResearchService:
                     else ObservedResearchGapKind.UNCLASSIFIED_EVIDENCE
                 )
                 for evidence_id in record.candidate_evidence_artifact_ids:
-                    relation = InstalledEvidenceRelation.create(
-                        claim_artifact_id=record.claim_artifact_id,
-                        evidence_artifact_id=evidence_id,
-                        kind=relation_kind,
-                        material=True,
+                    record_relations = tuple(
+                        InstalledEvidenceRelation.create(
+                            claim_artifact_id=claim_id,
+                            evidence_artifact_id=evidence_id,
+                            kind=relation_kind,
+                            material=True,
+                        )
+                        for claim_id in record.effective_target_claim_artifact_ids
                     )
-                    relations.append(relation)
+                    relations.extend(record_relations)
                     gaps.append(
                         ObservedResearchGap.create(
                             kind=gap_kind,
-                            subject_artifact_id=relation.artifact_id,
+                            subject_artifact_id=(
+                                record_relations[0].artifact_id
+                                if record_relations
+                                else evidence_id
+                            ),
                         )
                     )
             state = cls._record_decision(

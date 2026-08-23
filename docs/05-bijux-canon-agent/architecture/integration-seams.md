@@ -122,5 +122,13 @@ Runtime maps that typed plan without inventing requirements. Agent retains the
 full requirement semantics in observed state and permits search only for
 material unresolved requirements with a query and an in-scope claim target.
 
+Agent also owns requirement-targeted query selection. Each admitted call binds
+one unresolved requirement, its support, opposition, limitation,
+disambiguation, or context intent, substantive query, satisfaction criteria,
+causal trigger, and prior attempts. Case, Unicode, whitespace, and
+punctuation-equivalent attempts share an equivalence identity and cannot be
+executed repeatedly. Runtime executes the selected query but cannot replace it
+with the same generic per-claim request.
+
 See [configuration](../interfaces/configuration-surface.md) for precedence and
 [artifact contracts](../interfaces/artifact-contracts.md) for evidence fields.

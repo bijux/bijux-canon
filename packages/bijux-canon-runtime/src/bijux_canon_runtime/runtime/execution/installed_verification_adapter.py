@@ -26,6 +26,7 @@ from bijux_canon_reason.grounding import (
     NuancedGroundingRepresentation,
     render_grounded_answer,
 )
+from bijux_canon_reason.grounding.provider_contracts import content_artifact_id
 from bijux_canon_reason.research import (
     AnswerRequirementPlan,
     ConvergenceDecision,
@@ -236,6 +237,29 @@ def _verify_research_trace(subject: Mapping[str, object]) -> tuple[str, ...]:
         raise StepDispatchError("research trace records are invalid") from error
     if run is not None and run.plan_artifact_id != plan.artifact_id:
         raise StepDispatchError("counterevidence run refers to another plan")
+    raw_targeted = subject.get("targeted_search_plan")
+    if not isinstance(raw_targeted, dict):
+        raise StepDispatchError("targeted search plan is missing or invalid")
+    targeted_id = raw_targeted.get("artifact_id")
+    if targeted_id != content_artifact_id(raw_targeted | {"artifact_id": None}):
+        raise StepDispatchError("targeted search plan identity is invalid")
+    raw_attempt = raw_targeted.get("attempt")
+    if (raw_attempt is None) != (not plan.requests):
+        raise StepDispatchError("targeted search selection differs from retrieval plan")
+    if isinstance(raw_attempt, dict):
+        attempt_id = raw_attempt.get("artifact_id")
+        if attempt_id != content_artifact_id(raw_attempt | {"artifact_id": None}):
+            raise StepDispatchError("targeted search attempt identity is invalid")
+        if len(plan.requests) != 1 or (
+            plan.requests[0].target_artifact_id
+            != raw_attempt.get("requirement_artifact_id")
+        ):
+            raise StepDispatchError("retrieval plan targets another answer requirement")
+        query_text = raw_attempt.get("query_text")
+        if not isinstance(query_text, str) or not plan.requests[0].query_text.startswith(
+            query_text
+        ):
+            raise StepDispatchError("retrieval query differs from targeted search")
     if requirements.graph_artifact_id != subject.get("claim_graph_artifact_id"):
         raise StepDispatchError("answer requirement plan refers to another graph")
     raw_requirements = raw_state.get("requirements")
@@ -273,6 +297,7 @@ def _verify_research_trace(subject: Mapping[str, object]) -> tuple[str, ...]:
         raise StepDispatchError("research opposition candidates do not match search")
     return (
         "answer-requirement-plan-identity",
+        "targeted-search-plan-identity",
         "counterevidence-plan-identity",
         "counterevidence-search-lineage",
         "unclassified-opposition-preservation",

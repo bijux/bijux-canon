@@ -23,6 +23,8 @@ from bijux_canon_agent.application import (
     InstalledResearchSearchRecord,
     InstalledResearchService,
     ObservedEvidenceRelationKind,
+    TargetedSearchAttempt,
+    TargetedSearchPlan,
 )
 from bijux_canon_index.application import HybridRetrievalPolicy, IndexService
 from bijux_canon_reason.grounding import (
@@ -188,31 +190,6 @@ class _IndexCounterevidencePort:
         )
 
 
-def _targets(
-    request: InstalledResearchRequest,
-) -> tuple[CounterevidenceTarget, ...]:
-    searchable_claim_ids = {
-        claim_id
-        for requirement in request.requirements
-        if requirement.material
-        and requirement.status == AnswerRequirementStatus.UNRESOLVED.value
-        and requirement.query_text is not None
-        for claim_id in requirement.target_claim_artifact_ids
-    }
-    return tuple(
-        create_counterevidence_target(
-            graph_artifact_id=request.claim_graph_artifact_id,
-            claim_artifact_id=claim.artifact_id,
-            scope_artifact_id=request.scope_artifact_id,
-            statement=claim.statement,
-            importance=claim.importance,
-            known_evidence_artifact_ids=claim.known_evidence_artifact_ids,
-        )
-        for claim in request.claims
-        if claim.artifact_id in searchable_claim_ids
-    )
-
-
 class _ReasonResearchPort:
     """Adapt installed Reason services and Runtime retrieval to Agent's port."""
 
@@ -227,14 +204,49 @@ class _ReasonResearchPort:
         self._convergence = convergence
         self._retrieval = retrieval
         self._reason_plan: CounterevidencePlan | None = None
+        self._targeted_attempt: TargetedSearchAttempt | None = None
 
-    def plan(self, request: InstalledResearchRequest) -> InstalledResearchPlan:
-        plan = self._counterevidence.plan(_targets(request))
+    def plan(
+        self,
+        request: InstalledResearchRequest,
+        targeted_search_plan: TargetedSearchPlan | None,
+    ) -> InstalledResearchPlan:
+        attempt = (
+            None if targeted_search_plan is None else targeted_search_plan.attempt
+        )
+        if attempt is None:
+            targets: tuple[CounterevidenceTarget, ...] = ()
+        else:
+            requirement = next(
+                (
+                    item
+                    for item in request.requirements
+                    if item.artifact_id == attempt.requirement_artifact_id
+                ),
+                None,
+            )
+            if requirement is None:
+                raise StepDispatchError(
+                    "targeted search references an unknown answer requirement"
+                )
+            targets = (
+                create_counterevidence_target(
+                    graph_artifact_id=request.claim_graph_artifact_id,
+                    claim_artifact_id=requirement.artifact_id,
+                    scope_artifact_id=request.scope_artifact_id,
+                    statement=attempt.query_text,
+                    importance=requirement.priority,
+                    known_evidence_artifact_ids=requirement.evidence_artifact_ids,
+                ),
+            )
+        plan = self._counterevidence.plan(targets)
         self._reason_plan = plan
+        self._targeted_attempt = attempt
         return InstalledResearchPlan(
             artifact_id=plan.artifact_id,
             request_artifact_ids=tuple(item.artifact_id for item in plan.requests),
             record=plan.model_dump(mode="json"),
+            targeted_search_plan=targeted_search_plan,
         )
 
     def search(
@@ -246,6 +258,9 @@ class _ReasonResearchPort:
         reason_plan = self._reason_plan
         if reason_plan is None or reason_plan.artifact_id != plan.artifact_id:
             raise StepDispatchError("Agent research plan is not bound to Reason")
+        attempt = self._targeted_attempt
+        if attempt is None:
+            raise StepDispatchError("Agent research search has no targeted attempt")
         counter_run = self._counterevidence.search(reason_plan, self._retrieval)
         return InstalledResearchSearch(
             artifact_id=counter_run.artifact_id,
@@ -258,6 +273,9 @@ class _ReasonResearchPort:
                     ),
                     negative_search_statement=record.negative_search_statement,
                     record=record.model_dump(mode="json"),
+                    requirement_artifact_id=attempt.requirement_artifact_id,
+                    target_claim_artifact_ids=attempt.target_claim_artifact_ids,
+                    attempt_artifact_id=attempt.artifact_id,
                 )
                 for record in counter_run.records
             ),
@@ -598,6 +616,11 @@ class CanonicalAgentOperationAdapter:
                 "causal_trace": _json_value(asdict(research.causal_trace)),
                 "claim_graph_artifact_id": graph_id,
                 "counterevidence_plan": dict(research.plan.record),
+                "targeted_search_plan": (
+                    None
+                    if research.plan.targeted_search_plan is None
+                    else _json_value(asdict(research.plan.targeted_search_plan))
+                ),
                 "counterevidence_retrieval_artifact_ids": (
                     []
                     if research.search is None

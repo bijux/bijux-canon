@@ -807,6 +807,21 @@ def _verify_reason_and_agent(grounded: _GroundedRuntime) -> None:
     assert research_trace["status"] == "budget_exhausted"
     assert research_trace["termination"]["stop"] is True
     assert research_trace["counterevidence_plan"]["requests"]
+    targeted_search = research_trace["targeted_search_plan"]
+    assert targeted_search["attempt"]["intent"] == "opposition"
+    assert targeted_search["attempt"]["trigger"] == "initial_gap"
+    assert targeted_search["attempt"]["requirement_artifact_id"] in (
+        research_trace["answer_requirement_plan"][
+            "search_requirement_artifact_ids"
+        ]
+    ) or targeted_search["attempt"]["source_requirement_artifact_id"] in (
+        research_trace["answer_requirement_plan"][
+            "search_requirement_artifact_ids"
+        ]
+    )
+    assert research_trace["counterevidence_plan"]["requests"][0][
+        "query_text"
+    ].startswith(targeted_search["attempt"]["query_text"])
     assert (
         "contradictory evidence"
         in research_trace["counterevidence_plan"]["requests"][0]["query_text"]

@@ -115,6 +115,13 @@ source requirement identity. A counterevidence plan alone is not evidence that
 the question's findings, methods/context, opposition, limitations,
 disambiguation, and answerability needs were considered.
 
+`targeted_search_plan` records Agent's exact next-call decision. Verification
+recomputes its plan and attempt identities, requires at most one selected
+requirement, binds that requirement to the Reason retrieval plan, and requires
+the executed query to preserve the selected substantive query. Index records
+formatting-equivalent multi-query variants as duplicates rather than executing
+them again.
+
 ## DuckDB Execution Store
 
 The execution store is the durable audit-and-replay boundary. It is explicitly
