@@ -14,7 +14,15 @@ from bijux_canon_agent.application import (
     InstalledResearchTerminalOutcome,
     RemainingResearchWork,
 )
-from bijux_canon_agent.contracts import CausalDecisionEvent, ResearchCausalTrace
+from bijux_canon_agent.contracts import (
+    BudgetAction,
+    BudgetDecision,
+    BudgetDimensions,
+    CausalDecisionEvent,
+    ResearchBudgetLedger,
+    ResearchBudgetPolicy,
+    ResearchCausalTrace,
+)
 from bijux_canon_reason.grounding import (
     AtomicClaimNormalizer,
     CitationSourceDescriptor,
@@ -127,6 +135,73 @@ def _event(value: object) -> CausalDecisionEvent:
     if event != recomputed:
         raise StepDispatchError("research causal event identity is invalid")
     return event
+
+
+def _budget_dimensions(value: object, field: str) -> BudgetDimensions:
+    raw = _object(value, field)
+    expected = set(BudgetDimensions().payload())
+    if set(raw) != expected:
+        raise StepDispatchError(f"verification subject field is invalid: {field}")
+    return BudgetDimensions(
+        **{name: _integer(raw[name], f"{field}.{name}") for name in expected}
+    )
+
+
+def _budget_policy(value: object) -> ResearchBudgetPolicy:
+    raw = _object(value, "budget_policy")
+    raw_roles = _object(raw.get("role_limits"), "budget role_limits")
+    try:
+        policy = ResearchBudgetPolicy(
+            plan_sha256=str(raw["plan_sha256"]),
+            global_limits=_budget_dimensions(
+                raw["global_limits"], "budget global_limits"
+            ),
+            role_limits={
+                role: _budget_dimensions(limits, f"budget role {role}")
+                for role, limits in raw_roles.items()
+            },
+        )
+    except (KeyError, TypeError, ValueError) as error:
+        raise StepDispatchError("research budget policy is invalid") from error
+    if raw.get("artifact_id") != policy.artifact_id:
+        raise StepDispatchError("research budget policy identity is invalid")
+    return policy
+
+
+def _budget_decision(value: object) -> BudgetDecision:
+    raw = _object(value, "budget_decision")
+    try:
+        decision = BudgetDecision(
+            artifact_id=str(raw["artifact_id"]),
+            sequence=_integer(raw["sequence"], "budget sequence"),
+            policy_artifact_id=str(raw["policy_artifact_id"]),
+            role=str(raw["role"]),
+            label=str(raw["label"]),
+            action=BudgetAction(str(raw["action"])),
+            charge=_budget_dimensions(raw["charge"], "budget charge"),
+            global_usage=_budget_dimensions(
+                raw["global_usage"], "budget global_usage"
+            ),
+            role_usage=_budget_dimensions(raw["role_usage"], "budget role_usage"),
+            exhausted_dimensions=_strings(
+                raw["exhausted_dimensions"], "budget exhausted_dimensions"
+            ),
+        )
+    except (KeyError, TypeError, ValueError) as error:
+        raise StepDispatchError("research budget decision is invalid") from error
+    if decision != BudgetDecision.create(
+        sequence=decision.sequence,
+        policy_artifact_id=decision.policy_artifact_id,
+        role=decision.role,
+        label=decision.label,
+        action=decision.action,
+        charge=decision.charge,
+        global_usage=decision.global_usage,
+        role_usage=decision.role_usage,
+        exhausted_dimensions=decision.exhausted_dimensions,
+    ):
+        raise StepDispatchError("research budget decision identity is invalid")
+    return decision
 
 
 def _verify_claim_graph(subject: Mapping[str, object]) -> tuple[str, ...]:
@@ -285,9 +360,18 @@ def _verify_research_trace(subject: Mapping[str, object]) -> tuple[str, ...]:
         raw_events = subject["causal_events"]
         raw_trace = _object(subject["causal_trace"], "causal_trace")
         raw_state = _object(subject["research_state"], "research_state")
-        if not isinstance(raw_events, list):
+        budget_policy = _budget_policy(subject["budget_policy"])
+        raw_budget_decisions = subject["budget_decisions"]
+        if not isinstance(raw_events, list) or not isinstance(
+            raw_budget_decisions, list
+        ):
             raise TypeError
         events = tuple(_event(item) for item in raw_events)
+        budget_decisions = tuple(
+            _budget_decision(item) for item in raw_budget_decisions
+        )
+        budget = ResearchBudgetLedger(budget_policy)
+        budget.restore(budget_decisions)
     except (KeyError, TypeError, ValueError, ValidationError) as error:
         raise StepDispatchError("research trace records are invalid") from error
     if run is not None and run.plan_artifact_id != plan.artifact_id:
@@ -400,6 +484,39 @@ def _verify_research_trace(subject: Mapping[str, object]) -> tuple[str, ...]:
         "head_artifact_id": trace.head_artifact_id,
     }:
         raise StepDispatchError("research causal trace identity is invalid")
+    if subject.get("budget_policy_artifact_id") != budget_policy.artifact_id:
+        raise StepDispatchError("research budget policy binding is invalid")
+    if _budget_dimensions(subject.get("budget_usage"), "budget_usage") != (
+        budget.global_usage
+    ):
+        raise StepDispatchError("research budget usage is not reproducible")
+    document_ids = _strings(
+        subject.get("counterevidence_document_artifact_ids"),
+        "counterevidence_document_artifact_ids",
+    )
+    if budget.global_usage.documents != len(document_ids):
+        raise StepDispatchError("research document budget differs from search history")
+    decision_ids = {item.artifact_id for item in budget_decisions}
+    referenced_budget_ids = {
+        artifact_id
+        for event in events
+        for artifact_id in event.budget_decision_artifact_ids
+    }
+    if decision_ids != referenced_budget_ids:
+        raise StepDispatchError("research causal trace omits budget decisions")
+    if budget.exhausted_dimensions:
+        if (
+            research_outcome.exhausted_budget_dimensions
+            != budget.exhausted_dimensions
+        ):
+            raise StepDispatchError("research budget exhaustion differs from ledger")
+    elif research_outcome.kind is InstalledResearchTerminalKind.INCOMPLETE_BUDGET:
+        if (
+            research_outcome.exhausted_budget_dimensions != ("retrievals",)
+            or budget.global_usage.retrievals
+            != budget_policy.global_limits.retrievals
+        ):
+            raise StepDispatchError("research search-budget exhaustion is invalid")
     if not convergence.stop:
         raise StepDispatchError("research trace did not reach a terminal decision")
     candidate_ids = tuple(
@@ -468,6 +585,8 @@ def _verify_research_trace(subject: Mapping[str, object]) -> tuple[str, ...]:
     expected_unresolved_gaps = tuple(
         str(item["artifact_id"]) for item in raw_gaps if item.get("blocking") is True
     )
+    if budget.exhausted_dimensions and not expected_unresolved_gaps:
+        expected_unresolved_gaps = (budget_decisions[-1].artifact_id,)
     classified_candidate_ids = {
         classification.evidence_artifact_id for classification in classifications
     }
@@ -510,6 +629,7 @@ def _verify_research_trace(subject: Mapping[str, object]) -> tuple[str, ...]:
         "counterevidence-search-lineage",
         "semantic-candidate-adjudication",
         "bounded-convergence-decision",
+        "transactional-budget-ledger",
         "typed-terminal-outcome",
         "causal-event-chain",
     )

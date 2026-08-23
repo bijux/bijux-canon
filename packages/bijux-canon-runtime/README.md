@@ -276,6 +276,15 @@ hash behind supporting, opposing, limiting, irrelevant, ambiguous, or
 unclassified evidence; a completed state cannot conceal material unclassified
 content.
 
+Runtime projects the request timeout, artifact ceiling, retrieval count, and
+per-search candidate bound into an explicit installed Agent budget. Agent
+reserves the complete call and result envelope before each planning, retrieval,
+or convergence port invocation, charges only admitted work, and persists the
+content-addressed policy, every reservation/charge decision, and measured usage
+in the research trace. Verification replays that ledger exactly and rejects
+altered usage, omitted decisions, or a terminal exhaustion that differs from
+the ledger.
+
 The research artifact separates Agent disposition from Reason's convergence
 observation. Its `status` is the typed Agent outcome, while
 `convergence_status` and the bound convergence record retain the underlying

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 import hashlib
 import json
 from typing import Protocol, runtime_checkable
@@ -34,6 +34,13 @@ from bijux_canon_agent.application.research_workflow.terminal_outcome import (
     InstalledResearchTerminalKind,
     InstalledResearchTerminalOutcome,
     RemainingResearchWork,
+)
+from bijux_canon_agent.contracts.research_budget import (
+    BudgetAction,
+    BudgetDecision,
+    BudgetDimensions,
+    ResearchBudgetLedger,
+    ResearchBudgetPolicy,
 )
 
 
@@ -90,6 +97,8 @@ class InstalledResearchRequest:
     requirement_plan_artifact_id: str
     requirement_plan_record: Mapping[str, object]
     requirement_plan_outcome: str
+    budget_limits: BudgetDimensions
+    maximum_search_candidates: int
     grounding_admission_outcome: str = "admitted"
 
     def __post_init__(self) -> None:
@@ -107,6 +116,10 @@ class InstalledResearchRequest:
             raise ValueError("research question must not be empty")
         if self.max_searches < 0:
             raise ValueError("maximum searches must not be negative")
+        if not isinstance(self.budget_limits, BudgetDimensions):
+            raise TypeError("installed research budget limits are invalid")
+        if self.maximum_search_candidates < 1:
+            raise ValueError("maximum search candidates must be positive")
         claim_ids = {claim.artifact_id for claim in self.claims}
         finding_claim_ids = tuple(
             item.claim_artifact_id
@@ -159,6 +172,7 @@ class InstalledResearchPlan:
     request_artifact_ids: tuple[str, ...]
     record: Mapping[str, object]
     targeted_search_plan: TargetedSearchPlan | None = None
+    execution_usage: BudgetDimensions = BudgetDimensions()
 
     def __post_init__(self) -> None:
         _require_artifact_id(self.artifact_id, "research plan artifact_id")
@@ -166,6 +180,8 @@ class InstalledResearchPlan:
             _require_artifact_id(artifact_id, "research request artifact_id")
         if not isinstance(self.record, Mapping):
             raise TypeError("research plan record must be a mapping")
+        if not isinstance(self.execution_usage, BudgetDimensions):
+            raise TypeError("research plan execution usage is invalid")
         if self.targeted_search_plan is not None:
             attempt = self.targeted_search_plan.attempt
             if (attempt is None) != (not self.request_artifact_ids):
@@ -265,15 +281,21 @@ class InstalledResearchSearch:
     """Complete search output plus persisted Runtime retrieval artifacts."""
 
     artifact_id: str
+    document_artifact_ids: tuple[str, ...]
     records: tuple[InstalledResearchSearchRecord, ...]
     unsearched_important_claim_artifact_ids: tuple[str, ...]
     retrieval_artifact_ids: tuple[str, ...]
     retrieval_records: tuple[Mapping[str, object], ...]
     record: Mapping[str, object]
     adjudication_records: tuple[Mapping[str, object], ...] = ()
+    execution_usage: BudgetDimensions = BudgetDimensions()
 
     def __post_init__(self) -> None:
         _require_artifact_id(self.artifact_id, "research search artifact_id")
+        if len(self.document_artifact_ids) != len(set(self.document_artifact_ids)):
+            raise ValueError("research search document identities must be unique")
+        for artifact_id in self.document_artifact_ids:
+            _require_artifact_id(artifact_id, "research search document artifact_id")
         for artifact_id in self.unsearched_important_claim_artifact_ids:
             _require_artifact_id(artifact_id, "unsearched claim artifact_id")
         for artifact_id in self.retrieval_artifact_ids:
@@ -284,6 +306,8 @@ class InstalledResearchSearch:
             raise TypeError("research search output must be a mapping")
         if any(not isinstance(item, Mapping) for item in self.adjudication_records):
             raise TypeError("research adjudication records must be mappings")
+        if not isinstance(self.execution_usage, BudgetDimensions):
+            raise TypeError("research search execution usage is invalid")
 
 
 @dataclass(frozen=True, slots=True)
@@ -294,6 +318,7 @@ class InstalledResearchConvergence:
     outcome: str
     stop: bool
     record: Mapping[str, object]
+    execution_usage: BudgetDimensions = BudgetDimensions()
 
     def __post_init__(self) -> None:
         _require_artifact_id(self.artifact_id, "research convergence artifact_id")
@@ -301,6 +326,8 @@ class InstalledResearchConvergence:
             raise ValueError("research convergence outcome must not be empty")
         if not isinstance(self.record, Mapping):
             raise TypeError("research convergence record must be a mapping")
+        if not isinstance(self.execution_usage, BudgetDimensions):
+            raise TypeError("research convergence execution usage is invalid")
 
 
 @runtime_checkable
@@ -345,11 +372,132 @@ class InstalledResearchResult:
     plan_history: tuple[InstalledResearchPlan, ...]
     search_history: tuple[InstalledResearchSearch, ...]
     targeted_search_observations: tuple[TargetedSearchObservation, ...]
+    budget_policy: ResearchBudgetPolicy
+    budget_policy_artifact_id: str
+    budget_decisions: tuple[BudgetDecision, ...]
+    budget_usage: BudgetDimensions
     terminal_outcome: InstalledResearchTerminalOutcome
 
 
 class InstalledResearchService:
     """Choose and execute installed research operations through typed ports."""
+
+    @staticmethod
+    def _budget_policy(request: InstalledResearchRequest) -> ResearchBudgetPolicy:
+        plan_payload = {
+            "claim_graph_artifact_id": request.claim_graph_artifact_id,
+            "scope_artifact_id": request.scope_artifact_id,
+            "counterevidence_policy_artifact_id": (
+                request.counterevidence_policy_artifact_id
+            ),
+            "convergence_policy_artifact_id": request.convergence_policy_artifact_id,
+            "requirement_plan_artifact_id": request.requirement_plan_artifact_id,
+            "max_searches": request.max_searches,
+            "maximum_search_candidates": request.maximum_search_candidates,
+            "budget_limits": request.budget_limits.payload(),
+        }
+        role_limits = BudgetDimensions(
+            **{
+                name: value + max(1, value)
+                for name, value in request.budget_limits.payload().items()
+            }
+        )
+        return ResearchBudgetPolicy(
+            plan_sha256=hashlib.sha256(_canonical(plan_payload)).hexdigest(),
+            global_limits=request.budget_limits,
+            role_limits={
+                "plan": role_limits,
+                "search": role_limits,
+                "evaluate": role_limits,
+            },
+        )
+
+    @staticmethod
+    def _output_charge(
+        value: object,
+        *,
+        documents: int = 0,
+        candidates: int = 0,
+        evidence_items: int = 0,
+    ) -> BudgetDimensions:
+        size = len(_canonical(value))
+        return BudgetDimensions(
+            documents=documents,
+            candidates=candidates,
+            evidence_items=evidence_items,
+            memory_bytes=size,
+            artifact_bytes=size,
+        )
+
+    @staticmethod
+    def _reservation(
+        budget: ResearchBudgetLedger,
+        *,
+        role: str,
+        label: str,
+        start: BudgetDimensions,
+        candidates: int = 0,
+    ) -> BudgetDecision:
+        capacity = budget.remaining(role=role)
+        return budget.reserve(
+            role=role,
+            label=f"{label}:reserve",
+            maximum=start.plus(
+                BudgetDimensions(
+                    documents=candidates,
+                    candidates=candidates,
+                    evidence_items=candidates,
+                    provider_calls=capacity.provider_calls,
+                    tokens=capacity.tokens,
+                    elapsed_ms=capacity.elapsed_ms,
+                    retries=capacity.retries,
+                    memory_bytes=capacity.memory_bytes,
+                    artifact_bytes=capacity.artifact_bytes,
+                )
+            ),
+        )
+
+    @staticmethod
+    def _budget_plan(
+        decision: BudgetDecision,
+        targeted_search_plan: TargetedSearchPlan | None,
+        rejected_plan_artifact_id: str | None = None,
+    ) -> InstalledResearchPlan:
+        record: dict[str, object] = {
+            "budget_decision_artifact_id": decision.artifact_id,
+            "outcome": "budget_exhausted",
+            "rejected_plan_artifact_id": rejected_plan_artifact_id,
+            "request_artifact_ids": [],
+            "targeted_search_plan_artifact_id": (
+                None
+                if targeted_search_plan is None
+                else targeted_search_plan.artifact_id
+            ),
+        }
+        return InstalledResearchPlan(
+            artifact_id=_artifact_id(record),
+            request_artifact_ids=(),
+            record=record,
+            targeted_search_plan=None,
+        )
+
+    @staticmethod
+    def _budget_convergence(
+        request: InstalledResearchRequest,
+        decision: BudgetDecision,
+    ) -> InstalledResearchConvergence:
+        record = {
+            "budget_decision_artifact_id": decision.artifact_id,
+            "claim_graph_artifact_id": request.claim_graph_artifact_id,
+            "outcome": "budget_exhausted",
+            "stop": True,
+        }
+        return InstalledResearchConvergence(
+            artifact_id=_artifact_id(record),
+            outcome="budget_exhausted",
+            stop=True,
+            record=record,
+        )
 
     def research(
         self,
@@ -362,6 +510,7 @@ class InstalledResearchService:
         if not isinstance(port, InstalledResearchPort):
             raise TypeError("installed research port does not implement its contract")
         events: list[CausalDecisionEvent] = []
+        budget = ResearchBudgetLedger(self._budget_policy(request))
         state_machine = ObservedResearchStateMachine()
         state = state_machine.initial(
             question=request.question,
@@ -374,6 +523,7 @@ class InstalledResearchService:
         policy_ids = (
             request.counterevidence_policy_artifact_id,
             request.convergence_policy_artifact_id,
+            budget.policy.artifact_id,
         )
         targeted_planner = (
             None
@@ -423,9 +573,74 @@ class InstalledResearchService:
                     policy_ids=policy_ids,
                 )
                 break
+            plan_budget_start = len(budget.decisions)
+            plan_start_usage = BudgetDimensions(iterations=1)
+            plan_reservation = self._reservation(
+                budget,
+                role="plan",
+                label="plan_counterevidence",
+                start=plan_start_usage,
+            )
+            if plan_reservation.action is BudgetAction.TERMINATE:
+                plan = self._budget_plan(
+                    plan_reservation,
+                    targeted_search_plan,
+                )
+                plans.append(plan)
+                state = self._record_decision(
+                    events,
+                    state_machine=state_machine,
+                    state=state,
+                    state_history=state_history,
+                    role="plan",
+                    operation="refuse_unbudgeted_plan",
+                    rationale="do not call the planning port without a reserved output envelope",
+                    observation_ids=(plan.artifact_id,),
+                    evidence_ids=(),
+                    policy_ids=policy_ids,
+                    budget_decision_ids=tuple(
+                        item.artifact_id
+                        for item in budget.decisions[plan_budget_start:]
+                    ),
+                )
+                break
+            budget.charge(
+                role="plan",
+                label="plan_counterevidence:start",
+                usage=plan_start_usage,
+            )
             plan = port.plan(request, targeted_search_plan)
             if not isinstance(plan, InstalledResearchPlan):
                 raise TypeError("installed research port returned an invalid plan")
+            plan_finish = budget.charge(
+                role="plan",
+                label="plan_counterevidence:finish",
+                usage=self._output_charge(asdict(plan)).plus(plan.execution_usage),
+            )
+            if plan_finish.action is BudgetAction.TERMINATE:
+                plan = self._budget_plan(
+                    plan_finish,
+                    targeted_search_plan,
+                    rejected_plan_artifact_id=plan.artifact_id,
+                )
+                plans.append(plan)
+                state = self._record_decision(
+                    events,
+                    state_machine=state_machine,
+                    state=state,
+                    state_history=state_history,
+                    role="plan",
+                    operation="refuse_oversized_plan_result",
+                    rationale="do not admit a planning result that exceeds its reserved envelope",
+                    observation_ids=(plan.artifact_id,),
+                    evidence_ids=(),
+                    policy_ids=policy_ids,
+                    budget_decision_ids=tuple(
+                        item.artifact_id
+                        for item in budget.decisions[plan_budget_start:]
+                    ),
+                )
+                break
             plans.append(plan)
             state = self._record_decision(
                 events,
@@ -441,6 +656,10 @@ class InstalledResearchService:
                 observation_ids=(plan.artifact_id,),
                 evidence_ids=(),
                 policy_ids=policy_ids,
+                budget_decision_ids=tuple(
+                    item.artifact_id
+                    for item in budget.decisions[plan_budget_start:]
+                ),
             )
             if (
                 not plan.request_artifact_ids
@@ -471,6 +690,42 @@ class InstalledResearchService:
                 )
                 break
             search = None
+            search_budget_start = len(budget.decisions)
+            search_start_usage = BudgetDimensions(
+                iterations=1,
+                retrievals=1,
+                tool_calls=1,
+            )
+            search_reservation = self._reservation(
+                budget,
+                role="search",
+                label="search_counterevidence",
+                start=search_start_usage,
+                candidates=request.maximum_search_candidates,
+            )
+            if search_reservation.action is BudgetAction.TERMINATE:
+                state = self._record_decision(
+                    events,
+                    state_machine=state_machine,
+                    state=state,
+                    state_history=state_history,
+                    role="researcher",
+                    operation="refuse_unbudgeted_search",
+                    rationale="do not call retrieval without its complete reserved resource envelope",
+                    observation_ids=(search_reservation.artifact_id,),
+                    evidence_ids=(),
+                    policy_ids=policy_ids,
+                    budget_decision_ids=tuple(
+                        item.artifact_id
+                        for item in budget.decisions[search_budget_start:]
+                    ),
+                )
+                break
+            budget.charge(
+                role="search",
+                label="search_counterevidence:start",
+                usage=search_start_usage,
+            )
             try:
                 search = port.search(request, plan)
                 if not isinstance(search, InstalledResearchSearch):
@@ -504,7 +759,46 @@ class InstalledResearchService:
                     observation_ids=(failure_id,),
                     evidence_ids=(),
                     policy_ids=policy_ids,
+                    budget_decision_ids=tuple(
+                        item.artifact_id
+                        for item in budget.decisions[search_budget_start:]
+                    ),
                     gaps=state.gaps + (failure_gap,),
+                    consume_search=True,
+                )
+                break
+            search_candidates = tuple(
+                artifact_id
+                for record in search.records
+                for artifact_id in record.candidate_evidence_artifact_ids
+            )
+            search_finish = budget.charge(
+                role="search",
+                label="search_counterevidence:finish",
+                usage=self._output_charge(
+                    asdict(search),
+                    documents=len(search.document_artifact_ids),
+                    candidates=len(search_candidates),
+                    evidence_items=len(search_candidates),
+                ).plus(search.execution_usage),
+            )
+            if search_finish.action is BudgetAction.TERMINATE:
+                search = None
+                state = self._record_decision(
+                    events,
+                    state_machine=state_machine,
+                    state=state,
+                    state_history=state_history,
+                    role="researcher",
+                    operation="refuse_oversized_search_result",
+                    rationale="retain the attempted call but do not admit evidence beyond the reserved budget",
+                    observation_ids=(search_finish.artifact_id,),
+                    evidence_ids=(),
+                    policy_ids=policy_ids,
+                    budget_decision_ids=tuple(
+                        item.artifact_id
+                        for item in budget.decisions[search_budget_start:]
+                    ),
                     consume_search=True,
                 )
                 break
@@ -523,12 +817,11 @@ class InstalledResearchService:
                 observation_ids=(search.artifact_id,),
                 evidence_ids=(),
                 policy_ids=policy_ids,
+                budget_decision_ids=tuple(
+                    item.artifact_id
+                    for item in budget.decisions[search_budget_start:]
+                ),
                 consume_search=True,
-            )
-            search_candidates = tuple(
-                artifact_id
-                for record in search.records
-                for artifact_id in record.candidate_evidence_artifact_ids
             )
             candidates += search_candidates
             state = self._record_search_observation(
@@ -557,9 +850,45 @@ class InstalledResearchService:
         plan = plans[-1]
         tool_failure_ids = tuple(tool_failures)
         relation_status = self._relation_status(state, search, tool_failure_ids)
-        convergence = port.evaluate(request, plan, search)
-        if not isinstance(convergence, InstalledResearchConvergence):
-            raise TypeError("installed research port returned invalid convergence")
+        evaluation_budget_start = len(budget.decisions)
+        if budget.exhausted_dimensions:
+            convergence = self._budget_convergence(request, budget.decisions[-1])
+        else:
+            evaluation_start_usage = BudgetDimensions(iterations=1)
+            evaluation_reservation = self._reservation(
+                budget,
+                role="evaluate",
+                label="evaluate_convergence",
+                start=evaluation_start_usage,
+            )
+            if evaluation_reservation.action is BudgetAction.TERMINATE:
+                convergence = self._budget_convergence(
+                    request,
+                    evaluation_reservation,
+                )
+            else:
+                budget.charge(
+                    role="evaluate",
+                    label="evaluate_convergence:start",
+                    usage=evaluation_start_usage,
+                )
+                convergence = port.evaluate(request, plan, search)
+                if not isinstance(convergence, InstalledResearchConvergence):
+                    raise TypeError(
+                        "installed research port returned invalid convergence"
+                    )
+                evaluation_finish = budget.charge(
+                    role="evaluate",
+                    label="evaluate_convergence:finish",
+                    usage=self._output_charge(asdict(convergence)).plus(
+                        convergence.execution_usage
+                    ),
+                )
+                if evaluation_finish.action is BudgetAction.TERMINATE:
+                    convergence = self._budget_convergence(
+                        request,
+                        evaluation_finish,
+                    )
         terminal_status = self._terminal_status(convergence, state)
         state = self._record_decision(
             events,
@@ -579,7 +908,10 @@ class InstalledResearchService:
             observation_ids=(convergence.artifact_id,),
             evidence_ids=(),
             policy_ids=policy_ids,
-            budget_decision_ids=(convergence.artifact_id,),
+            budget_decision_ids=tuple(
+                item.artifact_id
+                for item in budget.decisions[evaluation_budget_start:]
+            ),
             terminal_status=terminal_status,
         )
         insufficiencies = self._insufficiencies(state, search, candidates)
@@ -587,8 +919,13 @@ class InstalledResearchService:
             state=state,
             searches=tuple(searches),
             insufficiencies=insufficiencies,
+            budget_exhaustion_artifact_id=(
+                None
+                if not budget.exhausted_dimensions
+                else budget.decisions[-1].artifact_id
+            ),
         )
-        exhausted_dimensions = (
+        exhausted_dimensions = budget.exhausted_dimensions or (
             ("retrievals",)
             if remaining_work.pending
             and state.search_budget_used >= state.search_budget_limit
@@ -632,6 +969,10 @@ class InstalledResearchService:
             plan_history=tuple(plans),
             search_history=tuple(searches),
             targeted_search_observations=tuple(targeted_observations),
+            budget_policy=budget.policy,
+            budget_policy_artifact_id=budget.policy.artifact_id,
+            budget_decisions=budget.decisions,
+            budget_usage=budget.global_usage,
             terminal_outcome=terminal_outcome,
         )
 
@@ -641,6 +982,7 @@ class InstalledResearchService:
         state: ObservedResearchState,
         searches: tuple[InstalledResearchSearch, ...],
         insufficiencies: tuple[str, ...],
+        budget_exhaustion_artifact_id: str | None = None,
     ) -> RemainingResearchWork:
         unresolved_evidence = tuple(
             dict.fromkeys(
@@ -677,6 +1019,11 @@ class InstalledResearchService:
             unresolved_evidence_artifact_ids=unresolved_evidence,
             unresolved_gap_artifact_ids=tuple(
                 item.artifact_id for item in state.blocking_gaps
+            )
+            + (
+                ()
+                if budget_exhaustion_artifact_id is None or state.blocking_gaps
+                else (budget_exhaustion_artifact_id,)
             ),
             unsearched_important_claim_artifact_ids=tuple(
                 dict.fromkeys(

@@ -875,6 +875,17 @@ def _verify_reason_and_agent(grounded: _GroundedRuntime) -> None:
         "limit": 2,
         "used": 1,
     }
+    assert research_trace["budget_policy_artifact_id"] == (
+        research_trace["budget_policy"]["artifact_id"]
+    )
+    assert research_trace["budget_usage"]["retrievals"] == 1
+    assert research_trace["budget_usage"]["documents"] == len(
+        research_trace["counterevidence_document_artifact_ids"]
+    )
+    assert any(
+        decision["action"] == "reserved"
+        for decision in research_trace["budget_decisions"]
+    )
     assert len(research_trace["targeted_search_plans"]) == 1
     assert len(research_trace["targeted_search_observations"]) == 1
     assert research_trace["targeted_search_observations"][0]["outcome"] == (
@@ -925,6 +936,24 @@ def _verify_reason_and_agent(grounded: _GroundedRuntime) -> None:
         OperationDispatcher((CanonicalVerificationOperationAdapter(),)).dispatch(
             research_verification_step,
             (tampered_research,),
+        )
+    tampered_budget_trace = json.loads(research.artifacts[0].payload)
+    tampered_budget_trace["budget_usage"]["documents"] += 1
+    tampered_budget = StepOutputArtifact(
+        contract_id="agent.research-trace.v1",
+        producer_step_id="agent",
+        producer_operation=DagOperation.AGENT,
+        artifact=AddressedArtifact.from_json(
+            tampered_budget_trace,
+            schema_id="agent.research-trace.v1",
+            producer="bijux-canon-runtime:agent",
+            dependencies=research.artifacts[0].artifact.descriptor.dependencies,
+        ),
+    )
+    with pytest.raises(StepDispatchError, match="budget usage is not reproducible"):
+        OperationDispatcher((CanonicalVerificationOperationAdapter(),)).dispatch(
+            research_verification_step,
+            (tampered_budget,),
         )
 
 

@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 
 import pytest
 
 from bijux_canon_agent.application import (
+    BudgetAction,
+    BudgetDimensions,
     InstalledCandidateClassification,
     InstalledEvidenceRelation,
     InstalledResearchClaim,
@@ -36,6 +38,7 @@ _RETRIEVAL = "sha256:" + "b" * 64
 _CONVERGENCE = "sha256:" + "c" * 64
 _REQUIREMENT = "sha256:" + "d" * 64
 _CLASSIFICATION = "sha256:" + "e" * 64
+_DOCUMENT = "sha256:" + "0" * 64
 
 
 def _request(
@@ -104,6 +107,18 @@ def _request(
         requirement_plan_artifact_id=_PLAN,
         requirement_plan_record={"outcome": "search_required"},
         requirement_plan_outcome="search_required",
+        budget_limits=BudgetDimensions(
+            iterations=max_searches * 2 + 2,
+            retrievals=max_searches,
+            documents=max_searches,
+            candidates=max_searches,
+            evidence_items=max_searches,
+            tool_calls=max_searches,
+            elapsed_ms=30_000,
+            memory_bytes=1_000_000,
+            artifact_bytes=1_000_000,
+        ),
+        maximum_search_candidates=1,
     )
 
 
@@ -119,6 +134,10 @@ class _Port:
     candidate_sequences: tuple[tuple[str, ...], ...] = ()
     classification_relation: str | None = None
     classification_material: bool = True
+    document_artifact_ids: tuple[str, ...] = (_DOCUMENT,)
+    plan_execution_usage: BudgetDimensions = BudgetDimensions()
+    search_execution_usage: BudgetDimensions = BudgetDimensions()
+    evaluation_execution_usage: BudgetDimensions = BudgetDimensions()
     calls: list[str] = field(default_factory=list)
 
     def plan(
@@ -139,6 +158,7 @@ class _Port:
             requests,
             {"requests": []},
             targeted_search_plan,
+            self.plan_execution_usage,
         )
 
     def search(
@@ -192,6 +212,7 @@ class _Port:
         )
         return InstalledResearchSearch(
             artifact_id=_SEARCH,
+            document_artifact_ids=self.document_artifact_ids,
             records=(
                 InstalledResearchSearchRecord(
                     claim_artifact_id=_CLAIM,
@@ -217,6 +238,7 @@ class _Port:
             retrieval_artifact_ids=(_RETRIEVAL,),
             retrieval_records=({"artifact_id": _RETRIEVAL},),
             record={"records": []},
+            execution_usage=self.search_execution_usage,
         )
 
     def evaluate(
@@ -233,6 +255,7 @@ class _Port:
             outcome=self.convergence_outcome,
             stop=self.convergence_stop,
             record={"stop": self.convergence_stop},
+            execution_usage=self.evaluation_execution_usage,
         )
 
 
@@ -252,7 +275,14 @@ def test_service_owns_search_decision_and_causal_trace() -> None:
         "verifier",
     ]
     assert result.causal_events[2].evidence_artifact_ids == (_CANDIDATE,)
-    assert result.causal_events[-1].budget_decision_artifact_ids == (_CONVERGENCE,)
+    assert result.causal_events[-1].budget_decision_artifact_ids == tuple(
+        item.artifact_id for item in result.budget_decisions[-3:]
+    )
+    assert result.budget_usage.retrievals == 1
+    assert result.budget_usage.documents == 1
+    assert any(
+        item.action is BudgetAction.RESERVED for item in result.budget_decisions
+    )
     assert result.causal_trace.head_artifact_id == result.causal_events[-1].artifact_id
     assert len(result.state_history) == len(result.causal_events) + 1
     for index, event in enumerate(result.causal_events):
@@ -445,6 +475,75 @@ def test_search_tool_failure_is_an_incomplete_data_dependent_branch() -> None:
     assert "secret-bearing" not in str(result.final_state.to_record())
     assert result.terminal_outcome.kind == "failed"
     assert result.terminal_outcome.failure_artifact_ids
+
+
+def test_installed_search_reservation_denial_executes_no_tool_call() -> None:
+    request = _request()
+    request = replace(
+        request,
+        budget_limits=BudgetDimensions(
+            **{
+                **request.budget_limits.payload(),
+                "documents": 0,
+            }
+        ),
+    )
+    port = _Port()
+
+    result = InstalledResearchService().research(request, port)
+
+    assert port.calls == ["plan"]
+    assert result.search is None
+    assert result.budget_usage.retrievals == 0
+    assert result.budget_usage.tool_calls == 0
+    assert result.budget_usage.documents == 0
+    assert result.terminal_outcome.kind == "incomplete_budget"
+    assert result.terminal_outcome.exhausted_budget_dimensions == ("documents",)
+    assert any(
+        event.operation == "refuse_unbudgeted_search"
+        for event in result.causal_events
+    )
+
+
+def test_installed_oversized_search_result_is_not_admitted() -> None:
+    request = _request()
+    port = _Port(
+        candidates=(_CANDIDATE, "sha256:" + "f" * 64),
+        document_artifact_ids=(_DOCUMENT, "sha256:" + "1" * 64),
+    )
+
+    result = InstalledResearchService().research(request, port)
+
+    assert port.calls == ["plan", "search"]
+    assert result.search is None
+    assert result.search_history == ()
+    assert result.opposition_candidate_ids == ()
+    assert result.budget_usage.retrievals == 1
+    assert result.budget_usage.candidates == 0
+    assert result.terminal_outcome.kind == "incomplete_budget"
+    assert result.terminal_outcome.exhausted_budget_dimensions == (
+        "documents",
+        "candidates",
+        "evidence_items",
+    )
+    assert any(
+        event.operation == "refuse_oversized_search_result"
+        for event in result.causal_events
+    )
+
+
+def test_installed_provider_usage_overrun_is_not_admitted() -> None:
+    port = _Port(plan_execution_usage=BudgetDimensions(provider_calls=1))
+
+    result = InstalledResearchService().research(_request(), port)
+
+    assert port.calls == ["plan"]
+    assert result.plan.record["outcome"] == "budget_exhausted"
+    assert result.budget_usage.provider_calls == 0
+    assert result.terminal_outcome.kind == "incomplete_budget"
+    assert result.terminal_outcome.exhausted_budget_dimensions == (
+        "provider_calls",
+    )
 
 
 def test_unsatisfied_requirement_without_a_search_is_not_completed() -> None:

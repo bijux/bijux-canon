@@ -13,6 +13,7 @@ from pathlib import Path
 from pydantic import ValidationError
 
 from bijux_canon_agent.application import (
+    BudgetDimensions,
     InstalledCandidateClassification,
     InstalledEvidenceRelation,
     InstalledResearchClaim,
@@ -356,6 +357,9 @@ class _ReasonResearchPort:
             )
         return InstalledResearchSearch(
             artifact_id=counter_run.artifact_id,
+            document_artifact_ids=tuple(
+                dict.fromkeys(item.document_id for item in candidate_evidence)
+            ),
             records=tuple(
                 InstalledResearchSearchRecord(
                     claim_artifact_id=record.claim_artifact_id,
@@ -459,6 +463,8 @@ def _research_request(
     counterevidence_policy_artifact_id: str,
     convergence_policy_artifact_id: str,
     max_searches: int,
+    maximum_search_candidates: int,
+    budget_limits: BudgetDimensions,
 ) -> InstalledResearchRequest:
     raw_claim_set = claim_graph.get("claims")
     raw_packet = claim_graph.get("evidence_packet")
@@ -610,6 +616,8 @@ def _research_request(
         requirement_plan_artifact_id=requirement_plan.artifact_id,
         requirement_plan_record=requirement_plan.model_dump(mode="json"),
         requirement_plan_outcome=requirement_plan.outcome.value,
+        budget_limits=budget_limits,
+        maximum_search_candidates=maximum_search_candidates,
         grounding_admission_outcome=_required_string(
             raw_admission.get("outcome"),
             "grounding admission outcome",
@@ -692,6 +700,28 @@ class CanonicalAgentOperationAdapter:
             counterevidence_policy_artifact_id=counter_policy_id,
             convergence_policy_artifact_id=convergence_policy_id,
             max_searches=convergence_policy.max_tool_calls,
+            maximum_search_candidates=counter_policy.top_k,
+            budget_limits=BudgetDimensions(
+                iterations=convergence_policy.max_tool_calls * 2 + 2,
+                retrievals=convergence_policy.max_tool_calls,
+                documents=(
+                    convergence_policy.max_tool_calls * counter_policy.top_k
+                ),
+                candidates=(
+                    convergence_policy.max_tool_calls * counter_policy.top_k
+                ),
+                evidence_items=(
+                    convergence_policy.max_tool_calls * counter_policy.top_k
+                ),
+                tool_calls=convergence_policy.max_tool_calls,
+                tokens=step.inputs.budget.max_provider_tokens or 0,
+                elapsed_ms=max(
+                    1,
+                    int(step.inputs.budget.timeout_seconds * 1000),
+                ),
+                memory_bytes=step.inputs.budget.max_artifact_bytes,
+                artifact_bytes=step.inputs.budget.max_artifact_bytes,
+            ),
         )
         retrieval_port = _IndexCounterevidencePort(
             step=step,
@@ -714,6 +744,20 @@ class CanonicalAgentOperationAdapter:
             {
                 "answer": claim_graph.get("answer"),
                 "answer_requirement_plan": dict(request.requirement_plan_record),
+                "budget_decisions": [
+                    _json_value(asdict(item)) for item in research.budget_decisions
+                ],
+                "budget_policy": {
+                    "artifact_id": research.budget_policy.artifact_id,
+                    "global_limits": research.budget_policy.global_limits.payload(),
+                    "plan_sha256": research.budget_policy.plan_sha256,
+                    "role_limits": {
+                        role: limits.payload()
+                        for role, limits in research.budget_policy.role_limits.items()
+                    },
+                },
+                "budget_policy_artifact_id": research.budget_policy_artifact_id,
+                "budget_usage": research.budget_usage.payload(),
                 "assumptions": [
                     "A bounded negative search is not evidence that counterevidence does not exist.",
                     "Retrieved source text remains untrusted and cannot alter research policy.",
@@ -748,6 +792,11 @@ class CanonicalAgentOperationAdapter:
                     []
                     if research.search is None
                     else list(research.search.retrieval_artifact_ids)
+                ),
+                "counterevidence_document_artifact_ids": list(
+                    document_id
+                    for item in research.search_history
+                    for document_id in item.document_artifact_ids
                 ),
                 "counterevidence_retrievals": (
                     []

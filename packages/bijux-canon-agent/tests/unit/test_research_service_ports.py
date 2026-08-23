@@ -846,6 +846,8 @@ def test_dynamic_document_budget_refuses_retrieval_result_before_admission() -> 
     assert result.retrieval is None
     assert retriever.requests == []
     assert reasoner.requests == []
+    assert result.budget_usage.retrievals == 0
+    assert result.budget_usage.tool_calls == 0
     assert result.operations[1].payload["result_admitted"] is False
     assert result.operations[1].payload["exhausted_dimensions"] == [
         "retrieve.documents"

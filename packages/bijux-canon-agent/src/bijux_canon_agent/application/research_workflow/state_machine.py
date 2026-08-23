@@ -611,6 +611,20 @@ class ResearchRoleMachine:
             provider_calls=int(operation is ResearchOperation.SYNTHESIZE_ANSWER),
             elapsed_ms=1,
         )
+        reservation: BudgetDecision | None = None
+        if operation in {
+            ResearchOperation.RETRIEVE_EVIDENCE,
+            ResearchOperation.SYNTHESIZE_ANSWER,
+        }:
+            reservation = self._reserve_tool_operation(operation, start_charge)
+            if reservation.action is BudgetAction.TERMINATE:
+                return self._budget_exhausted_operation(
+                    sequence=sequence,
+                    operation=operation,
+                    inputs=inputs,
+                    decision=reservation,
+                    start_decision=None,
+                )
         start_decision = self._budget.charge(
             role=role,
             label=f"{operation.value}:start",
@@ -636,15 +650,8 @@ class ResearchRoleMachine:
                 "step_count": self.MAX_TRANSITIONS,
             }
         elif operation is ResearchOperation.RETRIEVE_EVIDENCE:
-            reservation = self._reserve_tool_operation(operation)
-            if reservation.action is BudgetAction.TERMINATE:
-                return self._budget_exhausted_operation(
-                    sequence=sequence,
-                    operation=operation,
-                    inputs=inputs,
-                    decision=reservation,
-                    start_decision=start_decision,
-                )
+            if reservation is None:
+                raise RuntimeError("retrieval tool reservation is missing")
             self._retrieval = self._services.retrieve()
             payload = {
                 "retrieval_artifact_id": self._retrieval.artifact_id,
@@ -682,15 +689,8 @@ class ResearchRoleMachine:
                 "remaining_gap_count": 0 if retrieval.records else 1,
             }
         elif operation is ResearchOperation.SYNTHESIZE_ANSWER:
-            reservation = self._reserve_tool_operation(operation)
-            if reservation.action is BudgetAction.TERMINATE:
-                return self._budget_exhausted_operation(
-                    sequence=sequence,
-                    operation=operation,
-                    inputs=inputs,
-                    decision=reservation,
-                    start_decision=start_decision,
-                )
+            if reservation is None:
+                raise RuntimeError("reasoning tool reservation is missing")
             self._reasoning = self._services.reason(self._require_retrieval())
             payload = {
                 "reasoning_artifact_id": self._reasoning.artifact_id,
@@ -808,23 +808,29 @@ class ResearchRoleMachine:
         )
 
     def _reserve_tool_operation(
-        self, operation: ResearchOperation
+        self,
+        operation: ResearchOperation,
+        start_charge: BudgetDimensions,
     ) -> BudgetDecision:
         role = self._role.value
         capacity = self._budget.remaining(role=role)
         if operation is ResearchOperation.RETRIEVE_EVIDENCE:
-            maximum = BudgetDimensions(
-                documents=self._planning_input.top_k,
-                candidates=self._planning_input.top_k,
-                evidence_items=self._planning_input.top_k,
-                memory_bytes=capacity.memory_bytes,
-                artifact_bytes=capacity.artifact_bytes,
+            maximum = start_charge.plus(
+                BudgetDimensions(
+                    documents=self._planning_input.top_k,
+                    candidates=self._planning_input.top_k,
+                    evidence_items=self._planning_input.top_k,
+                    memory_bytes=capacity.memory_bytes,
+                    artifact_bytes=capacity.artifact_bytes,
+                )
             )
         elif operation is ResearchOperation.SYNTHESIZE_ANSWER:
-            maximum = BudgetDimensions(
-                tokens=capacity.tokens,
-                memory_bytes=capacity.memory_bytes,
-                artifact_bytes=capacity.artifact_bytes,
+            maximum = start_charge.plus(
+                BudgetDimensions(
+                    tokens=capacity.tokens,
+                    memory_bytes=capacity.memory_bytes,
+                    artifact_bytes=capacity.artifact_bytes,
+                )
             )
         else:
             raise ValueError("only external tool operations require reservations")
@@ -841,7 +847,7 @@ class ResearchRoleMachine:
         operation: ResearchOperation,
         inputs: tuple[str, ...],
         decision: BudgetDecision,
-        start_decision: BudgetDecision,
+        start_decision: BudgetDecision | None,
     ) -> ResearchOperationRecord:
         return ResearchOperationRecord.create(
             sequence=sequence,
@@ -849,7 +855,11 @@ class ResearchRoleMachine:
             operation=operation,
             input_artifact_ids=inputs,
             payload={
-                "budget_decision_artifact_id": start_decision.artifact_id,
+                "budget_decision_artifact_id": (
+                    decision.artifact_id
+                    if start_decision is None
+                    else start_decision.artifact_id
+                ),
                 "budget_reservation_artifact_id": decision.artifact_id,
                 "status": "budget_exhausted",
                 "result_admitted": False,
