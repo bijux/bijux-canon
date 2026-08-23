@@ -205,6 +205,7 @@ class _ReasonResearchPort:
         self._retrieval = retrieval
         self._reason_plan: CounterevidencePlan | None = None
         self._targeted_attempt: TargetedSearchAttempt | None = None
+        self._search_count = 0
 
     def plan(
         self,
@@ -262,6 +263,7 @@ class _ReasonResearchPort:
         if attempt is None:
             raise StepDispatchError("Agent research search has no targeted attempt")
         counter_run = self._counterevidence.search(reason_plan, self._retrieval)
+        self._search_count += 1
         return InstalledResearchSearch(
             artifact_id=counter_run.artifact_id,
             records=tuple(
@@ -310,6 +312,9 @@ class _ReasonResearchPort:
             else search.unsearched_important_claim_artifact_ids
         )
         required_count = len(request.claims)
+        unresolved_requirements = sum(
+            item.material and not item.satisfied for item in request.requirements
+        )
         observation = create_convergence_observation(
             iteration=1,
             graph_artifact_id=request.claim_graph_artifact_id,
@@ -324,16 +329,16 @@ class _ReasonResearchPort:
             ),
             required_claims=required_count,
             blocking_gap_count=(
-                len(candidates) + len(unsearched)
-                if plan.request_artifact_ids
-                else 1
+                unresolved_requirements + len(candidates) + len(unsearched)
             ),
             new_evidence_count=len(candidates),
             marginal_evidence_value=(1.0 if candidates else 0.0),
-            cumulative_tool_calls=len(plan.request_artifact_ids),
+            cumulative_tool_calls=self._search_count,
             cumulative_tokens=0,
             cumulative_elapsed_ms=1,
-            explicit_insufficiency=required_count == 0,
+            explicit_insufficiency=(
+                required_count == 0 or bool(candidates) or bool(unsearched)
+            ),
         )
         decision = self._convergence.evaluate((observation,))
         return InstalledResearchConvergence(
@@ -568,7 +573,7 @@ class CanonicalAgentOperationAdapter:
         )
         convergence_policy = ConvergencePolicy(
             max_iterations=2,
-            max_tool_calls=1,
+            max_tool_calls=2,
             max_tokens=max(1, step.inputs.budget.max_provider_tokens or 100_000),
             max_elapsed_ms=max(1, int(step.inputs.budget.timeout_seconds * 1000)),
         )
@@ -616,11 +621,26 @@ class CanonicalAgentOperationAdapter:
                 "causal_trace": _json_value(asdict(research.causal_trace)),
                 "claim_graph_artifact_id": graph_id,
                 "counterevidence_plan": dict(research.plan.record),
+                "counterevidence_plans": [
+                    dict(item.record) for item in research.plan_history
+                ],
                 "targeted_search_plan": (
                     None
                     if research.plan.targeted_search_plan is None
                     else _json_value(asdict(research.plan.targeted_search_plan))
                 ),
+                "targeted_search_plans": [
+                    (
+                        None
+                        if item.targeted_search_plan is None
+                        else _json_value(asdict(item.targeted_search_plan))
+                    )
+                    for item in research.plan_history
+                ],
+                "targeted_search_observations": [
+                    _json_value(asdict(item))
+                    for item in research.targeted_search_observations
+                ],
                 "counterevidence_retrieval_artifact_ids": (
                     []
                     if research.search is None
@@ -634,6 +654,9 @@ class CanonicalAgentOperationAdapter:
                 "counterevidence_run": (
                     None if research.search is None else dict(research.search.record)
                 ),
+                "counterevidence_runs": [
+                    dict(item.record) for item in research.search_history
+                ],
                 "generation_id": generation_id,
                 "insufficiencies": list(research.insufficiencies),
                 "opposition_candidates": list(research.opposition_candidate_ids),

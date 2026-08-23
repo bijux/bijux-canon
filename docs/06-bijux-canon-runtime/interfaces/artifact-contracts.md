@@ -122,6 +122,13 @@ the executed query to preserve the selected substantive query. Index records
 formatting-equivalent multi-query variants as duplicates rather than executing
 them again.
 
+The plural `targeted_search_plans`, `targeted_search_observations`,
+`counterevidence_plans`, and `counterevidence_runs` fields retain adaptive
+history in order. Verification recomputes every identity, rejects repeated
+attempt or query-equivalence identities, requires observations to reference the
+executed attempts in order, and binds the terminal compatibility records to the
+last history entries.
+
 ## DuckDB Execution Store
 
 The execution store is the durable audit-and-replay boundary. It is explicitly

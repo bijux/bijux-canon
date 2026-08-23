@@ -804,8 +804,11 @@ def _verify_reason_and_agent(grounded: _GroundedRuntime) -> None:
         )
     ).dispatch(agent_step, (agent_upstream,))
     research_trace = json.loads(research.artifacts[0].payload)
-    assert research_trace["status"] == "budget_exhausted"
+    assert research_trace["status"] == "insufficient"
     assert research_trace["termination"]["stop"] is True
+    assert research_trace["termination"]["reasons"] == [
+        "explicit_insufficiency"
+    ]
     assert research_trace["counterevidence_plan"]["requests"]
     targeted_search = research_trace["targeted_search_plan"]
     assert targeted_search["attempt"]["intent"] == "opposition"
@@ -844,11 +847,18 @@ def _verify_reason_and_agent(grounded: _GroundedRuntime) -> None:
     assert research_trace["research_state"]["question"] == (
         "What evidence do ancient genomes preserve?"
     )
-    assert research_trace["research_state"]["terminal_status"] == "incomplete"
+    assert research_trace["research_state"]["terminal_status"] == "insufficient"
     assert research_trace["research_state"]["search_budget"] == {
-        "limit": 1,
+        "limit": 2,
         "used": 1,
     }
+    assert len(research_trace["targeted_search_plans"]) == 1
+    assert len(research_trace["targeted_search_observations"]) == 1
+    assert research_trace["targeted_search_observations"][0]["outcome"] == (
+        "material_candidate"
+    )
+    assert len(research_trace["counterevidence_plans"]) == 1
+    assert len(research_trace["counterevidence_runs"]) == 1
     assert research_trace["research_state"]["gaps"]
     requirement_plan = research_trace["answer_requirement_plan"]
     assert requirement_plan["question"] == (

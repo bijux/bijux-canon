@@ -113,6 +113,8 @@ class _Port:
     convergence_outcome: str = "budget_exhausted"
     convergence_stop: bool = True
     search_error: Exception | None = None
+    search_outcomes: tuple[str, ...] = ()
+    candidate_sequences: tuple[tuple[str, ...], ...] = ()
     calls: list[str] = field(default_factory=list)
 
     def plan(
@@ -145,19 +147,30 @@ class _Port:
         self.calls.append("search")
         if self.search_error is not None:
             raise self.search_error
+        search_index = self.calls.count("search") - 1
+        outcome = (
+            self.search_outcomes[search_index]
+            if search_index < len(self.search_outcomes)
+            else self.search_outcome
+        )
+        candidates = (
+            self.candidate_sequences[search_index]
+            if search_index < len(self.candidate_sequences)
+            else self.candidates
+        )
         return InstalledResearchSearch(
             artifact_id=_SEARCH,
             records=(
                 InstalledResearchSearchRecord(
                     claim_artifact_id=_CLAIM,
-                    outcome=self.search_outcome,
-                    candidate_evidence_artifact_ids=self.candidates,
+                    outcome=outcome,
+                    candidate_evidence_artifact_ids=candidates,
                     negative_search_statement=(
                         None
-                        if self.candidates
+                        if candidates
                         else "No new counterevidence was found within this search."
                     ),
-                    record={"outcome": self.search_outcome},
+                    record={"outcome": outcome},
                 ),
             ),
             unsearched_important_claim_artifact_ids=(),
@@ -283,6 +296,7 @@ def test_no_results_are_retained_without_closing_the_opposition_need() -> None:
         "plan",
         "researcher",
         "verifier",
+        "adjudicator",
         "verifier",
     ]
     assert result.final_state.terminal_status == "incomplete"
@@ -293,6 +307,38 @@ def test_no_results_are_retained_without_closing_the_opposition_need() -> None:
     )
     assert len(no_results) == 1
     assert no_results[0].blocking is False
+
+
+def test_no_results_cause_a_distinct_second_query_before_candidates_stop() -> None:
+    port = _Port(
+        search_outcomes=(
+            "no_new_counterevidence_found",
+            "candidate_evidence_found",
+        ),
+        candidate_sequences=((), (_CANDIDATE,)),
+    )
+
+    result = InstalledResearchService().research(_request(max_searches=2), port)
+
+    assert port.calls == ["plan", "search", "plan", "search", "evaluate"]
+    assert len(result.plan_history) == 2
+    assert len(result.search_history) == 2
+    attempts = tuple(
+        plan.targeted_search_plan.attempt
+        for plan in result.plan_history
+        if plan.targeted_search_plan is not None
+    )
+    assert all(attempt is not None for attempt in attempts)
+    assert attempts[0].query_text != attempts[1].query_text  # type: ignore[union-attr]
+    assert "alternative terminology" in attempts[1].query_text  # type: ignore[union-attr]
+    assert [
+        observation.outcome for observation in result.targeted_search_observations
+    ] == [
+        "no_results",
+        "material_candidate",
+    ]
+    assert result.final_state.search_budget_used == 2
+    assert result.final_state.terminal_status == "incomplete"
 
 
 def test_search_tool_failure_is_an_incomplete_data_dependent_branch() -> None:

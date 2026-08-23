@@ -23,6 +23,9 @@ from bijux_canon_agent.application.research_workflow.observed_state import (
     ObservedResearchStateMachine,
 )
 from bijux_canon_agent.application.research_workflow.targeted_search import (
+    TargetedSearchAttempt,
+    TargetedSearchObservation,
+    TargetedSearchOutcome,
     TargetedSearchPlan,
     TargetedSearchPlanningService,
     TargetedSearchPolicy,
@@ -278,6 +281,9 @@ class InstalledResearchResult:
     tool_failure_artifact_ids: tuple[str, ...]
     causal_events: tuple[CausalDecisionEvent, ...]
     causal_trace: ResearchCausalTrace
+    plan_history: tuple[InstalledResearchPlan, ...]
+    search_history: tuple[InstalledResearchSearch, ...]
+    targeted_search_observations: tuple[TargetedSearchObservation, ...]
 
 
 class InstalledResearchService:
@@ -307,7 +313,7 @@ class InstalledResearchService:
             request.counterevidence_policy_artifact_id,
             request.convergence_policy_artifact_id,
         )
-        targeted_search_plan = (
+        targeted_planner = (
             None
             if request.max_searches == 0
             else TargetedSearchPlanningService(
@@ -315,29 +321,94 @@ class InstalledResearchService:
                     max_attempts=request.max_searches,
                     max_attempts_per_requirement=min(2, request.max_searches),
                 )
-            ).plan(request.requirements)
+            )
         )
-        plan = port.plan(request, targeted_search_plan)
-        if not isinstance(plan, InstalledResearchPlan):
-            raise TypeError("installed research port returned an invalid plan")
-        state = self._record_decision(
-            events,
-            state_machine=state_machine,
-            state=state,
-            state_history=state_history,
-            role="plan",
-            operation="plan_counterevidence",
-            rationale=(
-                "select important atomic claims only where observed evidence needs "
-                "justify deliberate skeptical search"
-            ),
-            observation_ids=(plan.artifact_id,),
-            evidence_ids=(),
-            policy_ids=policy_ids,
-        )
+        attempts: list[TargetedSearchAttempt] = []
+        targeted_observations: list[TargetedSearchObservation] = []
+        plans: list[InstalledResearchPlan] = []
+        searches: list[InstalledResearchSearch] = []
         search: InstalledResearchSearch | None = None
-        tool_failure_ids: tuple[str, ...] = ()
-        if plan.request_artifact_ids and state.search_budget_used < state.search_budget_limit:
+        tool_failures: list[str] = []
+        candidates: tuple[str, ...] = ()
+        while True:
+            targeted_search_plan = (
+                None
+                if targeted_planner is None
+                else targeted_planner.plan(
+                    request.requirements,
+                    attempts=tuple(attempts),
+                    observations=tuple(targeted_observations),
+                )
+            )
+            if (
+                targeted_search_plan is not None
+                and targeted_search_plan.attempt is None
+                and plans
+            ):
+                state = self._record_decision(
+                    events,
+                    state_machine=state_machine,
+                    state=state,
+                    state_history=state_history,
+                    role="adjudicator",
+                    operation="retain_unresolved_requirements",
+                    rationale=(
+                        "observed results justify no distinct additional query "
+                        "within the targeted-search policy"
+                    ),
+                    observation_ids=(targeted_search_plan.artifact_id,),
+                    evidence_ids=(),
+                    policy_ids=policy_ids,
+                )
+                break
+            plan = port.plan(request, targeted_search_plan)
+            if not isinstance(plan, InstalledResearchPlan):
+                raise TypeError("installed research port returned an invalid plan")
+            plans.append(plan)
+            state = self._record_decision(
+                events,
+                state_machine=state_machine,
+                state=state,
+                state_history=state_history,
+                role="plan",
+                operation="plan_counterevidence",
+                rationale=(
+                    "select the highest-priority unresolved answer requirement "
+                    "with a distinct query justified by observed search outcomes"
+                ),
+                observation_ids=(plan.artifact_id,),
+                evidence_ids=(),
+                policy_ids=policy_ids,
+            )
+            if (
+                not plan.request_artifact_ids
+                or state.search_budget_used >= state.search_budget_limit
+            ):
+                role = "verifier" if not state.blocking_gaps else "adjudicator"
+                operation = (
+                    "preserve_sufficient_answer"
+                    if not state.blocking_gaps
+                    else "retain_unresolved_requirements"
+                )
+                state = self._record_decision(
+                    events,
+                    state_machine=state_machine,
+                    state=state,
+                    state_history=state_history,
+                    role=role,
+                    operation=operation,
+                    rationale=(
+                        "the observed requirements are already satisfied, so an "
+                        "additional search is not needed"
+                        if not state.blocking_gaps
+                        else "the plan exposed no distinct executable search for blocking gaps"
+                    ),
+                    observation_ids=(plan.artifact_id,),
+                    evidence_ids=(),
+                    policy_ids=policy_ids,
+                )
+                break
+            search = None
             try:
                 search = port.search(request, plan)
                 if not isinstance(search, InstalledResearchSearch):
@@ -350,7 +421,7 @@ class InstalledResearchService:
                         "plan_artifact_id": plan.artifact_id,
                     }
                 )
-                tool_failure_ids = (failure_id,)
+                tool_failures.append(failure_id)
                 failure_gap = ObservedResearchGap.create(
                     kind=ObservedResearchGapKind.TOOL_FAILURE,
                     subject_artifact_id=failure_id,
@@ -372,64 +443,53 @@ class InstalledResearchService:
                     gaps=state.gaps + (failure_gap,),
                     consume_search=True,
                 )
-            if search is not None:
-                state = self._record_decision(
-                    events,
-                    state_machine=state_machine,
-                    state=state,
-                    state_history=state_history,
-                    role="researcher",
-                    operation="search_counterevidence",
-                    rationale=(
-                        "execute the planned bounded search because unresolved "
-                        "evidence needs remain"
-                    ),
-                    observation_ids=(search.artifact_id,),
-                    evidence_ids=(),
-                    policy_ids=policy_ids,
-                    consume_search=True,
-                )
-            candidates = tuple(
-                artifact_id
-                for record in (() if search is None else search.records)
-                for artifact_id in record.candidate_evidence_artifact_ids
-            )
-            if search is not None:
-                state = self._record_search_observation(
-                    events=events,
-                    state_machine=state_machine,
-                    state=state,
-                    state_history=state_history,
-                    search=search,
-                    candidates=candidates,
-                    policy_ids=policy_ids,
-                )
-        else:
-            candidates = ()
-            role = "verifier" if not state.blocking_gaps else "adjudicator"
-            operation = (
-                "preserve_sufficient_answer"
-                if not state.blocking_gaps
-                else "retain_unresolved_requirements"
-            )
+                break
+            searches.append(search)
             state = self._record_decision(
                 events,
                 state_machine=state_machine,
                 state=state,
                 state_history=state_history,
-                role=role,
-                operation=operation,
+                role="researcher",
+                operation="search_counterevidence",
                 rationale=(
-                    "the observed requirements are already satisfied, so a second "
-                    "search is not needed"
-                    if not state.blocking_gaps
-                    else "the plan exposed no executable search for blocking gaps"
+                    "execute the selected requirement-specific query because its "
+                    "recorded evidence need remains unresolved"
                 ),
-                observation_ids=(plan.artifact_id,),
+                observation_ids=(search.artifact_id,),
                 evidence_ids=(),
                 policy_ids=policy_ids,
+                consume_search=True,
             )
+            search_candidates = tuple(
+                artifact_id
+                for record in search.records
+                for artifact_id in record.candidate_evidence_artifact_ids
+            )
+            candidates += search_candidates
+            state = self._record_search_observation(
+                events=events,
+                state_machine=state_machine,
+                state=state,
+                state_history=state_history,
+                search=search,
+                candidates=search_candidates,
+                policy_ids=policy_ids,
+            )
+            attempt = None if targeted_search_plan is None else targeted_search_plan.attempt
+            if attempt is None:
+                raise TypeError("executed research plan has no targeted search attempt")
+            attempts.append(attempt)
+            observation = self._targeted_observation(attempt, search)
+            targeted_observations.append(observation)
+            if observation.outcome in {
+                TargetedSearchOutcome.MATERIAL_CANDIDATE,
+                TargetedSearchOutcome.REFUSED,
+            }:
+                break
 
+        plan = plans[-1]
+        tool_failure_ids = tuple(tool_failures)
         relation_status = self._relation_status(state, search, tool_failure_ids)
         convergence = port.evaluate(request, plan, search)
         if not isinstance(convergence, InstalledResearchConvergence):
@@ -470,6 +530,39 @@ class InstalledResearchService:
             tool_failure_artifact_ids=tool_failure_ids,
             causal_events=causal_events,
             causal_trace=ResearchCausalTrace.create(causal_events),
+            plan_history=tuple(plans),
+            search_history=tuple(searches),
+            targeted_search_observations=tuple(targeted_observations),
+        )
+
+    @staticmethod
+    def _targeted_observation(
+        attempt: TargetedSearchAttempt,
+        search: InstalledResearchSearch,
+    ) -> TargetedSearchObservation:
+        outcomes = {record.outcome for record in search.records}
+        candidates = tuple(
+            artifact_id
+            for record in search.records
+            for artifact_id in record.candidate_evidence_artifact_ids
+        )
+        evidence: tuple[str, ...]
+        if any("ambigu" in outcome for outcome in outcomes):
+            outcome = TargetedSearchOutcome.AMBIGUOUS
+            evidence = ()
+        elif candidates:
+            outcome = TargetedSearchOutcome.MATERIAL_CANDIDATE
+            evidence = candidates
+        elif "retrieval_refused" in outcomes:
+            outcome = TargetedSearchOutcome.REFUSED
+            evidence = ()
+        else:
+            outcome = TargetedSearchOutcome.NO_RESULTS
+            evidence = ()
+        return TargetedSearchObservation.create(
+            attempt_artifact_id=attempt.artifact_id,
+            outcome=outcome,
+            evidence_artifact_ids=evidence,
         )
 
     @classmethod

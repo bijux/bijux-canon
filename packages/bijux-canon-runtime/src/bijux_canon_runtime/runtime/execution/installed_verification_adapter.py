@@ -260,6 +260,62 @@ def _verify_research_trace(subject: Mapping[str, object]) -> tuple[str, ...]:
             query_text
         ):
             raise StepDispatchError("retrieval query differs from targeted search")
+    raw_targeted_plans = subject.get("targeted_search_plans")
+    raw_counter_plans = subject.get("counterevidence_plans")
+    raw_counter_runs = subject.get("counterevidence_runs")
+    raw_search_observations = subject.get("targeted_search_observations")
+    if (
+        not isinstance(raw_targeted_plans, list)
+        or not isinstance(raw_counter_plans, list)
+        or not isinstance(raw_counter_runs, list)
+        or not isinstance(raw_search_observations, list)
+        or len(raw_targeted_plans) != len(raw_counter_plans)
+        or len(raw_counter_runs) != len(raw_search_observations)
+    ):
+        raise StepDispatchError("targeted search history is invalid")
+    try:
+        counter_plans = tuple(
+            CounterevidencePlan.model_validate(item) for item in raw_counter_plans
+        )
+        counter_runs = tuple(
+            CounterevidenceSearchRun.model_validate(item) for item in raw_counter_runs
+        )
+    except ValidationError as error:
+        raise StepDispatchError("counterevidence history is invalid") from error
+    if not counter_plans or counter_plans[-1] != plan:
+        raise StepDispatchError("terminal counterevidence plan differs from history")
+    if counter_runs and (run is None or counter_runs[-1] != run):
+        raise StepDispatchError("terminal counterevidence run differs from history")
+    attempt_ids: list[object] = []
+    equivalence_ids: list[object] = []
+    for targeted, counter_plan in zip(
+        raw_targeted_plans, counter_plans, strict=True
+    ):
+        if not isinstance(targeted, dict):
+            raise StepDispatchError("targeted search history entry is invalid")
+        if targeted.get("artifact_id") != content_artifact_id(
+            targeted | {"artifact_id": None}
+        ):
+            raise StepDispatchError("targeted search history identity is invalid")
+        attempt = targeted.get("attempt")
+        if (attempt is None) != (not counter_plan.requests):
+            raise StepDispatchError("targeted and counterevidence histories differ")
+        if isinstance(attempt, dict):
+            attempt_ids.append(attempt.get("artifact_id"))
+            equivalence_ids.append(attempt.get("query_equivalence_sha256"))
+    if len(attempt_ids) != len(set(attempt_ids)) or len(equivalence_ids) != len(
+        set(equivalence_ids)
+    ):
+        raise StepDispatchError("targeted search history repeats an equivalent attempt")
+    observed_attempt_ids: list[object] = []
+    for observation in raw_search_observations:
+        if not isinstance(observation, dict) or observation.get(
+            "artifact_id"
+        ) != content_artifact_id(observation | {"artifact_id": None}):
+            raise StepDispatchError("targeted search observation identity is invalid")
+        observed_attempt_ids.append(observation.get("attempt_artifact_id"))
+    if observed_attempt_ids != attempt_ids[: len(observed_attempt_ids)]:
+        raise StepDispatchError("targeted search observations refer to other attempts")
     if requirements.graph_artifact_id != subject.get("claim_graph_artifact_id"):
         raise StepDispatchError("answer requirement plan refers to another graph")
     raw_requirements = raw_state.get("requirements")
@@ -288,7 +344,8 @@ def _verify_research_trace(subject: Mapping[str, object]) -> tuple[str, ...]:
         raise StepDispatchError("research trace did not reach a terminal decision")
     candidate_ids = tuple(
         artifact_id
-        for record in (() if run is None else run.records)
+        for history_run in counter_runs
+        for record in history_run.records
         for artifact_id in record.candidate_evidence_artifact_ids
     )
     if _strings(subject.get("opposition_candidates"), "opposition_candidates") != (
@@ -298,6 +355,7 @@ def _verify_research_trace(subject: Mapping[str, object]) -> tuple[str, ...]:
     return (
         "answer-requirement-plan-identity",
         "targeted-search-plan-identity",
+        "targeted-search-history-lineage",
         "counterevidence-plan-identity",
         "counterevidence-search-lineage",
         "unclassified-opposition-preservation",

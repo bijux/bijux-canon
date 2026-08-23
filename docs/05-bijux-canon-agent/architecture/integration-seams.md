@@ -130,5 +130,13 @@ punctuation-equivalent attempts share an equivalence identity and cannot be
 executed repeatedly. Runtime executes the selected query but cannot replace it
 with the same generic per-claim request.
 
+After each call, Agent records a typed observation and replans from the full
+attempt history. A bounded no-result observation broadens terminology and
+context, ambiguity targets exact entity/scope/quantity qualifiers, and
+classified opposition requests reconciliation and boundary evidence. A
+material unclassified candidate or retrieval refusal pauses further querying;
+neither is treated as support. Every executed call consumes one search-budget
+unit.
+
 See [configuration](../interfaces/configuration-surface.md) for precedence and
 [artifact contracts](../interfaces/artifact-contracts.md) for evidence fields.
