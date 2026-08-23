@@ -137,7 +137,7 @@ def test_discover_command_uses_the_ingest_application_boundary(
         assert run_v2_command(args, services=None) == 0
 
     payload = json.loads(stdout.getvalue())
-    assert payload["schema_version"] == "bijux.canon.ingest.discovery.v1"
+    assert payload["schema_version"] == "bijux.canon.ingest.discovery.v2"
     assert payload["sources"][0]["relative_path"] == "evidence.txt"
 
 
