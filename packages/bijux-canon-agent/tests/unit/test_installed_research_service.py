@@ -9,6 +9,7 @@ import pytest
 from bijux_canon_agent.application import (
     BudgetAction,
     BudgetDimensions,
+    CancellationSignal,
     InstalledCandidateClassification,
     InstalledEvidenceRelation,
     InstalledResearchClaim,
@@ -39,6 +40,14 @@ _CONVERGENCE = "sha256:" + "c" * 64
 _REQUIREMENT = "sha256:" + "d" * 64
 _CLASSIFICATION = "sha256:" + "e" * 64
 _DOCUMENT = "sha256:" + "0" * 64
+
+
+@dataclass
+class _MutableCancellation:
+    signal: CancellationSignal = field(default_factory=CancellationSignal.inactive)
+
+    def current(self) -> CancellationSignal:
+        return self.signal
 
 
 def _request(
@@ -544,6 +553,93 @@ def test_installed_provider_usage_overrun_is_not_admitted() -> None:
     assert result.terminal_outcome.exhausted_budget_dimensions == (
         "provider_calls",
     )
+
+
+def test_installed_cancellation_before_call_is_terminal_without_port_work() -> None:
+    signal = CancellationSignal.active(
+        reason="operator cancelled before research",
+        request_artifact_id="sha256:" + "1" * 64,
+    )
+    cancellation = _MutableCancellation(signal)
+    port = _Port()
+
+    result = InstalledResearchService().research(
+        _request(),
+        port,
+        cancellation,
+    )
+
+    assert port.calls == []
+    assert result.cancellation_signal == signal
+    assert result.terminal_outcome.kind == "cancelled"
+    assert result.terminal_outcome.cancellation_artifact_id == signal.artifact_id
+    assert result.final_state.terminal_status == "incomplete"
+    assert result.causal_events[-1].operation == "cancel_research"
+
+
+def test_installed_cancellation_during_search_records_attempt_without_failure() -> None:
+    cancellation = _MutableCancellation()
+
+    class CancellingPort(_Port):
+        def search(
+            self,
+            request: InstalledResearchRequest,
+            plan: InstalledResearchPlan,
+        ) -> InstalledResearchSearch:
+            self.calls.append("search")
+            cancellation.signal = CancellationSignal.active(
+                reason="operator cancelled in-flight search",
+                request_artifact_id="sha256:" + "2" * 64,
+            )
+            raise RuntimeError("cancelled search transport")
+
+    port = CancellingPort()
+    result = InstalledResearchService().research(
+        _request(),
+        port,
+        cancellation,
+    )
+
+    assert port.calls == ["plan", "search"]
+    assert result.search is None
+    assert result.search_history == ()
+    assert result.tool_failure_artifact_ids == ()
+    assert result.budget_usage.retrievals == 1
+    assert result.final_state.search_budget_used == 1
+    assert result.terminal_outcome.kind == "cancelled"
+    assert result.causal_events[-1].budget_decision_artifact_ids
+
+
+def test_installed_cancellation_after_search_preserves_completed_evidence() -> None:
+    cancellation = _MutableCancellation()
+
+    class CancellingPort(_Port):
+        def search(
+            self,
+            request: InstalledResearchRequest,
+            plan: InstalledResearchPlan,
+        ) -> InstalledResearchSearch:
+            result = super().search(request, plan)
+            cancellation.signal = CancellationSignal.active(
+                reason="operator cancelled after search",
+                request_artifact_id="sha256:" + "3" * 64,
+            )
+            return result
+
+    port = CancellingPort()
+    result = InstalledResearchService().research(
+        _request(),
+        port,
+        cancellation,
+    )
+
+    assert port.calls == ["plan", "search"]
+    assert result.search is not None
+    assert result.search_history == (result.search,)
+    assert result.opposition_candidate_ids == (_CANDIDATE,)
+    assert result.final_state.search_budget_used == 1
+    assert result.terminal_outcome.kind == "cancelled"
+    assert result.causal_events[-1].operation == "cancel_research"
 
 
 def test_unsatisfied_requirement_without_a_search_is_not_completed() -> None:

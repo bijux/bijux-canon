@@ -285,6 +285,13 @@ in the research trace. Verification replays that ledger exactly and rejects
 altered usage, omitted decisions, or a terminal exhaustion that differs from
 the ledger.
 
+If cancellation arrives during an Agent-owned tool call, Agent records the
+attempted call, retains any result that completed before the signal, prevents
+later calls, and emits a typed `cancelled` research trace. Runtime accepts that
+partial-success artifact only through the Agent adapter's explicit cancellation
+validator; queued descendants remain cancelled. The exact signal and terminal
+identity are persisted and can be verified independently.
+
 The research artifact separates Agent disposition from Reason's convergence
 observation. Its `status` is the typed Agent outcome, while
 `convergence_status` and the bound convergence record retain the underlying

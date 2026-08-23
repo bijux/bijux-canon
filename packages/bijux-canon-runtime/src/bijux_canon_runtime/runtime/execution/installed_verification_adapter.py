@@ -10,6 +10,7 @@ from collections.abc import Mapping
 from pydantic import ValidationError
 
 from bijux_canon_agent.application import (
+    InstalledResearchConvergence,
     InstalledResearchTerminalKind,
     InstalledResearchTerminalOutcome,
     RemainingResearchWork,
@@ -18,6 +19,7 @@ from bijux_canon_agent.contracts import (
     BudgetAction,
     BudgetDecision,
     BudgetDimensions,
+    CancellationSignal,
     CausalDecisionEvent,
     ResearchBudgetLedger,
     ResearchBudgetPolicy,
@@ -80,6 +82,39 @@ def _integer(value: object, field: str) -> int:
     if isinstance(value, bool) or not isinstance(value, int):
         raise StepDispatchError(f"verification subject field is invalid: {field}")
     return value
+
+
+def _boolean(value: object, field: str) -> bool:
+    if not isinstance(value, bool):
+        raise StepDispatchError(f"verification subject field is invalid: {field}")
+    return value
+
+
+def _cancellation_signal(value: object) -> CancellationSignal | None:
+    if value is None:
+        return None
+    raw = _object(value, "cancellation_signal")
+    requested = raw.get("requested")
+    reason = raw.get("reason")
+    request_artifact_id = raw.get("request_artifact_id")
+    if (
+        requested is not True
+        or not isinstance(reason, str)
+        or not isinstance(request_artifact_id, str)
+    ):
+        raise StepDispatchError("research cancellation signal is invalid")
+    signal = CancellationSignal(
+        artifact_id=str(raw.get("artifact_id")),
+        requested=True,
+        reason=reason,
+        request_artifact_id=request_artifact_id,
+    )
+    if signal != CancellationSignal.active(
+        reason=reason,
+        request_artifact_id=request_artifact_id,
+    ):
+        raise StepDispatchError("research cancellation identity is invalid")
+    return signal
 
 
 def _event(value: object) -> CausalDecisionEvent:
@@ -308,7 +343,23 @@ def _verify_research_trace(subject: Mapping[str, object]) -> tuple[str, ...]:
             if raw_run is None
             else CounterevidenceSearchRun.model_validate(raw_run)
         )
-        convergence = ConvergenceDecision.model_validate(subject["termination"])
+        convergence = (
+            InstalledResearchConvergence(
+                artifact_id=str(
+                    _object(subject["termination"], "termination")["artifact_id"]
+                ),
+                outcome=str(
+                    _object(subject["termination"], "termination")["outcome"]
+                ),
+                stop=_boolean(
+                    _object(subject["termination"], "termination")["stop"],
+                    "termination.stop",
+                ),
+                record=_object(subject["termination"], "termination"),
+            )
+            if subject.get("status") == "cancelled"
+            else ConvergenceDecision.model_validate(subject["termination"])
+        )
         raw_research_outcome = _object(subject["research_outcome"], "research_outcome")
         raw_remaining_work = _object(
             raw_research_outcome["remaining_work"], "remaining_work"
@@ -357,6 +408,7 @@ def _verify_research_trace(subject: Mapping[str, object]) -> tuple[str, ...]:
                 "failure_artifact_ids",
             ),
         )
+        cancellation_signal = _cancellation_signal(subject["cancellation_signal"])
         raw_events = subject["causal_events"]
         raw_trace = _object(subject["causal_trace"], "causal_trace")
         raw_state = _object(subject["research_state"], "research_state")
@@ -376,13 +428,26 @@ def _verify_research_trace(subject: Mapping[str, object]) -> tuple[str, ...]:
         raise StepDispatchError("research trace records are invalid") from error
     if run is not None and run.plan_artifact_id != plan.artifact_id:
         raise StepDispatchError("counterevidence run refers to another plan")
+    convergence_outcome = (
+        convergence.outcome
+        if isinstance(convergence, InstalledResearchConvergence)
+        else convergence.outcome.value
+    )
     if (
         research_outcome.convergence_artifact_id != convergence.artifact_id
-        or research_outcome.convergence_outcome != convergence.outcome.value
+        or research_outcome.convergence_outcome != convergence_outcome
         or subject.get("status") != research_outcome.kind.value
-        or subject.get("convergence_status") != convergence.outcome.value
+        or subject.get("convergence_status") != convergence_outcome
     ):
         raise StepDispatchError("research terminal outcome differs from convergence")
+    if cancellation_signal is not None:
+        if (
+            research_outcome.cancellation_artifact_id
+            != cancellation_signal.artifact_id
+        ):
+            raise StepDispatchError("research cancellation identity is invalid")
+    elif research_outcome.cancellation_artifact_id is not None:
+        raise StepDispatchError("research cancellation signal is missing")
     raw_targeted = subject.get("targeted_search_plan")
     if not isinstance(raw_targeted, dict):
         raise StepDispatchError("targeted search plan is missing or invalid")

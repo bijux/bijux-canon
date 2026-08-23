@@ -231,7 +231,18 @@ class OperationDispatcher:
             raise StepDispatchError(
                 f"adapter {adapter.adapter_id} failed operation {step.operation.value}"
             ) from exc
-        dispatch_context.raise_if_stopped()
+        try:
+            dispatch_context.raise_if_stopped()
+        except StepDispatchCancelled:
+            cancellation_validator = getattr(
+                adapter,
+                "accepts_cooperative_cancellation",
+                None,
+            )
+            if not callable(cancellation_validator) or not cancellation_validator(
+                artifacts
+            ):
+                raise
         self._validate_outputs(step, artifacts, upstream_artifacts)
         return StepDispatchResult(
             step_id=step.step_id,

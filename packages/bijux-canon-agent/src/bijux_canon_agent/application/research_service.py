@@ -42,6 +42,10 @@ from bijux_canon_agent.contracts.research_budget import (
     ResearchBudgetLedger,
     ResearchBudgetPolicy,
 )
+from bijux_canon_agent.contracts.execution_control import (
+    CancellationPort,
+    CancellationSignal,
+)
 
 
 def _canonical(value: object) -> bytes:
@@ -376,6 +380,7 @@ class InstalledResearchResult:
     budget_policy_artifact_id: str
     budget_decisions: tuple[BudgetDecision, ...]
     budget_usage: BudgetDimensions
+    cancellation_signal: CancellationSignal | None
     terminal_outcome: InstalledResearchTerminalOutcome
 
 
@@ -486,29 +491,86 @@ class InstalledResearchService:
         request: InstalledResearchRequest,
         decision: BudgetDecision,
     ) -> InstalledResearchConvergence:
-        record = {
+        identity_record = {
             "budget_decision_artifact_id": decision.artifact_id,
             "claim_graph_artifact_id": request.claim_graph_artifact_id,
             "outcome": "budget_exhausted",
             "stop": True,
         }
+        artifact_id = _artifact_id(identity_record)
+        record = {"artifact_id": artifact_id, **identity_record}
         return InstalledResearchConvergence(
-            artifact_id=_artifact_id(record),
+            artifact_id=artifact_id,
             outcome="budget_exhausted",
             stop=True,
             record=record,
         )
 
+    @staticmethod
+    def _cancellation_plan(
+        request: InstalledResearchRequest,
+        signal: CancellationSignal,
+    ) -> InstalledResearchPlan:
+        record: dict[str, object] = {
+            "cancellation_artifact_id": signal.artifact_id,
+            "claim_graph_artifact_id": request.claim_graph_artifact_id,
+            "outcome": "cancelled",
+            "request_artifact_ids": [],
+        }
+        return InstalledResearchPlan(
+            artifact_id=_artifact_id(record),
+            request_artifact_ids=(),
+            record=record,
+        )
+
+    @staticmethod
+    def _cancellation_convergence(
+        request: InstalledResearchRequest,
+        signal: CancellationSignal,
+    ) -> InstalledResearchConvergence:
+        identity_record: dict[str, object] = {
+            "cancellation_artifact_id": signal.artifact_id,
+            "claim_graph_artifact_id": request.claim_graph_artifact_id,
+            "outcome": "cancelled",
+            "stop": True,
+        }
+        artifact_id = _artifact_id(identity_record)
+        record = {"artifact_id": artifact_id, **identity_record}
+        return InstalledResearchConvergence(
+            artifact_id=artifact_id,
+            outcome="cancelled",
+            stop=True,
+            record=record,
+        )
+
+    @staticmethod
+    def _cancellation(
+        cancellation_port: CancellationPort | None,
+    ) -> CancellationSignal:
+        signal = (
+            CancellationSignal.inactive()
+            if cancellation_port is None
+            else cancellation_port.current()
+        )
+        if not isinstance(signal, CancellationSignal):
+            raise TypeError("installed cancellation port returned an invalid signal")
+        return signal
+
     def research(
         self,
         request: InstalledResearchRequest,
         port: InstalledResearchPort,
+        cancellation_port: CancellationPort | None = None,
     ) -> InstalledResearchResult:
         """Run only operations justified by the current plan and observations."""
         if not isinstance(request, InstalledResearchRequest):
             raise TypeError("installed research request has the wrong type")
         if not isinstance(port, InstalledResearchPort):
             raise TypeError("installed research port does not implement its contract")
+        if cancellation_port is not None and not isinstance(
+            cancellation_port, CancellationPort
+        ):
+            raise TypeError("installed cancellation port does not implement its contract")
         events: list[CausalDecisionEvent] = []
         budget = ResearchBudgetLedger(self._budget_policy(request))
         state_machine = ObservedResearchStateMachine()
@@ -542,7 +604,16 @@ class InstalledResearchService:
         search: InstalledResearchSearch | None = None
         tool_failures: list[str] = []
         candidates: tuple[str, ...] = ()
+        cancellation_signal: CancellationSignal | None = None
+        cancellation_budget_decision_ids: tuple[str, ...] = ()
+        cancellation_consumed_search = False
         while True:
+            signal = self._cancellation(cancellation_port)
+            if signal.requested:
+                cancellation_signal = signal
+                if not plans:
+                    plans.append(self._cancellation_plan(request, signal))
+                break
             targeted_search_plan = (
                 None
                 if targeted_planner is None
@@ -609,7 +680,19 @@ class InstalledResearchService:
                 label="plan_counterevidence:start",
                 usage=plan_start_usage,
             )
-            plan = port.plan(request, targeted_search_plan)
+            try:
+                plan = port.plan(request, targeted_search_plan)
+            except Exception:
+                signal = self._cancellation(cancellation_port)
+                if not signal.requested:
+                    raise
+                cancellation_signal = signal
+                cancellation_budget_decision_ids = tuple(
+                    item.artifact_id
+                    for item in budget.decisions[plan_budget_start:]
+                )
+                plans.append(self._cancellation_plan(request, signal))
+                break
             if not isinstance(plan, InstalledResearchPlan):
                 raise TypeError("installed research port returned an invalid plan")
             plan_finish = budget.charge(
@@ -661,6 +744,10 @@ class InstalledResearchService:
                     for item in budget.decisions[plan_budget_start:]
                 ),
             )
+            signal = self._cancellation(cancellation_port)
+            if signal.requested:
+                cancellation_signal = signal
+                break
             if (
                 not plan.request_artifact_ids
                 or state.search_budget_used >= state.search_budget_limit
@@ -690,6 +777,10 @@ class InstalledResearchService:
                 )
                 break
             search = None
+            signal = self._cancellation(cancellation_port)
+            if signal.requested:
+                cancellation_signal = signal
+                break
             search_budget_start = len(budget.decisions)
             search_start_usage = BudgetDimensions(
                 iterations=1,
@@ -733,6 +824,15 @@ class InstalledResearchService:
                         "installed research port returned an invalid search"
                     )
             except Exception as error:
+                signal = self._cancellation(cancellation_port)
+                if signal.requested:
+                    cancellation_signal = signal
+                    cancellation_budget_decision_ids = tuple(
+                        item.artifact_id
+                        for item in budget.decisions[search_budget_start:]
+                    )
+                    cancellation_consumed_search = True
+                    break
                 failure_id = _artifact_id(
                     {
                         "error_type": type(error).__name__,
@@ -841,6 +941,10 @@ class InstalledResearchService:
             attempts.append(attempt)
             observation = self._targeted_observation(attempt, search)
             targeted_observations.append(observation)
+            signal = self._cancellation(cancellation_port)
+            if signal.requested:
+                cancellation_signal = signal
+                break
             if observation.outcome in {
                 TargetedSearchOutcome.MATERIAL_CANDIDATE,
                 TargetedSearchOutcome.REFUSED,
@@ -851,7 +955,17 @@ class InstalledResearchService:
         tool_failure_ids = tuple(tool_failures)
         relation_status = self._relation_status(state, search, tool_failure_ids)
         evaluation_budget_start = len(budget.decisions)
-        if budget.exhausted_dimensions:
+        cancellation_observation_ids: tuple[str, ...] = ()
+        if cancellation_signal is None:
+            signal = self._cancellation(cancellation_port)
+            if signal.requested:
+                cancellation_signal = signal
+        if cancellation_signal is not None:
+            convergence = self._cancellation_convergence(
+                request,
+                cancellation_signal,
+            )
+        elif budget.exhausted_dimensions:
             convergence = self._budget_convergence(request, budget.decisions[-1])
         else:
             evaluation_start_usage = BudgetDimensions(iterations=1)
@@ -872,48 +986,96 @@ class InstalledResearchService:
                     label="evaluate_convergence:start",
                     usage=evaluation_start_usage,
                 )
-                convergence = port.evaluate(request, plan, search)
+                try:
+                    convergence = port.evaluate(request, plan, search)
+                except Exception:
+                    signal = self._cancellation(cancellation_port)
+                    if not signal.requested:
+                        raise
+                    cancellation_signal = signal
+                    cancellation_budget_decision_ids = tuple(
+                        item.artifact_id
+                        for item in budget.decisions[evaluation_budget_start:]
+                    )
+                    convergence = self._cancellation_convergence(request, signal)
                 if not isinstance(convergence, InstalledResearchConvergence):
                     raise TypeError(
                         "installed research port returned invalid convergence"
                     )
-                evaluation_finish = budget.charge(
-                    role="evaluate",
-                    label="evaluate_convergence:finish",
-                    usage=self._output_charge(asdict(convergence)).plus(
-                        convergence.execution_usage
-                    ),
-                )
-                if evaluation_finish.action is BudgetAction.TERMINATE:
-                    convergence = self._budget_convergence(
-                        request,
-                        evaluation_finish,
+                if cancellation_signal is None:
+                    evaluation_finish = budget.charge(
+                        role="evaluate",
+                        label="evaluate_convergence:finish",
+                        usage=self._output_charge(asdict(convergence)).plus(
+                            convergence.execution_usage
+                        ),
                     )
-        terminal_status = self._terminal_status(convergence, state)
-        state = self._record_decision(
-            events,
-            state_machine=state_machine,
-            state=state,
-            state_history=state_history,
-            role="verifier",
-            operation=(
-                "verify_completed_research"
-                if terminal_status == "completed"
-                else "retain_incomplete_research"
-            ),
-            rationale=(
-                "accept completion only when convergence and the observed evidence "
-                "state contain no blocking gaps"
-            ),
-            observation_ids=(convergence.artifact_id,),
-            evidence_ids=(),
-            policy_ids=policy_ids,
-            budget_decision_ids=tuple(
-                item.artifact_id
-                for item in budget.decisions[evaluation_budget_start:]
-            ),
-            terminal_status=terminal_status,
-        )
+                    if evaluation_finish.action is BudgetAction.TERMINATE:
+                        convergence = self._budget_convergence(
+                            request,
+                            evaluation_finish,
+                        )
+                    else:
+                        signal = self._cancellation(cancellation_port)
+                        if signal.requested:
+                            cancellation_signal = signal
+                            cancellation_budget_decision_ids = tuple(
+                                item.artifact_id
+                                for item in budget.decisions[
+                                    evaluation_budget_start:
+                                ]
+                            )
+                            cancellation_observation_ids = (
+                                convergence.artifact_id,
+                            )
+                            convergence = self._cancellation_convergence(
+                                request,
+                                signal,
+                            )
+        if cancellation_signal is not None:
+            terminal_status = "incomplete"
+            state = self._record_decision(
+                events,
+                state_machine=state_machine,
+                state=state,
+                state_history=state_history,
+                role="controller",
+                operation="cancel_research",
+                rationale="stop before any later call while retaining completed in-flight evidence",
+                observation_ids=(cancellation_signal.artifact_id, plan.artifact_id)
+                + cancellation_observation_ids,
+                evidence_ids=(),
+                policy_ids=policy_ids,
+                budget_decision_ids=cancellation_budget_decision_ids,
+                consume_search=cancellation_consumed_search,
+                terminal_status=terminal_status,
+            )
+        else:
+            terminal_status = self._terminal_status(convergence, state)
+            state = self._record_decision(
+                events,
+                state_machine=state_machine,
+                state=state,
+                state_history=state_history,
+                role="verifier",
+                operation=(
+                    "verify_completed_research"
+                    if terminal_status == "completed"
+                    else "retain_incomplete_research"
+                ),
+                rationale=(
+                    "accept completion only when convergence and the observed evidence "
+                    "state contain no blocking gaps"
+                ),
+                observation_ids=(convergence.artifact_id,),
+                evidence_ids=(),
+                policy_ids=policy_ids,
+                budget_decision_ids=tuple(
+                    item.artifact_id
+                    for item in budget.decisions[evaluation_budget_start:]
+                ),
+                terminal_status=terminal_status,
+            )
         insufficiencies = self._insufficiencies(state, search, candidates)
         remaining_work = self._remaining_work(
             state=state,
@@ -935,7 +1097,9 @@ class InstalledResearchService:
             )
             else ()
         )
-        if tool_failure_ids:
+        if cancellation_signal is not None:
+            terminal_kind = InstalledResearchTerminalKind.CANCELLED
+        elif tool_failure_ids:
             terminal_kind = InstalledResearchTerminalKind.FAILED
         elif exhausted_dimensions:
             terminal_kind = InstalledResearchTerminalKind.INCOMPLETE_BUDGET
@@ -951,6 +1115,11 @@ class InstalledResearchService:
             convergence_outcome=convergence.outcome,
             remaining_work=remaining_work,
             exhausted_budget_dimensions=exhausted_dimensions,
+            cancellation_artifact_id=(
+                None
+                if cancellation_signal is None
+                else cancellation_signal.artifact_id
+            ),
             failure_artifact_ids=tool_failure_ids,
         )
         causal_events = tuple(events)
@@ -973,6 +1142,7 @@ class InstalledResearchService:
             budget_policy_artifact_id=budget.policy.artifact_id,
             budget_decisions=budget.decisions,
             budget_usage=budget.global_usage,
+            cancellation_signal=cancellation_signal,
             terminal_outcome=terminal_outcome,
         )
 

@@ -14,6 +14,7 @@ from pydantic import ValidationError
 
 from bijux_canon_agent.application import (
     BudgetDimensions,
+    CancellationSignal,
     InstalledCandidateClassification,
     InstalledEvidenceRelation,
     InstalledResearchClaim,
@@ -203,6 +204,22 @@ class _IndexCounterevidencePort:
             ),
             evidence_artifact_ids=evidence_ids,
         )
+
+
+class _RuntimeCancellationPort:
+    """Project Runtime's cooperative signal into Agent's typed contract."""
+
+    def __init__(self, context: StepDispatchContext, request_artifact_id: str) -> None:
+        self._context = context
+        self._request_artifact_id = request_artifact_id
+
+    def current(self) -> CancellationSignal:
+        if self._context.is_cancelled():
+            return CancellationSignal.active(
+                reason="runtime cancellation requested",
+                request_artifact_id=self._request_artifact_id,
+            )
+        return CancellationSignal.inactive()
 
 
 class _ReasonResearchPort:
@@ -632,6 +649,27 @@ class CanonicalAgentOperationAdapter:
     adapter_version = "1.0"
     operation = DagOperation.AGENT
 
+    @staticmethod
+    def accepts_cooperative_cancellation(
+        artifacts: tuple[StepOutputArtifact, ...],
+    ) -> bool:
+        """Accept only an exact Agent cancellation terminal as partial success."""
+        if len(artifacts) != 1 or artifacts[0].contract_id != "agent.research-trace.v1":
+            return False
+        try:
+            payload = _json_object(artifacts[0].artifact, "agent.research-trace.v1")
+        except StepDispatchError:
+            return False
+        outcome = payload.get("research_outcome")
+        signal = payload.get("cancellation_signal")
+        return (
+            payload.get("status") == "cancelled"
+            and isinstance(outcome, dict)
+            and outcome.get("kind") == "cancelled"
+            and isinstance(signal, dict)
+            and outcome.get("cancellation_artifact_id") == signal.get("artifact_id")
+        )
+
     def __init__(
         self,
         *,
@@ -739,6 +777,15 @@ class CanonicalAgentOperationAdapter:
                 convergence=ConvergenceService(convergence_policy),
                 retrieval=retrieval_port,
             ),
+            _RuntimeCancellationPort(
+                context,
+                content_artifact_id(
+                    {
+                        "request_id": str(step.inputs.request_id),
+                        "step_id": step.step_id,
+                    }
+                ),
+            ),
         )
         payload = canonical_json_bytes(
             {
@@ -820,6 +867,11 @@ class CanonicalAgentOperationAdapter:
                     for record in item.records
                     for classification in record.classifications
                 ],
+                "cancellation_signal": (
+                    None
+                    if research.cancellation_signal is None
+                    else _json_value(asdict(research.cancellation_signal))
+                ),
                 "generation_id": generation_id,
                 "insufficiencies": list(research.insufficiencies),
                 "opposition_candidates": list(research.opposition_candidate_ids),
@@ -837,7 +889,8 @@ class CanonicalAgentOperationAdapter:
                 "tool_failure_artifact_ids": list(research.tool_failure_artifact_ids),
             }
         )
-        context.raise_if_stopped()
+        if research.terminal_outcome.kind.value != "cancelled":
+            context.raise_if_stopped()
         return _bounded_output(
             step=step,
             contract_id="agent.research-trace.v1",

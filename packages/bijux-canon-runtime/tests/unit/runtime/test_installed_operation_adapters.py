@@ -16,6 +16,7 @@ import pytest
 pytest.importorskip("faiss")
 
 from bijux_canon_agent.application import (
+    CancellationPort,
     InstalledResearchPort,
     InstalledResearchRequest,
     InstalledResearchResult,
@@ -86,6 +87,7 @@ from bijux_canon_runtime.runtime.execution.installed_verification_adapter import
 )
 from bijux_canon_runtime.runtime.execution.operation_dispatcher import (
     OperationDispatcher,
+    StepDispatchContext,
     StepDispatchError,
     StepOutputArtifact,
 )
@@ -956,6 +958,42 @@ def _verify_reason_and_agent(grounded: _GroundedRuntime) -> None:
             (tampered_budget,),
         )
 
+    cancellation_checks = 0
+
+    def cancel_during_retrieval() -> bool:
+        nonlocal cancellation_checks
+        cancellation_checks += 1
+        return cancellation_checks >= 6
+
+    cancelled_research = OperationDispatcher(
+        (
+            CanonicalAgentOperationAdapter(
+                store=store,
+                index=index_service,
+                embedding=_Embedding(),
+                vex_store_root=tmp_path / "runtime" / "vex-cancelled",
+            ),
+        )
+    ).dispatch(
+        agent_step,
+        (agent_upstream,),
+        context=StepDispatchContext(is_cancelled=cancel_during_retrieval),
+    )
+    cancelled_trace = json.loads(cancelled_research.artifacts[0].payload)
+    assert cancelled_trace["status"] == "cancelled"
+    assert cancelled_trace["research_outcome"]["kind"] == "cancelled"
+    assert cancelled_trace["cancellation_signal"]["requested"] is True
+    assert cancelled_trace["counterevidence_runs"] == []
+    assert cancelled_trace["tool_failure_artifact_ids"] == []
+    assert cancelled_trace["budget_usage"]["retrievals"] == 1
+    verified_cancelled = OperationDispatcher(
+        (CanonicalVerificationOperationAdapter(),)
+    ).dispatch(
+        research_verification_step,
+        (cancelled_research.artifacts[0],),
+    )
+    assert json.loads(verified_cancelled.artifacts[0].payload)["status"] == "verified"
+
 
 def _verify_linked_runs(grounded: _GroundedRuntime) -> None:
     indexed = grounded.indexed
@@ -1186,16 +1224,17 @@ def test_installed_ingest_and_index_adapters_persist_restartable_payloads(
         self: InstalledResearchService,
         request: InstalledResearchRequest,
         port: InstalledResearchPort,
+        cancellation_port: CancellationPort | None = None,
     ) -> InstalledResearchResult:
         delegated_requests.append(request)
-        return original_research(self, request, port)
+        return original_research(self, request, port, cancellation_port)
 
     monkeypatch.setattr(InstalledResearchService, "research", record_agent_delegation)
     indexed = _build_indexed_runtime(tmp_path)
     grounded = _retrieve_and_reason(indexed)
 
     _verify_reason_and_agent(grounded)
-    assert len(delegated_requests) == 1
+    assert len(delegated_requests) == 2
     assert delegated_requests[0].claims
     assert delegated_requests[0].question == (
         "What evidence do ancient genomes preserve?"
@@ -1208,7 +1247,7 @@ def test_installed_ingest_and_index_adapters_persist_restartable_payloads(
     )
     assert delegated_requests[0].evidence_relations
     _verify_linked_runs(grounded)
-    assert len(delegated_requests) == 2
+    assert len(delegated_requests) == 3
     _verify_offline_boundaries(grounded)
     _verify_replay(indexed)
 

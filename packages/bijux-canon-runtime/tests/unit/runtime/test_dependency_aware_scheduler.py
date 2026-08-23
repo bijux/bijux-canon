@@ -12,6 +12,8 @@ from pathlib import Path
 import threading
 from time import monotonic, sleep
 
+import pytest
+
 from bijux_canon_runtime.application.request_planner import RuntimeRequestPlanner
 from bijux_canon_runtime.model.execution.request_plan import (
     ConcreteDagStep,
@@ -40,6 +42,7 @@ from bijux_canon_runtime.runtime.execution.dag_scheduler import (
 )
 from bijux_canon_runtime.runtime.execution.operation_dispatcher import (
     OperationDispatcher,
+    StepDispatchCancelled,
     StepDispatchContext,
     StepOutputArtifact,
     resolved_input_artifact_ids,
@@ -363,3 +366,49 @@ def test_scheduler_classifies_expired_deadline_separately_from_cancellation(
         )
         == 3
     )
+
+
+def test_dispatcher_accepts_only_adapter_validated_cancellation_output() -> None:
+    step = _index_plan().steps[0]
+    cancelled = False
+
+    class AcknowledgingAdapter:
+        adapter_id = "test:cooperative-cancellation"
+        adapter_version = "1"
+        operation = step.operation
+
+        def execute(self, step, upstream, context):
+            nonlocal cancelled
+            cancelled = True
+            return (
+                StepOutputArtifact.from_payload(
+                    step=step,
+                    contract_id=step.output_artifact_contract_ids[0],
+                    media_type="application/json",
+                    payload=b'{"status":"cancelled"}',
+                    dependency_artifact_ids=resolved_input_artifact_ids(
+                        step, upstream
+                    ),
+                ),
+            )
+
+        @staticmethod
+        def accepts_cooperative_cancellation(artifacts):
+            return json.loads(artifacts[0].payload)["status"] == "cancelled"
+
+    result = OperationDispatcher((AcknowledgingAdapter(),)).dispatch(
+        step,
+        context=StepDispatchContext(is_cancelled=lambda: cancelled),
+    )
+
+    assert json.loads(result.artifacts[0].payload)["status"] == "cancelled"
+
+    class UnacknowledgedAdapter(AcknowledgingAdapter):
+        accepts_cooperative_cancellation = None
+
+    cancelled = False
+    with pytest.raises(StepDispatchCancelled):
+        OperationDispatcher((UnacknowledgedAdapter(),)).dispatch(
+            step,
+            context=StepDispatchContext(is_cancelled=lambda: cancelled),
+        )
