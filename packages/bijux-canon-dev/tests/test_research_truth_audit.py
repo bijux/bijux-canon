@@ -16,6 +16,7 @@ def _audit() -> dict[str, object]:
         cases_path=TRUTH_ROOT / "evaluation-cases.jsonl",
         claim_truth_path=TRUTH_ROOT / "claim-truth.jsonl",
         qrels_path=TRUTH_ROOT / "qrels.jsonl",
+        questions_path=TRUTH_ROOT / "research-questions.jsonl",
         split_path=TRUTH_ROOT / "split.json",
     )
 
@@ -27,6 +28,8 @@ def test_audit_reports_semantic_populations_instead_of_row_denominators() -> Non
 
     assert inventory == {
         "case_row_count": 120,
+        "reviewed_semantic_question_count": 18,
+        "reviewed_semantic_question_text_count": 18,
         "source_count": 8,
         "unique_case_count": 120,
         "unique_claim_count": 32,
@@ -47,6 +50,18 @@ def test_audit_reports_semantic_populations_instead_of_row_denominators() -> Non
         "must-abstain": 104,
     }
     assert len(report["query_inventory"]) == 8
+    assert len(report["reviewed_question_inventory"]) == 18
+    assert report["reviewed_question_category_counts"] == {
+        "ambiguous": 2,
+        "conflict": 2,
+        "cross-paper-synthesis": 2,
+        "finding": 2,
+        "limitation": 2,
+        "method": 2,
+        "multi-hop": 2,
+        "out-of-scope": 2,
+        "population-context": 2,
+    }
     assert len(report["qrel_inventory"]) == 30
     assert len(report["claim_inventory"]) == 32
     assert report["qrel_relevance_grade_counts"] == {"1": 14, "2": 8, "3": 8}
@@ -79,13 +94,18 @@ def test_audit_discloses_review_lineage_and_partition_leakage() -> None:
     )
     qrels = provenance["qrels"]
     claims = provenance["claims"]
+    questions = provenance["questions"]
     assert isinstance(qrels, dict) and isinstance(claims, dict)
+    assert isinstance(questions, dict)
     assert qrels["reviewer_ids"] == ["bijux-corpus-curation-primary"]
     assert claims["reviewer_ids"] == ["bijux-corpus-curation-primary"]
     assert qrels["system_output_consulted"] == [False]
     assert qrels["system_output_consulted_declared"] is True
     assert claims["system_output_consulted"] == []
     assert claims["system_output_consulted_declared"] is False
+    assert questions["reviewer_ids"] == ["bijux-corpus-curation-secondary"]
+    assert questions["system_output_consulted"] == [False]
+    assert questions["system_output_consulted_declared"] is True
 
     assert partition["leakage_free"] is False
     assert partition["overlap"] == {

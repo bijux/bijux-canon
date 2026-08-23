@@ -26,6 +26,24 @@ manifest and mapping identities, and one or more exact locator-truth anchors.
 The labels were reviewed from source content before retrieval evaluation;
 system rankings are explicitly forbidden as label input.
 
+`research-questions.jsonl` is the content-first semantic question authority.
+It contains 18 independently source-reviewed questions: two each for findings,
+methods, population/context, limitations, conflicts, cross-paper synthesis,
+multi-hop reasoning, ambiguity, and out-of-scope abstention. Each record names
+acceptable answer points, an answerability and abstention disposition, exact
+reachable qrel evidence with support/opposition/limitation/context relations,
+and secondary reviewer provenance. Product output may neither define nor amend
+this truth.
+
+Validate question diversity, exact evidence reachability, category balance,
+paraphrase exclusion, and review independence with:
+
+```console
+python -m bijux_canon_dev.corpus.research_questions \
+  --qrels examples/ancient-dna-research/truth/qrels.jsonl \
+  --questions examples/ancient-dna-research/truth/research-questions.jsonl
+```
+
 Validate the qrels and their embedded chunk identities with:
 
 ```console
@@ -53,12 +71,13 @@ python -m bijux_canon_dev.corpus.research_claim_truth \
   --claim-truth examples/ancient-dna-research/truth/claim-truth.jsonl
 ```
 
-`split.json` freezes the complete same-source cross-product of 30 graded qrel
+`split.json` freezes the legacy same-source cross-product of 30 graded qrel
 judgments and 32 atomic claims into exactly 120 reviewed execution rows. Those
 rows are not 120 independent questions or claims. The semantic populations are
-8 unique research questions, 30 qrels, 32 atomic claims, and 120 unique
-qrel/claim pairs. Metrics must declare which population they aggregate and use
-that population's unique identities as their denominator.
+18 reviewed semantic questions, 8 legacy single-source qrel queries, 30 qrels,
+32 atomic claims, and 120 unique legacy qrel/claim pairs. Metrics must declare
+which population they aggregate and use that population's unique identities as
+their denominator.
 
 The current row partition contains 80 development and 40 held-out rows and
 prohibits tuning use of held-out labels. It is not leakage-resistant: all 8
@@ -66,6 +85,8 @@ query identities, 27 of 30 qrel identities, and all 32 claim identities occur
 in both partitions. A release-eligible held-out corpus must replace this split
 with disjoint reviewed semantic identities. Until then, these rows support
 development diagnostics but cannot prove held-out generalization.
+The 18 semantic questions intentionally do not enter this obsolete cross-product;
+they become the question-level authority for the leakage-resistant replacement.
 
 `evaluation-cases.jsonl` is the canonical line-oriented execution inventory for
 those 120 cases. Every row joins the frozen split to its reviewed question,
@@ -107,6 +128,7 @@ source cross-products, and development/held-out overlap with:
 ```console
 python -m bijux_canon_dev.corpus.research_truth_audit \
   --qrels examples/ancient-dna-research/truth/qrels.jsonl \
+  --questions examples/ancient-dna-research/truth/research-questions.jsonl \
   --claim-truth examples/ancient-dna-research/truth/claim-truth.jsonl \
   --split examples/ancient-dna-research/truth/split.json \
   --cases examples/ancient-dna-research/truth/evaluation-cases.jsonl

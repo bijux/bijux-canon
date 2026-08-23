@@ -15,8 +15,12 @@ from bijux_canon_dev.corpus.acquisition import canonical, sha256
 from bijux_canon_dev.corpus.research_claim_truth import load_claim_truth
 from bijux_canon_dev.corpus.research_evaluation_split import load_split
 from bijux_canon_dev.corpus.research_qrels import load_qrels
+from bijux_canon_dev.corpus.research_questions import (
+    load_questions,
+    validate_questions,
+)
 
-SCHEMA_VERSION = "bijux.canon.research_truth_audit.v1"
+SCHEMA_VERSION = "bijux.canon.research_truth_audit.v2"
 
 
 def _load_jsonl(path: Path) -> tuple[dict[str, Any], ...]:
@@ -119,17 +123,22 @@ def audit_research_truth(
     cases_path: Path,
     claim_truth_path: Path,
     qrels_path: Path,
+    questions_path: Path,
     split_path: Path,
 ) -> dict[str, Any]:
     """Return a canonical audit without treating execution rows as questions."""
 
     qrels = tuple(load_qrels(qrels_path))
+    questions = tuple(load_questions(questions_path))
+    validate_questions(list(questions), qrels_path=qrels_path)
     claims = tuple(load_claim_truth(claim_truth_path))
     cases = _load_jsonl(cases_path)
     split = load_split(split_path)
 
     query_ids = _string_set(qrels, "query_id")
     query_texts = _string_set(qrels, "query")
+    reviewed_question_ids = _string_set(questions, "question_id")
+    reviewed_question_texts = _string_set(questions, "question")
     qrel_ids = _string_set(qrels, "qrel_id")
     claim_ids = _string_set(claims, "truth_id")
     claim_identities = _string_set(claims, "claim_identity_sha256")
@@ -166,6 +175,18 @@ def audit_research_truth(
             "abstention_expected": bool(record["abstention_expected"]),
         }
         for record in sorted(claims, key=lambda item: str(item["truth_id"]))
+    }
+    reviewed_question_inventory = {
+        str(record["question_id"]): {
+            "abstention_expected": bool(record["abstention_expected"]),
+            "answerability": str(record["answerability"]),
+            "category": str(record["category"]),
+            "evidence_qrel_ids": sorted(
+                str(item["qrel_id"]) for item in record["evidence"]
+            ),
+            "question": str(record["question"]),
+        }
+        for record in sorted(questions, key=lambda item: str(item["question_id"]))
     }
 
     source_cross_products = []
@@ -258,6 +279,12 @@ def audit_research_truth(
         reviewer_key="reviewer_id",
         method_key="review_method",
     )
+    question_provenance = _provenance(
+        questions,
+        reviewer_key="reviewer_id",
+        method_key="review_method",
+        output_consulted_key="system_output_consulted",
+    )
     independent_review_complete = (
         len(qrel_provenance["reviewer_ids"]) > 1
         and len(claim_provenance["reviewer_ids"]) > 1
@@ -301,8 +328,14 @@ def audit_research_truth(
             "unique_query_count": len(query_ids),
             "unique_query_text_count": len(query_texts),
             "source_count": len(source_ids),
+            "reviewed_semantic_question_count": len(reviewed_question_ids),
+            "reviewed_semantic_question_text_count": len(reviewed_question_texts),
         },
         "query_inventory": query_rows,
+        "reviewed_question_inventory": reviewed_question_inventory,
+        "reviewed_question_category_counts": dict(
+            sorted(Counter(str(record["category"]) for record in questions).items())
+        ),
         "qrel_inventory": qrel_inventory,
         "qrel_relevance_grade_counts": dict(
             sorted(Counter(str(record["relevance_grade"]) for record in qrels).items())
@@ -347,6 +380,7 @@ def audit_research_truth(
         "review_provenance": {
             "qrels": qrel_provenance,
             "claims": claim_provenance,
+            "questions": question_provenance,
             "split": {
                 "reviewer_ids": [str(split["reviewer_id"])],
                 "reviewed_on": [str(split["reviewed_on"])],
@@ -383,6 +417,7 @@ def main() -> None:
     parser.add_argument("--cases", type=Path, required=True)
     parser.add_argument("--claim-truth", type=Path, required=True)
     parser.add_argument("--qrels", type=Path, required=True)
+    parser.add_argument("--questions", type=Path, required=True)
     parser.add_argument("--split", type=Path, required=True)
     args = parser.parse_args()
     json.dump(
@@ -390,6 +425,7 @@ def main() -> None:
             cases_path=args.cases,
             claim_truth_path=args.claim_truth,
             qrels_path=args.qrels,
+            questions_path=args.questions,
             split_path=args.split,
         ),
         sys.stdout,
