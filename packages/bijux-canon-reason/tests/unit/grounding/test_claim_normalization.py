@@ -12,10 +12,13 @@ from pydantic import ValidationError
 import pytest
 
 from bijux_canon_reason.grounding import (
+    AtomicClaim,
     AtomicClaimNormalizer,
     AtomicClaimPolarity,
+    ClaimContentKind,
     CitationEvidence,
     ClaimConfidenceBasis,
+    ClaimModality,
     ClaimNormalizationError,
     ClaimNormalizationErrorCode,
     ClaimNormalizationOutcome,
@@ -30,6 +33,7 @@ from bijux_canon_reason.grounding import (
     StructuredProviderConfiguration,
     StructuredProviderSynthesis,
 )
+from bijux_canon_reason.grounding.provider_contracts import content_artifact_id
 
 
 def _sha(value: str) -> str:
@@ -109,21 +113,23 @@ class _Transport:
 
 
 def _provider_result(
-    statement: str, answer: str
+    statement: str | tuple[str, ...], answer: str
 ) -> tuple[StructuredProviderSynthesis, CitationEvidence]:
     packet, evidence = _packet()
+    statements = (statement,) if isinstance(statement, str) else statement
     candidate = {
         "schema_version": "bijux.canon.reason.provider_synthesis_candidate.v1",
         "outcome": "answered",
         "answer": answer,
         "claims": [
             {
-                "statement": statement,
+                "statement": item,
                 "citation_evidence_artifact_ids": [evidence.artifact_id],
                 "polarity": "opposes",
                 "qualifier": "within the tested samples",
                 "scope": "the source study",
             }
+            for item in statements
         ],
         "limitations": ["Source-scoped candidate."],
         "conflicts": [],
@@ -156,7 +162,8 @@ def test_compound_provider_claim_splits_without_collapsing_assertions() -> None:
     )
     assert all(claim.scope == "the source study" for claim in result.claims)
     assert all(
-        claim.qualifier == "within the tested samples" for claim in result.claims
+        claim.qualification.source_qualifier == "within the tested samples"
+        for claim in result.claims
     )
     assert all(claim.polarity is AtomicClaimPolarity.opposes for claim in result.claims)
     assert all(
@@ -172,6 +179,51 @@ def test_compound_provider_claim_splits_without_collapsing_assertions() -> None:
         == claim.statement
         for claim in result.claims
     )
+
+
+def test_atomic_claim_retains_negation_modality_population_time_and_quantity() -> None:
+    statement = "At least one of the snakes may not retain useful DNA after 120 years."
+    provider_result, _ = _provider_result(statement, statement)
+
+    claim = AtomicClaimNormalizer().normalize_provider(provider_result).claims[0]
+
+    assert claim.qualification.content_kind is ClaimContentKind.factual_assertion
+    assert claim.qualification.modality is ClaimModality.possible
+    assert claim.qualification.negated is True
+    assert claim.qualification.population_scope == ("At least one of the snakes",)
+    assert claim.qualification.temporal_scope == ("120 years",)
+    assert claim.qualification.quantitative_scope == ("120",)
+    assert claim.answer_quote == statement
+
+
+def test_recommendation_is_typed_without_erasing_its_modality() -> None:
+    statement = "Future studies should test additional hot-region samples."
+    provider_result, _ = _provider_result(statement, statement)
+
+    claim = AtomicClaimNormalizer().normalize_provider(provider_result).claims[0]
+
+    assert claim.qualification.content_kind is ClaimContentKind.recommendation
+    assert claim.qualification.modality is ClaimModality.recommended
+
+
+@pytest.mark.parametrize(
+    "statement",
+    (
+        "In my opinion, this method is elegant.",
+        "However.",
+    ),
+)
+def test_non_factual_candidate_cannot_enter_claim_metrics(statement: str) -> None:
+    provider_result, _ = _provider_result(statement, statement)
+
+    with pytest.raises(ClaimNormalizationError) as caught:
+        AtomicClaimNormalizer().normalize_provider(provider_result)
+
+    assert caught.value.code is ClaimNormalizationErrorCode.candidate_not_factual
+    assert caught.value.content_kind in {
+        ClaimContentKind.opinion,
+        ClaimContentKind.transition,
+    }
 
 
 def test_noun_phrase_conjunction_is_not_split() -> None:
@@ -205,6 +257,61 @@ def test_definition_list_is_not_split_into_a_noun_phrase() -> None:
     assert tuple(claim.statement for claim in result.claims) == (statement,)
 
 
+def test_leading_concession_splits_finding_from_limitation_with_exact_spans() -> None:
+    statement = (
+        "While endogenous yields were below 1% for samples from hot regions, "
+        "damage patterns indicated ancient molecules."
+    )
+    provider_result, _ = _provider_result(statement, statement)
+
+    result = AtomicClaimNormalizer().normalize_provider(provider_result)
+
+    assert tuple(claim.statement for claim in result.claims) == (
+        "endogenous yields were below 1% for samples from hot regions",
+        "damage patterns indicated ancient molecules.",
+    )
+    first = result.claims[0]
+    assert first.qualification.population_scope == ("samples from hot regions",)
+    assert first.qualification.quantitative_scope == ("below 1%",)
+    assert all(
+        statement[claim.answer_span[0] : claim.answer_span[1]] == claim.statement
+        for claim in result.claims
+    )
+
+
+def test_inline_concession_splits_capability_from_uncertain_boundary() -> None:
+    statement = (
+        "Genomic study of resin-embedded organisms is possible, although the "
+        "time limits remain to be determined."
+    )
+    provider_result, _ = _provider_result(statement, statement)
+
+    result = AtomicClaimNormalizer().normalize_provider(provider_result)
+
+    assert tuple(claim.qualification.modality for claim in result.claims) == (
+        ClaimModality.possible,
+        ClaimModality.uncertain,
+    )
+    assert tuple(claim.statement for claim in result.claims) == (
+        "Genomic study of resin-embedded organisms is possible",
+        "the time limits remain to be determined.",
+    )
+
+
+def test_claim_ordinals_follow_answer_spans_not_provider_candidate_order() -> None:
+    first = "The earlier result was observed."
+    second = "The later result remained stable."
+    answer = f"{first} {second}"
+    provider_result, _ = _provider_result((second, first), answer)
+
+    result = AtomicClaimNormalizer().normalize_provider(provider_result)
+
+    assert tuple(claim.statement for claim in result.claims) == (first, second)
+    assert tuple(claim.ordinal for claim in result.claims) == (1, 2)
+    assert tuple(claim.source_candidate_ordinal for claim in result.claims) == (2, 1)
+    assert result.claims[0].answer_span[1] < result.claims[1].answer_span[0]
+
+
 def test_credential_free_points_keep_exact_answer_and_citation_spans() -> None:
     packet, evidence = _packet()
     synthesis = CredentialFreeSynthesizer().synthesize(
@@ -226,6 +333,14 @@ def test_credential_free_points_keep_exact_answer_and_citation_spans() -> None:
     )
     assert all(
         claim.citation_evidence_artifact_ids == (evidence.artifact_id,)
+        for claim in result.claims
+    )
+    assert all(
+        claim.confidence_basis is ClaimConfidenceBasis.conservative_evidence_projection
+        for claim in result.claims
+    )
+    assert all(
+        claim.atomicity_basis.startswith("conservative-projection:")
         for claim in result.claims
     )
 
@@ -274,7 +389,9 @@ def test_insufficient_offline_synthesis_has_honest_empty_claim_set() -> None:
 
 
 def test_normalized_claim_set_is_deterministic_and_restart_safe() -> None:
-    provider_result, _ = _provider_result("A stable claim.", "A stable claim.")
+    provider_result, _ = _provider_result(
+        "A stable claim remained.", "A stable claim remained."
+    )
     normalizer = AtomicClaimNormalizer()
 
     first = normalizer.normalize_provider(provider_result)
@@ -284,8 +401,48 @@ def test_normalized_claim_set_is_deterministic_and_restart_safe() -> None:
     assert first == second == restarted
 
 
+def test_historical_plain_qualifier_claim_replays_without_identity_change() -> None:
+    statement = "A historical claim remained stable."
+    claim_payload = {
+        "ordinal": 1,
+        "statement": statement,
+        "statement_sha256": _sha(statement),
+        "answer_span": (0, len(statement)),
+        "answer_quote": statement,
+        "answer_quote_sha256": _sha(statement),
+        "qualifier": "within the historical source",
+        "scope": "historical-source",
+        "polarity": "observed",
+        "confidence_basis": "exact_extractive_span",
+        "citation_evidence_artifact_ids": (_artifact("historical-evidence"),),
+        "source_candidate_ordinal": 1,
+        "atomicity_basis": "single_assertion",
+    }
+    claim = AtomicClaim(artifact_id=content_artifact_id(claim_payload), **claim_payload)
+    claim_set_payload = {
+        "schema_version": "bijux.canon.reason.normalized_claim_set.v1",
+        "source_synthesis_artifact_id": _artifact("historical-synthesis"),
+        "answer_text_sha256": _sha(statement),
+        "outcome": "claims_extracted",
+        "claims": (claim.model_dump(mode="json"),),
+    }
+
+    replayed = NormalizedClaimSet(
+        artifact_id=content_artifact_id(claim_set_payload), **claim_set_payload
+    )
+
+    assert replayed.claims[0].qualifier == "within the historical source"
+    assert (
+        replayed.claims[0].qualification.source_qualifier
+        == "within the historical source"
+    )
+    assert replayed.artifact_id == content_artifact_id(claim_set_payload)
+
+
 def test_normalized_claim_set_rejects_identity_drift() -> None:
-    provider_result, _ = _provider_result("A stable claim.", "A stable claim.")
+    provider_result, _ = _provider_result(
+        "A stable claim remained.", "A stable claim remained."
+    )
     result = AtomicClaimNormalizer().normalize_provider(provider_result)
     drifted = result.model_dump(mode="json")
     drifted["artifact_id"] = _artifact("different")

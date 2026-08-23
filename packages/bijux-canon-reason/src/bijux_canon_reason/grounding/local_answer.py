@@ -197,6 +197,7 @@ class LocalGroundedAnswerService:
         contexts = []
         for claim in claims.claims:
             point = synthesis.points[claim.source_candidate_ordinal - 1]
+            qualification = claim.qualification
             links = links_by_claim[claim.artifact_id]
             section_paths = tuple(" / ".join(link.section_path) for link in links) or (
                 "section unavailable",
@@ -204,17 +205,25 @@ class LocalGroundedAnswerService:
             contexts.append(
                 create_claim_context(
                     claim_artifact_id=claim.artifact_id,
-                    population_scope=(f"source-scoped: {claim.scope}",),
+                    population_scope=(
+                        qualification.population_scope
+                        or (f"source-scoped: {claim.scope}",)
+                    ),
                     method_scope=section_paths,
-                    temporal_scope=("not normalized beyond the exact cited clause",),
-                    uncertainty=(
-                        "counterevidence or negation retained"
-                        if point.role is EvidenceRole.counterevidence
-                        else "no uncertainty inferred beyond source wording",
+                    temporal_scope=(
+                        qualification.temporal_scope
+                        or ("no explicit temporal qualifier in the claim",)
+                    ),
+                    uncertainty=_claim_uncertainty(
+                        qualification.modality.value,
+                        negated=qualification.negated,
+                        counterevidence=(point.role is EvidenceRole.counterevidence),
                     ),
                     limitations=(
                         "claim remains limited to its exact source scope",
                         f"evidence role: {point.role.value}",
+                        "explicit quantities: "
+                        + (", ".join(qualification.quantitative_scope) or "none"),
                     ),
                     source_quality=SourceQualityGrade.unknown,
                     source_quality_basis=(
@@ -247,6 +256,17 @@ class LocalGroundedAnswerService:
             contexts=tuple(contexts),
             conflicts=conflicts,
         )
+
+
+def _claim_uncertainty(
+    modality: str, *, negated: bool, counterevidence: bool
+) -> tuple[str, ...]:
+    annotations = [f"explicit modality: {modality}"]
+    if negated:
+        annotations.append("explicit negation retained")
+    if counterevidence:
+        annotations.append("candidate selected as counterevidence")
+    return tuple(annotations)
 
 
 def render_grounded_answer(

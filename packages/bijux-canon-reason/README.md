@@ -118,8 +118,11 @@ replace reviewed retrieval, claim, citation, or refusal truth.
 retrieved document chunks, selects question-relevant finding, method,
 limitation, counterevidence, and definition clauses, removes repeated facts,
 normalizes atomic claims, binds exact locators and hashes, verifies direct
-support, records source-scoped context, and applies the grounding admission
-decision before rendering an answer.
+support, and applies the grounding admission decision before rendering an
+answer. Each normalized claim retains typed modality, negation, population,
+temporal, and quantitative qualifiers extracted conservatively from its exact
+answer span. Questions, transition-only text, and explicit personal opinions
+cannot enter the factual claim set or inflate claim metrics.
 
 Bibliographic fields are integrity and discovery inputs; they are not answer
 evidence. An admitted local answer is derived from the retrieved publication
