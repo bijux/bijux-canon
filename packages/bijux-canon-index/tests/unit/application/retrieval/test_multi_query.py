@@ -12,6 +12,7 @@ import pytest
 from bijux_canon_index.application import (
     CitationChannel,
     CitationChannelProvenance,
+    CitationLocatorSegment,
     CitationReadyHit,
     CitationResolutionBatch,
     CitationRetrievalMode,
@@ -38,6 +39,11 @@ def _hit(
     score: float,
 ) -> CitationReadyHit:
     content_sha256 = hashlib.sha256(text.encode()).hexdigest()
+    mapping_id = "sha256:" + hashlib.sha256((chunk_id + "map").encode()).hexdigest()
+    locator = ExactSourceLocator(
+        "jats-element-path",
+        (("element_path", f"/article/body/p[{rank}]"),),
+    )
     return CitationReadyHit(
         artifact_id="sha256:" + hashlib.sha256(chunk_id.encode()).hexdigest(),
         rank=rank,
@@ -55,15 +61,25 @@ def _hit(
             "Evidence paper",
         ),
         section_path=("results",),
-        locator=ExactSourceLocator(
-            "jats-element-path",
-            (("element_path", f"/article/body/p[{rank}]"),),
+        locator=locator,
+        locator_scope="complete-chunk",
+        locator_segments=(
+            CitationLocatorSegment(
+                ordinal=0,
+                mapping_id=mapping_id,
+                chunk_start=0,
+                chunk_end=len(text),
+                normalized_start=0,
+                normalized_end=len(text),
+                section_path=("results",),
+                locator=locator,
+                verbatim_text=text,
+                content_sha256=content_sha256,
+            ),
         ),
         verbatim_text=text,
         content_sha256=content_sha256,
-        mapping_ids=(
-            "sha256:" + hashlib.sha256((chunk_id + "map").encode()).hexdigest(),
-        ),
+        mapping_ids=(mapping_id,),
         parent_chunk_ids=(),
         locator_record_id="sha256:"
         + hashlib.sha256((chunk_id + "locator").encode()).hexdigest(),
