@@ -5,8 +5,11 @@
 
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor
+import hashlib
 import json
 from pathlib import Path
+import threading
 
 import pytest
 
@@ -34,6 +37,7 @@ from bijux_canon_runtime.ontology.public import ReplayMode
 from bijux_canon_runtime.runtime.execution.application_composition import (
     compose_runtime_application_services,
 )
+from bijux_canon_runtime.runtime.execution import application_composition
 from bijux_canon_runtime.runtime.execution.durable_jobs import JobStatus
 
 
@@ -229,3 +233,92 @@ def test_composition_uses_safe_explicit_database_and_index_overrides(
     assert (layout.index_root / "generations").is_dir()
     assert not (workspace / "runtime.duckdb").exists()
     assert not (workspace / "indexes").exists()
+
+
+def test_lazy_embedding_model_reuses_and_invalidates_the_exact_lock_identity(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    model_root = tmp_path / "model"
+    model_root.mkdir()
+    lock_path = model_root / "model.lock.json"
+    lock_path.write_text("first", encoding="utf-8")
+    constructed: list[str] = []
+    inference_started = threading.Event()
+    release_inference = threading.Event()
+    overlapping_inference = threading.Event()
+    active_inferences = 0
+
+    class _Model:
+        def __init__(self, _root: Path, lock: str) -> None:
+            constructed.append(lock)
+            self.model_lock_id = "sha256:" + hashlib.sha256(lock.encode()).hexdigest()
+
+        def embed(self, texts: object) -> object:
+            nonlocal active_inferences
+            active_inferences += 1
+            if active_inferences > 1:
+                overlapping_inference.set()
+            inference_started.set()
+            assert release_inference.wait(timeout=2.0)
+            active_inferences -= 1
+            return texts
+
+    def load_lock(path: Path) -> str:
+        value = path.read_text(encoding="utf-8")
+        if value == "invalid":
+            raise ValueError("invalid model lock")
+        return value
+
+    monkeypatch.setattr(application_composition, "load_model_lock", load_lock)
+    monkeypatch.setattr(application_composition, "LocalEmbeddingModel", _Model)
+    embedding = application_composition._LazyLocalEmbeddingModel(model_root)
+
+    first_id = embedding.model_lock_id
+    cold_observation = embedding.cache_observation()
+    assert cold_observation["status"] == "cold"
+    with ThreadPoolExecutor(max_workers=8) as executor:
+        warm_ids = tuple(
+            executor.map(lambda _ordinal: embedding.model_lock_id, range(15))
+        )
+    first_ids = (first_id, *warm_ids)
+
+    assert len(set(first_ids)) == 1
+    assert constructed == ["first"]
+    observation = embedding.cache_observation()
+    assert observation["cache_identity"] == first_ids[0]
+    assert observation["hit_count"] == 15
+    assert observation["invalidation_count"] == 0
+    assert isinstance(observation["last_load_ms"], float)
+    assert observation["load_count"] == 1
+    assert observation["schema_version"] == (
+        "bijux.canon.index.model_resource_cache.v1"
+    )
+    assert observation["status"] == "warm"
+
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        first_embedding = executor.submit(embedding.embed, ("first",))
+        assert inference_started.wait(timeout=2.0)
+        second_embedding = executor.submit(embedding.embed, ("second",))
+        assert not overlapping_inference.wait(timeout=0.05)
+        release_inference.set()
+        assert first_embedding.result(timeout=2.0) == ("first",)
+        assert second_embedding.result(timeout=2.0) == ("second",)
+    assert not overlapping_inference.is_set()
+
+    lock_path.write_text("second", encoding="utf-8")
+    second_id = embedding.model_lock_id
+    assert second_id != first_ids[0]
+    assert constructed == ["first", "second"]
+    assert embedding.cache_observation()["invalidation_count"] == 1
+    assert embedding.cache_observation()["load_count"] == 2
+    assert embedding.cache_observation()["status"] == "invalidated"
+
+    lock_path.write_text("invalid", encoding="utf-8")
+    with pytest.raises(ValueError, match="invalid model lock"):
+        _ = embedding.model_lock_id
+    assert embedding.cache_observation()["cache_identity"] == second_id
+    assert embedding.cache_observation()["load_count"] == 2
+
+    embedding.close()
+    assert embedding.cache_observation()["status"] == "cold"

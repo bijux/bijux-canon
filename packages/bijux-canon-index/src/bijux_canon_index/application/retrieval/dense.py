@@ -18,6 +18,10 @@ from typing import Protocol, cast
 
 from bijux_canon_index.application.index_activation import IndexGenerationRegistry
 from bijux_canon_index.application.index_audit import IndexCompatibility
+from bijux_canon_index.application.index_inspection import IndexInspectionReport
+from bijux_canon_index.application.index_resource_cache import (
+    IndexGenerationResourceCache,
+)
 from bijux_canon_index.application.index_service import (
     IndexQueryChannel,
     IndexQueryHit,
@@ -152,12 +156,18 @@ class DenseCandidateService:
         embedder: QueryEmbeddingProvider,
         artifact_store_root: str | Path,
         compatibility: IndexCompatibility | None = None,
+        resource_cache: IndexGenerationResourceCache | None = None,
     ) -> None:
+        self._index = IndexService(
+            registry_root,
+            compatibility=compatibility,
+            resource_cache=resource_cache,
+        )
         self._registry = IndexGenerationRegistry(
             registry_root,
             compatibility=compatibility,
+            resource_cache=self._index.resource_cache,
         )
-        self._index = IndexService(registry_root, compatibility=compatibility)
         self._embedder = embedder
         self._store = VexArtifactStore(artifact_store_root)
 
@@ -171,6 +181,7 @@ class DenseCandidateService:
         candidate_limit: int,
         budget: VexExecutionBudget,
         metadata_filter: MetadataFilter | None = None,
+        inspection: IndexInspectionReport | None = None,
     ) -> DenseCandidateBatch:
         """Embed and execute one bounded dense query with an exact witness."""
 
@@ -183,8 +194,12 @@ class DenseCandidateService:
         if not top_k <= candidate_limit <= 1000:
             raise ValueError("dense candidate_limit must be within [top_k,1000]")
 
-        inspection = self._index.verify(generation_id)
-        with self._registry.open(generation_id) as generation:
+        selected_inspection = inspection or self._index.verify(generation_id)
+        if selected_inspection.generation_id != generation_id:
+            raise DenseCandidateCompatibilityError(
+                "prepared inspection does not match selected generation"
+            )
+        with self._registry.lease(generation_id) as generation:
             manifest = generation.manifest
             hnsw_parameters = manifest.hnsw_parameters
             exact_backend_version = generation.exact.manifest.faiss_version
@@ -200,7 +215,7 @@ class DenseCandidateService:
             embedding_started = perf_counter()
             embedded = self._embedder.embed((query_text,))
             embedding_ms = (perf_counter() - embedding_started) * 1000.0
-            if embedded.model_lock_id != inspection.model_lock_artifact_id:
+            if embedded.model_lock_id != selected_inspection.model_lock_artifact_id:
                 raise DenseCandidateCompatibilityError(
                     "query embedding model lock does not match index generation"
                 )
@@ -209,7 +224,7 @@ class DenseCandidateService:
                     "query embedding provider must return exactly one vector"
                 )
             query_vector = embedded.vectors[0]
-            if len(query_vector) != inspection.dimension:
+            if len(query_vector) != selected_inspection.dimension:
                 raise DenseCandidateCompatibilityError(
                     "query embedding dimension does not match index generation"
                 )
@@ -286,7 +301,7 @@ class DenseCandidateService:
                 "candidate_limit": candidate_limit,
                 "filter": _filter_payload(metadata_filter),
                 "generation_id": report.generation_id,
-                "model_lock_artifact_id": inspection.model_lock_artifact_id,
+                "model_lock_artifact_id": (selected_inspection.model_lock_artifact_id),
                 "query_text_sha256": query_text_sha256,
                 "top_k": top_k,
             },
@@ -342,7 +357,7 @@ class DenseCandidateService:
         return DenseCandidateBatch(
             schema_version="bijux.canon.retrieval.dense_candidates.v1",
             generation_id=report.generation_id,
-            model_lock_artifact_id=inspection.model_lock_artifact_id,
+            model_lock_artifact_id=selected_inspection.model_lock_artifact_id,
             query_text_sha256=query_text_sha256,
             query_vector_sha256=witness.query_vector_sha256,
             mode=mode,

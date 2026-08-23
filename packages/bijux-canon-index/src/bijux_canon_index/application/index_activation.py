@@ -30,6 +30,10 @@ from bijux_canon_index.application.index_inspection import (
     IndexInspectionReport,
     inspect_index_generation,
 )
+from bijux_canon_index.application.index_resource_cache import (
+    IndexGenerationResourceCache,
+    generation_version,
+)
 
 ACTIVE_NAME = "active.json"
 GENERATIONS_NAME = "generations"
@@ -67,6 +71,7 @@ class IndexGenerationRegistry:
         root: str | Path,
         *,
         compatibility: IndexCompatibility | None = None,
+        resource_cache: IndexGenerationResourceCache | None = None,
     ) -> None:
         self.root = Path(root).resolve()
         self.generations = self.root / GENERATIONS_NAME
@@ -77,6 +82,13 @@ class IndexGenerationRegistry:
         except FileExistsError:
             pass
         self._compatibility = compatibility
+        self._resource_cache = resource_cache
+
+    @property
+    def resource_cache(self) -> IndexGenerationResourceCache | None:
+        """Return the explicitly shared process-local resource cache."""
+
+        return self._resource_cache
 
     @contextmanager
     def _exclusive(self) -> Iterator[None]:
@@ -148,6 +160,8 @@ class IndexGenerationRegistry:
             )
             if audit.generation_id != generation_id:
                 raise IndexActivationError("generation path and identity diverged")
+            if self._resource_cache is not None:
+                self._resource_cache.invalidate()
             previous = self.active_generation_id(required=False)
             payload = {
                 "generation_id": generation_id,
@@ -222,6 +236,31 @@ class IndexGenerationRegistry:
         audit_index_generation(path, compatibility=self._compatibility)
         return IndexGeneration.open(path)
 
+    @contextmanager
+    def lease(self, generation_id: str | None = None) -> Iterator[IndexGeneration]:
+        """Lease one verified generation through the configured bounded cache."""
+
+        selected_generation_id = generation_id or self.active_generation_id()
+        assert selected_generation_id is not None
+        path = self.generations / _generation_directory_name(selected_generation_id)
+        if self._resource_cache is None:
+            with self.open(selected_generation_id) as generation:
+                yield generation
+            return
+
+        def load() -> IndexGeneration:
+            audit = audit_index_generation(path, compatibility=self._compatibility)
+            if audit.generation_id != selected_generation_id:
+                raise IndexActivationError("generation path and identity diverged")
+            return IndexGeneration.open(path)
+
+        with self._resource_cache.lease(
+            generation_id=selected_generation_id,
+            version=generation_version(path),
+            loader=load,
+        ) as generation:
+            yield generation
+
     def inspect(self, generation_id: str | None = None) -> IndexInspectionReport:
         """Return a verified content-safe report for an admitted generation."""
 
@@ -240,6 +279,8 @@ class IndexGenerationRegistry:
         """Remove only recognized interrupted publications and verify activation."""
 
         removed = []
+        if self._resource_cache is not None:
+            self._resource_cache.invalidate()
         with self._exclusive():
             for path in sorted(self.generations.glob(".*.building")):
                 if path.is_dir():

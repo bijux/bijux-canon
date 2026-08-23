@@ -11,6 +11,8 @@ from enum import StrEnum
 import hashlib
 from pathlib import Path
 import tempfile
+import threading
+from time import perf_counter
 
 from bijux_canon_index.application.index_activation import IndexGenerationRegistry
 from bijux_canon_index.application.index_archive import (
@@ -25,6 +27,10 @@ from bijux_canon_index.application.index_generation import (
     IndexGeneration,
 )
 from bijux_canon_index.application.index_inspection import IndexInspectionReport
+from bijux_canon_index.application.index_resource_cache import (
+    IndexGenerationResourceCache,
+    IndexResourceCacheReport,
+)
 from bijux_canon_index.application.vex.witnesses import (
     ExactSearchWitness,
     build_exact_search_witness,
@@ -91,6 +97,26 @@ class IndexQueryReport:
     hits: tuple[IndexQueryHit, ...]
 
 
+class IndexPreparationCacheStatus(StrEnum):
+    """Whether archive admission was required for one retrieval request."""
+
+    cold = "cold"
+    warm = "warm"
+    invalidated = "invalidated"
+
+
+@dataclass(frozen=True, slots=True)
+class PreparedIndexGeneration:
+    """One active generation plus observable cache and admission evidence."""
+
+    schema_version: str
+    inspection: IndexInspectionReport
+    archive_content_sha256: str
+    cache_status: IndexPreparationCacheStatus
+    preparation_ms: float
+    resource_cache: IndexResourceCacheReport
+
+
 class IndexService:
     """Own build, activation, inspection, verification, and query behavior."""
 
@@ -99,17 +125,34 @@ class IndexService:
         registry_root: str | Path,
         *,
         compatibility: IndexCompatibility | None = None,
+        resource_cache: IndexGenerationResourceCache | None = None,
     ) -> None:
-        self._registry = IndexGenerationRegistry(
-            registry_root,
-            compatibility=compatibility,
+        resolved_root = Path(registry_root).resolve()
+        self._resource_cache = resource_cache or IndexGenerationResourceCache(
+            cache_identity=(
+                "sha256:"
+                + hashlib.sha256(str(resolved_root).encode("utf-8")).hexdigest()
+            )
         )
+        self._registry = IndexGenerationRegistry(
+            resolved_root,
+            compatibility=compatibility,
+            resource_cache=self._resource_cache,
+        )
+        self._preparation_lock = threading.Lock()
+        self._prepared_archive: tuple[str, IndexInspectionReport] | None = None
 
     @property
     def registry_root(self) -> Path:
         """Return the configured operator-owned registry root."""
 
         return Path(self._registry.root)
+
+    @property
+    def resource_cache(self) -> IndexGenerationResourceCache:
+        """Return the cache shared by every service in this process lifecycle."""
+
+        return self._resource_cache
 
     def build(
         self,
@@ -198,6 +241,40 @@ class IndexService:
             self.registry_root,
             content,
             activate=activate,
+            resource_cache=self._resource_cache,
+        )
+
+    def prepare_archive(self, content: bytes) -> PreparedIndexGeneration:
+        """Admit and activate changed content once, then reuse its exact identity."""
+
+        archive_sha256 = hashlib.sha256(content).hexdigest()
+        started = perf_counter()
+        with self._preparation_lock:
+            prepared = self._prepared_archive
+            if prepared is not None and prepared[0] == archive_sha256:
+                active = self._registry.active_generation_id(required=False)
+                if active == prepared[1].generation_id:
+                    status = IndexPreparationCacheStatus.warm
+                    inspection = prepared[1]
+                else:
+                    status = IndexPreparationCacheStatus.invalidated
+                    inspection = self.admit_archive(content, activate=True)
+                    self._prepared_archive = (archive_sha256, inspection)
+            else:
+                status = (
+                    IndexPreparationCacheStatus.cold
+                    if prepared is None
+                    else IndexPreparationCacheStatus.invalidated
+                )
+                inspection = self.admit_archive(content, activate=True)
+                self._prepared_archive = (archive_sha256, inspection)
+        return PreparedIndexGeneration(
+            schema_version="bijux.canon.index.prepared_generation.v1",
+            inspection=inspection,
+            archive_content_sha256=archive_sha256,
+            cache_status=status,
+            preparation_ms=(perf_counter() - started) * 1000.0,
+            resource_cache=self._resource_cache.report(),
         )
 
     def inspect(self, generation_id: str | None = None) -> IndexInspectionReport:
@@ -218,7 +295,7 @@ class IndexService:
     ) -> IndexQueryReport:
         """Query one verified generation through a normalized application contract."""
 
-        with self._registry.open(generation_id) as generation:
+        with self._registry.lease(generation_id) as generation:
             chunks = {chunk.chunk_id: chunk for chunk in generation.lexical.chunks()}
             if request.channel is IndexQueryChannel.lexical:
                 assert request.query_text is not None
@@ -283,13 +360,18 @@ class IndexService:
         if request.channel is IndexQueryChannel.lexical:
             raise ValueError("exact witnesses require a dense query")
         assert request.query_vector is not None
-        with self._registry.open(generation_id) as generation:
+        with self._registry.lease(generation_id) as generation:
             return build_exact_search_witness(
                 generation,
                 tuple(request.query_vector),
                 top_k=request.top_k,
                 metadata_filter=request.metadata_filter,
             )
+
+    def close(self) -> None:
+        """Release all resident generation handles and reject later warm reuse."""
+
+        self._resource_cache.close()
 
 
 def _text_sha256(text: str) -> str:
@@ -301,5 +383,7 @@ __all__ = [
     "IndexQueryHit",
     "IndexQueryReport",
     "IndexQueryRequest",
+    "IndexPreparationCacheStatus",
+    "PreparedIndexGeneration",
     "IndexService",
 ]

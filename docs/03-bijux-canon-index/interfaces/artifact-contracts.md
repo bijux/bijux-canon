@@ -36,6 +36,15 @@ but it lacks the explicit build/configuration envelope and cannot be newly
 admitted or activated. Rebuild it from the pinned corpus snapshot and model
 lock to obtain a schema 2 generation.
 
+Within one process, verified immutable generations may be retained behind a
+bounded lease cache. A lease is scoped to the registry root, generation ID,
+and current file identities. Queries share the already-audited backend handles
+under serialized read access. Activation, recovery, file mutation, eviction,
+or service shutdown invalidates and closes those handles; an active lease must
+finish before its replacement can load, so the configured memory bound is not
+temporarily exceeded. This cache is reconstructible process state, not a new
+durable authority and not evidence that an older generation is still active.
+
 ## Execution Artifact
 
 `ExecutionArtifact` binds a vector corpus to an execution contract:

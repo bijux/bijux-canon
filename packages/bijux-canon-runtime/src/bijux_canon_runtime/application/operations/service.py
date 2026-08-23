@@ -149,12 +149,15 @@ class RuntimeApplicationServicesV2:
         comparison: RuntimeComparisonService | None = None,
         corpus_inspector: ResourceInspectionExecutor | None = None,
         index_inspector: ResourceInspectionExecutor | None = None,
+        resource_closers: tuple[Callable[[], None], ...] = (),
     ) -> None:
         self._jobs = jobs
         self._inspector = inspector
         self._comparison = comparison or RuntimeComparisonService(inspector)
         self._corpus_inspector = corpus_inspector
         self._index_inspector = index_inspector
+        self._resource_closers = resource_closers
+        self._closed = False
 
     def corpus(
         self,
@@ -376,7 +379,12 @@ class RuntimeApplicationServicesV2:
 
     def close(self) -> None:
         """Release worker resources after the application boundary is stopped."""
+        if self._closed:
+            return
         self._jobs.close()
+        for close_resource in self._resource_closers:
+            close_resource()
+        self._closed = True
 
     def __enter__(self) -> RuntimeApplicationServicesV2:
         return self

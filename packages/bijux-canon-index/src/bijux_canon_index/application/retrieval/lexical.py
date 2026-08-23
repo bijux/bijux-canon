@@ -14,6 +14,9 @@ from pathlib import Path
 
 from bijux_canon_index.application.index_activation import IndexGenerationRegistry
 from bijux_canon_index.application.index_audit import IndexCompatibility
+from bijux_canon_index.application.index_resource_cache import (
+    IndexGenerationResourceCache,
+)
 from bijux_canon_index.domain.metadata_filters import (
     MetadataFilter,
 )
@@ -107,10 +110,12 @@ class LexicalCandidateService:
         registry_root: str | Path,
         *,
         compatibility: IndexCompatibility | None = None,
+        resource_cache: IndexGenerationResourceCache | None = None,
     ) -> None:
         self._registry = IndexGenerationRegistry(
             registry_root,
             compatibility=compatibility,
+            resource_cache=resource_cache,
         )
 
     def generate(
@@ -132,7 +137,7 @@ class LexicalCandidateService:
         filter_sha256 = _sha256_json(
             {} if metadata_filter is None else asdict(metadata_filter)
         )
-        with self._registry.open(generation_id) as generation:
+        with self._registry.lease(generation_id) as generation:
             manifest = generation.lexical.manifest
             if not query_text.strip():
                 return LexicalCandidateBatch(

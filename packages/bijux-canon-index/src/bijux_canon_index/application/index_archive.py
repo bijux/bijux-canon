@@ -23,6 +23,9 @@ from bijux_canon_index.application.index_generation import (
     IndexGeneration,
 )
 from bijux_canon_index.application.index_inspection import IndexInspectionReport
+from bijux_canon_index.application.index_resource_cache import (
+    IndexGenerationResourceCache,
+)
 
 ARCHIVE_SCHEMA_VERSION = "bijux.canon.index.generation_archive.v1"
 _FILE_NAMES = (LEXICAL_NAME, EXACT_NAME, HNSW_NAME, MANIFEST_NAME)
@@ -201,10 +204,14 @@ def admit_index_generation_archive(
     content: bytes,
     *,
     activate: bool = False,
+    resource_cache: IndexGenerationResourceCache | None = None,
 ) -> IndexInspectionReport:
     """Verify, admit, and optionally activate one portable generation archive."""
 
-    registry = IndexGenerationRegistry(registry_root)
+    registry = IndexGenerationRegistry(
+        registry_root,
+        resource_cache=resource_cache,
+    )
     archive = IndexGenerationArchive.from_bytes(content)
     with (
         tempfile.TemporaryDirectory(

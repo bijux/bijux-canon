@@ -48,6 +48,26 @@ artifact size dominate local I/O. Keep these measurements separate. A single
 end-to-end number cannot show whether the next improvement belongs in an
 executor, the store, verification, or artifact transport.
 
+## Retrieval Resource Lifecycle
+
+One composed Runtime service retains its verified embedding model and a bounded
+set of immutable index generations across retrieval requests. The embedding
+model is keyed by the exact `model.lock.json` content; a lock change is loaded
+and verified before it replaces the resident model. Index handles are keyed by
+generation identity plus mutation-sensitive file identities. Activation,
+recovery, or an on-disk identity change invalidates resident handles before a
+new generation can answer a query. Generation access and local model inference
+are serialized so request workers can safely reuse the same read-only resource.
+
+Every `index.evidence-set.v1` payload includes `resource_reuse`. Its archive
+status distinguishes `cold`, `warm`, and `invalidated` admission; generation
+and embedding observations report content-safe cache identity, access/load
+counters, and last-load timing. A process restart is cold by definition. Cache
+identity is scoped to the resolved workspace index root, and the generation
+cache retains at most two idle or active generations by default. These fields
+must accompany cold/warm latency comparisons; a warm end-to-end measurement
+without matching resource evidence is not a valid warm retrieval result.
+
 ## Execution Budgets
 
 The Python API accepts an `ExecutionBudget` with limits for:

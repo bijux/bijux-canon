@@ -7,10 +7,12 @@ from __future__ import annotations
 
 from collections.abc import Callable, Sequence
 from dataclasses import asdict
+import gc
 import hashlib
 import json
 from pathlib import Path
 import threading
+from time import perf_counter
 
 from bijux_canon_index.application import IndexGenerationArchive, IndexService
 from bijux_canon_index.infra.embeddings.local_model import (
@@ -74,21 +76,76 @@ class _LazyLocalEmbeddingModel:
     def __init__(self, model_root: Path) -> None:
         self._model_root = model_root
         self._model: LocalEmbeddingModel | None = None
-        self._lock = threading.Lock()
+        self._lock = threading.RLock()
+        self._lock_content_sha256: str | None = None
+        self._load_count = 0
+        self._hit_count = 0
+        self._invalidation_count = 0
+        self._last_load_ms: float | None = None
+        self._last_access_status = "cold"
 
     @property
     def model_lock_id(self) -> str:
-        return self._load().model_lock_id
+        with self._lock:
+            return self._load().model_lock_id
 
     def embed(self, texts: Sequence[str]) -> EmbeddedBatch:
-        return self._load().embed(texts)
+        with self._lock:
+            return self._load().embed(texts)
 
     def _load(self) -> LocalEmbeddingModel:
         with self._lock:
-            if self._model is None:
-                lock = load_model_lock(self._model_root / "model.lock.json")
-                self._model = LocalEmbeddingModel(self._model_root, lock)
+            lock_path = self._model_root / "model.lock.json"
+            lock_content_sha256 = hashlib.sha256(lock_path.read_bytes()).hexdigest()
+            if (
+                self._model is not None
+                and self._lock_content_sha256 == lock_content_sha256
+            ):
+                self._hit_count += 1
+                self._last_access_status = "warm"
+                return self._model
+            started = perf_counter()
+            lock = load_model_lock(lock_path)
+            if (
+                hashlib.sha256(lock_path.read_bytes()).hexdigest()
+                != lock_content_sha256
+            ):
+                raise RuntimeError("embedding model lock changed while loading")
+            replacement = LocalEmbeddingModel(self._model_root, lock)
+            invalidated = self._model is not None
+            if invalidated:
+                self._invalidation_count += 1
+            self._model = replacement
+            self._lock_content_sha256 = lock_content_sha256
+            self._load_count += 1
+            self._last_load_ms = (perf_counter() - started) * 1000.0
+            self._last_access_status = "invalidated" if invalidated else "cold"
             return self._model
+
+    def cache_observation(self) -> dict[str, object]:
+        """Return content-safe model reuse evidence without forcing a load."""
+
+        with self._lock:
+            return {
+                "cache_identity": (
+                    None if self._model is None else self._model.model_lock_id
+                ),
+                "hit_count": self._hit_count,
+                "invalidation_count": self._invalidation_count,
+                "last_load_ms": self._last_load_ms,
+                "load_count": self._load_count,
+                "schema_version": "bijux.canon.index.model_resource_cache.v1",
+                "status": ("cold" if self._model is None else self._last_access_status),
+            }
+
+    def close(self) -> None:
+        """Release the model reference when the application lifecycle ends."""
+
+        with self._lock:
+            self._model = None
+            self._lock_content_sha256 = None
+            self._last_access_status = "cold"
+        gc.collect()
 
 
 def compose_runtime_application_services(
@@ -216,6 +273,7 @@ def compose_runtime_application_services(
         inspector=inspector,
         corpus_inspector=inspect_corpus,
         index_inspector=inspect_index,
+        resource_closers=(embedding.close, index.close),
     )
 
 

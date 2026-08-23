@@ -181,6 +181,7 @@ class SQLiteLexicalIndex:
                 f"file:{self._path}?mode=rw",
                 uri=True,
                 timeout=5.0,
+                check_same_thread=False,
             )
             self._connection.execute("PRAGMA foreign_keys=ON")
             self._connection.execute("PRAGMA busy_timeout=5000")

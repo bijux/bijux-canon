@@ -326,6 +326,10 @@ def _retrieve_and_reason(indexed: _IndexedRuntime) -> _GroundedRuntime:
     evidence = json.loads(evidence_artifact.canonical_bytes)
     assert evidence["status"] == "success"
     assert evidence["retrieval_mode"] == "local-hybrid-ann"
+    assert evidence["resource_reuse"]["archive_status"] == "cold"
+    assert evidence["resource_reuse"]["generation"]["load_count"] == 1
+    assert evidence["resource_reuse"]["generation"]["miss_count"] == 1
+    assert evidence["resource_reuse"]["generation"]["hit_count"] >= 4
     assert evidence["vex_execution"]["decision"]["status"] == "admitted"
     assert len(evidence["hits"]) == 1
     hit = evidence["hits"][0]
@@ -623,6 +627,8 @@ def _verify_offline_boundaries(grounded: _GroundedRuntime) -> None:
     offline = json.loads(offline_result.artifacts[0].payload)
     assert offline["status"] == "insufficient"
     assert offline["retrieval_mode"] == "lexical"
+    assert offline["resource_reuse"]["archive_status"] == "warm"
+    assert offline["resource_reuse"]["generation"]["load_count"] == 1
     assert offline["hits"] == []
     assert offline["retrieval"]["dense"] is None
     assert offline["vex_execution"] is None

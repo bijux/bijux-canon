@@ -49,11 +49,13 @@ from bijux_canon_index.application.index_mutation import (
     apply_index_delta,
 )
 from bijux_canon_index.application.index_service import (
+    IndexPreparationCacheStatus,
     IndexQueryChannel,
     IndexQueryHit,
     IndexQueryReport,
     IndexQueryRequest,
     IndexService,
+    PreparedIndexGeneration,
 )
 from bijux_canon_index.application.retrieval import (
     ChannelRunner,
@@ -258,8 +260,10 @@ __all__ = [
     "IndexQueryHit",
     "IndexQueryReport",
     "IndexQueryRequest",
+    "IndexPreparationCacheStatus",
     "IndexSegmentInspection",
     "IndexService",
+    "PreparedIndexGeneration",
     "LexicalCandidateBatch",
     "LexicalCandidateDecision",
     "LexicalCandidateDisposition",

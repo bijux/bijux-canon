@@ -104,6 +104,16 @@ def _is_artifact_id(value: object) -> bool:
     )
 
 
+def _embedding_cache_observation(embedding: object) -> dict[str, object] | None:
+    observer = getattr(embedding, "cache_observation", None)
+    if not callable(observer):
+        return None
+    value = observer()
+    if not isinstance(value, dict) or any(not isinstance(key, str) for key in value):
+        raise StepDispatchError("embedding cache observation is invalid")
+    return value
+
+
 def _required_object(value: object) -> dict[str, object]:
     if not isinstance(value, dict):
         raise TypeError
@@ -457,6 +467,21 @@ class CanonicalRetrievalOperationAdapter:
         self._index = index
         self._embedding = embedding
         self._vex_store_root = vex_store_root
+        resource_cache = index.resource_cache
+        self._lexical = LexicalCandidateService(
+            index.registry_root,
+            resource_cache=resource_cache,
+        )
+        self._dense = DenseCandidateService(
+            index.registry_root,
+            embedder=embedding,
+            artifact_store_root=vex_store_root,
+            resource_cache=resource_cache,
+        )
+        self._locators = CitationLocatorService(
+            index.registry_root,
+            resource_cache=resource_cache,
+        )
 
     def execute(
         self,
@@ -477,10 +502,8 @@ class CanonicalRetrievalOperationAdapter:
             contract_id="index.composite.v1",
             fallback_id=step.inputs.index_id,
         )
-        inspection = self._index.admit_archive(
-            index_artifact.canonical_bytes,
-            activate=True,
-        )
+        prepared = self._index.prepare_archive(index_artifact.canonical_bytes)
+        inspection = prepared.inspection
         try:
             snapshot_artifact = self._store.load(
                 ArtifactID(inspection.snapshot_artifact_id)
@@ -497,7 +520,7 @@ class CanonicalRetrievalOperationAdapter:
         top_k = step.inputs.top_k
         candidate_limit = min(1000, max(top_k, top_k * 4))
         metadata_filter = _retrieval_filter(step)
-        lexical = LexicalCandidateService(self._index.registry_root).generate(
+        lexical = self._lexical.generate(
             query,
             generation_id=inspection.generation_id,
             top_k=top_k,
@@ -517,11 +540,7 @@ class CanonicalRetrievalOperationAdapter:
                 else DenseCandidateMode.ann
             )
             self._vex_store_root.mkdir(parents=True, exist_ok=True)
-            dense = DenseCandidateService(
-                self._index.registry_root,
-                embedder=self._embedding,
-                artifact_store_root=self._vex_store_root,
-            ).generate(
+            dense = self._dense.generate(
                 query,
                 generation_id=inspection.generation_id,
                 mode=dense_mode,
@@ -536,6 +555,7 @@ class CanonicalRetrievalOperationAdapter:
                     require_witness=True,
                 ),
                 metadata_filter=metadata_filter,
+                inspection=inspection,
             )
             if dense.outcome is DenseCandidateOutcome.refused:
                 raise StepDispatchError("dense VEX policy refused retrieval evidence")
@@ -558,7 +578,7 @@ class CanonicalRetrievalOperationAdapter:
             vex_record = (
                 VexArtifactStore(self._vex_store_root).load(dense.artifact_id).record
             )
-        resolution = CitationLocatorService(self._index.registry_root).resolve(
+        resolution = self._locators.resolve(
             candidates,
             generation_id=inspection.generation_id,
             query_text_sha256=lexical.query_text_sha256,
@@ -590,6 +610,14 @@ class CanonicalRetrievalOperationAdapter:
                         "dense": None if dense is None else asdict(dense),
                         "fusion": None if fusion is None else asdict(fusion),
                         "lexical": asdict(lexical),
+                    },
+                    "resource_reuse": {
+                        "archive_content_sha256": prepared.archive_content_sha256,
+                        "archive_preparation_ms": prepared.preparation_ms,
+                        "archive_status": prepared.cache_status.value,
+                        "embedding": _embedding_cache_observation(self._embedding),
+                        "generation": asdict(self._index.resource_cache.report()),
+                        "schema_version": "bijux.canon.index.resource_reuse.v1",
                     },
                     "retrieval_mode": retrieval_mode.value,
                     "schema_version": "bijux.canon.index.evidence_set.v1",

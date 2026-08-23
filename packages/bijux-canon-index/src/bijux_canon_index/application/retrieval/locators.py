@@ -14,6 +14,9 @@ from pathlib import Path
 
 from bijux_canon_index.application.index_activation import IndexGenerationRegistry
 from bijux_canon_index.application.index_audit import IndexCompatibility
+from bijux_canon_index.application.index_resource_cache import (
+    IndexGenerationResourceCache,
+)
 
 from .dense import DenseCandidateBatch, DenseCandidateMode, DenseCandidateOutcome
 from .fusion import RetrievalChannel, RrfFusionBatch
@@ -650,10 +653,12 @@ class CitationLocatorService:
         registry_root: str | Path,
         *,
         compatibility: IndexCompatibility | None = None,
+        resource_cache: IndexGenerationResourceCache | None = None,
     ) -> None:
         self._registry = IndexGenerationRegistry(
             registry_root,
             compatibility=compatibility,
+            resource_cache=resource_cache,
         )
 
     def resolve(
@@ -708,7 +713,7 @@ class CitationLocatorService:
                 "citation locator catalog contains duplicate chunk mappings",
             )
 
-        with self._registry.open(generation_id) as generation:
+        with self._registry.lease(generation_id) as generation:
             manifest = generation.manifest
             if manifest.generation_id != generation_id:
                 raise CitationResolutionError(
