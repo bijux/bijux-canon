@@ -195,11 +195,15 @@ def _indexable_chunks(snapshot: dict[str, object]) -> tuple[_IndexableChunk, ...
                 for source_name, target_name in (
                     ("doi", "doi"),
                     ("language", "language"),
-                    ("publication_date", "date"),
                 ):
                     value = metadata.get(source_name)
                     if isinstance(value, str) and value:
                         index_metadata[target_name] = value
+                publication_date = metadata.get("publication_date")
+                if isinstance(publication_date, str) and publication_date:
+                    index_metadata["publication_date"] = publication_date
+                    if re.fullmatch(r"\d{4}-\d{2}-\d{2}", publication_date):
+                        index_metadata["date"] = publication_date
                 section_paths = raw_chunk.get("section_paths")
                 if isinstance(section_paths, list) and section_paths:
                     first = section_paths[0]

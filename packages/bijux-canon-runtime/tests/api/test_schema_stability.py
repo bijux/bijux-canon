@@ -6,9 +6,12 @@ from __future__ import annotations
 import hashlib
 from pathlib import Path
 
+import pytest
+
 REPO_ROOT = Path(__file__).resolve().parents[4]
-SCHEMA_PATH = REPO_ROOT / "apis" / "bijux-canon-runtime" / "v1" / "schema.yaml"
-HASH_PATH = REPO_ROOT / "apis" / "bijux-canon-runtime" / "v1" / "schema.hash"
+SCHEMA_ROOTS = tuple(
+    REPO_ROOT / "apis" / "bijux-canon-runtime" / version for version in ("v1", "v2")
+)
 
 
 def _extract_version(text: str) -> str:
@@ -44,10 +47,13 @@ def _read_hash_file(text: str) -> dict[str, str]:
     return values
 
 
-def test_schema_hash_is_stable() -> None:
-    schema_text = SCHEMA_PATH.read_text(encoding="utf-8")
+@pytest.mark.parametrize("schema_root", SCHEMA_ROOTS, ids=("v1", "v2"))
+def test_schema_hash_is_stable(schema_root: Path) -> None:
+    schema_path = schema_root / "schema.yaml"
+    hash_path = schema_root / "schema.hash"
+    schema_text = schema_path.read_text(encoding="utf-8")
     schema_hash = hashlib.sha256(schema_text.encode("utf-8")).hexdigest()
-    stored = _read_hash_file(HASH_PATH.read_text(encoding="utf-8"))
+    stored = _read_hash_file(hash_path.read_text(encoding="utf-8"))
     stored_hash = stored.get("sha256")
     stored_version = stored.get("version")
 
@@ -59,6 +65,6 @@ def test_schema_hash_is_stable() -> None:
         "Schema version must match schema.hash before updating"
     )
     assert schema_hash == stored_hash, (
-        "Schema changed. Update apis/bijux-canon-runtime/v1/schema.hash and bump info.version "
-        "for breaking changes."
+        f"Schema changed. Update {hash_path.relative_to(REPO_ROOT)} and bump "
+        "info.version for breaking changes."
     )

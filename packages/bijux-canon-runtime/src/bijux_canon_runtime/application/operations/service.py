@@ -10,6 +10,10 @@ from dataclasses import fields, is_dataclass
 import re
 from typing import Protocol
 
+from bijux_canon_index.evaluation import (
+    PublicRetrievalEvaluationReport,
+    PublicRetrievalEvaluationRequest,
+)
 from bijux_canon_runtime.application.operations.codec import (
     replay_request_from_payload,
     replay_request_payload,
@@ -81,6 +85,16 @@ class ResourceInspectionExecutor(Protocol):
         ...
 
 
+class RetrievalEvaluationExecutor(Protocol):
+    """Execute a truth-only retrieval evaluation through installed owners."""
+
+    def __call__(
+        self, request: PublicRetrievalEvaluationRequest
+    ) -> PublicRetrievalEvaluationReport:
+        """Return an integrity-bound report over observed installed hits."""
+        ...
+
+
 def _validated_artifact_id(artifact_id: ArtifactID) -> ArtifactID:
     if re.fullmatch(r"sha256:[0-9a-f]{64}", str(artifact_id)) is None:
         raise ValueError("resource inspection requires a SHA-256 artifact identity")
@@ -149,6 +163,7 @@ class RuntimeApplicationServicesV2:
         comparison: RuntimeComparisonService | None = None,
         corpus_inspector: ResourceInspectionExecutor | None = None,
         index_inspector: ResourceInspectionExecutor | None = None,
+        retrieval_evaluator: RetrievalEvaluationExecutor | None = None,
         resource_closers: tuple[Callable[[], None], ...] = (),
     ) -> None:
         self._jobs = jobs
@@ -156,6 +171,7 @@ class RuntimeApplicationServicesV2:
         self._comparison = comparison or RuntimeComparisonService(inspector)
         self._corpus_inspector = corpus_inspector
         self._index_inspector = index_inspector
+        self._retrieval_evaluator = retrieval_evaluator
         self._resource_closers = resource_closers
         self._closed = False
 
@@ -217,6 +233,17 @@ class RuntimeApplicationServicesV2:
     ) -> DurableJobSnapshot:
         """Submit exact evidence retrieval work."""
         return self._submit(ApplicationOperation.RETRIEVE, request, idempotency_key)
+
+    def evaluate_retrieval(
+        self, request: PublicRetrievalEvaluationRequest
+    ) -> PublicRetrievalEvaluationReport:
+        """Execute reviewed queries through the installed persistent retriever."""
+
+        if self._retrieval_evaluator is None:
+            raise ApplicationCapabilityError(
+                "retrieval evaluation capability is not configured"
+            )
+        return self._retrieval_evaluator(request)
 
     def ask(
         self,
@@ -424,6 +451,7 @@ def _record(value: object) -> dict[str, object]:
 __all__ = [
     "ApplicationCapabilityError",
     "ReplayOperationExecutor",
+    "RetrievalEvaluationExecutor",
     "ResourceInspectionExecutor",
     "RuntimeApplicationServicesV2",
     "RuntimeOperationExecutor",

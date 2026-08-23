@@ -49,6 +49,10 @@ _OPERATION_SURFACES = {
     "research": ("research", ("post", "/api/v2/research")),
     "result": ("result", ("get", "/api/v2/jobs/{job_id}/result")),
     "retrieve": ("retrieve", ("post", "/api/v2/retrievals")),
+    "retrieval.evaluate": (
+        "evaluate-retrieval",
+        ("post", "/api/v2/retrieval-evaluations"),
+    ),
     "run": ("run", ("post", "/api/v2/runs")),
     "status": ("status", ("get", "/api/v2/jobs/{job_id}")),
 }

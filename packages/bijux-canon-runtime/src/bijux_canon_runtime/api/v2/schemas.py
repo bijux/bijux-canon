@@ -12,6 +12,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from bijux_canon_runtime.application.problems import RuntimeProblemCode
 
 ArtifactIdentity = Annotated[str, Field(pattern=r"^sha256:[0-9a-f]{64}$")]
+ContentDigest = Annotated[str, Field(pattern=r"^[0-9a-f]{64}$")]
 StableIdentity = Annotated[str, Field(min_length=1, max_length=200)]
 Cursor = Annotated[str, Field(min_length=1, max_length=4096)]
 ReadinessReasonValue = Literal[
@@ -115,6 +116,168 @@ class RetrieveRequest(StrictModel):
         "local-hybrid-ann",
         "qdrant-hybrid",
     ]
+
+
+class RetrievalEvaluationRequest(StrictModel):
+    """Evaluate reviewed local questions through one immutable index artifact."""
+
+    cases_path: Annotated[str, Field(min_length=1)]
+    qrels_path: Annotated[str, Field(min_length=1)]
+    index_id: ArtifactIdentity
+    split: Annotated[str, Field(min_length=1)] = "development"
+    mode: Literal[
+        "offline-lexical",
+        "local-hybrid-exact",
+        "local-hybrid-ann",
+    ] = "local-hybrid-ann"
+    top_k: Annotated[int, Field(ge=10, le=1000)] = 10
+
+
+class RetrievalLocatorSegmentResponse(StrictModel):
+    """One exact content-bound citation locator segment."""
+
+    ordinal: Annotated[int, Field(ge=0)]
+    mapping_id: ArtifactIdentity
+    scheme: Annotated[str, Field(min_length=1)]
+    selectors: tuple[tuple[str, str | int], ...]
+    content_sha256: ContentDigest
+
+
+class RetrievalObservedHitResponse(StrictModel):
+    """One installed ranked hit with exact document and locator lineage."""
+
+    rank: Annotated[int, Field(ge=1)]
+    retrieval_rank: Annotated[int, Field(ge=1)]
+    score: float
+    chunk_id: Annotated[str, Field(min_length=1)]
+    document_id: Annotated[str, Field(min_length=1)]
+    source_content_sha256: ContentDigest
+    content_sha256: ContentDigest
+    locator_segments: Annotated[
+        tuple[RetrievalLocatorSegmentResponse, ...], Field(min_length=1)
+    ]
+
+
+class RetrievalExecutionObservationResponse(StrictModel):
+    """One persisted installed query execution, including non-usable outcomes."""
+
+    query_id: Annotated[str, Field(min_length=1)]
+    query_text_sha256: ContentDigest
+    status: Literal["success", "insufficient", "refused", "failed"]
+    generation_id: ArtifactIdentity
+    model_lock_artifact_id: ArtifactIdentity
+    configuration_id: ArtifactIdentity
+    retrieval_mode: Literal[
+        "lexical", "offline-lexical", "local-hybrid-exact", "local-hybrid-ann"
+    ]
+    hits: tuple[RetrievalObservedHitResponse, ...]
+    run_id: str | None
+    attempt_id: str | None
+    vex_artifact_id: ArtifactIdentity | None
+    policy_action: Annotated[str, Field(min_length=1)]
+    fallback_action: Annotated[str, Field(min_length=1)]
+    failure: str | None
+
+
+class RetrievalGradedQrelResponse(StrictModel):
+    """One independently reviewed relevance grade used in metric arithmetic."""
+
+    evidence_id: Annotated[str, Field(min_length=1)]
+    relevance_grade: Annotated[int, Field(ge=0, le=3)]
+
+
+class RetrievalRankedHitResponse(StrictModel):
+    """One scored hit in deterministic metric order."""
+
+    evidence_id: Annotated[str, Field(min_length=1)]
+    score: float
+
+
+class RetrievalQueryMetricsResponse(StrictModel):
+    """Exact per-question ranking arithmetic."""
+
+    query_id: Annotated[str, Field(min_length=1)]
+    input_identity_sha256: ContentDigest
+    graded_qrels: tuple[RetrievalGradedQrelResponse, ...]
+    ordered_hits: tuple[RetrievalRankedHitResponse, ...]
+    ordered_evidence_ids: tuple[str, ...]
+    relevant_evidence_ids: tuple[str, ...]
+    retrieved_relevant_at_5: tuple[str, ...]
+    recall_at_5_numerator: Annotated[int, Field(ge=0)]
+    recall_at_5_denominator: Annotated[int, Field(ge=1)]
+    recall_at_5: Annotated[float, Field(ge=0, le=1)]
+    first_relevant_rank_at_10: Annotated[int | None, Field(ge=1, le=10)]
+    reciprocal_rank_at_10: Annotated[float, Field(ge=0, le=1)]
+    graded_gains_at_10: tuple[int, ...]
+    ideal_graded_gains_at_10: tuple[int, ...]
+    dcg_at_10: Annotated[float, Field(ge=0)]
+    ideal_dcg_at_10: Annotated[float, Field(ge=0)]
+    ndcg_at_10: Annotated[float, Field(ge=0, le=1)]
+    evidence_sha256: ContentDigest
+
+
+class RetrievalMetricIntervalResponse(StrictModel):
+    """Declared confidence interval for one macro retrieval metric."""
+
+    level: Annotated[float, Field(gt=0, lt=1)]
+    lower: Annotated[float, Field(ge=0, le=1)]
+    upper: Annotated[float, Field(ge=0, le=1)]
+    method: Annotated[str, Field(min_length=1)]
+
+
+class RetrievalAggregateMetricResponse(StrictModel):
+    """Macro metric with its complete numerator, samples, and denominator."""
+
+    metric_id: Annotated[str, Field(min_length=1)]
+    value: Annotated[float, Field(ge=0, le=1)]
+    numerator: Annotated[float, Field(ge=0)]
+    denominator: Annotated[int, Field(ge=1)]
+    formula: Annotated[str, Field(min_length=1)]
+    samples: tuple[float, ...]
+    confidence_interval: RetrievalMetricIntervalResponse
+
+
+class RetrievalMacroReportResponse(StrictModel):
+    """All per-query and macro retrieval metrics."""
+
+    schema_version: Literal["bijux.canon.index.retrieval-evaluation.v1"]
+    queries: Annotated[tuple[RetrievalQueryMetricsResponse, ...], Field(min_length=1)]
+    metrics: Annotated[
+        tuple[RetrievalAggregateMetricResponse, ...], Field(min_length=3, max_length=3)
+    ]
+    evidence_sha256: ContentDigest
+
+
+class RetrievalPooledCountsResponse(StrictModel):
+    """Transparent micro-population counts across reviewed judgments."""
+
+    relevant_qrels: Annotated[int, Field(ge=1)]
+    retrieved_relevant_at_5: Annotated[int, Field(ge=0)]
+    recall_at_5: Annotated[float, Field(ge=0, le=1)]
+    total_ranked_hits: Annotated[int, Field(ge=0)]
+    refused_queries: Annotated[int, Field(ge=0)]
+    failed_queries: Annotated[int, Field(ge=0)]
+
+
+class RetrievalEvaluationResponse(StrictModel):
+    """Transparent metrics and exact observations from installed retrieval."""
+
+    schema_version: Literal["bijux.canon.index.public-retrieval-evaluation.v1"]
+    request_sha256: Annotated[str, Field(pattern=r"^[0-9a-f]{64}$")]
+    query_count: Annotated[int, Field(ge=1)]
+    qrel_count: Annotated[int, Field(ge=1)]
+    generation_ids: Annotated[tuple[ArtifactIdentity, ...], Field(min_length=1)]
+    model_lock_artifact_ids: Annotated[
+        tuple[ArtifactIdentity, ...], Field(min_length=1)
+    ]
+    configuration_ids: Annotated[tuple[ArtifactIdentity, ...], Field(min_length=1)]
+    observations: Annotated[
+        tuple[RetrievalExecutionObservationResponse, ...], Field(min_length=1)
+    ]
+    macro: RetrievalMacroReportResponse
+    micro: RetrievalPooledCountsResponse
+    worst_query_ids: tuple[str, ...]
+    evidence_sha256: Annotated[str, Field(pattern=r"^[0-9a-f]{64}$")]
 
 
 class AskRequest(RetrieveRequest):
@@ -421,6 +584,8 @@ __all__ = [
     "ReadinessResponse",
     "ReplayRequest",
     "ResearchRequest",
+    "RetrievalEvaluationRequest",
+    "RetrievalEvaluationResponse",
     "RetrieveRequest",
     "RunRequest",
     "RuntimeCapabilityDiscoveryResponse",

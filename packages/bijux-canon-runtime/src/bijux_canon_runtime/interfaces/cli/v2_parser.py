@@ -76,6 +76,22 @@ def add_v2_commands(
     index_inspect.add_argument("--offset", type=int)
     index_inspect.add_argument("--limit", type=int, default=100)
 
+    evaluate_retrieval = commands.add_parser(
+        "evaluate-retrieval",
+        help="Execute reviewed questions through the installed persistent retriever.",
+    )
+    evaluate_retrieval.add_argument("--cases", required=True)
+    evaluate_retrieval.add_argument("--qrels", required=True)
+    evaluate_retrieval.add_argument("--index-id", required=True)
+    evaluate_retrieval.add_argument("--split", default="development")
+    evaluate_retrieval.add_argument(
+        "--mode",
+        choices=("offline-lexical", "local-hybrid-exact", "local-hybrid-ann"),
+        default="local-hybrid-ann",
+    )
+    evaluate_retrieval.add_argument("--top-k", type=int, default=10)
+    evaluate_retrieval.add_argument("--human", action="store_true")
+
     status = commands.add_parser("status", help="Inspect durable job state.")
     status.add_argument("job_id")
 

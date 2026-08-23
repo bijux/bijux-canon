@@ -7,6 +7,7 @@ from collections.abc import AsyncIterator, Awaitable, Callable
 from contextlib import asynccontextmanager
 from dataclasses import asdict
 import os
+from pathlib import Path
 import threading
 from typing import Annotated, Any
 
@@ -15,6 +16,10 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.responses import Response
 
+from bijux_canon_index.evaluation import (
+    PublicRetrievalMode,
+    load_reviewed_retrieval_request,
+)
 from bijux_canon_runtime.api.v2.conversion import (
     job_status,
     operation_request,
@@ -34,6 +39,8 @@ from bijux_canon_runtime.api.v2.schemas import (
     ReadinessResponse,
     ReplayRequest,
     ResearchRequest,
+    RetrievalEvaluationRequest,
+    RetrievalEvaluationResponse,
     RetrieveRequest,
     RunRequest,
     RuntimeCapabilityDiscoveryResponse,
@@ -415,6 +422,28 @@ def create_app(
                 ArtifactID(index_id),
                 page=PageRequest(limit=limit, cursor=cursor, offset=offset),
             )
+        )
+
+    @api.post(
+        "/api/v2/retrieval-evaluations",
+        response_model=RetrievalEvaluationResponse,
+        responses=PROBLEM_RESPONSES,
+    )
+    def evaluate_retrieval(
+        body: Annotated[RetrievalEvaluationRequest, Body(...)],
+        _: Version,
+        service: Services,
+    ) -> RetrievalEvaluationResponse:
+        request = load_reviewed_retrieval_request(
+            cases_path=Path(body.cases_path),
+            qrels_path=Path(body.qrels_path),
+            index_artifact_id=body.index_id,
+            split=body.split,
+            mode=PublicRetrievalMode(body.mode),
+            top_k=body.top_k,
+        )
+        return RetrievalEvaluationResponse.model_validate(
+            service.evaluate_retrieval(request).manifest()
         )
 
     @api.post(

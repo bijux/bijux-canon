@@ -16,6 +16,11 @@ from typing import TypeVar
 
 from pydantic import BaseModel, ValidationError
 
+from bijux_canon_index.evaluation import (
+    PublicRetrievalEvaluationReport,
+    PublicRetrievalMode,
+    load_reviewed_retrieval_request,
+)
 from bijux_canon_ingest.application.source_discovery import (
     SourceDiscoveryRequest,
     discover_source_directory,
@@ -143,6 +148,21 @@ def run_v2_command(
                     ),
                 )
             )
+            return 0
+        if args.v2_command == "evaluate-retrieval":
+            evaluation_request = load_reviewed_retrieval_request(
+                cases_path=Path(args.cases),
+                qrels_path=Path(args.qrels),
+                index_artifact_id=args.index_id,
+                split=args.split,
+                mode=PublicRetrievalMode(args.mode),
+                top_k=args.top_k,
+            )
+            evaluation = service.evaluate_retrieval(evaluation_request)
+            if args.human:
+                _write_retrieval_evaluation_human(evaluation)
+            else:
+                _write(evaluation.manifest())
             return 0
         if args.v2_command == "status":
             _write(job_status(service.status(args.job_id)).model_dump(mode="json"))
@@ -467,16 +487,10 @@ def _write_capabilities_human(report: RuntimeCapabilityDiscovery) -> None:
         + json.dumps(report.configuration["origins"], sort_keys=True)
     )
     print(
-        f"Workspace: {report.workspace.status} "
-        f"{report.workspace.workspace_id or '-'}"
+        f"Workspace: {report.workspace.status} {report.workspace.workspace_id or '-'}"
     )
-    print(
-        f"Model: {report.model.status} "
-        f"{report.model.model_lock_artifact_id or '-'}"
-    )
-    print(
-        f"Index: {report.index.status} {report.index.generation_id or '-'}"
-    )
+    print(f"Model: {report.model.status} {report.model.model_lock_artifact_id or '-'}")
+    print(f"Index: {report.index.status} {report.index.generation_id or '-'}")
     print("Operations: " + ", ".join(report.operations))
     print(
         "Parsers: "
@@ -485,8 +499,7 @@ def _write_capabilities_human(report: RuntimeCapabilityDiscovery) -> None:
         )
     )
     print(
-        "Providers: "
-        + ", ".join(provider.provider_id for provider in report.providers)
+        "Providers: " + ", ".join(provider.provider_id for provider in report.providers)
     )
     print(
         "Readiness: "
@@ -502,6 +515,31 @@ def _write_capabilities_human(report: RuntimeCapabilityDiscovery) -> None:
         )
     )
     print("Discovery record: " + json.dumps(record, sort_keys=True))
+
+
+def _write_retrieval_evaluation_human(
+    report: PublicRetrievalEvaluationReport,
+) -> None:
+    metrics = {item.metric_id: item for item in report.macro.metrics}
+    print(f"Queries: {report.query_count}")
+    print(f"Reviewed qrels: {report.qrel_count}")
+    print(f"Generation: {', '.join(report.generation_ids)}")
+    print(f"Model: {', '.join(report.model_lock_artifact_ids)}")
+    print(f"Configuration: {', '.join(report.configuration_ids)}")
+    print(
+        "Macro metrics: "
+        f"Recall@5={metrics['recall-at-5'].value:.6f}, "
+        f"MRR@10={metrics['mrr-at-10'].value:.6f}, "
+        f"nDCG@10={metrics['ndcg-at-10'].value:.6f}"
+    )
+    print(
+        "Pooled evidence: "
+        f"{report.micro.retrieved_relevant_at_5}/"
+        f"{report.micro.relevant_qrels} relevant qrels at 5; "
+        f"refused={report.micro.refused_queries}; failed={report.micro.failed_queries}"
+    )
+    print("Worst queries: " + ", ".join(report.worst_query_ids))
+    print(f"Evidence: {report.evidence_sha256}")
 
 
 def _normalize(value: object) -> object:

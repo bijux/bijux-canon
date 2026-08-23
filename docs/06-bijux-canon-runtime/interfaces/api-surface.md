@@ -4,17 +4,30 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-runtime-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-08-23
 ---
 
 # HTTP API
 
-The runtime HTTP application is experimental. Health and storage readiness are
-implemented. Flow run and replay endpoints validate their contracts and then
-return `501 Not Implemented`. Use the Python or CLI surfaces for governed
-execution.
+The Runtime HTTP application retains the compatibility v1 probes and exposes
+the implemented local-first application service under `/api/v2`. Requests must
+send `Bijux-API-Version: v2`. Python, CLI, and HTTP v2 compose the same effective
+workspace configuration and application service.
 
 ## Current Availability
+
+The v2 surface implements corpus preparation and inspection, index build and
+inspection, retrieval, answers, research, complete runs, durable job lifecycle,
+run inspection, replay, comparison, readiness, and capability discovery.
+
+`POST /api/v2/retrieval-evaluations` synchronously executes a reviewed local
+case set against one index artifact. Its strict request supplies local case and
+qrel paths, index identity, split, retrieval mode, and bounds. It has no field
+for hits. The response is the same integrity-bound report returned by Python
+and the JSON CLI, including exact hit locators and all failed/refused queries in
+the denominator.
+
+The older v1 compatibility endpoints remain structurally limited:
 
 | Method and path | Status | Behavior |
 | --- | --- | --- |

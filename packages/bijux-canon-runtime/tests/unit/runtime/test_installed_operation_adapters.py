@@ -15,7 +15,19 @@ import pytest
 
 pytest.importorskip("faiss")
 
-from bijux_canon_index.application import IndexGenerationArchive, IndexService
+from bijux_canon_index.application import (
+    IndexGenerationArchive,
+    IndexQueryChannel,
+    IndexQueryRequest,
+    IndexService,
+)
+from bijux_canon_index.evaluation import (
+    PublicRetrievalEvaluationRequest,
+    PublicRetrievalEvaluator,
+    PublicRetrievalMode,
+    ReviewedRetrievalQrel,
+    ReviewedRetrievalQuery,
+)
 from bijux_canon_index.infra.embeddings.local_model import EmbeddedBatch
 from bijux_canon_runtime.application.request_planner import RuntimeRequestPlanner
 from bijux_canon_runtime.model.artifact import AddressedArtifact
@@ -65,6 +77,9 @@ from bijux_canon_runtime.runtime.execution.operation_dispatcher import (
     OperationDispatcher,
     StepDispatchError,
     StepOutputArtifact,
+)
+from bijux_canon_runtime.runtime.execution.retrieval_evaluation import (
+    InstalledRetrievalEvaluationExecutor,
 )
 from bijux_canon_runtime.runtime.inspection import RuntimeRunInspector
 from bijux_canon_runtime.runtime.persistence import (
@@ -153,6 +168,45 @@ def test_indexable_chunks_omit_empty_jats_section_paths() -> None:
 
     assert chunks[0].metadata["format"] == "jats"
     assert "section" not in chunks[0].metadata
+
+
+@pytest.mark.parametrize(
+    ("publication_date", "governed_date"),
+    [("2015", None), ("2015-06", None), ("2015-06-16", "2015-06-16")],
+)
+def test_indexable_chunks_preserve_partial_publication_dates_without_fabrication(
+    publication_date: str,
+    governed_date: str | None,
+) -> None:
+    text = "Ancient DNA evidence"
+    snapshot = {
+        "documents": [
+            {
+                "document_id": "sha256:" + "a" * 64,
+                "metadata": {
+                    "format_id": "jats",
+                    "publication_date": publication_date,
+                    "relative_path": "article.xml",
+                    "source_content_sha256": "b" * 64,
+                },
+                "chunks": [
+                    {
+                        "chunk_id": "sha256:" + "c" * 64,
+                        "chunk_index": 0,
+                        "normalized_text": text,
+                        "normalized_text_sha256": hashlib.sha256(
+                            text.encode("utf-8")
+                        ).hexdigest(),
+                    }
+                ],
+            }
+        ]
+    }
+
+    metadata = _indexable_chunks(snapshot)[0].metadata
+
+    assert metadata["publication_date"] == publication_date
+    assert metadata.get("date") == governed_date
 
 
 def _build_indexed_runtime(tmp_path: Path) -> _IndexedRuntime:
@@ -723,3 +777,72 @@ def test_installed_ingest_and_index_adapters_persist_restartable_payloads(
     _verify_linked_runs(grounded)
     _verify_offline_boundaries(grounded)
     _verify_replay(indexed)
+
+
+def test_public_retrieval_evaluation_executes_the_persistent_installed_path(
+    tmp_path: Path,
+) -> None:
+    indexed = _build_indexed_runtime(tmp_path)
+    query_text = "What direct population evidence do ancient genomes preserve?"
+    expected = indexed.index_service.query(
+        IndexQueryRequest(
+            channel=IndexQueryChannel.lexical,
+            query_text=query_text,
+            top_k=10,
+        )
+    ).hits[0]
+    query = ReviewedRetrievalQuery(
+        query_id="content-question",
+        query_text=query_text,
+        input_identity_sha256="a" * 64,
+        qrels=(
+            ReviewedRetrievalQrel(
+                qrel_id="content-question::qrel",
+                chunk_id=expected.chunk_id,
+                relevance_grade=3,
+                relation="supports",
+                qrel_identity_sha256="b" * 64,
+            ),
+        ),
+    )
+    request = PublicRetrievalEvaluationRequest.create(
+        index_artifact_id=str(indexed.composite.artifact_id),
+        split="development",
+        mode=PublicRetrievalMode.hybrid_ann,
+        queries=(query,),
+    )
+    execution = RuntimeFirstExecutionService(
+        store=indexed.store,
+        dispatcher=OperationDispatcher(
+            (
+                CanonicalRetrievalOperationAdapter(
+                    store=indexed.store,
+                    index=indexed.index_service,
+                    embedding=_Embedding(),
+                    vex_store_root=tmp_path / "runtime" / "vex-evaluation",
+                ),
+            )
+        ),
+        process_id="installed-retrieval-evaluation-test",
+    )
+    installed = InstalledRetrievalEvaluationExecutor(
+        execution=execution,
+        store=indexed.store,
+        index=indexed.index_service,
+    )
+
+    report = PublicRetrievalEvaluator(installed.execute).evaluate(request)
+
+    assert report.query_count == 1
+    assert report.qrel_count == 1
+    assert report.macro.metric("recall-at-5").value == 1.0
+    assert report.macro.metric("mrr-at-10").value == 1.0
+    assert report.observations[0].run_id is not None
+    assert report.observations[0].vex_artifact_id is not None
+    assert report.observations[0].hits[0].chunk_id == expected.chunk_id
+    assert report.observations[0].hits[0].locator_segments
+    persisted = RuntimeRunInspector(indexed.store).inspect(
+        str(report.observations[0].run_id)
+    )
+    assert persisted.status.value == "completed"
+    assert persisted.hits

@@ -20,6 +20,7 @@ class ApplicationOperation(StrEnum):
     INDEX = "index.build"
     INDEX_INSPECT = "index.inspect"
     RETRIEVE = "retrieve"
+    RETRIEVAL_EVALUATE = "retrieval.evaluate"
     ASK = "ask"
     RESEARCH = "research"
     RUN = "run"

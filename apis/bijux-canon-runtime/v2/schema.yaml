@@ -1057,6 +1057,587 @@ components:
       - answer_policy
       title: ResearchRequest
       type: object
+    RetrievalAggregateMetricResponse:
+      additionalProperties: false
+      description: Macro metric with its complete numerator, samples, and denominator.
+      properties:
+        confidence_interval:
+          $ref: '#/components/schemas/RetrievalMetricIntervalResponse'
+        denominator:
+          minimum: 1.0
+          title: Denominator
+          type: integer
+        formula:
+          minLength: 1
+          title: Formula
+          type: string
+        metric_id:
+          minLength: 1
+          title: Metric Id
+          type: string
+        numerator:
+          minimum: 0.0
+          title: Numerator
+          type: number
+        samples:
+          items:
+            type: number
+          title: Samples
+          type: array
+        value:
+          maximum: 1.0
+          minimum: 0.0
+          title: Value
+          type: number
+      required:
+      - metric_id
+      - value
+      - numerator
+      - denominator
+      - formula
+      - samples
+      - confidence_interval
+      title: RetrievalAggregateMetricResponse
+      type: object
+    RetrievalEvaluationRequest:
+      additionalProperties: false
+      description: Evaluate reviewed local questions through one immutable index artifact.
+      properties:
+        cases_path:
+          minLength: 1
+          title: Cases Path
+          type: string
+        index_id:
+          pattern: ^sha256:[0-9a-f]{64}$
+          title: Index Id
+          type: string
+        mode:
+          default: local-hybrid-ann
+          enum:
+          - offline-lexical
+          - local-hybrid-exact
+          - local-hybrid-ann
+          title: Mode
+          type: string
+        qrels_path:
+          minLength: 1
+          title: Qrels Path
+          type: string
+        split:
+          default: development
+          minLength: 1
+          title: Split
+          type: string
+        top_k:
+          default: 10
+          maximum: 1000.0
+          minimum: 10.0
+          title: Top K
+          type: integer
+      required:
+      - cases_path
+      - qrels_path
+      - index_id
+      title: RetrievalEvaluationRequest
+      type: object
+    RetrievalEvaluationResponse:
+      additionalProperties: false
+      description: Transparent metrics and exact observations from installed retrieval.
+      properties:
+        configuration_ids:
+          items:
+            pattern: ^sha256:[0-9a-f]{64}$
+            type: string
+          minItems: 1
+          title: Configuration Ids
+          type: array
+        evidence_sha256:
+          pattern: ^[0-9a-f]{64}$
+          title: Evidence Sha256
+          type: string
+        generation_ids:
+          items:
+            pattern: ^sha256:[0-9a-f]{64}$
+            type: string
+          minItems: 1
+          title: Generation Ids
+          type: array
+        macro:
+          $ref: '#/components/schemas/RetrievalMacroReportResponse'
+        micro:
+          $ref: '#/components/schemas/RetrievalPooledCountsResponse'
+        model_lock_artifact_ids:
+          items:
+            pattern: ^sha256:[0-9a-f]{64}$
+            type: string
+          minItems: 1
+          title: Model Lock Artifact Ids
+          type: array
+        observations:
+          items:
+            $ref: '#/components/schemas/RetrievalExecutionObservationResponse'
+          minItems: 1
+          title: Observations
+          type: array
+        qrel_count:
+          minimum: 1.0
+          title: Qrel Count
+          type: integer
+        query_count:
+          minimum: 1.0
+          title: Query Count
+          type: integer
+        request_sha256:
+          pattern: ^[0-9a-f]{64}$
+          title: Request Sha256
+          type: string
+        schema_version:
+          const: bijux.canon.index.public-retrieval-evaluation.v1
+          title: Schema Version
+          type: string
+        worst_query_ids:
+          items:
+            type: string
+          title: Worst Query Ids
+          type: array
+      required:
+      - schema_version
+      - request_sha256
+      - query_count
+      - qrel_count
+      - generation_ids
+      - model_lock_artifact_ids
+      - configuration_ids
+      - observations
+      - macro
+      - micro
+      - worst_query_ids
+      - evidence_sha256
+      title: RetrievalEvaluationResponse
+      type: object
+    RetrievalExecutionObservationResponse:
+      additionalProperties: false
+      description: One persisted installed query execution, including non-usable outcomes.
+      properties:
+        attempt_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Attempt Id
+        configuration_id:
+          pattern: ^sha256:[0-9a-f]{64}$
+          title: Configuration Id
+          type: string
+        failure:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Failure
+        fallback_action:
+          minLength: 1
+          title: Fallback Action
+          type: string
+        generation_id:
+          pattern: ^sha256:[0-9a-f]{64}$
+          title: Generation Id
+          type: string
+        hits:
+          items:
+            $ref: '#/components/schemas/RetrievalObservedHitResponse'
+          title: Hits
+          type: array
+        model_lock_artifact_id:
+          pattern: ^sha256:[0-9a-f]{64}$
+          title: Model Lock Artifact Id
+          type: string
+        policy_action:
+          minLength: 1
+          title: Policy Action
+          type: string
+        query_id:
+          minLength: 1
+          title: Query Id
+          type: string
+        query_text_sha256:
+          pattern: ^[0-9a-f]{64}$
+          title: Query Text Sha256
+          type: string
+        retrieval_mode:
+          enum:
+          - lexical
+          - offline-lexical
+          - local-hybrid-exact
+          - local-hybrid-ann
+          title: Retrieval Mode
+          type: string
+        run_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Run Id
+        status:
+          enum:
+          - success
+          - insufficient
+          - refused
+          - failed
+          title: Status
+          type: string
+        vex_artifact_id:
+          anyOf:
+          - pattern: ^sha256:[0-9a-f]{64}$
+            type: string
+          - type: 'null'
+          title: Vex Artifact Id
+      required:
+      - query_id
+      - query_text_sha256
+      - status
+      - generation_id
+      - model_lock_artifact_id
+      - configuration_id
+      - retrieval_mode
+      - hits
+      - run_id
+      - attempt_id
+      - vex_artifact_id
+      - policy_action
+      - fallback_action
+      - failure
+      title: RetrievalExecutionObservationResponse
+      type: object
+    RetrievalGradedQrelResponse:
+      additionalProperties: false
+      description: One independently reviewed relevance grade used in metric arithmetic.
+      properties:
+        evidence_id:
+          minLength: 1
+          title: Evidence Id
+          type: string
+        relevance_grade:
+          maximum: 3.0
+          minimum: 0.0
+          title: Relevance Grade
+          type: integer
+      required:
+      - evidence_id
+      - relevance_grade
+      title: RetrievalGradedQrelResponse
+      type: object
+    RetrievalLocatorSegmentResponse:
+      additionalProperties: false
+      description: One exact content-bound citation locator segment.
+      properties:
+        content_sha256:
+          pattern: ^[0-9a-f]{64}$
+          title: Content Sha256
+          type: string
+        mapping_id:
+          pattern: ^sha256:[0-9a-f]{64}$
+          title: Mapping Id
+          type: string
+        ordinal:
+          minimum: 0.0
+          title: Ordinal
+          type: integer
+        scheme:
+          minLength: 1
+          title: Scheme
+          type: string
+        selectors:
+          items:
+            maxItems: 2
+            minItems: 2
+            prefixItems:
+            - type: string
+            - anyOf:
+              - type: string
+              - type: integer
+            type: array
+          title: Selectors
+          type: array
+      required:
+      - ordinal
+      - mapping_id
+      - scheme
+      - selectors
+      - content_sha256
+      title: RetrievalLocatorSegmentResponse
+      type: object
+    RetrievalMacroReportResponse:
+      additionalProperties: false
+      description: All per-query and macro retrieval metrics.
+      properties:
+        evidence_sha256:
+          pattern: ^[0-9a-f]{64}$
+          title: Evidence Sha256
+          type: string
+        metrics:
+          items:
+            $ref: '#/components/schemas/RetrievalAggregateMetricResponse'
+          maxItems: 3
+          minItems: 3
+          title: Metrics
+          type: array
+        queries:
+          items:
+            $ref: '#/components/schemas/RetrievalQueryMetricsResponse'
+          minItems: 1
+          title: Queries
+          type: array
+        schema_version:
+          const: bijux.canon.index.retrieval-evaluation.v1
+          title: Schema Version
+          type: string
+      required:
+      - schema_version
+      - queries
+      - metrics
+      - evidence_sha256
+      title: RetrievalMacroReportResponse
+      type: object
+    RetrievalMetricIntervalResponse:
+      additionalProperties: false
+      description: Declared confidence interval for one macro retrieval metric.
+      properties:
+        level:
+          exclusiveMaximum: 1.0
+          exclusiveMinimum: 0.0
+          title: Level
+          type: number
+        lower:
+          maximum: 1.0
+          minimum: 0.0
+          title: Lower
+          type: number
+        method:
+          minLength: 1
+          title: Method
+          type: string
+        upper:
+          maximum: 1.0
+          minimum: 0.0
+          title: Upper
+          type: number
+      required:
+      - level
+      - lower
+      - upper
+      - method
+      title: RetrievalMetricIntervalResponse
+      type: object
+    RetrievalObservedHitResponse:
+      additionalProperties: false
+      description: One installed ranked hit with exact document and locator lineage.
+      properties:
+        chunk_id:
+          minLength: 1
+          title: Chunk Id
+          type: string
+        content_sha256:
+          pattern: ^[0-9a-f]{64}$
+          title: Content Sha256
+          type: string
+        document_id:
+          minLength: 1
+          title: Document Id
+          type: string
+        locator_segments:
+          items:
+            $ref: '#/components/schemas/RetrievalLocatorSegmentResponse'
+          minItems: 1
+          title: Locator Segments
+          type: array
+        rank:
+          minimum: 1.0
+          title: Rank
+          type: integer
+        retrieval_rank:
+          minimum: 1.0
+          title: Retrieval Rank
+          type: integer
+        score:
+          title: Score
+          type: number
+        source_content_sha256:
+          pattern: ^[0-9a-f]{64}$
+          title: Source Content Sha256
+          type: string
+      required:
+      - rank
+      - retrieval_rank
+      - score
+      - chunk_id
+      - document_id
+      - source_content_sha256
+      - content_sha256
+      - locator_segments
+      title: RetrievalObservedHitResponse
+      type: object
+    RetrievalPooledCountsResponse:
+      additionalProperties: false
+      description: Transparent micro-population counts across reviewed judgments.
+      properties:
+        failed_queries:
+          minimum: 0.0
+          title: Failed Queries
+          type: integer
+        recall_at_5:
+          maximum: 1.0
+          minimum: 0.0
+          title: Recall At 5
+          type: number
+        refused_queries:
+          minimum: 0.0
+          title: Refused Queries
+          type: integer
+        relevant_qrels:
+          minimum: 1.0
+          title: Relevant Qrels
+          type: integer
+        retrieved_relevant_at_5:
+          minimum: 0.0
+          title: Retrieved Relevant At 5
+          type: integer
+        total_ranked_hits:
+          minimum: 0.0
+          title: Total Ranked Hits
+          type: integer
+      required:
+      - relevant_qrels
+      - retrieved_relevant_at_5
+      - recall_at_5
+      - total_ranked_hits
+      - refused_queries
+      - failed_queries
+      title: RetrievalPooledCountsResponse
+      type: object
+    RetrievalQueryMetricsResponse:
+      additionalProperties: false
+      description: Exact per-question ranking arithmetic.
+      properties:
+        dcg_at_10:
+          minimum: 0.0
+          title: Dcg At 10
+          type: number
+        evidence_sha256:
+          pattern: ^[0-9a-f]{64}$
+          title: Evidence Sha256
+          type: string
+        first_relevant_rank_at_10:
+          anyOf:
+          - maximum: 10.0
+            minimum: 1.0
+            type: integer
+          - type: 'null'
+          title: First Relevant Rank At 10
+        graded_gains_at_10:
+          items:
+            type: integer
+          title: Graded Gains At 10
+          type: array
+        graded_qrels:
+          items:
+            $ref: '#/components/schemas/RetrievalGradedQrelResponse'
+          title: Graded Qrels
+          type: array
+        ideal_dcg_at_10:
+          minimum: 0.0
+          title: Ideal Dcg At 10
+          type: number
+        ideal_graded_gains_at_10:
+          items:
+            type: integer
+          title: Ideal Graded Gains At 10
+          type: array
+        input_identity_sha256:
+          pattern: ^[0-9a-f]{64}$
+          title: Input Identity Sha256
+          type: string
+        ndcg_at_10:
+          maximum: 1.0
+          minimum: 0.0
+          title: Ndcg At 10
+          type: number
+        ordered_evidence_ids:
+          items:
+            type: string
+          title: Ordered Evidence Ids
+          type: array
+        ordered_hits:
+          items:
+            $ref: '#/components/schemas/RetrievalRankedHitResponse'
+          title: Ordered Hits
+          type: array
+        query_id:
+          minLength: 1
+          title: Query Id
+          type: string
+        recall_at_5:
+          maximum: 1.0
+          minimum: 0.0
+          title: Recall At 5
+          type: number
+        recall_at_5_denominator:
+          minimum: 1.0
+          title: Recall At 5 Denominator
+          type: integer
+        recall_at_5_numerator:
+          minimum: 0.0
+          title: Recall At 5 Numerator
+          type: integer
+        reciprocal_rank_at_10:
+          maximum: 1.0
+          minimum: 0.0
+          title: Reciprocal Rank At 10
+          type: number
+        relevant_evidence_ids:
+          items:
+            type: string
+          title: Relevant Evidence Ids
+          type: array
+        retrieved_relevant_at_5:
+          items:
+            type: string
+          title: Retrieved Relevant At 5
+          type: array
+      required:
+      - query_id
+      - input_identity_sha256
+      - graded_qrels
+      - ordered_hits
+      - ordered_evidence_ids
+      - relevant_evidence_ids
+      - retrieved_relevant_at_5
+      - recall_at_5_numerator
+      - recall_at_5_denominator
+      - recall_at_5
+      - first_relevant_rank_at_10
+      - reciprocal_rank_at_10
+      - graded_gains_at_10
+      - ideal_graded_gains_at_10
+      - dcg_at_10
+      - ideal_dcg_at_10
+      - ndcg_at_10
+      - evidence_sha256
+      title: RetrievalQueryMetricsResponse
+      type: object
+    RetrievalRankedHitResponse:
+      additionalProperties: false
+      description: One scored hit in deterministic metric order.
+      properties:
+        evidence_id:
+          minLength: 1
+          title: Evidence Id
+          type: string
+        score:
+          title: Score
+          type: number
+      required:
+      - evidence_id
+      - score
+      title: RetrievalRankedHitResponse
+      type: object
     RetrieveRequest:
       additionalProperties: false
       description: Retrieve bounded evidence from one index artifact.
@@ -2267,6 +2848,83 @@ paths:
                 $ref: '#/components/schemas/ProblemDetail'
           description: Application service unavailable.
       summary: Research
+  /api/v2/retrieval-evaluations:
+    post:
+      operationId: evaluate_retrieval_api_v2_retrieval_evaluations_post
+      parameters:
+      - in: header
+        name: Bijux-API-Version
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Bijux-Api-Version
+      - in: header
+        name: X-Correlation-ID
+        required: false
+        schema:
+          anyOf:
+          - pattern: ^[A-Za-z0-9._:-]{1,200}$
+            type: string
+          - type: 'null'
+          title: X-Correlation-Id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RetrievalEvaluationRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetrievalEvaluationResponse'
+          description: Successful Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+          description: Invalid typed request.
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+          description: Resource not found.
+        '406':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+          description: Unsupported API version.
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+          description: Immutable state conflict.
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+          description: Application operation failed.
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+          description: Application service unavailable.
+      summary: Evaluate Retrieval
   /api/v2/retrievals:
     post:
       operationId: retrieve_api_v2_retrievals_post

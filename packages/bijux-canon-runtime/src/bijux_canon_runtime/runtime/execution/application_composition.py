@@ -15,6 +15,7 @@ import threading
 from time import perf_counter
 
 from bijux_canon_index.application import IndexGenerationArchive, IndexService
+from bijux_canon_index.evaluation import PublicRetrievalEvaluator
 from bijux_canon_index.infra.embeddings.local_model import (
     EmbeddedBatch,
     LocalEmbeddingModel,
@@ -61,6 +62,9 @@ from bijux_canon_runtime.runtime.execution.installed_verification_adapter import
 )
 from bijux_canon_runtime.runtime.execution.operation_dispatcher import (
     OperationDispatcher,
+)
+from bijux_canon_runtime.runtime.execution.retrieval_evaluation import (
+    InstalledRetrievalEvaluationExecutor,
 )
 from bijux_canon_runtime.runtime.inspection import RuntimeRunInspector
 from bijux_canon_runtime.runtime.persistence.filesystem_payload_store import (
@@ -239,6 +243,11 @@ def compose_runtime_application_services(
         max_workers=max_workers,
     )
     inspector = RuntimeRunInspector(store)
+    installed_retrieval_evaluation = InstalledRetrievalEvaluationExecutor(
+        execution=execution,
+        store=store,
+        index=index,
+    )
 
     def inspect_corpus(artifact_id: ArtifactID) -> dict[str, object]:
         artifact = store.load(artifact_id)
@@ -273,6 +282,9 @@ def compose_runtime_application_services(
         inspector=inspector,
         corpus_inspector=inspect_corpus,
         index_inspector=inspect_index,
+        retrieval_evaluator=PublicRetrievalEvaluator(
+            installed_retrieval_evaluation.execute
+        ).evaluate,
         resource_closers=(embedding.close, index.close),
     )
 
