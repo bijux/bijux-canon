@@ -77,6 +77,16 @@ samples and confidence intervals; pooled relevant-qrel arithmetic; refusal and
 failure counts; and the five worst query identities. Metadata coverage or a
 caller-authored ranking cannot satisfy this boundary.
 
+Development reports also retain the raw lexical, dense, and fusion ranks. Each
+reviewed qrel is classified as retained at five, below the final metric cutoff,
+absent from candidate depth, excluded by a channel bound, lost at fusion, lost
+at finalization, refused, or failed. Candidate conservation is enforced between
+stages, so fusion or final output cannot invent an unexplained chunk. Exact
+qrel numerators, denominators, and recall are reported at candidate depth,
+channel admission, fusion at ten, final at ten, and final at five. Use these
+traces to repair admission, chunk identity, or locator defects before tuning
+retrieval parameters.
+
 For a configured Runtime workspace and persisted index artifact:
 
 ```console

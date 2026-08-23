@@ -538,6 +538,36 @@ def _write_retrieval_evaluation_human(
         f"{report.micro.relevant_qrels} relevant qrels at 5; "
         f"refused={report.micro.refused_queries}; failed={report.micro.failed_queries}"
     )
+    print(
+        "Relevant-evidence outcomes: "
+        + ", ".join(
+            f"{disposition}={count}"
+            for disposition, count in report.stage_analysis.disposition_counts
+        )
+    )
+    print(
+        "Stage recall: "
+        + ", ".join(
+            f"{item.stage_id}={item.numerator}/{item.denominator} ({item.value:.6f})"
+            for item in report.stage_analysis.recall
+        )
+    )
+    for query in report.stage_analysis.queries:
+        losses = ", ".join(
+            f"{item.qrel_id}={item.disposition.value}"
+            f"(L{item.lexical_source_rank or '-'}"
+            f"/D{item.dense_rank or '-'}"
+            f"/F{item.fusion_rank or '-'}"
+            f"/R{item.final_rank or '-'})"
+            for item in query.relevant_evidence
+        )
+        print(
+            f"Stage {query.query_id}: "
+            f"lexical={query.lexical_included_count}/"
+            f"{query.lexical_observed_count}; "
+            f"dense={query.dense_observed_count}; fusion={query.fusion_count}; "
+            f"final={query.final_count}; {losses}"
+        )
     print("Worst queries: " + ", ".join(report.worst_query_ids))
     print(f"Evidence: {report.evidence_sha256}")
 

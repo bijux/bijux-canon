@@ -17,10 +17,13 @@ from fastapi.testclient import TestClient
 from bijux_canon_index.evaluation import (
     ObservedLocatorSegment,
     ObservedRetrievalHit,
+    ObservedStageCandidate,
     PublicRetrievalEvaluationRequest,
     PublicRetrievalEvaluator,
     RetrievalExecutionObservation,
     RetrievalExecutionStatus,
+    RetrievalStage,
+    RetrievalStageEvidence,
     ReviewedRetrievalQuery,
 )
 from bijux_canon_runtime.api.v2 import create_app
@@ -60,6 +63,18 @@ def _observation(
         )
         for rank, qrel in enumerate(query.qrels, 1)
     )
+    stage_candidates = tuple(
+        ObservedStageCandidate(
+            stage=stage,
+            chunk_id=qrel.chunk_id,
+            source_rank=rank,
+            output_rank=rank,
+            score=1.0 / rank,
+            disposition="included",
+        )
+        for stage in RetrievalStage
+        for rank, qrel in enumerate(query.qrels, 1)
+    )
     return RetrievalExecutionObservation(
         query_id=query.query_id,
         query_text_sha256=hashlib.sha256(query.query_text.encode("utf-8")).hexdigest(),
@@ -74,6 +89,22 @@ def _observation(
         vex_artifact_id="sha256:" + "e" * 64,
         policy_action="admitted",
         fallback_action="none",
+        stages=RetrievalStageEvidence(
+            lexical_outcome="success",
+            dense_outcome="success",
+            fusion_policy_sha256="f" * 64,
+            lexical_candidates=tuple(
+                item
+                for item in stage_candidates
+                if item.stage is RetrievalStage.lexical
+            ),
+            dense_candidates=tuple(
+                item for item in stage_candidates if item.stage is RetrievalStage.dense
+            ),
+            fusion_candidates=tuple(
+                item for item in stage_candidates if item.stage is RetrievalStage.fusion
+            ),
+        ),
         failure=None,
     )
 
@@ -145,4 +176,7 @@ def test_human_summary_discloses_denominators_and_worst_queries() -> None:
     assert "Queries: 12" in output
     assert "Reviewed qrels: 29" in output
     assert "Macro metrics: Recall@5=" in output
+    assert "Relevant-evidence outcomes: retained_at_5=29" in output
+    assert "Stage recall: candidate-depth=29/29 (1.000000)" in output
+    assert "Stage adna-ambiguous-damage-authentication:" in output
     assert "Worst queries:" in output

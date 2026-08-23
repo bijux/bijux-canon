@@ -24,8 +24,9 @@ run inspection, replay, comparison, readiness, and capability discovery.
 case set against one index artifact. Its strict request supplies local case and
 qrel paths, index identity, split, retrieval mode, and bounds. It has no field
 for hits. The response is the same integrity-bound report returned by Python
-and the JSON CLI, including exact hit locators and all failed/refused queries in
-the denominator.
+and the JSON CLI, including exact hit locators, lexical/dense/fusion rank traces,
+per-qrel first-loss classifications, and all failed/refused queries in the
+denominator.
 
 The older v1 compatibility endpoints remain structurally limited:
 

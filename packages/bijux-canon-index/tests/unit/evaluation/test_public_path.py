@@ -14,12 +14,15 @@ import pytest
 from bijux_canon_index.evaluation import (
     ObservedLocatorSegment,
     ObservedRetrievalHit,
+    ObservedStageCandidate,
     PublicRetrievalEvaluationError,
     PublicRetrievalEvaluationRequest,
     PublicRetrievalEvaluator,
     PublicRetrievalMode,
     RetrievalExecutionObservation,
     RetrievalExecutionStatus,
+    RetrievalStage,
+    RetrievalStageEvidence,
     ReviewedRetrievalQrel,
     ReviewedRetrievalQuery,
     load_reviewed_retrieval_request,
@@ -77,6 +80,37 @@ def _observation(
         if hit
         else ()
     )
+    stages = None
+    if status not in {
+        RetrievalExecutionStatus.refused,
+        RetrievalExecutionStatus.failed,
+    }:
+        candidates = tuple(
+            ObservedStageCandidate(
+                stage=stage,
+                chunk_id=query.qrels[0].chunk_id,
+                source_rank=1,
+                output_rank=1,
+                score=0.75,
+                disposition="included",
+            )
+            for stage in RetrievalStage
+            if hit
+        )
+        stages = RetrievalStageEvidence(
+            lexical_outcome="success" if hit else "no_matches",
+            dense_outcome="success" if hit else "no_matches",
+            fusion_policy_sha256="9" * 64,
+            lexical_candidates=tuple(
+                item for item in candidates if item.stage is RetrievalStage.lexical
+            ),
+            dense_candidates=tuple(
+                item for item in candidates if item.stage is RetrievalStage.dense
+            ),
+            fusion_candidates=tuple(
+                item for item in candidates if item.stage is RetrievalStage.fusion
+            ),
+        )
     return RetrievalExecutionObservation(
         query_id=query.query_id,
         query_text_sha256=__import__("hashlib")
@@ -95,6 +129,7 @@ def _observation(
         if status is RetrievalExecutionStatus.refused
         else "admit",
         fallback_action="none",
+        stages=stages,
         failure="below VEX policy"
         if status is RetrievalExecutionStatus.refused
         else None,
@@ -131,6 +166,10 @@ def test_public_evaluator_executes_every_unique_query_and_keeps_failures() -> No
     assert report.micro.retrieved_relevant_at_5 == 1
     assert report.micro.recall_at_5 == 0.5
     assert report.micro.refused_queries == 1
+    assert dict(report.stage_analysis.disposition_counts) == {
+        "execution_refused": 1,
+        "retained_at_5": 1,
+    }
     assert report.macro.metric("recall-at-5").value == 0.5
     assert report.worst_query_ids[0] == "query-refused"
     assert report.manifest()["evidence_sha256"] == report.evidence_sha256

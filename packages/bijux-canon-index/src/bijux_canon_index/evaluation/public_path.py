@@ -20,6 +20,12 @@ from bijux_canon_index.evaluation.retrieval_metrics import (
     RetrievalEvaluationReport,
     RetrievalMetricEvaluator,
 )
+from bijux_canon_index.evaluation.stage_diagnostics import (
+    RetrievalStageAnalysis,
+    RetrievalStageEvidence,
+    aggregate_stage_analysis,
+    analyze_query_stages,
+)
 
 
 class PublicRetrievalEvaluationError(ValueError):
@@ -232,6 +238,7 @@ class RetrievalExecutionObservation:
     vex_artifact_id: str | None
     policy_action: str
     fallback_action: str
+    stages: RetrievalStageEvidence | None
     failure: str | None
 
     def __post_init__(self) -> None:
@@ -259,14 +266,19 @@ class RetrievalExecutionObservation:
             RetrievalExecutionStatus.refused,
             RetrievalExecutionStatus.failed,
         }:
-            if self.hits or not self.failure:
+            if self.hits or self.stages is not None or not self.failure:
                 raise ValueError(
                     "refused or failed retrieval must retain only its failure"
                 )
-        elif self.failure is not None:
-            raise ValueError(
-                "successful retrieval observations cannot retain a failure"
-            )
+        else:
+            if self.failure is not None:
+                raise ValueError(
+                    "successful retrieval observations cannot retain a failure"
+                )
+            if self.stages is None:
+                raise ValueError(
+                    "successful retrieval observations require raw stage evidence"
+                )
 
 
 @dataclass(frozen=True, slots=True)
@@ -295,16 +307,30 @@ class PublicRetrievalEvaluationReport:
     observations: tuple[RetrievalExecutionObservation, ...]
     macro: RetrievalEvaluationReport
     micro: PooledRetrievalCounts
+    stage_analysis: RetrievalStageAnalysis
     worst_query_ids: tuple[str, ...]
     evidence_sha256: str
 
     def __post_init__(self) -> None:
-        if self.schema_version != "bijux.canon.index.public-retrieval-evaluation.v1":
+        if self.schema_version != "bijux.canon.index.public-retrieval-evaluation.v2":
             raise ValueError("public retrieval evaluation report schema is unsupported")
         if self.query_count != len(self.observations) or self.query_count < 1:
             raise ValueError("public retrieval query denominator is invalid")
         if len(self.macro.queries) != self.query_count:
             raise ValueError("public and macro query denominators diverge")
+        if (
+            self.stage_analysis.query_count != self.query_count
+            or self.stage_analysis.qrel_count != self.qrel_count
+        ):
+            raise ValueError("public and stage-analysis denominators diverge")
+        final_at_5 = next(
+            item for item in self.stage_analysis.recall if item.stage_id == "final-at-5"
+        )
+        if (
+            final_at_5.numerator != self.micro.retrieved_relevant_at_5
+            or final_at_5.denominator != self.micro.relevant_qrels
+        ):
+            raise ValueError("public metric and stage-analysis arithmetic diverge")
         expected = _sha256(
             {
                 "configuration_ids": self.configuration_ids,
@@ -317,6 +343,7 @@ class PublicRetrievalEvaluationReport:
                 "query_count": self.query_count,
                 "request_sha256": self.request_sha256,
                 "schema_version": self.schema_version,
+                "stage_analysis": asdict(self.stage_analysis),
                 "worst_query_ids": self.worst_query_ids,
             }
         )
@@ -377,6 +404,25 @@ class PublicRetrievalEvaluator:
             for query, observation in zip(request.queries, observations, strict=True)
         )
         macro = RetrievalMetricEvaluator().evaluate(cases)
+        stage_analysis = aggregate_stage_analysis(
+            tuple(
+                analyze_query_stages(
+                    query_id=query.query_id,
+                    qrels=tuple(
+                        (qrel.qrel_id, qrel.chunk_id, qrel.relevance_grade)
+                        for qrel in query.qrels
+                    ),
+                    status=observation.status.value,
+                    stages=observation.stages,
+                    final_ranks=tuple(
+                        (hit.chunk_id, hit.rank) for hit in observation.hits
+                    ),
+                )
+                for query, observation in zip(
+                    request.queries, observations, strict=True
+                )
+            )
+        )
         relevant_qrels = sum(query.recall_at_5_denominator for query in macro.queries)
         retrieved_relevant = sum(query.recall_at_5_numerator for query in macro.queries)
         micro = PooledRetrievalCounts(
@@ -403,7 +449,7 @@ class PublicRetrievalEvaluator:
                 ),
             )[: min(5, len(metric_by_query))]
         )
-        schema_version = "bijux.canon.index.public-retrieval-evaluation.v1"
+        schema_version = "bijux.canon.index.public-retrieval-evaluation.v2"
         configuration_ids = tuple(
             sorted({item.configuration_id for item in observations})
         )
@@ -422,6 +468,7 @@ class PublicRetrievalEvaluator:
             "query_count": len(request.queries),
             "request_sha256": request.request_sha256,
             "schema_version": schema_version,
+            "stage_analysis": asdict(stage_analysis),
             "worst_query_ids": worst,
         }
         return PublicRetrievalEvaluationReport(
@@ -435,6 +482,7 @@ class PublicRetrievalEvaluator:
             observations=observations,
             macro=macro,
             micro=micro,
+            stage_analysis=stage_analysis,
             worst_query_ids=worst,
             evidence_sha256=_sha256(payload),
         )

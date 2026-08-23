@@ -808,6 +808,50 @@ components:
       - credential_required
       title: ProviderDiscoveryResponse
       type: object
+    QueryStageDiagnosticsResponse:
+      additionalProperties: false
+      description: Per-question stage population and qrel losses.
+      properties:
+        dense_observed_count:
+          minimum: 0.0
+          title: Dense Observed Count
+          type: integer
+        final_count:
+          minimum: 0.0
+          title: Final Count
+          type: integer
+        fusion_count:
+          minimum: 0.0
+          title: Fusion Count
+          type: integer
+        lexical_included_count:
+          minimum: 0.0
+          title: Lexical Included Count
+          type: integer
+        lexical_observed_count:
+          minimum: 0.0
+          title: Lexical Observed Count
+          type: integer
+        query_id:
+          minLength: 1
+          title: Query Id
+          type: string
+        relevant_evidence:
+          items:
+            $ref: '#/components/schemas/RelevantEvidenceStageTraceResponse'
+          minItems: 1
+          title: Relevant Evidence
+          type: array
+      required:
+      - query_id
+      - lexical_observed_count
+      - lexical_included_count
+      - dense_observed_count
+      - fusion_count
+      - final_count
+      - relevant_evidence
+      title: QueryStageDiagnosticsResponse
+      type: object
     ReadinessCapability:
       description: Public capability whose exact dependencies are being checked.
       enum:
@@ -925,6 +969,83 @@ components:
       - checks
       - reasons
       title: ReadinessResponse
+      type: object
+    RelevantEvidenceStageTraceResponse:
+      additionalProperties: false
+      description: Ranks and first accountable loss point for one reviewed qrel.
+      properties:
+        chunk_id:
+          minLength: 1
+          title: Chunk Id
+          type: string
+        dense_rank:
+          anyOf:
+          - minimum: 1.0
+            type: integer
+          - type: 'null'
+          title: Dense Rank
+        disposition:
+          enum:
+          - retained_at_5
+          - final_below_5
+          - absent_from_candidate_depth
+          - excluded_by_channel_limit
+          - lost_at_fusion_limit
+          - lost_at_finalization
+          - execution_refused
+          - execution_failed
+          title: Disposition
+          type: string
+        final_rank:
+          anyOf:
+          - minimum: 1.0
+            type: integer
+          - type: 'null'
+          title: Final Rank
+        fusion_rank:
+          anyOf:
+          - minimum: 1.0
+            type: integer
+          - type: 'null'
+          title: Fusion Rank
+        lexical_disposition:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Lexical Disposition
+        lexical_output_rank:
+          anyOf:
+          - minimum: 1.0
+            type: integer
+          - type: 'null'
+          title: Lexical Output Rank
+        lexical_source_rank:
+          anyOf:
+          - minimum: 1.0
+            type: integer
+          - type: 'null'
+          title: Lexical Source Rank
+        qrel_id:
+          minLength: 1
+          title: Qrel Id
+          type: string
+        relevance_grade:
+          maximum: 3.0
+          minimum: 0.0
+          title: Relevance Grade
+          type: integer
+      required:
+      - qrel_id
+      - chunk_id
+      - relevance_grade
+      - lexical_source_rank
+      - lexical_output_rank
+      - lexical_disposition
+      - dense_rank
+      - fusion_rank
+      - final_rank
+      - disposition
+      title: RelevantEvidenceStageTraceResponse
       type: object
     ReplayRequest:
       additionalProperties: false
@@ -1192,9 +1313,11 @@ components:
           title: Request Sha256
           type: string
         schema_version:
-          const: bijux.canon.index.public-retrieval-evaluation.v1
+          const: bijux.canon.index.public-retrieval-evaluation.v2
           title: Schema Version
           type: string
+        stage_analysis:
+          $ref: '#/components/schemas/RetrievalStageAnalysisResponse'
         worst_query_ids:
           items:
             type: string
@@ -1211,6 +1334,7 @@ components:
       - observations
       - macro
       - micro
+      - stage_analysis
       - worst_query_ids
       - evidence_sha256
       title: RetrievalEvaluationResponse
@@ -1275,6 +1399,10 @@ components:
           - type: string
           - type: 'null'
           title: Run Id
+        stages:
+          anyOf:
+          - $ref: '#/components/schemas/RetrievalStageEvidenceResponse'
+          - type: 'null'
         status:
           enum:
           - success
@@ -1303,6 +1431,7 @@ components:
       - vex_artifact_id
       - policy_action
       - fallback_action
+      - stages
       - failure
       title: RetrievalExecutionObservationResponse
       type: object
@@ -1637,6 +1766,170 @@ components:
       - evidence_id
       - score
       title: RetrievalRankedHitResponse
+      type: object
+    RetrievalStageAnalysisResponse:
+      additionalProperties: false
+      description: Compact loss counts plus every per-query qrel trace.
+      properties:
+        disposition_counts:
+          items:
+            maxItems: 2
+            minItems: 2
+            prefixItems:
+            - type: string
+            - minimum: 0.0
+              type: integer
+            type: array
+          title: Disposition Counts
+          type: array
+        qrel_count:
+          minimum: 1.0
+          title: Qrel Count
+          type: integer
+        queries:
+          items:
+            $ref: '#/components/schemas/QueryStageDiagnosticsResponse'
+          minItems: 1
+          title: Queries
+          type: array
+        query_count:
+          minimum: 1.0
+          title: Query Count
+          type: integer
+        recall:
+          items:
+            $ref: '#/components/schemas/RetrievalStageRecallResponse'
+          title: Recall
+          type: array
+        schema_version:
+          const: bijux.canon.index.retrieval-stage-analysis.v1
+          title: Schema Version
+          type: string
+      required:
+      - schema_version
+      - query_count
+      - qrel_count
+      - recall
+      - disposition_counts
+      - queries
+      title: RetrievalStageAnalysisResponse
+      type: object
+    RetrievalStageCandidateResponse:
+      additionalProperties: false
+      description: One raw channel candidate retained for development diagnosis.
+      properties:
+        chunk_id:
+          minLength: 1
+          title: Chunk Id
+          type: string
+        disposition:
+          minLength: 1
+          title: Disposition
+          type: string
+        output_rank:
+          anyOf:
+          - minimum: 1.0
+            type: integer
+          - type: 'null'
+          title: Output Rank
+        score:
+          title: Score
+          type: number
+        source_rank:
+          minimum: 1.0
+          title: Source Rank
+          type: integer
+        stage:
+          enum:
+          - lexical
+          - dense
+          - fusion
+          title: Stage
+          type: string
+      required:
+      - stage
+      - chunk_id
+      - source_rank
+      - output_rank
+      - score
+      - disposition
+      title: RetrievalStageCandidateResponse
+      type: object
+    RetrievalStageEvidenceResponse:
+      additionalProperties: false
+      description: Raw stage rankings used to prove candidate conservation.
+      properties:
+        dense_candidates:
+          items:
+            $ref: '#/components/schemas/RetrievalStageCandidateResponse'
+          title: Dense Candidates
+          type: array
+        dense_outcome:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Dense Outcome
+        fusion_candidates:
+          items:
+            $ref: '#/components/schemas/RetrievalStageCandidateResponse'
+          title: Fusion Candidates
+          type: array
+        fusion_policy_sha256:
+          anyOf:
+          - pattern: ^[0-9a-f]{64}$
+            type: string
+          - type: 'null'
+          title: Fusion Policy Sha256
+        lexical_candidates:
+          items:
+            $ref: '#/components/schemas/RetrievalStageCandidateResponse'
+          title: Lexical Candidates
+          type: array
+        lexical_outcome:
+          minLength: 1
+          title: Lexical Outcome
+          type: string
+      required:
+      - lexical_outcome
+      - dense_outcome
+      - fusion_policy_sha256
+      - lexical_candidates
+      - dense_candidates
+      - fusion_candidates
+      title: RetrievalStageEvidenceResponse
+      type: object
+    RetrievalStageRecallResponse:
+      additionalProperties: false
+      description: Exact qrel numerator and denominator at one retrieval stage.
+      properties:
+        denominator:
+          minimum: 1.0
+          title: Denominator
+          type: integer
+        numerator:
+          minimum: 0.0
+          title: Numerator
+          type: integer
+        stage_id:
+          enum:
+          - candidate-depth
+          - channel-admitted
+          - fusion-at-10
+          - final-at-10
+          - final-at-5
+          title: Stage Id
+          type: string
+        value:
+          maximum: 1.0
+          minimum: 0.0
+          title: Value
+          type: number
+      required:
+      - stage_id
+      - numerator
+      - denominator
+      - value
+      title: RetrievalStageRecallResponse
       type: object
     RetrieveRequest:
       additionalProperties: false

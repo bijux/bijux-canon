@@ -12,9 +12,12 @@ from bijux_canon_index.application import IndexService
 from bijux_canon_index.evaluation import (
     ObservedLocatorSegment,
     ObservedRetrievalHit,
+    ObservedStageCandidate,
     PublicRetrievalEvaluationRequest,
     RetrievalExecutionObservation,
     RetrievalExecutionStatus,
+    RetrievalStage,
+    RetrievalStageEvidence,
     ReviewedRetrievalQuery,
 )
 from bijux_canon_runtime.model.execution.request_plan import (
@@ -98,6 +101,7 @@ class InstalledRetrievalEvaluationExecutor:
                 vex_artifact_id=None,
                 policy_action="refuse" if refused else "fail",
                 fallback_action="none",
+                stages=None,
                 failure=message,
             )
         terminal_ids = result.get("terminal_artifact_ids")
@@ -155,6 +159,7 @@ def _observation(
     if not isinstance(retrieval, dict):
         raise RuntimeError("retrieval evaluation channel evidence is invalid")
     dense = retrieval.get("dense")
+    stages = _stage_evidence(retrieval)
     vex_artifact_id: str | None = None
     policy_action = "not-applicable"
     if dense is not None:
@@ -187,7 +192,110 @@ def _observation(
         vex_artifact_id=vex_artifact_id,
         policy_action=policy_action,
         fallback_action="none",
+        stages=stages,
         failure=None,
+    )
+
+
+def _stage_evidence(retrieval: Mapping[str, object]) -> RetrievalStageEvidence:
+    lexical = retrieval.get("lexical")
+    if not isinstance(lexical, dict):
+        raise RuntimeError("retrieval evaluation lexical stage is invalid")
+    raw_lexical = lexical.get("decisions")
+    if not isinstance(raw_lexical, list):
+        raise RuntimeError("retrieval evaluation lexical candidates are invalid")
+    lexical_candidates = tuple(
+        _stage_candidate(
+            value,
+            stage=RetrievalStage.lexical,
+            rank_field="source_rank",
+            score_field="score",
+            output_rank_field="output_rank",
+            disposition_field="disposition",
+        )
+        for value in raw_lexical
+    )
+    dense = retrieval.get("dense")
+    fusion = retrieval.get("fusion")
+    if dense is None:
+        if fusion is not None:
+            raise RuntimeError("lexical retrieval cannot contain fusion evidence")
+        return RetrievalStageEvidence(
+            lexical_outcome=_required_string(lexical, "outcome"),
+            dense_outcome=None,
+            fusion_policy_sha256=None,
+            lexical_candidates=lexical_candidates,
+            dense_candidates=(),
+            fusion_candidates=(),
+        )
+    if not isinstance(dense, dict) or not isinstance(fusion, dict):
+        raise RuntimeError("hybrid retrieval stage evidence is invalid")
+    raw_dense = dense.get("observed_candidates")
+    raw_fusion = fusion.get("hits")
+    if not isinstance(raw_dense, list) or not isinstance(raw_fusion, list):
+        raise RuntimeError("hybrid retrieval candidates are invalid")
+    return RetrievalStageEvidence(
+        lexical_outcome=_required_string(lexical, "outcome"),
+        dense_outcome=_required_string(dense, "outcome"),
+        fusion_policy_sha256=_required_string(fusion, "policy_sha256"),
+        lexical_candidates=lexical_candidates,
+        dense_candidates=tuple(
+            _stage_candidate(
+                value,
+                stage=RetrievalStage.dense,
+                rank_field="source_rank",
+                score_field="score",
+                output_rank_field="source_rank",
+                disposition="observed",
+            )
+            for value in raw_dense
+        ),
+        fusion_candidates=tuple(
+            _stage_candidate(
+                value,
+                stage=RetrievalStage.fusion,
+                rank_field="rank",
+                score_field="fused_score",
+                output_rank_field="rank",
+                disposition="included",
+            )
+            for value in raw_fusion
+        ),
+    )
+
+
+def _stage_candidate(
+    value: object,
+    *,
+    stage: RetrievalStage,
+    rank_field: str,
+    score_field: str,
+    output_rank_field: str,
+    disposition_field: str | None = None,
+    disposition: str | None = None,
+) -> ObservedStageCandidate:
+    if not isinstance(value, dict):
+        raise RuntimeError("retrieval evaluation stage candidate is invalid")
+    raw_output_rank = value.get(output_rank_field)
+    if raw_output_rank is not None and (
+        isinstance(raw_output_rank, bool) or not isinstance(raw_output_rank, int)
+    ):
+        raise RuntimeError("retrieval evaluation stage output rank is invalid")
+    raw_score = value.get(score_field)
+    if isinstance(raw_score, bool) or not isinstance(raw_score, int | float):
+        raise RuntimeError("retrieval evaluation stage score is invalid")
+    selected_disposition = disposition
+    if disposition_field is not None:
+        selected_disposition = _required_string(value, disposition_field)
+    if selected_disposition is None:
+        raise RuntimeError("retrieval evaluation stage disposition is invalid")
+    return ObservedStageCandidate(
+        stage=stage,
+        chunk_id=_required_string(value, "chunk_id"),
+        source_rank=_required_int(value, rank_field),
+        output_rank=raw_output_rank,
+        score=float(raw_score),
+        disposition=selected_disposition,
     )
 
 

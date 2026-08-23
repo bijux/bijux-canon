@@ -158,6 +158,28 @@ class RetrievalObservedHitResponse(StrictModel):
     ]
 
 
+class RetrievalStageCandidateResponse(StrictModel):
+    """One raw channel candidate retained for development diagnosis."""
+
+    stage: Literal["lexical", "dense", "fusion"]
+    chunk_id: Annotated[str, Field(min_length=1)]
+    source_rank: Annotated[int, Field(ge=1)]
+    output_rank: Annotated[int | None, Field(ge=1)]
+    score: float
+    disposition: Annotated[str, Field(min_length=1)]
+
+
+class RetrievalStageEvidenceResponse(StrictModel):
+    """Raw stage rankings used to prove candidate conservation."""
+
+    lexical_outcome: Annotated[str, Field(min_length=1)]
+    dense_outcome: str | None
+    fusion_policy_sha256: ContentDigest | None
+    lexical_candidates: tuple[RetrievalStageCandidateResponse, ...]
+    dense_candidates: tuple[RetrievalStageCandidateResponse, ...]
+    fusion_candidates: tuple[RetrievalStageCandidateResponse, ...]
+
+
 class RetrievalExecutionObservationResponse(StrictModel):
     """One persisted installed query execution, including non-usable outcomes."""
 
@@ -176,6 +198,7 @@ class RetrievalExecutionObservationResponse(StrictModel):
     vex_artifact_id: ArtifactIdentity | None
     policy_action: Annotated[str, Field(min_length=1)]
     fallback_action: Annotated[str, Field(min_length=1)]
+    stages: RetrievalStageEvidenceResponse | None
     failure: str | None
 
 
@@ -259,10 +282,74 @@ class RetrievalPooledCountsResponse(StrictModel):
     failed_queries: Annotated[int, Field(ge=0)]
 
 
+class RelevantEvidenceStageTraceResponse(StrictModel):
+    """Ranks and first accountable loss point for one reviewed qrel."""
+
+    qrel_id: Annotated[str, Field(min_length=1)]
+    chunk_id: Annotated[str, Field(min_length=1)]
+    relevance_grade: Annotated[int, Field(ge=0, le=3)]
+    lexical_source_rank: Annotated[int | None, Field(ge=1)]
+    lexical_output_rank: Annotated[int | None, Field(ge=1)]
+    lexical_disposition: str | None
+    dense_rank: Annotated[int | None, Field(ge=1)]
+    fusion_rank: Annotated[int | None, Field(ge=1)]
+    final_rank: Annotated[int | None, Field(ge=1)]
+    disposition: Literal[
+        "retained_at_5",
+        "final_below_5",
+        "absent_from_candidate_depth",
+        "excluded_by_channel_limit",
+        "lost_at_fusion_limit",
+        "lost_at_finalization",
+        "execution_refused",
+        "execution_failed",
+    ]
+
+
+class QueryStageDiagnosticsResponse(StrictModel):
+    """Per-question stage population and qrel losses."""
+
+    query_id: Annotated[str, Field(min_length=1)]
+    lexical_observed_count: Annotated[int, Field(ge=0)]
+    lexical_included_count: Annotated[int, Field(ge=0)]
+    dense_observed_count: Annotated[int, Field(ge=0)]
+    fusion_count: Annotated[int, Field(ge=0)]
+    final_count: Annotated[int, Field(ge=0)]
+    relevant_evidence: Annotated[
+        tuple[RelevantEvidenceStageTraceResponse, ...], Field(min_length=1)
+    ]
+
+
+class RetrievalStageRecallResponse(StrictModel):
+    """Exact qrel numerator and denominator at one retrieval stage."""
+
+    stage_id: Literal[
+        "candidate-depth",
+        "channel-admitted",
+        "fusion-at-10",
+        "final-at-10",
+        "final-at-5",
+    ]
+    numerator: Annotated[int, Field(ge=0)]
+    denominator: Annotated[int, Field(ge=1)]
+    value: Annotated[float, Field(ge=0, le=1)]
+
+
+class RetrievalStageAnalysisResponse(StrictModel):
+    """Compact loss counts plus every per-query qrel trace."""
+
+    schema_version: Literal["bijux.canon.index.retrieval-stage-analysis.v1"]
+    query_count: Annotated[int, Field(ge=1)]
+    qrel_count: Annotated[int, Field(ge=1)]
+    recall: tuple[RetrievalStageRecallResponse, ...]
+    disposition_counts: tuple[tuple[str, Annotated[int, Field(ge=0)]], ...]
+    queries: Annotated[tuple[QueryStageDiagnosticsResponse, ...], Field(min_length=1)]
+
+
 class RetrievalEvaluationResponse(StrictModel):
     """Transparent metrics and exact observations from installed retrieval."""
 
-    schema_version: Literal["bijux.canon.index.public-retrieval-evaluation.v1"]
+    schema_version: Literal["bijux.canon.index.public-retrieval-evaluation.v2"]
     request_sha256: Annotated[str, Field(pattern=r"^[0-9a-f]{64}$")]
     query_count: Annotated[int, Field(ge=1)]
     qrel_count: Annotated[int, Field(ge=1)]
@@ -276,6 +363,7 @@ class RetrievalEvaluationResponse(StrictModel):
     ]
     macro: RetrievalMacroReportResponse
     micro: RetrievalPooledCountsResponse
+    stage_analysis: RetrievalStageAnalysisResponse
     worst_query_ids: tuple[str, ...]
     evidence_sha256: Annotated[str, Field(pattern=r"^[0-9a-f]{64}$")]
 

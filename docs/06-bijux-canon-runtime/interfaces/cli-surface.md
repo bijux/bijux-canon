@@ -47,9 +47,10 @@ bijux-canon-runtime v2 evaluate-retrieval \
 The JSON report includes every raw ranked hit and exact locator segment,
 generation/model/configuration and VEX identities, Runtime run/attempt lineage,
 per-query arithmetic, macro distributions, pooled qrel counts, refusal/failure
-counts, and worst queries. `--human` prints the same report's denominators and
-headline metrics. A sealed held-out case is rejected rather than silently
-exposing release labels.
+counts, stage-by-stage relevant-chunk ranks and loss classifications, and worst
+queries. `--human` prints the same report's denominators, headline metrics, and
+one compact stage line per reviewed question. A sealed held-out case is rejected
+rather than silently exposing release labels.
 
 `unsafe-run` is present in the parser but is not currently executable through
 the CLI: unsafe execution requires a verification policy, while the subcommand
