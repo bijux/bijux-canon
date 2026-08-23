@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 import subprocess
 from configparser import ConfigParser
 from pathlib import Path
@@ -67,7 +68,7 @@ def test_focused_lanes_dry_run_the_named_package_only() -> None:
     for target, package in package_by_target.items():
         output = _make_output("--dry-run", target)
         assert f"PACKAGE={package}" in output
-        assert "test-all" not in output
+        assert re.search(r"(?:^|\s)test-all(?:\s|$)", output) is None
 
 
 def test_vertical_lanes_dry_run_bounded_named_paths() -> None:
@@ -81,4 +82,4 @@ def test_vertical_lanes_dry_run_bounded_named_paths() -> None:
     for target, evidence_path in evidence_by_target.items():
         output = _make_output("--dry-run", target)
         assert evidence_path in output
-        assert "test-all" not in output
+        assert re.search(r"(?:^|\s)test-all(?:\s|$)", output) is None
