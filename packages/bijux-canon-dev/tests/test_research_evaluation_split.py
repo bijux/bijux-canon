@@ -1,4 +1,4 @@
-"""Coverage, balance, overlap disclosure, and identity checks for the split."""
+"""Family partition, label sealing, and identity checks for research truth."""
 
 from __future__ import annotations
 
@@ -16,16 +16,17 @@ from bijux_canon_dev.corpus.research_evaluation_split import (
     validate_split,
     write_evaluation_cases,
 )
-from bijux_canon_dev.corpus.research_claim_truth import load_claim_truth
-from bijux_canon_dev.corpus.research_qrels import load_qrels
+from bijux_canon_dev.corpus.research_questions import load_questions
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 RESEARCH_ROOT = REPO_ROOT / "examples/ancient-dna-research"
+TRUTH_ROOT = RESEARCH_ROOT / "truth"
 LOCK_PATH = RESEARCH_ROOT / "corpus.lock.json"
-LOCATOR_TRUTH_PATH = RESEARCH_ROOT / "truth/locator-truth.jsonl"
-QRELS_PATH = RESEARCH_ROOT / "truth/qrels.jsonl"
-CLAIM_TRUTH_PATH = RESEARCH_ROOT / "truth/claim-truth.jsonl"
-SPLIT_PATH = RESEARCH_ROOT / "truth/split.json"
+LOCATOR_TRUTH_PATH = TRUTH_ROOT / "locator-truth.jsonl"
+PARTITION_REVIEW_PATH = TRUTH_ROOT / "question-partition-review.jsonl"
+QRELS_PATH = TRUTH_ROOT / "qrels.jsonl"
+QUESTIONS_PATH = TRUTH_ROOT / "research-questions.jsonl"
+SPLIT_PATH = TRUTH_ROOT / "split.json"
 
 
 def _document() -> dict[str, object]:
@@ -35,10 +36,11 @@ def _document() -> dict[str, object]:
 def _validate(document: dict[str, object]) -> dict[str, object]:
     return validate_split(
         document,
-        claim_truth_path=CLAIM_TRUTH_PATH,
         lock_path=LOCK_PATH,
         locator_truth_path=LOCATOR_TRUTH_PATH,
+        partition_review_path=PARTITION_REVIEW_PATH,
         qrels_path=QRELS_PATH,
+        questions_path=QUESTIONS_PATH,
         research_root=RESEARCH_ROOT,
         split_path=SPLIT_PATH,
     )
@@ -50,100 +52,59 @@ def _reidentify(document: dict[str, object], case: dict[str, object]) -> None:
     document["split_identity_sha256"] = split_identity(document)
 
 
-def test_split_freezes_exactly_120_balanced_reviewed_cases() -> None:
-    document = _document()
-    result = _validate(document)
-    assert result["case_count"] == 120
-    assert result["development_case_count"] == 80
-    assert result["heldout_case_count"] == 40
-    assert result["source_count"] == 8
-
-
-def test_split_reports_semantic_denominators_and_known_leakage() -> None:
+def test_split_freezes_one_case_per_reviewed_semantic_question() -> None:
     result = _validate(_document())
 
-    assert result["case_row_count"] == 120
-    assert result["query_count"] == 8
-    assert result["qrel_count"] == 30
-    assert result["claim_truth_count"] == 32
-    assert result["development_query_count"] == 8
-    assert result["heldout_query_count"] == 8
-    assert result["query_overlap_count"] == 8
-    assert result["qrel_overlap_count"] == 27
-    assert result["claim_truth_overlap_count"] == 32
-    assert result["leakage_free"] is False
+    assert result["case_count"] == 18
+    assert result["question_count"] == 18
+    assert result["development_case_count"] == 12
+    assert result["heldout_case_count"] == 6
+    assert result["development_family_count"] == 3
+    assert result["heldout_family_count"] == 1
+    assert result["heldout_category_count"] == 6
+
+
+def test_split_is_disjoint_by_question_and_complete_evidence_family() -> None:
+    result = _validate(_document())
+
+    assert result["question_overlap_count"] == 0
+    assert result["family_overlap_count"] == 0
+    assert result["leakage_free"] is True
+    assert result["heldout_labels_available_to_tuning"] is False
+    assert len(str(result["development_label_set_sha256"])) == 64
+    assert len(str(result["heldout_label_set_sha256"])) == 64
 
 
 def test_split_validation_is_restart_stable() -> None:
     assert _validate(_document()) == _validate(load_split(SPLIT_PATH))
 
 
-def test_evaluation_cases_jsonl_is_exact_canonical_split_projection(
-    tmp_path: Path,
-) -> None:
+def test_runnable_cases_seal_heldout_truth(tmp_path: Path) -> None:
     output = tmp_path / "evaluation-cases.jsonl"
-
     write_evaluation_cases(
         _document(),
         output,
-        qrels=tuple(load_qrels(QRELS_PATH)),
-        claims=tuple(load_claim_truth(CLAIM_TRUTH_PATH)),
+        questions=tuple(load_questions(QUESTIONS_PATH)),
     )
 
-    assert (
-        output.read_bytes()
-        == (RESEARCH_ROOT / "truth/evaluation-cases.jsonl").read_bytes()
-    )
+    assert output.read_bytes() == (TRUTH_ROOT / "evaluation-cases.jsonl").read_bytes()
     records = [json.loads(line) for line in output.read_text().splitlines()]
-    assert len(records) == 120
-    assert [item["case_id"] for item in records] == [
-        f"adna-case-{ordinal:03d}" for ordinal in range(1, 121)
-    ]
-    assert all(item["question"].strip() for item in records)
-    assert all(item["corpus_scope"]["source_ids"] for item in records)
-    assert all(item["filters"]["source_id"] == item["source_id"] for item in records)
-    assert {item["answerability"] for item in records} == {
-        "answerable",
-        "must-abstain",
-    }
-    assert all(item["rationale"].startswith("Retrieval:") for item in records)
-    assert all(item["system_output_consulted"] is False for item in records)
-    negative = [item for item in records if item["labels"]["negative"]]
-    nonnegative = [item for item in records if not item["labels"]["negative"]]
-    assert negative and nonnegative
+    assert len(records) == 18
+    development = [record for record in records if record["split"] == "development"]
+    heldout = [record for record in records if record["split"] == "heldout"]
+    assert len(development) == 12
+    assert len(heldout) == 6
     assert all(
-        item["qrel_disposition"] == "explicit-empty-negative" for item in negative
+        record["label_disposition"] == "development-labels-visible"
+        for record in development
     )
-    assert all(item["qrels"] == [] for item in negative)
-    assert all(item["qrel_disposition"] == "reviewed" for item in nonnegative)
-    assert all(len(item["qrels"]) == 1 for item in nonnegative)
-    for item in nonnegative:
-        locator = item["qrels"][0]["locator"]
-        assert locator["character_end"] - locator["character_start"] == len(
-            locator["exact_text"]
-        )
-        assert sha256(locator["exact_text"].encode()) == locator["exact_text_sha256"]
-        assert item["qrels"][0]["adjudication"]["system_ranking_consulted"] is False
-    assert {item["claim_truth"]["claim_class"] for item in records} == {
-        "expected",
-        "optional",
-        "opposed",
-        "forbidden",
-    }
-    for item in records:
-        truth = item["claim_truth"]
-        citation = truth["citation"]
-        assert truth["claim_truth_id"] == item["claim_truth_id"]
-        assert citation["character_end"] > citation["character_start"]
-        assert sha256(citation["exact_text"].encode()) == citation["exact_text_sha256"]
-        assert (
-            item["conflict_expectation"]["conflict_expected"]
-            == item["labels"]["conflict"]
-        )
-        assert (
-            item["abstention_expectation"]["abstention_expected"]
-            == item["labels"]["abstention_expected"]
-        )
+    assert all(
+        record["label_disposition"] == "heldout-labels-sealed" for record in heldout
+    )
+    assert all("truth" in record for record in development)
+    assert all("truth" not in record for record in heldout)
+    assert all(len(record["truth_sha256"]) == 64 for record in records)
+    assert all(record["system_output_consulted"] is False for record in records)
 
 
 def test_heldout_labels_cannot_be_enabled_for_tuning() -> None:
@@ -156,29 +117,26 @@ def test_heldout_labels_cannot_be_enabled_for_tuning() -> None:
         _validate(document)
 
 
-def test_case_label_tampering_is_rejected() -> None:
-    document = deepcopy(_document())
-    cases = document["cases"]
-    assert isinstance(cases, list) and isinstance(cases[0], dict)
-    labels = cases[0]["labels"]
-    assert isinstance(labels, dict)
-    labels["relevance_grade"] = 0
-    _reidentify(document, cases[0])
-    with pytest.raises(RuntimeError, match="case drift"):
-        _validate(document)
-
-
-def test_duplicate_truth_pair_is_rejected() -> None:
+def test_evidence_family_cannot_cross_partitions() -> None:
     document = deepcopy(_document())
     cases = document["cases"]
     assert isinstance(cases, list)
-    first = cases[0]
-    second = cases[1]
-    assert isinstance(first, dict) and isinstance(second, dict)
-    second["qrel_id"] = first["qrel_id"]
-    second["claim_truth_id"] = first["claim_truth_id"]
-    _reidentify(document, second)
-    with pytest.raises(RuntimeError, match="duplicate research evaluation truth pair"):
+    heldout = next(case for case in cases if case["split"] == "heldout")
+    development = next(case for case in cases if case["split"] == "development")
+    assert isinstance(heldout, dict) and isinstance(development, dict)
+    development["evidence_family"] = heldout["evidence_family"]
+    _reidentify(document, development)
+    with pytest.raises(RuntimeError, match="case drift|crosses partitions"):
+        _validate(document)
+
+
+def test_question_label_hash_tampering_is_rejected() -> None:
+    document = deepcopy(_document())
+    cases = document["cases"]
+    assert isinstance(cases, list) and isinstance(cases[0], dict)
+    cases[0]["question_label_sha256"] = "0" * 64
+    _reidentify(document, cases[0])
+    with pytest.raises(RuntimeError, match="case drift"):
         _validate(document)
 
 

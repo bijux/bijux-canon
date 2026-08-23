@@ -106,6 +106,7 @@ def validate_questions(
     categories: Counter[str] = Counter()
     answerability: Counter[str] = Counter()
     relations: Counter[str] = Counter()
+    relevance_grades: Counter[str] = Counter()
     source_ids: set[str] = set()
     evidence_ids: set[str] = set()
     _validate_question_texts(records)
@@ -170,12 +171,16 @@ def validate_questions(
             qrel_id = item.get("qrel_id")
             relation = item.get("relation")
             evidence_rationale = item.get("rationale")
+            relevance_grade = item.get("relevance_grade")
             qrel = qrels.get(str(qrel_id))
             if (
                 qrel is None
                 or relation not in EVIDENCE_RELATIONS
                 or not isinstance(evidence_rationale, str)
                 or len(evidence_rationale) < 40
+                or not isinstance(relevance_grade, int)
+                or isinstance(relevance_grade, bool)
+                or relevance_grade not in {1, 2, 3}
                 or qrel_id in question_evidence
             ):
                 raise RuntimeError(
@@ -188,6 +193,7 @@ def validate_questions(
             question_evidence.add(str(qrel_id))
             evidence_ids.add(str(qrel_id))
             relations[str(relation)] += 1
+            relevance_grades[str(relevance_grade)] += 1
             source_id = str(qrel["source_id"])
             question_sources.add(source_id)
             source_ids.add(source_id)
@@ -216,6 +222,7 @@ def validate_questions(
         "answerability_counts": dict(sorted(answerability.items())),
         "category_counts": dict(sorted(categories.items())),
         "evidence_qrel_count": len(evidence_ids),
+        "evidence_relevance_grade_counts": dict(sorted(relevance_grades.items())),
         "evidence_relation_counts": dict(sorted(relations.items())),
         "question_count": len(records),
         "question_set_sha256": sha256(

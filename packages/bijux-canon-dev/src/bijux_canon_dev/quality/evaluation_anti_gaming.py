@@ -12,6 +12,7 @@ class MetricTruthSource(StrEnum):
     """Admissible and prohibited sources of evaluation credit."""
 
     reviewed_qrels = "reviewed-qrels"
+    reviewed_question_evidence = "reviewed-question-evidence"
     reviewed_claim_relations = "reviewed-claim-relations"
     evidence_presence = "evidence-presence"
     system_output = "system-output"
@@ -80,7 +81,7 @@ class EvaluationSubmission:
     expected_sample_ids: Mapping[MetricPopulation, frozenset[str]]
     declared_denominators: Mapping[str, int]
     metrics: tuple[SubmittedMetric, ...]
-    minimum_case_count: int = 120
+    minimum_case_count: int
 
     def __post_init__(self) -> None:
         if self.minimum_case_count <= 0:

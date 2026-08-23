@@ -71,42 +71,35 @@ python -m bijux_canon_dev.corpus.research_claim_truth \
   --claim-truth examples/ancient-dna-research/truth/claim-truth.jsonl
 ```
 
-`split.json` freezes the legacy same-source cross-product of 30 graded qrel
-judgments and 32 atomic claims into exactly 120 reviewed execution rows. Those
-rows are not 120 independent questions or claims. The semantic populations are
-18 reviewed semantic questions, 8 legacy single-source qrel queries, 30 qrels,
-32 atomic claims, and 120 unique legacy qrel/claim pairs. Metrics must declare
-which population they aggregate and use that population's unique identities as
-their denominator.
+`question-partition-review.jsonl` records the reviewed evidence-family decision
+for every semantic question. `split.json` freezes exactly one case per question:
+12 development questions in three complete families and six held-out questions
+in the complete resin-preservation family. No question or evidence family
+crosses partitions. The split binds the exact question, qrel, partition-review,
+development-label, held-out-label, case-set, corpus-lock, and split identities.
 
-The current row partition contains 80 development and 40 held-out rows and
-prohibits tuning use of held-out labels. It is not leakage-resistant: all 8
-query identities, 27 of 30 qrel identities, and all 32 claim identities occur
-in both partitions. A release-eligible held-out corpus must replace this split
-with disjoint reviewed semantic identities. Until then, these rows support
-development diagnostics but cannot prove held-out generalization.
-The 18 semantic questions intentionally do not enter this obsolete cross-product;
-they become the question-level authority for the leakage-resistant replacement.
+The eight original single-source qrel queries, 30 qrels, and 32 atomic claims
+remain useful truth inventories, but they are no longer multiplied into fake
+execution cases. Metrics use the 18 unique semantic question IDs as their
+denominator. Each question's evidence edge carries a relevance grade reviewed
+for that exact question; a grade from the old single-source query is not reused
+as if it answered a different query.
 
-`evaluation-cases.jsonl` is the canonical line-oriented execution inventory for
-those 120 cases. Every row joins the frozen split to its reviewed question,
-single-source corpus scope, source filter, answerability decision, and combined
-retrieval/claim rationale without consulting system output. Applicable cases
-embed their graded qrel, exact content-hashed chunk span, and adjudication
-lineage. Negative cases retain an explicit empty-qrel disposition rather than
-silently disappearing from metric denominators. Each row also embeds its atomic
-claim class, exact claim-citation relation and span, conflict expectation, and
-abstention outcome. The file is regenerated from the validated split, qrels,
-and claim truth with `--cases-output`; byte drift fails the repository test
-suite.
+`evaluation-cases.jsonl` is the canonical runnable inventory. Its 12
+development rows expose reviewed answer points, abstention outcomes, and exact
+evidence. Its six held-out rows expose only the prompt, case identity, family,
+and label-set hash. Held-out answer points, evidence IDs, relations, and grades
+are absent. The release evaluator is the sole executable interface that joins
+a complete held-out submission to sealed labels, and it returns aggregates
+rather than the labels.
 
-The qrels, claims, and split currently record primary manual review by
-`bijux-corpus-curation-primary` on 2026-08-22. Qrels use source-first
-adjudication before retrieval evaluation; claims use source-first atomic-claim
-and citation adjudication. Qrels explicitly record that system rankings were
-not consulted; the claim records do not carry an equivalent explicit field.
-Independent review is still required for release truth, so the audit marks that
-condition for review instead of inferring certainty from product output.
+Question and partition amendments require a source-first reviewer identity,
+date, method, and rationale different from the primary qrel/claim adjudicator.
+System output may not select questions, families, splits, answer points,
+evidence, or relevance grades. Any accepted amendment regenerates and reviews
+all bound hashes. The older qrels and atomic claims still need another reviewer,
+so the audit retains that release blocker without weakening the independently
+reviewed question partition.
 
 Validate the frozen case construction, strata, partition indexes, and hashes
 with:
@@ -116,14 +109,32 @@ python -m bijux_canon_dev.corpus.research_evaluation_split \
   --lock examples/ancient-dna-research/corpus.lock.json \
   --research-root examples/ancient-dna-research \
   --locator-truth examples/ancient-dna-research/truth/locator-truth.jsonl \
+  --partition-review examples/ancient-dna-research/truth/question-partition-review.jsonl \
   --qrels examples/ancient-dna-research/truth/qrels.jsonl \
-  --claim-truth examples/ancient-dna-research/truth/claim-truth.jsonl \
+  --questions examples/ancient-dna-research/truth/research-questions.jsonl \
   --split examples/ancient-dna-research/truth/split.json \
   --cases-output examples/ancient-dna-research/truth/evaluation-cases.jsonl
 ```
 
+Release-only retrieval scoring requires a canonical submission containing every
+held-out `question_id` and its ordered `retrieved_qrel_ids`. The operator must
+set `BIJUX_CANON_RELEASE_EVALUATION` to the exact frozen split identity. The
+command refuses missing, duplicate, extra, or unauthorized populations:
+
+```console
+python -m bijux_canon_dev.corpus.research_release_evaluation \
+  --lock examples/ancient-dna-research/corpus.lock.json \
+  --research-root examples/ancient-dna-research \
+  --locator-truth examples/ancient-dna-research/truth/locator-truth.jsonl \
+  --partition-review examples/ancient-dna-research/truth/question-partition-review.jsonl \
+  --qrels examples/ancient-dna-research/truth/qrels.jsonl \
+  --questions examples/ancient-dna-research/truth/research-questions.jsonl \
+  --split examples/ancient-dna-research/truth/split.json \
+  --submission /path/to/canonical-heldout-ranking.jsonl
+```
+
 Audit semantic denominators, duplicates, contradictions, reviewer provenance,
-source cross-products, and development/held-out overlap with:
+label sealing, and development/held-out family overlap with:
 
 ```console
 python -m bijux_canon_dev.corpus.research_truth_audit \

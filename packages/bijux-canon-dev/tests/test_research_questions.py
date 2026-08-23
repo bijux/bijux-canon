@@ -44,6 +44,7 @@ def test_questions_cover_diverse_semantic_needs_and_all_sources() -> None:
         "opposes",
         "supports",
     }
+    assert result["evidence_relevance_grade_counts"] == {"1": 10, "2": 8, "3": 25}
 
 
 def test_question_validation_is_restart_stable() -> None:

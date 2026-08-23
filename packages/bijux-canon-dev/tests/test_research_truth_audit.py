@@ -21,76 +21,43 @@ def _audit() -> dict[str, object]:
     )
 
 
-def test_audit_reports_semantic_populations_instead_of_row_denominators() -> None:
+def test_audit_reports_questions_instead_of_cross_product_rows() -> None:
     report = _audit()
-    inventory = report["inventory"]
-    assert isinstance(inventory, dict)
-
-    assert inventory == {
-        "case_row_count": 120,
+    assert report["inventory"] == {
+        "case_row_count": 18,
+        "legacy_qrel_query_count": 8,
+        "legacy_qrel_query_text_count": 8,
         "reviewed_semantic_question_count": 18,
         "reviewed_semantic_question_text_count": 18,
         "source_count": 8,
-        "unique_case_count": 120,
+        "unique_case_count": 18,
         "unique_claim_count": 32,
         "unique_claim_identity_count": 32,
-        "unique_qrel_claim_pair_count": 120,
         "unique_qrel_count": 30,
-        "unique_query_count": 8,
-        "unique_query_text_count": 8,
     }
-    assert report["claim_class_counts"] == {
-        "expected": 8,
-        "forbidden": 8,
-        "opposed": 8,
-        "optional": 8,
-    }
-    assert report["case_answerability_counts"] == {
-        "answerable": 16,
-        "must-abstain": 104,
-    }
-    assert len(report["query_inventory"]) == 8
-    assert len(report["reviewed_question_inventory"]) == 18
-    assert report["reviewed_question_category_counts"] == {
-        "ambiguous": 2,
-        "conflict": 2,
-        "cross-paper-synthesis": 2,
-        "finding": 2,
-        "limitation": 2,
-        "method": 2,
-        "multi-hop": 2,
-        "out-of-scope": 2,
-        "population-context": 2,
-    }
+    assert len(report["question_inventory"]) == 18
+    assert len(report["legacy_query_inventory"]) == 8
     assert len(report["qrel_inventory"]) == 30
     assert len(report["claim_inventory"]) == 32
-    assert report["qrel_relevance_grade_counts"] == {"1": 14, "2": 8, "3": 8}
-    assert report["case_label_counts"] == {
-        "citation_relation": {
-            "insufficient": 88,
-            "limits": 8,
-            "opposes": 8,
-            "supports": 16,
-        },
-        "difficulty": {"adversarial": 30, "hard": 74, "standard": 16},
-        "negative": {"false": 24, "true": 96},
-        "split": {"development": 80, "heldout": 40},
+    assert report["case_label_disposition_counts"] == {
+        "development-labels-visible": 12,
+        "heldout-labels-sealed": 6,
     }
     consistency = report["dataset_consistency"]
     assert isinstance(consistency, dict)
     assert all(consistency.values())
 
 
-def test_audit_discloses_review_lineage_and_partition_leakage() -> None:
+def test_audit_discloses_review_lineage_and_family_partition() -> None:
     report = _audit()
     provenance = report["review_provenance"]
     partition = report["partition"]
     assert isinstance(provenance, dict)
     assert isinstance(partition, dict)
 
-    assert provenance["independent_review_complete"] is False
+    assert provenance["independent_legacy_truth_review_complete"] is False
     assert provenance["label_status"] == (
-        "primary-reviewed-independent-review-required"
+        "semantic-questions-independent-legacy-truth-review-required"
     )
     qrels = provenance["qrels"]
     claims = provenance["claims"]
@@ -99,29 +66,28 @@ def test_audit_discloses_review_lineage_and_partition_leakage() -> None:
     assert isinstance(questions, dict)
     assert qrels["reviewer_ids"] == ["bijux-corpus-curation-primary"]
     assert claims["reviewer_ids"] == ["bijux-corpus-curation-primary"]
-    assert qrels["system_output_consulted"] == [False]
-    assert qrels["system_output_consulted_declared"] is True
-    assert claims["system_output_consulted"] == []
-    assert claims["system_output_consulted_declared"] is False
     assert questions["reviewer_ids"] == ["bijux-corpus-curation-secondary"]
     assert questions["system_output_consulted"] == [False]
-    assert questions["system_output_consulted_declared"] is True
 
-    assert partition["leakage_free"] is False
+    assert partition["leakage_free"] is True
+    assert partition["development"] == {
+        "case_count": 12,
+        "family_count": 3,
+        "question_count": 12,
+    }
+    assert partition["heldout"] == {
+        "case_count": 6,
+        "family_count": 1,
+        "question_count": 6,
+    }
     assert partition["overlap"] == {
         "case_count": 0,
-        "claim_count": 32,
-        "qrel_count": 27,
-        "query_count": 8,
+        "family_count": 0,
+        "question_count": 0,
     }
     queue = report["review_queue"]
     assert isinstance(queue, list)
-    assert [item["issue_id"] for item in queue] == [
-        "independent-review-required",
-        "query-split-leakage",
-        "qrel-split-leakage",
-        "claim-split-leakage",
-    ]
+    assert [item["issue_id"] for item in queue] == ["independent-review-required"]
     assert report["release_eligible"] is False
 
 
@@ -130,6 +96,7 @@ def test_audit_is_restart_stable_and_canonically_identified() -> None:
     second = _audit()
 
     assert first == second
+    assert first["schema_version"] == "bijux.canon.research_truth_audit.v3"
     assert first["audit_identity_sha256"] == second["audit_identity_sha256"]
     assert len(str(first["audit_identity_sha256"])) == 64
     json.dumps(first, sort_keys=True)

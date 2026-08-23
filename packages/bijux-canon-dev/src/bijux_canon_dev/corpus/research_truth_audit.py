@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Audit semantic populations, review lineage, and leakage in research truth."""
+"""Audit semantic populations, review lineage, and question-family leakage."""
 
 from __future__ import annotations
 
@@ -13,29 +13,30 @@ from typing import Any
 
 from bijux_canon_dev.corpus.acquisition import canonical, sha256
 from bijux_canon_dev.corpus.research_claim_truth import load_claim_truth
-from bijux_canon_dev.corpus.research_evaluation_split import load_split
+from bijux_canon_dev.corpus.research_evaluation_split import (
+    load_split,
+    question_label_identity,
+)
 from bijux_canon_dev.corpus.research_qrels import load_qrels
 from bijux_canon_dev.corpus.research_questions import (
     load_questions,
     validate_questions,
 )
 
-SCHEMA_VERSION = "bijux.canon.research_truth_audit.v2"
+SCHEMA_VERSION = "bijux.canon.research_truth_audit.v3"
 
 
 def _load_jsonl(path: Path) -> tuple[dict[str, Any], ...]:
     if path.is_symlink() or not path.is_file():
         raise RuntimeError(f"research truth is not a regular file: {path}")
     records: list[dict[str, Any]] = []
-    for line_number, line in enumerate(
-        path.read_text(encoding="utf-8").splitlines(), 1
-    ):
-        if not line.strip():
-            continue
+    for line_number, line in enumerate(path.read_bytes().splitlines(), 1):
+        if not line:
+            raise RuntimeError(f"blank research truth row {line_number}: {path}")
         value = json.loads(line)
-        if not isinstance(value, dict):
+        if not isinstance(value, dict) or canonical(value) != line:
             raise RuntimeError(
-                f"research truth row {line_number} is not an object: {path}"
+                f"non-canonical research truth row {line_number}: {path}"
             )
         records.append(value)
     return tuple(records)
@@ -88,7 +89,7 @@ def _field_conflicts(
 
 def _partition_report(cases: tuple[dict[str, Any], ...]) -> dict[str, Any]:
     populations: dict[str, dict[str, set[str]]] = {
-        split: {"case": set(), "query": set(), "qrel": set(), "claim": set()}
+        split: {"case": set(), "family": set(), "question": set()}
         for split in ("development", "heldout")
     }
     for case in cases:
@@ -96,12 +97,11 @@ def _partition_report(cases: tuple[dict[str, Any], ...]) -> dict[str, Any]:
         if split not in populations:
             continue
         populations[split]["case"].add(str(case["case_id"]))
-        populations[split]["query"].add(str(case["query_id"]))
-        populations[split]["qrel"].add(str(case["qrel_id"]))
-        populations[split]["claim"].add(str(case["claim_truth_id"]))
+        populations[split]["family"].add(str(case["evidence_family"]))
+        populations[split]["question"].add(str(case["question_id"]))
     overlaps = {
         name: sorted(populations["development"][name] & populations["heldout"][name])
-        for name in ("case", "query", "qrel", "claim")
+        for name in ("case", "family", "question")
     }
     return {
         "development": {
@@ -126,7 +126,7 @@ def audit_research_truth(
     questions_path: Path,
     split_path: Path,
 ) -> dict[str, Any]:
-    """Return a canonical audit without treating execution rows as questions."""
+    """Return a canonical audit whose denominator is semantic questions."""
 
     qrels = tuple(load_qrels(qrels_path))
     questions = tuple(load_questions(questions_path))
@@ -135,108 +135,98 @@ def audit_research_truth(
     cases = _load_jsonl(cases_path)
     split = load_split(split_path)
 
-    query_ids = _string_set(qrels, "query_id")
-    query_texts = _string_set(qrels, "query")
-    reviewed_question_ids = _string_set(questions, "question_id")
-    reviewed_question_texts = _string_set(questions, "question")
+    legacy_query_ids = _string_set(qrels, "query_id")
+    legacy_query_texts = _string_set(qrels, "query")
+    question_ids = _string_set(questions, "question_id")
+    question_texts = _string_set(questions, "question")
     qrel_ids = _string_set(qrels, "qrel_id")
     claim_ids = _string_set(claims, "truth_id")
     claim_identities = _string_set(claims, "claim_identity_sha256")
     case_ids = _string_set(cases, "case_id")
-    pairs = {(str(case["qrel_id"]), str(case["claim_truth_id"])) for case in cases}
     source_ids = _string_set(qrels, "source_id") | _string_set(claims, "source_id")
 
-    query_rows: dict[str, dict[str, Any]] = {}
-    for query_id in sorted(query_ids):
+    legacy_query_inventory: dict[str, dict[str, Any]] = {}
+    for query_id in sorted(legacy_query_ids):
         matching = [record for record in qrels if record["query_id"] == query_id]
-        query_rows[query_id] = {
+        legacy_query_inventory[query_id] = {
             "question": sorted({str(record["query"]) for record in matching}),
-            "qrel_row_count": len(matching),
             "qrel_ids": sorted(str(record["qrel_id"]) for record in matching),
+            "qrel_row_count": len(matching),
             "source_ids": sorted(str(record["source_id"]) for record in matching),
         }
     qrel_inventory = {
         str(record["qrel_id"]): {
-            "query_id": str(record["query_id"]),
-            "source_id": str(record["source_id"]),
-            "relevance_grade": int(record["relevance_grade"]),
             "adjudication_status": str(record["adjudication_status"]),
+            "legacy_query_id": str(record["query_id"]),
+            "legacy_relevance_grade": int(record["relevance_grade"]),
+            "source_id": str(record["source_id"]),
         }
         for record in sorted(qrels, key=lambda item: str(item["qrel_id"]))
     }
     claim_inventory = {
         str(record["truth_id"]): {
+            "abstention_expected": bool(record["abstention_expected"]),
+            "claim_class": str(record["claim_class"]),
             "claim_identity_sha256": str(record["claim_identity_sha256"]),
+            "evidence_relation": str(record["evidence_relation"]),
             "source_id": str(record["source_id"]),
             "statement": str(record["claim"]),
-            "claim_class": str(record["claim_class"]),
             "verdict": str(record["verdict"]),
-            "evidence_relation": str(record["evidence_relation"]),
-            "abstention_expected": bool(record["abstention_expected"]),
         }
         for record in sorted(claims, key=lambda item: str(item["truth_id"]))
     }
-    reviewed_question_inventory = {
+    question_inventory = {
         str(record["question_id"]): {
             "abstention_expected": bool(record["abstention_expected"]),
             "answerability": str(record["answerability"]),
             "category": str(record["category"]),
-            "evidence_qrel_ids": sorted(
-                str(item["qrel_id"]) for item in record["evidence"]
-            ),
+            "evidence": [
+                {
+                    "qrel_id": str(item["qrel_id"]),
+                    "relation": str(item["relation"]),
+                    "relevance_grade": int(item["relevance_grade"]),
+                }
+                for item in record["evidence"]
+            ],
             "question": str(record["question"]),
         }
         for record in sorted(questions, key=lambda item: str(item["question_id"]))
     }
 
-    source_cross_products = []
-    for source_id in sorted(source_ids):
-        source_qrels = [record for record in qrels if record["source_id"] == source_id]
-        source_claims = [
-            record for record in claims if record["source_id"] == source_id
-        ]
-        source_cases = [record for record in cases if record["source_id"] == source_id]
-        source_cross_products.append(
-            {
-                "source_id": source_id,
-                "query_count": len(_string_set(source_qrels, "query_id")),
-                "qrel_count": len(source_qrels),
-                "claim_count": len(source_claims),
-                "case_row_count": len(source_cases),
-                "expected_cross_product_count": len(source_qrels) * len(source_claims),
-            }
-        )
+    questions_by_id = {str(record["question_id"]): record for record in questions}
     split_cases_value = split.get("cases")
     split_cases = (
         tuple(item for item in split_cases_value if isinstance(item, dict))
         if isinstance(split_cases_value, list)
         else ()
     )
-    qrels_by_id = {str(record["qrel_id"]): record for record in qrels}
-    claims_by_id = {str(record["truth_id"]): record for record in claims}
     consistency = {
-        "case_query_bindings_match_qrels": all(
-            str(case["qrel_id"]) in qrels_by_id
-            and str(case["query_id"])
-            == str(qrels_by_id[str(case["qrel_id"])]["query_id"])
+        "development_cases_expose_reviewed_truth": all(
+            case.get("split") != "development" or isinstance(case.get("truth"), dict)
             for case in cases
         ),
-        "case_claim_bindings_match_truth": all(
-            str(case["claim_truth_id"]) in claims_by_id
-            and str(case["source_id"])
-            == str(claims_by_id[str(case["claim_truth_id"])]["source_id"])
+        "heldout_cases_seal_reviewed_truth": all(
+            case.get("split") != "heldout"
+            or (
+                "truth" not in case
+                and case.get("label_disposition") == "heldout-labels-sealed"
+            )
             for case in cases
         ),
-        "source_cross_products_complete": all(
-            item["case_row_count"] == item["expected_cross_product_count"]
-            for item in source_cross_products
+        "case_question_bindings_match_truth": all(
+            str(case["question_id"]) in questions_by_id
+            and str(case["question"])
+            == str(questions_by_id[str(case["question_id"])]["question"])
+            and str(case["truth_sha256"])
+            == question_label_identity(questions_by_id[str(case["question_id"])])
+            for case in cases
         ),
         "split_case_ids_match_execution_rows": _string_set(split_cases, "case_id")
         == case_ids,
-        "split_truth_pairs_match_execution_rows": {
-            (str(case["qrel_id"]), str(case["claim_truth_id"])) for case in split_cases
-        }
-        == pairs,
+        "split_question_ids_match_execution_rows": _string_set(
+            split_cases, "question_id"
+        )
+        == _string_set(cases, "question_id"),
     }
 
     duplicates = {
@@ -245,10 +235,9 @@ def audit_research_truth(
             str(record["claim_identity_sha256"]) for record in claims
         ),
         "claim_truth_ids": _duplicates(str(record["truth_id"]) for record in claims),
-        "qrel_claim_pairs": _duplicates(
-            f"{record['qrel_id']}::{record['claim_truth_id']}" for record in cases
-        ),
         "qrel_ids": _duplicates(str(record["qrel_id"]) for record in qrels),
+        "question_ids": _duplicates(str(record["question_id"]) for record in questions),
+        "question_texts": _duplicates(str(record["question"]) for record in questions),
     }
     contradictions = {
         "claim_identity_values": _field_conflicts(
@@ -261,10 +250,15 @@ def audit_research_truth(
             identity_key="truth_id",
             value_keys=("claim", "claim_class", "verdict", "evidence_relation"),
         ),
-        "query_texts": _field_conflicts(
+        "legacy_query_texts": _field_conflicts(
             qrels,
             identity_key="query_id",
             value_keys=("query",),
+        ),
+        "question_values": _field_conflicts(
+            questions,
+            identity_key="question_id",
+            value_keys=("question", "category", "answerability"),
         ),
     }
 
@@ -290,122 +284,83 @@ def audit_research_truth(
         and len(claim_provenance["reviewer_ids"]) > 1
     )
     partition = _partition_report(cases)
-
     review_queue = []
     if not independent_review_complete:
         review_queue.append(
             {
+                "affected_population": "legacy-qrels-and-atomic-claims",
                 "issue_id": "independent-review-required",
+                "reason": "legacy qrels and claim truth each have only one primary reviewer",
                 "status": "review-required",
-                "affected_population": "truth-set",
-                "reason": "qrels and claim truth each have only one primary reviewer",
             }
         )
-    for population in ("query", "qrel", "claim"):
-        overlap_count = partition["overlap"][f"{population}_count"]
-        if overlap_count:
-            review_queue.append(
-                {
-                    "issue_id": f"{population}-split-leakage",
-                    "status": "replacement-required",
-                    "affected_population": population,
-                    "overlap_count": overlap_count,
-                    "reason": (
-                        f"{population} identities occur in development and held-out rows"
-                    ),
-                }
-            )
 
     report: dict[str, Any] = {
         "schema_version": SCHEMA_VERSION,
         "inventory": {
             "case_row_count": len(cases),
+            "legacy_qrel_query_count": len(legacy_query_ids),
+            "legacy_qrel_query_text_count": len(legacy_query_texts),
+            "reviewed_semantic_question_count": len(question_ids),
+            "reviewed_semantic_question_text_count": len(question_texts),
+            "source_count": len(source_ids),
             "unique_case_count": len(case_ids),
             "unique_claim_count": len(claim_ids),
             "unique_claim_identity_count": len(claim_identities),
-            "unique_qrel_claim_pair_count": len(pairs),
             "unique_qrel_count": len(qrel_ids),
-            "unique_query_count": len(query_ids),
-            "unique_query_text_count": len(query_texts),
-            "source_count": len(source_ids),
-            "reviewed_semantic_question_count": len(reviewed_question_ids),
-            "reviewed_semantic_question_text_count": len(reviewed_question_texts),
         },
-        "query_inventory": query_rows,
-        "reviewed_question_inventory": reviewed_question_inventory,
-        "reviewed_question_category_counts": dict(
-            sorted(Counter(str(record["category"]) for record in questions).items())
+        "case_label_disposition_counts": dict(
+            sorted(
+                Counter(str(record["label_disposition"]) for record in cases).items()
+            )
         ),
-        "qrel_inventory": qrel_inventory,
-        "qrel_relevance_grade_counts": dict(
-            sorted(Counter(str(record["relevance_grade"]) for record in qrels).items())
-        ),
-        "claim_inventory": claim_inventory,
         "claim_class_counts": dict(
             sorted(Counter(str(record["claim_class"]) for record in claims).items())
         ),
+        "claim_inventory": claim_inventory,
         "claim_verdict_counts": dict(
             sorted(Counter(str(record["verdict"]) for record in claims).items())
         ),
-        "case_answerability_counts": dict(
-            sorted(Counter(str(record["answerability"]) for record in cases).items())
-        ),
-        "case_label_counts": {
-            "citation_relation": dict(
-                sorted(
-                    Counter(
-                        str(record["labels"]["citation_relation"]) for record in cases
-                    ).items()
-                )
-            ),
-            "difficulty": dict(
-                sorted(Counter(str(record["difficulty"]) for record in cases).items())
-            ),
-            "negative": dict(
-                sorted(
-                    Counter(
-                        str(bool(record["labels"]["negative"])).lower()
-                        for record in cases
-                    ).items()
-                )
-            ),
-            "split": dict(
-                sorted(Counter(str(record["split"]) for record in cases).items())
-            ),
-        },
-        "source_cross_products": source_cross_products,
+        "contradictions": contradictions,
         "dataset_consistency": consistency,
         "duplicates": duplicates,
-        "contradictions": contradictions,
+        "legacy_query_inventory": legacy_query_inventory,
+        "partition": partition,
+        "qrel_inventory": qrel_inventory,
+        "question_answerability_counts": dict(
+            sorted(
+                Counter(str(record["answerability"]) for record in questions).items()
+            )
+        ),
+        "question_category_counts": dict(
+            sorted(Counter(str(record["category"]) for record in questions).items())
+        ),
+        "question_inventory": question_inventory,
+        "release_eligible": False,
         "review_provenance": {
-            "qrels": qrel_provenance,
             "claims": claim_provenance,
+            "independent_legacy_truth_review_complete": independent_review_complete,
+            "label_status": "semantic-questions-independent-legacy-truth-review-required",
+            "qrels": qrel_provenance,
             "questions": question_provenance,
             "split": {
-                "reviewer_ids": [str(split["reviewer_id"])],
-                "reviewed_on": [str(split["reviewed_on"])],
                 "review_methods": [str(split["review_method"])],
+                "reviewed_on": [str(split["reviewed_on"])],
+                "reviewer_ids": [str(split["reviewer_id"])],
                 "system_output_may_define_truth": bool(
                     split["partition_policy"]["system_output_may_define_truth"]
                 ),
             },
-            "independent_review_complete": independent_review_complete,
-            "label_status": (
-                "independently-reviewed"
-                if independent_review_complete
-                else "primary-reviewed-independent-review-required"
-            ),
         },
-        "partition": partition,
         "review_queue": review_queue,
-        "release_eligible": not (
-            any(duplicates.values())
-            or any(contradictions.values())
-            or not all(consistency.values())
-            or review_queue
-            or not partition["leakage_free"]
-        ),
     }
+    report["release_eligible"] = not (
+        any(duplicates.values())
+        or any(contradictions.values())
+        or not all(consistency.values())
+        or review_queue
+        or not partition["leakage_free"]
+    )
     report["audit_identity_sha256"] = sha256(canonical(report))
     return report
 

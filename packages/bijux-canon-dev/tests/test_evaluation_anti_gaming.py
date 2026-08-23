@@ -20,32 +20,47 @@ from bijux_canon_dev.quality import (
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 SPLIT_PATH = REPO_ROOT / "examples/ancient-dna-research/truth/split.json"
+TRUTH_ROOT = SPLIT_PATH.parent
 
 
 def _submission() -> EvaluationSubmission:
     rows = json.loads(SPLIT_PATH.read_text(encoding="utf-8"))["cases"]
+    questions = {
+        row["question_id"]: row
+        for row in (
+            json.loads(line)
+            for line in (TRUTH_ROOT / "research-questions.jsonl")
+            .read_text(encoding="utf-8")
+            .splitlines()
+        )
+    }
+    claims = [
+        json.loads(line)
+        for line in (TRUTH_ROOT / "claim-truth.jsonl")
+        .read_text(encoding="utf-8")
+        .splitlines()
+    ]
     case_ids = frozenset(str(row["case_id"]) for row in rows)
-    query_ids = frozenset(str(row["query_id"]) for row in rows)
-    claim_ids = frozenset(str(row["claim_truth_id"]) for row in rows)
+    query_ids = frozenset(str(row["question_id"]) for row in rows)
+    claim_ids = frozenset(str(row["truth_id"]) for row in claims)
     hard = frozenset(
         str(row["case_id"])
         for row in rows
-        if row["difficulty"] in {"hard", "adversarial"}
+        if questions[row["question_id"]]["category"]
+        in {"ambiguous", "conflict", "multi-hop", "out-of-scope"}
     )
     negative = frozenset(
-        str(row["case_id"]) for row in rows if row["labels"]["negative"]
-    )
-    reviewed = frozenset(
         str(row["case_id"])
         for row in rows
-        if str(row["review_status"]).endswith("manual_review_complete")
+        if questions[row["question_id"]]["abstention_expected"]
     )
+    reviewed = case_ids
     metrics = (
         SubmittedMetric(
             metric_id="recall-at-5",
-            numerator=8,
+            numerator=18,
             denominator=len(query_ids),
-            truth_source=MetricTruthSource.reviewed_qrels,
+            truth_source=MetricTruthSource.reviewed_question_evidence,
             population=MetricPopulation.query,
             sample_ids=query_ids,
         ),
@@ -76,6 +91,7 @@ def _submission() -> EvaluationSubmission:
         },
         declared_denominators={item.metric_id: item.denominator for item in metrics},
         metrics=metrics,
+        minimum_case_count=len(case_ids),
     )
 
 
@@ -85,9 +101,9 @@ def test_truth_submission_uses_semantic_metric_populations() -> None:
 
     assert report.passed
     assert report.violations == ()
-    assert submission.metrics[0].denominator == 8
+    assert submission.metrics[0].denominator == 18
     assert submission.metrics[1].denominator == 32
-    assert len(submission.evaluated_case_ids) == 120
+    assert len(submission.evaluated_case_ids) == 18
 
 
 @pytest.mark.parametrize(
@@ -145,7 +161,7 @@ def test_truth_submission_uses_semantic_metric_populations() -> None:
                 metrics=(
                     SubmittedMetric(
                         metric_id=item.metrics[0].metric_id,
-                        numerator=120,
+                        numerator=len(item.evaluated_case_ids),
                         denominator=len(item.evaluated_case_ids),
                         truth_source=item.metrics[0].truth_source,
                         population=MetricPopulation.query,
