@@ -60,6 +60,7 @@ def planning_input() -> ResearchPlanningInput:
         budget={
             "iterations": 8,
             "retrievals": 1,
+            "documents": 2,
             "candidates": 4,
             "evidence_items": 2,
             "tool_calls": 1,
@@ -67,6 +68,7 @@ def planning_input() -> ResearchPlanningInput:
             "tokens": 512,
             "elapsed_ms": 30000,
             "retries": 0,
+            "memory_bytes": 65536,
             "artifact_bytes": 65536,
         },
     )
@@ -165,6 +167,17 @@ class StaticCancellation:
 
     def current(self) -> CancellationSignal:
         return self.signal
+
+
+class SequencedCancellation:
+    def __init__(self, *signals: CancellationSignal) -> None:
+        self.signals = signals
+        self.calls = 0
+
+    def current(self) -> CancellationSignal:
+        signal = self.signals[min(self.calls, len(self.signals) - 1)]
+        self.calls += 1
+        return signal
 
 
 def test_injected_services_carry_exact_requests() -> None:
@@ -317,9 +330,15 @@ def test_research_role_machine_executes_one_operation_per_legal_edge() -> None:
     assert result.tool_policy_artifact_id == tool_policy().artifact_id
     assert result.budget_policy_artifact_id == budget_policy().artifact_id
     assert not result.exhausted_budget_dimensions
-    assert all(
-        decision.action is BudgetAction.CONTINUE for decision in result.budget_decisions
-    )
+    assert {decision.action for decision in result.budget_decisions} == {
+        BudgetAction.CONTINUE,
+        BudgetAction.RESERVED,
+    }
+    assert [
+        decision.label
+        for decision in result.budget_decisions
+        if decision.action is BudgetAction.RESERVED
+    ] == ["retrieve_evidence:reserve", "synthesize_answer:reserve"]
     assert result.operations[1].payload["tool_policy_decision_artifact_id"] == (
         result.tool_decisions[0].artifact_id
     )
@@ -588,6 +607,46 @@ def test_research_role_machine_preserves_evidence_on_cooperative_cancellation() 
     assert AgentBehaviorEvaluator().evaluate(result).passed
 
 
+def test_research_role_machine_records_cancellation_during_tool_execution() -> None:
+    plan = planning_input()
+    cancelled = CancellationSignal.active(
+        reason="operator cancelled in-flight retrieval",
+        request_artifact_id="sha256:" + "8" * 64,
+    )
+    cancellation = SequencedCancellation(
+        CancellationSignal.inactive(),
+        CancellationSignal.inactive(),
+        CancellationSignal.inactive(),
+        cancelled,
+    )
+    retriever = RecordingRetriever()
+    reasoner = RecordingReasoner()
+
+    result = ResearchRoleMachine(
+        planning_input=plan,
+        services=InjectedResearchServices(retriever=retriever, reasoner=reasoner),
+        tool_policy=ToolPolicy.for_plan(plan),
+        budget_policy=ResearchBudgetPolicy.for_plan(plan),
+        checkpoint_port=RecordingCheckpointPort(),
+        cancellation_port=cancellation,
+    ).run()
+
+    assert result.terminal_outcome == (
+        "cancelled:operator cancelled in-flight retrieval"
+    )
+    assert result.cancellation_signal == cancelled
+    assert result.failure_records == ()
+    assert result.retrieval is None
+    assert len(retriever.requests) == 1
+    assert reasoner.requests == []
+    assert result.tool_execution_records[0].status.value == "cancelled"
+    assert result.tool_execution_records[0].cancellation_artifact_id == (
+        cancelled.artifact_id
+    )
+    assert result.operations[1].payload["status"] == "cancelled"
+    assert AgentBehaviorEvaluator().evaluate(result).passed
+
+
 @pytest.mark.parametrize(
     ("error", "kind", "retryable"),
     [
@@ -756,11 +815,141 @@ def test_role_machine_terminates_on_per_role_budget() -> None:
     assert result.reasoning is None
 
 
+def test_dynamic_document_budget_refuses_retrieval_result_before_admission() -> None:
+    plan = planning_input()
+    base = ResearchBudgetPolicy.for_plan(plan)
+    roles = dict(base.role_limits)
+    roles[ResearchRole.RETRIEVE.value] = BudgetDimensions(
+        **{
+            **roles[ResearchRole.RETRIEVE.value].payload(),
+            "documents": 0,
+        }
+    )
+    constrained = ResearchBudgetPolicy(
+        plan_sha256=base.plan_sha256,
+        global_limits=base.global_limits,
+        role_limits=roles,
+    )
+    retriever = RecordingRetriever()
+    reasoner = RecordingReasoner()
+
+    result = ResearchRoleMachine(
+        planning_input=plan,
+        services=InjectedResearchServices(retriever=retriever, reasoner=reasoner),
+        tool_policy=ToolPolicy.for_plan(plan),
+        budget_policy=constrained,
+        checkpoint_port=RecordingCheckpointPort(),
+        cancellation_port=StaticCancellation(),
+    ).run()
+
+    assert result.terminal_outcome == "budget_exhausted:retrieve.documents"
+    assert result.retrieval is None
+    assert retriever.requests == []
+    assert reasoner.requests == []
+    assert result.operations[1].payload["result_admitted"] is False
+    assert result.operations[1].payload["exhausted_dimensions"] == [
+        "retrieve.documents"
+    ]
+
+
+def test_memory_budget_is_peak_usage_and_refusal_does_not_consume() -> None:
+    plan = planning_input()
+    ledger = ResearchBudgetLedger(
+        ResearchBudgetPolicy(
+            plan_sha256=plan_sha256(plan),
+            global_limits=BudgetDimensions(memory_bytes=100),
+            role_limits={"analyze": BudgetDimensions(memory_bytes=100)},
+        )
+    )
+
+    first = ledger.charge(
+        role="analyze",
+        label="first",
+        usage=BudgetDimensions(memory_bytes=80),
+    )
+    second = ledger.charge(
+        role="analyze",
+        label="second",
+        usage=BudgetDimensions(memory_bytes=50),
+    )
+    refused = ledger.charge(
+        role="analyze",
+        label="refused",
+        usage=BudgetDimensions(memory_bytes=101),
+    )
+
+    assert first.action is BudgetAction.CONTINUE
+    assert second.action is BudgetAction.CONTINUE
+    assert second.global_usage.memory_bytes == 80
+    assert refused.action is BudgetAction.TERMINATE
+    assert refused.global_usage.memory_bytes == 80
+    assert ledger.global_usage.memory_bytes == 80
+
+
+def test_budget_reservation_is_non_consuming_and_denial_replays_exactly() -> None:
+    plan = planning_input()
+    policy = ResearchBudgetPolicy(
+        plan_sha256=plan_sha256(plan),
+        global_limits=BudgetDimensions(documents=2),
+        role_limits={"retrieve": BudgetDimensions(documents=2)},
+    )
+    ledger = ResearchBudgetLedger(policy)
+
+    reservation = ledger.reserve(
+        role="retrieve",
+        label="retrieve_evidence:reserve",
+        maximum=BudgetDimensions(documents=2),
+    )
+    actual = ledger.charge(
+        role="retrieve",
+        label="retrieve_evidence:finish",
+        usage=BudgetDimensions(documents=1),
+    )
+    denied = ledger.reserve(
+        role="retrieve",
+        label="retrieve_evidence:reserve",
+        maximum=BudgetDimensions(documents=2),
+    )
+
+    assert reservation.action is BudgetAction.RESERVED
+    assert reservation.global_usage == BudgetDimensions()
+    assert actual.action is BudgetAction.CONTINUE
+    assert actual.global_usage.documents == 1
+    assert denied.action is BudgetAction.TERMINATE
+    assert denied.global_usage.documents == 1
+    restored = ResearchBudgetLedger(policy)
+    restored.restore(ledger.decisions)
+    assert restored.decisions == ledger.decisions
+    assert restored.global_usage.documents == 1
+
+
+def test_simultaneous_budget_exhaustion_reports_every_dimension() -> None:
+    plan = planning_input()
+    ledger = ResearchBudgetLedger(
+        ResearchBudgetPolicy(
+            plan_sha256=plan_sha256(plan),
+            global_limits=BudgetDimensions(),
+            role_limits={"retrieve": BudgetDimensions(documents=1, candidates=1)},
+        )
+    )
+
+    decision = ledger.charge(
+        role="retrieve",
+        label="candidate batch",
+        usage=BudgetDimensions(documents=1, candidates=1),
+    )
+
+    assert decision.action is BudgetAction.TERMINATE
+    assert decision.exhausted_dimensions == ("documents", "candidates")
+    assert ledger.global_usage == BudgetDimensions()
+
+
 @pytest.mark.parametrize(
     "dimension",
     [
         "iterations",
         "retrievals",
+        "documents",
         "candidates",
         "evidence_items",
         "tool_calls",
@@ -768,6 +957,7 @@ def test_role_machine_terminates_on_per_role_budget() -> None:
         "tokens",
         "elapsed_ms",
         "retries",
+        "memory_bytes",
         "artifact_bytes",
     ],
 )
@@ -787,7 +977,7 @@ def test_budget_ledger_enforces_every_global_dimension(dimension: str) -> None:
     assert decision.action is BudgetAction.TERMINATE
     assert decision.policy_artifact_id == ledger.policy.artifact_id
     assert decision.exhausted_dimensions == (dimension,)
-    assert ledger.global_usage == charge
+    assert ledger.global_usage == BudgetDimensions()
 
 
 def test_policy_gateway_records_allowed_and_denied_calls() -> None:

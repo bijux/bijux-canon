@@ -56,6 +56,7 @@ async def test_end_to_end_minimal_run(tmp_path: Path) -> None:
                 "budget": {
                     "iterations": 2,
                     "retrievals": 1,
+                    "documents": 2,
                     "candidates": 4,
                     "evidence_items": 2,
                     "tool_calls": 1,
@@ -63,6 +64,7 @@ async def test_end_to_end_minimal_run(tmp_path: Path) -> None:
                     "tokens": 512,
                     "elapsed_ms": 30000,
                     "retries": 0,
+                    "memory_bytes": 65536,
                     "artifact_bytes": 65536,
                 },
             }

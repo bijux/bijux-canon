@@ -32,6 +32,7 @@ class PlanningBudget(TypedBaseModel):
 
     iterations: int = Field(..., ge=1)
     retrievals: int = Field(..., ge=1)
+    documents: int = Field(..., ge=1)
     candidates: int = Field(..., ge=1)
     evidence_items: int = Field(..., ge=1)
     tool_calls: int = Field(..., ge=0)
@@ -39,6 +40,7 @@ class PlanningBudget(TypedBaseModel):
     tokens: int = Field(..., ge=0)
     elapsed_ms: int = Field(..., ge=1)
     retries: int = Field(..., ge=0)
+    memory_bytes: int = Field(..., ge=1)
     artifact_bytes: int = Field(..., ge=1)
 
     def model_post_init(self, __context: Any) -> None:
@@ -49,6 +51,8 @@ class PlanningBudget(TypedBaseModel):
             )
         if self.retrievals > self.tool_calls:
             raise ValueError("tool_calls must be greater than or equal to retrievals")
+        if self.documents > self.candidates:
+            raise ValueError("documents must not exceed the candidate budget")
 
 
 class ResearchPlanningInput(TypedBaseModel):

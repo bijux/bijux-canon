@@ -143,6 +143,7 @@ async def test_e2e_real_model_flow(tmp_path) -> None:
                 "budget": {
                     "iterations": 3,
                     "retrievals": 2,
+                    "documents": 4,
                     "candidates": 8,
                     "evidence_items": 4,
                     "tool_calls": 2,
@@ -150,6 +151,7 @@ async def test_e2e_real_model_flow(tmp_path) -> None:
                     "tokens": 1024,
                     "elapsed_ms": 120000,
                     "retries": 1,
+                    "memory_bytes": 131072,
                     "artifact_bytes": 131072,
                 },
             }

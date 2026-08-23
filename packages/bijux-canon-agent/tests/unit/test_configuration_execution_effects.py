@@ -54,6 +54,7 @@ def _plan(*, retrieval_mode: str, top_k: int, provider: str) -> ResearchPlanning
         budget={
             "iterations": 8,
             "retrievals": 1,
+            "documents": max(top_k, 4),
             "candidates": max(top_k, 4),
             "evidence_items": max(top_k, 4),
             "tool_calls": 1,
@@ -61,6 +62,7 @@ def _plan(*, retrieval_mode: str, top_k: int, provider: str) -> ResearchPlanning
             "tokens": 100,
             "elapsed_ms": 1000,
             "retries": 0,
+            "memory_bytes": 10000,
             "artifact_bytes": 10000,
         },
     )

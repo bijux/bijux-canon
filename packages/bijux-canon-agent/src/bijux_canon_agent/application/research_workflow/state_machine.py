@@ -44,6 +44,7 @@ from bijux_canon_agent.contracts.tool_policy import (
     ToolPolicyAction,
     ToolPolicyDecision,
 )
+from bijux_canon_agent.tooling.registry import ResearchToolCallCancelled
 
 
 def _canonical(value: object) -> bytes:
@@ -423,23 +424,43 @@ class ResearchRoleMachine:
         try:
             record = self._execute_operation(operation)
         except Exception as error:
-            failure = self._classify_failure(error, operation)
-            self._failure_records.append(failure)
-            self._failure_lineage = tuple(
-                dict.fromkeys(self._failure_lineage + (failure.artifact_id,))
-            )
-            record = ResearchOperationRecord.create(
-                sequence=len(self._operations),
-                role=self._role,
-                operation=operation,
-                input_artifact_ids=self._operation_inputs(),
-                payload={
-                    "status": "failed",
-                    "failure_artifact_id": failure.artifact_id,
-                    "failure_kind": failure.kind.value,
-                    "retryable": failure.retryable,
-                },
-            )
+            signal = self._cancellation_port.current()
+            if isinstance(error, ResearchToolCallCancelled) and signal.requested:
+                self._cancellation_signal = signal
+                self._cancellation_lineage = tuple(
+                    dict.fromkeys(self._cancellation_lineage + (signal.artifact_id,))
+                )
+                record = ResearchOperationRecord.create(
+                    sequence=len(self._operations),
+                    role=self._role,
+                    operation=operation,
+                    input_artifact_ids=self._operation_inputs(),
+                    payload={
+                        "status": "cancelled",
+                        "cancellation_artifact_id": signal.artifact_id,
+                        "tool_execution_record_artifact_id": (
+                            self._services.execution_records[-1].artifact_id
+                        ),
+                    },
+                )
+            else:
+                failure = self._classify_failure(error, operation)
+                self._failure_records.append(failure)
+                self._failure_lineage = tuple(
+                    dict.fromkeys(self._failure_lineage + (failure.artifact_id,))
+                )
+                record = ResearchOperationRecord.create(
+                    sequence=len(self._operations),
+                    role=self._role,
+                    operation=operation,
+                    input_artifact_ids=self._operation_inputs(),
+                    payload={
+                        "status": "failed",
+                        "failure_artifact_id": failure.artifact_id,
+                        "failure_kind": failure.kind.value,
+                        "retryable": failure.retryable,
+                    },
+                )
         transition = ResearchTransition.create(
             sequence=len(self._transitions),
             from_role=from_role,
@@ -615,10 +636,20 @@ class ResearchRoleMachine:
                 "step_count": self.MAX_TRANSITIONS,
             }
         elif operation is ResearchOperation.RETRIEVE_EVIDENCE:
+            reservation = self._reserve_tool_operation(operation)
+            if reservation.action is BudgetAction.TERMINATE:
+                return self._budget_exhausted_operation(
+                    sequence=sequence,
+                    operation=operation,
+                    inputs=inputs,
+                    decision=reservation,
+                    start_decision=start_decision,
+                )
             self._retrieval = self._services.retrieve()
             payload = {
                 "retrieval_artifact_id": self._retrieval.artifact_id,
                 "record_count": len(self._retrieval.records),
+                "budget_reservation_artifact_id": reservation.artifact_id,
                 "tool_policy_decision_artifact_id": (
                     self._services.decisions[-1].artifact_id
                 ),
@@ -651,10 +682,20 @@ class ResearchRoleMachine:
                 "remaining_gap_count": 0 if retrieval.records else 1,
             }
         elif operation is ResearchOperation.SYNTHESIZE_ANSWER:
+            reservation = self._reserve_tool_operation(operation)
+            if reservation.action is BudgetAction.TERMINATE:
+                return self._budget_exhausted_operation(
+                    sequence=sequence,
+                    operation=operation,
+                    inputs=inputs,
+                    decision=reservation,
+                    start_decision=start_decision,
+                )
             self._reasoning = self._services.reason(self._require_retrieval())
             payload = {
                 "reasoning_artifact_id": self._reasoning.artifact_id,
                 "outcome": self._reasoning.outcome,
+                "budget_reservation_artifact_id": reservation.artifact_id,
                 "tool_policy_decision_artifact_id": (
                     self._services.decisions[-1].artifact_id
                 ),
@@ -696,6 +737,12 @@ class ResearchRoleMachine:
         ):
             output_bytes += len(_canonical(self._reasoning.model_dump(mode="json")))
         dynamic_charge = BudgetDimensions(
+            documents=(
+                self._retrieval_document_count(self._retrieval.records)
+                if operation is ResearchOperation.RETRIEVE_EVIDENCE
+                and self._retrieval is not None
+                else 0
+            ),
             candidates=(
                 len(self._retrieval.records)
                 if operation is ResearchOperation.RETRIEVE_EVIDENCE
@@ -714,6 +761,22 @@ class ResearchRoleMachine:
                 and self._reasoning is not None
                 else 0
             ),
+            memory_bytes=len(
+                _canonical(
+                    {
+                        "retrieval": (
+                            None
+                            if self._retrieval is None
+                            else self._retrieval.model_dump(mode="json")
+                        ),
+                        "reasoning": (
+                            None
+                            if self._reasoning is None
+                            else self._reasoning.model_dump(mode="json")
+                        ),
+                    }
+                )
+            ),
             artifact_bytes=output_bytes,
         )
         finish_decision = self._budget.charge(
@@ -725,6 +788,17 @@ class ResearchRoleMachine:
             **payload,
             "budget_finish_decision_artifact_id": finish_decision.artifact_id,
         }
+        if finish_decision.action is BudgetAction.TERMINATE:
+            if operation is ResearchOperation.RETRIEVE_EVIDENCE:
+                self._retrieval = None
+            elif operation is ResearchOperation.SYNTHESIZE_ANSWER:
+                self._reasoning = None
+            payload = {
+                **payload,
+                "status": "budget_exhausted",
+                "result_admitted": False,
+                "exhausted_dimensions": list(finish_decision.exhausted_dimensions),
+            }
         return ResearchOperationRecord.create(
             sequence=sequence,
             role=self._role,
@@ -732,6 +806,69 @@ class ResearchRoleMachine:
             input_artifact_ids=inputs,
             payload=payload,
         )
+
+    def _reserve_tool_operation(
+        self, operation: ResearchOperation
+    ) -> BudgetDecision:
+        role = self._role.value
+        capacity = self._budget.remaining(role=role)
+        if operation is ResearchOperation.RETRIEVE_EVIDENCE:
+            maximum = BudgetDimensions(
+                documents=self._planning_input.top_k,
+                candidates=self._planning_input.top_k,
+                evidence_items=self._planning_input.top_k,
+                memory_bytes=capacity.memory_bytes,
+                artifact_bytes=capacity.artifact_bytes,
+            )
+        elif operation is ResearchOperation.SYNTHESIZE_ANSWER:
+            maximum = BudgetDimensions(
+                tokens=capacity.tokens,
+                memory_bytes=capacity.memory_bytes,
+                artifact_bytes=capacity.artifact_bytes,
+            )
+        else:
+            raise ValueError("only external tool operations require reservations")
+        return self._budget.reserve(
+            role=role,
+            label=f"{operation.value}:reserve",
+            maximum=maximum,
+        )
+
+    def _budget_exhausted_operation(
+        self,
+        *,
+        sequence: int,
+        operation: ResearchOperation,
+        inputs: tuple[str, ...],
+        decision: BudgetDecision,
+        start_decision: BudgetDecision,
+    ) -> ResearchOperationRecord:
+        return ResearchOperationRecord.create(
+            sequence=sequence,
+            role=self._role,
+            operation=operation,
+            input_artifact_ids=inputs,
+            payload={
+                "budget_decision_artifact_id": start_decision.artifact_id,
+                "budget_reservation_artifact_id": decision.artifact_id,
+                "status": "budget_exhausted",
+                "result_admitted": False,
+                "exhausted_dimensions": list(decision.exhausted_dimensions),
+            },
+        )
+
+    @staticmethod
+    def _retrieval_document_count(records: tuple[Mapping[str, Any], ...]) -> int:
+        identities = {
+            str(
+                record.get("document_id")
+                or record.get("source_id")
+                or record.get("chunk_id")
+                or _artifact_id(record)
+            )
+            for record in records
+        }
+        return len(identities)
 
     def _operation_inputs(self) -> tuple[str, ...]:
         if not self._operations:

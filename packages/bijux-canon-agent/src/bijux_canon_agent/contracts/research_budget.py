@@ -33,6 +33,7 @@ class BudgetDimensions:
 
     iterations: int = 0
     retrievals: int = 0
+    documents: int = 0
     candidates: int = 0
     evidence_items: int = 0
     tool_calls: int = 0
@@ -40,6 +41,7 @@ class BudgetDimensions:
     tokens: int = 0
     elapsed_ms: int = 0
     retries: int = 0
+    memory_bytes: int = 0
     artifact_bytes: int = 0
 
     def __post_init__(self) -> None:
@@ -55,7 +57,11 @@ class BudgetDimensions:
         """Add a deterministic charge to current usage."""
         return BudgetDimensions(
             **{
-                item.name: getattr(self, item.name) + getattr(other, item.name)
+                item.name: (
+                    max(getattr(self, item.name), getattr(other, item.name))
+                    if item.name == "memory_bytes"
+                    else getattr(self, item.name) + getattr(other, item.name)
+                )
                 for item in fields(self)
             }
         )
@@ -75,6 +81,7 @@ class BudgetDimensions:
 class BudgetAction(StrEnum):
     """Whether a deterministic charge may proceed."""
 
+    RESERVED = "reserved"
     CONTINUE = "continue"
     TERMINATE = "terminate"
 
@@ -110,6 +117,7 @@ class ResearchBudgetPolicy:
             role: BudgetDimensions(
                 iterations=1,
                 retrievals=limits.retrievals if role == "retrieve" else 0,
+                documents=limits.documents if role == "retrieve" else 0,
                 candidates=limits.candidates if role == "retrieve" else 0,
                 evidence_items=(limits.evidence_items if role == "retrieve" else 0),
                 tool_calls=limits.tool_calls if role == "retrieve" else 0,
@@ -117,6 +125,7 @@ class ResearchBudgetPolicy:
                 tokens=limits.tokens if role == "synthesize" else 0,
                 elapsed_ms=limits.elapsed_ms,
                 retries=limits.retries,
+                memory_bytes=limits.memory_bytes,
                 artifact_bytes=limits.artifact_bytes,
             )
             for role in (
@@ -261,9 +270,10 @@ class ResearchBudgetLedger:
         )
         exhausted = global_exceeded + role_exceeded
         action = BudgetAction.TERMINATE if exhausted else BudgetAction.CONTINUE
-        self._global_usage = global_usage
-        self._role_usage[role] = role_usage
         self._exhausted = exhausted
+        if action is BudgetAction.CONTINUE:
+            self._global_usage = global_usage
+            self._role_usage[role] = role_usage
         decision = BudgetDecision.create(
             sequence=len(self._decisions),
             policy_artifact_id=self._policy.artifact_id,
@@ -271,12 +281,72 @@ class ResearchBudgetLedger:
             label=label,
             action=action,
             charge=usage,
-            global_usage=global_usage,
-            role_usage=role_usage,
+            global_usage=self._global_usage,
+            role_usage=self._role_usage[role],
             exhausted_dimensions=exhausted,
         )
         self._decisions.append(decision)
         return decision
+
+    def reserve(
+        self, *, role: str, label: str, maximum: BudgetDimensions
+    ) -> BudgetDecision:
+        """Reserve a maximum tool envelope without consuming it as actual usage."""
+        if role not in self._policy.role_limits:
+            raise ValueError(f"budget policy has no limits for role {role}")
+        global_usage = self._global_usage.plus(maximum)
+        role_usage = self._role_usage[role].plus(maximum)
+        exhausted = self._exhausted or (
+            global_usage.exceeded(self._policy.global_limits)
+            + tuple(
+                f"{role}.{name}"
+                for name in role_usage.exceeded(self._policy.role_limits[role])
+            )
+        )
+        action = BudgetAction.TERMINATE if exhausted else BudgetAction.RESERVED
+        if exhausted:
+            self._exhausted = exhausted
+        decision = BudgetDecision.create(
+            sequence=len(self._decisions),
+            policy_artifact_id=self._policy.artifact_id,
+            role=role,
+            label=label,
+            action=action,
+            charge=maximum,
+            global_usage=self._global_usage,
+            role_usage=self._role_usage[role],
+            exhausted_dimensions=exhausted,
+        )
+        self._decisions.append(decision)
+        return decision
+
+    def remaining(self, *, role: str) -> BudgetDimensions:
+        """Return the narrowest remaining global/per-role capacity."""
+        if role not in self._policy.role_limits:
+            raise ValueError(f"budget policy has no limits for role {role}")
+        role_usage = self._role_usage[role]
+        role_limits = self._policy.role_limits[role]
+        values: dict[str, int] = {}
+        for item in fields(BudgetDimensions):
+            name = item.name
+            if name == "memory_bytes":
+                values[name] = min(
+                    getattr(self._policy.global_limits, name),
+                    getattr(role_limits, name),
+                )
+            else:
+                values[name] = min(
+                    max(
+                        0,
+                        getattr(self._policy.global_limits, name)
+                        - getattr(self._global_usage, name),
+                    ),
+                    max(
+                        0,
+                        getattr(role_limits, name) - getattr(role_usage, name),
+                    ),
+                )
+        return BudgetDimensions(**values)
 
     def restore(self, decisions: tuple[BudgetDecision, ...]) -> None:
         """Reapply and validate checkpointed charges without executing work."""
@@ -289,10 +359,19 @@ class ResearchBudgetLedger:
                 raise ValueError("restored budget decisions are not contiguous")
             if decision.policy_artifact_id != self._policy.artifact_id:
                 raise ValueError("restored budget decision has a different policy")
-            restored = self.charge(
-                role=decision.role,
-                label=decision.label,
-                usage=decision.charge,
+            restored = (
+                self.reserve(
+                    role=decision.role,
+                    label=decision.label,
+                    maximum=decision.charge,
+                )
+                if decision.action is BudgetAction.RESERVED
+                or decision.label.endswith(":reserve")
+                else self.charge(
+                    role=decision.role,
+                    label=decision.label,
+                    usage=decision.charge,
+                )
             )
             if restored != decision:
                 raise ValueError("restored budget decision failed exact validation")

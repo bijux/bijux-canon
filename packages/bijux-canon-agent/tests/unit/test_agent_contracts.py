@@ -34,6 +34,7 @@ def planning_input(query: str) -> dict[str, object]:
         "budget": {
             "iterations": 3,
             "retrievals": 2,
+            "documents": 4,
             "candidates": 8,
             "evidence_items": 4,
             "tool_calls": 3,
@@ -41,6 +42,7 @@ def planning_input(query: str) -> dict[str, object]:
             "tokens": 512,
             "elapsed_ms": 30000,
             "retries": 1,
+            "memory_bytes": 65536,
             "artifact_bytes": 65536,
         },
     }

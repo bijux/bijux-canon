@@ -186,6 +186,7 @@ def _planning_input() -> ResearchPlanningInput:
         budget={
             "iterations": 8,
             "retrievals": 1,
+            "documents": 2,
             "candidates": 4,
             "evidence_items": 2,
             "tool_calls": 2,
@@ -193,6 +194,7 @@ def _planning_input() -> ResearchPlanningInput:
             "tokens": 512,
             "elapsed_ms": 30_000,
             "retries": 0,
+            "memory_bytes": 65_536,
             "artifact_bytes": 65_536,
         },
     )

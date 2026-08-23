@@ -176,6 +176,13 @@ research-tool registry. A registered tool binds versioned schemas, capability,
 implementation, scope, cost, timeout/cancellation, and replay policy. Durable
 Agent state retains request/result identities and fixed safe summaries without
 serializing source content, provider output, credentials, or exception text.
+Every declared research plan bounds iterations, retrievals, distinct documents,
+candidates, evidence items, tool/provider calls, tokens, elapsed time, retries,
+peak memory, and persisted artifact bytes. Agent records a non-consuming maximum
+reservation before each external retrieval or reasoning call, admits only the
+measured result charge, and refuses the call when its envelope cannot fit. A
+cooperative cancellation observed during an in-flight call closes that call as
+cancelled, prevents later calls, and remains distinct from tool failure.
 
 ## Runtime Agent Adapter Status
 
