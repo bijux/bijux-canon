@@ -110,6 +110,24 @@ identify text in a deterministic parser representation bound to the exact
 source payload; they do not pretend compressed container bytes are direct text
 coordinates.
 
+## Immutable Snapshot Publication
+
+`bijux.canon.ingest.corpus_publication.v2` is the active-generation manifest.
+It binds the canonical snapshot bytes and snapshot identity to a
+`bijux.canon.ingest.corpus_object_relation.v1` identity, plus explicit source
+and derived relation-entry counts. The relation enumerates the exact source
+bytes, canonical snapshot, parsed-document and metadata manifests,
+citation-lineage graph, normalized mappings, and semantic chunks. Every entry
+records its kind, document identity, stable domain identity, byte length, and
+SHA-256 content address.
+
+Object counts describe logical relation entries; identical byte payloads may
+share one physical content-addressed object. A reader accepts the publication
+only after canonical JSON, snapshot identity, relation identity, entry counts,
+every reachable object digest, and the snapshot-object binding all verify.
+Version 1 generation manifests remain readable for existing stores but do not
+claim the version 2 relation guarantees.
+
 ## Source Record
 
 `RawDoc` represents one source row:
