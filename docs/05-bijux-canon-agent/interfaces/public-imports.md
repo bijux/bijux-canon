@@ -86,8 +86,11 @@ model provider.
 
 Installed composition imports `InstalledResearchService` and its typed request
 and port records from `bijux_canon_agent.application`. The service owns search
-selection, causal ordering, and convergence progression. An integrating
-runtime implements the port; it does not construct Agent role events itself.
+selection, observed-state transitions, causal ordering, and convergence
+progression. `InstalledResearchRequirement`, `InstalledEvidenceRelation`, and
+the `ObservedResearch*` contracts make the question, requirements, relations,
+gaps, budgets, and decisions inspectable. An integrating runtime implements
+the port; it does not construct Agent role events itself.
 
 Tool integrations import `ResearchToolRegistry` and `ResearchToolBinding` from
 `bijux_canon_agent.tooling`, and descriptor/execution contracts from

@@ -11,13 +11,16 @@ from enum import Enum
 from pathlib import Path
 
 from bijux_canon_agent.application import (
+    InstalledEvidenceRelation,
     InstalledResearchClaim,
     InstalledResearchConvergence,
     InstalledResearchPlan,
     InstalledResearchRequest,
+    InstalledResearchRequirement,
     InstalledResearchSearch,
     InstalledResearchSearchRecord,
     InstalledResearchService,
+    ObservedEvidenceRelationKind,
 )
 from bijux_canon_index.application import HybridRetrievalPolicy, IndexService
 from bijux_canon_reason.grounding.provider_contracts import content_artifact_id
@@ -309,6 +312,7 @@ def _research_request(
     graph_artifact_id: str,
     counterevidence_policy_artifact_id: str,
     convergence_policy_artifact_id: str,
+    max_searches: int,
 ) -> InstalledResearchRequest:
     raw_claim_set = claim_graph.get("claims")
     raw_packet = claim_graph.get("evidence_packet")
@@ -323,17 +327,30 @@ def _research_request(
     raw_verified = raw_verification.get("claims")
     if not isinstance(raw_claims, list) or not isinstance(raw_verified, list):
         raise StepDispatchError("claim graph claims or verification are invalid")
+    verified_by_claim = {}
+    for raw_item in raw_verified:
+        if not isinstance(raw_item, dict):
+            raise StepDispatchError("claim graph verification claim is invalid")
+        claim_id = _required_string(
+            raw_item.get("claim_artifact_id"),
+            "verified claim artifact_id",
+        )
+        verified_by_claim[claim_id] = raw_item
     claims = []
+    requirements = []
+    relations = []
     for raw_claim in raw_claims:
         if not isinstance(raw_claim, dict):
             raise StepDispatchError("claim graph claim is invalid")
+        claim_id = _required_string(
+            raw_claim.get("artifact_id"),
+            "claim artifact_id",
+        )
+        statement = _required_string(raw_claim.get("statement"), "statement")
         claims.append(
             InstalledResearchClaim(
-                artifact_id=_required_string(
-                    raw_claim.get("artifact_id"),
-                    "claim artifact_id",
-                ),
-                statement=_required_string(raw_claim.get("statement"), "statement"),
+                artifact_id=claim_id,
+                statement=statement,
                 importance=100,
                 known_evidence_artifact_ids=_string_array(
                     raw_claim.get("citation_evidence_artifact_ids"),
@@ -341,6 +358,55 @@ def _research_request(
                 ),
             )
         )
+        verification = verified_by_claim.get(claim_id)
+        verdict = None if verification is None else verification.get("verdict")
+        requirements.append(
+            InstalledResearchRequirement.create(
+                description=f"Establish with direct evidence: {statement}",
+                claim_artifact_id=claim_id,
+                satisfied=verdict == "direct_support",
+            )
+        )
+        raw_assessments = (
+            [] if verification is None else verification.get("assessments", [])
+        )
+        if not isinstance(raw_assessments, list):
+            raise StepDispatchError("claim graph evidence assessments are invalid")
+        for assessment in raw_assessments:
+            if not isinstance(assessment, dict):
+                raise StepDispatchError("claim graph evidence assessment is invalid")
+            raw_kind = _required_string(
+                assessment.get("verdict"),
+                "evidence relation verdict",
+            )
+            try:
+                kind = {
+                    "direct_support": ObservedEvidenceRelationKind.SUPPORT,
+                    "opposition": ObservedEvidenceRelationKind.OPPOSITION,
+                    "ambiguity": ObservedEvidenceRelationKind.AMBIGUITY,
+                    "irrelevance": ObservedEvidenceRelationKind.IRRELEVANCE,
+                    "insufficiency": ObservedEvidenceRelationKind.INSUFFICIENCY,
+                }[raw_kind]
+            except KeyError as error:
+                raise StepDispatchError(
+                    "claim graph evidence relation is unsupported"
+                ) from error
+            relations.append(
+                InstalledEvidenceRelation.create(
+                    claim_artifact_id=claim_id,
+                    evidence_artifact_id=_required_string(
+                        assessment.get("citation_evidence_artifact_id"),
+                        "citation evidence artifact_id",
+                    ),
+                    kind=kind,
+                    material=kind
+                    in {
+                        ObservedEvidenceRelationKind.SUPPORT,
+                        ObservedEvidenceRelationKind.OPPOSITION,
+                        ObservedEvidenceRelationKind.AMBIGUITY,
+                    },
+                )
+            )
     return InstalledResearchRequest(
         claim_graph_artifact_id=graph_artifact_id,
         scope_artifact_id=_required_string(
@@ -348,9 +414,15 @@ def _research_request(
             "scope_artifact_id",
         ),
         claims=tuple(claims),
-        verified_claim_count=len(raw_verified),
+        verified_claim_count=sum(
+            requirement.satisfied for requirement in requirements
+        ),
         counterevidence_policy_artifact_id=counterevidence_policy_artifact_id,
         convergence_policy_artifact_id=convergence_policy_artifact_id,
+        question=_required_string(claim_graph.get("query"), "research question"),
+        requirements=tuple(requirements),
+        evidence_relations=tuple(relations),
+        max_searches=max_searches,
     )
 
 
@@ -430,6 +502,7 @@ class CanonicalAgentOperationAdapter:
             graph_artifact_id=graph_id,
             counterevidence_policy_artifact_id=counter_policy_id,
             convergence_policy_artifact_id=convergence_policy_id,
+            max_searches=convergence_policy.max_tool_calls,
         )
         retrieval_port = _IndexCounterevidencePort(
             step=step,
@@ -478,9 +551,16 @@ class CanonicalAgentOperationAdapter:
                 "insufficiencies": list(research.insufficiencies),
                 "opposition_candidates": list(research.opposition_candidate_ids),
                 "relation_status": research.relation_status,
+                "research_state": research.final_state.to_record(),
+                "research_state_history": [
+                    state.to_record() for state in research.state_history
+                ],
                 "schema_version": "bijux.canon.agent.research_trace.v1",
                 "status": research.convergence.outcome,
                 "termination": dict(research.convergence.record),
+                "tool_failure_artifact_ids": list(
+                    research.tool_failure_artifact_ids
+                ),
             }
         )
         context.raise_if_stopped()

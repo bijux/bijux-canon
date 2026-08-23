@@ -91,6 +91,22 @@ decision.
 Keeping engine results separate from arbitration is important: a policy can
 escalate or halt on selected rules without rewriting what an engine observed.
 
+## Installed Research State
+
+The `agent.research-trace.v1` payload retains an Agent-owned
+`research_state_history` and terminal `research_state`. Each state names the
+research question, answer requirement and claim identities, semantic evidence
+relations, blocking and non-blocking gaps, the search budget, and the decisions
+that changed the state. Causal events bind their before and after identities to
+these content-addressed states.
+
+`status` retains the Reason convergence outcome for compatibility. The
+terminal state's `terminal_status` is the completion interpretation: a budget
+limit, refusal, tool failure, ambiguity, material opposition, unsearched
+important claim, or unclassified candidate remains incomplete even if a raw
+convergence observation says to stop. No-result search gaps are explicitly
+non-blocking and must retain their bounded negative-search statement.
+
 ## DuckDB Execution Store
 
 The execution store is the durable audit-and-replay boundary. It is explicitly

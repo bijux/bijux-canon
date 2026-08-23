@@ -6,6 +6,16 @@ from bijux_canon_agent.application.research_workflow.behavior_evaluation import 
     AgentBehaviorOutcome,
     AgentBehaviorReport,
 )
+from bijux_canon_agent.application.research_workflow.observed_state import (
+    InstalledEvidenceRelation,
+    InstalledResearchRequirement,
+    ObservedEvidenceRelationKind,
+    ObservedResearchDecision,
+    ObservedResearchGap,
+    ObservedResearchGapKind,
+    ObservedResearchState,
+    ObservedResearchStateMachine,
+)
 from bijux_canon_agent.application.research_workflow.state_machine import (
     ResearchCheckpoint,
     ResearchCheckpointPort,
@@ -22,6 +32,14 @@ __all__ = [
     "AgentBehaviorEvaluator",
     "AgentBehaviorOutcome",
     "AgentBehaviorReport",
+    "InstalledEvidenceRelation",
+    "InstalledResearchRequirement",
+    "ObservedEvidenceRelationKind",
+    "ObservedResearchDecision",
+    "ObservedResearchGap",
+    "ObservedResearchGapKind",
+    "ObservedResearchState",
+    "ObservedResearchStateMachine",
     "ResearchExecutionResult",
     "ResearchCheckpoint",
     "ResearchCheckpointPort",

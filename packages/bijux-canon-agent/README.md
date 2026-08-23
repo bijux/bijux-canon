@@ -181,8 +181,11 @@ serializing source content, provider output, credentials, or exception text.
 
 The installed runtime integration delegates research progression to
 `InstalledResearchService` from `bijux_canon_agent.application`. Agent decides
-whether a counterevidence plan justifies search, records the ordered causal
-events, and applies the supplied convergence decision. Runtime provides a
+whether observed evidence gaps and a counterevidence plan justify search,
+records the ordered causal events, and applies the supplied convergence
+decision. Its content-addressed state retains the question, answer
+requirements, claims, semantic evidence relations, blocking and non-blocking
+gaps, search budget, and every decision. Runtime provides a
 typed port that adapts persistent Index retrieval and Reason planning and
 convergence; it then projects the Agent result into the versioned runtime
 artifact without inventing role history.
@@ -193,6 +196,11 @@ exact plan, retrieval, candidate-evidence, policy, and convergence artifact
 identities needed by Runtime persistence. A material candidate remains
 explicitly unclassified until a later Agent decision classifies and uses it;
 retrieval alone is not opposition and does not revise an answer.
+Different observations produce different role paths: already-sufficient
+evidence can skip search, no-result searches remain bounded negative evidence,
+and opposition, ambiguity, refusal, tool failure, or unclassified material
+evidence keep the run incomplete. A convergence flag cannot override a
+blocking evidence gap.
 
 The existing CLI, HTTP, and Python pipeline remain package-local supported
 surfaces. The package root still exports only `API_VERSION`; installed

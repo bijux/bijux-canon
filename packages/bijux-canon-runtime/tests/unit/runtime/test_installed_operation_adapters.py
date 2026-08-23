@@ -819,7 +819,22 @@ def _verify_reason_and_agent(grounded: _GroundedRuntime) -> None:
     assert counterevidence_ids
     assert len(counterevidence_ids) == len(set(counterevidence_ids))
     assert "require relation classification" in research_trace["insufficiencies"][0]
-    assert len(research_trace["causal_events"]) == 4
+    assert [event["role"] for event in research_trace["causal_events"]] == [
+        "plan",
+        "researcher",
+        "skeptic",
+        "adjudicator",
+        "verifier",
+    ]
+    assert research_trace["research_state"]["question"] == (
+        "What evidence do ancient genomes preserve?"
+    )
+    assert research_trace["research_state"]["terminal_status"] == "incomplete"
+    assert research_trace["research_state"]["search_budget"] == {
+        "limit": 1,
+        "used": 1,
+    }
+    assert research_trace["research_state"]["gaps"]
     assert (
         research_trace["causal_trace"]["head_artifact_id"]
         == (research_trace["causal_events"][-1]["artifact_id"])
@@ -1066,6 +1081,11 @@ def test_installed_ingest_and_index_adapters_persist_restartable_payloads(
     _verify_reason_and_agent(grounded)
     assert len(delegated_requests) == 1
     assert delegated_requests[0].claims
+    assert delegated_requests[0].question == (
+        "What evidence do ancient genomes preserve?"
+    )
+    assert delegated_requests[0].requirements
+    assert delegated_requests[0].evidence_relations
     _verify_linked_runs(grounded)
     assert len(delegated_requests) == 2
     _verify_offline_boundaries(grounded)

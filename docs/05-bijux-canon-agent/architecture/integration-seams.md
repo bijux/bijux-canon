@@ -105,11 +105,15 @@ verification veto into success.
 
 For the installed local research path, Runtime supplies an
 `InstalledResearchPort` that exposes Reason planning/convergence and persistent
-Index retrieval. `InstalledResearchService` decides whether the plan warrants
-search and emits the causal event chain. This keeps evidence semantics in
-Reason, retrieval semantics in Index, workflow decisions in Agent, and durable
-artifact/run custody in Runtime. Runtime may serialize the returned records
-into its versioned artifact, but it must not synthesize missing Agent events.
+Index retrieval. `InstalledResearchService` combines the plan with its
+content-addressed observed state and selects actions from explicit guards. A
+satisfied no-search state, a bounded no-result search, material opposition,
+ambiguous evidence, unclassified candidates, and tool failure therefore do not
+emit the same role sequence. This keeps evidence semantics in Reason,
+retrieval semantics in Index, workflow decisions in Agent, and durable
+artifact/run custody in Runtime. Runtime may serialize the returned state and
+events into its versioned artifact, but it must not synthesize missing Agent
+events or promote a blocking gap to completion.
 
 See [configuration](../interfaces/configuration-surface.md) for precedence and
 [artifact contracts](../interfaces/artifact-contracts.md) for evidence fields.

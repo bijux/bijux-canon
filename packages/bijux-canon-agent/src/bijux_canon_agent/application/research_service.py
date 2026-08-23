@@ -12,6 +12,16 @@ from bijux_canon_agent.contracts.causal_trace import (
     CausalDecisionEvent,
     ResearchCausalTrace,
 )
+from bijux_canon_agent.application.research_workflow.observed_state import (
+    InstalledEvidenceRelation,
+    InstalledResearchRequirement,
+    ObservedEvidenceRelationKind,
+    ObservedResearchDecision,
+    ObservedResearchGap,
+    ObservedResearchGapKind,
+    ObservedResearchState,
+    ObservedResearchStateMachine,
+)
 
 
 def _canonical(value: object) -> bytes:
@@ -60,6 +70,10 @@ class InstalledResearchRequest:
     verified_claim_count: int
     counterevidence_policy_artifact_id: str
     convergence_policy_artifact_id: str
+    question: str
+    requirements: tuple[InstalledResearchRequirement, ...]
+    evidence_relations: tuple[InstalledEvidenceRelation, ...]
+    max_searches: int
 
     def __post_init__(self) -> None:
         for value, field in (
@@ -71,6 +85,26 @@ class InstalledResearchRequest:
             _require_artifact_id(value, field)
         if self.verified_claim_count < 0:
             raise ValueError("verified claim count must not be negative")
+        if not self.question.strip():
+            raise ValueError("research question must not be empty")
+        if self.max_searches < 0:
+            raise ValueError("maximum searches must not be negative")
+        claim_ids = {claim.artifact_id for claim in self.claims}
+        requirement_claim_ids = tuple(
+            item.claim_artifact_id for item in self.requirements
+        )
+        if set(requirement_claim_ids) != claim_ids or len(
+            requirement_claim_ids
+        ) != len(set(requirement_claim_ids)):
+            raise ValueError("research requirements must cover every claim exactly once")
+        if self.verified_claim_count != sum(
+            item.satisfied for item in self.requirements
+        ):
+            raise ValueError("verified claim count must match satisfied requirements")
+        if any(
+            item.claim_artifact_id not in claim_ids for item in self.evidence_relations
+        ):
+            raise ValueError("evidence relation references an unknown claim")
 
 
 @dataclass(frozen=True, slots=True)
@@ -179,6 +213,9 @@ class InstalledResearchResult:
     opposition_candidate_ids: tuple[str, ...]
     relation_status: str
     insufficiencies: tuple[str, ...]
+    state_history: tuple[ObservedResearchState, ...]
+    final_state: ObservedResearchState
+    tool_failure_artifact_ids: tuple[str, ...]
     causal_events: tuple[CausalDecisionEvent, ...]
     causal_trace: ResearchCausalTrace
 
@@ -197,7 +234,15 @@ class InstalledResearchService:
         if not isinstance(port, InstalledResearchPort):
             raise TypeError("installed research port does not implement its contract")
         events: list[CausalDecisionEvent] = []
-        state = request.claim_graph_artifact_id
+        state_machine = ObservedResearchStateMachine()
+        state = state_machine.initial(
+            question=request.question,
+            requirements=request.requirements,
+            claim_artifact_ids=tuple(claim.artifact_id for claim in request.claims),
+            evidence_relations=request.evidence_relations,
+            search_budget_limit=request.max_searches,
+        )
+        state_history = [state]
         policy_ids = (
             request.counterevidence_policy_artifact_id,
             request.convergence_policy_artifact_id,
@@ -205,86 +250,143 @@ class InstalledResearchService:
         plan = port.plan(request)
         if not isinstance(plan, InstalledResearchPlan):
             raise TypeError("installed research port returned an invalid plan")
-        state = self._record_event(
+        state = self._record_decision(
             events,
-            state_before=state,
+            state_machine=state_machine,
+            state=state,
+            state_history=state_history,
             role="plan",
             operation="plan_counterevidence",
-            rationale="select important atomic claims for deliberate skeptical search",
+            rationale=(
+                "select important atomic claims only where observed evidence needs "
+                "justify deliberate skeptical search"
+            ),
             observation_ids=(plan.artifact_id,),
             evidence_ids=(),
             policy_ids=policy_ids,
         )
         search: InstalledResearchSearch | None = None
-        if plan.request_artifact_ids:
-            search = port.search(request, plan)
-            if not isinstance(search, InstalledResearchSearch):
-                raise TypeError("installed research port returned an invalid search")
+        tool_failure_ids: tuple[str, ...] = ()
+        if plan.request_artifact_ids and state.search_budget_used < state.search_budget_limit:
+            try:
+                search = port.search(request, plan)
+                if not isinstance(search, InstalledResearchSearch):
+                    raise TypeError("installed research port returned an invalid search")
+            except Exception as error:
+                failure_id = _artifact_id(
+                    {
+                        "error_type": type(error).__name__,
+                        "operation": "search_counterevidence",
+                        "plan_artifact_id": plan.artifact_id,
+                    }
+                )
+                tool_failure_ids = (failure_id,)
+                failure_gap = ObservedResearchGap.create(
+                    kind=ObservedResearchGapKind.TOOL_FAILURE,
+                    subject_artifact_id=failure_id,
+                )
+                state = self._record_decision(
+                    events,
+                    state_machine=state_machine,
+                    state=state,
+                    state_history=state_history,
+                    role="researcher",
+                    operation="record_search_tool_failure",
+                    rationale=(
+                        "retain the typed tool failure without treating missing "
+                        "results as negative evidence"
+                    ),
+                    observation_ids=(failure_id,),
+                    evidence_ids=(),
+                    policy_ids=policy_ids,
+                    gaps=state.gaps + (failure_gap,),
+                    consume_search=True,
+                )
+            if search is not None:
+                state = self._record_decision(
+                    events,
+                    state_machine=state_machine,
+                    state=state,
+                    state_history=state_history,
+                    role="researcher",
+                    operation="search_counterevidence",
+                    rationale=(
+                        "execute the planned bounded search because unresolved "
+                        "evidence needs remain"
+                    ),
+                    observation_ids=(search.artifact_id,),
+                    evidence_ids=(),
+                    policy_ids=policy_ids,
+                    consume_search=True,
+                )
             candidates = tuple(
                 artifact_id
-                for record in search.records
+                for record in (() if search is None else search.records)
                 for artifact_id in record.candidate_evidence_artifact_ids
             )
-            state = self._record_event(
-                events,
-                state_before=state,
-                role="skeptic",
-                operation="search_counterevidence",
-                rationale=(
-                    "inspect material skeptical retrieval results"
-                    if candidates
-                    else "retain the bounded negative-search result"
-                ),
-                observation_ids=(search.artifact_id,),
-                evidence_ids=candidates,
-                policy_ids=policy_ids,
-            )
+            if search is not None:
+                state = self._record_search_observation(
+                    events=events,
+                    state_machine=state_machine,
+                    state=state,
+                    state_history=state_history,
+                    search=search,
+                    candidates=candidates,
+                    policy_ids=policy_ids,
+                )
         else:
             candidates = ()
+            role = "verifier" if not state.blocking_gaps else "adjudicator"
+            operation = (
+                "preserve_sufficient_answer"
+                if not state.blocking_gaps
+                else "retain_unresolved_requirements"
+            )
+            state = self._record_decision(
+                events,
+                state_machine=state_machine,
+                state=state,
+                state_history=state_history,
+                role=role,
+                operation=operation,
+                rationale=(
+                    "the observed requirements are already satisfied, so a second "
+                    "search is not needed"
+                    if not state.blocking_gaps
+                    else "the plan exposed no executable search for blocking gaps"
+                ),
+                observation_ids=(plan.artifact_id,),
+                evidence_ids=(),
+                policy_ids=policy_ids,
+            )
 
-        relation_status = (
-            "unclassified" if candidates else "no-new-counterevidence"
-        )
-        analysis_id = _artifact_id(
-            {
-                "candidate_evidence_artifact_ids": candidates,
-                "relation": relation_status,
-                "search_artifact_id": None if search is None else search.artifact_id,
-            }
-        )
-        state = self._record_event(
-            events,
-            state_before=state,
-            role="analyze",
-            operation="classify_research_gap",
-            rationale=(
-                "require material candidates to be classified before revision"
-                if candidates
-                else "record that this bounded search found no new counterevidence"
-            ),
-            observation_ids=(analysis_id,),
-            evidence_ids=candidates,
-            policy_ids=policy_ids,
-        )
+        relation_status = self._relation_status(state, search, tool_failure_ids)
         convergence = port.evaluate(request, plan, search)
         if not isinstance(convergence, InstalledResearchConvergence):
             raise TypeError("installed research port returned invalid convergence")
-        self._record_event(
+        terminal_status = self._terminal_status(convergence, state)
+        state = self._record_decision(
             events,
-            state_before=state,
-            role="terminate",
+            state_machine=state_machine,
+            state=state,
+            state_history=state_history,
+            role="verifier",
             operation=(
-                "continue_research"
-                if not convergence.stop
-                else "terminate_research"
+                "verify_completed_research"
+                if terminal_status == "completed"
+                else "retain_incomplete_research"
             ),
-            rationale="apply the declared convergence and resource policy",
+            rationale=(
+                "accept completion only when convergence and the observed evidence "
+                "state contain no blocking gaps"
+            ),
             observation_ids=(convergence.artifact_id,),
             evidence_ids=(),
             policy_ids=policy_ids,
             budget_decision_ids=(convergence.artifact_id,),
+            terminal_status=terminal_status,
         )
-        insufficiencies = self._insufficiencies(search, candidates)
+        insufficiencies = self._insufficiencies(state, search, candidates)
         causal_events = tuple(events)
         return InstalledResearchResult(
             plan=plan,
@@ -293,15 +395,21 @@ class InstalledResearchService:
             opposition_candidate_ids=candidates,
             relation_status=relation_status,
             insufficiencies=insufficiencies,
+            state_history=tuple(state_history),
+            final_state=state,
+            tool_failure_artifact_ids=tool_failure_ids,
             causal_events=causal_events,
             causal_trace=ResearchCausalTrace.create(causal_events),
         )
 
-    @staticmethod
-    def _record_event(
+    @classmethod
+    def _record_decision(
+        cls,
         events: list[CausalDecisionEvent],
         *,
-        state_before: str,
+        state_machine: ObservedResearchStateMachine,
+        state: ObservedResearchState,
+        state_history: list[ObservedResearchState],
         role: str,
         operation: str,
         rationale: str,
@@ -309,28 +417,38 @@ class InstalledResearchService:
         evidence_ids: tuple[str, ...],
         policy_ids: tuple[str, ...],
         budget_decision_ids: tuple[str, ...] = (),
-    ) -> str:
+        evidence_relations: tuple[InstalledEvidenceRelation, ...] | None = None,
+        gaps: tuple[ObservedResearchGap, ...] | None = None,
+        consume_search: bool = False,
+        terminal_status: str | None = None,
+    ) -> ObservedResearchState:
+        decision = ObservedResearchDecision.create(
+            role=role,
+            operation=operation,
+            rationale=rationale,
+            cause_artifact_ids=(state.artifact_id,) + observation_ids + evidence_ids,
+        )
+        state_after = state_machine.transition(
+            state,
+            decision,
+            evidence_relations=evidence_relations,
+            gaps=gaps,
+            consume_search=consume_search,
+            terminal_status=terminal_status,
+        )
         sequence = len(events)
-        operation_id = observation_ids[0]
         transition_id = _artifact_id(
             {
-                "from": state_before,
-                "operation": operation,
-                "output": operation_id,
+                "decision_artifact_id": decision.artifact_id,
+                "from": state.artifact_id,
                 "sequence": sequence,
-            }
-        )
-        state_after = _artifact_id(
-            {
-                "previous_state_artifact_id": state_before,
-                "sequence": sequence,
-                "transition_artifact_id": transition_id,
+                "to": state_after.artifact_id,
             }
         )
         events.append(
             CausalDecisionEvent.create(
                 sequence=sequence,
-                state_before_artifact_id=state_before,
+                state_before_artifact_id=state.artifact_id,
                 role=role,
                 operation=operation,
                 rationale=rationale,
@@ -339,33 +457,242 @@ class InstalledResearchService:
                 tool_decision_artifact_ids=(),
                 budget_decision_artifact_ids=budget_decision_ids,
                 policy_artifact_ids=policy_ids,
-                output_artifact_ids=observation_ids,
-                operation_artifact_id=operation_id,
+                output_artifact_ids=(state_after.artifact_id,),
+                operation_artifact_id=decision.artifact_id,
                 transition_artifact_id=transition_id,
-                state_after_artifact_id=state_after,
+                state_after_artifact_id=state_after.artifact_id,
             )
         )
+        state_history.append(state_after)
         return state_after
+
+    @classmethod
+    def _record_search_observation(
+        cls,
+        *,
+        events: list[CausalDecisionEvent],
+        state_machine: ObservedResearchStateMachine,
+        state: ObservedResearchState,
+        state_history: list[ObservedResearchState],
+        search: InstalledResearchSearch,
+        candidates: tuple[str, ...],
+        policy_ids: tuple[str, ...],
+    ) -> ObservedResearchState:
+        relations = list(state.evidence_relations)
+        gaps = list(state.gaps)
+        outcomes = {record.outcome for record in search.records}
+        if candidates:
+            for record in search.records:
+                relation_kind = (
+                    ObservedEvidenceRelationKind.AMBIGUITY
+                    if "ambigu" in record.outcome
+                    else ObservedEvidenceRelationKind.UNCLASSIFIED
+                )
+                gap_kind = (
+                    ObservedResearchGapKind.AMBIGUOUS_EVIDENCE
+                    if relation_kind is ObservedEvidenceRelationKind.AMBIGUITY
+                    else ObservedResearchGapKind.UNCLASSIFIED_EVIDENCE
+                )
+                for evidence_id in record.candidate_evidence_artifact_ids:
+                    relation = InstalledEvidenceRelation.create(
+                        claim_artifact_id=record.claim_artifact_id,
+                        evidence_artifact_id=evidence_id,
+                        kind=relation_kind,
+                        material=True,
+                    )
+                    relations.append(relation)
+                    gaps.append(
+                        ObservedResearchGap.create(
+                            kind=gap_kind,
+                            subject_artifact_id=relation.artifact_id,
+                        )
+                    )
+            state = cls._record_decision(
+                events,
+                state_machine=state_machine,
+                state=state,
+                state_history=state_history,
+                role="skeptic",
+                operation="inspect_material_counterevidence",
+                rationale=(
+                    "material retrieved candidates require explicit semantic relation "
+                    "assessment"
+                ),
+                observation_ids=(search.artifact_id,),
+                evidence_ids=candidates,
+                policy_ids=policy_ids,
+                evidence_relations=tuple(relations),
+                gaps=tuple(gaps),
+            )
+            return cls._record_decision(
+                events,
+                state_machine=state_machine,
+                state=state,
+                state_history=state_history,
+                role="adjudicator",
+                operation="retain_unclassified_material_evidence",
+                rationale=(
+                    "do not revise or complete the answer until every material "
+                    "candidate has a classified relation"
+                ),
+                observation_ids=tuple(gap.artifact_id for gap in state.blocking_gaps),
+                evidence_ids=candidates,
+                policy_ids=policy_ids,
+            )
+        if "retrieval_refused" in outcomes:
+            gap = ObservedResearchGap.create(
+                kind=ObservedResearchGapKind.RETRIEVAL_REFUSED,
+                subject_artifact_id=search.artifact_id,
+            )
+            return cls._record_decision(
+                events,
+                state_machine=state_machine,
+                state=state,
+                state_history=state_history,
+                role="adjudicator",
+                operation="retain_retrieval_refusal",
+                rationale=(
+                    "a refused retrieval leaves its evidence need unresolved and "
+                    "cannot count as a negative result"
+                ),
+                observation_ids=(search.artifact_id,),
+                evidence_ids=(),
+                policy_ids=policy_ids,
+                gaps=state.gaps + (gap,),
+            )
+        if any("ambigu" in outcome for outcome in outcomes):
+            gap = ObservedResearchGap.create(
+                kind=ObservedResearchGapKind.AMBIGUOUS_EVIDENCE,
+                subject_artifact_id=search.artifact_id,
+            )
+            return cls._record_decision(
+                events,
+                state_machine=state_machine,
+                state=state,
+                state_history=state_history,
+                role="adjudicator",
+                operation="retain_ambiguous_evidence",
+                rationale="ambiguous evidence requires adjudication before synthesis",
+                observation_ids=(search.artifact_id,),
+                evidence_ids=(),
+                policy_ids=policy_ids,
+                gaps=state.gaps + (gap,),
+            )
+        no_result_gap = ObservedResearchGap.create(
+            kind=ObservedResearchGapKind.NO_RESULTS,
+            subject_artifact_id=search.artifact_id,
+            blocking=False,
+        )
+        for claim_id in search.unsearched_important_claim_artifact_ids:
+            gaps.append(
+                ObservedResearchGap.create(
+                    kind=ObservedResearchGapKind.UNSEARCHED_IMPORTANT_CLAIM,
+                    subject_artifact_id=claim_id,
+                )
+            )
+        return cls._record_decision(
+            events,
+            state_machine=state_machine,
+            state=state,
+            state_history=state_history,
+            role="verifier",
+            operation="retain_bounded_negative_search",
+            rationale=(
+                "retain the bounded no-result observation without interpreting it "
+                "as confirmation"
+            ),
+            observation_ids=(search.artifact_id,),
+            evidence_ids=(),
+            policy_ids=policy_ids,
+            gaps=tuple(gaps) + (no_result_gap,),
+        )
+
+    @staticmethod
+    def _relation_status(
+        state: ObservedResearchState,
+        search: InstalledResearchSearch | None,
+        tool_failure_ids: tuple[str, ...],
+    ) -> str:
+        if tool_failure_ids:
+            return "tool-failure"
+        kinds = {relation.kind for relation in state.evidence_relations}
+        if ObservedEvidenceRelationKind.UNCLASSIFIED in kinds:
+            return "unclassified"
+        if ObservedEvidenceRelationKind.AMBIGUITY in kinds or any(
+            gap.kind is ObservedResearchGapKind.AMBIGUOUS_EVIDENCE
+            for gap in state.gaps
+        ):
+            return "ambiguous"
+        if any(
+            gap.kind is ObservedResearchGapKind.RETRIEVAL_REFUSED
+            for gap in state.gaps
+        ):
+            return "retrieval-refused"
+        if search is None and not state.blocking_gaps:
+            return "sufficient-evidence"
+        return "no-new-counterevidence"
+
+    @staticmethod
+    def _terminal_status(
+        convergence: InstalledResearchConvergence,
+        state: ObservedResearchState,
+    ) -> str:
+        if convergence.stop and convergence.outcome == "converged":
+            return "completed" if not state.blocking_gaps else "incomplete"
+        if convergence.stop and convergence.outcome == "insufficient":
+            return "insufficient"
+        return "incomplete"
 
     @staticmethod
     def _insufficiencies(
+        state: ObservedResearchState,
         search: InstalledResearchSearch | None,
         candidates: tuple[str, ...],
     ) -> tuple[str, ...]:
-        if search is None:
-            return ("No important claim produced a counterevidence request.",)
         findings = tuple(
             record.negative_search_statement
-            for record in search.records
+            for record in (() if search is None else search.records)
             if record.negative_search_statement is not None
         )
         if candidates:
             findings += (
                 "Counterevidence candidates require relation classification before use.",
             )
-        if any(record.outcome == "retrieval_refused" for record in search.records):
+        if search is not None and any(
+            record.outcome == "retrieval_refused" for record in search.records
+        ):
             findings += ("One or more skeptical retrievals were refused.",)
-        return findings
+        gap_messages = {
+            ObservedResearchGapKind.UNSATISFIED_REQUIREMENT: (
+                "One or more answer requirements remain unsatisfied."
+            ),
+            ObservedResearchGapKind.MATERIAL_OPPOSITION: (
+                "Material opposition remains unresolved."
+            ),
+            ObservedResearchGapKind.AMBIGUOUS_EVIDENCE: (
+                "Ambiguous evidence requires adjudication."
+            ),
+            ObservedResearchGapKind.UNCLASSIFIED_EVIDENCE: (
+                "Material evidence remains unclassified."
+            ),
+            ObservedResearchGapKind.RETRIEVAL_REFUSED: (
+                "One or more skeptical retrievals were refused."
+            ),
+            ObservedResearchGapKind.UNSEARCHED_IMPORTANT_CLAIM: (
+                "One or more important claims remain unsearched."
+            ),
+            ObservedResearchGapKind.TOOL_FAILURE: (
+                "A research tool failed before producing admissible evidence."
+            ),
+        }
+        findings += tuple(
+            message
+            for kind, message in gap_messages.items()
+            if any(gap.kind is kind for gap in state.gaps)
+        )
+        if search is None and state.blocking_gaps:
+            findings += ("No executable search resolved the blocking evidence gaps.",)
+        return tuple(dict.fromkeys(findings))
 
 
 __all__ = [

@@ -7,13 +7,17 @@ from dataclasses import dataclass, field
 import pytest
 
 from bijux_canon_agent.application import (
+    InstalledEvidenceRelation,
     InstalledResearchClaim,
     InstalledResearchConvergence,
     InstalledResearchPlan,
     InstalledResearchRequest,
+    InstalledResearchRequirement,
     InstalledResearchSearch,
     InstalledResearchSearchRecord,
     InstalledResearchService,
+    ObservedEvidenceRelationKind,
+    ObservedResearchGapKind,
 )
 
 _GRAPH = "sha256:" + "1" * 64
@@ -30,7 +34,30 @@ _RETRIEVAL = "sha256:" + "b" * 64
 _CONVERGENCE = "sha256:" + "c" * 64
 
 
-def _request() -> InstalledResearchRequest:
+def _request(
+    *,
+    satisfied: bool = True,
+    relation: ObservedEvidenceRelationKind | None = None,
+) -> InstalledResearchRequest:
+    requirement = InstalledResearchRequirement.create(
+        description="Establish whether the method improves endogenous DNA recovery.",
+        claim_artifact_id=_CLAIM,
+        satisfied=satisfied,
+    )
+    evidence_relation = InstalledEvidenceRelation.create(
+        claim_artifact_id=_CLAIM,
+        evidence_artifact_id=_KNOWN,
+        kind=(
+            relation
+            if relation is not None
+            else (
+                ObservedEvidenceRelationKind.SUPPORT
+                if satisfied
+                else ObservedEvidenceRelationKind.INSUFFICIENCY
+            )
+        ),
+        material=True,
+    )
     return InstalledResearchRequest(
         claim_graph_artifact_id=_GRAPH,
         scope_artifact_id=_SCOPE,
@@ -42,9 +69,13 @@ def _request() -> InstalledResearchRequest:
                 known_evidence_artifact_ids=(_KNOWN,),
             ),
         ),
-        verified_claim_count=1,
+        verified_claim_count=int(satisfied),
         counterevidence_policy_artifact_id=_COUNTER_POLICY,
         convergence_policy_artifact_id=_CONVERGENCE_POLICY,
+        question="Does the method improve endogenous DNA recovery?",
+        requirements=(requirement,),
+        evidence_relations=(evidence_relation,),
+        max_searches=1,
     )
 
 
@@ -52,10 +83,14 @@ def _request() -> InstalledResearchRequest:
 class _Port:
     requests: tuple[str, ...] = (_QUERY,)
     candidates: tuple[str, ...] = (_CANDIDATE,)
+    search_outcome: str = "candidate_evidence_found"
+    convergence_outcome: str = "budget_exhausted"
+    convergence_stop: bool = True
+    search_error: Exception | None = None
     calls: list[str] = field(default_factory=list)
 
     def plan(self, request: InstalledResearchRequest) -> InstalledResearchPlan:
-        assert request == _request()
+        assert request.claims[0].artifact_id == _CLAIM
         self.calls.append("plan")
         return InstalledResearchPlan(_PLAN, self.requests, {"requests": []})
 
@@ -64,18 +99,24 @@ class _Port:
         request: InstalledResearchRequest,
         plan: InstalledResearchPlan,
     ) -> InstalledResearchSearch:
-        assert request == _request()
+        assert request.claims[0].artifact_id == _CLAIM
         assert plan.artifact_id == _PLAN
         self.calls.append("search")
+        if self.search_error is not None:
+            raise self.search_error
         return InstalledResearchSearch(
             artifact_id=_SEARCH,
             records=(
                 InstalledResearchSearchRecord(
                     claim_artifact_id=_CLAIM,
-                    outcome="candidate_evidence_found",
+                    outcome=self.search_outcome,
                     candidate_evidence_artifact_ids=self.candidates,
-                    negative_search_statement=None,
-                    record={"outcome": "candidate_evidence_found"},
+                    negative_search_statement=(
+                        None
+                        if self.candidates
+                        else "No new counterevidence was found within this search."
+                    ),
+                    record={"outcome": self.search_outcome},
                 ),
             ),
             unsearched_important_claim_artifact_ids=(),
@@ -90,14 +131,14 @@ class _Port:
         plan: InstalledResearchPlan,
         search: InstalledResearchSearch | None,
     ) -> InstalledResearchConvergence:
-        assert request == _request()
+        assert request.claims[0].artifact_id == _CLAIM
         assert plan.artifact_id == _PLAN
         self.calls.append("evaluate")
         return InstalledResearchConvergence(
             artifact_id=_CONVERGENCE,
-            outcome="budget_exhausted",
-            stop=True,
-            record={"stop": True},
+            outcome=self.convergence_outcome,
+            stop=self.convergence_stop,
+            record={"stop": self.convergence_stop},
         )
 
 
@@ -108,30 +149,136 @@ def test_service_owns_search_decision_and_causal_trace() -> None:
     assert port.calls == ["plan", "search", "evaluate"]
     assert result.opposition_candidate_ids == (_CANDIDATE,)
     assert result.relation_status == "unclassified"
-    assert len(result.causal_events) == 4
+    assert len(result.causal_events) == 5
     assert [event.role for event in result.causal_events] == [
         "plan",
+        "researcher",
         "skeptic",
-        "analyze",
-        "terminate",
+        "adjudicator",
+        "verifier",
     ]
-    assert result.causal_events[1].evidence_artifact_ids == (_CANDIDATE,)
+    assert result.causal_events[2].evidence_artifact_ids == (_CANDIDATE,)
     assert result.causal_events[-1].budget_decision_artifact_ids == (_CONVERGENCE,)
     assert result.causal_trace.head_artifact_id == result.causal_events[-1].artifact_id
+    assert len(result.state_history) == len(result.causal_events) + 1
+    for index, event in enumerate(result.causal_events):
+        assert event.state_before_artifact_id == result.state_history[index].artifact_id
+        assert event.state_after_artifact_id == result.state_history[index + 1].artifact_id
+        assert event.operation_artifact_id == (
+            result.state_history[index + 1].decisions[-1].artifact_id
+        )
+    assert result.final_state.terminal_status == "incomplete"
+    assert result.final_state.search_budget_used == 1
+    assert any(
+        gap.kind is ObservedResearchGapKind.UNCLASSIFIED_EVIDENCE
+        for gap in result.final_state.blocking_gaps
+    )
 
 
 def test_service_skips_search_when_plan_has_no_requests() -> None:
-    port = _Port(requests=())
+    port = _Port(
+        requests=(),
+        convergence_outcome="converged",
+        convergence_stop=True,
+    )
     result = InstalledResearchService().research(_request(), port)
 
     assert port.calls == ["plan", "evaluate"]
     assert [event.role for event in result.causal_events] == [
         "plan",
-        "analyze",
-        "terminate",
+        "verifier",
+        "verifier",
     ]
     assert result.search is None
-    assert result.relation_status == "no-new-counterevidence"
+    assert result.relation_status == "sufficient-evidence"
+    assert result.final_state.terminal_status == "completed"
+    assert result.final_state.search_budget_used == 0
+
+
+def test_material_opposition_remains_a_blocking_observed_gap() -> None:
+    port = _Port(
+        candidates=(),
+        search_outcome="no_new_counterevidence_found",
+        convergence_outcome="converged",
+    )
+    result = InstalledResearchService().research(
+        _request(relation=ObservedEvidenceRelationKind.OPPOSITION),
+        port,
+    )
+
+    assert result.final_state.terminal_status == "incomplete"
+    assert any(
+        gap.kind is ObservedResearchGapKind.MATERIAL_OPPOSITION
+        for gap in result.final_state.blocking_gaps
+    )
+
+
+def test_ambiguous_search_takes_the_adjudication_branch() -> None:
+    port = _Port(search_outcome="ambiguous_evidence")
+    result = InstalledResearchService().research(_request(), port)
+
+    assert result.relation_status == "ambiguous"
+    assert [event.role for event in result.causal_events][2:4] == [
+        "skeptic",
+        "adjudicator",
+    ]
+    assert any(
+        gap.kind is ObservedResearchGapKind.AMBIGUOUS_EVIDENCE
+        for gap in result.final_state.blocking_gaps
+    )
+
+
+def test_no_results_are_retained_without_becoming_confirmation() -> None:
+    port = _Port(
+        candidates=(),
+        search_outcome="no_new_counterevidence_found",
+        convergence_outcome="converged",
+    )
+    result = InstalledResearchService().research(_request(), port)
+
+    assert [event.role for event in result.causal_events] == [
+        "plan",
+        "researcher",
+        "verifier",
+        "verifier",
+    ]
+    assert result.final_state.terminal_status == "completed"
+    no_results = tuple(
+        gap
+        for gap in result.final_state.gaps
+        if gap.kind is ObservedResearchGapKind.NO_RESULTS
+    )
+    assert len(no_results) == 1
+    assert no_results[0].blocking is False
+
+
+def test_search_tool_failure_is_an_incomplete_data_dependent_branch() -> None:
+    port = _Port(search_error=TimeoutError("secret-bearing provider failure"))
+    result = InstalledResearchService().research(_request(), port)
+
+    assert port.calls == ["plan", "search", "evaluate"]
+    assert result.search is None
+    assert result.relation_status == "tool-failure"
+    assert result.tool_failure_artifact_ids
+    assert result.final_state.terminal_status == "incomplete"
+    assert [event.operation for event in result.causal_events] == [
+        "plan_counterevidence",
+        "record_search_tool_failure",
+        "retain_incomplete_research",
+    ]
+    assert "secret-bearing" not in str(result.final_state.to_record())
+
+
+def test_unsatisfied_requirement_without_a_search_is_not_completed() -> None:
+    port = _Port(
+        requests=(),
+        convergence_outcome="converged",
+    )
+    result = InstalledResearchService().research(_request(satisfied=False), port)
+
+    assert port.calls == ["plan", "evaluate"]
+    assert result.causal_events[1].role == "adjudicator"
+    assert result.final_state.terminal_status == "incomplete"
 
 
 def test_service_rejects_an_untyped_port_result() -> None:
