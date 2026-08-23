@@ -32,7 +32,7 @@ def _result(tmp_path: Path) -> WorkspaceInitializationResult:
         status=WorkspaceInitializationStatus.INITIALIZED,
         workspace_id="workspace_v1_identity",
         workspace_root=str(tmp_path / "workspace"),
-        workspace_version=1,
+        workspace_version=2,
     )
 
 
@@ -132,6 +132,38 @@ def test_human_init_identifies_outcome_workspace_and_identities(
     assert "Workspace initialized:" in output
     assert expected.workspace_id in output
     assert expected.model_lock_artifact_id in output
+
+
+def test_human_migration_identifies_ordered_change_and_rollback_backup(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    expected = WorkspaceInitializationResult(
+        configuration_identity_sha256="c" * 64,
+        layout_identity_sha256="l" * 64,
+        model_lock_artifact_id="sha256:model",
+        status=WorkspaceInitializationStatus.MIGRATED,
+        workspace_id="workspace_v1_migrated",
+        workspace_root=str(tmp_path / "workspace"),
+        workspace_version=2,
+        applied_migration_ids=("sha256:" + "a" * 64,),
+        rollback_backup_path=str(tmp_path / "workspace/backups/migration"),
+    )
+    monkeypatch.setattr(
+        "bijux_canon_runtime.interfaces.cli.workspace_commands."
+        "initialize_runtime_workspace",
+        lambda _configuration: expected,
+    )
+    args = build_parser(prog_name="bijux-canon-runtime").parse_args(
+        ["init", "--workspace", "state", "--model", "model"]
+    )
+
+    assert initialize_workspace(args) == 0
+    output = capsys.readouterr().out
+    assert "Workspace migrated:" in output
+    assert expected.applied_migration_ids[0] in output
+    assert expected.rollback_backup_path in output
 
 
 def test_json_refusal_is_typed_and_actionable(

@@ -99,6 +99,7 @@ def test_workspace_layout_resolves_every_runtime_authority(tmp_path: Path) -> No
     )
     assert layout.root == workspace.resolve()
     assert layout.manifest_path == workspace / "workspace.json"
+    assert layout.migration_ledger_path == workspace / "workspace-migrations.json"
     assert layout.cas_root == workspace / "cas"
     assert layout.database_path == workspace / "runtime.duckdb"
     assert layout.job_store_path == workspace / "jobs.sqlite"
@@ -110,8 +111,8 @@ def test_workspace_layout_resolves_every_runtime_authority(tmp_path: Path) -> No
     assert layout.staging_root == workspace / "staging"
     assert layout.temporary_root == workspace / "process"
     assert layout.backup_root == workspace / "backups"
-    assert layout.schema_version == "bijux.runtime.workspace-layout.v1"
-    assert layout.workspace_version == 1
+    assert layout.schema_version == "bijux.runtime.workspace-layout.v2"
+    assert layout.workspace_version == 2
     assert len(layout.identity_sha256) == 64
 
 

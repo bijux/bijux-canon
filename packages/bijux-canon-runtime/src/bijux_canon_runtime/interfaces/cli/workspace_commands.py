@@ -74,6 +74,10 @@ def initialize_workspace(args: argparse.Namespace) -> int:
         print(f"Workspace {result.status.value}: {result.workspace_root}")
         print(f"Workspace ID: {result.workspace_id}")
         print(f"Model lock: {result.model_lock_artifact_id}")
+        if result.applied_migration_ids:
+            print("Applied migrations: " + ", ".join(result.applied_migration_ids))
+        if result.rollback_backup_path is not None:
+            print(f"Rollback backup: {result.rollback_backup_path}")
     return 0
 
 

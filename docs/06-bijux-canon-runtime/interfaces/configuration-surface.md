@@ -18,9 +18,10 @@ the CLI does not infer missing governance from ambient defaults.
 A local Runtime workspace has one versioned layout. Its manifest binds the
 effective configuration identity, layout identity, locked embedding model,
 CAS, DuckDB execution store, durable job store, persistent index root, locks,
-staging, process state, VEX records, operations, and backups. Runtime-owned
-state must remain below the workspace root. A locked model directory may be
-external so one verified local cache can serve multiple isolated workspaces.
+staging, process state, VEX records, operations, backups, and the ordered
+workspace-migration ledger. Runtime-owned state must remain below the workspace
+root. A locked model directory may be external so one verified local cache can
+serve multiple isolated workspaces.
 
 Initialize or validate the layout before admitting documents:
 
@@ -33,8 +34,11 @@ bijux-canon-runtime init \
 Add `--json` for a stable machine-readable result. A compatible repeat reports
 `unchanged` without rewriting state. A partial workspace, incompatible version
 or configuration, missing/corrupt model, external state override, unsafe path,
-or unwritable activation is refused with a typed code and remediation. Init
-never downloads a model and never repairs or replaces existing state.
+or unwritable activation is refused with a typed code and remediation. A known
+older layout is preflighted, backed up, and migrated with manifest-last
+activation; the result names the ordered migration and rollback identity. Init
+never downloads a model and never silently repairs, downgrades, or replaces
+unrecognized state.
 
 The canonical environment names begin with `BIJUX_CANON_RUNTIME_`. In
 particular, `WORKING_ROOT`, `DB_PATH`, `EMBEDDING_MODEL_PATH`, and

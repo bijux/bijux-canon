@@ -62,6 +62,32 @@ canonical manifest is treated as partial state and refused rather than filled
 in. Preserve the whole workspace for restart, inspection, replay, and backup;
 the DuckDB file alone is not the complete authority.
 
+### Workspace migration and rollback
+
+Stop Runtime workers before running `init` against an older workspace. The
+current Runtime recognizes the exact version-1 layout, validates its manifest,
+model, DuckDB migrations, durable-job schema, CAS, and index structure before
+changing anything, and creates a content-bound rollback generation below
+`backups/workspace-migrations/generations/`. It then writes the ordered
+`workspace-migrations.json` ledger and activates the version-2
+`workspace.json` last. A successful upgrade reports `migrated`, the applied
+migration identity, and the exact rollback backup path. Repeating `init` does
+not append or reapply that migration.
+
+If the process stops after ledger publication but before manifest activation,
+repeat the same `init` command. Runtime verifies the source manifest and
+rollback backup identities and resumes the same migration. Do not delete the
+ledger or edit either checksum. A newer workspace or a layout older than the
+supported migration floor is refused before a backup or state mutation.
+
+For an immediate rollback before admitting new work, stop Runtime, preserve the
+failed/upgraded workspace, verify the reported backup generation, restore its
+exact `workspace.json`, remove only the version-2 `workspace-migrations.json`,
+and reopen with the prior Runtime release that owns workspace version 1. If any
+work was admitted after migration, restore a complete pre-upgrade workspace
+backup instead; the manifest-only rollback generation covers the files changed
+by this metadata migration, not later application writes.
+
 Verify the exact operation boundary before submitting work:
 
 ```bash

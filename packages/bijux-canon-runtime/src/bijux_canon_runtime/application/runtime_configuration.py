@@ -70,6 +70,7 @@ class RuntimeWorkspaceLayout:
 
     root: Path
     manifest_path: Path
+    migration_ledger_path: Path
     cas_root: Path
     database_path: Path
     job_store_path: Path
@@ -83,8 +84,8 @@ class RuntimeWorkspaceLayout:
     staging_root: Path
     temporary_root: Path
     backup_root: Path
-    schema_version: str = "bijux.runtime.workspace-layout.v1"
-    workspace_version: int = 1
+    schema_version: str = "bijux.runtime.workspace-layout.v2"
+    workspace_version: int = 2
 
     @classmethod
     def resolve(
@@ -149,6 +150,7 @@ class RuntimeWorkspaceLayout:
         return cls(
             root=root,
             manifest_path=root / "workspace.json",
+            migration_ledger_path=root / "workspace-migrations.json",
             cas_root=cas_root,
             database_path=database,
             job_store_path=jobs,
@@ -180,6 +182,7 @@ class RuntimeWorkspaceLayout:
             "job_store_path": str(self.job_store_path),
             "locks_root": str(self.locks_root),
             "manifest_path": str(self.manifest_path),
+            "migration_ledger_path": str(self.migration_ledger_path),
             "model_lock_path": str(self.model_lock_path),
             "model_root": str(self.model_root),
             "operations_root": str(self.operations_root),
