@@ -44,6 +44,7 @@ from bijux_canon_reason.grounding.extractive_synthesis import (
     EvidenceRole,
     SynthesisStyle,
     infer_synthesis_style,
+    recommended_point_count,
     required_source_count,
 )
 from bijux_canon_reason.grounding.provider_contracts import (
@@ -117,7 +118,7 @@ class LocalGroundedAnswerService:
         style = infer_synthesis_style(question)
         synthesis = CredentialFreeSynthesizer(
             CredentialFreeSynthesisPolicy(
-                max_points=max_points,
+                max_points=min(max_points, recommended_point_count(question)),
                 required_sources=required_source_count(question),
             )
         ).synthesize(

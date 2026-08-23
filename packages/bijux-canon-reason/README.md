@@ -127,12 +127,14 @@ content. A request for an unsupported universal guarantee produces an
 abstention with no claims or citations, even when retrieval returns incidental
 mentions of related methods or yields.
 
-Credential-free synthesis preserves exact source clauses and explicitly does
-not claim a broader semantic inference than those clauses establish. Provider
-paths are optional and lazy. Context records distinguish citation integrity
-from unassessed study quality, and conflict-oriented questions preserve
-divergent source-scoped claims without declaring a contradiction that has not
-been semantically verified.
+Credential-free synthesis uses a closed set of conservative projections, such
+as removing source-attribution boilerplate or resolving a labeled definition.
+The verifier independently reproduces the projection from exact cited text;
+arbitrary paraphrases, lexical overlap, and same-document matches do not count
+as support. Provider paths are optional and lazy. Context records distinguish
+citation integrity from unassessed study quality, and conflict-oriented
+questions preserve divergent source-scoped claims without declaring a
+contradiction that has not been semantically verified.
 
 ## HTTP Contract
 

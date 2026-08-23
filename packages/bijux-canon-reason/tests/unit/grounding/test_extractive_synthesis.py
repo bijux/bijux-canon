@@ -22,6 +22,7 @@ from bijux_canon_reason.grounding import (
     SynthesisOutcome,
     SynthesisStyle,
     infer_synthesis_style,
+    recommended_point_count,
     required_source_count,
 )
 
@@ -164,7 +165,7 @@ def test_answer_bearing_results_outrank_study_aims_and_background() -> None:
     )
     assert any("lower than 1%" in statement for statement in statements)
     assert any(
-        "part C" in statement and "otic capsule" in statement
+        "Part C" in statement and "otic capsule" in statement
         for statement in statements
     )
     assert all("investigate whether" not in statement for statement in statements)
@@ -226,6 +227,12 @@ def test_question_policy_is_general_and_identity_free() -> None:
     )
     assert required_source_count("What did this study find?") == 1
     assert required_source_count("What differed across the two studies?") == 2
+    four_contexts = (
+        "Across permafrost soft tissue, petrous bone, young resin, and "
+        "ethanol-preserved specimens, what limits were reported?"
+    )
+    assert required_source_count(four_contexts) == 4
+    assert recommended_point_count(four_contexts) == 5
 
 
 def test_best_query_relevant_clause_retains_exact_source_span() -> None:

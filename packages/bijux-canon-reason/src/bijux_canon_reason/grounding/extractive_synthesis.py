@@ -17,6 +17,11 @@ from bijux_canon_reason.grounding.evidence_packets import (
     CitationEvidence,
     EvidencePacket,
 )
+from bijux_canon_reason.grounding.semantic_projection import (
+    EvidenceProjection,
+    EvidenceProjectionMethod,
+    project_evidence_clause,
+)
 
 _ARTIFACT_ID = re.compile(r"sha256:[0-9a-f]{64}")
 _SHA256 = re.compile(r"[0-9a-f]{64}")
@@ -68,7 +73,7 @@ _OPPOSITION_TERMS = frozenset(
     {"cannot", "failed", "fails", "no", "not", "unlikely", "without"}
 )
 _RESULT_CUE = re.compile(
-    r"\b(?:our results?|we (?:found|show|have shown)|results? (?:confirm|indicate|support)|can exceed|provided? the best|highest)\b",
+    r"\b(?:our results?|(?:this|the) study shows|we (?:conclude|demonstrate|found|show|have shown)|results? (?:confirm|indicate|support)|can exceed|provided? the best|highest)\b",
     flags=re.IGNORECASE,
 )
 _AIM_CUE = re.compile(
@@ -77,10 +82,6 @@ _AIM_CUE = re.compile(
 )
 _BACKGROUND_CUE = re.compile(
     r"(?:\[[ ]*\d+[ ]*\]\s+(?:demonstrate|show)|has (?:recently |previously )?been (?:demonstrated|shown))",
-    flags=re.IGNORECASE,
-)
-_LABELED_DEFINITION = re.compile(
-    r"\((?:area|part|portion|region)\s+[A-Z0-9]+\)",
     flags=re.IGNORECASE,
 )
 _NUMBER = re.compile(
@@ -97,7 +98,18 @@ _QUESTION_CONCEPTS: tuple[tuple[frozenset[str], frozenset[str]], ...] = (
     ),
     (
         frozenset({"highest", "best", "greatest", "most"}),
-        frozenset({"highest", "best", "greater", "high", "maximum", "exceed"}),
+        frozenset(
+            {
+                "dense",
+                "densest",
+                "highest",
+                "best",
+                "greater",
+                "high",
+                "maximum",
+                "exceed",
+            }
+        ),
     ),
     (
         frozenset({"caveat", "limitation", "limitations"}),
@@ -222,7 +234,7 @@ class CredentialFreeSynthesisPolicy(StableModel):
     required_sources: int = 2
     minimum_query_term_overlap: int = 1
     semantic_duplicate_threshold: float = 0.8
-    method: str = "credential-free-structured-extractive-v2"
+    method: str = "credential-free-constrained-synthesis-v3"
 
     @field_validator("max_points", "required_sources")
     @classmethod
@@ -333,7 +345,7 @@ class ExtractiveSynthesisPoint(StableModel):
 class CredentialFreeSynthesis(StableModel):
     """Content-addressed offline synthesis with source-scoped candidate claims."""
 
-    schema_version: str = "bijux.canon.reason.credential_free_synthesis.v2"
+    schema_version: str = "bijux.canon.reason.credential_free_synthesis.v3"
     artifact_id: str
     question: str
     question_sha256: str
@@ -440,7 +452,7 @@ class CredentialFreeSynthesizer:
             limitations=limitations,
         )
         payload = {
-            "schema_version": "bijux.canon.reason.credential_free_synthesis.v2",
+            "schema_version": "bijux.canon.reason.credential_free_synthesis.v3",
             "question": question,
             "question_sha256": hashlib.sha256(question.encode()).hexdigest(),
             "evidence_packet_artifact_id": evidence_packet.artifact_id,
@@ -489,6 +501,21 @@ class CredentialFreeSynthesizer:
             for item in evidence
             for clause in _ranked_clauses(question, item.exact_text)
         )
+        if (
+            style is not SynthesisStyle.methods_comparison
+            and not (_terms(question) & _METHOD_TERMS)
+        ):
+            sources_with_nonmethod_evidence = {
+                item.source_id
+                for item in candidates
+                if item.role is not EvidenceRole.method
+            }
+            candidates = tuple(
+                item
+                for item in candidates
+                if item.role is not EvidenceRole.method
+                or item.source_id not in sources_with_nonmethod_evidence
+            )
         if not re.search(
             r"\b(?:and|both|caveat|conflict|limitation|limitations|versus)\b",
             question,
@@ -560,15 +587,25 @@ class CredentialFreeSynthesizer:
         question: str,
         style: SynthesisStyle,
     ) -> ExtractiveSynthesisPoint:
-        quote, start, end, overlap = clause
+        quote, start, end, _ = clause
         role = _evidence_role(quote, evidence.section_path)
+        projection = _best_projection(
+            question,
+            quote,
+            role,
+            style,
+            reference_text=evidence.exact_text,
+        )
+        statement = projection.statement
+        overlap = len(_terms(question) & _terms(statement))
         score = max(
             0,
             overlap * 10
             + _role_bonus(role, style)
-            + _answer_value_score(question, quote, role),
+            + _answer_value_score(question, statement, role)
+            + _projection_bonus(projection)
+            + _projection_reference_bonus(projection, evidence.exact_text),
         )
-        statement = quote
         payload = {
             "statement": statement,
             "statement_sha256": hashlib.sha256(statement.encode()).hexdigest(),
@@ -583,7 +620,7 @@ class CredentialFreeSynthesizer:
             "extraction_score": score,
             "query_term_overlap": overlap,
             "role": role.value,
-            "atomicity_basis": "single-sentence-or-contrast-clause",
+            "atomicity_basis": f"conservative-projection:{projection.method.value}",
         }
         return ExtractiveSynthesisPoint(
             artifact_id=_artifact_id(payload),
@@ -600,6 +637,7 @@ class CredentialFreeSynthesizer:
             extraction_score=score,
             query_term_overlap=overlap,
             role=role,
+            atomicity_basis=f"conservative-projection:{projection.method.value}",
         )
 
     @staticmethod
@@ -612,7 +650,7 @@ class CredentialFreeSynthesizer:
         used_count: int,
     ) -> tuple[str, ...]:
         limitations = [
-            "Each factual bullet is an exact source clause; no broader interpretation is asserted beyond its cited wording."
+            "Each factual bullet is an exact source clause or a reproducible conservative projection; no broader interpretation is asserted beyond its cited wording."
         ]
         if outcome is SynthesisOutcome.insufficient:
             limitations.append(
@@ -764,6 +802,47 @@ def _supports_absolute_request(question: str, statements: tuple[str, ...]) -> bo
     )
 
 
+def _best_projection(
+    question: str,
+    quote: str,
+    role: EvidenceRole,
+    style: SynthesisStyle,
+    *,
+    reference_text: str,
+) -> EvidenceProjection:
+    projections = project_evidence_clause(quote)
+    if not projections:
+        raise ValueError("citation evidence contains no projectable text")
+    return max(
+        enumerate(projections),
+        key=lambda indexed: (
+            len(_terms(question) & _terms(indexed[1].statement)) * 10
+            + _role_bonus(role, style)
+            + _answer_value_score(question, indexed[1].statement, role)
+            + _projection_bonus(indexed[1])
+            + _projection_reference_bonus(indexed[1], reference_text),
+            indexed[0],
+        ),
+    )[1]
+
+
+def _projection_bonus(projection: EvidenceProjection) -> int:
+    return {
+        EvidenceProjectionMethod.exact_clause: 0,
+        EvidenceProjectionMethod.attribution_removed: 50,
+        EvidenceProjectionMethod.labeled_definition: 120,
+    }[projection.method]
+
+
+def _projection_reference_bonus(
+    projection: EvidenceProjection, reference_text: str
+) -> int:
+    if projection.method is not EvidenceProjectionMethod.labeled_definition:
+        return 0
+    label = " ".join(projection.statement.casefold().split()[:2])
+    return reference_text.casefold().count(label) * 10
+
+
 def _evidence_role(text: str, section_path: tuple[str, ...]) -> EvidenceRole:
     terms = _terms(text)
     sections = _terms(" ".join(section_path))
@@ -826,14 +905,6 @@ def _answer_value_score(question: str, statement: str, role: EvidenceRole) -> in
         score -= 36
     if _BACKGROUND_CUE.search(statement):
         score -= 12
-    if question_terms & {
-        "which",
-        "region",
-        "area",
-        "part",
-        "portion",
-    } and _LABELED_DEFINITION.search(statement):
-        score += 50
     if "petrous" in question_terms and "non-petrous" in statement.casefold():
         score -= 12
     if role is EvidenceRole.context:
@@ -847,7 +918,14 @@ def infer_synthesis_style(question: str) -> SynthesisStyle:
     terms = _terms(question)
     if terms & {"conflict", "contradict", "counterevidence", "disagree"}:
         return SynthesisStyle.conflict_preserving
-    if terms & {"caveat", "limit", "limitation", "uncertain", "uncertainty"}:
+    if terms & {
+        "caveat",
+        "limit",
+        "limits",
+        "limitation",
+        "uncertain",
+        "uncertainty",
+    }:
         return SynthesisStyle.limitations_review
     if terms & _METHOD_TERMS or terms & {"compare", "versus"}:
         return SynthesisStyle.methods_comparison
@@ -862,6 +940,9 @@ def required_source_count(question: str) -> int:
     """Require cross-source coverage only when the question explicitly asks for it."""
 
     normalized = " ".join(question.casefold().split())
+    enumerated = _across_enumeration_count(normalized)
+    if enumerated >= 2:
+        return enumerated
     cross_source = (
         re.search(r"\bacross\b.*\b(?:papers|sources|studies|articles)\b", normalized)
         or re.search(r"\b(?:papers|sources|studies|articles)\b.*\bacross\b", normalized)
@@ -875,6 +956,32 @@ def required_source_count(question: str) -> int:
     return 2 if cross_source else 1
 
 
+def recommended_point_count(question: str) -> int:
+    """Bound answer points while retaining explicitly requested source contexts."""
+
+    sources = required_source_count(question)
+    requested_terms = _terms(question)
+    limitation_allowance = (
+        1
+        if sources > 1
+        and requested_terms & {"caveat", "limit", "limits", "limitation", "limitations"}
+        else 0
+    )
+    return max(3, min(6, sources + limitation_allowance))
+
+
+def _across_enumeration_count(question: str) -> int:
+    match = re.search(
+        r"\bacross\s+(?P<items>.+?),\s+(?:how|what|which)\b",
+        question,
+        flags=re.IGNORECASE,
+    )
+    if match is None:
+        return 0
+    items = re.split(r",\s*(?:and\s+)?|\s+and\s+", match.group("items"))
+    return min(6, len(tuple(item for item in items if item.strip())))
+
+
 __all__ = [
     "CredentialFreeSynthesis",
     "CredentialFreeSynthesisPolicy",
@@ -884,5 +991,6 @@ __all__ = [
     "SynthesisOutcome",
     "SynthesisStyle",
     "infer_synthesis_style",
+    "recommended_point_count",
     "required_source_count",
 ]

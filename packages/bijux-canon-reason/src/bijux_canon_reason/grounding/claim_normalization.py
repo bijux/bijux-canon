@@ -196,7 +196,7 @@ class AtomicClaimNormalizer:
 
         inputs = tuple(
             _ClaimInput(
-                statement=point.quote,
+                statement=point.statement,
                 qualifier="reported by the identified source",
                 scope=point.source_id,
                 polarity=AtomicClaimPolarity.observed,

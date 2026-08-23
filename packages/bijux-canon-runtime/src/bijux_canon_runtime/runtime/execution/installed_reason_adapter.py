@@ -329,7 +329,7 @@ class CanonicalReasonOperationAdapter:
             question=step.inputs.query,
             evidence_packet=packet,
             sources=sources,
-            max_points=min(citation_budget, 3),
+            max_points=min(citation_budget, 6),
         )
         if (
             grounded.synthesis.outcome is SynthesisOutcome.insufficient

@@ -102,6 +102,24 @@ def test_local_answer_admits_exact_claims_with_complete_context() -> None:
     )
 
 
+def test_local_answer_admits_a_reproducible_concise_projection() -> None:
+    source_text = "Our results show that endogenous DNA yields can remain below 1%."
+    result = _answer(
+        "What endogenous DNA yield limitation was reported?",
+        _evidence("projection", source_text, 1),
+    )
+
+    assert result.outcome is GroundingAdmissionOutcome.admitted
+    assert "Our results show that" not in result.answer_text
+    assert result.claims.claims[0].statement == (
+        "Endogenous DNA yields can remain below 1%."
+    )
+    assert result.citations.links[0].exact_text == source_text
+    assessment = result.verification.claims[0].assessments[0]
+    assert assessment.verdict.value == "direct_support"
+    assert assessment.rationale_code == "claim_is_verified_conservative_projection"
+
+
 def test_local_answer_abstains_without_claim_leakage_for_unsupported_guarantee() -> (
     None
 ):

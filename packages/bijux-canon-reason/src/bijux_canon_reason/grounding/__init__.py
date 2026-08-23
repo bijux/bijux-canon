@@ -96,6 +96,7 @@ from bijux_canon_reason.grounding.extractive_synthesis import (
     SynthesisOutcome,
     SynthesisStyle,
     infer_synthesis_style,
+    recommended_point_count,
     required_source_count,
 )
 from bijux_canon_reason.grounding.local_answer import (
@@ -112,6 +113,12 @@ from bijux_canon_reason.grounding.provider_contracts import (
     StructuredCandidateClaim,
     StructuredProviderSynthesis,
     StructuredSynthesisCandidate,
+)
+from bijux_canon_reason.grounding.semantic_projection import (
+    EvidenceProjection,
+    EvidenceProjectionMethod,
+    project_evidence_clause,
+    project_evidence_text,
 )
 from bijux_canon_reason.grounding.structured_provider import (
     JsonHttpResponse,
@@ -167,6 +174,8 @@ __all__ = [
     "EvidencePacketError",
     "EvidencePacketErrorCode",
     "EvidencePacketPolicy",
+    "EvidenceProjection",
+    "EvidenceProjectionMethod",
     "EvidenceSelectionDecision",
     "EvidenceTrust",
     "EntailmentVerdict",
@@ -208,6 +217,7 @@ __all__ = [
     "SynthesisOutcome",
     "SynthesisStyle",
     "infer_synthesis_style",
+    "recommended_point_count",
     "required_source_count",
     "SourceQualityGrade",
     "StructuredCandidateClaim",
@@ -226,6 +236,8 @@ __all__ = [
     "create_rag_execution_budget",
     "create_rag_execution_failure",
     "prompt_artifact_id",
+    "project_evidence_clause",
+    "project_evidence_text",
     "response_schema",
     "response_schema_sha256",
 ]

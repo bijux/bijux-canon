@@ -191,6 +191,27 @@ def test_related_nonexact_evidence_requires_semantic_verification() -> None:
     assert report.claims[0].verdict is EntailmentVerdict.insufficiency
 
 
+def test_reproducible_conservative_projection_is_direct_support() -> None:
+    report, _, _ = _verification(
+        "Yields can remain below 1% in hot regions.",
+        "Our results show that yields can remain below 1% in hot regions.",
+    )
+
+    assessment = report.claims[0].assessments[0]
+    assert report.claims[0].verdict is EntailmentVerdict.direct_support
+    assert assessment.exact_claim_span is False
+    assert assessment.rationale_code == "claim_is_verified_conservative_projection"
+
+
+def test_projection_does_not_accept_an_entity_or_number_swap() -> None:
+    report, _, _ = _verification(
+        "Part B yields can remain below 2% in hot regions.",
+        "Our results show that part C yields can remain below 1% in hot regions.",
+    )
+
+    assert report.claims[0].verdict is EntailmentVerdict.insufficiency
+
+
 def test_unrelated_citation_is_not_given_an_overlap_only_verdict() -> None:
     report, _, _ = _verification(
         "Ocean temperatures increased globally.",

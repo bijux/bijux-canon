@@ -24,6 +24,10 @@ from bijux_canon_reason.grounding.provider_contracts import (
     content_artifact_id,
     require_artifact_id,
 )
+from bijux_canon_reason.grounding.semantic_projection import (
+    EvidenceProjectionMethod,
+    project_evidence_text,
+)
 
 _WORD = re.compile(r"[^\W_]+", flags=re.UNICODE)
 _NEGATIONS = frozenset({"no", "not", "never", "neither", "nor", "without"})
@@ -357,6 +361,11 @@ class DeterministicCitationVerifier:
         claim_words = _terms(claim.statement)
         evidence_words = _terms(link.exact_text)
         exact_span = claim.statement in link.exact_text
+        verified_projection = claim.statement in {
+            projection.statement
+            for projection in project_evidence_text(link.exact_text)
+            if projection.method is not EvidenceProjectionMethod.exact_clause
+        }
         claim_negated = _negated(claim.statement)
         evidence_negated = _negated(link.exact_text)
         coverage = (
@@ -368,6 +377,9 @@ class DeterministicCitationVerifier:
         elif exact_span:
             verdict = EntailmentVerdict.direct_support
             rationale = "claim_is_exact_evidence_span"
+        elif verified_projection:
+            verdict = EntailmentVerdict.direct_support
+            rationale = "claim_is_verified_conservative_projection"
         else:
             verdict = EntailmentVerdict.insufficiency
             rationale = "semantic_entailment_not_deterministically_established"
