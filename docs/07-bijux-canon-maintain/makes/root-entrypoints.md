@@ -4,7 +4,7 @@ audience: mixed
 type: reference
 status: canonical
 owner: bijux-canon-dev-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-08-23
 ---
 
 # Root Entrypoints
@@ -47,11 +47,29 @@ with `make -prRn`; maintainers normally begin with `make help`.
 | `docs`, `docs-check`, `docs-serve`, `docs-deploy` | build, validate, serve, or publish the handbook through isolated docs paths |
 | `check` | require lock consistency, then run the full ordinary repository verification graph |
 | `test-all` | invoke every configured test surface, including slow, evaluation, and real-local selections |
+| `test-all-frozen`, `tox-frozen`, `ci-github-frozen` | launch distinct test, Tox, and structural CI-equivalent lanes against one immutable commit |
+| `frozen-status` | emit compact JSON lifecycle state for one commit and gate without reading its log |
+| `frozen-summary` | emit the same state plus a bounded failure tail; exit `0` passed, `1` failed, `3` running, `4` not started, or `5` stale |
+| `all-frozen` | launch each of the three non-overlapping frozen lanes once |
 | `setup`, `clean`, `clean-root-artifacts` | materialize aliases or remove explicitly scoped generated state |
 
 Use the target that names the contract being reviewed. `test-all` is not a
 substitute for selecting the affected surface, and `check` is not required to
 establish that a Markdown link renders.
+
+Frozen launches are keyed by the resolved commit and gate. A second launch for
+the same identity is refused whether the first is active or complete. Inspect a
+record directly instead:
+
+```bash
+make frozen-status FROZEN_REF="$H" GATE=test-all
+make frozen-summary FROZEN_REF="$H" GATE=test-all
+```
+
+`frozen-status` exits successfully whenever the record can be inspected and
+reports its lifecycle in JSON. `frozen-summary` has stable lifecycle exit codes
+for automation and includes at most the bounded tail when a gate failed or
+became stale.
 
 ## Package Dispatch
 

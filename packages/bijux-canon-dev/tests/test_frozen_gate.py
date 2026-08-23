@@ -10,8 +10,13 @@ import pytest
 from bijux_canon_dev.release.frozen_gate import (
     GATE_COMMANDS,
     FrozenGateError,
+    FrozenGateState,
+    inspect_frozen_gate,
     launch_frozen_gate,
+    main,
 )
+
+REPO_ROOT = Path(__file__).resolve().parents[3]
 
 
 def _git(repository: Path, *arguments: str) -> str:
@@ -101,7 +106,112 @@ def test_frozen_gate_defines_independent_complete_gate_commands() -> None:
         "check-make-layout",
         "help",
     )
-    assert GATE_COMMANDS["ci-github"][-1] == GATE_COMMANDS["tox"][-1]
+    assert set(GATE_COMMANDS["ci-github"]).isdisjoint(GATE_COMMANDS["tox"])
+
+
+def test_frozen_gate_reports_not_started_without_scanning_artifacts(
+    tmp_path: Path,
+) -> None:
+    repository, first_commit = _repository(tmp_path)
+
+    status = inspect_frozen_gate(repository, first_commit, "test-all")
+
+    assert status.state is FrozenGateState.NOT_STARTED
+    assert status.exit_code is None
+    assert status.started_at is None
+    assert status.finished_at is None
+    assert status.log_tail == ()
+
+
+def test_frozen_gate_reports_completion_and_rejects_duplicate_launch(
+    tmp_path: Path,
+) -> None:
+    repository, first_commit = _repository(tmp_path)
+    launch = launch_frozen_gate(repository, first_commit, "test-all")
+    assert _wait_for_status(Path(launch.status_file)) == 0
+
+    status = inspect_frozen_gate(repository, first_commit, "test-all")
+
+    assert status.state is FrozenGateState.PASSED
+    assert status.exit_code == 0
+    assert status.started_at is not None
+    assert status.finished_at is not None
+    with pytest.raises(FrozenGateError, match="already has a passed launch"):
+        launch_frozen_gate(repository, first_commit, "test-all")
+
+
+def test_frozen_gate_rejects_duplicate_active_launch(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    repository, first_commit = _repository(tmp_path)
+    monkeypatch.setitem(
+        GATE_COMMANDS,
+        "test-all",
+        (("/bin/bash", "-c", "sleep 0.5"),),
+    )
+    launch = launch_frozen_gate(repository, first_commit, "test-all")
+
+    with pytest.raises(FrozenGateError, match="already has a running launch"):
+        launch_frozen_gate(repository, first_commit, "test-all")
+
+    assert _wait_for_status(Path(launch.status_file)) == 0
+
+
+def test_frozen_gate_failure_summary_is_bounded(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    repository, first_commit = _repository(tmp_path)
+    monkeypatch.setitem(
+        GATE_COMMANDS,
+        "test-all",
+        (("/bin/bash", "-c", "printf 'useful failure\\n'; exit 7"),),
+    )
+    launch = launch_frozen_gate(repository, first_commit, "test-all")
+    assert _wait_for_status(Path(launch.status_file)) == 7
+
+    status = inspect_frozen_gate(
+        repository,
+        first_commit,
+        "test-all",
+        include_failure_tail=True,
+        tail_lines=1,
+    )
+
+    assert status.state is FrozenGateState.FAILED
+    assert status.exit_code == 7
+    assert status.log_tail == ("useful failure",)
+
+
+def test_frozen_gate_cli_has_stable_monitor_exit_semantics(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    repository, first_commit = _repository(tmp_path)
+    arguments = [
+        "--repo",
+        str(repository),
+        "--ref",
+        first_commit,
+        "--gate",
+        "test-all",
+    ]
+
+    assert main([*arguments, "--action", "status"]) == 0
+    assert json.loads(capsys.readouterr().out)["state"] == "not_started"
+    assert main([*arguments, "--action", "summary"]) == 4
+    assert json.loads(capsys.readouterr().out)["state"] == "not_started"
+
+
+def test_frozen_make_targets_expose_deduplicated_monitoring_contract() -> None:
+    root_make = (REPO_ROOT / "makes" / "root.mk").read_text(encoding="utf-8")
+
+    assert "all-frozen: test-all-frozen tox-frozen ci-github-frozen" in root_make
+    assert "frozen-status:" in root_make
+    assert '"$(GATE)" --action status' in root_make
+    assert "frozen-summary:" in root_make
+    assert '"$(GATE)" --action summary' in root_make
 
 
 def test_frozen_gates_can_overlap_without_sharing_worktrees(

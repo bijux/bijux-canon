@@ -7,6 +7,7 @@ from collections.abc import Iterator, Sequence
 from contextlib import contextmanager
 from dataclasses import asdict, dataclass
 from datetime import UTC, datetime
+from enum import StrEnum
 import fcntl
 import json
 import os
@@ -42,9 +43,18 @@ GATE_COMMANDS: dict[str, tuple[tuple[str, ...], ...]] = {
             "check-make-layout",
             "help",
         ),
-        TOX_COMMAND,
     ),
 }
+
+
+class FrozenGateState(StrEnum):
+    """Stable lifecycle states exposed by frozen-gate monitoring."""
+
+    NOT_STARTED = "not_started"
+    RUNNING = "running"
+    PASSED = "passed"
+    FAILED = "failed"
+    STALE = "stale"
 
 
 @dataclass(frozen=True)
@@ -60,6 +70,30 @@ class FrozenGateLaunch:
     pid: int
     repository: str
     status_file: str
+
+
+@dataclass(frozen=True)
+class FrozenGateStatus:
+    """Concise status for one commit and gate identity."""
+
+    artifact_root: str
+    commit: str
+    commit_count: int
+    console_log: str
+    exit_code: int | None
+    finished_at: str | None
+    gate: str
+    log_tail: tuple[str, ...]
+    metadata_file: str
+    pid: int | None
+    repository: str
+    started_at: str | None
+    state: FrozenGateState
+    status_file: str
+
+    def record(self) -> dict[str, object]:
+        """Return the stable JSON-compatible monitoring record."""
+        return asdict(self)
 
 
 def _run(
@@ -84,6 +118,25 @@ def _git_text(repository: Path, *arguments: str) -> str:
     return _run(
         ("git", "-C", str(repository), *arguments), cwd=repository
     ).stdout.strip()
+
+
+def _resolved_identity(repository: Path, revision: str) -> tuple[str, int, str]:
+    commit = _git_text(
+        repository,
+        "rev-parse",
+        "--verify",
+        "--end-of-options",
+        f"{revision}^{{commit}}",
+    )
+    commit_count = int(_git_text(repository, "rev-list", "--count", commit))
+    return commit, commit_count, f"{commit_count}-{commit[:8]}"
+
+
+def _require_gate(gate: str) -> tuple[tuple[str, ...], ...]:
+    try:
+        return GATE_COMMANDS[gate]
+    except KeyError as exc:
+        raise FrozenGateError(f"unsupported frozen gate: {gate}") from exc
 
 
 def _pid_is_running(pid: int) -> bool:
@@ -126,6 +179,113 @@ def _validate_repository(repository: Path) -> Path:
             f"repository must be its Git top level: {repository} != {top_level}"
         )
     return repository
+
+
+def _timestamp(path: Path) -> str:
+    return (
+        datetime.fromtimestamp(path.stat().st_mtime, tz=UTC)
+        .isoformat()
+        .replace("+00:00", "Z")
+    )
+
+
+def _bounded_log_tail(path: Path, *, line_count: int) -> tuple[str, ...]:
+    if line_count < 1 or not path.is_file():
+        return ()
+    byte_limit = 64 * 1024
+    with path.open("rb") as stream:
+        stream.seek(0, os.SEEK_END)
+        size = stream.tell()
+        stream.seek(max(0, size - byte_limit))
+        payload = stream.read(byte_limit)
+    text = payload.decode("utf-8", errors="replace")
+    lines = text.splitlines()
+    return tuple(lines[-line_count:])
+
+
+def inspect_frozen_gate(
+    repository: Path,
+    revision: str,
+    gate: str,
+    *,
+    include_failure_tail: bool = False,
+    tail_lines: int = 20,
+) -> FrozenGateStatus:
+    """Inspect one exact gate identity without scanning frozen artifacts."""
+    repository = _validate_repository(repository)
+    _require_gate(gate)
+    commit, commit_count, identity = _resolved_identity(repository, revision)
+    artifact_root = repository / "artifacts" / "frozen" / identity / gate
+    source = artifact_root / repository.name
+    console_log = artifact_root / "console.log"
+    metadata_file = artifact_root / "launch.json"
+    status_file = artifact_root / "exit.status"
+    if not metadata_file.is_file():
+        return FrozenGateStatus(
+            artifact_root=str(artifact_root),
+            commit=commit,
+            commit_count=commit_count,
+            console_log=str(console_log),
+            exit_code=None,
+            finished_at=None,
+            gate=gate,
+            log_tail=(),
+            metadata_file=str(metadata_file),
+            pid=None,
+            repository=str(source),
+            started_at=None,
+            state=FrozenGateState.NOT_STARTED,
+            status_file=str(status_file),
+        )
+    try:
+        metadata = json.loads(metadata_file.read_text(encoding="utf-8"))
+        pid = int(metadata["pid"])
+        started_at = str(metadata["started_at"])
+    except (KeyError, TypeError, ValueError, json.JSONDecodeError) as exc:
+        raise FrozenGateError(
+            f"frozen gate metadata is invalid: {metadata_file}"
+        ) from exc
+    if metadata.get("commit") != commit or metadata.get("gate") != gate:
+        raise FrozenGateError(
+            f"frozen gate metadata identity mismatch: {metadata_file}"
+        )
+    exit_code: int | None = None
+    finished_at: str | None = None
+    if status_file.is_file():
+        try:
+            exit_code = int(status_file.read_text(encoding="utf-8").strip())
+        except ValueError as exc:
+            raise FrozenGateError(
+                f"frozen gate exit status is invalid: {status_file}"
+            ) from exc
+        finished_at = _timestamp(status_file)
+        state = FrozenGateState.PASSED if exit_code == 0 else FrozenGateState.FAILED
+    elif _pid_is_running(pid):
+        state = FrozenGateState.RUNNING
+    else:
+        state = FrozenGateState.STALE
+    log_tail = (
+        _bounded_log_tail(console_log, line_count=tail_lines)
+        if include_failure_tail
+        and state in {FrozenGateState.FAILED, FrozenGateState.STALE}
+        else ()
+    )
+    return FrozenGateStatus(
+        artifact_root=str(artifact_root),
+        commit=commit,
+        commit_count=commit_count,
+        console_log=str(console_log),
+        exit_code=exit_code,
+        finished_at=finished_at,
+        gate=gate,
+        log_tail=log_tail,
+        metadata_file=str(metadata_file),
+        pid=pid,
+        repository=str(source),
+        started_at=started_at,
+        state=state,
+        status_file=str(status_file),
+    )
 
 
 def _prepare_clone(repository: Path, source: Path, commit: str) -> None:
@@ -234,19 +394,8 @@ def launch_frozen_gate(
 ) -> FrozenGateLaunch:
     """Launch ``gate`` against ``revision`` without touching the live checkout."""
     repository = _validate_repository(repository)
-    try:
-        commands = GATE_COMMANDS[gate]
-    except KeyError as exc:
-        raise FrozenGateError(f"unsupported frozen gate: {gate}") from exc
-    commit = _git_text(
-        repository,
-        "rev-parse",
-        "--verify",
-        "--end-of-options",
-        f"{revision}^{{commit}}",
-    )
-    commit_count = int(_git_text(repository, "rev-list", "--count", commit))
-    identity = f"{commit_count}-{commit[:8]}"
+    commands = _require_gate(gate)
+    commit, commit_count, identity = _resolved_identity(repository, revision)
     artifact_root = repository / "artifacts" / "frozen" / identity / gate
     # Workspace-aware Make gates resolve the current repository by its slug
     # beneath the checkout parent, so preserve that shape in every frozen run.
@@ -258,15 +407,17 @@ def launch_frozen_gate(
     launcher = artifact_root / "launch.sh"
 
     with _launch_lock(artifact_root / "launch.lock"):
-        if pid_file.is_file():
-            try:
-                existing_pid = int(pid_file.read_text(encoding="utf-8").strip())
-            except ValueError:
-                existing_pid = 0
-            if _pid_is_running(existing_pid):
-                raise FrozenGateError(
-                    f"{gate} is already running for {identity}: pid {existing_pid}"
-                )
+        if metadata_file.is_file():
+            existing = inspect_frozen_gate(repository, commit, gate)
+            detail = (
+                f": pid {existing.pid}"
+                if existing.state is FrozenGateState.RUNNING
+                else ""
+            )
+            raise FrozenGateError(
+                f"{gate} already has a {existing.state.value} launch "
+                f"for {identity}{detail}"
+            )
 
         _prepare_clone(repository, source, commit)
         status_file.unlink(missing_ok=True)
@@ -316,11 +467,16 @@ def launch_frozen_gate(
 
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Launch a repository gate from an isolated tracked revision."
+        description="Launch or inspect a gate against an isolated tracked revision."
     )
     parser.add_argument("--repo", type=Path, default=Path.cwd())
     parser.add_argument("--ref", default="HEAD")
     parser.add_argument("--gate", choices=sorted(GATE_COMMANDS), required=True)
+    parser.add_argument(
+        "--action",
+        choices=("launch", "status", "summary"),
+        default="launch",
+    )
     return parser
 
 
@@ -329,6 +485,23 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser = _parser()
     arguments = parser.parse_args(argv)
     try:
+        if arguments.action in {"status", "summary"}:
+            status = inspect_frozen_gate(
+                arguments.repo,
+                arguments.ref,
+                arguments.gate,
+                include_failure_tail=arguments.action == "summary",
+            )
+            print(json.dumps(status.record(), sort_keys=True))
+            if arguments.action == "status":
+                return 0
+            return {
+                FrozenGateState.PASSED: 0,
+                FrozenGateState.FAILED: 1,
+                FrozenGateState.RUNNING: 3,
+                FrozenGateState.NOT_STARTED: 4,
+                FrozenGateState.STALE: 5,
+            }[status.state]
         launch = launch_frozen_gate(arguments.repo, arguments.ref, arguments.gate)
     except FrozenGateError as exc:
         parser.error(str(exc))

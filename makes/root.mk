@@ -29,6 +29,7 @@ ROOT_VULTURE_WHITELIST := configs/vulture_whitelist.py
 FREEZE_REF ?= HEAD
 FREEZE_PYTHON ?= $(if $(wildcard $(ROOT_CHECK_PYTHON)),$(ROOT_CHECK_PYTHON),$(PYTHON))
 FROZEN_REF ?= HEAD
+GATE ?= test-all
 FROZEN_GATE_PYTHON ?= $(if $(wildcard $(ROOT_CHECK_PYTHON)),$(ROOT_CHECK_PYTHON),$(PYTHON))
 # Guard against stale local stamp state so root docs and helper lanes can
 # recreate the shared check environment when the interpreter path was removed.
@@ -41,7 +42,7 @@ ROOT_CHECK_ENV_COMMAND = @test -x "$(ROOT_CHECK_PYTHON)" || { \
 
 include $(ROOT_MAKEFILE_DIR)/bijux-py/repository/root.mk
 
-.PHONY: all-frozen ci-github-frozen freeze quality-dead-code test-all-frozen tox-frozen
+.PHONY: all-frozen ci-github-frozen freeze frozen-status frozen-summary quality-dead-code test-all-frozen tox-frozen
 
 quality: quality-dead-code
 
@@ -114,7 +115,13 @@ tox-frozen: ## Launch the complete Tox matrix from an isolated tracked revision
 ci-github-frozen: ## Launch GitHub-equivalent gates from an isolated tracked revision
 	@$(CANON_DEV_PYTHON_ENV) "$(FROZEN_GATE_PYTHON)" -m bijux_canon_dev.release.frozen_gate \
 		--repo "$(MONOREPO_ROOT)" --ref "$(FROZEN_REF)" --gate ci-github
-all-frozen: test-all-frozen tox-frozen ci-github-frozen ## Launch every isolated frozen gate
+frozen-status: ## Report one frozen gate without scanning logs (GATE=test-all|tox|ci-github)
+	@$(CANON_DEV_PYTHON_ENV) "$(FROZEN_GATE_PYTHON)" -m bijux_canon_dev.release.frozen_gate \
+		--repo "$(MONOREPO_ROOT)" --ref "$(FROZEN_REF)" --gate "$(GATE)" --action status
+frozen-summary: ## Summarize one frozen gate and include a bounded failure tail
+	@$(CANON_DEV_PYTHON_ENV) "$(FROZEN_GATE_PYTHON)" -m bijux_canon_dev.release.frozen_gate \
+		--repo "$(MONOREPO_ROOT)" --ref "$(FROZEN_REF)" --gate "$(GATE)" --action summary
+all-frozen: test-all-frozen tox-frozen ci-github-frozen ## Launch each non-overlapping frozen gate once
 sync-badges: root-check-env ## Render shared badge blocks from docs/badges.md into README surfaces
 	@"$(ROOT_CHECK_PYTHON)" -m bijux_canon_dev.docs.badge_sync sync
 check-badges: root-check-env ## Verify README badge blocks match docs/badges.md
