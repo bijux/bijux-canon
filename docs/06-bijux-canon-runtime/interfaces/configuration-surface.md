@@ -73,6 +73,30 @@ configuration only when the effective profile explicitly enables online
 operation; the mandatory offline profile never requires provider credentials.
 The HTTP equivalent is `GET /api/v2/ready?operation=<name>`.
 
+Inspect the complete effective product without opening environment files or
+state databases by hand:
+
+```bash
+bijux-canon-runtime v2 capabilities
+bijux-canon-runtime v2 capabilities --human
+```
+
+The canonical JSON result, the human rendering, public Python
+`discover_runtime_capabilities()` call, and
+`GET /api/v2/capabilities` expose the same configuration identity and winning
+source for every field, workspace/model/active-generation identities, exact
+installed canonical distribution versions, operation set, parser dispositions,
+accepted provider identifiers, and readiness for all seven public
+capabilities. Credential values are never resolved into the report; only the
+configured environment-variable reference and a boolean availability verdict
+are exposed.
+
+The current installed reasoning adapter accepts exactly `credential-free` and
+`local-recorded`. Both are local and require no credential. A configured
+online credential reference is configuration/readiness evidence only; it does
+not manufacture an online adapter or add an identifier to the supported
+provider list.
+
 ## Flow manifest
 
 A v1 manifest owns the identifiers and boundaries that must survive planning

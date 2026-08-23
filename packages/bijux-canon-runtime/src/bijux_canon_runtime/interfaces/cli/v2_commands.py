@@ -41,6 +41,10 @@ from bijux_canon_runtime.application.operations import (
     ReplayOperationRequest,
     RuntimeApplicationServicesV2,
 )
+from bijux_canon_runtime.application.capability_discovery import (
+    RuntimeCapabilityDiscovery,
+    RuntimeCapabilityDiscoveryService,
+)
 from bijux_canon_runtime.application.problems import (
     RuntimeProblemCode,
     runtime_problem,
@@ -87,6 +91,7 @@ def run_v2_command(
     *,
     services: RuntimeApplicationServicesV2 | None,
     readiness_service: RuntimeReadinessService | None = None,
+    capability_discovery_service: RuntimeCapabilityDiscoveryService | None = None,
 ) -> int:
     """Execute one parsed v2 command and emit exactly one JSON document."""
     correlation_id, run_id = _problem_context(args)
@@ -97,14 +102,28 @@ def run_v2_command(
         if args.v2_command == "live":
             _write(runtime_liveness())
             return 0
+        if args.v2_command == "capabilities":
+            discovery = (
+                capability_discovery_service
+                or RuntimeCapabilityDiscoveryService(
+                    resolve_runtime_configuration(environment=os.environ),
+                    environment=os.environ,
+                )
+            )
+            capability_report = discovery.inspect()
+            if args.human:
+                _write_capabilities_human(capability_report)
+            else:
+                _write(capability_report)
+            return 0
         if args.v2_command == "ready":
             readiness = readiness_service or RuntimeReadinessService(
                 resolve_runtime_configuration(environment=os.environ),
                 environment=os.environ,
             )
-            report = readiness.evaluate(ReadinessCapability(args.operation))
-            _write(report)
-            return 0 if report.ready else EXIT_NOT_READY
+            readiness_report = readiness.evaluate(ReadinessCapability(args.operation))
+            _write(readiness_report)
+            return 0 if readiness_report.ready else EXIT_NOT_READY
         service = _require_services(services)
         if services is None:
             owned_service = service
@@ -438,6 +457,51 @@ def _problem_context(args: argparse.Namespace) -> tuple[str | None, str | None]:
 
 def _write(value: object) -> None:
     print(json.dumps(_normalize(value), sort_keys=True, separators=(",", ":")))
+
+
+def _write_capabilities_human(report: RuntimeCapabilityDiscovery) -> None:
+    record = report.record()
+    print(f"Configuration: {report.configuration['identity_sha256']}")
+    print(
+        "Configuration sources: "
+        + json.dumps(report.configuration["origins"], sort_keys=True)
+    )
+    print(
+        f"Workspace: {report.workspace.status} "
+        f"{report.workspace.workspace_id or '-'}"
+    )
+    print(
+        f"Model: {report.model.status} "
+        f"{report.model.model_lock_artifact_id or '-'}"
+    )
+    print(
+        f"Index: {report.index.status} {report.index.generation_id or '-'}"
+    )
+    print("Operations: " + ", ".join(report.operations))
+    print(
+        "Parsers: "
+        + ", ".join(
+            f"{parser.format_id}={parser.disposition}" for parser in report.parsers
+        )
+    )
+    print(
+        "Providers: "
+        + ", ".join(provider.provider_id for provider in report.providers)
+    )
+    print(
+        "Readiness: "
+        + ", ".join(
+            f"{readiness.capability.value}={readiness.status}"
+            for readiness in report.readiness
+        )
+    )
+    print(
+        "Installed distributions: "
+        + ", ".join(
+            f"{item.name}={item.version}" for item in report.installed_distributions
+        )
+    )
+    print("Discovery record: " + json.dumps(record, sort_keys=True))
 
 
 def _normalize(value: object) -> object:

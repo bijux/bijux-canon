@@ -41,6 +41,7 @@ flowchart LR
 | `live` | runtime attempts authorized effects and durable recording | canonical lower-package root callables are currently missing; an explicit host adapter is required |
 | `unsafe` | reduced-guarantee execution is explicitly requested | CLI cannot currently supply its required verification policy; use the governed Python surface |
 | HTTP v2 liveness/readiness | process liveness plus initialized, ingest, index, retrieve, ask, research, or run dependency checks | readiness is scoped by the requested operation |
+| CLI/HTTP/Python capability discovery | effective configuration origins, active identities, installed formats/providers, and readiness matrix | reports actual installed support without enabling a provider or mutating state |
 
 Start with the strongest demonstrated surface that answers the operational
 question. Do not use dry-run success as a live readiness result or one

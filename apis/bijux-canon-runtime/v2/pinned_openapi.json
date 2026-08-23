@@ -431,6 +431,98 @@
         "title": "HTTPValidationError",
         "type": "object"
       },
+      "IndexDiscoveryResponse": {
+        "additionalProperties": false,
+        "description": "Content-safe active index identity.",
+        "properties": {
+          "chunk_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Chunk Count"
+          },
+          "chunk_set_sha256": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Chunk Set Sha256"
+          },
+          "dimension": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dimension"
+          },
+          "generation_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Generation Id"
+          },
+          "model_lock_artifact_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Lock Artifact Id"
+          },
+          "snapshot_artifact_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Snapshot Artifact Id"
+          },
+          "status": {
+            "enum": [
+              "not_configured",
+              "unavailable",
+              "active"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "generation_id",
+          "snapshot_artifact_id",
+          "model_lock_artifact_id",
+          "chunk_set_sha256",
+          "chunk_count",
+          "dimension"
+        ],
+        "title": "IndexDiscoveryResponse",
+        "type": "object"
+      },
       "IndexInspectionResponse": {
         "additionalProperties": false,
         "description": "Content-safe immutable index generation metadata.",
@@ -544,6 +636,26 @@
           "page"
         ],
         "title": "IndexInspectionResponse",
+        "type": "object"
+      },
+      "InstalledDistributionDiscoveryResponse": {
+        "additionalProperties": false,
+        "description": "Exact installed version of one canonical package.",
+        "properties": {
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "version": {
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "version"
+        ],
+        "title": "InstalledDistributionDiscoveryResponse",
         "type": "object"
       },
       "JobResultResponse": {
@@ -751,6 +863,131 @@
         "title": "LivenessResponse",
         "type": "object"
       },
+      "ModelDiscoveryResponse": {
+        "additionalProperties": false,
+        "description": "Content-safe effective embedding-model identity.",
+        "properties": {
+          "dimension": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dimension"
+          },
+          "model_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Id"
+          },
+          "model_lock_artifact_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Lock Artifact Id"
+          },
+          "profile_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Profile Id"
+          },
+          "provider_kind": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider Kind"
+          },
+          "revision": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Revision"
+          },
+          "status": {
+            "enum": [
+              "not_configured",
+              "unavailable",
+              "verified"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "model_lock_artifact_id",
+          "profile_id",
+          "provider_kind",
+          "model_id",
+          "revision",
+          "dimension"
+        ],
+        "title": "ModelDiscoveryResponse",
+        "type": "object"
+      },
+      "ParserDiscoveryResponse": {
+        "additionalProperties": false,
+        "description": "One source format and its installed admission disposition.",
+        "properties": {
+          "disposition": {
+            "enum": [
+              "supported",
+              "typed_refusal"
+            ],
+            "title": "Disposition",
+            "type": "string"
+          },
+          "format_id": {
+            "enum": [
+              "jats",
+              "pdf-digital",
+              "html",
+              "markdown",
+              "text",
+              "docx",
+              "ocr-required"
+            ],
+            "title": "Format Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "format_id",
+          "disposition"
+        ],
+        "title": "ParserDiscoveryResponse",
+        "type": "object"
+      },
       "PrepareCorpusRequest": {
         "additionalProperties": false,
         "description": "Prepare a corpus from one explicit local directory.",
@@ -864,6 +1101,37 @@
           "cause"
         ],
         "title": "ProblemDetail",
+        "type": "object"
+      },
+      "ProviderDiscoveryResponse": {
+        "additionalProperties": false,
+        "description": "One provider identifier accepted by installed reasoning.",
+        "properties": {
+          "credential_required": {
+            "const": false,
+            "title": "Credential Required",
+            "type": "boolean"
+          },
+          "provider_id": {
+            "enum": [
+              "credential-free",
+              "local-recorded"
+            ],
+            "title": "Provider Id",
+            "type": "string"
+          },
+          "provider_kind": {
+            "const": "local",
+            "title": "Provider Kind",
+            "type": "string"
+          }
+        },
+        "required": [
+          "provider_id",
+          "provider_kind",
+          "credential_required"
+        ],
+        "title": "ProviderDiscoveryResponse",
         "type": "object"
       },
       "ReadinessCapability": {
@@ -1334,6 +1602,85 @@
         "title": "RunRequest",
         "type": "object"
       },
+      "RuntimeCapabilityDiscoveryResponse": {
+        "additionalProperties": false,
+        "description": "Secret-safe effective product configuration and support discovery.",
+        "properties": {
+          "configuration": {
+            "additionalProperties": true,
+            "title": "Configuration",
+            "type": "object"
+          },
+          "index": {
+            "$ref": "#/components/schemas/IndexDiscoveryResponse"
+          },
+          "installed_distributions": {
+            "items": {
+              "$ref": "#/components/schemas/InstalledDistributionDiscoveryResponse"
+            },
+            "title": "Installed Distributions",
+            "type": "array"
+          },
+          "model": {
+            "$ref": "#/components/schemas/ModelDiscoveryResponse"
+          },
+          "operations": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Operations",
+            "type": "array"
+          },
+          "parsers": {
+            "items": {
+              "$ref": "#/components/schemas/ParserDiscoveryResponse"
+            },
+            "title": "Parsers",
+            "type": "array"
+          },
+          "provider_credential_available": {
+            "title": "Provider Credential Available",
+            "type": "boolean"
+          },
+          "providers": {
+            "items": {
+              "$ref": "#/components/schemas/ProviderDiscoveryResponse"
+            },
+            "title": "Providers",
+            "type": "array"
+          },
+          "readiness": {
+            "items": {
+              "$ref": "#/components/schemas/ReadinessResponse"
+            },
+            "title": "Readiness",
+            "type": "array"
+          },
+          "schema_version": {
+            "const": "bijux.runtime.capability-discovery.v1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "workspace": {
+            "$ref": "#/components/schemas/WorkspaceDiscoveryResponse"
+          }
+        },
+        "required": [
+          "schema_version",
+          "configuration",
+          "provider_credential_available",
+          "workspace",
+          "model",
+          "index",
+          "installed_distributions",
+          "operations",
+          "parsers",
+          "providers",
+          "readiness"
+        ],
+        "title": "RuntimeCapabilityDiscoveryResponse",
+        "type": "object"
+      },
       "RuntimeProblemCode": {
         "description": "Stable machine-readable application failure codes.",
         "enum": [
@@ -1385,6 +1732,62 @@
           "type"
         ],
         "title": "ValidationError",
+        "type": "object"
+      },
+      "WorkspaceDiscoveryResponse": {
+        "additionalProperties": false,
+        "description": "Content-safe effective workspace identity.",
+        "properties": {
+          "layout_identity_sha256": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Layout Identity Sha256"
+          },
+          "status": {
+            "enum": [
+              "not_configured",
+              "unavailable",
+              "initialized"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "workspace_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Workspace Id"
+          },
+          "workspace_version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Workspace Version"
+          }
+        },
+        "required": [
+          "status",
+          "workspace_id",
+          "workspace_version",
+          "layout_identity_sha256"
+        ],
+        "title": "WorkspaceDiscoveryResponse",
         "type": "object"
       }
     }
@@ -1546,6 +1949,69 @@
           }
         },
         "summary": "Ask"
+      }
+    },
+    "/api/v2/capabilities": {
+      "get": {
+        "operationId": "capabilities_api_v2_capabilities_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Bijux-API-Version",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Bijux-Api-Version"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Correlation-ID",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^[A-Za-z0-9._:-]{1,200}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Correlation-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RuntimeCapabilityDiscoveryResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Capabilities"
       }
     },
     "/api/v2/comparisons": {

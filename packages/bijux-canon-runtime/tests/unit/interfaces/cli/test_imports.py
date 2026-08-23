@@ -21,8 +21,15 @@ def test_imports() -> None:
     assert ExecutionConfig.__name__ == "ExecutionConfig"
     assert RunMode.__name__ == "RunMode"
     assert FlowManifest.__name__ == "FlowManifest"
+    assert callable(bijux_canon_runtime.discover_runtime_capabilities)
+    assert (
+        bijux_canon_runtime.RuntimeCapabilityDiscovery.__name__
+        == "RuntimeCapabilityDiscovery"
+    )
     assert set(bijux_canon_runtime.__all__) == {
         "FlowManifest",
+        "RuntimeCapabilityDiscovery",
         "RunMode",
+        "discover_runtime_capabilities",
         "execute_flow",
     }

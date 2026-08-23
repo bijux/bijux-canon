@@ -55,6 +55,7 @@ extension points merely because repository tests import them.
 | Need | Import surface |
 | --- | --- |
 | execution entrypoint | `bijux_canon_runtime` or `bijux_canon_runtime.runtime` |
+| effective capability discovery | `bijux_canon_runtime.discover_runtime_capabilities` |
 | execution result facade | `bijux_canon_runtime.runtime` |
 | stable plan, trace, and replay models | `bijux_canon_runtime.model` |
 | identifiers and semantic enums | `bijux_canon_runtime.ontology` |
@@ -62,17 +63,22 @@ extension points merely because repository tests import them.
 | versioned HTTP schemas and ASGI app | `bijux_canon_runtime.api.v1` |
 
 ```python
-from bijux_canon_runtime import RunMode, execute_flow
+from bijux_canon_runtime import (
+    RunMode,
+    discover_runtime_capabilities,
+    execute_flow,
+)
 from bijux_canon_runtime.application.execute_flow import ExecutionConfig
 from bijux_canon_runtime.model import FlowManifest
 from bijux_canon_runtime.ontology import DeterminismLevel
 ```
 
-`ExecutionConfig` currently has no package-root or public-facade export. The
-shown application import is the operational path required for explicit Python
-configuration, but the `application` package is marked as internal and is not
-a general extension surface. Consumers that need a stronger boundary can use
-the canonical CLI while a stable configuration facade is absent.
+`discover_runtime_capabilities()` is the stable read-only facade for effective
+configuration identities, sources, installed support, and readiness. It never
+returns credential values. `ExecutionConfig` still has no package-root export;
+the shown application import remains the operational path for legacy flow
+execution configuration, and the `application` package is not a general
+extension surface.
 
 `FlowManifest` construction validates its dataclass shape. Execute through the
 application boundary so contract validation, planning, determinism enforcement,

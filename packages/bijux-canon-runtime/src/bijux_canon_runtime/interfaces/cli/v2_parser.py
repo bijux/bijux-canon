@@ -34,6 +34,15 @@ def add_v2_commands(
     )
 
     commands.add_parser("live", help="Report dependency-free process liveness.")
+    capabilities = commands.add_parser(
+        "capabilities",
+        help="Inspect effective configuration and installed product capabilities.",
+    )
+    capabilities.add_argument(
+        "--human",
+        action="store_true",
+        help="Render the same discovery report as operator-oriented text.",
+    )
     ready = commands.add_parser("ready", help="Verify capability-aware readiness.")
     ready.add_argument(
         "--operation",

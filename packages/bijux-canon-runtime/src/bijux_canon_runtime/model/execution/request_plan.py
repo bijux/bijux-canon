@@ -13,6 +13,9 @@ from bijux_canon_runtime.ontology.ids import ArtifactID, RequestID
 from bijux_canon_runtime.ontology.public import ReplayMode
 
 
+SUPPORTED_LOCAL_REASON_PROVIDERS = ("credential-free", "local-recorded")
+
+
 class RuntimeRequestOperation(StrEnum):
     """User operations that expand into one or more typed DAG nodes."""
 
@@ -243,4 +246,5 @@ __all__ = [
     "RuntimeRequestBudget",
     "RuntimeRequestOperation",
     "RuntimeRequestPlan",
+    "SUPPORTED_LOCAL_REASON_PROVIDERS",
 ]

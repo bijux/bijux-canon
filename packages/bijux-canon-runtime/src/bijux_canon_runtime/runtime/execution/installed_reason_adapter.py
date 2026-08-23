@@ -25,6 +25,7 @@ from bijux_canon_runtime.model.artifact import canonical_json_bytes
 from bijux_canon_runtime.model.execution.request_plan import (
     ConcreteDagStep,
     DagOperation,
+    SUPPORTED_LOCAL_REASON_PROVIDERS,
 )
 from bijux_canon_runtime.runtime.execution.installed_operation_adapters import (
     _bounded_output,
@@ -35,9 +36,6 @@ from bijux_canon_runtime.runtime.execution.operation_dispatcher import (
     StepDispatchError,
     StepOutputArtifact,
 )
-
-_LOCAL_PROVIDERS = frozenset({"credential-free", "local-recorded"})
-
 
 def _required_string(value: object, field: str) -> str:
     if not isinstance(value, str) or not value:
@@ -286,7 +284,7 @@ class CanonicalReasonOperationAdapter:
             raise StepDispatchError("reasoning requires one retrieval evidence set")
         if step.inputs.query is None or step.inputs.output_policy is None:
             raise StepDispatchError("reasoning requires query and output policy")
-        if step.inputs.provider not in _LOCAL_PROVIDERS:
+        if step.inputs.provider not in SUPPORTED_LOCAL_REASON_PROVIDERS:
             raise StepDispatchError(
                 "provider-backed reasoning requires separately configured credentials"
             )

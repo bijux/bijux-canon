@@ -278,6 +278,85 @@ class ReadinessResponse(StrictModel):
     reasons: tuple[ReadinessReasonValue, ...]
 
 
+class InstalledDistributionDiscoveryResponse(StrictModel):
+    """Exact installed version of one canonical package."""
+
+    name: str
+    version: str
+
+
+class ParserDiscoveryResponse(StrictModel):
+    """One source format and its installed admission disposition."""
+
+    format_id: Literal[
+        "jats",
+        "pdf-digital",
+        "html",
+        "markdown",
+        "text",
+        "docx",
+        "ocr-required",
+    ]
+    disposition: Literal["supported", "typed_refusal"]
+
+
+class ProviderDiscoveryResponse(StrictModel):
+    """One provider identifier accepted by installed reasoning."""
+
+    provider_id: Literal["credential-free", "local-recorded"]
+    provider_kind: Literal["local"]
+    credential_required: Literal[False]
+
+
+class WorkspaceDiscoveryResponse(StrictModel):
+    """Content-safe effective workspace identity."""
+
+    status: Literal["not_configured", "unavailable", "initialized"]
+    workspace_id: str | None
+    workspace_version: int | None
+    layout_identity_sha256: str | None
+
+
+class ModelDiscoveryResponse(StrictModel):
+    """Content-safe effective embedding-model identity."""
+
+    status: Literal["not_configured", "unavailable", "verified"]
+    model_lock_artifact_id: str | None
+    profile_id: str | None
+    provider_kind: str | None
+    model_id: str | None
+    revision: str | None
+    dimension: int | None
+
+
+class IndexDiscoveryResponse(StrictModel):
+    """Content-safe active index identity."""
+
+    status: Literal["not_configured", "unavailable", "active"]
+    generation_id: str | None
+    snapshot_artifact_id: str | None
+    model_lock_artifact_id: str | None
+    chunk_set_sha256: str | None
+    chunk_count: int | None
+    dimension: int | None
+
+
+class RuntimeCapabilityDiscoveryResponse(StrictModel):
+    """Secret-safe effective product configuration and support discovery."""
+
+    schema_version: Literal["bijux.runtime.capability-discovery.v1"]
+    configuration: dict[str, object]
+    provider_credential_available: bool
+    workspace: WorkspaceDiscoveryResponse
+    model: ModelDiscoveryResponse
+    index: IndexDiscoveryResponse
+    installed_distributions: tuple[InstalledDistributionDiscoveryResponse, ...]
+    operations: tuple[str, ...]
+    parsers: tuple[ParserDiscoveryResponse, ...]
+    providers: tuple[ProviderDiscoveryResponse, ...]
+    readiness: tuple[ReadinessResponse, ...]
+
+
 class CorpusInspectionResponse(StrictModel):
     """Verified immutable corpus publication metadata."""
 
@@ -344,4 +423,5 @@ __all__ = [
     "ResearchRequest",
     "RetrieveRequest",
     "RunRequest",
+    "RuntimeCapabilityDiscoveryResponse",
 ]

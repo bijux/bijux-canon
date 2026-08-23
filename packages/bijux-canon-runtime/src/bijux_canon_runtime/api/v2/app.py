@@ -36,6 +36,10 @@ from bijux_canon_runtime.api.v2.schemas import (
     ResearchRequest,
     RetrieveRequest,
     RunRequest,
+    RuntimeCapabilityDiscoveryResponse,
+)
+from bijux_canon_runtime.application.capability_discovery import (
+    RuntimeCapabilityDiscoveryService,
 )
 from bijux_canon_runtime.application.operations import (
     ApplicationCapabilityError,
@@ -53,6 +57,7 @@ from bijux_canon_runtime.application.readiness import (
     runtime_liveness,
 )
 from bijux_canon_runtime.application.runtime_configuration import (
+    RuntimeConfiguration,
     resolve_runtime_configuration,
 )
 from bijux_canon_runtime.model.execution.request_plan import (
@@ -112,6 +117,8 @@ def _problem(
 def create_app(
     services: RuntimeApplicationServicesV2 | None = None,
     readiness: RuntimeReadinessService | None = None,
+    discovery: RuntimeCapabilityDiscoveryService | None = None,
+    configuration: RuntimeConfiguration | None = None,
 ) -> FastAPI:
     """Create an isolated v2 adapter with explicit application composition."""
 
@@ -142,16 +149,31 @@ def create_app(
     api.state.application_services = services
     api.state.application_services_lock = threading.Lock()
     api.state.readiness_service = readiness
+    api.state.capability_discovery_service = discovery
+    api.state.runtime_configuration = configuration
+    api.state.runtime_configuration_lock = threading.Lock()
+
+    def effective_configuration(request: Request) -> RuntimeConfiguration:
+        configured = request.app.state.runtime_configuration
+        if configured is None:
+            with request.app.state.runtime_configuration_lock:
+                configured = request.app.state.runtime_configuration
+                if configured is None:
+                    configured = resolve_runtime_configuration(environment=os.environ)
+                    request.app.state.runtime_configuration = configured
+        if not isinstance(configured, RuntimeConfiguration):
+            raise TypeError("runtime configuration has the wrong version")
+        return configured
 
     def application_services(request: Request) -> RuntimeApplicationServicesV2:
         configured = request.app.state.application_services
         if configured is None:
-            configuration = resolve_runtime_configuration(environment=os.environ)
+            runtime_configuration = effective_configuration(request)
             with request.app.state.application_services_lock:
                 configured = request.app.state.application_services
                 if configured is None:
                     configured = compose_runtime_application_services(
-                        configuration=configuration,
+                        configuration=runtime_configuration,
                     )
                     request.app.state.application_services = configured
         if not isinstance(configured, RuntimeApplicationServicesV2):
@@ -182,7 +204,20 @@ def create_app(
                 raise TypeError("runtime readiness service has the wrong version")
             return configured
         return RuntimeReadinessService(
-            resolve_runtime_configuration(environment=os.environ),
+            effective_configuration(request),
+            environment=os.environ,
+        )
+
+    def capability_discovery_service(
+        request: Request,
+    ) -> RuntimeCapabilityDiscoveryService:
+        configured = request.app.state.capability_discovery_service
+        if configured is not None:
+            if not isinstance(configured, RuntimeCapabilityDiscoveryService):
+                raise TypeError("runtime capability discovery has the wrong version")
+            return configured
+        return RuntimeCapabilityDiscoveryService(
+            effective_configuration(request),
             environment=os.environ,
         )
 
@@ -260,6 +295,10 @@ def create_app(
     Version = Annotated[None, Depends(require_version)]
     Services = Annotated[RuntimeApplicationServicesV2, Depends(application_services)]
     Readiness = Annotated[RuntimeReadinessService, Depends(readiness_service)]
+    Discovery = Annotated[
+        RuntimeCapabilityDiscoveryService,
+        Depends(capability_discovery_service),
+    ]
 
     @api.get("/api/v2/live", response_model=LivenessResponse)
     def live(_: Version) -> LivenessResponse:
@@ -282,6 +321,18 @@ def create_app(
             mode="json"
         )
         return JSONResponse(status_code=200 if report.ready else 503, content=payload)
+
+    @api.get(
+        "/api/v2/capabilities",
+        response_model=RuntimeCapabilityDiscoveryResponse,
+    )
+    def capabilities(
+        _: Version,
+        capability_discovery: Discovery,
+    ) -> RuntimeCapabilityDiscoveryResponse:
+        return RuntimeCapabilityDiscoveryResponse.model_validate(
+            capability_discovery.inspect().record()
+        )
 
     Idempotency = Annotated[
         str,

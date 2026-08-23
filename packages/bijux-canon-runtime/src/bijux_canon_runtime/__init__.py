@@ -11,7 +11,9 @@ from bijux_canon_runtime.model.flows.manifest import FlowManifest
 
 __all__ = [
     "FlowManifest",
+    "RuntimeCapabilityDiscovery",
     "RunMode",
+    "discover_runtime_capabilities",
     "execute_flow",
 ]
 
@@ -26,6 +28,17 @@ def __getattr__(name: str) -> Any:
         exports = {
             "RunMode": RunMode,
             "execute_flow": execute_flow,
+        }
+        return exports[name]
+    if name in {"RuntimeCapabilityDiscovery", "discover_runtime_capabilities"}:
+        from bijux_canon_runtime.application.capability_discovery import (
+            RuntimeCapabilityDiscovery,
+            discover_runtime_capabilities,
+        )
+
+        exports = {
+            "RuntimeCapabilityDiscovery": RuntimeCapabilityDiscovery,
+            "discover_runtime_capabilities": discover_runtime_capabilities,
         }
         return exports[name]
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
