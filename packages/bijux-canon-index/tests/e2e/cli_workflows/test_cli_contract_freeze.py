@@ -21,6 +21,7 @@ CLI_HELP = """
 │ --trace                 Emit trace metadata                                  │
 │ --quiet                 Suppress non-error output                            │
 │ --no-color              Disable colored output                               │
+│ --version               Show the installed canonical index version and exit. │
 │ --help                  Show this message and exit.                          │
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ╭─ Commands ───────────────────────────────────────────────────────────────────╮

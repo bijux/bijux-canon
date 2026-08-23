@@ -53,11 +53,10 @@ a stable production claim.
 
 ## Inspect Before Executing
 
-The canonical wheel currently exposes a module CLI rather than a
-`bijux-canon-index` console script:
+The canonical wheel exposes `bijux-canon-index` and an equivalent module CLI:
 
 ```bash
-python -m bijux_canon_index.interfaces.cli.app capabilities
+bijux-canon-index capabilities
 ```
 
 Capability output reveals the selected backend, available adapters, and

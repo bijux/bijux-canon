@@ -105,8 +105,8 @@ unbounded package name after retirement.
 
 ## Package-Specific Execution
 
-- For `bijux-vex`, retain the chosen canonical Python or HTTP invocation and
-  its provenance handling; there is no renamed canonical console script.
+- For `bijux-vex`, retain the verified `bijux-canon-index`, Python, or HTTP
+  invocation and its provenance handling.
 - For `bijux-rar`, inspect installed distributions and imports rather than
   treating the still-available command as bridge evidence.
 - For `bijux-canon` and `agentic-flows`, verify that removing one exact pin does

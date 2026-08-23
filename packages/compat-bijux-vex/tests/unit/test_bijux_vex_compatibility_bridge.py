@@ -3,6 +3,7 @@ from __future__ import annotations
 import importlib
 from pathlib import Path
 import sys
+import tomllib
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "src"))
 sys.path.insert(
@@ -41,3 +42,24 @@ def test_nested_runtime_types_keep_identity_under_alias_imports() -> None:
     canonical_module = importlib.import_module(CANONICAL_NESTED_MODULE_NAME)
 
     assert legacy_module.ExecutionPlan is canonical_module.ExecutionPlan
+
+
+def test_legacy_and_canonical_commands_delegate_to_one_public_entrypoint() -> None:
+    packages = Path(__file__).resolve().parents[3]
+    canonical = tomllib.loads(
+        (packages / "bijux-canon-index" / "pyproject.toml").read_text(
+            encoding="utf-8"
+        )
+    )
+    legacy = tomllib.loads(
+        (packages / "compat-bijux-vex" / "pyproject.toml").read_text(
+            encoding="utf-8"
+        )
+    )
+
+    assert canonical["project"]["scripts"]["bijux-canon-index"] == (
+        "bijux_canon_index.interfaces.cli.app:app"
+    )
+    assert legacy["project"]["scripts"]["bijux-vex"] == (
+        canonical["project"]["scripts"]["bijux-canon-index"]
+    )

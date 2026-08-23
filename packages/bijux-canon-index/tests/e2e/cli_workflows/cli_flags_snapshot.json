@@ -1401,6 +1401,15 @@
         ],
         "param_type": "option",
         "required": false
+      },
+      {
+        "default": false,
+        "name": "version",
+        "opts": [
+          "--version"
+        ],
+        "param_type": "option",
+        "required": false
       }
     ]
   },

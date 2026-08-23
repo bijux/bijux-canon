@@ -72,11 +72,10 @@ importable is not evidence that a feature belongs to the supported contract.
 
 ## Interface Boundary
 
-The package exposes Python and HTTP surfaces and contains a Typer application,
-but it does not install a `bijux-canon-index` console command. Automation must
-not assume that command exists. The `bijux-vex` package is a compatibility
-surface with its own continuity constraints; it is not the name of the
-canonical index contract.
+The package exposes Python and HTTP surfaces and installs its Typer application
+as `bijux-canon-index`. The `bijux-vex` package is a compatibility surface with
+its own continuity constraints; it delegates to the canonical application but
+is not the name of the canonical index contract.
 
 Authorization decisions and metadata redaction apply only at package-owned
 interfaces. Authentication, TLS, secret management, service-to-service

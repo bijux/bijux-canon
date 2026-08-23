@@ -14,21 +14,19 @@ console command for `bijux-canon-index`. The canonical package owns vector
 execution planning, capability resolution, state backends, ranked results,
 replay comparison, and provenance.
 
-The executable requires special care: `bijux-canon-index` intentionally
-publishes no canonical console script. There is no `bijux-canon-index` command
-to substitute for `bijux-vex`.
+The canonical wheel publishes `bijux-canon-index`. Both executable names invoke
+the same application; the bridge adds no parser or index behavior.
 
 ## Choose A Replacement Boundary
 
 | Consumer need | Supported boundary | Migration implication |
 | --- | --- | --- |
-| keep deployed command automation running | `bijux-vex` bridge command | retain the compatibility distribution |
+| replace deployed command automation | `bijux-canon-index` | compare help, version, JSON output, and exit status before removing the bridge |
 | embed index behavior in Python | documented `bijux_canon_index` facade | replace imports and validate returned contracts |
-| retain a command boundary without a console script | `python -m bijux_canon_index.interfaces.cli.app` | replace invocation and compare structured results |
+| retain a module command boundary | `python -m bijux_canon_index.interfaces.cli.app` | replace invocation and compare structured results |
 | integrate across a service boundary | versioned HTTP API | map requests and responses to published schemas |
 
-Do not create or document a nonexistent `bijux-canon-index` executable as a
-migration shortcut.
+Use the canonical command for direct command migration.
 
 ## Identity Contract
 
@@ -36,7 +34,7 @@ migration shortcut.
 | --- | --- | --- |
 | distribution | `bijux-vex` | `bijux-canon-index` |
 | Python root | `bijux_vex` | `bijux_canon_index` |
-| console command | `bijux-vex` | no direct executable replacement |
+| console command | `bijux-vex` | `bijux-canon-index` |
 | nested CLI module | `bijux_vex.interfaces.cli.app` | `bijux_canon_index.interfaces.cli.app` |
 | representative nested type | `bijux_vex.core.runtime.execution_plan.ExecutionPlan` | `bijux_canon_index.core.runtime.execution_plan.ExecutionPlan` |
 

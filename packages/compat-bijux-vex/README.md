@@ -43,9 +43,8 @@ command for [`bijux-canon-index`](../bijux-canon-index/README.md). The canonical
 package owns execution planning, capability resolution, state backends, ranked
 results, provenance, explanation, comparison, and replay.
 
-This bridge has an intentional asymmetry: `bijux-canon-index` publishes no
-canonical console script. There is no `bijux-canon-index` executable to use as
-a mechanical rename for `bijux-vex`.
+The canonical package publishes `bijux-canon-index`. Both executable names
+delegate to the same Typer application; the bridge adds no index behavior.
 
 ## Install
 
@@ -66,7 +65,7 @@ contract.
 | --- | --- | --- |
 | distribution | `bijux-vex` | `bijux-canon-index` |
 | Python package | `bijux_vex` | `bijux_canon_index` |
-| console command | `bijux-vex` | no direct console replacement |
+| console command | `bijux-vex` | `bijux-canon-index` |
 | module execution | `python -m bijux_vex` | `python -m bijux_canon_index.interfaces.cli.app` |
 | CLI module | `bijux_vex.interfaces.cli.app` | `bijux_canon_index.interfaces.cli.app` |
 | representative plan type | `bijux_vex.core.runtime.execution_plan.ExecutionPlan` | `bijux_canon_index.core.runtime.execution_plan.ExecutionPlan` |
@@ -77,12 +76,14 @@ flowchart TD
     bridge["bijux-vex bridge"]
     index["bijux-canon-index"]
     command["preserved bijux-vex command"]
+    canonical_command["bijux-canon-index command"]
     python["canonical Python API"]
     module["canonical module CLI"]
     http["versioned HTTP API"]
 
     caller --> bridge -->|"exact release pin"| index
     bridge --> command --> index
+    canonical_command --> index
     caller -. "deliberate migration" .-> python --> index
     caller -. "deliberate migration" .-> module --> index
     caller -. "deliberate migration" .-> http --> index
@@ -115,6 +116,7 @@ assert CompatibilityPlan is CanonicalPlan
 
 ```bash
 bijux-vex --help
+bijux-canon-index --help
 python3.11 -m bijux_vex --help
 python3.11 -m bijux_canon_index.interfaces.cli.app --help
 ```
@@ -126,9 +128,10 @@ artifact identity, and replay or comparison verdicts.
 ## Replace Command Integrations Deliberately
 
 New Python code should install `bijux-canon-index` and import
-`bijux_canon_index`. A command caller must choose a supported boundary rather
-than inventing a `bijux-canon-index` executable:
+`bijux_canon_index`. A command caller can migrate directly:
 
+- replace `bijux-vex` with `bijux-canon-index` and compare structured output
+  and exit behavior;
 - call the documented Python facade for in-process integration;
 - invoke `python -m bijux_canon_index.interfaces.cli.app` when the module CLI
   is the correct operational boundary; or
@@ -147,7 +150,7 @@ historical artifact layouts.
 - [Index handbook](https://bijux.io/bijux-canon/03-bijux-canon-index/)
   for execution, artifacts, and replay semantics
 - [Compatibility contract](https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-vex/)
-  for the command asymmetry and preserved identities
+  for command delegation and preserved identities
 - [Migration guidance](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
   for consumer inventory and acceptance
 - [Retired repository](https://github.com/bijux/bijux-vex) for historical

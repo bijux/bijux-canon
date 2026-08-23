@@ -55,6 +55,9 @@ dependencies = [
   "fastapi>=0.138,<1.0",
 ]
 
+[project.scripts]
+bijux-canon-index = "bijux_canon_index.interfaces.cli.app:app"
+
 [project.optional-dependencies]
 api = [
   "fastapi>=0.138,<1.0",

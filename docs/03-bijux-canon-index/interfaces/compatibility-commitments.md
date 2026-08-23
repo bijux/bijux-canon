@@ -10,15 +10,14 @@ last_reviewed: 2026-07-21
 # Compatibility Commitments
 
 The canonical distribution and import are `bijux-canon-index` and
-`bijux_canon_index`. The canonical wheel currently exposes its CLI through the
-module entry point:
+`bijux_canon_index`. The canonical wheel exposes its CLI directly:
 
 ```bash
-python -m bijux_canon_index.interfaces.cli.app capabilities
+bijux-canon-index capabilities
 ```
 
-It does not register a `bijux-canon-index` console command. Automation should
-use the module form instead of depending on an executable that is not packaged.
+The module form `python -m bijux_canon_index.interfaces.cli.app` resolves to the
+same application.
 
 ## Legacy Name
 
@@ -32,6 +31,7 @@ flowchart LR
     LegacyImport --> Canonical[bijux_canon_index]
     LegacyCommand[bijux-vex command] --> CLI[canonical CLI app]
     CanonicalDist[bijux-canon-index distribution] --> Canonical
+    CanonicalCommand[bijux-canon-index command] --> CLI
     Module[python -m canonical CLI module] --> CLI
 ```
 
@@ -119,9 +119,10 @@ For approximate execution, retain the ANN profile, randomness declaration,
 quality evidence, observed differences, and tolerance decision. Similar
 neighbors without those identities are not compatibility proof.
 
-The canonical distribution deliberately has no console script. Migration is
-therefore complete only when every old command caller has selected and tested
-an actual canonical boundary; renaming the executable is not an option.
+Command migration replaces `bijux-vex` with `bijux-canon-index` and verifies
+help, version, structured output, exit status, and operation evidence. Both
+executables delegate to the same canonical application; the legacy bridge adds
+no behavior.
 
 See the [bijux-vex catalog entry](../../08-compat-packages/catalog/bijux-vex.md)
 for package-level details.

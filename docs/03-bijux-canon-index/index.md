@@ -54,11 +54,10 @@ flowchart LR
 - the package root currently exports only `__version__`; callers use the
   domain, application, contract, and interface modules deliberately
 
-Package installation does not register a `bijux-canon-index` console script.
-Invoke the application as `python -m bijux_canon_index.interfaces.cli.app`, use
-the versioned HTTP contract, or integrate through the documented application
-and domain modules. The `bijux-vex` executable is a compatibility surface, not
-the canonical command name.
+Package installation registers the `bijux-canon-index` command. The module
+form `python -m bijux_canon_index.interfaces.cli.app` invokes the same
+application. The `bijux-vex` executable remains a compatibility surface that
+delegates to this canonical command implementation.
 
 ## Start With Backend Capability Evidence
 

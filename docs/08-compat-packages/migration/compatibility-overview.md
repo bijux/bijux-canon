@@ -51,7 +51,7 @@ delegate to the canonical command application.
 | `bijux-agent` | `bijux-canon-agent` | move orchestration imports, provider configuration, and traces |
 | `bijux-rag` | `bijux-canon-ingest` | move preparation imports, commands, caches, and artifact readers |
 | `bijux-rar` | `bijux-canon-reason` | move reasoning imports and run-bundle verification |
-| `bijux-vex` | `bijux-canon-index` | move imports and redesign command automation around Python or HTTP |
+| `bijux-vex` | `bijux-canon-index` | move imports and command automation to the canonical package and executable |
 
 Two preserved identities target runtime. That is intentional: one protects the
 shorter `bijux-canon` family name and one protects the former

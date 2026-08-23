@@ -23,7 +23,7 @@ to leave the preserved identity.
 | `bijux-agent` | `bijux-canon-agent` | orchestration imports, provider configuration, commands, and traces | [bijux-agent](bijux-agent.md) |
 | `bijux-rag` | `bijux-canon-ingest` | preparation imports, commands, caches, and artifact readers | [bijux-rag](bijux-rag.md) |
 | `bijux-rar` | `bijux-canon-reason` | reasoning imports, commands, run bundles, and verification | [bijux-rar](bijux-rar.md) |
-| `bijux-vex` | `bijux-canon-index` | vector contracts, module execution, provenance, and command redesign | [bijux-vex](bijux-vex.md) |
+| `bijux-vex` | `bijux-canon-index` | vector contracts, provenance, and direct command migration | [bijux-vex](bijux-vex.md) |
 
 The [legacy name map](legacy-name-map.md) gives the compact distribution,
 module, command, and retired-repository mapping. Use the package records when

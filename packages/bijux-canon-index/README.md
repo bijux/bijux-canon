@@ -77,26 +77,26 @@ flowchart LR
 ## Primary entrypoint
 
 The repository contains a complete Typer application under
-`bijux_canon_index.interfaces.cli.app`. The current package metadata does **not**
-register a `bijux-canon-index` console script, so source and wheel users must
-not assume that executable exists. The application can be invoked explicitly:
+`bijux_canon_index.interfaces.cli.app`. The wheel registers that application as
+the canonical `bijux-canon-index` console script:
 
 ```bash
-python -m bijux_canon_index.interfaces.cli.app capabilities
-python -m bijux_canon_index.interfaces.cli.app execute \
+bijux-canon-index --version
+bijux-canon-index capabilities
+bijux-canon-index execute \
   --vector '[0.2, 0.8]' \
   --execution-contract deterministic \
   --execution-intent exact_validation \
   --execution-mode strict
 ```
 
-The missing console-script registration is a packaging limitation, not a
-documentation alias. HTTP and in-process users are unaffected.
+`python -m bijux_canon_index.interfaces.cli.app` invokes the same application
+when a module command is preferable.
 
 | Integration need | Supported surface | Authority to pin |
 | --- | --- | --- |
 | typed composition | application, domain, contract, and interface modules | imported symbol and distribution version |
-| shell automation | `python -m bijux_canon_index.interfaces.cli.app` | module command and its rendered output contract |
+| shell automation | `bijux-canon-index` | installed command and its rendered output contract |
 | service integration | v1 HTTP API | checked-in OpenAPI schema and schema hash |
 | historical automation | `bijux-vex` compatibility package | bridge version plus its exact canonical dependency |
 
@@ -156,11 +156,11 @@ custody gap that replay cannot repair.
 [`bijux-vex`](https://pypi.org/project/bijux-vex/) is an exact-version
 compatibility distribution for this package. It preserves the `bijux_vex`
 import root and `bijux-vex` command while delegating execution to canonical
-index modules. `bijux-canon-index` intentionally publishes no console script,
-so there is no `bijux-canon-index` command to use as a direct replacement.
+index modules. Both commands resolve to the same public CLI application;
+`bijux-canon-index` is the direct replacement for new automation.
 
-Use `bijux_canon_index` in new Python integrations or adopt the versioned HTTP
-contract. Follow the
+Use `bijux-canon-index`, `bijux_canon_index`, or the versioned HTTP contract in
+new integrations. Follow the
 [migration guide](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
 to replace command automation deliberately and compare ranked results, typed
 failures, and execution evidence. The former
@@ -218,11 +218,9 @@ and deployment controls remain necessary.
 | Python | available | import application and domain modules from `bijux_canon_index` |
 | HTTP | available | serve the application against the pinned v1 OpenAPI contract |
 | module CLI | available | `python -m bijux_canon_index.interfaces.cli.app` |
-| console script | not registered | use the module CLI; do not assume `bijux-canon-index` exists |
+| console script | available | `bijux-canon-index` |
 
-This distinction matters for automation: package installation proves that the
-Python distribution is available, but it does not prove that a shell command
-was registered. Consumers should select one of the available surfaces
-explicitly and pin the corresponding contract.
+Consumers should select one surface explicitly and pin the corresponding
+contract. Installed-wheel checks prove command registration and behavior.
 
 Package history is recorded in [`CHANGELOG.md`](CHANGELOG.md).

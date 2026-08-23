@@ -89,9 +89,9 @@ artifact, error, budget, or replay semantics.
 The supported in-process seam is the typed execution engine. The package also
 publishes versioned HTTP routes for capability discovery, artifacts, execution,
 explanation, and replay. Its Typer application can be invoked as
-`python -m bijux_canon_index.interfaces.cli.app`; the wheel does not install a
-`bijux-canon-index` console command. `bijux-vex` preserves the historical
-command and import surface as a compatibility package.
+`bijux-canon-index` or `python -m bijux_canon_index.interfaces.cli.app`.
+`bijux-vex` preserves the historical command and import surface as a
+compatibility package that delegates to the same application.
 
 ## Downstream Handoff
 

@@ -115,9 +115,9 @@ that the source repository does not contain.
 8. Deploy with an explicit rollback image or lockfile and observe the actual
    workload before removing the bridge from support inventory.
 
-For `bijux-vex`, the command step requires interface redesign: the canonical
-index distribution has no renamed console script. Select its typed Python API
-or HTTP surface and validate the new request, refusal, and provenance contract.
+For `bijux-vex`, replace the command with `bijux-canon-index` and validate help,
+version, structured output, refusal status, and provenance. Typed Python and
+HTTP remain alternatives for embedded or service consumers.
 
 ## Completion Boundary
 

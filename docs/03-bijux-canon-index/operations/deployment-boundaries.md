@@ -48,7 +48,7 @@ flowchart TB
 | Shape | Use | Boundary |
 | --- | --- | --- |
 | Embedded Python | A host owns resource construction and invokes the execution engine directly | Do not pass raw backend clients around the engine's validation and evidence path |
-| Module CLI | Local and automated artifact, execution, explain, replay, and audit workflows | Invoke `python -m bijux_canon_index.interfaces.cli.app`; the wheel has no canonical console script |
+| Installed or module CLI | Local and automated artifact, execution, explain, replay, and audit workflows | Invoke `bijux-canon-index` or the equivalent `python -m bijux_canon_index.interfaces.cli.app` |
 | HTTP v1 | A controlled service adapter for capability, artifact, execution, explain, and replay operations | Add external authentication, per-operation authorization, TLS, quotas, and tenant routing |
 | Remote vector backend | Service-backed vector state such as Qdrant | Bind collection/snapshot identity and consistency behavior to the run; backend availability is external |
 

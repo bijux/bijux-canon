@@ -11,6 +11,7 @@ from typing import no_type_check
 
 import typer
 
+from bijux_canon_index import __version__
 from bijux_canon_index.application.surface_services import enable_execution_trace
 from bijux_canon_index.interfaces.cli.artifact_commands import (
     register_artifact_commands,
@@ -45,6 +46,12 @@ index_app = typer.Typer(add_completion=False, help="Immutable index generations"
 app.add_typer(index_app, name="index")
 
 
+def _version_callback(value: bool) -> None:
+    if value:
+        typer.echo(f"bijux-canon-index {__version__}")
+        raise typer.Exit()
+
+
 @app.callback()
 @no_type_check
 def _main_callback(
@@ -67,8 +74,16 @@ def _main_callback(
     trace: bool = typer.Option(False, "--trace", help="Emit trace metadata"),
     quiet: bool = typer.Option(False, "--quiet", help="Suppress non-error output"),
     no_color: bool = typer.Option(False, "--no-color", help="Disable colored output"),
+    version: bool = typer.Option(
+        False,
+        "--version",
+        callback=_version_callback,
+        is_eager=True,
+        help="Show the installed canonical index version and exit.",
+    ),
 ) -> None:
     """Handle main callback."""
+    del version
     if trace:
         enable_execution_trace()
     if no_color:

@@ -70,10 +70,9 @@ entrypoint, and its local `__main__.py` launches that same application for
 `python -m <compat_import>`. It must not introduce a second parser or translate
 arguments independently.
 
-`bijux-vex` is a special continuity case: it registers the canonical index
-Typer application even though `bijux-canon-index` has no console script of its
-own. This preserves existing automation without declaring the old command to be
-the canonical architecture.
+`bijux-vex` and `bijux-canon-index` register the same canonical index Typer
+application. This preserves existing automation while making the owner command
+available directly.
 
 ## Verified And Unverified Claims
 

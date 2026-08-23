@@ -130,10 +130,10 @@ For each bridge, prove:
 | `python -m <preserved_root>` | follows the same canonical dispatcher |
 | invalid arguments or expected domain failure | canonical exit status and error meaning pass through unchanged |
 
-For `bijux-vex`, test the preserved command even though the canonical index
-distribution has no renamed console script. For `bijux-rar`, inspect installed
-distributions because the command can also be registered by the canonical
-reason package.
+For `bijux-vex`, test both installed commands and require matching help,
+version, structured output, and exit behavior. For `bijux-rar`, inspect
+installed distributions because the command can also be registered by the
+canonical reason package.
 
 ## Consumer Migration Evidence
 

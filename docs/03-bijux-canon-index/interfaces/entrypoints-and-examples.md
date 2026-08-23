@@ -9,9 +9,9 @@ last_reviewed: 2026-07-21
 
 # Entrypoints and Examples
 
-The package provides Python, module CLI, and HTTP surfaces. The current wheel
-does **not** register a `bijux-canon-index` console script. Use the module CLI
-exactly as shown below; automation must not assume an executable alias exists.
+The package provides Python, installed CLI, module CLI, and HTTP surfaces. The
+wheel registers `bijux-canon-index`; the module form invokes the same public
+application.
 
 ## Inspect capabilities before execution
 
@@ -19,7 +19,7 @@ Capabilities are the first useful call because they reveal the selected
 backend and the contracts it can satisfy.
 
 ```bash
-python -m bijux_canon_index.interfaces.cli.app capabilities
+bijux-canon-index capabilities
 ```
 
 The same discovery path is available in process:

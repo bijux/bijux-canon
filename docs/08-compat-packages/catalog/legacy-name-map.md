@@ -34,7 +34,7 @@ uses a non-canonical identity.
 | `bijux-agent` | `bijux-canon-agent` |
 | `bijux-rag` | `bijux-canon-ingest` |
 | `bijux-rar` | `bijux-canon-reason` |
-| `bijux-vex` | no direct executable; migrate to `bijux-canon-index` Python or HTTP contracts |
+| `bijux-vex` | `bijux-canon-index` |
 
 ## Nested Imports
 

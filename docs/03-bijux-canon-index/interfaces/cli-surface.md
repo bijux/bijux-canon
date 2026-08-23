@@ -9,15 +9,18 @@ last_reviewed: 2026-07-21
 
 # CLI Surface
 
-The current wheel does not register a console script. Invoke the Typer
-application as a module:
+The wheel registers the canonical Typer application as `bijux-canon-index`:
 
 ```bash
-python -m bijux_canon_index.interfaces.cli.app --help
+bijux-canon-index --help
+bijux-canon-index --version
 ```
 
+The equivalent module form is
+`python -m bijux_canon_index.interfaces.cli.app`.
+
 Global options precede the command: `--format json|table`, `--output PATH`,
-`--config PATH`, `--trace`, `--quiet`, and `--no-color`.
+`--config PATH`, `--trace`, `--quiet`, `--no-color`, and `--version`.
 
 ## Command Families
 

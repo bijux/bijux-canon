@@ -54,7 +54,7 @@ Consolidation affects more than Git remotes. Inventory and replace:
 | --- | --- |
 | source or VCS dependency | canonical distribution release, or an explicit current repository reference when source installation is required |
 | Python import | canonical package root and supported public modules |
-| console or module command | canonical interface; `bijux-vex` requires Python or HTTP redesign |
+| console or module command | canonical command; replace `bijux-vex` with `bijux-canon-index` |
 | documentation and API links | `https://bijux.io/bijux-canon/` and the owning package section |
 | issue and security reporting | current repository issue and security surfaces |
 | container source and labels | current repository and canonical distribution identity |

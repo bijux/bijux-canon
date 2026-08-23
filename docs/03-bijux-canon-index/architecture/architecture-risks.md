@@ -84,9 +84,9 @@ classification in the failure.
 
 The canonical root deliberately exports only version metadata, while the
 module CLI and compatibility package expose broader surfaces. Adding convenient
-root exports or assuming a nonexistent canonical console script can create a
-contract that packaging does not support. Test installed-wheel behavior, not
-only source-checkout imports.
+root exports or allowing the canonical and compatibility commands to diverge
+can create a contract that packaging does not support. Test installed-wheel
+behavior, not only source-checkout imports.
 
 ## Provenance Can Become Larger Than the Result
 

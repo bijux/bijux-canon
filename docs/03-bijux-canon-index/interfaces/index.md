@@ -18,7 +18,7 @@ result, and refusal semantics that clients must preserve.
 | Surface | Entry | Contract |
 | --- | --- | --- |
 | Python | domain, application, contract, and interface modules | typed requests, artifacts, results, protocols, and refusals |
-| CLI | `python -m bijux_canon_index.interfaces.cli.app` | JSON-first commands for discovery, ingest, materialize, execute, explain, replay, compare, and diagnostics |
+| CLI | `bijux-canon-index` | JSON-first commands for discovery, ingest, materialize, execute, explain, replay, compare, and diagnostics |
 | HTTP v1 | `bijux_canon_index.api.v1.app:app` | strict capability, ingest, artifact, execute, explain, replay, and inventory operations |
 | Schema | `apis/bijux-canon-index/v1/schema.yaml` | versioned request and response vocabulary |
 | Run files | `metadata.json`, `result.json`, `status.json` | execution evidence with explicit completion state |
@@ -26,8 +26,8 @@ result, and refusal semantics that clients must preserve.
 
 The package root intentionally exports only `__version__`. Consumers import
 the owning module so important contracts do not become an accidental flat API.
-The installed wheel currently provides no console script; module invocation is
-the supported CLI entry.
+The module invocation `python -m bijux_canon_index.interfaces.cli.app` is an
+equivalent entry to the installed command.
 
 ## Request-to-evidence contract
 
