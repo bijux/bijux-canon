@@ -106,6 +106,10 @@ def _source() -> CitationSourceMetadata:
         doi="10.0000/example",
         language="en",
         license_id="CC-BY-4.0",
+        journal="Journal of Ancient Evidence",
+        publication_date="2026-08-24",
+        license_url="https://creativecommons.org/licenses/by/4.0/",
+        provenance_artifact_id="sha256:" + "9" * 64,
     )
 
 
@@ -195,6 +199,11 @@ def test_lexical_hits_resolve_to_exact_source_text_and_lineage(tmp_path: Path) -
     assert hit.verbatim_text == record.verbatim_text
     assert hit.content_sha256 == _text_sha256(hit.verbatim_text)
     assert hit.source.source_content_sha256 == _SOURCE_SHA
+    assert hit.source.authors == ("Researcher A",)
+    assert hit.source.journal == "Journal of Ancient Evidence"
+    assert hit.source.publication_date == "2026-08-24"
+    assert hit.source.license_id == "CC-BY-4.0"
+    assert hit.source.provenance_artifact_id == "sha256:" + "9" * 64
     assert hit.section_path == ("article", "results")
     assert dict(hit.locator.selectors)["char_start"] == 0
     assert hit.mapping_ids == record.mapping_ids

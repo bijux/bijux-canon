@@ -124,9 +124,11 @@ def _report() -> CitationVerificationReport:
         _verified_claim(second_id, 2, EntailmentVerdict.ambiguity, second_assessments),
     )
     payload = {
-        "schema_version": "bijux.canon.reason.citation_verification_report.v1",
+        "schema_version": "bijux.canon.reason.citation_verification_report.v2",
         "source_claim_set_artifact_id": _artifact("3"),
         "claim_citation_set_artifact_id": _artifact("4"),
+        "evidence_packet_artifact_id": _artifact("8"),
+        "source_descriptor_artifact_ids": (_artifact("9"),),
         "policy_artifact_id": _artifact("5"),
         "outcome": CitationVerificationOutcome.claims_verified.value,
         "integrity_verified_links": 5,
@@ -195,9 +197,11 @@ def test_admitted_relations_validate_against_public_v2_schema() -> None:
 
 def test_no_claims_report_produces_an_empty_attachment() -> None:
     payload = {
-        "schema_version": "bijux.canon.reason.citation_verification_report.v1",
+        "schema_version": "bijux.canon.reason.citation_verification_report.v2",
         "source_claim_set_artifact_id": _artifact("3"),
         "claim_citation_set_artifact_id": _artifact("4"),
+        "evidence_packet_artifact_id": _artifact("8"),
+        "source_descriptor_artifact_ids": (),
         "policy_artifact_id": _artifact("5"),
         "outcome": CitationVerificationOutcome.no_claims.value,
         "integrity_verified_links": 0,

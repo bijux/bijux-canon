@@ -459,6 +459,8 @@ def _retrieve_and_reason(indexed: _IndexedRuntime) -> _GroundedRuntime:
     assert claim_graph["status"] == "answered"
     assert "Ancient genomes preserve" in claim_graph["answer"]
     assert "Answer:" in claim_graph["answer"]
+    assert "Citations:\n[1]" in claim_graph["answer"]
+    assert "[citation:" not in claim_graph["answer"]
     assert "reports: “" not in claim_graph["answer"]
     segment_hashes = {
         segment["verbatim_text"]: segment["content_sha256"]
@@ -470,6 +472,15 @@ def _retrieve_and_reason(indexed: _IndexedRuntime) -> _GroundedRuntime:
         assert link["exact_text"] in segment_hashes
         assert link["exact_text_sha256"] == segment_hashes[link["exact_text"]]
         assert link["locator_scheme"] == "markdown-line-span"
+        assert link["document_id"] == hit["document_id"]
+        assert link["chunk_artifact_id"] == hit["chunk_id"]
+        assert link["retrieval_artifact_id"] == str(
+            evidence_artifact.descriptor.artifact_id
+        )
+    presentation = claim_graph["citation_presentation"]
+    assert len(presentation["entries"]) == len(claim_graph["citations"]["links"])
+    assert all(entry["exact_quote"] in segment_hashes for entry in presentation["entries"])
+    assert all(entry["document_id"] == hit["document_id"] for entry in presentation["entries"])
     assert claim_graph["citation_verification"]["integrity_verified_links"] == len(
         claim_graph["citations"]["links"]
     )
@@ -788,6 +799,22 @@ def _verify_reason_and_agent(grounded: _GroundedRuntime) -> None:
         OperationDispatcher((CanonicalVerificationOperationAdapter(),)).dispatch(
             verification_step,
             (tampered_reason,),
+        )
+    unreachable_reason = StepOutputArtifact(
+        contract_id="reason.claim-graph.v1",
+        producer_step_id="reason",
+        producer_operation=DagOperation.REASON,
+        artifact=AddressedArtifact.from_json(
+            claim_graph,
+            schema_id="reason.claim-graph.v1",
+            producer="bijux-canon-runtime:reason",
+            dependencies=(),
+        ),
+    )
+    with pytest.raises(StepDispatchError, match="persisted retrieval artifact"):
+        OperationDispatcher((CanonicalVerificationOperationAdapter(),)).dispatch(
+            verification_step,
+            (unreachable_reason,),
         )
 
     research_request = replace(

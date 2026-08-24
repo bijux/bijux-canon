@@ -4,7 +4,7 @@ audience: developers
 type: reference
 status: canonical
 owner: bijux-canon-reason-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-08-24
 ---
 
 # Public Imports
@@ -50,6 +50,7 @@ planner, tool runtime, verifier implementation, or CLI.
 | trace | `Trace`, `TraceEvent`, `TraceEventKind`, `StepOutput` |
 | evidence and claims | `EvidenceRef`, `SupportRef`, `SupportKind`, `Claim` |
 | verification | `VerificationCheck`, `VerificationReport` |
+| grounded citations | `CitationSourceDescriptor`, `ClaimCitationSet`, `CitationVerificationReport`, `CitationPresentation`, `PresentedCitation` |
 | identity | `canonical_dumps`, `fingerprint_bytes`, `fingerprint_obj`, `stable_id` |
 | invariants | `validate_plan`, `validate_trace`, `validate_verification_report` |
 

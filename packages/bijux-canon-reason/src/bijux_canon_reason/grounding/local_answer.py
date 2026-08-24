@@ -19,6 +19,11 @@ from bijux_canon_reason.grounding.citation_linking import (
     ClaimCitationLinker,
     ClaimCitationSet,
 )
+from bijux_canon_reason.grounding.citation_presentation import (
+    CitationPresentation,
+    CitationPresentationService,
+    render_citation_reference,
+)
 from bijux_canon_reason.grounding.citation_verification import (
     CitationVerificationReport,
     DeterministicCitationVerifier,
@@ -56,13 +61,14 @@ from bijux_canon_reason.grounding.provider_contracts import (
 class LocalGroundedAnswer(StableModel):
     """One content-addressed local answer with complete grounding decisions."""
 
-    schema_version: str = "bijux.canon.reason.local_grounded_answer.v1"
+    schema_version: str = "bijux.canon.reason.local_grounded_answer.v2"
     artifact_id: str
     answer_text: str
     outcome: GroundingAdmissionOutcome
     synthesis: CredentialFreeSynthesis
     claims: NormalizedClaimSet
     citations: ClaimCitationSet
+    citation_presentation: CitationPresentation
     verification: CitationVerificationReport
     admission: GroundingAdmissionDecision
     contextualized: NuancedGroundingRepresentation
@@ -85,6 +91,10 @@ class LocalGroundedAnswer(StableModel):
             self.claims.source_synthesis_artifact_id != self.synthesis.artifact_id
             or self.citations.source_claim_set_artifact_id != self.claims.artifact_id
             or self.verification.source_claim_set_artifact_id != self.claims.artifact_id
+            or self.citation_presentation.source_claim_set_artifact_id
+            != self.claims.artifact_id
+            or self.citation_presentation.claim_citation_set_artifact_id
+            != self.citations.artifact_id
             or self.admission.source_claim_set_artifact_id != self.claims.artifact_id
             or self.contextualized.source_claim_set_artifact_id
             != self.claims.artifact_id
@@ -135,7 +145,10 @@ class LocalGroundedAnswerService:
         verification = DeterministicCitationVerifier().verify(
             claim_set=claims,
             citation_set=citations,
+            evidence_packet=evidence_packet,
+            sources=sources,
         )
+        citation_presentation = CitationPresentationService().present(citations)
         admission = GroundingAdmissionService().decide(
             claim_set=claims,
             citation_set=citations,
@@ -153,14 +166,16 @@ class LocalGroundedAnswerService:
             claims=claims,
             citations=citations,
             admission=admission,
+            citation_presentation=citation_presentation,
         )
         payload = {
-            "schema_version": "bijux.canon.reason.local_grounded_answer.v1",
+            "schema_version": "bijux.canon.reason.local_grounded_answer.v2",
             "answer_text": answer_text,
             "outcome": admission.outcome.value,
             "synthesis": synthesis.model_dump(mode="json"),
             "claims": claims.model_dump(mode="json"),
             "citations": citations.model_dump(mode="json"),
+            "citation_presentation": citation_presentation.model_dump(mode="json"),
             "verification": verification.model_dump(mode="json"),
             "admission": admission.model_dump(mode="json"),
             "contextualized": contextualized.model_dump(mode="json"),
@@ -172,6 +187,7 @@ class LocalGroundedAnswerService:
             synthesis=synthesis,
             claims=claims,
             citations=citations,
+            citation_presentation=citation_presentation,
             verification=verification,
             admission=admission,
             contextualized=contextualized,
@@ -275,11 +291,15 @@ def render_grounded_answer(
     claims: NormalizedClaimSet,
     citations: ClaimCitationSet,
     admission: GroundingAdmissionDecision,
+    citation_presentation: CitationPresentation,
 ) -> str:
     """Render only claims admitted by the recorded grounding decision."""
 
     if admission.outcome is GroundingAdmissionOutcome.admitted:
-        return synthesis.answer_text
+        return _render_with_references(
+            synthesis.answer_text,
+            citation_presentation=citation_presentation,
+        )
     if admission.outcome is GroundingAdmissionOutcome.abstained:
         details = " ".join(gap.detail for gap in admission.evidence_gaps)
         actions = " ".join(gap.required_action for gap in admission.evidence_gaps)
@@ -294,11 +314,55 @@ def render_grounded_answer(
             for link in citations.links
             if link.claim_artifact_id == claim.artifact_id
         )
-        citation_ids = ", ".join(link.citation_evidence_artifact_id for link in links)
-        lines.append(f"- {claim.statement} [citation:{citation_ids}]")
+        citation_numbers = ", ".join(
+            str(citation_presentation.number_for(link.citation_evidence_artifact_id))
+            for link in links
+        )
+        lines.append(f"- {claim.statement} [{citation_numbers}]")
     lines.append("Unresolved evidence gaps:")
     lines.extend(f"- {gap.detail}" for gap in admission.evidence_gaps)
-    return "\n".join(lines)
+    return _append_references(
+        "\n".join(lines),
+        citation_presentation=citation_presentation,
+        admitted_claim_artifact_ids=admitted,
+    )
+
+
+def _render_with_references(
+    answer_text: str, *, citation_presentation: CitationPresentation
+) -> str:
+    rendered = answer_text
+    for entry in citation_presentation.entries:
+        rendered = rendered.replace(
+            f"[citation:{entry.citation_evidence_artifact_id}]",
+            f"[{entry.number}]",
+        )
+    if "[citation:" in rendered:
+        raise ValueError("grounded answer references an unpresented citation")
+    return _append_references(
+        rendered,
+        citation_presentation=citation_presentation,
+        admitted_claim_artifact_ids=None,
+    )
+
+
+def _append_references(
+    answer_text: str,
+    *,
+    citation_presentation: CitationPresentation,
+    admitted_claim_artifact_ids: set[str] | None,
+) -> str:
+    entries = tuple(
+        entry
+        for entry in citation_presentation.entries
+        if admitted_claim_artifact_ids is None
+        or bool(set(entry.claim_artifact_ids) & admitted_claim_artifact_ids)
+    )
+    if not entries:
+        return answer_text
+    return answer_text + "\nCitations:\n" + "\n".join(
+        render_citation_reference(entry) for entry in entries
+    )
 
 
 __all__ = [

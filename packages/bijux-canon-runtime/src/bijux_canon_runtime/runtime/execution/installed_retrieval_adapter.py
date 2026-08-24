@@ -406,6 +406,13 @@ def _citation_catalog(
                 doi=_optional_string(metadata.get("doi")),
                 language=_optional_string(metadata.get("language")),
                 license_id=_optional_string(metadata.get("license_expression")),
+                journal=_optional_string(metadata.get("journal")),
+                publication_date=_optional_string(metadata.get("publication_date")),
+                license_url=_optional_string(metadata.get("license_url")),
+                provenance_artifact_id=(
+                    _optional_string(metadata.get("manifest_sha256"))
+                    or _content_id(metadata)
+                ),
             )
             for raw_chunk in chunks:
                 if not isinstance(raw_chunk, dict):

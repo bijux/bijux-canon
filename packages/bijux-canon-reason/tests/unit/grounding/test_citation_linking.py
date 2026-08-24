@@ -16,6 +16,7 @@ from bijux_canon_reason.grounding import (
     CitationEvidence,
     CitationLinkingError,
     CitationLinkingErrorCode,
+    CitationPresentationService,
     CitationSourceDescriptor,
     ClaimCitationLinker,
     ClaimCitationRole,
@@ -176,6 +177,55 @@ def test_extractive_claim_links_complete_exact_source_evidence() -> None:
     assert link.locator_selectors == evidence.locator.selectors
     assert link.exact_text == evidence.exact_text
     assert link.exact_text_sha256 == _sha(link.exact_text)
+
+
+def test_citation_presentation_deduplicates_one_source_span_across_claims() -> None:
+    packet, evidence, source = _packet()
+    statements = (
+        "Ancient DNA fragments were shorter.",
+        "The comparison used source controls.",
+    )
+    candidate = {
+        "schema_version": "bijux.canon.reason.provider_synthesis_candidate.v1",
+        "outcome": "answered",
+        "answer": " ".join(statements),
+        "claims": [
+            {
+                "statement": statement,
+                "citation_evidence_artifact_ids": [evidence.artifact_id],
+                "polarity": "supports",
+                "qualifier": "within the source",
+                "scope": "the source study",
+            }
+            for statement in statements
+        ],
+        "limitations": ["Semantic support is verified separately."],
+        "conflicts": [],
+        "assumptions": [],
+    }
+    provider = OpenAICompatibleStructuredSynthesizer(
+        StructuredProviderConfiguration(
+            base_url="http://127.0.0.1:8000", model="test-model"
+        ),
+        credential_resolver=lambda: "secret",
+        transport=_Transport(candidate),
+    )
+    claims = AtomicClaimNormalizer().normalize_provider(
+        provider.synthesize(question="Question?", evidence_packet=packet)
+    )
+    citations = ClaimCitationLinker().link(
+        claim_set=claims,
+        evidence_packet=packet,
+        sources=(source,),
+    )
+
+    presentation = CitationPresentationService().present(citations)
+
+    assert len(citations.links) == 2
+    assert len(presentation.entries) == 1
+    assert presentation.entries[0].claim_artifact_ids == tuple(
+        claim.artifact_id for claim in claims.claims
+    )
 
 
 @pytest.mark.parametrize(

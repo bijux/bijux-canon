@@ -55,13 +55,21 @@ class CitationLinkingError(ValueError):
 class CitationSourceDescriptor(StableModel):
     """Content-addressed bibliographic identity for one immutable source."""
 
-    schema_version: str = "bijux.canon.reason.citation_source_descriptor.v1"
+    schema_version: str = "bijux.canon.reason.citation_source_descriptor.v2"
     artifact_id: str
     source_id: str
     title: str
     canonical_uri: str
     doi: str | None
     source_content_sha256: str
+    authors: tuple[str, ...] = ()
+    journal: str | None = None
+    publication_date: str | None = None
+    license_expression: str | None = None
+    license_url: str | None = None
+    provenance_artifact_id: str | None = None
+    format_id: str | None = None
+    language: str | None = None
 
     @classmethod
     def create(
@@ -72,16 +80,32 @@ class CitationSourceDescriptor(StableModel):
         canonical_uri: str,
         doi: str | None,
         source_content_sha256: str,
+        authors: tuple[str, ...] = (),
+        journal: str | None = None,
+        publication_date: str | None = None,
+        license_expression: str | None = None,
+        license_url: str | None = None,
+        provenance_artifact_id: str | None = None,
+        format_id: str | None = None,
+        language: str | None = None,
     ) -> Self:
         """Create a descriptor whose identity covers every bibliographic field."""
 
         payload = {
-            "schema_version": "bijux.canon.reason.citation_source_descriptor.v1",
+            "schema_version": "bijux.canon.reason.citation_source_descriptor.v2",
             "source_id": source_id,
             "title": title,
             "canonical_uri": canonical_uri,
             "doi": doi,
             "source_content_sha256": source_content_sha256,
+            "authors": authors,
+            "journal": journal,
+            "publication_date": publication_date,
+            "license_expression": license_expression,
+            "license_url": license_url,
+            "provenance_artifact_id": provenance_artifact_id,
+            "format_id": format_id,
+            "language": language,
         }
         return cls(
             artifact_id=content_artifact_id(payload),
@@ -90,6 +114,14 @@ class CitationSourceDescriptor(StableModel):
             canonical_uri=canonical_uri,
             doi=doi,
             source_content_sha256=source_content_sha256,
+            authors=authors,
+            journal=journal,
+            publication_date=publication_date,
+            license_expression=license_expression,
+            license_url=license_url,
+            provenance_artifact_id=provenance_artifact_id,
+            format_id=format_id,
+            language=language,
         )
 
     @field_validator("artifact_id")
@@ -108,6 +140,32 @@ class CitationSourceDescriptor(StableModel):
         if not value.strip():
             raise ValueError("citation source identity and title must not be empty")
         return value
+
+    @field_validator("authors")
+    @classmethod
+    def _validate_authors(cls, value: tuple[str, ...]) -> tuple[str, ...]:
+        if any(not author.strip() for author in value):
+            raise ValueError("citation source authors must not be empty")
+        return value
+
+    @field_validator(
+        "journal",
+        "publication_date",
+        "license_expression",
+        "license_url",
+        "format_id",
+        "language",
+    )
+    @classmethod
+    def _validate_optional_text(cls, value: str | None) -> str | None:
+        if value is not None and not value.strip():
+            raise ValueError("citation source optional metadata must not be empty")
+        return value
+
+    @field_validator("provenance_artifact_id")
+    @classmethod
+    def _validate_optional_artifact_id(cls, value: str | None) -> str | None:
+        return None if value is None else require_artifact_id(value)
 
     @field_validator("canonical_uri")
     @classmethod
@@ -158,12 +216,23 @@ class ClaimCitationLink(StableModel):
     role: ClaimCitationRole
     citation_evidence_artifact_id: str
     source_descriptor_artifact_id: str
+    document_id: str
+    chunk_artifact_id: str
+    retrieval_artifact_id: str
     source_id: str
     source_title: str
+    source_authors: tuple[str, ...]
+    source_journal: str | None
+    source_publication_date: str | None
     source_doi: str | None
     source_uri: str
     source_artifact_id: str
     source_content_sha256: str
+    source_license_expression: str | None
+    source_license_url: str | None
+    source_provenance_artifact_id: str | None
+    source_format_id: str | None
+    source_language: str | None
     section_path: tuple[str, ...]
     locator_artifact_id: str
     locator_scheme: str
@@ -176,6 +245,8 @@ class ClaimCitationLink(StableModel):
         "claim_artifact_id",
         "citation_evidence_artifact_id",
         "source_descriptor_artifact_id",
+        "chunk_artifact_id",
+        "retrieval_artifact_id",
         "source_artifact_id",
         "locator_artifact_id",
     )
@@ -190,6 +261,7 @@ class ClaimCitationLink(StableModel):
 
     @field_validator(
         "source_id",
+        "document_id",
         "source_title",
         "source_uri",
         "locator_scheme",
@@ -200,6 +272,32 @@ class ClaimCitationLink(StableModel):
         if not value.strip():
             raise ValueError("claim citation fields must not be empty")
         return value
+
+    @field_validator("source_authors")
+    @classmethod
+    def _validate_source_authors(cls, value: tuple[str, ...]) -> tuple[str, ...]:
+        if any(not author.strip() for author in value):
+            raise ValueError("claim citation source authors must not be empty")
+        return value
+
+    @field_validator(
+        "source_journal",
+        "source_publication_date",
+        "source_license_expression",
+        "source_license_url",
+        "source_format_id",
+        "source_language",
+    )
+    @classmethod
+    def _validate_optional_source_text(cls, value: str | None) -> str | None:
+        if value is not None and not value.strip():
+            raise ValueError("claim citation optional source fields must not be empty")
+        return value
+
+    @field_validator("source_provenance_artifact_id")
+    @classmethod
+    def _validate_optional_source_artifact(cls, value: str | None) -> str | None:
+        return None if value is None else require_artifact_id(value)
 
     @model_validator(mode="after")
     def _validate_link(self) -> Self:
@@ -224,6 +322,14 @@ class ClaimCitationLink(StableModel):
             canonical_uri=self.source_uri,
             doi=self.source_doi,
             source_content_sha256=self.source_content_sha256,
+            authors=self.source_authors,
+            journal=self.source_journal,
+            publication_date=self.source_publication_date,
+            license_expression=self.source_license_expression,
+            license_url=self.source_license_url,
+            provenance_artifact_id=self.source_provenance_artifact_id,
+            format_id=self.source_format_id,
+            language=self.source_language,
         )
         if source.artifact_id != self.source_descriptor_artifact_id:
             raise ValueError("claim citation source descriptor identity does not match")
@@ -236,7 +342,7 @@ class ClaimCitationLink(StableModel):
 class ClaimCitationSet(StableModel):
     """Complete content-addressed citation links for a normalized claim set."""
 
-    schema_version: str = "bijux.canon.reason.claim_citation_set.v1"
+    schema_version: str = "bijux.canon.reason.claim_citation_set.v2"
     artifact_id: str
     source_claim_set_artifact_id: str
     evidence_packet_artifact_id: str
@@ -348,12 +454,23 @@ class ClaimCitationLinker:
                     "role": _citation_role(claim.polarity).value,
                     "citation_evidence_artifact_id": evidence.artifact_id,
                     "source_descriptor_artifact_id": source.artifact_id,
+                    "document_id": evidence.document_id,
+                    "chunk_artifact_id": evidence.chunk_artifact_id,
+                    "retrieval_artifact_id": evidence.retrieval_artifact_id,
                     "source_id": source.source_id,
                     "source_title": source.title,
+                    "source_authors": source.authors,
+                    "source_journal": source.journal,
+                    "source_publication_date": source.publication_date,
                     "source_doi": source.doi,
                     "source_uri": source.canonical_uri,
                     "source_artifact_id": evidence.locator.source_artifact_id,
                     "source_content_sha256": source.source_content_sha256,
+                    "source_license_expression": source.license_expression,
+                    "source_license_url": source.license_url,
+                    "source_provenance_artifact_id": source.provenance_artifact_id,
+                    "source_format_id": source.format_id,
+                    "source_language": source.language,
                     "section_path": evidence.section_path,
                     "locator_artifact_id": evidence.locator.artifact_id,
                     "locator_scheme": evidence.locator.scheme,
@@ -370,12 +487,23 @@ class ClaimCitationLinker:
                         role=_citation_role(claim.polarity),
                         citation_evidence_artifact_id=evidence.artifact_id,
                         source_descriptor_artifact_id=source.artifact_id,
+                        document_id=evidence.document_id,
+                        chunk_artifact_id=evidence.chunk_artifact_id,
+                        retrieval_artifact_id=evidence.retrieval_artifact_id,
                         source_id=source.source_id,
                         source_title=source.title,
+                        source_authors=source.authors,
+                        source_journal=source.journal,
+                        source_publication_date=source.publication_date,
                         source_doi=source.doi,
                         source_uri=source.canonical_uri,
                         source_artifact_id=evidence.locator.source_artifact_id,
                         source_content_sha256=source.source_content_sha256,
+                        source_license_expression=source.license_expression,
+                        source_license_url=source.license_url,
+                        source_provenance_artifact_id=source.provenance_artifact_id,
+                        source_format_id=source.format_id,
+                        source_language=source.language,
                         section_path=evidence.section_path,
                         locator_artifact_id=evidence.locator.artifact_id,
                         locator_scheme=evidence.locator.scheme,
@@ -386,7 +514,7 @@ class ClaimCitationLinker:
                 )
         claim_ids = tuple(claim.artifact_id for claim in claim_set.claims)
         payload = {
-            "schema_version": "bijux.canon.reason.claim_citation_set.v1",
+            "schema_version": "bijux.canon.reason.claim_citation_set.v2",
             "source_claim_set_artifact_id": claim_set.artifact_id,
             "evidence_packet_artifact_id": evidence_packet.artifact_id,
             "claim_artifact_ids": claim_ids,

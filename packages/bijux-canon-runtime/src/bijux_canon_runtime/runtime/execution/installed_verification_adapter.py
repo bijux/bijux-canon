@@ -28,6 +28,8 @@ from bijux_canon_agent.contracts import (
 from bijux_canon_reason.grounding import (
     AtomicClaimNormalizer,
     CitationSourceDescriptor,
+    CitationPresentation,
+    CitationPresentationService,
     CitationVerificationReport,
     ClaimCitationLinker,
     ClaimCitationSet,
@@ -239,12 +241,17 @@ def _budget_decision(value: object) -> BudgetDecision:
     return decision
 
 
-def _verify_claim_graph(subject: Mapping[str, object]) -> tuple[str, ...]:
+def _verify_claim_graph(
+    subject: Mapping[str, object], *, subject_dependency_ids: frozenset[str]
+) -> tuple[str, ...]:
     try:
         packet = EvidencePacket.model_validate(subject["evidence_packet"])
         synthesis = CredentialFreeSynthesis.model_validate(subject["synthesis"])
         claims = NormalizedClaimSet.model_validate(subject["claims"])
         citations = ClaimCitationSet.model_validate(subject["citations"])
+        citation_presentation = CitationPresentation.model_validate(
+            subject["citation_presentation"]
+        )
         verification = CitationVerificationReport.model_validate(
             subject["citation_verification"]
         )
@@ -259,6 +266,19 @@ def _verify_claim_graph(subject: Mapping[str, object]) -> tuple[str, ...]:
     answer = subject.get("answer")
     if not isinstance(answer, str):
         raise StepDispatchError("grounded answer is invalid")
+    evidence_set_artifact_id = subject.get("evidence_set_artifact_id")
+    if (
+        not isinstance(evidence_set_artifact_id, str)
+        or evidence_set_artifact_id not in subject_dependency_ids
+        or evidence_set_artifact_id not in packet.retrieval_trace_artifact_ids
+        or any(
+            evidence.retrieval_artifact_id != evidence_set_artifact_id
+            for evidence in packet.selected
+        )
+    ):
+        raise StepDispatchError(
+            "grounded citations are not bound to the persisted retrieval artifact"
+        )
     if synthesis.evidence_packet_artifact_id != packet.artifact_id:
         raise StepDispatchError("grounded synthesis refers to another evidence packet")
     if AtomicClaimNormalizer().normalize_credential_free(synthesis) != claims:
@@ -272,10 +292,14 @@ def _verify_claim_graph(subject: Mapping[str, object]) -> tuple[str, ...]:
         != citations
     ):
         raise StepDispatchError("grounded citation links are not reproducible")
+    if CitationPresentationService().present(citations) != citation_presentation:
+        raise StepDispatchError("grounded citation presentation is not reproducible")
     if (
         DeterministicCitationVerifier().verify(
             claim_set=claims,
             citation_set=citations,
+            evidence_packet=packet,
+            sources=sources,
         )
         != verification
     ):
@@ -293,6 +317,7 @@ def _verify_claim_graph(subject: Mapping[str, object]) -> tuple[str, ...]:
                 claims=claims,
                 citations=citations,
                 admission=admission,
+                citation_presentation=citation_presentation,
             )
             if answer != expected_answer:
                 raise StepDispatchError("grounded answer differs from its admission")
@@ -305,6 +330,7 @@ def _verify_claim_graph(subject: Mapping[str, object]) -> tuple[str, ...]:
                 synthesis=synthesis,
                 claims=claims,
                 citations=citations,
+                citation_presentation=citation_presentation,
                 verification=verification,
                 admission=admission,
                 contextualized=contextualized,
@@ -324,9 +350,11 @@ def _verify_claim_graph(subject: Mapping[str, object]) -> tuple[str, ...]:
         raise StepDispatchError("grounded answer differs from its synthesis")
     return (
         "evidence-packet-identity",
+        "persisted-retrieval-artifact-binding",
         "grounding-admission-binding",
         "atomic-claim-normalization",
         "exact-citation-linking",
+        "human-usable-citation-presentation",
         "deterministic-entailment-verification",
     )
 
@@ -719,7 +747,12 @@ class CanonicalVerificationOperationAdapter:
         subject_artifact = upstream_artifacts[0].artifact
         subject = _json_object(subject_artifact, upstream_artifacts[0].contract_id)
         if upstream_artifacts[0].contract_id == "reason.claim-graph.v1":
-            checks = _verify_claim_graph(subject)
+            checks = _verify_claim_graph(
+                subject,
+                subject_dependency_ids=frozenset(
+                    str(item) for item in subject_artifact.descriptor.dependencies
+                ),
+            )
         elif upstream_artifacts[0].contract_id == "agent.research-trace.v1":
             checks = _verify_research_trace(subject)
         else:

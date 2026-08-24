@@ -28,6 +28,7 @@ from bijux_canon_reason.grounding import (
     CredentialFreeSynthesizer,
     DeterministicCitationVerifier,
     EntailmentVerdict,
+    EvidencePacket,
     EvidencePacketBuilder,
     EvidencePacketPolicy,
     ImmutableEvidenceLocator,
@@ -82,7 +83,13 @@ def _verification(
     *,
     polarity: str = "supports",
     structured_verifier: StructuredEntailmentVerifier | None = None,
-) -> tuple[CitationVerificationReport, NormalizedClaimSet, ClaimCitationSet]:
+) -> tuple[
+    CitationVerificationReport,
+    NormalizedClaimSet,
+    ClaimCitationSet,
+    EvidencePacket,
+    tuple[CitationSourceDescriptor, ...],
+]:
     source_content = f"Immutable source containing: {evidence_text}"
     evidence = CitationEvidence(
         artifact_id=_artifact(f"evidence:{evidence_text}"),
@@ -156,8 +163,13 @@ def _verification(
     )
     report = DeterministicCitationVerifier(
         structured_verifier=structured_verifier
-    ).verify(claim_set=claims, citation_set=citations)
-    return report, claims, citations
+    ).verify(
+        claim_set=claims,
+        citation_set=citations,
+        evidence_packet=packet,
+        sources=(source,),
+    )
+    return report, claims, citations, packet, (source,)
 
 
 class _SemanticVerifier:
@@ -202,7 +214,7 @@ class _SemanticVerifier:
 
 def test_exact_evidence_span_is_direct_support_with_complete_integrity() -> None:
     claim = "Ancient DNA fragments were shorter."
-    report, _, _ = _verification(
+    report, _, _, _, _ = _verification(
         claim, f"The study reports the following result: {claim}"
     )
     restarted = CitationVerificationReport.model_validate_json(report.model_dump_json())
@@ -218,7 +230,7 @@ def test_exact_evidence_span_is_direct_support_with_complete_integrity() -> None
 
 def test_exact_claim_words_inside_negated_evidence_are_opposition() -> None:
     claim = "The control changed."
-    report, _, _ = _verification(
+    report, _, _, _, _ = _verification(
         claim,
         f"The study denied the following assertion: {claim}",
     )
@@ -231,7 +243,7 @@ def test_exact_claim_words_inside_negated_evidence_are_opposition() -> None:
 
 def test_exact_claim_under_possible_negation_remains_ambiguous() -> None:
     claim = "The control changed."
-    report, _, _ = _verification(
+    report, _, _, _, _ = _verification(
         claim,
         f"It may not be true that {claim}",
     )
@@ -243,7 +255,7 @@ def test_exact_claim_under_possible_negation_remains_ambiguous() -> None:
 
 
 def test_aligned_proposition_with_opposite_negation_is_opposition() -> None:
-    report, _, _ = _verification(
+    report, _, _, _, _ = _verification(
         "The control did change.", "The control did not change."
     )
 
@@ -254,7 +266,7 @@ def test_aligned_proposition_with_opposite_negation_is_opposition() -> None:
 
 
 def test_possible_opposite_evidence_does_not_overstate_opposition() -> None:
-    report, _, _ = _verification(
+    report, _, _, _, _ = _verification(
         "The control changed.", "The control may not have changed."
     )
 
@@ -262,7 +274,7 @@ def test_possible_opposite_evidence_does_not_overstate_opposition() -> None:
 
 
 def test_weaker_modality_and_narrower_scope_remain_ambiguous() -> None:
-    report, _, _ = _verification(
+    report, _, _, _, _ = _verification(
         "Ancient DNA fragments were shorter.",
         "Ancient DNA fragments may have been shorter in a subset.",
     )
@@ -271,7 +283,7 @@ def test_weaker_modality_and_narrower_scope_remain_ambiguous() -> None:
 
 
 def test_reproducible_conservative_projection_is_direct_support() -> None:
-    report, _, _ = _verification(
+    report, _, _, _, _ = _verification(
         "Yields can remain below 1% in hot regions.",
         "Our results show that yields can remain below 1% in hot regions.",
     )
@@ -283,7 +295,7 @@ def test_reproducible_conservative_projection_is_direct_support() -> None:
 
 
 def test_projection_does_not_accept_an_entity_or_number_swap() -> None:
-    report, _, _ = _verification(
+    report, _, _, _, _ = _verification(
         "Part B yields can remain below 2% in hot regions.",
         "Our results show that part C yields can remain below 1% in hot regions.",
     )
@@ -292,7 +304,7 @@ def test_projection_does_not_accept_an_entity_or_number_swap() -> None:
 
 
 def test_unrelated_citation_is_not_given_an_overlap_only_verdict() -> None:
-    report, _, _ = _verification(
+    report, _, _, _, _ = _verification(
         "Ocean temperatures increased globally.",
         "Ancient DNA fragments degraded in the tested samples.",
     )
@@ -301,7 +313,7 @@ def test_unrelated_citation_is_not_given_an_overlap_only_verdict() -> None:
 
 
 def test_nonexact_ordered_claim_with_matching_qualifiers_is_direct_support() -> None:
-    report, _, _ = _verification(
+    report, _, _, _, _ = _verification(
         "The control changed by 12% in tested samples.",
         "In the experiment, the control changed by 12% in tested samples.",
     )
@@ -312,7 +324,7 @@ def test_nonexact_ordered_claim_with_matching_qualifiers_is_direct_support() -> 
 
 
 def test_reversed_entity_relation_is_not_supported_by_term_overlap() -> None:
-    report, _, _ = _verification(
+    report, _, _, _, _ = _verification(
         "Part B exceeded part C.",
         "Part C exceeded part B.",
     )
@@ -321,7 +333,7 @@ def test_reversed_entity_relation_is_not_supported_by_term_overlap() -> None:
 
 
 def test_unmatched_population_boundary_is_not_supported() -> None:
-    report, _, _ = _verification(
+    report, _, _, _, _ = _verification(
         "DNA recovery remained high.",
         "DNA recovery remained high in only some tested samples.",
     )
@@ -330,7 +342,7 @@ def test_unmatched_population_boundary_is_not_supported() -> None:
 
 
 def test_unmatched_numeric_qualifier_is_not_supported() -> None:
-    report, _, _ = _verification(
+    report, _, _, _, _ = _verification(
         "Endogenous yield exceeded 12%.",
         "Endogenous yield exceeded 2%.",
     )
@@ -340,7 +352,7 @@ def test_unmatched_numeric_qualifier_is_not_supported() -> None:
 
 def test_optional_structured_verifier_can_admit_aligned_paraphrase() -> None:
     verifier = _SemanticVerifier(verdict=EntailmentVerdict.direct_support)
-    report, _, _ = _verification(
+    report, _, _, _, _ = _verification(
         "DNA preservation declined in the sampled tissue.",
         "Genetic material became less recoverable in the sampled tissue.",
         structured_verifier=verifier,
@@ -381,7 +393,7 @@ def test_optional_structured_verifier_can_admit_aligned_paraphrase() -> None:
 def test_structured_support_requires_confidence_and_all_alignment(
     verifier: _SemanticVerifier,
 ) -> None:
-    report, _, _ = _verification(
+    report, _, _, _, _ = _verification(
         "DNA preservation declined.",
         "Genetic material became less recoverable.",
         structured_verifier=verifier,
@@ -396,7 +408,7 @@ def test_structured_opposition_requires_explicit_negation_misalignment() -> None
         verdict=EntailmentVerdict.opposition,
         negation_alignment=False,
     )
-    report, _, _ = _verification(
+    report, _, _, _, _ = _verification(
         "The control changed.",
         "The control remained stable.",
         structured_verifier=verifier,
@@ -424,14 +436,14 @@ def test_structured_decision_for_other_inputs_fails_closed() -> None:
 
 
 def test_too_little_evidence_is_insufficient_even_when_present() -> None:
-    report, _, _ = _verification("Tiny result.", "Tiny.")
+    report, _, _, _, _ = _verification("Tiny result.", "Tiny.")
 
     assert report.claims[0].verdict is EntailmentVerdict.insufficiency
 
 
 def test_provider_proposed_role_does_not_decide_entailment() -> None:
     claim = "The control changed."
-    report, _, _ = _verification(claim, claim, polarity="opposes")
+    report, _, _, _, _ = _verification(claim, claim, polarity="opposes")
 
     assert report.claims[0].verdict is EntailmentVerdict.direct_support
 
@@ -460,7 +472,10 @@ def test_empty_claims_produce_honest_no_claims_report() -> None:
     )
 
     report = DeterministicCitationVerifier().verify(
-        claim_set=claims, citation_set=citations
+        claim_set=claims,
+        citation_set=citations,
+        evidence_packet=packet,
+        sources=(),
     )
 
     assert report.outcome is CitationVerificationOutcome.no_claims
@@ -469,19 +484,26 @@ def test_empty_claims_produce_honest_no_claims_report() -> None:
 
 
 def test_citation_set_for_another_claim_set_fails_closed() -> None:
-    _, claims, _ = _verification("First claim.", "First claim in evidence.")
-    _, _, other_citations = _verification("Second claim.", "Second claim in evidence.")
+    _, claims, _, packet, sources = _verification(
+        "First claim.", "First claim in evidence."
+    )
+    _, _, other_citations, _, _ = _verification(
+        "Second claim.", "Second claim in evidence."
+    )
 
     with pytest.raises(CitationVerificationError) as caught:
         DeterministicCitationVerifier().verify(
-            claim_set=claims, citation_set=other_citations
+            claim_set=claims,
+            citation_set=other_citations,
+            evidence_packet=packet,
+            sources=sources,
         )
 
     assert caught.value.code is CitationVerificationErrorCode.claim_set_mismatch
 
 
 def test_unreachable_locator_fails_integrity_gate() -> None:
-    _, claims, citations = _verification(
+    _, claims, citations, packet, sources = _verification(
         "A located claim.", "A located claim in exact evidence."
     )
     unreachable = citations.links[0].model_copy(
@@ -491,14 +513,71 @@ def test_unreachable_locator_fails_integrity_gate() -> None:
 
     with pytest.raises(CitationVerificationError) as caught:
         DeterministicCitationVerifier().verify(
-            claim_set=claims, citation_set=drifted_citations
+            claim_set=claims,
+            citation_set=drifted_citations,
+            evidence_packet=packet,
+            sources=sources,
         )
 
-    assert caught.value.code is CitationVerificationErrorCode.integrity_failure
+    assert caught.value.code is CitationVerificationErrorCode.evidence_identity_mismatch
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    (
+        ("document_id", "invented-document"),
+        ("chunk_artifact_id", _artifact("invented-chunk")),
+        ("retrieval_artifact_id", _artifact("stale-retrieval")),
+        ("exact_text", "Invented quotation."),
+        ("exact_text_sha256", _sha("Invented quotation.")),
+    ),
+)
+def test_citation_evidence_authority_rejects_invented_or_stale_coordinates(
+    field: str, value: str
+) -> None:
+    _, claims, citations, packet, sources = _verification(
+        "A located claim.", "A located claim in exact evidence."
+    )
+    drifted_link = citations.links[0].model_copy(update={field: value})
+    drifted_citations = citations.model_copy(update={"links": (drifted_link,)})
+
+    with pytest.raises(CitationVerificationError) as caught:
+        DeterministicCitationVerifier().verify(
+            claim_set=claims,
+            citation_set=drifted_citations,
+            evidence_packet=packet,
+            sources=sources,
+        )
+
+    assert caught.value.code is CitationVerificationErrorCode.evidence_identity_mismatch
+
+
+def test_citation_source_authority_rejects_bibliographic_drift() -> None:
+    _, claims, citations, packet, sources = _verification(
+        "A located claim.", "A located claim in exact evidence."
+    )
+    source = sources[0]
+    drifted_source = CitationSourceDescriptor.create(
+        source_id=source.source_id,
+        title="Invented title",
+        canonical_uri=source.canonical_uri,
+        doi=source.doi,
+        source_content_sha256=source.source_content_sha256,
+    )
+
+    with pytest.raises(CitationVerificationError) as caught:
+        DeterministicCitationVerifier().verify(
+            claim_set=claims,
+            citation_set=citations,
+            evidence_packet=packet,
+            sources=(drifted_source,),
+        )
+
+    assert caught.value.code is CitationVerificationErrorCode.source_identity_mismatch
 
 
 def test_verification_report_rejects_identity_drift() -> None:
-    report, _, _ = _verification("A stable claim.", "A stable claim.")
+    report, _, _, _, _ = _verification("A stable claim.", "A stable claim.")
     drifted = report.model_dump(mode="json")
     drifted["artifact_id"] = _artifact("different")
 

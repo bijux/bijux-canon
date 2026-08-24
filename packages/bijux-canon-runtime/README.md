@@ -276,6 +276,13 @@ hash behind supporting, opposing, limiting, irrelevant, ambiguous, or
 unclassified evidence; a completed state cannot conceal material unclassified
 content.
 
+Installed grounded answers persist numbered, human-readable citations as well
+as their machine authority. Each reference retains the retrieval, document,
+chunk, source descriptor, exact locator and quote hashes, bibliography,
+license, and provenance. Runtime inspection recomputes the citation set and
+presentation from the persisted retrieval dependency; it refuses an internally
+consistent claim graph that is detached from that dependency.
+
 Runtime projects the request timeout, artifact ceiling, retrieval count, and
 per-search candidate bound into an explicit installed Agent budget. Agent
 reserves the complete call and result envelope before each planning, retrieval,

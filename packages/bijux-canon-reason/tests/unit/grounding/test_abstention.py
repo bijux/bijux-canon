@@ -158,7 +158,10 @@ def _pipeline(
         claim_set=claims, evidence_packet=packet, sources=tuple(sources)
     )
     report = DeterministicCitationVerifier().verify(
-        claim_set=claims, citation_set=citations
+        claim_set=claims,
+        citation_set=citations,
+        evidence_packet=packet,
+        sources=tuple(sources),
     )
     return claims, citations, report
 
@@ -188,7 +191,10 @@ def _empty_pipeline() -> tuple[
         claim_set=claims, evidence_packet=packet, sources=()
     )
     report = DeterministicCitationVerifier().verify(
-        claim_set=claims, citation_set=citations
+        claim_set=claims,
+        citation_set=citations,
+        evidence_packet=packet,
+        sources=(),
     )
     return claims, citations, report
 

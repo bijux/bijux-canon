@@ -162,7 +162,10 @@ def _pipeline(
         claim_set=claims, evidence_packet=packet, sources=tuple(sources)
     )
     report = DeterministicCitationVerifier().verify(
-        claim_set=claims, citation_set=citations
+        claim_set=claims,
+        citation_set=citations,
+        evidence_packet=packet,
+        sources=tuple(sources),
     )
     contexts = tuple(
         create_claim_context(

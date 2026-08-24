@@ -200,12 +200,58 @@ def citation_inputs_from_evidence_set(
             doi = raw_source.get("doi")
             if doi is not None and not isinstance(doi, str):
                 raise StepDispatchError("retrieval source DOI is invalid")
+            raw_authors = raw_source.get("authors", [])
+            if not isinstance(raw_authors, list) or any(
+                not isinstance(item, str) or not item for item in raw_authors
+            ):
+                raise StepDispatchError("retrieval source authors are invalid")
             source = CitationSourceDescriptor.create(
                 source_id=source_id,
                 title=title,
                 canonical_uri=source_uri,
                 doi=doi,
                 source_content_sha256=source_sha256,
+                authors=tuple(raw_authors),
+                journal=(
+                    _required_string(raw_source["journal"], "journal")
+                    if raw_source.get("journal") is not None
+                    else None
+                ),
+                publication_date=(
+                    _required_string(
+                        raw_source["publication_date"], "publication_date"
+                    )
+                    if raw_source.get("publication_date") is not None
+                    else None
+                ),
+                license_expression=(
+                    _required_string(raw_source["license_id"], "license_id")
+                    if raw_source.get("license_id") is not None
+                    else None
+                ),
+                license_url=(
+                    _required_string(raw_source["license_url"], "license_url")
+                    if raw_source.get("license_url") is not None
+                    else None
+                ),
+                provenance_artifact_id=(
+                    _required_string(
+                        raw_source["provenance_artifact_id"],
+                        "provenance_artifact_id",
+                    )
+                    if raw_source.get("provenance_artifact_id") is not None
+                    else None
+                ),
+                format_id=(
+                    _required_string(raw_source["format_id"], "format_id")
+                    if raw_source.get("format_id") is not None
+                    else None
+                ),
+                language=(
+                    _required_string(raw_source["language"], "language")
+                    if raw_source.get("language") is not None
+                    else None
+                ),
             )
             existing = sources.get(source_id)
             if existing is not None and existing != source:
@@ -342,6 +388,9 @@ class CanonicalReasonOperationAdapter:
                 "answer_disposition": grounded.outcome.value,
                 "citation_verification": grounded.verification.model_dump(mode="json"),
                 "citations": grounded.citations.model_dump(mode="json"),
+                "citation_presentation": grounded.citation_presentation.model_dump(
+                    mode="json"
+                ),
                 "claims": grounded.claims.model_dump(mode="json"),
                 "contextualized": grounded.contextualized.model_dump(mode="json"),
                 "evidence_packet": packet.model_dump(mode="json"),

@@ -111,6 +111,10 @@ class CitationSourceMetadata:
     doi: str | None = None
     language: str | None = None
     license_id: str | None = None
+    journal: str | None = None
+    publication_date: str | None = None
+    license_url: str | None = None
+    provenance_artifact_id: str | None = None
 
     def __post_init__(self) -> None:
         if not all((self.source_id, self.source_uri, self.format_id, self.title)):
@@ -119,6 +123,20 @@ class CitationSourceMetadata:
             raise ValueError("citation source content identity must be a SHA-256")
         if any(not author for author in self.authors):
             raise ValueError("citation source authors must not be empty")
+        optional_text = (
+            self.doi,
+            self.language,
+            self.license_id,
+            self.journal,
+            self.publication_date,
+            self.license_url,
+        )
+        if any(value is not None and not value.strip() for value in optional_text):
+            raise ValueError("citation source optional metadata must not be empty")
+        if self.provenance_artifact_id is not None and not _is_artifact_id(
+            self.provenance_artifact_id
+        ):
+            raise ValueError("citation source provenance identity is invalid")
 
 
 @dataclass(frozen=True, slots=True)

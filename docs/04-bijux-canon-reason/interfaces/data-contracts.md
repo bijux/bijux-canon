@@ -4,7 +4,7 @@ audience: mixed
 type: reference
 status: canonical
 owner: bijux-canon-reason-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-08-24
 ---
 
 # Data Contracts
@@ -71,6 +71,32 @@ evidence spans, chunk-ID syntax, and path safety. `EvidenceRef.sha256` is carrie
 as a string at model construction; the run builder establishes its meaning by
 hashing the referenced file and requiring an exact match. Cross-record
 verification then confirms that cited bytes and registered evidence agree.
+
+## Grounded Answer Citations
+
+The credential-free grounded-answer path uses a closed chain of immutable
+records rather than accepting citation dictionaries from a caller:
+
+```text
+retrieval artifact -> evidence packet -> normalized claim -> citation link
+                   -> verification report -> numbered presentation
+```
+
+Each citation link retains the exact retrieval, document, chunk, source,
+locator, quote, and source-byte identities plus the source descriptor used for
+bibliographic display. The verifier compares the link with both the evidence
+packet and the source descriptor. An invented coordinate, changed quote, stale
+retrieval identity, substituted source, or changed bibliography is a typed
+failure.
+
+`CitationPresentation` deduplicates repeated use of one evidence item while
+retaining all claim identities that cite it. A numbered entry includes the
+exact quote and locator, hashes, title, authors, journal, date, DOI, URI,
+license, provenance, format, and language when the immutable source descriptor
+provides them. An admitted factual claim without a verified citation is
+invalid; an abstention exposes no claims or citations. Bibliographic metadata
+helps a reader identify the source but is never treated as evidence for the
+claim.
 
 ## Validation Layers
 

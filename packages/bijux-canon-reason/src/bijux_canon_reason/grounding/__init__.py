@@ -23,6 +23,12 @@ from bijux_canon_reason.grounding.citation_linking import (
     ClaimCitationRole,
     ClaimCitationSet,
 )
+from bijux_canon_reason.grounding.citation_presentation import (
+    CitationPresentation,
+    CitationPresentationService,
+    PresentedCitation,
+    render_citation_reference,
+)
 from bijux_canon_reason.grounding.citation_verification import (
     CitationIntegrityStatus,
     CitationVerificationError,
@@ -151,6 +157,8 @@ __all__ = [
     "CitationIntegrityStatus",
     "CitationLinkingError",
     "CitationLinkingErrorCode",
+    "CitationPresentation",
+    "CitationPresentationService",
     "CitationSourceDescriptor",
     "CitationVerificationError",
     "CitationVerificationErrorCode",
@@ -209,6 +217,7 @@ __all__ = [
     "OpenAICompatibleStructuredSynthesizer",
     "OmissionReason",
     "PacketCompleteness",
+    "PresentedCitation",
     "ProviderAttemptKind",
     "ProviderAttemptReceipt",
     "ProviderAttemptStatus",
@@ -229,6 +238,7 @@ __all__ = [
     "infer_synthesis_style",
     "recommended_point_count",
     "required_source_count",
+    "render_citation_reference",
     "SourceQualityGrade",
     "StructuredCandidateClaim",
     "StructuredProviderConfiguration",

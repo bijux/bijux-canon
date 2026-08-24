@@ -130,6 +130,18 @@ content. A request for an unsupported universal guarantee produces an
 abstention with no claims or citations, even when retrieval returns incidental
 mentions of related methods or yields.
 
+Every admitted factual claim is also bound to a closed citation authority: the
+exact evidence packet, retrieval artifact, document, chunk, source descriptor,
+locator, quote, quote hash, and source-byte hash. Verification rejects a link
+whose coordinates or bibliographic source fields differ from that authority;
+it does not accept a plausible title, nearby passage, stale retrieval result,
+or caller-supplied citation. The rendered answer uses numbered references and
+deduplicates claims that use the same evidence. Each reference exposes the
+authors, title, journal, date, DOI and source URI when known, exact locator and
+quote, content hashes, document and chunk identities, license, provenance,
+format, and language. These fields make a citation usable and inspectable; they
+still do not turn metadata into support or prove scientific truth.
+
 `AnswerRequirementPlanningService` turns that grounded answer into an
 inspectable research plan. Requirements cover answerability, factual findings,
 methods/context, skeptical opposition, limitations, disambiguation, and
@@ -257,6 +269,12 @@ Its output retains the corpus, index generation, retrieval trace, evidence
 packet, source descriptors, claim graph, exact citations, admission decision,
 and content-addressed grounded-answer identity. Runtime composition does not
 replace Reason policy with runtime-owned generated prose.
+
+Inspection reproduces citation verification from the persisted retrieval
+artifact dependency and the complete source descriptors. A reason artifact
+with a missing, substituted, or unregistered retrieval dependency fails
+verification even if its displayed answer and hashes are otherwise
+self-consistent.
 
 ## Verification And Failure Semantics
 

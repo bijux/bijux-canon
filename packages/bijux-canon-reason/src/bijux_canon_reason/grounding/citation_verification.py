@@ -12,9 +12,11 @@ from pydantic import field_validator, model_validator
 
 from bijux_canon_reason.core.models.base import StableModel
 from bijux_canon_reason.grounding.citation_linking import (
+    CitationSourceDescriptor,
     ClaimCitationLink,
     ClaimCitationSet,
 )
+from bijux_canon_reason.grounding.evidence_packets import CitationEvidence, EvidencePacket
 from bijux_canon_reason.grounding.claim_normalization import (
     AtomicClaim,
     NormalizedClaimSet,
@@ -59,6 +61,9 @@ class CitationVerificationErrorCode(StrEnum):
     claim_set_mismatch = "claim_set_mismatch"
     claim_identity_mismatch = "claim_identity_mismatch"
     integrity_failure = "integrity_failure"
+    evidence_packet_mismatch = "evidence_packet_mismatch"
+    evidence_identity_mismatch = "evidence_identity_mismatch"
+    source_identity_mismatch = "source_identity_mismatch"
     structured_decision_invalid = "structured_decision_invalid"
 
 
@@ -297,10 +302,12 @@ class VerifiedAtomicClaim(StableModel):
 class CitationVerificationReport(StableModel):
     """Complete restart-safe integrity and entailment verification report."""
 
-    schema_version: str = "bijux.canon.reason.citation_verification_report.v1"
+    schema_version: str = "bijux.canon.reason.citation_verification_report.v2"
     artifact_id: str
     source_claim_set_artifact_id: str
     claim_citation_set_artifact_id: str
+    evidence_packet_artifact_id: str
+    source_descriptor_artifact_ids: tuple[str, ...]
     policy_artifact_id: str
     outcome: CitationVerificationOutcome
     integrity_verified_links: int
@@ -311,6 +318,7 @@ class CitationVerificationReport(StableModel):
         "artifact_id",
         "source_claim_set_artifact_id",
         "claim_citation_set_artifact_id",
+        "evidence_packet_artifact_id",
         "policy_artifact_id",
     )
     @classmethod
@@ -319,6 +327,13 @@ class CitationVerificationReport(StableModel):
 
     @model_validator(mode="after")
     def _validate_report(self) -> Self:
+        if len(self.source_descriptor_artifact_ids) != len(
+            set(self.source_descriptor_artifact_ids)
+        ) or any(
+            require_artifact_id(item) != item
+            for item in self.source_descriptor_artifact_ids
+        ):
+            raise ValueError("citation source authority identities must be unique")
         if (
             self.integrity_verified_links < 0
             or self.integrity_total_links < 0
@@ -361,6 +376,8 @@ class DeterministicCitationVerifier:
         *,
         claim_set: NormalizedClaimSet,
         citation_set: ClaimCitationSet,
+        evidence_packet: EvidencePacket,
+        sources: tuple[CitationSourceDescriptor, ...],
     ) -> CitationVerificationReport:
         """Verify every link and classify its conservative entailment relation."""
 
@@ -368,6 +385,26 @@ class DeterministicCitationVerifier:
             raise CitationVerificationError(
                 CitationVerificationErrorCode.claim_set_mismatch,
                 "citation links reference a different normalized claim set",
+            )
+        if citation_set.evidence_packet_artifact_id != evidence_packet.artifact_id:
+            raise CitationVerificationError(
+                CitationVerificationErrorCode.evidence_packet_mismatch,
+                "citation links reference a different evidence packet",
+            )
+        evidence_by_id = {
+            evidence.artifact_id: evidence for evidence in evidence_packet.selected
+        }
+        if len(evidence_by_id) != len(evidence_packet.selected):
+            raise CitationVerificationError(
+                CitationVerificationErrorCode.evidence_identity_mismatch,
+                "evidence authority contains duplicate identities",
+            )
+        ordered_sources = tuple(sorted(sources, key=lambda source: source.source_id))
+        sources_by_id = {source.source_id: source for source in ordered_sources}
+        if len(sources_by_id) != len(sources):
+            raise CitationVerificationError(
+                CitationVerificationErrorCode.source_identity_mismatch,
+                "citation source authority contains duplicate identities",
             )
         claim_ids = tuple(claim.artifact_id for claim in claim_set.claims)
         if citation_set.claim_artifact_ids != claim_ids:
@@ -385,7 +422,13 @@ class DeterministicCitationVerifier:
         integrity_count = 0
         for claim in claim_set.claims:
             assessments = tuple(
-                self._assess(claim, link) for link in links_by_claim[claim.artifact_id]
+                self._assess(
+                    claim,
+                    link,
+                    evidence_by_id=evidence_by_id,
+                    sources_by_id=sources_by_id,
+                )
+                for link in links_by_claim[claim.artifact_id]
             )
             integrity_count += len(assessments)
             verdict = _aggregate_verdict(tuple(item.verdict for item in assessments))
@@ -412,9 +455,13 @@ class DeterministicCitationVerifier:
             else CitationVerificationOutcome.no_claims
         )
         payload = {
-            "schema_version": "bijux.canon.reason.citation_verification_report.v1",
+            "schema_version": "bijux.canon.reason.citation_verification_report.v2",
             "source_claim_set_artifact_id": claim_set.artifact_id,
             "claim_citation_set_artifact_id": citation_set.artifact_id,
+            "evidence_packet_artifact_id": evidence_packet.artifact_id,
+            "source_descriptor_artifact_ids": tuple(
+                source.artifact_id for source in ordered_sources
+            ),
             "policy_artifact_id": self._policy.artifact_id,
             "outcome": outcome.value,
             "integrity_verified_links": integrity_count,
@@ -425,6 +472,10 @@ class DeterministicCitationVerifier:
             artifact_id=content_artifact_id(payload),
             source_claim_set_artifact_id=claim_set.artifact_id,
             claim_citation_set_artifact_id=citation_set.artifact_id,
+            evidence_packet_artifact_id=evidence_packet.artifact_id,
+            source_descriptor_artifact_ids=tuple(
+                source.artifact_id for source in ordered_sources
+            ),
             policy_artifact_id=self._policy.artifact_id,
             outcome=outcome,
             integrity_verified_links=integrity_count,
@@ -433,8 +484,25 @@ class DeterministicCitationVerifier:
         )
 
     def _assess(
-        self, claim: AtomicClaim, link: ClaimCitationLink
+        self,
+        claim: AtomicClaim,
+        link: ClaimCitationLink,
+        *,
+        evidence_by_id: dict[str, CitationEvidence],
+        sources_by_id: dict[str, CitationSourceDescriptor],
     ) -> EvidenceEntailmentAssessment:
+        evidence = evidence_by_id.get(link.citation_evidence_artifact_id)
+        if evidence is None or not _link_matches_evidence(link, evidence):
+            raise CitationVerificationError(
+                CitationVerificationErrorCode.evidence_identity_mismatch,
+                "claim citation does not match its authoritative evidence record",
+            )
+        source = sources_by_id.get(link.source_id)
+        if source is None or not _link_matches_source(link, source):
+            raise CitationVerificationError(
+                CitationVerificationErrorCode.source_identity_mismatch,
+                "claim citation does not match its authoritative source metadata",
+            )
         if (
             link.claim_artifact_id != claim.artifact_id
             or link.claim_ordinal != claim.ordinal
@@ -535,6 +603,51 @@ def _structured_verdict(
 
 def _encode_structured_decision(decision: StructuredEntailmentDecision) -> str:
     return _STRUCTURED_DECISION_PREFIX + decision.model_dump_json()
+
+
+def _link_matches_evidence(
+    link: ClaimCitationLink, evidence: CitationEvidence
+) -> bool:
+    """Compare every citation-bearing evidence coordinate to its closed authority."""
+
+    return (
+        link.document_id == evidence.document_id
+        and link.chunk_artifact_id == evidence.chunk_artifact_id
+        and link.retrieval_artifact_id == evidence.retrieval_artifact_id
+        and link.source_id == evidence.source_id
+        and link.source_artifact_id == evidence.locator.source_artifact_id
+        and link.source_uri == evidence.locator.source_uri
+        and link.source_content_sha256 == evidence.locator.source_content_sha256
+        and link.section_path == evidence.section_path
+        and link.locator_artifact_id == evidence.locator.artifact_id
+        and link.locator_scheme == evidence.locator.scheme
+        and link.locator_selectors == evidence.locator.selectors
+        and link.exact_text == evidence.exact_text
+        and link.exact_text_sha256 == evidence.exact_text_sha256
+    )
+
+
+def _link_matches_source(
+    link: ClaimCitationLink, source: CitationSourceDescriptor
+) -> bool:
+    """Compare complete bibliographic and provenance data to its closed authority."""
+
+    return (
+        link.source_descriptor_artifact_id == source.artifact_id
+        and link.source_id == source.source_id
+        and link.source_title == source.title
+        and link.source_authors == source.authors
+        and link.source_journal == source.journal
+        and link.source_publication_date == source.publication_date
+        and link.source_doi == source.doi
+        and link.source_uri == source.canonical_uri
+        and link.source_content_sha256 == source.source_content_sha256
+        and link.source_license_expression == source.license_expression
+        and link.source_license_url == source.license_url
+        and link.source_provenance_artifact_id == source.provenance_artifact_id
+        and link.source_format_id == source.format_id
+        and link.source_language == source.language
+    )
 
 
 def _locator_reachable(link: ClaimCitationLink) -> bool:
