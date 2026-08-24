@@ -67,7 +67,17 @@ def _corpus_inspection(artifact_id: ArtifactID) -> Mapping[str, object]:
     return {
         "byte_length": 421,
         "canonical_sha256": "c" * 64,
+        "chunk_count": 496,
+        "document_count": 8,
         "generation_name": "a" * 64,
+        "parser_identities": (
+            {
+                "name": "bijux-canon-ingest-jats",
+                "schema_version": "bijux.canon.ingest.parsed_document.v1",
+                "version": "1",
+            },
+        ),
+        "rejection_count": 0,
         "schema_version": "bijux.canon.ingest.corpus_publication.v1",
         "snapshot_id": str(artifact_id),
     }

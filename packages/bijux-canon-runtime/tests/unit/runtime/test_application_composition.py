@@ -161,6 +161,17 @@ def test_composed_corpus_job_survives_application_restart_without_model_load(
         assert corpus["schema_version"] == ("bijux.canon.ingest.corpus_publication.v1")
         assert isinstance(corpus["byte_length"], int)
         assert corpus["byte_length"] > 0
+        assert corpus["document_count"] == 1
+        assert isinstance(corpus["chunk_count"], int)
+        assert corpus["chunk_count"] > 0
+        assert corpus["rejection_count"] == 0
+        assert corpus["parser_identities"] == (
+            {
+                "name": "bijux-canon-ingest-markdown",
+                "schema_version": "bijux.canon.ingest.parsed_text_document.v1",
+                "version": "1",
+            },
+        )
 
     layout = configuration.require_workspace_layout()
     with duckdb.connect(str(layout.database_path), read_only=True) as authority:

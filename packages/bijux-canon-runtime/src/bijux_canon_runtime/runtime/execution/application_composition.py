@@ -288,17 +288,53 @@ def compose_runtime_application_services(
         if artifact.descriptor.schema_id != "ingest.corpus-snapshot.v1":
             raise ValueError("artifact is not a corpus snapshot")
         value = json.loads(artifact.canonical_bytes)
-        if not isinstance(value, dict) or not isinstance(value.get("documents"), list):
+        if (
+            not isinstance(value, dict)
+            or not isinstance(value.get("documents"), list)
+            or not isinstance(value.get("rejections"), list)
+        ):
             raise ValueError("corpus snapshot payload is invalid")
         documents = value["documents"]
         assert isinstance(documents, list)
+        rejections = value["rejections"]
+        assert isinstance(rejections, list)
+        parser_identities: set[tuple[str, str, str]] = set()
+        chunk_count = 0
+        for item in documents:
+            if not isinstance(item, dict):
+                raise ValueError("corpus snapshot document is invalid")
+            document = item.get("document")
+            chunks = item.get("chunks")
+            if not isinstance(document, dict) or not isinstance(chunks, list):
+                raise ValueError("corpus snapshot document is invalid")
+            parser = document.get("parser")
+            schema_version = document.get("schema_version")
+            if not isinstance(parser, dict) or not isinstance(schema_version, str):
+                raise ValueError("corpus snapshot parser identity is invalid")
+            name = parser.get("name")
+            version = parser.get("version")
+            if not isinstance(name, str) or not isinstance(version, str):
+                raise ValueError("corpus snapshot parser identity is invalid")
+            parser_identities.add((name, version, schema_version))
+            chunk_count += len(chunks)
         snapshot_id = value.get("snapshot_id")
         if not isinstance(snapshot_id, str) or not snapshot_id.startswith("sha256:"):
             raise ValueError("corpus snapshot identity is invalid")
         return {
             "byte_length": len(artifact.canonical_bytes),
             "canonical_sha256": hashlib.sha256(artifact.canonical_bytes).hexdigest(),
+            "chunk_count": chunk_count,
+            "document_count": len(documents),
             "generation_name": snapshot_id.removeprefix("sha256:"),
+            "parser_identities": tuple(
+                {
+                    "name": name,
+                    "schema_version": schema_version,
+                    "version": version,
+                }
+                for name, version, schema_version in sorted(parser_identities)
+            ),
+            "rejection_count": len(rejections),
             "schema_version": "bijux.canon.ingest.corpus_publication.v1",
             "snapshot_id": snapshot_id,
         }

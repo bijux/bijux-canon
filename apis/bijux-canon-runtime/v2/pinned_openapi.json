@@ -313,10 +313,33 @@
             "title": "Canonical Sha256",
             "type": "string"
           },
+          "chunk_count": {
+            "minimum": 0.0,
+            "title": "Chunk Count",
+            "type": "integer"
+          },
+          "document_count": {
+            "minimum": 0.0,
+            "title": "Document Count",
+            "type": "integer"
+          },
           "generation_name": {
             "pattern": "^[0-9a-f]{64}$",
             "title": "Generation Name",
             "type": "string"
+          },
+          "parser_identities": {
+            "items": {
+              "$ref": "#/components/schemas/CorpusParserIdentityResponse"
+            },
+            "maxItems": 100,
+            "title": "Parser Identities",
+            "type": "array"
+          },
+          "rejection_count": {
+            "minimum": 0.0,
+            "title": "Rejection Count",
+            "type": "integer"
           },
           "schema_version": {
             "const": "bijux.canon.ingest.corpus_publication.v1",
@@ -334,9 +357,44 @@
           "snapshot_id",
           "canonical_sha256",
           "byte_length",
+          "document_count",
+          "chunk_count",
+          "rejection_count",
+          "parser_identities",
           "generation_name"
         ],
         "title": "CorpusInspectionResponse",
+        "type": "object"
+      },
+      "CorpusParserIdentityResponse": {
+        "additionalProperties": false,
+        "description": "Installed parser contract represented in an immutable corpus.",
+        "properties": {
+          "name": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "schema_version": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "version": {
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "version",
+          "schema_version"
+        ],
+        "title": "CorpusParserIdentityResponse",
         "type": "object"
       },
       "CursorPageResponse": {

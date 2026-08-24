@@ -246,7 +246,17 @@ class _RecordingServices(RuntimeApplicationServicesV2):
         return {
             "byte_length": 100,
             "canonical_sha256": "d" * 64,
+            "chunk_count": 496,
+            "document_count": 8,
             "generation_name": "a" * 64,
+            "parser_identities": (
+                {
+                    "name": "bijux-canon-ingest-jats",
+                    "schema_version": "bijux.canon.ingest.parsed_document.v1",
+                    "version": "1",
+                },
+            ),
+            "rejection_count": 0,
             "schema_version": "bijux.canon.ingest.corpus_publication.v1",
             "snapshot_id": str(corpus_id),
         }

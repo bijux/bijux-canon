@@ -4,7 +4,7 @@ audience: mixed
 type: how-to
 status: canonical
 owner: bijux-canon-runtime-docs
-last_reviewed: 2026-08-24
+last_reviewed: 2026-08-25
 ---
 
 # Installation and Setup
@@ -154,20 +154,29 @@ Hybrid readiness additionally requires a verified dense generation and model.
 Install `bijux-canon` or `agentic-flows` only when an application still needs a
 compatibility import or command. New code should install the canonical runtime.
 
-## Start with the Checked-In Example
+## Start with the checked-in product workflow
 
-From a repository checkout, the `boring` example provides a strict manifest
-and baseline policy:
+The ancient-DNA example exercises the base installed wheel without a model,
+provider credential, optional extra, or source-tree import:
 
 ```bash
-make install
-bijux-canon-runtime plan \
-  packages/bijux-canon-runtime/examples/boring/flow.json \
-  --json
+python examples/ancient-dna-research/offline_lexical_workflow.py \
+  --runtime-command .venv/bin/bijux-canon-runtime \
+  --workspace artifacts/ancient-dna-offline/runtime-workspace \
+  --evidence-directory artifacts/ancient-dna-offline/evidence
 ```
 
-Plan mode is the safest setup check. It validates and resolves the flow without
-executing steps, writing a trace, or allocating a run identifier.
+It discovers and ingests eight real JATS articles, builds a persistent SQLite
+FTS5 index, retrieves evidence, answers with verified citations, reopens the
+same workspace using its absolute spelling, and performs an exact replay and
+comparison. Each CLI exchange and bounded artifact page is retained below the
+selected evidence directory. The example's
+[`README`](../../../examples/ancient-dna-research/README.md) documents the
+network-denied installed-wheel acceptance command and the resulting identities.
+
+For an application-owned legacy flow manifest, `plan` remains available to
+validate and resolve the manifest without executing steps, writing a trace, or
+allocating a run identifier.
 
 The command determines how much authority is exercised:
 

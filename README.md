@@ -69,6 +69,31 @@ correct; it makes the execution conditions and resulting evidence inspectable.
 Missing evidence produces a narrower claim or an explicit refusal. It is not
 reconstructed from a plausible final answer.
 
+## Quickstart: Offline Lexical Research
+
+The base Runtime wheel provides the model-free profile. From a release source
+archive or repository checkout, run the ancient-DNA workflow against a clean
+installed environment:
+
+```bash
+python -m venv artifacts/ancient-dna-offline/venv
+artifacts/ancient-dna-offline/venv/bin/python -m pip install bijux-canon-runtime
+
+python examples/ancient-dna-research/offline_lexical_workflow.py \
+  --runtime-command artifacts/ancient-dna-offline/venv/bin/bijux-canon-runtime \
+  --workspace artifacts/ancient-dna-offline/runtime-workspace \
+  --evidence-directory artifacts/ancient-dna-offline/evidence
+```
+
+This executes discovery, durable ingest, lexical indexing, evidence search,
+grounded answering, bounded inspection, process restart, replay, and comparison
+through the public Runtime CLI. It requires no model, provider credential, or
+optional extra. The final `summary.json` binds the answer and exact citation
+locators to the source, corpus, index, configuration, job, run, and replay
+identities. See the
+[offline ancient-DNA workflow](examples/ancient-dna-research/README.md) for
+network-denied release acceptance and manual inspection commands.
+
 This repository defines `11` publishable package records. PyPI, GHCR, and
 GitHub Release are independent publication workflows. Each resolves the
 checked-in release matrix and invokes the same reusable artifact-building

@@ -627,6 +627,14 @@ class RuntimeCapabilityDiscoveryResponse(StrictModel):
     readiness: tuple[ReadinessResponse, ...]
 
 
+class CorpusParserIdentityResponse(StrictModel):
+    """Installed parser contract represented in an immutable corpus."""
+
+    name: Annotated[str, Field(min_length=1, max_length=200)]
+    version: Annotated[str, Field(min_length=1, max_length=100)]
+    schema_version: Annotated[str, Field(min_length=1, max_length=200)]
+
+
 class CorpusInspectionResponse(StrictModel):
     """Verified immutable corpus publication metadata."""
 
@@ -634,6 +642,12 @@ class CorpusInspectionResponse(StrictModel):
     snapshot_id: ArtifactIdentity
     canonical_sha256: Annotated[str, Field(pattern=r"^[0-9a-f]{64}$")]
     byte_length: Annotated[int, Field(ge=1)]
+    document_count: Annotated[int, Field(ge=0)]
+    chunk_count: Annotated[int, Field(ge=0)]
+    rejection_count: Annotated[int, Field(ge=0)]
+    parser_identities: Annotated[
+        tuple[CorpusParserIdentityResponse, ...], Field(max_length=100)
+    ]
     generation_name: Annotated[str, Field(pattern=r"^[0-9a-f]{64}$")]
 
 
