@@ -230,6 +230,15 @@ def run_v2_command(
             return 0
         if args.v2_command == "inspect":
             return _inspect(args, service)
+        if args.v2_command == "artifact-payload":
+            _write(
+                service.read_artifact_payload_page(
+                    ArtifactID(args.artifact_id),
+                    offset=args.offset,
+                    max_bytes=args.max_bytes,
+                )
+            )
+            return 0
         if args.v2_command == "replay":
             return _replay(args, service)
         if args.v2_command == "compare":

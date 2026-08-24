@@ -203,7 +203,15 @@ def add_v2_commands(
     inspect.add_argument("--attempt-id")
     inspect.add_argument("--cursor")
     inspect.add_argument("--offset", type=int)
-    inspect.add_argument("--limit", type=int, default=100)
+    inspect.add_argument("--limit", type=int, default=5)
+
+    artifact_payload = commands.add_parser(
+        "artifact-payload",
+        help="Read one bounded page of immutable artifact payload bytes.",
+    )
+    artifact_payload.add_argument("artifact_id")
+    artifact_payload.add_argument("--offset", type=int, default=0)
+    artifact_payload.add_argument("--max-bytes", type=int, default=64 * 1024)
 
     replay = commands.add_parser("replay", help="Submit a linked replay attempt.")
     replay.add_argument("run_id")

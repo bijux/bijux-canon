@@ -148,6 +148,21 @@ class InspectedArtifact:
 
 
 @dataclass(frozen=True, slots=True)
+class InspectedArtifactPayloadPage:
+    """One deliberate bounded page of immutable artifact payload bytes."""
+
+    schema_version: str
+    artifact_id: ArtifactID
+    media_type: str
+    payload_sha256: str
+    total_bytes: int
+    offset: int
+    byte_length: int
+    data_base64: str
+    next_offset: int | None
+
+
+@dataclass(frozen=True, slots=True)
 class PersistedInspectionValue:
     """A semantic value resolved to its exact persisted source location."""
 
@@ -197,6 +212,7 @@ class RuntimeRunInspection:
 
 __all__ = [
     "InspectedArtifact",
+    "InspectedArtifactPayloadPage",
     "InspectedAttempt",
     "InspectedDagStep",
     "InspectedErrorRecord",

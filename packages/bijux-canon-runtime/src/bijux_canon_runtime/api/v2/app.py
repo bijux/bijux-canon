@@ -593,13 +593,32 @@ def create_app(
         attempt_id: str | None = Query(default=None),
         cursor: str | None = Query(default=None, min_length=1, max_length=4096),
         offset: Annotated[int | None, Query(ge=0)] = None,
-        limit: Annotated[int, Query(ge=1, le=1000)] = 100,
+        limit: Annotated[int, Query(ge=1, le=100)] = 5,
     ) -> dict[str, object]:
         return dict(
             service.inspect_page(
                 run_id,
                 attempt_id=attempt_id,
                 page=PageRequest(limit=limit, cursor=cursor, offset=offset),
+            )
+        )
+
+    @api.get(
+        "/api/v2/artifacts/{artifact_id}/payload",
+        responses=PROBLEM_RESPONSES,
+    )
+    def artifact_payload(
+        artifact_id: str,
+        _: Version,
+        service: Services,
+        offset: Annotated[int, Query(ge=0)] = 0,
+        max_bytes: Annotated[int, Query(ge=1, le=65536)] = 65536,
+    ) -> dict[str, object]:
+        return dict(
+            service.read_artifact_payload_page(
+                ArtifactID(artifact_id),
+                offset=offset,
+                max_bytes=max_bytes,
             )
         )
 

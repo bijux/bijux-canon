@@ -5,6 +5,7 @@
 
 from bijux_canon_runtime.runtime.inspection.models import (
     InspectedArtifact,
+    InspectedArtifactPayloadPage,
     InspectedAttempt,
     InspectedDagStep,
     InspectedErrorRecord,
@@ -22,6 +23,7 @@ from bijux_canon_runtime.runtime.inspection.run_inspector import RuntimeRunInspe
 
 __all__ = [
     "InspectedArtifact",
+    "InspectedArtifactPayloadPage",
     "InspectedAttempt",
     "InspectedDagStep",
     "InspectedErrorRecord",

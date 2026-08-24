@@ -37,6 +37,10 @@ _CORPUS_ID = ArtifactID("sha256:" + "a" * 64)
 _INDEX_ID = ArtifactID("sha256:" + "b" * 64)
 
 _OPERATION_SURFACES = {
+    "artifact.payload": (
+        "artifact-payload",
+        ("get", "/api/v2/artifacts/{artifact_id}/payload"),
+    ),
     "ask": ("ask", ("post", "/api/v2/answers")),
     "cancel": ("cancel", ("post", "/api/v2/jobs/{job_id}/cancellation")),
     "compare": ("compare", ("post", "/api/v2/comparisons")),
@@ -147,6 +151,7 @@ def test_operator_help_hides_legacy_commands_without_suppress_sentinels() -> Non
         "research",
         "run",
         "inspect",
+        "artifact-payload",
         "replay",
         "compare",
         "backup",

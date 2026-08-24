@@ -392,6 +392,17 @@
         "title": "CursorPageResponse",
         "type": "object"
       },
+      "ExecutionProfile": {
+        "description": "Supported local and service-backed execution profiles.",
+        "enum": [
+          "offline-lexical",
+          "local-hybrid-exact",
+          "local-hybrid-ann",
+          "qdrant-hybrid"
+        ],
+        "title": "ExecutionProfile",
+        "type": "string"
+      },
       "Filters": {
         "additionalProperties": false,
         "description": "Immutable retrieval filters.",
@@ -867,6 +878,28 @@
         "additionalProperties": false,
         "description": "Content-safe effective embedding-model identity.",
         "properties": {
+          "artifact_set_digest": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Artifact Set Digest"
+          },
+          "compatibility_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Compatibility Status"
+          },
           "dimension": {
             "anyOf": [
               {
@@ -877,6 +910,17 @@
               }
             ],
             "title": "Dimension"
+          },
+          "license_pointer": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "License Pointer"
           },
           "model_id": {
             "anyOf": [
@@ -899,6 +943,10 @@
               }
             ],
             "title": "Model Lock Artifact Id"
+          },
+          "offline_reuse": {
+            "title": "Offline Reuse",
+            "type": "boolean"
           },
           "profile_id": {
             "anyOf": [
@@ -941,6 +989,28 @@
             ],
             "title": "Status",
             "type": "string"
+          },
+          "validation_record_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Validation Record Id"
+          },
+          "validation_result": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Validation Result"
           }
         },
         "required": [
@@ -950,7 +1020,13 @@
           "provider_kind",
           "model_id",
           "revision",
-          "dimension"
+          "dimension",
+          "validation_record_id",
+          "artifact_set_digest",
+          "license_pointer",
+          "compatibility_status",
+          "validation_result",
+          "offline_reuse"
         ],
         "title": "ModelDiscoveryResponse",
         "type": "object"
@@ -1175,6 +1251,11 @@
             "minItems": 1,
             "title": "Relevant Evidence",
             "type": "array"
+          },
+          "rerank_count": {
+            "minimum": 0.0,
+            "title": "Rerank Count",
+            "type": "integer"
           }
         },
         "required": [
@@ -1183,6 +1264,7 @@
           "lexical_included_count",
           "dense_observed_count",
           "fusion_count",
+          "rerank_count",
           "final_count",
           "relevant_evidence"
         ],
@@ -1370,6 +1452,7 @@
               "absent_from_candidate_depth",
               "excluded_by_channel_limit",
               "lost_at_fusion_limit",
+              "lost_at_rerank_limit",
               "lost_at_finalization",
               "execution_refused",
               "execution_failed"
@@ -1446,6 +1529,18 @@
             "minimum": 0.0,
             "title": "Relevance Grade",
             "type": "integer"
+          },
+          "rerank_rank": {
+            "anyOf": [
+              {
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rerank Rank"
           }
         },
         "required": [
@@ -1457,6 +1552,7 @@
           "lexical_disposition",
           "dense_rank",
           "fusion_rank",
+          "rerank_rank",
           "final_rank",
           "disposition"
         ],
@@ -2457,7 +2553,7 @@
             "type": "array"
           },
           "schema_version": {
-            "const": "bijux.canon.index.retrieval-stage-analysis.v1",
+            "const": "bijux.canon.index.retrieval-stage-analysis.v2",
             "title": "Schema Version",
             "type": "string"
           }
@@ -2512,7 +2608,8 @@
             "enum": [
               "lexical",
               "dense",
-              "fusion"
+              "fusion",
+              "rerank"
             ],
             "title": "Stage",
             "type": "string"
@@ -2581,15 +2678,36 @@
             "minLength": 1,
             "title": "Lexical Outcome",
             "type": "string"
+          },
+          "rerank_candidates": {
+            "items": {
+              "$ref": "#/components/schemas/RetrievalStageCandidateResponse"
+            },
+            "title": "Rerank Candidates",
+            "type": "array"
+          },
+          "rerank_policy_sha256": {
+            "anyOf": [
+              {
+                "pattern": "^[0-9a-f]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rerank Policy Sha256"
           }
         },
         "required": [
           "lexical_outcome",
           "dense_outcome",
           "fusion_policy_sha256",
+          "rerank_policy_sha256",
           "lexical_candidates",
           "dense_candidates",
-          "fusion_candidates"
+          "fusion_candidates",
+          "rerank_candidates"
         ],
         "title": "RetrievalStageEvidenceResponse",
         "type": "object"
@@ -2613,6 +2731,7 @@
               "candidate-depth",
               "channel-admitted",
               "fusion-at-10",
+              "rerank-at-10",
               "final-at-10",
               "final-at-5"
             ],
@@ -3127,6 +3246,163 @@
           }
         },
         "summary": "Ask"
+      }
+    },
+    "/api/v2/artifacts/{artifact_id}/payload": {
+      "get": {
+        "operationId": "artifact_payload_api_v2_artifacts__artifact_id__payload_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "artifact_id",
+            "required": true,
+            "schema": {
+              "title": "Artifact Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "max_bytes",
+            "required": false,
+            "schema": {
+              "default": 65536,
+              "maximum": 65536,
+              "minimum": 1,
+              "title": "Max Bytes",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Bijux-API-Version",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Bijux-Api-Version"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Correlation-ID",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^[A-Za-z0-9._:-]{1,200}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Correlation-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Artifact Payload Api V2 Artifacts  Artifact Id  Payload Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Invalid typed request."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Resource not found."
+          },
+          "406": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Unsupported API version."
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Immutable state conflict."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Application operation failed."
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Application service unavailable."
+          }
+        },
+        "summary": "Artifact Payload"
       }
     },
     "/api/v2/capabilities": {
@@ -4418,6 +4694,22 @@
             }
           },
           {
+            "in": "query",
+            "name": "profile",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/ExecutionProfile"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Profile"
+            }
+          },
+          {
             "in": "header",
             "name": "Bijux-API-Version",
             "required": false,
@@ -5120,8 +5412,8 @@
             "name": "limit",
             "required": false,
             "schema": {
-              "default": 100,
-              "maximum": 1000,
+              "default": 5,
+              "maximum": 100,
               "minimum": 1,
               "title": "Limit",
               "type": "integer"

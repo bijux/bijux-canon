@@ -6,12 +6,14 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import base64
 import json
 
 from bijux_canon_runtime.model.artifact import AddressedArtifact
 from bijux_canon_runtime.ontology.ids import ArtifactID
 from bijux_canon_runtime.runtime.inspection.models import (
     InspectedArtifact,
+    InspectedArtifactPayloadPage,
     InspectedAttempt,
     InspectedEvent,
     InspectedFailure,
@@ -168,6 +170,37 @@ class RuntimeRunInspector:
             budgets=budgets,
             checks=tuple(checks),
             failures=failures,
+        )
+
+    def read_artifact_payload_page(
+        self,
+        artifact_id: ArtifactID,
+        *,
+        offset: int = 0,
+        max_bytes: int = 64 * 1024,
+    ) -> InspectedArtifactPayloadPage:
+        """Return one checksum-bound payload page without expanding it as JSON."""
+        if offset < 0:
+            raise ValueError("artifact payload offset must not be negative")
+        if not 1 <= max_bytes <= 64 * 1024:
+            raise ValueError("artifact payload max_bytes must be between 1 and 65536")
+        artifact = self._store.load(artifact_id)
+        payload = artifact.canonical_bytes
+        if offset > len(payload):
+            raise ValueError("artifact payload offset exceeds payload size")
+        page = payload[offset : offset + max_bytes]
+        next_offset = offset + len(page) if offset + len(page) < len(payload) else None
+        descriptor = artifact.descriptor
+        return InspectedArtifactPayloadPage(
+            schema_version="bijux.runtime.artifact-payload-page.v1",
+            artifact_id=descriptor.artifact_id,
+            media_type=descriptor.media_type,
+            payload_sha256=str(descriptor.payload_sha256),
+            total_bytes=len(payload),
+            offset=offset,
+            byte_length=len(page),
+            data_base64=base64.b64encode(page).decode("ascii"),
+            next_offset=next_offset,
         )
 
     def _control_inventory(

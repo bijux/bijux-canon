@@ -17,6 +17,7 @@ class ApplicationOperation(StrEnum):
 
     CORPUS = "corpus.prepare"
     CORPUS_INSPECT = "corpus.inspect"
+    ARTIFACT_PAYLOAD = "artifact.payload"
     INDEX = "index.build"
     INDEX_INSPECT = "index.inspect"
     RETRIEVE = "retrieve"

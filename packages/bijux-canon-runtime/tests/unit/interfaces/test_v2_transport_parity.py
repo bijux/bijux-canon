@@ -210,6 +210,26 @@ class _RecordingServices(RuntimeApplicationServicesV2):
             "steps": values,
         }
 
+    def read_artifact_payload_page(
+        self,
+        artifact_id: ArtifactID,
+        *,
+        offset: int = 0,
+        max_bytes: int = 64 * 1024,
+    ):
+        self.calls.append(("artifact.payload", artifact_id, offset, max_bytes))
+        return {
+            "artifact_id": str(artifact_id),
+            "byte_length": 4,
+            "data_base64": "dGVzdA==",
+            "media_type": "text/plain",
+            "next_offset": None,
+            "offset": offset,
+            "payload_sha256": "f" * 64,
+            "schema_version": "bijux.runtime.artifact-payload-page.v1",
+            "total_bytes": 4,
+        }
+
     def compare(self, **kwargs):
         self.calls.append(("compare", kwargs))
         return {
@@ -652,6 +672,24 @@ def test_inspect_pagination_is_identical() -> None:
     assert cli_payload["page"]["offset"] == 1
     assert cli_payload["page"]["next_cursor"]
     assert len(cli_payload["page"]["snapshot_sha256"]) == 64
+    assert cli_service.calls == http_service.calls
+
+
+def test_artifact_payload_pages_have_cli_and_http_parity() -> None:
+    cli_service = _RecordingServices()
+    cli_code, cli_payload = _cli(
+        cli_service,
+        ["artifact-payload", _INDEX_ID, "--offset", "0", "--max-bytes", "4"],
+    )
+    http_service = _RecordingServices()
+    response = TestClient(create_app(http_service)).get(
+        f"/api/v2/artifacts/{_INDEX_ID}/payload",
+        headers={"Bijux-API-Version": "v2"},
+        params={"offset": 0, "max_bytes": 4},
+    )
+
+    assert cli_code == 0 and response.status_code == 200
+    assert cli_payload == response.json()
     assert cli_service.calls == http_service.calls
 
 

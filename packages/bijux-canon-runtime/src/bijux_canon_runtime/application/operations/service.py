@@ -33,6 +33,10 @@ from bijux_canon_runtime.application.operations.retrieval_evaluation import (
     evaluate_reviewed_retrieval,
     search_reviewed_retrieval_configurations,
 )
+from bijux_canon_runtime.application.inspection_views import (
+    MAX_INSPECTION_PAGE_SIZE,
+    bounded_inspection_record,
+)
 from bijux_canon_runtime.model.execution.request_plan import (
     RuntimeOperationRequest,
     RuntimeRequestOperation,
@@ -344,8 +348,12 @@ class RuntimeApplicationServicesV2:
         page: PageRequest,
     ) -> Mapping[str, object]:
         """Inspect bounded collections with a cursor tied to immutable run state."""
+        if page.limit > MAX_INSPECTION_PAGE_SIZE:
+            raise ValueError(
+                f"run inspection page limit must not exceed {MAX_INSPECTION_PAGE_SIZE}"
+            )
         inspection = self.inspect(run_id, attempt_id=attempt_id)
-        record = _record(inspection)
+        record = bounded_inspection_record(_record(inspection))
         return paginate_collections(
             record,
             collection_fields=(
@@ -371,6 +379,22 @@ class RuntimeApplicationServicesV2:
                 "run_id": record.get("run_id"),
             },
             request=page,
+        )
+
+    def read_artifact_payload_page(
+        self,
+        artifact_id: ArtifactID,
+        *,
+        offset: int = 0,
+        max_bytes: int = 64 * 1024,
+    ) -> Mapping[str, object]:
+        """Read a deliberate bounded page of immutable artifact bytes."""
+        return _record(
+            self._inspector.read_artifact_payload_page(
+                _validated_artifact_id(artifact_id),
+                offset=offset,
+                max_bytes=max_bytes,
+            )
         )
 
     def compare(
