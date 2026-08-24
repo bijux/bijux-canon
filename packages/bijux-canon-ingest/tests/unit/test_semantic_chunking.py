@@ -102,7 +102,7 @@ def test_chunks_real_documents_with_stable_bounded_lineage(
     assert chunks[0].manifest() == chunks[0].manifest()
 
 
-def test_oversized_semantic_block_uses_exact_bounded_overlap() -> None:
+def test_oversized_semantic_block_uses_boundary_aligned_overlap() -> None:
     content, document = _parse("text")
     mappings = build_document_span_mappings(content, document)
     policy = SemanticChunkingPolicy(max_characters=100, overlap_characters=20)
@@ -110,10 +110,52 @@ def test_oversized_semantic_block_uses_exact_bounded_overlap() -> None:
     overlapping = [chunk for chunk in chunks if chunk.overlap_character_count]
 
     assert overlapping
-    assert all(chunk.overlap_character_count == 20 for chunk in overlapping)
+    assert all(0 < chunk.overlap_character_count <= 20 for chunk in overlapping)
     for previous, current in zip(chunks, chunks[1:], strict=False):
         if current.overlap_character_count:
-            assert previous.normalized_text[-20:] == current.normalized_text[:20]
+            overlap = current.overlap_character_count
+            assert previous.normalized_text[-overlap:] == current.normalized_text[:overlap]
+
+
+def test_oversized_paragraph_keeps_answer_sentences_whole() -> None:
+    path = (
+        REPOSITORY
+        / "examples"
+        / "ancient-dna-research"
+        / "corpus"
+        / "sources"
+        / "plos-pbio-3000166.xml"
+    )
+    content = path.read_bytes()
+    source = DiscoveredSource.create(
+        root_name="ancient-dna-research",
+        relative_path=path.name,
+        filesystem_path=path,
+        content_sha256=hashlib.sha256(content).hexdigest(),
+        byte_length=len(content),
+        media_type="application/xml",
+        is_symlink=False,
+    )
+    admission = admit_source(source)
+    assert admission.admitted
+    document = parse_jats(admission)
+    mappings = build_document_span_mappings(content, document)
+    chunks = chunk_document_mappings(document, mappings)
+
+    authenticity_sentence = (
+        "Other hallmarks of RNA sequencing (RNA-seq) data such as exon-exon "
+        "junction presence and high endogenous ribosomal RNA (rRNA) content "
+        "confirms our data’s authenticity."
+    )
+    replication_sentence = (
+        "By performing independent technical library replicates using two "
+        "high-throughput sequencing platforms, we show not only that aRNA can "
+        "survive for extended periods in mammalian tissues but also that it has "
+        "potential for tissue identification."
+    )
+
+    assert any(authenticity_sentence in chunk.normalized_text for chunk in chunks)
+    assert any(replication_sentence in chunk.normalized_text for chunk in chunks)
 
 
 def test_canonical_fingerprint_does_not_depend_on_source_bytes() -> None:

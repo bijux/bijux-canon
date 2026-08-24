@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 
 from bijux_canon_ingest.application.source_mapping import (
@@ -31,6 +32,54 @@ class _Fragment:
     section_path: tuple[str, ...]
 
 
+_SENTENCE_BOUNDARY = re.compile(r"(?<=[.!?])\s+")
+_WORD_BOUNDARY = re.compile(r"\s+")
+
+
+def _boundaries(text: str, pattern: re.Pattern[str]) -> tuple[int, ...]:
+    return tuple(match.end() for match in pattern.finditer(text))
+
+
+def _bounded_end(
+    text: str,
+    *,
+    start: int,
+    maximum: int,
+    previous_end: int,
+) -> int:
+    hard_end = min(start + maximum, len(text))
+    if hard_end == len(text):
+        return hard_end
+    minimum = max(previous_end + 1, start + max(1, maximum // 2))
+    for candidates in (
+        _boundaries(text, _SENTENCE_BOUNDARY),
+        _boundaries(text, _WORD_BOUNDARY),
+    ):
+        eligible = tuple(value for value in candidates if minimum <= value <= hard_end)
+        if eligible:
+            return eligible[-1]
+    return hard_end
+
+
+def _bounded_start(text: str, *, prior_start: int, end: int, overlap: int) -> int:
+    if overlap == 0:
+        return end
+    target = max(prior_start + 1, end - overlap)
+    sentence_boundaries = tuple(
+        value
+        for value in _boundaries(text, _SENTENCE_BOUNDARY)
+        if target <= value < end
+    )
+    if sentence_boundaries:
+        return sentence_boundaries[0]
+    word_boundaries = tuple(
+        value
+        for value in _boundaries(text, _WORD_BOUNDARY)
+        if target <= value < end
+    )
+    return word_boundaries[0] if word_boundaries else target
+
+
 def _annotations(
     document: ParsedSourceDocument,
 ) -> tuple[tuple[str, tuple[str, ...]], ...]:
@@ -52,8 +101,14 @@ def _fragments(
         return (_Fragment(mapping, role, section_path),)
     result: list[_Fragment] = []
     start = 0
+    previous_end = -1
     while start < len(mapping.normalized_text):
-        end = min(start + policy.max_characters, len(mapping.normalized_text))
+        end = _bounded_end(
+            mapping.normalized_text,
+            start=start,
+            maximum=policy.max_characters,
+            previous_end=previous_end,
+        )
         result.append(
             _Fragment(
                 build_chunk_span_mapping(mapping, start=start, end=end),
@@ -63,7 +118,13 @@ def _fragments(
         )
         if end == len(mapping.normalized_text):
             break
-        start = end - policy.overlap_characters
+        previous_end = end
+        start = _bounded_start(
+            mapping.normalized_text,
+            prior_start=start,
+            end=end,
+            overlap=policy.overlap_characters,
+        )
     return tuple(result)
 
 
