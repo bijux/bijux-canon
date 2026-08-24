@@ -47,6 +47,34 @@ If you need to understand plan versus run modes, replay acceptance, trace
 capture, execution-store behavior, or non-determinism policy enforcement, start
 here.
 
+## Installation profiles
+
+The base wheel is the complete `offline-lexical` installation. It does not
+install or load an embedding model:
+
+```bash
+python -m pip install bijux-canon-runtime
+```
+
+Install `bijux-canon-runtime[local-cpu]` for the FAISS exact/ANN, local dense,
+and local hybrid profiles. Install `bijux-canon-runtime[api]` for the HTTP
+server. On Linux, install the official CPU-only PyTorch wheel first so the
+resolver does not select CUDA runtime packages:
+
+```bash
+python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
+python -m pip install 'bijux-canon-runtime[local-cpu]'
+```
+
+The `local-cpu` extra provides code and native libraries; model acquisition
+remains an explicit `bijux-canon-index model acquire` operation. On macOS,
+`local-cpu` is supported on Python 3.11 only: newer FAISS wheels conflict with
+PyTorch's OpenMP runtime, and the safe FAISS 1.7.4 wheel has no newer Python
+ABI. The base lexical and API profiles remain supported on Python 3.11–3.14.
+The `bijux-cli` dependency publishes a Linux x86_64 wheel; Linux ARM64 hosts
+currently need a C build toolchain so pip can build that dependency from its
+source distribution.
+
 ## Authority Model
 
 ```mermaid

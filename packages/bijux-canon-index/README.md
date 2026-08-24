@@ -97,7 +97,7 @@ For local dense or hybrid retrieval, install the embedding dependencies and
 explicitly acquire the pinned CPU model:
 
 ```bash
-python -m pip install 'bijux-canon-index[embeddings]'
+python -m pip install 'bijux-canon-index[local-cpu]'
 bijux-canon-index model acquire \
   --profile local-minilm-384 \
   --cache-root artifacts/bijux-canon-index/models
@@ -111,6 +111,14 @@ compatibility, and offline-reuse result. Re-run `model validate --model-root
 PATH` without network access before configuring Runtime. Use `model register`
 for an existing directory containing the exact pinned files; registration does
 not accept a different model or revision.
+
+On Linux, install `torch` from the official CPU wheel index before installing
+`local-cpu`; this prevents the default resolver from introducing CUDA runtime
+packages into a CPU-only environment. On macOS, `local-cpu` is supported on
+Python 3.11 because the safe FAISS/PyTorch combination has no newer Python ABI.
+The `bijux-cli` dependency publishes a Linux x86_64 wheel; Linux ARM64 hosts
+currently need a C build toolchain so pip can build that dependency from its
+source distribution.
 
 | Integration need | Supported surface | Authority to pin |
 | --- | --- | --- |

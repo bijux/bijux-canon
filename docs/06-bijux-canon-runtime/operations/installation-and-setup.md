@@ -31,6 +31,35 @@ python -m pip install --upgrade pip
 python -m pip install bijux-canon-runtime
 ```
 
+The base installation fulfills `offline-lexical`. Choose extras by the public
+operation profile rather than installing the development environment:
+
+| Product profile | Installation | Installed capability |
+| --- | --- | --- |
+| offline lexical | `bijux-canon-runtime` | SQLite FTS5 ingest, index, retrieval, answer, and research without a model |
+| local exact, ANN, or hybrid | `bijux-canon-runtime[local-cpu]` | NumPy, CPU FAISS, sentence-transformers, and PyTorch |
+| HTTP | `bijux-canon-runtime[api]` | FastAPI, Starlette, and Uvicorn |
+
+On Linux CPU hosts, install PyTorch from its CPU wheel index before resolving
+`local-cpu`. This is required because the default Linux PyTorch wheel channel
+may include CUDA runtime distributions even when Runtime selects `device=cpu`:
+
+```bash
+python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
+python -m pip install 'bijux-canon-runtime[local-cpu]'
+```
+
+On macOS, the native `local-cpu` profile is supported on Python 3.11. FAISS
+1.7.4 is constrained with NumPy 1.26 because that combination can share a
+process with PyTorch safely; newer FAISS macOS wheels abort after duplicate
+OpenMP initialization, and FAISS 1.7.4 has no Python 3.12+ wheel. The base
+lexical and `api` installations continue to support Python 3.11 through 3.14.
+
+The `bijux-cli` dependency publishes a Linux x86_64 wheel. On Linux ARM64,
+install a C build toolchain before installing Runtime so pip can build that
+dependency from its source distribution. For example, Debian and Ubuntu hosts
+can use `sudo apt-get install build-essential`.
+
 Verify the stable package root and CLI:
 
 ```bash

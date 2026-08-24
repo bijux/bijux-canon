@@ -255,6 +255,22 @@ def test_runtime_build_metadata_binds_canonical_peers_to_its_version() -> None:
         "duckdb>=1.1.3,<2.0.0",
         "pydantic>=2.0.2,<3.0.0",
     ]
+    runtime_extras = cast(dict[str, list[str]], project["optional-dependencies"])
+    local_cpu = {
+        canonicalize_name(Requirement(value).name)
+        for value in runtime_extras["local-cpu"]
+    }
+    assert local_cpu == {"faiss-cpu", "numpy", "sentence-transformers", "torch"}
+
+    index_project = _project_table(
+        _package_path("bijux-canon-index") / "pyproject.toml"
+    )
+    index_extras = cast(dict[str, list[str]], index_project["optional-dependencies"])
+    index_local_cpu = {
+        canonicalize_name(Requirement(value).name)
+        for value in index_extras["local-cpu"]
+    }
+    assert index_local_cpu == local_cpu
 
 
 def test_http_surface_packages_declare_only_owned_http_dependencies() -> None:

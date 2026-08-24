@@ -10,6 +10,10 @@ tagged release, including legacy distribution naming where applicable.
 
 ### Changed
 
+- The base Runtime wheel now defines the model-free `offline-lexical` install,
+  while `local-cpu` supplies FAISS and local embedding dependencies for exact,
+  ANN, and hybrid profiles; Linux CPU installation guidance avoids implicit
+  CUDA runtime packages.
 - The `offline-lexical` profile now initializes without a model, builds and
   inspects standalone lexical indexes, and carries those artifacts through
   retrieval, grounded answers, research, restart-safe runs, and citations.

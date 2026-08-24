@@ -41,6 +41,10 @@ _validated_metadata = validated_metadata
 SCHEMA_VERSION = 1
 BACKEND_ID = "faiss-flat-ip"
 INDEX_TYPE = "IndexFlatIP"
+# FAISS 1.7.4 deserializes IndexFlatIP as its IndexFlat base wrapper. The
+# persisted metric, dimension, vector count, and checksums retain the exact
+# semantic identity across that supported wrapper variation.
+DESERIALIZED_INDEX_TYPES = frozenset({INDEX_TYPE, "IndexFlat"})
 METRIC = "inner_product"
 NORMALIZATION = "l2-float32-v1"
 
@@ -473,7 +477,7 @@ class FaissExactIndex:
                 "FAISS exact serialized index failed to load"
             ) from error
         if (
-            type(index).__name__ != INDEX_TYPE
+            type(index).__name__ not in DESERIALIZED_INDEX_TYPES
             or int(index.d) != dimension
             or int(index.ntotal) != vector_count
             or int(index.metric_type) != int(faiss_runtime.METRIC_INNER_PRODUCT)

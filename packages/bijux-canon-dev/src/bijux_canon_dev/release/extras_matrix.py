@@ -88,6 +88,12 @@ CAPABILITY_MODULES: dict[tuple[str, str], tuple[str, ...]] = {
         "sentence_transformers",
         "torch",
     ),
+    ("bijux-canon-index", "local-cpu"): (
+        "faiss",
+        "numpy",
+        "sentence_transformers",
+        "torch",
+    ),
     ("bijux-canon-index", "nd"): ("hnswlib",),
     ("bijux-canon-index", "vdb"): ("faiss", "numpy", "qdrant_client"),
     ("bijux-canon-ingest", "dev"): ("pytest", "ruff"),
@@ -97,6 +103,17 @@ CAPABILITY_MODULES: dict[tuple[str, str], tuple[str, ...]] = {
     ("bijux-canon-reason", "dev"): ("pytest", "ruff"),
     ("bijux-canon-runtime", "api"): ("fastapi", "starlette", "uvicorn"),
     ("bijux-canon-runtime", "dev"): ("pytest", "ruff"),
+    ("bijux-canon-runtime", "local-cpu"): (
+        "faiss",
+        "numpy",
+        "sentence_transformers",
+        "torch",
+    ),
+}
+
+CPU_PROFILE_TARGETS = {
+    "bijux-canon-index[local-cpu]",
+    "bijux-canon-runtime[local-cpu]",
 }
 
 
@@ -384,6 +401,53 @@ def _reason_probe() -> str:
     )
 
 
+def _cpu_profile_probe(*, runtime: bool) -> str:
+    runtime_lines = (
+        [
+            "from bijux_canon_runtime.api.v2 import create_app",
+            "assert '/api/v2/live' in create_app().openapi()['paths']",
+        ]
+        if runtime
+        else []
+    )
+    return "\n".join(
+        [
+            "import importlib.metadata as metadata",
+            "import json",
+            "import torch",
+            "import faiss",
+            "import numpy as np",
+            "assert torch.version.cuda is None, torch.version.cuda",
+            "installed = sorted({(item.metadata.get('Name') or '').lower() for item in metadata.distributions()})",
+            "gpu = [name for name in installed if name.startswith('nvidia-') or name in {'tensorflow-gpu', 'torch-directml'}]",
+            "assert not gpu, gpu",
+            "index = faiss.IndexFlatIP(2)",
+            "vectors = np.asarray([[1.0, 0.0], [0.0, 1.0]], dtype='float32')",
+            "index.add(vectors)",
+            "scores, identifiers = index.search(vectors[:1], 1)",
+            "assert identifiers.tolist() == [[0]], identifiers",
+            "assert scores.tolist() == [[1.0]], scores",
+            *runtime_lines,
+            "print(json.dumps({'cuda_runtime': torch.version.cuda, 'faiss_result': identifiers.tolist(), 'gpu_distributions': gpu, 'runtime_api': "
+            + str(runtime)
+            + "}, sort_keys=True))",
+        ]
+    )
+
+
+def _runtime_api_probe() -> str:
+    return "\n".join(
+        [
+            "import json",
+            "from bijux_canon_runtime.api.v2 import create_app",
+            "schema = create_app().openapi()",
+            "assert '/api/v2/live' in schema['paths']",
+            "assert '/api/v2/ready' in schema['paths']",
+            "print(json.dumps({'openapi': schema['openapi'], 'paths': ['/api/v2/live', '/api/v2/ready']}, sort_keys=True))",
+        ]
+    )
+
+
 def _json_stdout(result: CommandResult) -> dict[str, object]:
     if result.exit_code != 0 or not result.stdout.strip():
         return {}
@@ -457,30 +521,72 @@ def run_extras_matrix(
                 python_version,
                 "--clear",
             ],
-            [
-                str(uv_executable.absolute()),
-                "pip",
-                "install",
-                "--python",
-                str(python),
-                "--constraint",
-                str(constraints),
-                "--find-links",
-                str(wheel_dir),
-                f"{wheel}[{target.extra}]",
-            ],
-            [str(uv_executable.absolute()), "pip", "check", "--python", str(python)],
-            [
-                str(python),
-                "-I",
-                "-c",
-                _generic_probe(target, source_roots=source_roots),
-            ],
         ]
+        if platform.system() == "Linux" and target.target_id in CPU_PROFILE_TARGETS:
+            commands.append(
+                [
+                    str(uv_executable.absolute()),
+                    "pip",
+                    "install",
+                    "--python",
+                    str(python),
+                    "--index",
+                    "https://download.pytorch.org/whl/cpu",
+                    "torch>=2.7,<3.0",
+                ]
+            )
+        commands.extend(
+            [
+                [
+                    str(uv_executable.absolute()),
+                    "pip",
+                    "install",
+                    "--python",
+                    str(python),
+                    "--constraint",
+                    str(constraints),
+                    "--find-links",
+                    str(wheel_dir),
+                    f"{wheel}[{target.extra}]",
+                ],
+                [
+                    str(uv_executable.absolute()),
+                    "pip",
+                    "check",
+                    "--python",
+                    str(python),
+                ],
+                [
+                    str(python),
+                    "-I",
+                    "-c",
+                    _generic_probe(target, source_roots=source_roots),
+                ],
+            ],
+        )
+        generic_probe_index = len(commands) - 1
+        capability_probe_index: int | None = None
         if target.target_id == "bijux-canon-agent[document-readers]":
             commands.append([str(python), "-I", "-c", _reader_probe(repo_root)])
+            capability_probe_index = len(commands) - 1
         if target.target_id == "bijux-canon-reason[api]":
             commands.append([str(python), "-I", "-c", _reason_probe()])
+            capability_probe_index = len(commands) - 1
+        if target.target_id in CPU_PROFILE_TARGETS:
+            commands.append(
+                [
+                    str(python),
+                    "-I",
+                    "-c",
+                    _cpu_profile_probe(
+                        runtime=target.target_id == "bijux-canon-runtime[local-cpu]"
+                    ),
+                ]
+            )
+            capability_probe_index = len(commands) - 1
+        if target.target_id == "bijux-canon-runtime[api]":
+            commands.append([str(python), "-I", "-c", _runtime_api_probe()])
+            capability_probe_index = len(commands) - 1
 
         outcomes: list[CommandResult] = []
         for command in commands:
@@ -500,10 +606,17 @@ def run_extras_matrix(
                 "requirements": list(target.requirements),
                 "capability_modules": list(target.capability_modules),
                 "status": "passed" if passed else "failed",
-                "generic_probe": _json_stdout(outcomes[3]) if len(outcomes) > 3 else {},
-                "capability_probe": _json_stdout(outcomes[4])
-                if len(outcomes) > 4
-                else {},
+                "generic_probe": (
+                    _json_stdout(outcomes[generic_probe_index])
+                    if len(outcomes) > generic_probe_index
+                    else {}
+                ),
+                "capability_probe": (
+                    _json_stdout(outcomes[capability_probe_index])
+                    if capability_probe_index is not None
+                    and len(outcomes) > capability_probe_index
+                    else {}
+                ),
                 "commands": [_command_payload(outcome) for outcome in outcomes],
             }
         )

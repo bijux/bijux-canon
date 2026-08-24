@@ -55,6 +55,21 @@ def test_mismatched_metadata_refuses_load(tmp_path: Path) -> None:
         adapter.connect()
 
 
+def test_mismatched_index_type_refuses_load(tmp_path: Path) -> None:
+    index_path = tmp_path / "index.faiss"
+    _seed_index(index_path)
+    meta_path = index_path.with_suffix(".meta.json")
+    meta = json.loads(meta_path.read_text(encoding="utf-8"))
+    meta["index_type"] = "IndexHNSWFlat"
+    meta_path.write_text(json.dumps(meta), encoding="utf-8")
+    adapter = FaissVectorStoreAdapter(
+        uri=str(index_path), options={"index_type": "exact"}
+    )
+
+    with pytest.raises(CorruptArtifactError, match="index type mismatch"):
+        adapter.connect()
+
+
 def test_deleted_vectors_do_not_resurrect(tmp_path: Path) -> None:
     index_path = tmp_path / "index.faiss"
     adapter = _make_adapter(index_path)

@@ -11,6 +11,7 @@ import pytest
 
 from bijux_canon_dev.release.extras_matrix import (
     ExtrasMatrixError,
+    _cpu_profile_probe,
     _normalized_requirements,
     _reader_probe,
     run_extras_matrix,
@@ -223,6 +224,16 @@ def test_reader_probe_requires_explicit_installed_ocr_processing(
     assert "processing_profile" in probe
     assert "processing_method == 'ocr_extraction'" in probe
     assert "OCR used" in probe
+
+
+def test_cpu_profile_probe_executes_faiss_and_refuses_gpu_distributions() -> None:
+    probe = _cpu_profile_probe(runtime=True)
+
+    assert "IndexFlatIP" in probe
+    assert "torch.version.cuda is None" in probe
+    assert "name.startswith('nvidia-')" in probe
+    assert "'/api/v2/live'" in probe
+    assert probe.index("import torch") < probe.index("import faiss")
 
 
 def test_matrix_retains_a_failed_install_row(tmp_path: Path) -> None:

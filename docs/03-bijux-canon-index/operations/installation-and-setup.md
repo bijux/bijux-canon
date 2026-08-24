@@ -4,7 +4,7 @@ audience: mixed
 type: how-to
 status: canonical
 owner: bijux-canon-index-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-08-24
 ---
 
 # Installation and Setup
@@ -52,8 +52,8 @@ python -m pip install 'bijux-canon-index[nd]'
 # NumPy, FAISS, and Qdrant client adapters
 python -m pip install 'bijux-canon-index[vdb]'
 
-# CPU-local embedding acquisition and inference
-python -m pip install 'bijux-canon-index[embeddings]'
+# CPU-local embedding acquisition, inference, and FAISS
+python -m pip install 'bijux-canon-index[local-cpu]'
 
 # Uvicorn and API validation dependencies
 python -m pip install 'bijux-canon-index[api]'
@@ -65,6 +65,23 @@ backup configuration. Capability discovery reports whether an adapter can
 actually be used in the current environment.
 
 ## Acquire a pinned model for dense retrieval
+
+On Linux CPU hosts, prevent installation of CUDA runtime packages by installing
+PyTorch from its CPU wheel index before the profile:
+
+```bash
+python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
+python -m pip install 'bijux-canon-index[local-cpu]'
+```
+
+On macOS, `local-cpu` is supported on Python 3.11. The profile constrains FAISS
+1.7.4 with NumPy 1.26 because newer FAISS wheels conflict with PyTorch's OpenMP
+runtime, while FAISS 1.7.4 has no Python 3.12+ wheel.
+
+The `bijux-cli` dependency publishes a Linux x86_64 wheel. On Linux ARM64,
+install a C build toolchain before installing Index so pip can build that
+dependency from its source distribution. For example, Debian and Ubuntu hosts
+can use `sudo apt-get install build-essential`.
 
 Model acquisition is explicit and network-backed. It never runs during lexical
 workspace initialization or as an implicit side effect of a retrieval request:

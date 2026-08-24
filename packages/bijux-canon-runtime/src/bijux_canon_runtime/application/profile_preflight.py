@@ -176,12 +176,15 @@ class InstalledProfilePreflight:
     @staticmethod
     def _verify_local_dense_backend() -> None:
         try:
+            # PyTorch must own OpenMP initialization before FAISS on supported
+            # macOS CPU wheels; reversing this order can abort the process.
+            importlib.import_module("torch")
             faiss = importlib.import_module("faiss")
             required = (getattr(faiss, "IndexFlatIP"), getattr(faiss, "IndexHNSWFlat"))
         except (AttributeError, ImportError) as error:
             raise ApplicationCapabilityError(
                 "selected dense or hybrid profile requires the CPU FAISS exact and "
-                "HNSW backends; install the CPU-local dense profile and retry"
+                "HNSW backends and PyTorch; install the CPU-local profile and retry"
             ) from error
         if not all(callable(item) for item in required):
             raise ApplicationCapabilityError(
