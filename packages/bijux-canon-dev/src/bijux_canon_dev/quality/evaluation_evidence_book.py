@@ -31,6 +31,9 @@ class EvidenceBookCaseResult:
     case_id: str
     passed: bool
     metrics: Mapping[str, float]
+    execution_status: str = "completed"
+    failure_code: str | None = None
+    label_completeness: float = 1.0
     errors: tuple[str, ...] = ()
     exclusions: tuple[str, ...] = ()
 
@@ -39,6 +42,20 @@ class EvidenceBookCaseResult:
             raise ValueError("evidence-book case identity and metrics are required")
         if self.passed and self.errors:
             raise ValueError("passing evidence-book cases cannot retain errors")
+        allowed_statuses = {
+            "completed",
+            "refused",
+            "failed",
+            "cancelled",
+            "budget-exhausted",
+        }
+        if self.execution_status not in allowed_statuses:
+            raise ValueError("evidence-book execution status is unsupported")
+        incomplete = self.execution_status != "completed"
+        if incomplete != (self.failure_code is not None):
+            raise ValueError("non-completed evidence cases require a failure code")
+        if not 0.0 <= self.label_completeness <= 1.0:
+            raise ValueError("evidence-book label completeness must be within 0..1")
         object.__setattr__(self, "metrics", MappingProxyType(dict(self.metrics)))
 
 
@@ -47,23 +64,49 @@ class EvidenceBookAggregate:
     """Aggregate arithmetic, interval, and baseline for one metric."""
 
     metric_id: str
+    definition_version: int
+    aggregation: str
+    population_unit: str
+    semantic_denominator: str
+    case_ids: tuple[str, ...]
     numerator: float
     denominator: float
     value: float
     confidence_lower: float
     confidence_upper: float
     confidence_method: str
+    population_standard_deviation: float
+    worst_case_ids: tuple[str, ...]
     baseline_value: float | None
 
     def __post_init__(self) -> None:
         if not self.metric_id or self.denominator <= 0:
             raise ValueError("aggregate identity and denominator are required")
+        if self.definition_version < 1:
+            raise ValueError("aggregate definition version must be positive")
+        if self.aggregation not in {
+            "macro-mean",
+            "micro-ratio",
+            "percentile-95",
+            "paired-mean-delta",
+        }:
+            raise ValueError("aggregate method is unsupported")
+        if not self.population_unit.strip() or not self.semantic_denominator.strip():
+            raise ValueError("aggregate semantic population must be explicit")
+        if not self.case_ids or len(self.case_ids) != len(set(self.case_ids)):
+            raise ValueError("aggregate case population must be nonempty and unique")
         if self.value != self.numerator / self.denominator:
             raise ValueError("aggregate value does not match exact arithmetic")
         if not self.confidence_lower <= self.value <= self.confidence_upper:
             raise ValueError("aggregate value is outside its confidence interval")
         if not self.confidence_method.strip():
             raise ValueError("aggregate confidence method is required")
+        if self.population_standard_deviation < 0:
+            raise ValueError("aggregate dispersion cannot be negative")
+        if not self.worst_case_ids or not set(self.worst_case_ids).issubset(
+            self.case_ids
+        ):
+            raise ValueError("aggregate worst cases must belong to its population")
 
 
 @dataclass(frozen=True, slots=True)
@@ -85,6 +128,15 @@ class EvaluationEvidenceBook:
             raise ValueError("evidence-book aggregate IDs must be unique")
         if not self.cases or not self.aggregates:
             raise ValueError("evidence book requires cases and aggregates")
+        case_ids = {item.case_id for item in self.cases}
+        aggregate_ids = {item.metric_id for item in self.aggregates}
+        if "completion.product-success-rate" not in aggregate_ids:
+            raise ValueError("evidence book requires unconditional product completion")
+        for aggregate in self.aggregates:
+            if set(aggregate.case_ids) != case_ids:
+                raise ValueError("aggregate omits cases from the declared population")
+            if any(aggregate.metric_id not in item.metrics for item in self.cases):
+                raise ValueError("aggregate metric is absent from a retained case")
         if not self.limitations or not all(item.strip() for item in self.limitations):
             raise ValueError("evidence book requires explicit limitations")
         if not self.commands or not all(item.strip() for item in self.commands):
@@ -95,7 +147,7 @@ class EvaluationEvidenceBook:
     def payload(self, *, include_artifact: bool = True) -> dict[str, object]:
         """Return canonical JSON-ready content."""
         payload: dict[str, object] = {
-            "schema_version": "bijux.canon.evaluation.evidence-book.v1",
+            "schema_version": "bijux.canon.evaluation.evidence-book.v2",
             "source_commit": self.source_commit,
             "identities": asdict(self.identities),
             "cases": [
@@ -103,6 +155,9 @@ class EvaluationEvidenceBook:
                     "case_id": item.case_id,
                     "passed": item.passed,
                     "metrics": dict(item.metrics),
+                    "execution_status": item.execution_status,
+                    "failure_code": item.failure_code,
+                    "label_completeness": item.label_completeness,
                     "errors": list(item.errors),
                     "exclusions": list(item.exclusions),
                 }
@@ -135,7 +190,7 @@ class EvaluationEvidenceBookGenerator:
         if source_commit != current_commit:
             raise ValueError("evidence book source commit is stale")
         provisional = {
-            "schema_version": "bijux.canon.evaluation.evidence-book.v1",
+            "schema_version": "bijux.canon.evaluation.evidence-book.v2",
             "source_commit": source_commit,
             "identities": asdict(identities),
             "cases": [
@@ -143,6 +198,9 @@ class EvaluationEvidenceBookGenerator:
                     "case_id": item.case_id,
                     "passed": item.passed,
                     "metrics": dict(item.metrics),
+                    "execution_status": item.execution_status,
+                    "failure_code": item.failure_code,
+                    "label_completeness": item.label_completeness,
                     "errors": list(item.errors),
                     "exclusions": list(item.exclusions),
                 }
@@ -178,6 +236,9 @@ class EvaluationEvidenceBookGenerator:
                         "case_id": item.case_id,
                         "passed": item.passed,
                         "metrics": dict(item.metrics),
+                        "execution_status": item.execution_status,
+                        "failure_code": item.failure_code,
+                        "label_completeness": item.label_completeness,
                         "errors": list(item.errors),
                         "exclusions": list(item.exclusions),
                     }
@@ -197,13 +258,13 @@ def _markdown(book: EvaluationEvidenceBook) -> str:
         "",
         f"Source commit: `{book.source_commit}`",
         "",
-        "| Metric | Value | 95% interval | Method | Baseline |",
-        "|---|---:|---:|---|---:|",
+        "| Metric | Population | Value | 95% interval | Method | Baseline |",
+        "|---|---|---:|---:|---|---:|",
     ]
     for item in book.aggregates:
         baseline = "n/a" if item.baseline_value is None else str(item.baseline_value)
         lines.append(
-            f"| {item.metric_id} | {item.value} | "
+            f"| {item.metric_id} | {len(item.case_ids)} {item.population_unit} | {item.value} | "
             f"[{item.confidence_lower}, {item.confidence_upper}] | "
             f"{item.confidence_method} | {baseline} |"
         )

@@ -306,7 +306,7 @@ def test_schema_catalog_is_versioned_deterministic_and_valid(tmp_path: Path) -> 
     first = evaluation_json_schemas()
     second = evaluation_json_schemas()
 
-    assert EVALUATION_SCHEMA_CATALOG_VERSION.endswith(".v1")
+    assert EVALUATION_SCHEMA_CATALOG_VERSION.endswith(".v2")
     assert first == second
     assert set(first) == {
         "adjudication",
@@ -315,6 +315,10 @@ def test_schema_catalog_is_versioned_deterministic_and_valid(tmp_path: Path) -> 
         "case-truth",
         "citation-truth",
         "metric-observation",
+        "product-case",
+        "product-metric-definition",
+        "product-metric-measurement",
+        "product-metric-report",
         "qrel",
         "query",
         "report",

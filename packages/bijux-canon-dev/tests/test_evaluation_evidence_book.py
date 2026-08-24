@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+from dataclasses import replace
 import json
+from typing import cast
 
 import pytest
 
@@ -28,25 +30,58 @@ def _inputs() -> dict[str, object]:
             EvidenceBookCaseResult(
                 case_id="real-case-001",
                 passed=True,
-                metrics={"recall-at-5": 1.0},
+                metrics={
+                    "retrieval.recall-at-5": 1.0,
+                    "completion.product-success-rate": 1.0,
+                },
             ),
             EvidenceBookCaseResult(
                 case_id="real-case-002",
                 passed=False,
-                metrics={"recall-at-5": 0.0},
+                metrics={
+                    "retrieval.recall-at-5": 0.0,
+                    "completion.product-success-rate": 0.0,
+                },
+                execution_status="failed",
+                failure_code="retrieval-backend-failed",
+                label_completeness=0.5,
                 errors=("expected qrel was not retrieved",),
             ),
         ),
         "aggregates": (
             EvidenceBookAggregate(
-                metric_id="recall-at-5",
+                metric_id="retrieval.recall-at-5",
+                definition_version=1,
+                aggregation="macro-mean",
+                population_unit="unique reviewed query",
+                semantic_denominator="all unique reviewed queries",
+                case_ids=("real-case-001", "real-case-002"),
                 numerator=1.0,
                 denominator=2.0,
                 value=0.5,
                 confidence_lower=0.1,
                 confidence_upper=0.9,
                 confidence_method="Wilson score interval",
+                population_standard_deviation=0.5,
+                worst_case_ids=("real-case-002",),
                 baseline_value=0.4,
+            ),
+            EvidenceBookAggregate(
+                metric_id="completion.product-success-rate",
+                definition_version=1,
+                aggregation="macro-mean",
+                population_unit="unique attempted product case",
+                semantic_denominator="all attempted cases including failures",
+                case_ids=("real-case-001", "real-case-002"),
+                numerator=1.0,
+                denominator=2.0,
+                value=0.5,
+                confidence_lower=0.1,
+                confidence_upper=0.9,
+                confidence_method="empirical 95% interval",
+                population_standard_deviation=0.5,
+                worst_case_ids=("real-case-002",),
+                baseline_value=None,
             ),
         ),
         "limitations": ("Two cases are insufficient for a release estimate.",),
@@ -84,17 +119,41 @@ def test_evidence_book_refuses_stale_source_commit() -> None:
 def test_evidence_book_requires_exact_arithmetic_and_limitations() -> None:
     with pytest.raises(ValueError, match="arithmetic"):
         EvidenceBookAggregate(
-            metric_id="recall-at-5",
+            metric_id="retrieval.recall-at-5",
+            definition_version=1,
+            aggregation="macro-mean",
+            population_unit="unique reviewed query",
+            semantic_denominator="all unique reviewed queries",
+            case_ids=("real-case-001", "real-case-002"),
             numerator=1.0,
             denominator=2.0,
             value=1.0,
             confidence_lower=0.0,
             confidence_upper=1.0,
             confidence_method="Wilson score interval",
+            population_standard_deviation=0.5,
+            worst_case_ids=("real-case-002",),
             baseline_value=None,
         )
 
     inputs = _inputs()
     inputs["limitations"] = ()
     with pytest.raises(ValueError, match="limitations"):
+        EvaluationEvidenceBookGenerator().build(**inputs)
+
+
+def test_evidence_book_forbids_conditional_failure_denominators() -> None:
+    inputs = _inputs()
+    aggregates = cast(tuple[EvidenceBookAggregate, ...], inputs["aggregates"])
+    aggregate = aggregates[0]
+    inputs["aggregates"] = (
+        replace(
+            aggregate,
+            case_ids=("real-case-001",),
+            worst_case_ids=("real-case-001",),
+        ),
+        aggregates[1],
+    )
+
+    with pytest.raises(ValueError, match="omits cases"):
         EvaluationEvidenceBookGenerator().build(**inputs)

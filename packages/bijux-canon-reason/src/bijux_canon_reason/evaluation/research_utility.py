@@ -12,6 +12,14 @@ from pydantic import Field, StringConstraints, field_validator, model_validator
 
 from bijux_canon_reason.core.models.base import StableModel
 from bijux_canon_reason.evaluation.claim_faithfulness import ClaimFaithfulnessReport
+from bijux_canon_reason.evaluation.product_metrics import (
+    ProductAnswerDisposition,
+    ProductEvaluationCase,
+    ProductExecutionStatus,
+    ProductMetricMeasurement,
+    ProductMetricReport,
+    UnconditionalProductMetricEvaluator,
+)
 from bijux_canon_reason.grounding.provider_contracts import (
     content_artifact_id,
     require_artifact_id,
@@ -28,6 +36,9 @@ class PairedResearchCase(StableModel):
 
     case_id: str
     input_identity_sha256: Sha256
+    source_identity_sha256: Sha256
+    model_identity_sha256: Sha256
+    config_identity_sha256: Sha256
     rag_faithfulness: ClaimFaithfulnessReport
     rar_faithfulness: ClaimFaithfulnessReport
     expected_counterevidence_qrel_ids: tuple[str, ...] = Field(min_length=1)
@@ -38,6 +49,14 @@ class PairedResearchCase(StableModel):
     rar_latency_ms: int = Field(ge=0)
     rar_iterations: int = Field(gt=0)
     rar_convergence_reason: str
+    rag_execution_status: ProductExecutionStatus = ProductExecutionStatus.completed
+    rar_execution_status: ProductExecutionStatus = ProductExecutionStatus.completed
+    rag_failure_code: str | None = None
+    rar_failure_code: str | None = None
+    rar_answer_disposition: ProductAnswerDisposition = (
+        ProductAnswerDisposition.answered
+    )
+    label_completeness: float = Field(default=1.0, ge=0.0, le=1.0)
 
     @model_validator(mode="after")
     def _validate_pair(self) -> Self:
@@ -56,6 +75,19 @@ class PairedResearchCase(StableModel):
             raise ValueError("retrieved counterevidence qrel IDs must be unique")
         if not self.rar_convergence_reason.strip():
             raise ValueError("RAR convergence reason must not be empty")
+        for owner, status, failure_code in (
+            ("RAG", self.rag_execution_status, self.rag_failure_code),
+            ("RAR", self.rar_execution_status, self.rar_failure_code),
+        ):
+            incomplete = status is not ProductExecutionStatus.completed
+            if incomplete != (failure_code is not None):
+                raise ValueError(
+                    f"{owner} non-completion requires exactly one typed failure code"
+                )
+        if (
+            self.rar_execution_status is ProductExecutionStatus.completed
+        ) != (self.rar_answer_disposition is not ProductAnswerDisposition.not_produced):
+            raise ValueError("RAR answer disposition conflicts with execution status")
         return self
 
 
@@ -75,6 +107,9 @@ class ResearchUtilityCaseOutcome(StableModel):
     rar_latency_ms: int
     rar_iterations: int
     rar_convergence_reason: str
+    rag_execution_status: ProductExecutionStatus
+    rar_execution_status: ProductExecutionStatus
+    rar_failure_code: str | None
 
 
 class ResearchUtilityMetric(StableModel):
@@ -102,7 +137,7 @@ class ResearchUtilityMetric(StableModel):
 class ResearchUtilityReport(StableModel):
     """Content-addressed paired utility result for the frozen research subset."""
 
-    schema_version: str = "bijux.canon.evaluation.research-utility.v1"
+    schema_version: str = "bijux.canon.evaluation.research-utility.v2"
     artifact_id: str
     input_identity_sha256: str
     outcomes: tuple[ResearchUtilityCaseOutcome, ...]
@@ -114,6 +149,7 @@ class ResearchUtilityReport(StableModel):
     rag_total_latency_ms: int
     rar_total_latency_ms: int
     rar_total_iterations: int
+    unconditional_metrics: ProductMetricReport
     passed: bool
 
     @field_validator("artifact_id")
@@ -138,7 +174,10 @@ class ResearchUtilityReport(StableModel):
             "rar-unsupported-rate-delta",
         ):
             raise ValueError("research utility dimensions are incomplete")
-        if self.passed != all(metric.passed for metric in metrics):
+        if self.passed != (
+            all(metric.passed for metric in metrics)
+            and self.unconditional_metrics.passed
+        ):
             raise ValueError("research utility report status is inconsistent")
         payload = self.model_dump(mode="json", exclude={"artifact_id"})
         if self.artifact_id != content_artifact_id(payload):
@@ -205,9 +244,10 @@ class ResearchUtilityEvaluator:
         rag_total_latency = sum(item.rag_latency_ms for item in cases)
         rar_total_latency = sum(item.rar_latency_ms for item in cases)
         rar_total_iterations = sum(item.rar_iterations for item in cases)
-        passed = all(metric.passed for metric in metrics)
+        unconditional = _unconditional_report(cases, outcomes, input_identity)
+        passed = all(metric.passed for metric in metrics) and unconditional.passed
         payload = {
-            "schema_version": "bijux.canon.evaluation.research-utility.v1",
+            "schema_version": "bijux.canon.evaluation.research-utility.v2",
             "input_identity_sha256": input_identity,
             "outcomes": tuple(item.model_dump(mode="json") for item in outcomes),
             "counterevidence_recall": metrics[0].model_dump(mode="json"),
@@ -218,6 +258,7 @@ class ResearchUtilityEvaluator:
             "rag_total_latency_ms": rag_total_latency,
             "rar_total_latency_ms": rar_total_latency,
             "rar_total_iterations": rar_total_iterations,
+            "unconditional_metrics": unconditional.model_dump(mode="json"),
             "passed": passed,
         }
         return ResearchUtilityReport(
@@ -232,24 +273,41 @@ class ResearchUtilityEvaluator:
             rag_total_latency_ms=rag_total_latency,
             rar_total_latency_ms=rar_total_latency,
             rar_total_iterations=rar_total_iterations,
+            unconditional_metrics=unconditional,
             passed=passed,
         )
 
 
 def _outcome(item: PairedResearchCase) -> ResearchUtilityCaseOutcome:
     expected = set(item.expected_counterevidence_qrel_ids)
-    found = expected.intersection(item.rar_counterevidence_qrel_ids)
+    completed = item.rar_execution_status is ProductExecutionStatus.completed
+    rag_completed = item.rag_execution_status is ProductExecutionStatus.completed
+    found = (
+        expected.intersection(item.rar_counterevidence_qrel_ids)
+        if completed
+        else set()
+    )
     return ResearchUtilityCaseOutcome(
         case_id=item.case_id,
         counterevidence_found=len(found),
         counterevidence_expected=len(expected),
-        rag_expected_claim_recall=item.rag_faithfulness.expected_claim_recall.value,
-        rar_expected_claim_recall=item.rar_faithfulness.expected_claim_recall.value,
+        rag_expected_claim_recall=(
+            item.rag_faithfulness.expected_claim_recall.value
+            if rag_completed
+            else 0.0
+        ),
+        rar_expected_claim_recall=(
+            item.rar_faithfulness.expected_claim_recall.value if completed else 0.0
+        ),
         rag_unsupported_claim_rate=(
             1.0 - item.rag_faithfulness.supported_claim_coverage.value
+            if rag_completed
+            else 1.0
         ),
         rar_unsupported_claim_rate=(
             1.0 - item.rar_faithfulness.supported_claim_coverage.value
+            if completed
+            else 1.0
         ),
         rag_cost_usd=item.rag_cost_usd,
         rar_cost_usd=item.rar_cost_usd,
@@ -257,6 +315,9 @@ def _outcome(item: PairedResearchCase) -> ResearchUtilityCaseOutcome:
         rar_latency_ms=item.rar_latency_ms,
         rar_iterations=item.rar_iterations,
         rar_convergence_reason=item.rar_convergence_reason,
+        rag_execution_status=item.rag_execution_status,
+        rar_execution_status=item.rar_execution_status,
+        rar_failure_code=item.rar_failure_code,
     )
 
 
@@ -264,7 +325,12 @@ def _expected_recall(cases: tuple[PairedResearchCase, ...], *, rar: bool) -> flo
     reports = tuple(
         item.rar_faithfulness if rar else item.rag_faithfulness for item in cases
     )
-    numerator = sum(item.expected_claim_recall.numerator for item in reports)
+    numerator = sum(
+        0
+        if not _completed(case, rar=rar)
+        else report.expected_claim_recall.numerator
+        for case, report in zip(cases, reports, strict=True)
+    )
     denominator = sum(item.expected_claim_recall.denominator for item in reports)
     return 1.0 if denominator == 0 else numerator / denominator
 
@@ -273,9 +339,124 @@ def _unsupported_rate(cases: tuple[PairedResearchCase, ...], *, rar: bool) -> fl
     reports = tuple(
         item.rar_faithfulness if rar else item.rag_faithfulness for item in cases
     )
-    supported = sum(item.supported_claim_coverage.numerator for item in reports)
-    claims = sum(item.supported_claim_coverage.denominator for item in reports)
+    supported = sum(
+        0
+        if not _completed(case, rar=rar)
+        else report.supported_claim_coverage.numerator
+        for case, report in zip(cases, reports, strict=True)
+    )
+    claims = sum(
+        (
+            max(
+                report.supported_claim_coverage.denominator,
+                report.expected_claim_recall.denominator,
+                1,
+            )
+            if not _completed(case, rar=rar)
+            else report.supported_claim_coverage.denominator
+        )
+        for case, report in zip(cases, reports, strict=True)
+    )
     return 0.0 if claims == 0 else (claims - supported) / claims
+
+
+def _unconditional_report(
+    cases: tuple[PairedResearchCase, ...],
+    outcomes: tuple[ResearchUtilityCaseOutcome, ...],
+    input_identity: str,
+) -> ProductMetricReport:
+    product_cases = tuple(
+        ProductEvaluationCase(
+            case_id=item.case_id,
+            execution_status=item.rar_execution_status,
+            answer_disposition=(
+                item.rar_answer_disposition
+                if item.rar_execution_status is ProductExecutionStatus.completed
+                else ProductAnswerDisposition.not_produced
+            ),
+            failure_code=item.rar_failure_code,
+            label_completeness=item.label_completeness,
+        )
+        for item in cases
+    )
+    measurements: list[ProductMetricMeasurement] = []
+    for case, outcome in zip(cases, outcomes, strict=True):
+        supported = case.rar_faithfulness.supported_claim_coverage
+        unsupported_denominator = max(
+            supported.denominator,
+            case.rar_faithfulness.expected_claim_recall.denominator,
+            int(case.rar_execution_status is not ProductExecutionStatus.completed),
+        )
+        unsupported_numerator = (
+            unsupported_denominator
+            if case.rar_execution_status is not ProductExecutionStatus.completed
+            else supported.denominator - supported.numerator
+        )
+        values = (
+            (
+                "counterevidence.recall",
+                float(outcome.counterevidence_found),
+                float(outcome.counterevidence_expected),
+            ),
+            (
+                "revision.expected-claim-recall-gain",
+                outcome.rar_expected_claim_recall
+                - outcome.rag_expected_claim_recall,
+                1.0,
+            ),
+            (
+                "unsupported-claim.rate",
+                float(unsupported_numerator),
+                float(unsupported_denominator),
+            ),
+            (
+                "latency.warm-hybrid-operator-p95-ms",
+                float(outcome.rar_latency_ms),
+                1.0,
+            ),
+        )
+        measurements.extend(
+            ProductMetricMeasurement(
+                metric_id=metric_id,
+                case_id=case.case_id,
+                numerator=numerator,
+                denominator=denominator,
+            )
+            for metric_id, numerator, denominator in values
+        )
+    return UnconditionalProductMetricEvaluator().evaluate(
+        cases=product_cases,
+        measurements=tuple(measurements),
+        source_identity_sha256=_population_identity(
+            cases, "source_identity_sha256"
+        ),
+        data_identity_sha256=input_identity,
+        model_identity_sha256=_population_identity(cases, "model_identity_sha256"),
+        config_identity_sha256=_population_identity(cases, "config_identity_sha256"),
+        metric_ids=(
+            "counterevidence.recall",
+            "revision.expected-claim-recall-gain",
+            "unsupported-claim.rate",
+            "latency.warm-hybrid-operator-p95-ms",
+        ),
+    )
+
+
+def _completed(case: PairedResearchCase, *, rar: bool) -> bool:
+    status = case.rar_execution_status if rar else case.rag_execution_status
+    return status is ProductExecutionStatus.completed
+
+
+def _population_identity(
+    cases: tuple[PairedResearchCase, ...],
+    field: str,
+) -> str:
+    return hashlib.sha256(
+        "\n".join(
+            f"{item.case_id}:{getattr(item, field)}"
+            for item in sorted(cases, key=lambda candidate: candidate.case_id)
+        ).encode()
+    ).hexdigest()
 
 
 def _metric(

@@ -39,6 +39,8 @@ from bijux_canon_reason.evaluation import (
     EvaluationSplit,
     ExactEvidenceLocator,
     PairedResearchCase,
+    ProductAnswerDisposition,
+    ProductExecutionStatus,
     QrelJudgment,
     ResearchUtilityEvaluator,
     ResearchUtilityReport,
@@ -696,6 +698,9 @@ def test_bounded_research_reports_paired_quality_cost_latency_and_convergence() 
     paired = PairedResearchCase(
         case_id=case.case_id,
         input_identity_sha256="7" * 64,
+        source_identity_sha256="a" * 64,
+        model_identity_sha256="b" * 64,
+        config_identity_sha256="c" * 64,
         rag_faithfulness=_faithfulness(case, rag_output, {}),
         rar_faithfulness=_faithfulness(case, rar_output, _sources(case)),
         expected_counterevidence_qrel_ids=(case.qrels[0].qrel_id,),
@@ -747,6 +752,9 @@ def test_bounded_research_failure_keeps_pair_and_negative_deltas() -> None:
     paired = PairedResearchCase(
         case_id=case.case_id,
         input_identity_sha256="5" * 64,
+        source_identity_sha256="a" * 64,
+        model_identity_sha256="b" * 64,
+        config_identity_sha256="c" * 64,
         rag_faithfulness=_faithfulness(case, rag_output, _sources(case)),
         rar_faithfulness=_faithfulness(case, rar_output, _sources(case)),
         expected_counterevidence_qrel_ids=(case.qrels[0].qrel_id,),
@@ -757,6 +765,9 @@ def test_bounded_research_failure_keeps_pair_and_negative_deltas() -> None:
         rar_latency_ms=40,
         rar_iterations=3,
         rar_convergence_reason="budget exhausted before evidence coverage",
+        rar_execution_status=ProductExecutionStatus.budget_exhausted,
+        rar_failure_code="research-budget-exhausted",
+        rar_answer_disposition=ProductAnswerDisposition.not_produced,
     )
 
     report = ResearchUtilityEvaluator().evaluate((paired,))
@@ -766,3 +777,56 @@ def test_bounded_research_failure_keeps_pair_and_negative_deltas() -> None:
     assert report.expected_claim_recall_gain.value == -1.0
     assert report.unsupported_claim_rate_delta.value == 1.0
     assert len(report.outcomes) == 1
+    unconditional = {
+        item.definition.metric_id: item for item in report.unconditional_metrics.metrics
+    }
+    assert unconditional["completion.product-success-rate"].value == 0.0
+    assert unconditional["counterevidence.recall"].value == 0.0
+    assert unconditional["revision.expected-claim-recall-gain"].value == -1.0
+
+
+def test_budget_exhaustion_cannot_inherit_successful_partial_output_scores() -> None:
+    case = _case()
+    rag_output = SystemOutput(
+        output_id="empty-one-pass-output",
+        case_id=case.case_id,
+        runtime_run_id="rag-run",
+        runtime_attempt_id="rag-attempt",
+        answer="",
+        disposition=SystemAnswerDisposition.abstained,
+        abstention_reason="One-pass evidence was insufficient.",
+        trace_identity_sha256="8" * 64,
+    )
+    apparently_good_rar = _output(case, _citation(case)).model_copy(
+        update={"output_id": "partial-research-output"}
+    )
+    paired = PairedResearchCase(
+        case_id=case.case_id,
+        input_identity_sha256="9" * 64,
+        source_identity_sha256="a" * 64,
+        model_identity_sha256="b" * 64,
+        config_identity_sha256="c" * 64,
+        rag_faithfulness=_faithfulness(case, rag_output, {}),
+        rar_faithfulness=_faithfulness(case, apparently_good_rar, _sources(case)),
+        expected_counterevidence_qrel_ids=(case.qrels[0].qrel_id,),
+        rar_counterevidence_qrel_ids=(case.qrels[0].qrel_id,),
+        rag_cost_usd=0.0,
+        rar_cost_usd=0.0,
+        rag_latency_ms=10,
+        rar_latency_ms=20,
+        rar_iterations=2,
+        rar_convergence_reason="budget exhausted with declared work remaining",
+        rar_execution_status=ProductExecutionStatus.budget_exhausted,
+        rar_failure_code="research-budget-exhausted",
+        rar_answer_disposition=ProductAnswerDisposition.not_produced,
+    )
+
+    report = ResearchUtilityEvaluator().evaluate((paired,))
+
+    assert not report.passed
+    assert report.counterevidence_recall.value == 0.0
+    assert report.expected_claim_recall_gain.value == 0.0
+    assert report.unsupported_claim_rate_delta.value == 1.0
+    assert report.outcomes[0].rar_execution_status is (
+        ProductExecutionStatus.budget_exhausted
+    )
