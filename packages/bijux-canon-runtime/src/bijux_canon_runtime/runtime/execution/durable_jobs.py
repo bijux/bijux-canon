@@ -13,6 +13,7 @@ from datetime import UTC, datetime, timedelta
 from enum import StrEnum
 import hashlib
 import json
+import math
 from pathlib import Path
 import sqlite3
 import threading
@@ -21,6 +22,9 @@ from typing import Iterator, Protocol
 import duckdb
 
 from bijux_canon_runtime.model.artifact import AddressedArtifact, canonical_json_bytes
+from bijux_canon_runtime.model.execution.request_plan import (
+    MAX_RUNTIME_TIMEOUT_SECONDS,
+)
 from bijux_canon_runtime.observability.storage.execution_store import (
     DuckDBExecutionStore,
 )
@@ -118,8 +122,15 @@ class DurableJobRequest:
             raise ValueError("job idempotency key must not be empty")
         if self.idempotency_key != self.idempotency_key.strip():
             raise ValueError("job idempotency key must not have surrounding whitespace")
-        if self.timeout_seconds is not None and self.timeout_seconds <= 0:
-            raise ValueError("job execution timeout must be positive")
+        if self.timeout_seconds is not None and (
+            not math.isfinite(self.timeout_seconds)
+            or self.timeout_seconds <= 0
+            or self.timeout_seconds > MAX_RUNTIME_TIMEOUT_SECONDS
+        ):
+            raise ValueError(
+                "job execution timeout must be finite, positive, and no greater "
+                f"than {MAX_RUNTIME_TIMEOUT_SECONDS:g} seconds"
+            )
         encoded = canonical_json_bytes(dict(self.payload))
         if len(encoded) > MAX_DURABLE_JOB_REQUEST_BYTES:
             raise DurableJobCapacityError(
@@ -462,8 +473,15 @@ class DurableJobManager:
         self, job_id: str, *, timeout_seconds: float | None = None
     ) -> DurableJobSnapshot:
         """Wait on worker notifications rather than repeatedly querying on a timer."""
-        if timeout_seconds is not None and timeout_seconds <= 0:
-            raise ValueError("durable job wait timeout must be positive")
+        if timeout_seconds is not None and (
+            not math.isfinite(timeout_seconds)
+            or timeout_seconds <= 0
+            or timeout_seconds > MAX_RUNTIME_TIMEOUT_SECONDS
+        ):
+            raise ValueError(
+                "durable job wait timeout must be finite, positive, and no greater "
+                f"than {MAX_RUNTIME_TIMEOUT_SECONDS:g} seconds"
+            )
         with self._condition:
             completed = self._condition.wait_for(
                 lambda: self.status(job_id).status.terminal,

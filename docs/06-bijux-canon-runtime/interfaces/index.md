@@ -4,7 +4,7 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-runtime-docs
-last_reviewed: 2026-07-22
+last_reviewed: 2026-08-25
 ---
 
 # Interfaces
@@ -19,8 +19,8 @@ identity rather than reducing a governed run to its final payload.
 | --- | --- | --- |
 | Python | complete execution surface | manifests, plans, execution configuration, stores, policies, results, replay |
 | CLI | plan, dry run, live run, replay, inspect, diff, failure explanation, database validation | JSON/plain output, exit classes, DuckDB path, tenant and run identity |
-| HTTP health/readiness | implemented | liveness and ability to open configured DuckDB storage |
-| HTTP flow run/replay | schema only | validates payload and headers, then returns `501 Not Implemented` |
+| HTTP v2 | complete application-service surface | versioned requests, durable jobs, bounded reads, typed failures, and shared workspace authority |
+| HTTP v1 compatibility module | probes plus schema-only run/replay | explicit legacy host; run and replay return `501 Not Implemented` |
 | DuckDB store | local typed persistence | runs, datasets, steps, events, checkpoints, artifacts, evidence, claims, tools, entropy, finalization |
 | artifact store | payload persistence | immutable identity, hash, parentage, producer, tenant, and scope |
 | versioned schemas | compatibility boundary | HTTP payloads, database migrations, and schema hashes |
@@ -57,8 +57,8 @@ sequenceDiagram
   policy through the CLI. Use the governed Python surface when that explicit
   reduced-guarantee mode is necessary.
 - Several callable CLI commands are suppressed from top-level help.
-- HTTP authority headers are syntax-checked only; run and replay have no remote
-  execution backend despite their versioned schemas.
+- The v2 server is local-first and supplies no authentication, tenant
+  authorization, sandboxing, TLS termination, or multi-writer coordination.
 
 ## Use the least-authoritative surface
 
@@ -67,13 +67,13 @@ effect authority merely to understand a flow or retained run:
 
 | Need | Surface | Authority consumed | Result boundary |
 | --- | --- | --- | --- |
-| prove the service process is reachable | HTTP health | none | liveness only |
-| prove configured DuckDB can be opened | HTTP readiness or CLI database validation | storage access, not flow execution | schema/openability, not semantic run integrity |
+| prove the service process is reachable | HTTP v2 liveness | none | liveness only |
+| prove an operation/profile is configured | HTTP v2 readiness or capabilities | read-only workspace inspection | declared capability, not a successful workflow |
 | inspect dependency order and replay declarations | CLI or Python plan | manifest resolution only | plan and `plan_hash`; no run ID or trace |
 | inspect retained history | CLI `inspect`, failure explanation, or typed readers | tenant-scoped read access | stored projection; payload availability must be checked separately |
 | compare retained runs | CLI diff or analysis modules | read access to both records | reported differences; process exit does not decide acceptability |
 | execute or resume effects | governed Python or CLI run surface | flow authority, policy, stores, budgets and executor bindings | finalized, arbitrated run or classified failure |
-| request remote run or replay | HTTP v1 schema | no executable authority today | `501 Not Implemented` after request validation |
+| request a local service run or replay | HTTP v2 | workspace, durable job, operation budget, and idempotency authority | bounded job status followed by deliberate result/inspection reads |
 
 Start with plan or read-side inspection whenever the question does not require
 new effects. Moving to live execution is a new authority decision: the caller

@@ -38,7 +38,8 @@ flowchart LR
 | DuckDB store | migration, tenant isolation, writer guard, ordered persistence, finalization, and round trip | corrupt, cross-tenant, or partial state loads as authoritative |
 | resume or recovery | checkpoint, reconstructed indices, retained effects, interruption, and unknown-state evidence | recovery repeats an effect without idempotency or loses causal history |
 | replay | original envelope, dataset, plan, policy, environment, entropy, semantic diff, verdict, and reason | changed authority or unacceptable drift passes |
-| HTTP boundary | schema and observed health/readiness/`501` behavior | schema presence is presented as implemented run or replay |
+| HTTP v2 boundary | installed server, live workflow, transport parity, bounds, typed errors, OpenAPI pin and hash | schema or injected-service tests are presented as installed execution evidence |
+| HTTP v1 compatibility boundary | probe and explicit run/replay `501` behavior | legacy schema presence is presented as executable workflow evidence |
 
 ## Authority claims form a lattice
 

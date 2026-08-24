@@ -5,10 +5,13 @@
 
 from __future__ import annotations
 
+import pytest
+
 from bijux_canon_runtime.application.request_planner import RuntimeRequestPlanner
 from bijux_canon_runtime.model.execution.request_plan import (
     DagOperation,
     ExecutionProfile,
+    MAX_RUNTIME_TIMEOUT_SECONDS,
     RuntimeOperationRequest,
     RuntimeOutputPolicy,
     RuntimeRequestBudget,
@@ -16,6 +19,20 @@ from bijux_canon_runtime.model.execution.request_plan import (
 )
 from bijux_canon_runtime.ontology.ids import ArtifactID, RequestID
 from bijux_canon_runtime.ontology.public import ReplayMode
+
+
+@pytest.mark.parametrize("timeout_seconds", [float("nan"), float("inf"), 604_801])
+def test_runtime_budget_rejects_unrepresentable_timeouts(
+    timeout_seconds: float,
+) -> None:
+    with pytest.raises(ValueError, match="runtime timeout must be finite"):
+        RuntimeRequestBudget(timeout_seconds, 1)
+
+
+def test_runtime_budget_accepts_the_documented_timeout_limit() -> None:
+    budget = RuntimeRequestBudget(MAX_RUNTIME_TIMEOUT_SECONDS, 1)
+
+    assert budget.timeout_seconds == 604_800
 
 
 def _index_request() -> RuntimeOperationRequest:

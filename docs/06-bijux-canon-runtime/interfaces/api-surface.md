@@ -1,128 +1,95 @@
 ---
 title: HTTP API
 audience: mixed
-type: explanation
+type: reference
 status: canonical
 owner: bijux-canon-runtime-docs
-last_reviewed: 2026-08-23
+last_reviewed: 2026-08-25
 ---
 
 # HTTP API
 
-The Runtime HTTP application retains the compatibility v1 probes and exposes
-the implemented local-first application service under `/api/v2`. Requests must
-send `Bijux-API-Version: v2`. Python, CLI, and HTTP v2 compose the same effective
-workspace configuration and application service.
+The `api` installation profile supplies an installed loopback-first server for
+the Runtime v2 application service:
 
-## Current Availability
-
-The v2 surface implements corpus preparation and inspection, index build and
-inspection, retrieval, answers, research, complete runs, durable job lifecycle,
-run inspection, replay, comparison, readiness, and capability discovery.
-
-`POST /api/v2/retrieval-evaluations` synchronously executes a reviewed local
-case set against one index artifact. Its strict request supplies local case and
-qrel paths, index identity, split, retrieval mode, and bounds. It has no field
-for hits. The response is the same integrity-bound report returned by Python
-and the JSON CLI, including exact hit locators, lexical/dense/fusion rank traces,
-per-qrel first-loss classifications, and all failed/refused queries in the
-denominator.
-
-The older v1 compatibility endpoints remain structurally limited:
-
-| Method and path | Status | Behavior |
-| --- | --- | --- |
-| `GET /health` | implemented | process liveness: `{ "status": "ok" }` |
-| `GET /api/v1/health` | implemented | versioned alias of `/health` |
-| `GET /ready` | implemented | checks that configured DuckDB storage can be opened |
-| `GET /api/v1/ready` | implemented | versioned alias of `/ready` |
-| `POST /api/v1/flows/run` | contract only | validates body and required headers, then returns `501` |
-| `POST /api/v1/flows/replay` | contract only | validates body and required headers, then returns `501` |
-
-```mermaid
-flowchart LR
-    request[HTTP request]
-    shape[body validation]
-    headers[authority header validation]
-    unavailable[501 structural failure]
-    python[Python or CLI execution]
-
-    request --> shape --> headers --> unavailable
-    request -. governed execution .-> python
+```bash
+python -m pip install 'bijux-canon-runtime[api]'
+bijux-canon-runtime init --workspace ./canon-workspace --json
+bijux-canon-runtime-server --workspace ./canon-workspace
 ```
 
-The versioned schema freezes the request and response shapes for compatibility
-checks. It does not mean the two flow operations have an execution backend.
+The default bind is `127.0.0.1:8000`. Use `--host`, `--port`, `--log-level`,
+and `--no-access-log` deliberately when the surrounding deployment supplies
+its own authentication, authorization, isolation, and request limits. The
+Runtime server does not provide those controls.
 
-## Health And Readiness
+Every v2 request must send `Bijux-API-Version: v2`. Durable workflow submissions
+also require an `Idempotency-Key` of 16 to 200 characters. The response header
+`Bijux-API-Supported-Versions: v2` identifies the supported contract.
 
-Readiness requires `AGENTIC_FLOWS_DB_PATH`. The probe constructs and closes a
-`DuckDBExecutionStore` at that path. Missing configuration or any open failure
-returns `503 { "ready": false }`; success returns `200 { "ready": true }`.
+## Probe The Installed Service
 
-This is a storage-open check, not a deep dependency check. It does not validate
-datasets, external tools, agent providers, policies, artifact payloads, or the
-ability to run a flow.
+```bash
+curl --fail-with-body \
+  -H 'Bijux-API-Version: v2' \
+  http://127.0.0.1:8000/api/v2/live
 
-## Flow Contract Headers
+curl --fail-with-body \
+  -H 'Bijux-API-Version: v2' \
+  'http://127.0.0.1:8000/api/v2/ready?operation=initialized'
 
-Both flow operations require:
+curl --fail-with-body \
+  -H 'Bijux-API-Version: v2' \
+  http://127.0.0.1:8000/api/v2/capabilities
+```
 
-| Header | Accepted form | Current validation |
-| --- | --- | --- |
-| `X-Agentic-Gate` | non-empty characters from letters, digits, `.`, `_`, `:`, `-` | presence and syntax only |
-| `X-Determinism-Level` | `strict`, `bounded`, `probabilistic`, or `unconstrained` | required enum; empty and `default` refused |
-| `X-Policy-Fingerprint` | non-empty characters from letters, digits, `.`, `_`, `:`, `-` | presence and syntax only |
+Liveness proves that the process can answer. Readiness evaluates the requested
+capability and optional execution profile against the effective workspace.
+Capability discovery reports configuration identities, installed support,
+requirements, and remediation without returning credential values.
 
-Missing or invalid authority headers return `406` with an authority failure
-envelope. The current endpoint does not compare the policy header with the
-request body's `policy_fingerprint` before returning `501`.
+## Implemented V2 Surface
 
-## Request Shapes
+The service composes the same application layer as the Python and CLI adapters:
 
-Run accepts a strict object containing `flow_manifest`, `inputs_fingerprint`,
-`dataset_id`, `policy_fingerprint`, and HTTP run mode `live`, `dry`, or
-`observer`. Replay accepts `run_id`, `expected_plan_hash`, `observer_mode`, and
-acceptability threshold `exact_match`, `invariant_preserving`, or
-`statistically_bounded`. Unknown fields are rejected.
-
-These HTTP mode strings are a schema contract and do not mirror every Python
-`RunMode` spelling or capability. In particular, their acceptance by Pydantic
-does not make remote execution available.
-
-## Failure Envelope
-
-| Status | Contract outcome |
+| Operation | HTTP route |
 | --- | --- |
-| `400` | request body could not be parsed |
-| `406` | authority headers are missing or invalid |
-| `422` | request validation failed |
-| `501` | validated run or replay operation is not implemented |
+| prepare and inspect a corpus | `POST /api/v2/corpora/prepare`, `GET /api/v2/corpora/{corpus_id}` |
+| build and inspect an index | `POST /api/v2/indexes/build`, `GET /api/v2/indexes/{index_id}` |
+| retrieve evidence | `POST /api/v2/retrievals` |
+| answer and research | `POST /api/v2/answers`, `POST /api/v2/research` |
+| run the linked workflow | `POST /api/v2/runs` |
+| inspect and replay a run | `GET /api/v2/runs/{run_id}`, `POST /api/v2/runs/{run_id}/replays` |
+| inspect, wait for, resolve, or cancel a job | `/api/v2/jobs/{job_id}` and child routes |
+| compare attempts | `POST /api/v2/comparisons` |
+| page immutable payload bytes | `GET /api/v2/artifacts/{artifact_id}/payload` |
+| evaluate reviewed retrieval cases | `POST /api/v2/retrieval-evaluations` |
 
-These failures use `FailureEnvelope`, carrying failure class, reason code,
-violated contract, evidence identities, and determinism impact. The current
-structural helper uses `contradiction_detected` as the reason code even for
-parse, validation, and not-implemented failures. Clients should key diagnosis
-on status and `violated_contract`, not infer a semantic contradiction from that
-reason code alone.
+Submissions return bounded durable job-status documents. Resolve completed
+results through the job result route. Inspection, comparison, index segments,
+and artifact payload bytes use explicit limits and opaque continuation cursors.
+Backup and restore remain local CLI operations because they require direct
+filesystem authority over a quiescent workspace.
 
-Method mismatch returns `405` with an `Allow` header. The application declares
-no OpenAPI security scheme and implements no authentication or tenant
-isolation. Required authority headers are contract metadata, not credentials.
+The pinned OpenAPI document and migration policy are under
+[`apis/bijux-canon-runtime/v2/`](https://github.com/bijux/bijux-canon/tree/main/apis/bijux-canon-runtime/v2).
+Route behavior, generated OpenAPI, its pin, and the schema hash must agree.
 
-## Successful Response Shape
+## Errors And Correlation
 
-`FlowRunResponse` defines run and flow identity, terminal status, determinism
-and environment classification, replay acceptability, and artifact count. It
-is retained in the versioned schema but is not returned by the current run or
-replay handlers. Integration code must not fabricate or mock that response and
-present the HTTP operation as implemented.
+Failures use `application/problem+json` and the shared Runtime problem fields:
+code, title, status, retryability, remediation, bounded cause, correlation ID,
+and optional run ID. Supply `X-Correlation-ID`, or a request context correlation
+identity where the schema supports one. Unsupported versions return `406` and
+the supported-version response header. Validation, not-found, conflict,
+capability, and operation failures retain distinct typed codes.
 
-## Contract Authority
+## V1 Compatibility Status
 
-The tracked schema is
-[`apis/bijux-canon-runtime/v1/schema.yaml`](https://github.com/bijux/bijux-canon/blob/main/apis/bijux-canon-runtime/v1/schema.yaml),
-with its pin and hash. The route code establishes current availability. See
-[Entrypoints and Examples](entrypoints-and-examples.md) for supported Python
-and CLI execution, and [Data Contracts](data-contracts.md) for the distinction
-between HTTP envelopes and runtime domain models.
+The installed server command serves v2 only. It does not mount the older v1
+application. `bijux_canon_runtime.api.v1.app:app` remains importable for callers
+that explicitly host that compatibility module. Its health and readiness probes
+are implemented, while `POST /api/v1/flows/run` and
+`POST /api/v1/flows/replay` validate their legacy envelopes and then return
+`501 Not Implemented`. A v1 schema or import is not evidence of an executable
+v1 workflow.

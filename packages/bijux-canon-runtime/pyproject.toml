@@ -117,6 +117,7 @@ dev = [
 
 [project.scripts]
 bijux-canon-runtime = "bijux_canon_runtime.interfaces.cli.entrypoint:main"
+bijux-canon-runtime-server = "bijux_canon_runtime.interfaces.http.server:main"
 
 [tool.hatch.build]
 include = [

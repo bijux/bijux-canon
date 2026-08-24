@@ -16,6 +16,9 @@ from time import sleep
 import pytest
 
 from bijux_canon_runtime.model.artifact import AddressedArtifact
+from bijux_canon_runtime.model.execution.request_plan import (
+    MAX_RUNTIME_TIMEOUT_SECONDS,
+)
 from bijux_canon_runtime.ontology.ids import ArtifactID
 from bijux_canon_runtime.runtime.persistence.authoritative_payload_store import (
     AuthoritativeArtifactPayloadStore,
@@ -55,6 +58,34 @@ def _request(
         payload={"value": value},
         timeout_seconds=timeout_seconds,
     )
+
+
+@pytest.mark.parametrize("timeout_seconds", [float("nan"), float("inf"), 604_801])
+def test_job_request_rejects_unrepresentable_timeouts(
+    timeout_seconds: float,
+) -> None:
+    with pytest.raises(ValueError, match="job execution timeout must be finite"):
+        _request("invalid-timeout", timeout_seconds=timeout_seconds)
+
+
+def test_job_request_accepts_the_documented_timeout_limit() -> None:
+    request = _request(
+        "maximum-timeout", timeout_seconds=MAX_RUNTIME_TIMEOUT_SECONDS
+    )
+
+    assert request.timeout_seconds == 604_800
+
+
+@pytest.mark.parametrize("timeout_seconds", [float("nan"), float("inf"), 604_801])
+def test_job_wait_rejects_unrepresentable_timeouts(
+    tmp_path: Path,
+    timeout_seconds: float,
+) -> None:
+    with DurableJobManager(
+        tmp_path / "jobs.sqlite3", handlers=_handlers(lambda _request, _cancel: {})
+    ) as manager:
+        with pytest.raises(ValueError, match="job wait timeout must be finite"):
+            manager.wait("job_v1_missing", timeout_seconds=timeout_seconds)
 
 
 def test_job_submission_is_idempotent_and_survives_restart(

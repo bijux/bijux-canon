@@ -58,7 +58,8 @@ python -m pip install bijux-canon-runtime
 
 Install `bijux-canon-runtime[local-cpu]` for the FAISS exact/ANN, local dense,
 and local hybrid profiles. Install `bijux-canon-runtime[api]` for the HTTP
-server. On Linux, install the official CPU-only PyTorch wheel first so the
+server and start it with the installed `bijux-canon-runtime-server` command.
+On Linux, install the official CPU-only PyTorch wheel first so the
 resolver does not select CUDA runtime packages:
 
 ```bash
@@ -161,7 +162,14 @@ from top-level help. New integrations should use the v2 command group.
 
 ## HTTP Contract
 
-The v2 HTTP application exposes the same typed corpus, index, retrieval,
+Initialize one workspace, then start the loopback-only default server:
+
+```bash
+bijux-canon-runtime init --workspace ./canon-workspace --json
+bijux-canon-runtime-server --workspace ./canon-workspace
+```
+
+The installed v2 HTTP application exposes the same typed corpus, index, retrieval,
 answer, research, run, inspection, replay, comparison, job, and evaluation
 operations as the shared application service. Submission responses are bounded
 job documents; result and inspection payloads require deliberate follow-up and
@@ -173,8 +181,10 @@ workspace-owned model state. Restore verifies that inventory before activating
 an absent destination and preserves the logical workspace identity while
 rewriting governed machine-local paths.
 
-The older v1 run and replay endpoints remain compatibility contracts and return
-`501 Not Implemented`. New integrations should use the v2 schema pinned under
+The server command exposes `/api/v2` only. The older v1 ASGI module remains a
+separate compatibility contract whose run and replay endpoints return `501 Not
+Implemented`; the installed server does not mount it. New integrations should
+use the v2 schema pinned under
 [`apis/bijux-canon-runtime/v2/`](../../apis/bijux-canon-runtime/v2/).
 
 ## Evaluate A Runtime Claim

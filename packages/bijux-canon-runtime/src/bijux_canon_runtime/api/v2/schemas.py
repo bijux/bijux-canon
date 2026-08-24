@@ -10,6 +10,9 @@ from typing import Annotated, Literal
 from pydantic import BaseModel, ConfigDict, Field
 
 from bijux_canon_runtime.application.problems import RuntimeProblemCode
+from bijux_canon_runtime.model.execution.request_plan import (
+    MAX_RUNTIME_TIMEOUT_SECONDS,
+)
 
 ArtifactIdentity = Annotated[str, Field(pattern=r"^sha256:[0-9a-f]{64}$")]
 ContentDigest = Annotated[str, Field(pattern=r"^[0-9a-f]{64}$")]
@@ -48,7 +51,9 @@ class RequestContext(StrictModel):
 class Budget(StrictModel):
     """Hard execution and persistence bounds."""
 
-    timeout_seconds: Annotated[float, Field(gt=0)]
+    timeout_seconds: Annotated[
+        float, Field(gt=0, le=MAX_RUNTIME_TIMEOUT_SECONDS)
+    ]
     max_artifact_bytes: Annotated[int, Field(ge=1)]
     max_steps: Annotated[int | None, Field(ge=1)] = None
     max_provider_tokens: Annotated[int | None, Field(ge=1)] = None
@@ -413,7 +418,9 @@ class ReplayRequest(StrictModel):
     process_id: StableIdentity
     network_policy: Literal["disabled", "recorded-only", "permitted"]
     provider_allowlist: tuple[str, ...] = ()
-    timeout_seconds: Annotated[float | None, Field(gt=0)] = None
+    timeout_seconds: Annotated[
+        float | None, Field(gt=0, le=MAX_RUNTIME_TIMEOUT_SECONDS)
+    ] = None
 
 
 class CompareRequest(StrictModel):

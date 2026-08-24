@@ -7,6 +7,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import StrEnum
+import math
 from pathlib import Path
 import re
 
@@ -15,6 +16,7 @@ from bijux_canon_runtime.ontology.public import ReplayMode
 
 
 SUPPORTED_LOCAL_REASON_PROVIDERS = ("credential-free", "local-recorded")
+MAX_RUNTIME_TIMEOUT_SECONDS = 604_800.0
 
 
 class RuntimeRequestOperation(StrEnum):
@@ -64,8 +66,17 @@ class RuntimeRequestBudget:
     max_provider_tokens: int | None = None
 
     def __post_init__(self) -> None:
-        if self.timeout_seconds <= 0 or self.max_artifact_bytes < 1:
-            raise ValueError("runtime timeout and artifact budget must be positive")
+        if (
+            not math.isfinite(self.timeout_seconds)
+            or self.timeout_seconds <= 0
+            or self.timeout_seconds > MAX_RUNTIME_TIMEOUT_SECONDS
+        ):
+            raise ValueError(
+                "runtime timeout must be finite, positive, and no greater than "
+                f"{MAX_RUNTIME_TIMEOUT_SECONDS:g} seconds"
+            )
+        if self.max_artifact_bytes < 1:
+            raise ValueError("runtime artifact budget must be positive")
         if self.max_steps is not None and self.max_steps < 1:
             raise ValueError("runtime step budget must be positive")
         if self.max_provider_tokens is not None and self.max_provider_tokens < 1:
@@ -253,6 +264,7 @@ __all__ = [
     "ConcreteStepInputs",
     "DagOperation",
     "ExecutionProfile",
+    "MAX_RUNTIME_TIMEOUT_SECONDS",
     "RetrievalFilters",
     "RuntimeOperationRequest",
     "RuntimeOutputPolicy",

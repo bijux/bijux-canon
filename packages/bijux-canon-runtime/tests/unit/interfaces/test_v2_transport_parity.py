@@ -565,6 +565,46 @@ def test_replay_has_identical_request_and_response(tmp_path: Path) -> None:
     assert cli_service.calls == http_service.calls
 
 
+def test_replay_rejects_an_unrepresentable_timeout_with_typed_parity(
+    tmp_path: Path,
+) -> None:
+    payload = {
+        "context": _context("replay-timeout"),
+        "network_policy": "recorded-only",
+        "process_id": "transport-parity",
+        "provider_allowlist": [],
+        "source_attempt_id": _ATTEMPT_ID,
+        "timeout_seconds": 1.062e307,
+    }
+    request_path = _write_request(tmp_path, "replay-timeout", payload)
+    cli_service = _RecordingServices()
+    cli_code, cli_problem = _cli(
+        cli_service,
+        [
+            "replay",
+            _RUN_ID,
+            "--request",
+            str(request_path),
+            "--idempotency-key",
+            _IDEMPOTENCY_KEY,
+        ],
+    )
+    http_service = _RecordingServices()
+    response = TestClient(create_app(http_service)).post(
+        f"/api/v2/runs/{_RUN_ID}/replays",
+        headers={
+            "Bijux-API-Version": "v2",
+            "Idempotency-Key": _IDEMPOTENCY_KEY,
+        },
+        json=payload,
+    )
+
+    assert cli_code == 2 and response.status_code == 400
+    assert response.headers["content-type"].startswith("application/problem+json")
+    assert cli_problem == response.json()
+    assert cli_service.calls == http_service.calls == []
+
+
 def test_replay_accepts_direct_identity_and_wait_options() -> None:
     service = _RecordingServices()
 

@@ -123,25 +123,26 @@ currently suppressed from top-level help output. `unsafe-run` cannot yet reach
 execution through the CLI because unsafe mode requires a verification policy
 and that subcommand exposes no `--policy` option.
 
-## HTTP: current implementation boundary
+## HTTP: installed v2 server
 
-The FastAPI module can expose liveness and storage readiness:
+Install the API profile, initialize a workspace, and start the server command:
 
 ```bash
-AGENTIC_FLOWS_DB_PATH=artifacts/bijux-canon-runtime/runs.duckdb \
-  uvicorn bijux_canon_runtime.api.v1.app:app \
-  --host 127.0.0.1 --port 8000
+python -m pip install 'bijux-canon-runtime[api]'
+bijux-canon-runtime init --workspace ./canon-workspace --json
+bijux-canon-runtime-server --workspace ./canon-workspace
 
-curl --fail-with-body http://127.0.0.1:8000/api/v1/health
-curl --fail-with-body http://127.0.0.1:8000/api/v1/ready
+curl --fail-with-body -H 'Bijux-API-Version: v2' \
+  http://127.0.0.1:8000/api/v2/live
+curl --fail-with-body -H 'Bijux-API-Version: v2' \
+  'http://127.0.0.1:8000/api/v2/ready?operation=initialized'
+curl --fail-with-body -H 'Bijux-API-Version: v2' \
+  http://127.0.0.1:8000/api/v2/capabilities
 ```
 
-The module is explicitly marked experimental and not production-ready.
-`POST /api/v1/flows/run` and `POST /api/v1/flows/replay` validate their request
-envelopes and required runtime headers, then currently return `501 Not
-Implemented`. Do not route production execution through those endpoints or
-describe the checked-in schema as proof of implemented HTTP execution.
-
-The authoritative boundary shape is the checked-in
-[`v1 schema`](https://github.com/bijux/bijux-canon/blob/main/apis/bijux-canon-runtime/v1/schema.yaml),
-while the console and Python paths remain the implemented execution surfaces.
+The installed command serves the complete v2 application-service workflow and
+defaults to loopback. It does not add authentication, tenant authorization, or
+sandboxing. The separate v1 compatibility application remains importable, but
+its run and replay routes return `501 Not Implemented`. The authoritative v2
+shape is the checked-in
+[`v2 schema`](https://github.com/bijux/bijux-canon/blob/main/apis/bijux-canon-runtime/v2/schema.yaml).

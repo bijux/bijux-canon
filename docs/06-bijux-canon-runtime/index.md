@@ -204,10 +204,10 @@ presence of a run row.
 | storage is complete | schema contract, finalized records, external artifact availability | metadata does not guarantee payload retention |
 | live composition works | installed loader execution plus cross-package identity and failure assertions | dependency resolution, plan mode, or dry-run success |
 
-The [entrypoint examples](interfaces/entrypoints-and-examples.md) begin with
-plan mode, then show persisted execution, inspection, replay, and diff. The v1
-HTTP application currently implements health and readiness; run and replay
-requests return `501 Not Implemented`.
+The [entrypoint examples](interfaces/entrypoints-and-examples.md) show persisted
+execution, inspection, replay, comparison, and the installed HTTP v2 server.
+The separately hosted v1 compatibility application implements health and
+readiness; its run and replay requests return `501 Not Implemented`.
 
 ## Continue By Question
 

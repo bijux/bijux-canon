@@ -86,14 +86,37 @@ from bijux_canon_runtime.runtime.replay.models import (
 )
 
 SUPPORTED_VERSION = "v2"
+
+
+def _problem_response(description: str) -> dict[str, Any]:
+    return {
+        "model": ProblemDetail,
+        "description": description,
+        "content": {
+            "application/problem+json": {
+                "schema": {"$ref": "#/components/schemas/ProblemDetail"}
+            }
+        },
+    }
+
+
 PROBLEM_RESPONSES: dict[int | str, dict[str, Any]] = {
-    400: {"model": ProblemDetail, "description": "Invalid typed request."},
-    404: {"model": ProblemDetail, "description": "Resource not found."},
-    406: {"model": ProblemDetail, "description": "Unsupported API version."},
-    409: {"model": ProblemDetail, "description": "Immutable state conflict."},
-    500: {"model": ProblemDetail, "description": "Application operation failed."},
-    503: {"model": ProblemDetail, "description": "Application service unavailable."},
+    400: _problem_response("Invalid typed request."),
+    404: _problem_response("Resource not found."),
+    406: _problem_response("Unsupported API version."),
+    409: _problem_response("Immutable state conflict."),
+    500: _problem_response("Application operation failed."),
+    503: _problem_response("Application service unavailable."),
 }
+
+
+class RuntimeV2FastAPI(FastAPI):
+    """FastAPI application with an explicit unauthenticated OpenAPI posture."""
+
+    def openapi(self) -> dict[str, Any]:
+        schema = super().openapi()
+        schema["security"] = []
+        return schema
 
 
 def _problem(
@@ -139,7 +162,7 @@ def create_app(
                 configured.close()
                 application.state.application_services = None
 
-    api = FastAPI(
+    api = RuntimeV2FastAPI(
         title="bijux-canon-runtime API",
         summary="Typed application operations for durable Bijux Canon workflows.",
         version=SUPPORTED_VERSION,
@@ -149,6 +172,7 @@ def create_app(
             "name": "Apache 2.0",
             "url": "https://www.apache.org/licenses/LICENSE-2.0",
         },
+        servers=[{"url": "/"}],
         lifespan=lifespan,
     )
     api.state.application_services = services

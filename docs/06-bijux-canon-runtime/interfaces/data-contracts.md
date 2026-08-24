@@ -122,11 +122,12 @@ treating the presence of a run ID as success.
 
 ## HTTP Boundary
 
-The v1 request models reject unknown fields and require explicit manifest,
-input, dataset, policy, mode, and replay identity. `FailureEnvelope` classifies
-contract failures separately from successful flow responses. The execution
-endpoints are currently unimplemented, however, so these schemas describe a
-versioned boundary—not a promise that HTTP execution is operational.
+The v2 request models reject unknown fields and carry explicit context,
+operation inputs, execution profile, budgets, and replay or comparison
+identity. Submissions create durable jobs; result and inspection reads remain
+separate and bounded. `ProblemDetail` preserves the shared Runtime failure
+taxonomy across Python, CLI, and HTTP. The older v1 models remain compatibility
+contracts whose flow execution routes return `501 Not Implemented`.
 
 Changes to tenant or flow identity, policy meaning, plan hashing, event order,
 entropy accounting, replay acceptability, or failure classification are

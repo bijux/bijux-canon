@@ -83,8 +83,9 @@ replay machinery, but capability also depends on the callable integration seam:
 | --- | --- | --- |
 | manifest admission and plan resolution | implemented | can be exercised without lower-package live calls |
 | runtime behavior with injected executor seams | implemented and package-tested | establishes runtime authority, failure, verification and replay semantics |
-| canonical package-root live composition | not currently demonstrated | required `retrieve`, `enforce_contract`, `reason` and `run` callables are not all exported by canonical roots |
-| HTTP flow run and replay | contract validation with `501` response | versioned schema/error compatibility, not remote execution |
+| installed canonical live composition | implemented and installed-workflow tested | the v2 application service loads canonical ingest, index, reason, and agent adapters |
+| HTTP v2 workflow and replay | implemented through durable jobs | shares application behavior, failures, pagination, and workspace authority with Python and CLI |
+| HTTP v1 flow run and replay | contract validation with `501` response | legacy schema/error compatibility, not execution |
 
 The compatibility packages delegate to the same canonical roots and therefore
 do not supply missing adapters. A supported end-to-end live claim requires
@@ -93,10 +94,10 @@ executes them without substituting seam-specific callables.
 
 ## Interface availability
 
-Python and CLI provide governed execution and read-side inspection. HTTP
-provides implemented liveness and storage readiness; versioned flow run and
-replay requests validate contracts but currently return `501 Not Implemented`.
-Schema presence is compatibility evidence, not remote execution capability.
+Python, CLI, and HTTP v2 provide governed application-service execution and
+read-side inspection. The separately hosted v1 compatibility module provides
+probes but returns `501 Not Implemented` for flow run and replay. Schema
+presence alone remains compatibility evidence, not execution evidence.
 
 Runtime cannot undo external effects, reconstruct omitted host events, or make
 a passing verification rule set equivalent to factual truth. See
