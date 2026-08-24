@@ -41,11 +41,11 @@ from bijux_canon_index.evaluation import (
     ReviewedRetrievalQuery,
 )
 from bijux_canon_index.infra.embeddings.local_model import EmbeddedBatch
-from bijux_canon_runtime.application.request_planner import RuntimeRequestPlanner
 from bijux_canon_runtime.application.operations import (
     PersistedAnswerEvaluationAdapter,
     PersistedAnswerEvaluationError,
 )
+from bijux_canon_runtime.application.request_planner import RuntimeRequestPlanner
 from bijux_canon_runtime.model.artifact import AddressedArtifact
 from bijux_canon_runtime.model.execution.request_plan import (
     DagOperation,
@@ -495,8 +495,10 @@ def _retrieve_and_reason(indexed: _IndexedRuntime) -> _GroundedRuntime:
     assert claim_graph["citation_verification"]["integrity_verified_links"] == len(
         claim_graph["citations"]["links"]
     )
-    assert claim_graph["citation_verification"]["integrity_verified_links"] == len(
-        hit["locator_segments"]
+    assert claim_graph["citation_verification"]["integrity_verified_links"] == 1
+    assert all(
+        link["exact_text"].strip() != "# Ancient DNA"
+        for link in claim_graph["citations"]["links"]
     )
 
     return _GroundedRuntime(

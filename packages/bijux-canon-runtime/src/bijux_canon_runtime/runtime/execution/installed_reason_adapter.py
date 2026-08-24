@@ -18,15 +18,16 @@ from bijux_canon_reason.grounding import (
     LocalGroundedAnswerService,
     PacketCompleteness,
     RetrievalEvidenceStatus,
+    SemanticEmbeddingService,
     SynthesisOutcome,
     VexEvidenceStatus,
 )
 from bijux_canon_reason.grounding.provider_contracts import content_artifact_id
 from bijux_canon_runtime.model.artifact import canonical_json_bytes
 from bijux_canon_runtime.model.execution.request_plan import (
+    SUPPORTED_LOCAL_REASON_PROVIDERS,
     ConcreteDagStep,
     DagOperation,
-    SUPPORTED_LOCAL_REASON_PROVIDERS,
 )
 from bijux_canon_runtime.runtime.execution.installed_operation_adapters import (
     _bounded_output,
@@ -321,6 +322,13 @@ class CanonicalReasonOperationAdapter:
     adapter_version = "1.0"
     operation = DagOperation.REASON
 
+    def __init__(
+        self,
+        *,
+        semantic_encoder: SemanticEmbeddingService | None = None,
+    ) -> None:
+        self._semantic_encoder = semantic_encoder
+
     def execute(
         self,
         step: ConcreteDagStep,
@@ -382,7 +390,9 @@ class CanonicalReasonOperationAdapter:
             selected_evidence_count=len(packet.selected),
             packet_completeness=packet.completeness,
         )
-        grounded = LocalGroundedAnswerService().answer(
+        grounded = LocalGroundedAnswerService(
+            semantic_encoder=self._semantic_encoder
+        ).answer(
             question=step.inputs.query,
             evidence_packet=packet,
             sources=sources,

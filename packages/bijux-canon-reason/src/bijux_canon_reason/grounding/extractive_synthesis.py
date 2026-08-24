@@ -4,10 +4,12 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from enum import StrEnum
 import hashlib
+import math
 import re
-from typing import Literal, Self
+from typing import Literal, Protocol, Self
 
 from pydantic import field_validator, model_validator
 
@@ -27,7 +29,10 @@ _ARTIFACT_ID = re.compile(r"sha256:[0-9a-f]{64}")
 _SHA256 = re.compile(r"[0-9a-f]{64}")
 _TERM = re.compile(r"[^\W_]+", flags=re.UNICODE)
 _SENTENCE_BOUNDARY = re.compile(r"(?<=[.!?])\s+", flags=re.UNICODE)
-_CONTRAST = re.compile(r";|,\s+(?:but|whereas|while)\s+", flags=re.IGNORECASE)
+_CONTRAST = re.compile(
+    r";|,\s+but\s+(?!instead,\s+should\b)|,\s+(?:whereas|while)\s+",
+    flags=re.IGNORECASE,
+)
 _ABSOLUTE_REQUEST = re.compile(
     r"\b(?:always|guarantee(?:d|s)?|perfect(?:ly)?|certain(?:ly)?|never fails?)\b",
     flags=re.IGNORECASE,
@@ -73,7 +78,10 @@ _OPPOSITION_TERMS = frozenset(
     {"cannot", "failed", "fails", "no", "not", "unlikely", "without"}
 )
 _RESULT_CUE = re.compile(
-    r"\b(?:our results?|(?:this|the) study shows|we (?:conclude|demonstrate|found|show|have shown)|results? (?:confirm|indicate|support)|can exceed|provided? the best|highest)\b",
+    r"\b(?:our results?|(?:this|the) study shows|these (?:results|specimens)|"
+    r"we (?:conclude|demonstrate|found|observed|show|were unable|have shown)|"
+    r"results? (?:confirm|indicate|support)|can exceed|provided? the best|highest|"
+    r"oldest .{0,32} sequenced)\b",
     flags=re.IGNORECASE,
 )
 _AIM_CUE = re.compile(
@@ -81,7 +89,40 @@ _AIM_CUE = re.compile(
     flags=re.IGNORECASE,
 )
 _BACKGROUND_CUE = re.compile(
-    r"(?:\[[ ]*\d+[ ]*\]\s+(?:demonstrate|show)|has (?:recently |previously )?been (?:demonstrated|shown))",
+    r"(?:\[[ ]*\d+[ ]*\]\s+(?:demonstrate|show)|"
+    r"has (?:recently |previously )?been (?:demonstrated|shown)|"
+    r"(?:conference|opinion piece)\b|first major study|^for context\b|"
+    r"^the recent .{0,80}\bdemonstrated\b)",
+    flags=re.IGNORECASE,
+)
+_SETUP_CUE = re.compile(
+    r"\b(?:to address (?:this|these) (?:issue|issues)|"
+    r"(?:comparative )?(?:analysis|experiment|study) was designed to|"
+    r"(?:we|this study) (?:investigate|investigated) whether|"
+    r"(?:an?\s+)?(?:original )?goal(?: of (?:this|the) study)? (?:is|was)|"
+    r"raises? the question (?:of|whether)|"
+    r"no standardized protocol has emerged)\b",
+    flags=re.IGNORECASE,
+)
+_DECISIVE_CUE = re.compile(
+    r"\b(?:cannot|could not|did not|failed to|indistinguishable|"
+    r"in no instance|need not|not (?:necessary|reliable|sufficient)|"
+    r"recommend(?:ed|s)?|should|solely|alone)\b",
+    flags=re.IGNORECASE,
+)
+_RECOMMENDATION_CUE = re.compile(
+    r"\b(?:case-by-case|need not|ought to|recommend(?:ed|s)?|should)\b",
+    flags=re.IGNORECASE,
+)
+_COMPARISON_CUE = re.compile(
+    r"\b(?:agree(?:d|ment)?|compar(?:e|ed|ing)|differ(?:ed|ence)?|identical|"
+    r"same|versus|relative to|higher|lower|exceed(?:ed|s)?)\b",
+    flags=re.IGNORECASE,
+)
+_METHOD_CUE = re.compile(
+    r"\b(?:analys(?:e|ed|is)|assay(?:ed)?|clon(?:e|ed|ing)|"
+    r"extract(?:ed|ion)?|libraries|library|protocol|replicat(?:e|ed|ion)|"
+    r"sequenc(?:e|ed|ing)|test(?:ed)?)\b",
     flags=re.IGNORECASE,
 )
 _NUMBER = re.compile(
@@ -114,6 +155,40 @@ _QUESTION_CONCEPTS: tuple[tuple[frozenset[str], frozenset[str]], ...] = (
     (
         frozenset({"caveat", "limitation", "limitations"}),
         frozenset({"although", "but", "however", "less", "low", "lower", "while"}),
+    ),
+    (
+        frozenset({"authenticate", "authenticating", "authentication"}),
+        frozenset(
+            {
+                "authentic",
+                "authenticity",
+                "authenticate",
+                "authentication",
+                "distinguish",
+                "distinguished",
+                "evidence",
+            }
+        ),
+    ),
+    (
+        frozenset({"replication", "replications", "replicate", "replicates"}),
+        frozenset({"independent", "platform", "platforms", "replicate", "replicates"}),
+    ),
+    (
+        frozenset({"signal", "signals"}),
+        frozenset({"evidence", "hallmark", "hallmarks", "junction", "junctions", "specificity"}),
+    ),
+    (
+        frozenset({"specimen", "specimens", "material", "materials"}),
+        frozenset({"material", "materials", "sample", "samples", "source", "sources", "specimen", "specimens"}),
+    ),
+    (
+        frozenset({"history", "preservation", "preserved"}),
+        frozenset({"age", "aged", "date", "dated", "preserved", "stored", "years"}),
+    ),
+    (
+        frozenset({"analysis", "analyses", "possible"}),
+        frozenset({"analysis", "analyses", "feasible", "genomic", "metagenomic", "profile", "profiles"}),
     ),
 )
 _GENERIC_QUESTION_TERMS = frozenset(
@@ -198,6 +273,33 @@ def _terms(text: str) -> frozenset[str]:
     return frozenset(match.group().casefold() for match in _TERM.finditer(text))
 
 
+class SemanticEmbeddingBatch(Protocol):
+    """Embedding result required by credential-free semantic ranking."""
+
+    @property
+    def vectors(self) -> tuple[tuple[float, ...], ...]:
+        """Return vectors in request order."""
+        ...
+
+    @property
+    def model_lock_id(self) -> str:
+        """Return the immutable model identity used for the batch."""
+        ...
+
+
+class SemanticEmbeddingService(Protocol):
+    """Locked local embedding behavior without an Index package dependency."""
+
+    @property
+    def model_lock_id(self) -> str:
+        """Return the immutable local model identity."""
+        ...
+
+    def embed(self, texts: Sequence[str]) -> SemanticEmbeddingBatch:
+        """Embed non-empty text in caller order."""
+        ...
+
+
 class SynthesisStyle(StrEnum):
     """Explicit rhetorical shape selected by the caller's question class."""
 
@@ -233,8 +335,10 @@ class CredentialFreeSynthesisPolicy(StableModel):
     max_points: int = 4
     required_sources: int = 2
     minimum_query_term_overlap: int = 1
+    minimum_semantic_similarity: float = 0.25
     semantic_duplicate_threshold: float = 0.8
     retain_cross_source_corroboration: bool = False
+    semantic_encoder_id: str | None = None
     method: str = "credential-free-constrained-synthesis-v3"
 
     @field_validator("max_points", "required_sources")
@@ -258,12 +362,24 @@ class CredentialFreeSynthesisPolicy(StableModel):
             raise ValueError("semantic duplicate threshold must be within (0, 1]")
         return value
 
+    @field_validator("minimum_semantic_similarity")
+    @classmethod
+    def _validate_semantic_threshold(cls, value: float) -> float:
+        if not 0 <= value <= 1:
+            raise ValueError("minimum semantic similarity must be within [0, 1]")
+        return value
+
     @field_validator("method")
     @classmethod
     def _validate_method(cls, value: str) -> str:
         if not value.strip():
             raise ValueError("synthesis method must not be empty")
         return value
+
+    @field_validator("semantic_encoder_id")
+    @classmethod
+    def _validate_semantic_encoder_id(cls, value: str | None) -> str | None:
+        return None if value is None else _require_artifact_id(value)
 
     @property
     def artifact_id(self) -> str:
@@ -288,6 +404,9 @@ class ExtractiveSynthesisPoint(StableModel):
     retrieval_rank: int
     extraction_score: int
     query_term_overlap: int
+    semantic_similarity: float | None = None
+    semantic_need_similarities: tuple[float, ...] = ()
+    semantic_need_term_overlaps: tuple[int, ...] = ()
     role: EvidenceRole
     atomicity_basis: str = "single-sentence-or-contrast-clause"
 
@@ -331,8 +450,42 @@ class ExtractiveSynthesisPoint(StableModel):
             raise ValueError("synthesis point retrieval rank must be positive")
         return value
 
+    @field_validator("semantic_similarity")
+    @classmethod
+    def _validate_semantic_similarity(cls, value: float | None) -> float | None:
+        if value is not None and (not math.isfinite(value) or not -1 <= value <= 1):
+            raise ValueError("semantic similarity must be finite and within [-1, 1]")
+        return value
+
+    @field_validator("semantic_need_similarities")
+    @classmethod
+    def _validate_semantic_need_similarities(
+        cls, value: tuple[float, ...]
+    ) -> tuple[float, ...]:
+        if any(not math.isfinite(item) or not -1 <= item <= 1 for item in value):
+            raise ValueError("semantic need similarities must be within [-1, 1]")
+        return value
+
+    @field_validator("semantic_need_term_overlaps")
+    @classmethod
+    def _validate_semantic_need_term_overlaps(
+        cls, value: tuple[int, ...]
+    ) -> tuple[int, ...]:
+        if any(item < 0 for item in value):
+            raise ValueError("semantic need term overlaps must not be negative")
+        return value
+
     @model_validator(mode="after")
     def _validate_identities(self) -> Self:
+        if self.semantic_similarity is None:
+            if self.semantic_need_similarities or self.semantic_need_term_overlaps:
+                raise ValueError("lexical synthesis points cannot carry semantic needs")
+        elif (
+            not self.semantic_need_similarities
+            or len(self.semantic_need_similarities)
+            != len(self.semantic_need_term_overlaps)
+        ):
+            raise ValueError("semantic synthesis point need scores must align")
         if hashlib.sha256(self.statement.encode()).hexdigest() != self.statement_sha256:
             raise ValueError("statement does not match statement_sha256")
         if hashlib.sha256(self.quote.encode()).hexdigest() != self.quote_sha256:
@@ -411,8 +564,21 @@ class CredentialFreeSynthesis(StableModel):
 class CredentialFreeSynthesizer:
     """Create useful source-attributed synthesis without providers or credentials."""
 
-    def __init__(self, policy: CredentialFreeSynthesisPolicy | None = None) -> None:
+    def __init__(
+        self,
+        policy: CredentialFreeSynthesisPolicy | None = None,
+        *,
+        semantic_encoder: SemanticEmbeddingService | None = None,
+    ) -> None:
         self._policy = policy or CredentialFreeSynthesisPolicy()
+        self._semantic_encoder = semantic_encoder
+        actual_encoder_id = (
+            None if semantic_encoder is None else semantic_encoder.model_lock_id
+        )
+        if self._policy.semantic_encoder_id != actual_encoder_id:
+            raise ValueError(
+                "synthesis policy semantic encoder identity does not match composition"
+            )
 
     def synthesize(
         self,
@@ -492,6 +658,10 @@ class CredentialFreeSynthesizer:
         evidence: tuple[CitationEvidence, ...],
         style: SynthesisStyle,
     ) -> tuple[ExtractiveSynthesisPoint, ...]:
+        prose_evidence = tuple(
+            item for item in evidence if not _standalone_fragment(item.exact_text)
+        )
+        selected_evidence = prose_evidence or evidence
         candidates = tuple(
             self._point(
                 evidence=item,
@@ -499,12 +669,31 @@ class CredentialFreeSynthesizer:
                 question=question,
                 style=style,
             )
-            for item in evidence
+            for item in selected_evidence
             for clause in _ranked_clauses(question, item.exact_text)
         )
-        if (
-            style is not SynthesisStyle.methods_comparison
-            and not (_terms(question) & _METHOD_TERMS)
+        candidates = self._semantic_rescore(question, candidates)
+        candidates = tuple(item for item in candidates if "?" not in item.statement)
+        sources_with_answer_bearing_clauses = {
+            item.source_id
+            for item in candidates
+            if not _background_or_setup(item.statement)
+        }
+        candidates = tuple(
+            item
+            for item in candidates
+            if not _background_or_setup(item.statement)
+            or item.source_id not in sources_with_answer_bearing_clauses
+        )
+        method_request_terms = _METHOD_TERMS | {
+            "experimental",
+            "specimen",
+            "specimens",
+            "tissue",
+            "tissues",
+        }
+        if style is not SynthesisStyle.methods_comparison and not (
+            _terms(question) & method_request_terms
         ):
             sources_with_nonmethod_evidence = {
                 item.source_id
@@ -517,7 +706,7 @@ class CredentialFreeSynthesizer:
                 if item.role is not EvidenceRole.method
                 or item.source_id not in sources_with_nonmethod_evidence
             )
-        if not re.search(
+        if self._policy.required_sources > 1 and not re.search(
             r"\b(?:and|both|caveat|conflict|limitation|limitations|versus)\b",
             question,
             flags=re.IGNORECASE,
@@ -540,7 +729,16 @@ class CredentialFreeSynthesizer:
         if not (_terms(question) - _GENERIC_QUESTION_TERMS):
             minimum_overlap = 0
         relevant = tuple(
-            item for item in candidates if item.query_term_overlap >= minimum_overlap
+            item
+            for item in candidates
+            if item.query_term_overlap >= minimum_overlap
+            or _need_term_overlap(question, item.statement) >= minimum_overlap
+            or (
+                item.semantic_similarity is not None
+                and item.semantic_similarity
+                >= self._policy.minimum_semantic_similarity
+            )
+            or any(item.semantic_need_term_overlaps)
         )
         if _ABSOLUTE_REQUEST.search(question) and not _supports_absolute_request(
             question,
@@ -557,13 +755,48 @@ class CredentialFreeSynthesizer:
                 item.artifact_id,
             ),
         )
-        diverse = []
-        seen_sources: set[str] = set()
-        for item in ranked:
-            if item.source_id not in seen_sources:
-                diverse.append(item)
-                seen_sources.add(item.source_id)
-        diverse.extend(item for item in ranked if item not in diverse)
+        semantic_frontier: list[ExtractiveSynthesisPoint] = []
+        if self._semantic_encoder is not None and ranked:
+            need_count = len(ranked[0].semantic_need_similarities)
+            for need_index in range(need_count):
+                best = max(
+                    ranked,
+                    key=lambda item: (
+                        round(
+                            item.semantic_need_term_overlaps[need_index] * 10
+                            + item.semantic_need_similarities[need_index] * 100
+                            + item.extraction_score,
+                            9,
+                        ),
+                        item.semantic_need_term_overlaps[need_index],
+                        item.semantic_need_similarities[need_index],
+                        item.extraction_score,
+                        -item.retrieval_rank,
+                    ),
+                )
+                if (
+                    (
+                        best.semantic_need_term_overlaps[need_index] > 0
+                        or best.semantic_need_similarities[need_index]
+                        >= self._policy.minimum_semantic_similarity
+                    )
+                    and best not in semantic_frontier
+                ):
+                    semantic_frontier.append(best)
+        ordered = [
+            *semantic_frontier,
+            *(item for item in ranked if item not in semantic_frontier),
+        ]
+        diverse: list[ExtractiveSynthesisPoint] = []
+        if self._policy.required_sources > 1:
+            seen_sources: set[str] = set()
+            for item in ordered:
+                if item.source_id not in seen_sources:
+                    diverse.append(item)
+                    seen_sources.add(item.source_id)
+            diverse.extend(item for item in ordered if item not in diverse)
+        else:
+            diverse.extend(ordered)
         selected: list[ExtractiveSynthesisPoint] = []
         for item in diverse:
             if any(
@@ -583,6 +816,35 @@ class CredentialFreeSynthesizer:
             if len(selected) >= self._policy.max_points:
                 break
         return tuple(selected)
+
+    def _semantic_rescore(
+        self,
+        question: str,
+        candidates: tuple[ExtractiveSynthesisPoint, ...],
+    ) -> tuple[ExtractiveSynthesisPoint, ...]:
+        if self._semantic_encoder is None or not candidates:
+            return candidates
+        needs = _semantic_needs(question)
+        batch = self._semantic_encoder.embed(
+            (*needs, *(candidate.statement for candidate in candidates))
+        )
+        if batch.model_lock_id != self._policy.semantic_encoder_id:
+            raise ValueError("semantic embedding batch model identity drifted")
+        if len(batch.vectors) != len(candidates) + len(needs):
+            raise ValueError("semantic embedding output count does not match input")
+        need_vectors = batch.vectors[: len(needs)]
+        candidate_vectors = batch.vectors[len(needs) :]
+        return tuple(
+            _with_semantic_similarity(
+                candidate,
+                tuple(_cosine_similarity(need, vector) for need in need_vectors),
+                tuple(
+                    _need_term_overlap(need, candidate.statement)
+                    for need in needs
+                ),
+            )
+            for candidate, vector in zip(candidates, candidate_vectors, strict=True)
+        )
 
     @staticmethod
     def _point(
@@ -609,7 +871,8 @@ class CredentialFreeSynthesizer:
             + _role_bonus(role, style)
             + _answer_value_score(question, statement, role)
             + _projection_bonus(projection)
-            + _projection_reference_bonus(projection, evidence.exact_text),
+            + _projection_reference_bonus(projection, evidence.exact_text)
+            + _evidence_shape_score(quote, evidence.exact_text),
         )
         payload = {
             "statement": statement,
@@ -624,6 +887,9 @@ class CredentialFreeSynthesizer:
             "retrieval_rank": evidence.rank,
             "extraction_score": score,
             "query_term_overlap": overlap,
+            "semantic_similarity": None,
+            "semantic_need_similarities": (),
+            "semantic_need_term_overlaps": (),
             "role": role.value,
             "atomicity_basis": f"conservative-projection:{projection.method.value}",
         }
@@ -641,6 +907,9 @@ class CredentialFreeSynthesizer:
             retrieval_rank=evidence.rank,
             extraction_score=score,
             query_term_overlap=overlap,
+            semantic_similarity=None,
+            semantic_need_similarities=(),
+            semantic_need_term_overlaps=(),
             role=role,
             atomicity_basis=f"conservative-projection:{projection.method.value}",
         )
@@ -786,15 +1055,167 @@ def _semantically_duplicate(
         return True
     if first.source_id != second.source_id:
         return False
+    first_terms = _terms(first.statement) - _DUPLICATE_STOPWORDS
+    second_terms = _terms(second.statement) - _DUPLICATE_STOPWORDS
+    shorter, longer = sorted((first_terms, second_terms), key=len)
+    if shorter and len(shorter & longer) / len(shorter) >= 0.8:
+        return True
     first_numbers = frozenset(_NUMBER.findall(first.statement.casefold()))
     second_numbers = frozenset(_NUMBER.findall(second.statement.casefold()))
     if not first_numbers & second_numbers:
         return False
-    first_facts = _terms(first.statement) - _DUPLICATE_STOPWORDS
-    second_facts = _terms(second.statement) - _DUPLICATE_STOPWORDS
-    shared = first_facts & second_facts
-    union = first_facts | second_facts
+    shared = first_terms & second_terms
+    union = first_terms | second_terms
     return len(shared) >= 5 and len(shared) / len(union) >= 0.2
+
+
+def _cosine_similarity(
+    first: tuple[float, ...],
+    second: tuple[float, ...],
+) -> float:
+    if not first or len(first) != len(second):
+        raise ValueError("semantic embedding vectors must be non-empty and aligned")
+    if any(not math.isfinite(value) for value in (*first, *second)):
+        raise ValueError("semantic embedding vectors must be finite")
+    first_norm = math.sqrt(sum(value * value for value in first))
+    second_norm = math.sqrt(sum(value * value for value in second))
+    if first_norm == 0 or second_norm == 0:
+        raise ValueError("semantic embedding vectors must have non-zero norm")
+    measured = sum(left * right for left, right in zip(first, second, strict=True)) / (
+        first_norm * second_norm
+    )
+    return max(-1.0, min(1.0, measured))
+
+
+def _with_semantic_similarity(
+    point: ExtractiveSynthesisPoint,
+    need_similarities: tuple[float, ...],
+    need_term_overlaps: tuple[int, ...],
+) -> ExtractiveSynthesisPoint:
+    similarity = max(need_similarities)
+    payload = point.model_dump(mode="json", exclude={"artifact_id"})
+    payload["semantic_similarity"] = similarity
+    payload["semantic_need_similarities"] = need_similarities
+    payload["semantic_need_term_overlaps"] = need_term_overlaps
+    payload["extraction_score"] = point.extraction_score + max(
+        0, round(similarity * 120)
+    )
+    return ExtractiveSynthesisPoint(
+        artifact_id=_artifact_id(payload),
+        **payload,
+    )
+
+
+def _lexical_concepts(text: str) -> frozenset[str]:
+    concepts = set()
+    for term in _terms(text) - _DUPLICATE_STOPWORDS:
+        for suffix in ("ing", "ed", "es", "s"):
+            if term.endswith(suffix) and len(term) > len(suffix) + 3:
+                term = term[: -len(suffix)]
+                break
+        concepts.add(term)
+    return frozenset(concepts)
+
+
+def _need_term_overlap(need: str, statement: str) -> int:
+    need_terms = _terms(need)
+    statement_terms = _terms(statement)
+    score = len(_lexical_concepts(need) & _lexical_concepts(statement))
+    for triggers, expressions in _QUESTION_CONCEPTS:
+        if need_terms & triggers and statement_terms & expressions:
+            score += 1
+    if need_terms & {"amount", "quantitative", "quantity"} and _NUMBER.search(
+        statement
+    ):
+        score += 2
+    return score
+
+
+def _semantic_needs(question: str) -> tuple[str, ...]:
+    """Derive general coordinated evidence needs without corpus-specific labels."""
+
+    normalized = " ".join(question.strip().rstrip("?").split())
+    clauses = tuple(
+        part.strip()
+        for part in re.split(
+            r"\s*;\s*|,?\s+and\s+(?=(?:how|what|where|which|why)\b)",
+            normalized,
+            flags=re.IGNORECASE,
+        )
+        if part.strip()
+    )
+    needs: list[str] = []
+    topic_context = clauses[0] if len(clauses) > 1 else None
+    for clause_index, clause in enumerate(clauses):
+        expanded = _coordinated_question_needs(clause)
+        for need in expanded:
+            if clause_index > 0 and topic_context is not None:
+                need = f"{need} in relation to {topic_context}"
+            needs.append(need)
+    across = re.search(
+        r"\bacross\s+(?P<items>.+?),\s+(?P<predicate>(?:how|what|where|which|why)\b.+)$",
+        normalized,
+        flags=re.IGNORECASE,
+    )
+    if across is not None:
+        needs = [
+            f"{item} {across.group('predicate')}"
+            for item in _split_coordinated_items(across.group("items"))
+        ]
+    based_on = re.search(r"\bbased on (?P<items>.+)$", normalized, re.IGNORECASE)
+    if based_on is not None:
+        prefix = normalized[: based_on.start()].strip(" ,")
+        needs.extend(
+            f"{prefix} based on {item}"
+            for item in _split_coordinated_items(based_on.group("items"))
+        )
+    return tuple(dict.fromkeys(need for need in needs if need)) or (normalized,)
+
+
+def _coordinated_question_needs(clause: str) -> tuple[str, ...]:
+    study_list = re.match(
+        r"^(?:how|what|why)\s+do\s+(?:the\s+)?(?P<items>.+?)\s+"
+        r"(?P<collective>articles|papers|sources|studies)\s+(?P<predicate>.+)$",
+        clause,
+        flags=re.IGNORECASE,
+    )
+    if study_list is not None:
+        items = _split_coordinated_items(study_list.group("items"))
+        if len(items) > 1:
+            collective = study_list.group("collective")
+            singular = collective[:-1] if collective.endswith("s") else collective
+            return tuple(
+                f"{item} {singular} {study_list.group('predicate')}" for item in items
+            )
+    requested_slots = re.match(
+        r"^(?:how|what|where|which|why)\s+(?P<items>.+?)\s+"
+        r"(?P<verb>are|bounded|did|does|is|produced|remained|reported|"
+        r"supported|was|were)\b(?P<predicate>.*)$",
+        clause,
+        flags=re.IGNORECASE,
+    )
+    if requested_slots is None:
+        return (clause,)
+    items = _split_coordinated_items(requested_slots.group("items"))
+    if len(items) <= 1:
+        return (clause,)
+    verb = requested_slots.group("verb")
+    predicate = requested_slots.group("predicate").strip()
+    return tuple(
+        " ".join(part for part in (item, verb, predicate) if part) for item in items
+    )
+
+
+def _split_coordinated_items(value: str) -> tuple[str, ...]:
+    return tuple(
+        item.strip()
+        for item in re.split(
+            r",\s*(?:and\s+|or\s+)?|\s+(?:and|or)\s+",
+            value,
+            flags=re.IGNORECASE,
+        )
+        if item.strip()
+    )
 
 
 def _supports_absolute_request(question: str, statements: tuple[str, ...]) -> bool:
@@ -846,6 +1267,32 @@ def _projection_reference_bonus(
         return 0
     label = " ".join(projection.statement.casefold().split()[:2])
     return reference_text.casefold().count(label) * 10
+
+
+def _evidence_shape_score(quote: str, reference_text: str) -> int:
+    """Demote standalone headings and glossary fragments without hiding them."""
+
+    normalized = " ".join(quote.split())
+    if normalized != " ".join(reference_text.split()):
+        return 0
+    terms = _terms(normalized) - _DUPLICATE_STOPWORDS
+    if len(terms) <= 4 or (len(terms) <= 16 and normalized[-1:] not in {".", "!", "?"}):
+        return -64
+    return 0
+
+
+def _background_or_setup(statement: str) -> bool:
+    return bool(
+        _AIM_CUE.search(statement)
+        or _SETUP_CUE.search(statement)
+        or _BACKGROUND_CUE.search(statement)
+    )
+
+
+def _standalone_fragment(statement: str) -> bool:
+    normalized = " ".join(statement.split())
+    terms = _terms(normalized) - _DUPLICATE_STOPWORDS
+    return len(terms) <= 16 and normalized[-1:] not in {".", "!", "?"}
 
 
 def _evidence_role(text: str, section_path: tuple[str, ...]) -> EvidenceRole:
@@ -901,17 +1348,80 @@ def _answer_value_score(question: str, statement: str, role: EvidenceRole) -> in
     for triggers, expressions in _QUESTION_CONCEPTS:
         if question_terms & triggers and statement_terms & expressions:
             score += 8
-    if question_terms & {"quantitative", "amount", "advantage", "difference"}:
-        if _NUMBER.search(statement):
-            score += 8
+    if question_terms & {
+        "quantitative",
+        "amount",
+        "advantage",
+        "difference",
+    } and _NUMBER.search(statement):
+        score += 8
     if _RESULT_CUE.search(statement):
         score += 14
+    if _DECISIVE_CUE.search(statement):
+        score += 18
+    if question_terms & {
+        "recommend",
+        "recommended",
+        "recommendation",
+        "should",
+    } and _RECOMMENDATION_CUE.search(statement):
+        score += 28
+    if question_terms & {"necessary", "necessity", "whether"} and (
+        _DECISIVE_CUE.search(statement) or _COMPARISON_CUE.search(statement)
+    ):
+        score += 22
+    if question_terms & {"test", "tested", "how"} and (
+        _COMPARISON_CUE.search(statement) and _METHOD_CUE.search(statement)
+    ):
+        score += 20
+    if question_terms & {
+        "prove",
+        "proof",
+        "authenticate",
+        "authenticating",
+        "distinguish",
+    } and re.search(
+        r"\b(?:alone|cannot|indistinguishable|not reliable|not sufficient|solely)\b",
+        statement,
+        flags=re.IGNORECASE,
+    ):
+        score += 120
+    if question_terms & {
+        "oldest",
+        "earliest",
+        "latest",
+        "newest",
+    } and _NUMBER.search(statement):
+        score += 18
+    if question_terms & {"imply", "implication", "conclusion"} and (
+        _RESULT_CUE.search(statement)
+        or re.search(
+            r"\b(?:conclusion|conclude|therefore)\b", statement, re.IGNORECASE
+        )
+    ):
+        score += 18
+    if question_terms & {"limit", "limits", "limitation", "limitations"} and (
+        role in {EvidenceRole.limitation, EvidenceRole.counterevidence}
+        or re.search(
+            r"\b(?:below|caution|lower than|remain(?:s|ed)? to be determined|"
+            r"unresolved)\b",
+            statement,
+            flags=re.IGNORECASE,
+        )
+    ):
+        score += 24
+    if "why" in question_terms and re.search(
+        r"\b(?:because|cannot|due to|indistinguishable|so|therefore)\b",
+        statement,
+        flags=re.IGNORECASE,
+    ):
+        score += 18
     if _AIM_CUE.search(statement):
         score -= 36
+    if _SETUP_CUE.search(statement):
+        score -= 34
     if _BACKGROUND_CUE.search(statement):
-        score -= 12
-    if "petrous" in question_terms and "non-petrous" in statement.casefold():
-        score -= 12
+        score -= 24
     if role is EvidenceRole.context:
         score -= 4
     return score
@@ -948,6 +1458,19 @@ def required_source_count(question: str) -> int:
     enumerated = _across_enumeration_count(normalized)
     if enumerated >= 2:
         return enumerated
+    based_on = re.search(
+        r"\bbased on (?P<items>[^?]+)", normalized, flags=re.IGNORECASE
+    )
+    if based_on is not None:
+        items = re.split(
+            r",\s*(?:and\s+|or\s+)?|\s+(?:and|or)\s+",
+            based_on.group("items"),
+        )
+        count = len(tuple(item for item in items if item.strip()))
+        if count >= 2:
+            return min(6, count)
+    if re.search(r"\b[^,?]+\s+and\s+[^,?]+\s+studies\b", normalized):
+        return 2
     cross_source = (
         re.search(r"\bacross\b.*\b(?:papers|sources|studies|articles)\b", normalized)
         or re.search(r"\b(?:papers|sources|studies|articles)\b.*\bacross\b", normalized)
@@ -956,6 +1479,16 @@ def required_source_count(question: str) -> int:
         )
         or re.search(
             r"\bcompare\b.*\b(?:papers|sources|studies|articles)\b", normalized
+        )
+        or re.search(
+            r"\b(?:combine|disagree|reconcile)\b.*"
+            r"\b(?:papers|sources|studies|articles)\b",
+            normalized,
+        )
+        or re.search(
+            r"\b(?:papers|sources|studies|articles)\b.*"
+            r"\b(?:combine|disagree|reconcile)\b",
+            normalized,
         )
     )
     return 2 if cross_source else 1
@@ -967,7 +1500,7 @@ def recommended_point_count(question: str) -> int:
     sources = required_source_count(question)
     requested_terms = _terms(question)
     limitation_allowance = (
-        1
+        2
         if sources > 1
         and requested_terms & {"caveat", "limit", "limits", "limitation", "limitations"}
         else 0
@@ -993,6 +1526,8 @@ __all__ = [
     "CredentialFreeSynthesizer",
     "EvidenceRole",
     "ExtractiveSynthesisPoint",
+    "SemanticEmbeddingBatch",
+    "SemanticEmbeddingService",
     "SynthesisOutcome",
     "SynthesisStyle",
     "infer_synthesis_style",

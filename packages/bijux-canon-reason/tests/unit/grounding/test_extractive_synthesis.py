@@ -4,6 +4,8 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
+from dataclasses import dataclass
 import hashlib
 
 from pydantic import ValidationError
@@ -14,10 +16,10 @@ from bijux_canon_reason.grounding import (
     CredentialFreeSynthesis,
     CredentialFreeSynthesisPolicy,
     CredentialFreeSynthesizer,
-    EvidenceRole,
     EvidencePacket,
     EvidencePacketBuilder,
     EvidencePacketPolicy,
+    EvidenceRole,
     ImmutableEvidenceLocator,
     SynthesisOutcome,
     SynthesisStyle,
@@ -74,6 +76,54 @@ def _packet(*evidence: CitationEvidence) -> EvidencePacket:
         retrieval_trace_artifact_ids=(_artifact("trace"),),
         candidates=tuple(evidence),
     )
+
+
+@dataclass(frozen=True)
+class _SemanticBatch:
+    vectors: tuple[tuple[float, ...], ...]
+    model_lock_id: str
+
+
+class _SemanticEncoder:
+    model_lock_id = _artifact("semantic-encoder")
+
+    def embed(self, texts: Sequence[str]) -> _SemanticBatch:
+        vectors = []
+        for index, text in enumerate(texts):
+            if index == 0 or "identical" in text:
+                vectors.append((1.0, 0.0))
+            else:
+                vectors.append((0.0, 1.0))
+        return _SemanticBatch(tuple(vectors), self.model_lock_id)
+
+
+def test_locked_semantic_ranking_selects_the_answer_bearing_clause() -> None:
+    encoder = _SemanticEncoder()
+    policy = CredentialFreeSynthesisPolicy(
+        max_points=1,
+        required_sources=1,
+        semantic_encoder_id=encoder.model_lock_id,
+    )
+    result = CredentialFreeSynthesizer(
+        policy,
+        semantic_encoder=encoder,
+    ).synthesize(
+        question="What outcome did the experiment report?",
+        evidence_packet=_packet(
+            _evidence(
+                "semantic-outcome",
+                "The experiment was designed to compare two workflows. "
+                "The measured consensus was identical between the workflows.",
+            )
+        ),
+    )
+
+    assert len(result.points) == 1
+    assert result.points[0].statement == (
+        "The measured consensus was identical between the workflows."
+    )
+    assert result.points[0].semantic_similarity == 1.0
+    assert result.synthesis_policy_artifact_id == policy.artifact_id
 
 
 def test_multi_source_synthesis_is_attributed_and_not_a_top_chunk_copy() -> None:
@@ -174,6 +224,175 @@ def test_answer_bearing_results_outrank_study_aims_and_background() -> None:
     )
 
 
+def test_source_question_cannot_enter_the_factual_claim_set() -> None:
+    result = CredentialFreeSynthesizer(
+        CredentialFreeSynthesisPolicy(max_points=1, required_sources=1)
+    ).synthesize(
+        question="Which material produced the highest yield?",
+        evidence_packet=_packet(
+            _evidence(
+                "source-question",
+                "Can the material produce a high yield? Part C produced the highest yield.",
+            )
+        ),
+    )
+
+    assert tuple(point.statement for point in result.points) == (
+        "Part C produced the highest yield.",
+    )
+
+
+def test_method_question_selects_observed_comparison_and_recommendation() -> None:
+    result = CredentialFreeSynthesizer(
+        CredentialFreeSynthesisPolicy(max_points=3, required_sources=1)
+    ).synthesize(
+        question=(
+            "How did the study test whether cloning was necessary for ancient-DNA "
+            "consensus sequences, and what did it recommend?"
+        ),
+        evidence_packet=_packet(
+            _evidence(
+                "comparison",
+                "To address this issue, a comparative study was designed to examine "
+                "both cloned and direct sequences from ancient DNA extracts. "
+                "Majority rules were used to generate clone consensus sequences. "
+                "In no instance did the consensus of clones differ from the direct "
+                "sequence. This study demonstrates that cloning need not be the "
+                "default method and should be used case-by-case.",
+            )
+        ),
+    )
+
+    statements = tuple(point.statement for point in result.points)
+    assert any("no instance" in item.casefold() for item in statements)
+    assert any(
+        "need not be the default" in item.casefold() and "case-by-case" in item
+        for item in statements
+    )
+    assert all("designed to examine" not in item for item in statements)
+
+
+def test_authentication_question_selects_current_signals_and_replication() -> None:
+    result = CredentialFreeSynthesizer(
+        CredentialFreeSynthesisPolicy(max_points=2, required_sources=1)
+    ).synthesize(
+        question=(
+            "Which experimental signals and replication choices supported "
+            "authentication of ancient RNA from the preserved specimen?"
+        ),
+        evidence_packet=_packet(
+            _evidence(
+                "rna-authentication",
+                "The recent qPCR approach demonstrated specificity in earlier "
+                "preserved tissues. Other hallmarks of the current RNA data, "
+                "including exon-exon junction presence and high endogenous rRNA "
+                "content, confirmed authenticity. Independent technical library "
+                "replicates used two high-throughput sequencing platforms and "
+                "retained the tissue-specific signal.",
+            )
+        ),
+    )
+
+    statements = tuple(point.statement for point in result.points)
+    assert any("exon-exon junction" in item for item in statements)
+    assert any("Independent technical library replicates" in item for item in statements)
+    assert all("recent qPCR" not in item for item in statements)
+
+
+def test_destructive_sampling_question_selects_outcomes_not_potential() -> None:
+    copal = _evidence(
+        "copal",
+        "Copal insects have potential value for molecular ecology. We were unable "
+        "to obtain convincing preserved insect DNA and found bacterial matches and "
+        "artefacts instead. Such archived samples are irreplaceable, so destructive "
+        "sampling is usually discouraged.",
+    )
+    snake = _evidence(
+        "ethanol",
+        "Old ethanol-preserved specimens yielded feasible genomic analyses and "
+        "tissue-specific metagenomic profiles despite damaged short molecules.",
+        rank=2,
+    )
+
+    result = CredentialFreeSynthesizer(
+        CredentialFreeSynthesisPolicy(max_points=3, required_sources=2)
+    ).synthesize(
+        question=(
+            "What do the copal-insect and ethanol-snake studies imply about "
+            "selecting irreplaceable museum specimens for destructive sampling?"
+        ),
+        evidence_packet=_packet(copal, snake),
+    )
+
+    statements = tuple(point.statement for point in result.points)
+    assert any("unable to obtain convincing" in item for item in statements)
+    assert any("feasible genomic analyses" in item for item in statements)
+    assert any("destructive sampling" in item for item in statements)
+    assert all("potential value" not in item for item in statements)
+
+
+def test_false_authentication_question_prefers_decisive_cross_source_limits() -> None:
+    result = CredentialFreeSynthesizer(
+        CredentialFreeSynthesisPolicy(max_points=3, required_sources=3)
+    ).synthesize(
+        question=(
+            "Given unknown handling history, how should a researcher combine the "
+            "studies' findings to avoid falsely authenticating ancient human DNA?"
+        ),
+        evidence_packet=_packet(
+            _evidence(
+                "handler",
+                "It is not reliable to authenticate ancient human DNA solely by "
+                "showing that it differs from expected handler profiles.",
+            ),
+            _evidence(
+                "fragmentation",
+                "Ancient genomes may still be recovered from temperate settings. "
+                "Contaminant and endogenous sequences cannot be distinguished by "
+                "fragmentation alone.",
+                rank=2,
+            ),
+            _evidence(
+                "cloning",
+                "Cloning need not be the default authentication method and should "
+                "be selected case by case.",
+                rank=3,
+            ),
+        ),
+    )
+
+    statements = tuple(point.statement for point in result.points)
+    assert any("expected handler profiles" in item for item in statements)
+    assert any("fragmentation alone" in item for item in statements), statements
+    assert any("Cloning need not be the default" in item for item in statements)
+    assert all("temperate settings" not in item for item in statements)
+
+
+def test_single_source_question_does_not_force_irrelevant_source_diversity() -> None:
+    result = CredentialFreeSynthesizer(
+        CredentialFreeSynthesisPolicy(max_points=2, required_sources=1)
+    ).synthesize(
+        question="Does DNA damage prove that a sequence is ancient?",
+        evidence_packet=_packet(
+            _evidence(
+                "direct",
+                "Bleach treatment created a fragmentation pattern in contaminant "
+                "sequences that was indistinguishable from endogenous sequences. "
+                "The results suggest that contaminant and endogenous sequences "
+                "cannot be distinguished by fragmentation alone.",
+            ),
+            _evidence(
+                "background",
+                "A conference published a list of authentication criteria.",
+                rank=2,
+            ),
+        ),
+    )
+
+    assert {point.source_id for point in result.points} == {"source-direct"}
+    assert any("fragmentation alone" in point.statement for point in result.points)
+
+
 def test_repeated_numeric_fact_from_one_source_is_not_repeated_in_answer() -> None:
     first = _evidence(
         "hot-primary",
@@ -232,7 +451,7 @@ def test_question_policy_is_general_and_identity_free() -> None:
         "ethanol-preserved specimens, what limits were reported?"
     )
     assert required_source_count(four_contexts) == 4
-    assert recommended_point_count(four_contexts) == 5
+    assert recommended_point_count(four_contexts) == 6
 
 
 def test_best_query_relevant_clause_retains_exact_source_span() -> None:

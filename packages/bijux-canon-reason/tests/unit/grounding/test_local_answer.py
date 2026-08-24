@@ -16,6 +16,7 @@ from bijux_canon_reason.grounding import (
     EvidencePacketBuilder,
     EvidencePacketPolicy,
     GroundingAdmissionOutcome,
+    GroundingRequestStatus,
     ImmutableEvidenceLocator,
     LocalGroundedAnswer,
     LocalGroundedAnswerService,
@@ -117,6 +118,35 @@ def test_local_answer_admits_exact_claims_with_complete_context() -> None:
     assert "Exact quote (sha256:" in result.answer_text
     assert "Locator: unicode-code-point(char_start=0" in result.answer_text
     assert f"Metadata provenance: {_artifact('metadata:alpha')}" in result.answer_text
+
+
+def test_categorical_proof_question_requires_clarified_evidence_scope() -> None:
+    result = _answer(
+        "Does DNA damage prove that a sequence is ancient?",
+        _evidence(
+            "damage",
+            "Contaminant and endogenous sequences cannot be distinguished by "
+            "fragmentation alone.",
+            1,
+        ),
+    )
+
+    assert result.outcome is GroundingAdmissionOutcome.abstained
+    assert (
+        result.admission.request_status is GroundingRequestStatus.clarification_required
+    )
+    assert result.admission.evidence_gaps[0].code.value == "clarification_required"
+    assert "Clarify the sample" in result.answer_text
+    assert result.admission.admitted_claim_artifact_ids == ()
+
+
+def test_scoped_binary_study_question_remains_answerable() -> None:
+    result = _answer(
+        "Does this study report DNA preservation?",
+        _evidence("study", "This study reports DNA preservation in bone.", 1),
+    )
+
+    assert result.outcome is GroundingAdmissionOutcome.admitted
 
 
 def test_local_answer_admits_a_reproducible_concise_projection() -> None:
@@ -229,7 +259,9 @@ def test_petrous_content_answer_separates_finding_from_cited_limitation() -> Non
     assert "65-fold" in result.answer_text
     assert "177-fold" in result.answer_text
     assert "below 1 percent" in result.answer_text
-    assert {context.presentation_role.value for context in result.contextualized.contexts} == {
+    assert {
+        context.presentation_role.value for context in result.contextualized.contexts
+    } == {
         "finding",
         "limitation",
     }
@@ -248,9 +280,9 @@ def test_real_supported_format_citations_round_trip_to_reviewed_source_truth(
     portfolio = repository / "examples" / "document-formats"
     truth = next(
         json.loads(line)
-        for line in (portfolio / "locator-truth.jsonl").read_text(
-            encoding="utf-8"
-        ).splitlines()
+        for line in (portfolio / "locator-truth.jsonl")
+        .read_text(encoding="utf-8")
+        .splitlines()
         if json.loads(line)["format_id"] == format_id
         and json.loads(line)["disposition"] == "verified_admitted"
     )
@@ -258,14 +290,16 @@ def test_real_supported_format_citations_round_trip_to_reviewed_source_truth(
         item["parser_source_id"]: item
         for item in (
             json.loads(line)
-            for line in (portfolio / "sources.jsonl").read_text(
-                encoding="utf-8"
-            ).splitlines()
+            for line in (portfolio / "sources.jsonl")
+            .read_text(encoding="utf-8")
+            .splitlines()
         )
     }
     source_record = sources[truth["parser_source_id"]]
     source_path = portfolio / truth["media_path"]
-    assert hashlib.sha256(source_path.read_bytes()).hexdigest() == truth["source_sha256"]
+    assert (
+        hashlib.sha256(source_path.read_bytes()).hexdigest() == truth["source_sha256"]
+    )
     selectors = tuple(truth["locator"].items())
     exact_text = truth["exact_text"]
     evidence = CitationEvidence(

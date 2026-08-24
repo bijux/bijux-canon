@@ -19,8 +19,8 @@ from bijux_canon_reason.grounding import (
     CitationSourceDescriptor,
     CitationVerificationPolicy,
     CitationVerificationReport,
-    ClaimCitationLinker,
     ClaimCitationLink,
+    ClaimCitationLinker,
     ClaimCitationSet,
     CredentialFreeSynthesizer,
     DeterministicCitationVerifier,
@@ -37,13 +37,37 @@ from bijux_canon_reason.grounding import (
     JsonHttpResponse,
     NormalizedClaimSet,
     OpenAICompatibleStructuredSynthesizer,
-    StructuredProviderConfiguration,
-    StructuredEntailmentDecision,
-    StructuredEntailmentVerifier,
     PacketCompleteness,
     RetrievalEvidenceStatus,
+    StructuredEntailmentDecision,
+    StructuredEntailmentVerifier,
+    StructuredProviderConfiguration,
     VexEvidenceStatus,
 )
+
+
+def test_verified_conservative_projection_has_full_admission_confidence() -> None:
+    claims, citations, report = _pipeline(
+        (
+            (
+                "Part C denotes the dense part within the otic capsule.",
+                "Three regions were sampled: trabecular bone (part A), cortical "
+                "bone (part B), and the dense part within the otic capsule (part C).",
+            ),
+        )
+    )
+
+    decision = GroundingAdmissionService().decide(
+        claim_set=claims,
+        citation_set=citations,
+        verification_report=report,
+    )
+
+    assert report.claims[0].assessments[0].rationale_code == (
+        "claim_is_verified_conservative_projection"
+    )
+    assert decision.outcome is GroundingAdmissionOutcome.admitted
+    assert decision.minimum_support_confidence == 1.0
 
 
 def _sha(value: str) -> str:
@@ -474,9 +498,7 @@ def test_material_opposition_forces_unresolved_conflict_abstention() -> None:
     claims, citations, report = _pipeline(
         ((supported, supported), (opposed, supported))
     )
-    assert EntailmentVerdict.opposition in {
-        item.verdict for item in report.claims
-    }
+    assert EntailmentVerdict.opposition in {item.verdict for item in report.claims}
 
     decision = GroundingAdmissionService().decide(
         claim_set=claims,

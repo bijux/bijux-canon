@@ -71,11 +71,11 @@ from bijux_canon_runtime.runtime.execution.retrieval_evaluation import (
     InstalledRetrievalEvaluationExecutor,
 )
 from bijux_canon_runtime.runtime.inspection import RuntimeRunInspector
-from bijux_canon_runtime.runtime.persistence.filesystem_payload_store import (
-    AtomicFilesystemArtifactPayloadStore,
-)
 from bijux_canon_runtime.runtime.persistence.authoritative_payload_store import (
     AuthoritativeArtifactPayloadStore,
+)
+from bijux_canon_runtime.runtime.persistence.filesystem_payload_store import (
+    AtomicFilesystemArtifactPayloadStore,
 )
 from bijux_canon_runtime.runtime.replay.models import ReplayNetworkPolicy
 from bijux_canon_runtime.runtime.replay.service import RuntimeReplayService
@@ -206,7 +206,7 @@ def compose_runtime_application_services(
                 vex_store_root=layout.vex_root,
                 policy=retrieval_policy,
             ),
-            CanonicalReasonOperationAdapter(),
+            CanonicalReasonOperationAdapter(semantic_encoder=embedding),
             CanonicalAgentOperationAdapter(
                 store=store,
                 index=index,

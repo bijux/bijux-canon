@@ -15,9 +15,9 @@ from bijux_canon_reason.grounding import (
     AtomicClaim,
     AtomicClaimNormalizer,
     AtomicClaimPolarity,
-    ClaimContentKind,
     CitationEvidence,
     ClaimConfidenceBasis,
+    ClaimContentKind,
     ClaimModality,
     ClaimNormalizationError,
     ClaimNormalizationErrorCode,
@@ -376,6 +376,17 @@ def test_question_is_not_admitted_as_a_falsifiable_claim() -> None:
         AtomicClaimNormalizer().normalize_provider(provider_result)
 
     assert caught.value.code is ClaimNormalizationErrorCode.candidate_not_falsifiable
+
+
+def test_coordinated_participle_stays_with_its_governing_claim() -> None:
+    statement = (
+        "The oldest RNA to have been sequenced and verified is over 700 years old."
+    )
+    provider_result, _ = _provider_result(statement, statement)
+
+    result = AtomicClaimNormalizer().normalize_provider(provider_result)
+
+    assert tuple(claim.statement for claim in result.claims) == (statement,)
 
 
 def test_insufficient_offline_synthesis_has_honest_empty_claim_set() -> None:

@@ -17,12 +17,12 @@ from bijux_canon_reason.grounding.citation_verification import (
     EvidenceEntailmentAssessment,
 )
 from bijux_canon_reason.grounding.claim_normalization import NormalizedClaimSet
+from bijux_canon_reason.grounding.evidence_packets import PacketCompleteness
 from bijux_canon_reason.grounding.evidence_state import (
     GroundingEvidenceState,
     RetrievalEvidenceStatus,
     VexEvidenceStatus,
 )
-from bijux_canon_reason.grounding.evidence_packets import PacketCompleteness
 from bijux_canon_reason.grounding.provider_contracts import (
     content_artifact_id,
     require_artifact_id,
@@ -33,6 +33,7 @@ class GroundingRequestStatus(StrEnum):
     """Pre-admission request or evidence condition established upstream."""
 
     in_scope = "in_scope"
+    clarification_required = "clarification_required"
     fabricated_entity = "fabricated_entity"
     out_of_scope = "out_of_scope"
     corrupt_evidence = "corrupt_evidence"
@@ -50,6 +51,7 @@ class EvidenceGapCode(StrEnum):
     """Stable reason and remediation class for an unadmitted claim or request."""
 
     fabricated_entity = "fabricated_entity"
+    clarification_required = "clarification_required"
     out_of_scope = "out_of_scope"
     integrity_failure = "integrity_failure"
     no_retrieved_evidence = "no_retrieved_evidence"
@@ -544,6 +546,11 @@ def _request_gap(
     status: GroundingRequestStatus,
 ) -> tuple[EvidenceGapCode, str, str]:
     return {
+        GroundingRequestStatus.clarification_required: (
+            EvidenceGapCode.clarification_required,
+            "The question is categorical but leaves the material scope or evidentiary standard unspecified.",
+            "Clarify the sample, preservation or treatment context, and the evidence standard before answering categorically.",
+        ),
         GroundingRequestStatus.fabricated_entity: (
             EvidenceGapCode.fabricated_entity,
             "The requested entity is not established by admitted evidence.",
@@ -583,11 +590,14 @@ def _derived_evidence_state(
 
 def _support_confidence(assessment: EvidenceEntailmentAssessment) -> float:
     structured = assessment.structured_decision
-    return (
-        assessment.claim_term_coverage
-        if structured is None
-        else structured.confidence
-    )
+    if structured is not None:
+        return structured.confidence
+    if assessment.rationale_code in {
+        "claim_is_exact_evidence_span",
+        "claim_is_verified_conservative_projection",
+    }:
+        return 1.0
+    return assessment.claim_term_coverage
 
 
 def _state_gap(state: GroundingEvidenceState) -> EvidenceGap | None:

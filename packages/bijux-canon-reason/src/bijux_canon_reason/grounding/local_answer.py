@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+import re
 from typing import Self
 
 from pydantic import field_validator, model_validator
@@ -13,6 +14,7 @@ from bijux_canon_reason.grounding.abstention import (
     GroundingAdmissionDecision,
     GroundingAdmissionOutcome,
     GroundingAdmissionService,
+    GroundingRequestStatus,
 )
 from bijux_canon_reason.grounding.citation_linking import (
     CitationSourceDescriptor,
@@ -56,6 +58,7 @@ from bijux_canon_reason.grounding.extractive_synthesis import (
     CredentialFreeSynthesisPolicy,
     CredentialFreeSynthesizer,
     EvidenceRole,
+    SemanticEmbeddingService,
     SynthesisStyle,
     infer_synthesis_style,
     recommended_point_count,
@@ -129,6 +132,13 @@ class LocalGroundedAnswer(StableModel):
 class LocalGroundedAnswerService:
     """Synthesize, verify, contextualize, and admit one closed evidence packet."""
 
+    def __init__(
+        self,
+        *,
+        semantic_encoder: SemanticEmbeddingService | None = None,
+    ) -> None:
+        self._semantic_encoder = semantic_encoder
+
     def answer(
         self,
         *,
@@ -139,6 +149,7 @@ class LocalGroundedAnswerService:
         evidence_state: GroundingEvidenceState | None = None,
         synthesis_style: SynthesisStyle | None = None,
         retain_cross_source_corroboration: bool = False,
+        request_status: GroundingRequestStatus | None = None,
     ) -> LocalGroundedAnswer:
         """Execute the deterministic provider-free answer workflow."""
 
@@ -158,10 +169,14 @@ class LocalGroundedAnswerService:
             CredentialFreeSynthesisPolicy(
                 max_points=min(max_points, recommended_point_count(question)),
                 required_sources=required_source_count(question),
-                retain_cross_source_corroboration=(
-                    retain_cross_source_corroboration
+                retain_cross_source_corroboration=(retain_cross_source_corroboration),
+                semantic_encoder_id=(
+                    None
+                    if self._semantic_encoder is None
+                    else self._semantic_encoder.model_lock_id
                 ),
-            )
+            ),
+            semantic_encoder=self._semantic_encoder,
         ).synthesize(
             question=question,
             evidence_packet=evidence_packet,
@@ -184,6 +199,7 @@ class LocalGroundedAnswerService:
             claim_set=claims,
             citation_set=citations,
             verification_report=verification,
+            request_status=request_status or _request_status(question),
             evidence_state=effective_evidence_state,
         )
         contextualized = self._contextualize(
@@ -296,9 +312,7 @@ class LocalGroundedAnswerService:
             if roles_by_claim[claim.artifact_id]
             is ClaimPresentationRole.counterevidence
         )
-        explicit_polarities = {
-            claim.qualification.negated for claim in claims.claims
-        }
+        explicit_polarities = {claim.qualification.negated for claim in claims.claims}
         explicit_conflict_ids = (
             tuple(claim.artifact_id for claim in claims.claims)
             if synthesis.style is SynthesisStyle.conflict_preserving
@@ -341,6 +355,30 @@ class LocalGroundedAnswerService:
             conflicts=conflicts,
             annotations=annotations,
         )
+
+
+def _request_status(question: str) -> GroundingRequestStatus:
+    normalized = " ".join(question.casefold().split())
+    categorical = normalized.startswith(("are ", "can ", "do ", "does ", "is "))
+    if categorical and normalized.endswith("?"):
+        terms = re.findall(r"[^\W_]+", normalized)
+        contextual = {
+            "article",
+            "condition",
+            "experiment",
+            "sample",
+            "samples",
+            "specimen",
+            "specimens",
+            "study",
+            "treatment",
+        }
+        asks_for_proof = bool(re.search(r"\bprove(?:s|d)?\b", normalized))
+        if len(terms) <= 12 and (
+            asks_for_proof or not contextual.intersection(terms)
+        ):
+            return GroundingRequestStatus.clarification_required
+    return GroundingRequestStatus.in_scope
 
 
 def _claim_uncertainty(
@@ -389,9 +427,7 @@ def render_grounded_answer(
                 ),
             ),
             citation_presentation=citation_presentation,
-            admitted_claim_artifact_ids=set(
-                admission.admitted_claim_artifact_ids
-            ),
+            admitted_claim_artifact_ids=set(admission.admitted_claim_artifact_ids),
         )
     if admission.outcome is GroundingAdmissionOutcome.abstained:
         details = " ".join(gap.detail for gap in admission.evidence_gaps)
@@ -443,8 +479,10 @@ def _append_references(
     )
     if not entries:
         return answer_text
-    return answer_text + "\nCitations:\n" + "\n".join(
-        render_citation_reference(entry) for entry in entries
+    return (
+        answer_text
+        + "\nCitations:\n"
+        + "\n".join(render_citation_reference(entry) for entry in entries)
     )
 
 

@@ -27,9 +27,9 @@ from bijux_canon_agent.contracts import (
 )
 from bijux_canon_reason.grounding import (
     AtomicClaimNormalizer,
-    CitationSourceDescriptor,
     CitationPresentation,
     CitationPresentationService,
+    CitationSourceDescriptor,
     CitationVerificationReport,
     ClaimCitationLinker,
     ClaimCitationSet,
@@ -37,8 +37,8 @@ from bijux_canon_reason.grounding import (
     DeterministicCitationVerifier,
     EvidencePacket,
     GroundingAdmissionDecision,
-    GroundingEvidenceState,
     GroundingAdmissionService,
+    GroundingEvidenceState,
     LocalGroundedAnswer,
     NormalizedClaimSet,
     NuancedGroundingRepresentation,
@@ -51,8 +51,8 @@ from bijux_canon_reason.research import (
     ConvergenceDecision,
     CounterevidencePlan,
     CounterevidenceSearchRun,
-    ResearchCandidateClassification,
     ResearchAnswerRevision,
+    ResearchCandidateClassification,
 )
 from bijux_canon_runtime.model.artifact import canonical_json_bytes
 from bijux_canon_runtime.model.execution.request_plan import (
@@ -349,6 +349,7 @@ def _verify_claim_graph(
                 claim_set=claims,
                 citation_set=citations,
                 verification_report=verification,
+                request_status=admission.request_status,
                 evidence_state=evidence_state,
             )
             != admission

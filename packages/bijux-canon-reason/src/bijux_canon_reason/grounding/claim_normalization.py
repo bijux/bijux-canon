@@ -32,8 +32,10 @@ _INDEPENDENT_VERB = (
     r"is|may|might|remained|reported|showed|was|were|will|would)"
 )
 _BOUNDARY = re.compile(
-    r"(?<=[.!?])\s+|;\s*|,\s+(?:although|but|though|whereas|while)\s+|"
-    rf"\s+and\s+(?=(?:(?:the|this|these|no)\s+)?[^\W_]+\s+{_INDEPENDENT_VERB}\b)",
+    r"(?<=[.!?])\s+|;\s*|,\s+but\s+(?!instead,\s+should\b)|"
+    r",\s+(?:although|though|whereas|while)\s+|"
+    rf"\s+and\s+(?!(?:[^\W_]+(?:ed|ing))\b)"
+    rf"(?=(?:(?:the|this|these|no)\s+)?[^\W_]+\s+{_INDEPENDENT_VERB}\b)",
     flags=re.IGNORECASE,
 )
 _LEADING_CONCESSION = re.compile(

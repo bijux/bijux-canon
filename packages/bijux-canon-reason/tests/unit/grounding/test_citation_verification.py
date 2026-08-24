@@ -22,8 +22,8 @@ from bijux_canon_reason.grounding import (
     CitationVerificationOutcome,
     CitationVerificationPolicy,
     CitationVerificationReport,
-    ClaimCitationLinker,
     ClaimCitationLink,
+    ClaimCitationLinker,
     ClaimCitationSet,
     CredentialFreeSynthesizer,
     DeterministicCitationVerifier,
@@ -35,9 +35,9 @@ from bijux_canon_reason.grounding import (
     JsonHttpResponse,
     NormalizedClaimSet,
     OpenAICompatibleStructuredSynthesizer,
-    StructuredProviderConfiguration,
     StructuredEntailmentDecision,
     StructuredEntailmentVerifier,
+    StructuredProviderConfiguration,
 )
 
 
@@ -520,6 +520,19 @@ def test_unreachable_locator_fails_integrity_gate() -> None:
         )
 
     assert caught.value.code is CitationVerificationErrorCode.evidence_identity_mismatch
+
+
+def test_negation_in_previous_sentence_does_not_oppose_exact_claim() -> None:
+    claim = "Resin-embedded specimens are regarded as unsuitable for genetic studies."
+    report, _, _, _, _ = _verification(
+        claim,
+        "Older attempts were unsuccessful or not documented. " + claim,
+    )
+
+    assert report.claims[0].verdict is EntailmentVerdict.direct_support
+    assert report.claims[0].assessments[0].rationale_code == (
+        "claim_is_exact_evidence_span"
+    )
 
 
 @pytest.mark.parametrize(

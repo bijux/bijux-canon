@@ -244,7 +244,9 @@ class AnswerRequirementPlan(StableModel):
     def _validate_plan(self) -> Self:
         requirement_ids = tuple(item.artifact_id for item in self.requirements)
         if not requirement_ids or len(requirement_ids) != len(set(requirement_ids)):
-            raise ValueError("answer requirement plan identities must be nonempty and unique")
+            raise ValueError(
+                "answer requirement plan identities must be nonempty and unique"
+            )
         known: set[str] = set()
         for requirement in self.requirements:
             if any(
@@ -268,7 +270,9 @@ class AnswerRequirementPlan(StableModel):
             )
         )
         if self.search_requirement_artifact_ids != expected_search:
-            raise ValueError("search requirements do not match unresolved material needs")
+            raise ValueError(
+                "search requirements do not match unresolved material needs"
+            )
         blocked = any(
             item.material
             and item.status
@@ -435,9 +439,7 @@ class AnswerRequirementPlanningService:
         requirements.append(limitation)
 
         if synthesis.style is SynthesisStyle.multi_hop and len(finding_by_claim) > 1:
-            dependencies = tuple(
-                item.artifact_id for item in finding_by_claim.values()
-            )
+            dependencies = tuple(item.artifact_id for item in finding_by_claim.values())
             dependency_ready = all(
                 item.status is AnswerRequirementStatus.SATISFIED
                 for item in finding_by_claim.values()
@@ -529,6 +531,7 @@ def _terminal_status(
     if request_status is GroundingRequestStatus.out_of_scope:
         return AnswerRequirementStatus.OUT_OF_SCOPE
     if request_status in {
+        GroundingRequestStatus.clarification_required,
         GroundingRequestStatus.fabricated_entity,
         GroundingRequestStatus.corrupt_evidence,
     }:
@@ -646,9 +649,7 @@ def _global_finding_requirement(
         status=status,
         query_text=None if terminal_status else f"{question} direct factual finding",
         evidence_ids=(admission.artifact_id,) if terminal_status else (),
-        source_gap_ids=(
-            tuple(item.artifact_id for item in admission.evidence_gaps)
-        ),
+        source_gap_ids=(tuple(item.artifact_id for item in admission.evidence_gaps)),
     )
 
 
@@ -729,7 +730,7 @@ def _opposition_requirement(
         status = AnswerRequirementStatus.UNRESOLVED
         evidence = () if completion is None else (completion.artifact_id,)
         query = (
-            f'{question} contradictory evidence limitations alternative interpretation '
+            f"{question} contradictory evidence limitations alternative interpretation "
             f'for "{statement}"'
         )
     return _requirement(

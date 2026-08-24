@@ -305,6 +305,14 @@ def _exact_span_context(claim: str, evidence: str) -> str:
     if start < 0:
         return claim
     governing_prefix = evidence[max(0, start - 160) : start]
+    sentence_boundary = max(
+        governing_prefix.rfind("."),
+        governing_prefix.rfind("!"),
+        governing_prefix.rfind("?"),
+        governing_prefix.rfind(";"),
+    )
+    if sentence_boundary >= 0:
+        governing_prefix = governing_prefix[sentence_boundary + 1 :]
     if _GOVERNING_NEGATION.search(governing_prefix) is None:
         return claim
     return f"{governing_prefix}{claim}"
