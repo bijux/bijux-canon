@@ -39,6 +39,7 @@ Changelog = "https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon
 Security = "https://github.com/bijux/bijux-canon/blob/main/SECURITY.md"
 
 [project.scripts]
+bijux-canon-impact-tests = "bijux_canon_dev.verification.impact_selection:main"
 bijux-canon-extras-matrix = "bijux_canon_dev.release.extras_matrix:main"
 bijux-canon-family-compatibility = "bijux_canon_dev.release.family_compatibility:main"
 bijux-canon-installation-matrix = "bijux_canon_dev.release.installation_matrix:main"

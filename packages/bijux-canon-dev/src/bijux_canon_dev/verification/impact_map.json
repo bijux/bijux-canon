@@ -1,0 +1,201 @@
+{
+  "schema_version": "bijux.canon.verification-impact.v1",
+  "generated_outputs": [
+    "artifacts/**",
+    "site/**",
+    "apis/*/v1/openapi.generated.json",
+    "apis/*/v2/openapi.generated.json"
+  ],
+  "checks": {
+    "repository-configuration": {
+      "command": ["make", "check-config-layout", "check-make-layout"],
+      "description": "Validate repository configuration and make ownership."
+    },
+    "dev-tests": {
+      "command": ["make", "test", "PACKAGE=bijux-canon-dev"],
+      "description": "Exercise repository-owned maintainer contracts."
+    },
+    "agent-tests": {
+      "command": ["make", "test-focused-agent"],
+      "description": "Exercise agent-owned behavior."
+    },
+    "index-tests": {
+      "command": ["make", "test-focused-index"],
+      "description": "Exercise index-owned behavior."
+    },
+    "ingest-tests": {
+      "command": ["make", "test-focused-ingest"],
+      "description": "Exercise ingest-owned behavior."
+    },
+    "reason-tests": {
+      "command": ["make", "test-focused-reason"],
+      "description": "Exercise reason-owned behavior."
+    },
+    "runtime-tests": {
+      "command": ["make", "test-focused-runtime"],
+      "description": "Exercise runtime-owned behavior."
+    },
+    "document-format-vertical": {
+      "command": ["make", "test-vertical-document-formats"],
+      "description": "Verify document admission and citation lineage across packages."
+    },
+    "research-content-vertical": {
+      "command": ["make", "test-vertical-research-content"],
+      "description": "Verify reviewed research truth, retrieval, and citation metrics."
+    },
+    "runtime-local-vertical": {
+      "command": ["make", "test-vertical-runtime-local"],
+      "description": "Verify local capability, persistence, backup, and restart behavior."
+    },
+    "release-install-vertical": {
+      "command": ["make", "test-vertical-release-install"],
+      "description": "Verify release inventory and source-independent installation contracts."
+    },
+    "runtime-api": {
+      "command": ["make", "api", "PACKAGE=bijux-canon-runtime"],
+      "description": "Verify the shipped runtime API contract."
+    },
+    "docs": {
+      "command": ["make", "docs-check"],
+      "description": "Build documentation and validate its governed inputs."
+    },
+    "dependency-lock": {
+      "command": ["make", "lock-check"],
+      "description": "Verify dependency metadata agrees with the frozen lock."
+    },
+    "security": {
+      "command": ["make", "security"],
+      "description": "Run repository security and dependency-boundary checks."
+    }
+  },
+  "rules": [
+    {
+      "id": "repository-governance",
+      "patterns": ["Makefile", "makes/**", "configs/**", ".bijux/**"],
+      "checks": ["repository-configuration", "dev-tests"],
+      "interfaces": ["repository make and tool configuration"],
+      "consumers": ["contributors", "CI", "frozen candidate gates"],
+      "reason": "Repository orchestration changes can alter which checks execute or where their evidence is stored."
+    },
+    {
+      "id": "dev-ownership",
+      "patterns": ["packages/bijux-canon-dev/**"],
+      "checks": ["dev-tests"],
+      "interfaces": ["maintainer and release tooling"],
+      "consumers": ["release automation", "evaluation", "repository gates"],
+      "reason": "The changed path is owned by the maintainer distribution."
+    },
+    {
+      "id": "agent-ownership",
+      "patterns": ["packages/bijux-canon-agent/**", "packages/compat-agentic-flows/**", "packages/compat-bijux-agent/**"],
+      "checks": ["agent-tests"],
+      "interfaces": ["agent workflow and compatibility surfaces"],
+      "consumers": ["runtime research execution", "compatibility users"],
+      "reason": "Agent behavior is consumed by runtime orchestration and compatibility packages."
+    },
+    {
+      "id": "index-ownership",
+      "patterns": ["packages/bijux-canon-index/**", "packages/compat-bijux-vex/**"],
+      "checks": ["index-tests"],
+      "interfaces": ["embedding, lexical, dense, and retrieval contracts"],
+      "consumers": ["runtime retrieval", "reason citations", "VEX compatibility"],
+      "reason": "Index changes can alter persisted generations and evidence ordering."
+    },
+    {
+      "id": "ingest-ownership",
+      "patterns": ["packages/bijux-canon-ingest/**"],
+      "checks": ["ingest-tests"],
+      "interfaces": ["document admission, parsing, chunking, and snapshots"],
+      "consumers": ["runtime corpus preparation", "indexing", "citation resolution"],
+      "reason": "Ingest changes can alter immutable source and chunk identities."
+    },
+    {
+      "id": "reason-ownership",
+      "patterns": ["packages/bijux-canon-reason/**", "packages/compat-bijux-rag/**", "packages/compat-bijux-rar/**"],
+      "checks": ["reason-tests"],
+      "interfaces": ["grounded answers, research, citations, and abstention"],
+      "consumers": ["runtime ask and research", "RAG and RAR compatibility"],
+      "reason": "Reason changes affect public answer and research semantics."
+    },
+    {
+      "id": "runtime-ownership",
+      "patterns": ["packages/bijux-canon-runtime/**", "packages/compat-bijux-canon/**"],
+      "checks": ["runtime-tests"],
+      "interfaces": ["runtime Python, CLI, HTTP, persistence, and replay contracts"],
+      "consumers": ["operators", "services", "compatibility users"],
+      "reason": "Runtime changes affect the composed public product and durable state."
+    },
+    {
+      "id": "document-contract",
+      "patterns": ["packages/bijux-canon-ingest/src/**", "packages/bijux-canon-ingest/tests/**", "examples/**/corpus/**"],
+      "checks": ["document-format-vertical"],
+      "interfaces": ["source bytes, parser locators, chunks, and citations"],
+      "consumers": ["corpus snapshots", "retrieval", "grounded answers"],
+      "reason": "Document contract changes require a cross-package lineage check."
+    },
+    {
+      "id": "research-contract",
+      "patterns": ["packages/bijux-canon-reason/src/**", "examples/**/truth/**"],
+      "checks": ["research-content-vertical"],
+      "interfaces": ["reviewed questions, claims, qualifiers, and citations"],
+      "consumers": ["development evaluation", "release evidence"],
+      "reason": "Research or truth changes require content-level evaluation without label leakage."
+    },
+    {
+      "id": "runtime-public-contract",
+      "patterns": ["packages/bijux-canon-runtime/src/**", "packages/bijux-canon-runtime/tests/regression/**"],
+      "checks": ["runtime-local-vertical"],
+      "interfaces": ["runtime application and persistence contracts"],
+      "consumers": ["CLI", "HTTP", "restart and replay"],
+      "reason": "Runtime production changes require the restart and persistence vertical."
+    },
+    {
+      "id": "api-contract",
+      "patterns": ["apis/**", "packages/*/src/**/api/**", "packages/*/src/**/interfaces/http/**"],
+      "checks": ["runtime-api"],
+      "interfaces": ["versioned HTTP and schema contracts"],
+      "consumers": ["HTTP clients", "generated documentation", "transport parity"],
+      "reason": "API schema or transport changes require generated-contract verification."
+    },
+    {
+      "id": "documentation-contract",
+      "patterns": ["README.md", "docs/**", "mkdocs*.yml", "packages/*/README.md", "packages/*/docs/**", "examples/**"],
+      "checks": ["docs"],
+      "interfaces": ["installation and operator documentation"],
+      "consumers": ["new users", "maintainers", "release notes"],
+      "reason": "User-facing prose and examples must build and remain synchronized with public commands."
+    },
+    {
+      "id": "dependency-contract",
+      "patterns": ["pyproject.toml", "packages/*/pyproject.toml", "uv.lock", "packages/*/hatch_build.py"],
+      "checks": ["dependency-lock", "release-install-vertical"],
+      "interfaces": ["distribution metadata, extras, and exact family dependencies"],
+      "consumers": ["wheel builds", "fresh installations", "supported Python environments"],
+      "reason": "Dependency metadata changes require lock consistency and source-isolated install coverage."
+    },
+    {
+      "id": "version-release-contract",
+      "patterns": ["CHANGELOG.md", "packages/*/CHANGELOG.md", "packages/bijux-canon-dev/src/bijux_canon_dev/release/**", ".github/workflows/*release*", ".github/workflows/*publish*"],
+      "checks": ["dev-tests", "release-install-vertical"],
+      "interfaces": ["candidate identity, artifacts, versions, and publication policy"],
+      "consumers": ["release reviewers", "package registries", "wheel consumers"],
+      "reason": "Release identity or artifact tooling changes require release-family verification."
+    },
+    {
+      "id": "persistence-escalation",
+      "patterns": ["packages/bijux-canon-runtime/src/**/persistence/**", "packages/bijux-canon-runtime/src/**/storage/**", "packages/bijux-canon-runtime/src/**/workspace_*.py", "packages/bijux-canon-runtime/src/**/replay/**", "packages/bijux-canon-runtime/src/**/backup*.py"],
+      "checks": ["runtime-local-vertical"],
+      "interfaces": ["workspace, storage, backup, and replay formats"],
+      "consumers": ["restart", "recovery", "comparison", "migration"],
+      "reason": "Persistence changes must cross a process boundary and validate durable state."
+    },
+    {
+      "id": "security-escalation",
+      "patterns": ["SECURITY.md", "packages/*/src/**/security/**", "packages/*/src/**/policy/**", "packages/*/src/**/serialization/**", "configs/bandit*", "configs/pip-audit*", "uv.lock"],
+      "checks": ["security"],
+      "interfaces": ["untrusted input, serialization, dependency, and policy boundaries"],
+      "consumers": ["local operators", "HTTP service", "release supply chain"],
+      "reason": "Security-sensitive changes require the strict security lane."
+    }
+  ]
+}

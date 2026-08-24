@@ -43,7 +43,7 @@ ROOT_CHECK_ENV_COMMAND = @test -x "$(ROOT_CHECK_PYTHON)" || { \
 
 include $(ROOT_MAKEFILE_DIR)/bijux-py/repository/root.mk
 
-.PHONY: all-frozen ci-github-frozen freeze frozen-status frozen-summary quality-dead-code \
+.PHONY: all-frozen ci-github-frozen freeze frozen-status frozen-summary impact-tests quality-dead-code \
 	test-all-frozen test-focused-agent test-focused-index test-focused-ingest \
 	test-focused-reason test-focused-runtime test-vertical-document-formats \
 	test-vertical-release-install test-vertical-research-content \
@@ -97,6 +97,9 @@ check: lock-check lint test quality security docs api build sbom ## Run the full
 test-all: ## Run every repository test surface, including slow, evaluation, and real-local tests
 test-all-plus-run-time: ## Run every repository test surface and report per-test durations
 coverage-core: ## Enforce measured canonical-package coverage floors
+impact-tests: ## Select mandatory focused checks for changed paths (set IMPACT_ARGS to override inputs)
+	@$(CANON_DEV_PYTHON_ENV) "$(PYTHON)" -m bijux_canon_dev.verification.impact_selection \
+		--repo "$(MONOREPO_ROOT)" $(IMPACT_ARGS)
 test-focused-agent: ## Run the agent package test lane
 	@$(MAKE) test PACKAGE=bijux-canon-agent
 test-focused-index: ## Run the index package test lane

@@ -10,6 +10,8 @@ governance.
 
 ### Changed
 
+- Added a deterministic changed-path selector that reports mandatory owned and
+  transitive checks, their reasons, affected contracts, and governed outputs.
 - Added maintained installed-distribution verifiers for wheel contents, clean
   installation, extras capabilities, supported Python versions, exact family
   compatibility, and release-candidate identity.
