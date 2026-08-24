@@ -15,6 +15,9 @@ from bijux_canon_runtime.runtime.persistence import (
     AtomicFilesystemArtifactPayloadStore,
     PublicationItem,
 )
+from bijux_canon_runtime.runtime.persistence.authoritative_payload_store import (
+    AuthoritativeArtifactPayloadStore,
+)
 
 _NOW = "2026-08-22T00:00:00+00:00"
 
@@ -124,6 +127,34 @@ def test_reachability_reports_missing_active_payload(
 
     assert report.missing_artifact_ids == (active.descriptor.artifact_id,)
     assert not report.integrity_ok
+
+
+def test_execution_control_artifacts_are_durable_reachability_roots(
+    tmp_path: Path,
+    resolved_flow,
+) -> None:
+    db_path, store, _coordinator, _tenant_id, _run_id = _workspace(
+        tmp_path,
+        resolved_flow,
+    )
+    control = AddressedArtifact.from_json(
+        {"event": "completed"},
+        schema_id="bijux.runtime.execution-event.v1",
+        producer="bijux-canon-runtime:event-ledger",
+    )
+    AuthoritativeArtifactPayloadStore(
+        payload_store=store,
+        database_path=db_path,
+    ).put(control)
+
+    report = ArtifactReachabilityValidator(
+        database_path=db_path,
+        payload_store=store,
+    ).validate()
+
+    assert report.root_artifact_ids == (control.descriptor.artifact_id,)
+    assert report.reachable_artifact_ids == (control.descriptor.artifact_id,)
+    assert report.integrity_ok
 
 
 def test_reachability_reports_corrupt_active_payload(

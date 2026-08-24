@@ -7,6 +7,10 @@ import pytest
 from bijux_canon_runtime.application.runtime_configuration import (
     resolve_runtime_configuration,
 )
+from bijux_canon_runtime.application.workspace_initialization import (
+    initialize_runtime_workspace,
+    validate_runtime_workspace,
+)
 from bijux_canon_runtime.model.artifact import AddressedArtifact
 from bijux_canon_runtime.model.execution.run_mode import RunMode
 from bijux_canon_runtime.observability.storage.execution_store import (
@@ -19,6 +23,9 @@ from bijux_canon_runtime.runtime.persistence import (
     PublicationItem,
     RuntimeBackupManager,
 )
+from bijux_canon_runtime.runtime.persistence.authoritative_payload_store import (
+    AuthoritativeArtifactPayloadStore,
+)
 
 
 def test_backup_restore_copies_only_reachable_payloads_and_verifies_identity(
@@ -28,8 +35,8 @@ def test_backup_restore_copies_only_reachable_payloads_and_verifies_identity(
     configuration = resolve_runtime_configuration(
         explicit={"working_root": tmp_path / "workspace"}
     )
+    initialized = initialize_runtime_workspace(configuration)
     layout = configuration.require_workspace_layout()
-    layout.root.mkdir()
     db_path = layout.database_path
     execution = DuckDBExecutionWriteStore(db_path)
     run_id = execution.save_run(
@@ -71,6 +78,15 @@ def test_backup_restore_copies_only_reachable_payloads_and_verifies_identity(
         producer="bijux-canon-runtime:test",
     )
     store.put(orphan)
+    admitted_control = AddressedArtifact.from_json(
+        {"transition": "retained for audit"},
+        schema_id="bijux.runtime.scheduler-transition.v1",
+        producer="bijux-canon-runtime:scheduler",
+    )
+    AuthoritativeArtifactPayloadStore(
+        payload_store=store,
+        database_path=db_path,
+    ).put(admitted_control)
     manager = RuntimeBackupManager(configuration=configuration)
 
     generation, manifest = manager.create_backup(
@@ -80,11 +96,20 @@ def test_backup_restore_copies_only_reachable_payloads_and_verifies_identity(
     )
 
     assert manifest.artifact_ids == tuple(
-        sorted((first.descriptor.artifact_id, second.descriptor.artifact_id))
+        sorted(
+            (
+                admitted_control.descriptor.artifact_id,
+                first.descriptor.artifact_id,
+                second.descriptor.artifact_id,
+            )
+        )
     )
     backup_store = AtomicFilesystemArtifactPayloadStore(generation / "cas")
     assert backup_store.load(first.descriptor.artifact_id) == first
     assert backup_store.load(second.descriptor.artifact_id) == second
+    assert backup_store.load(admitted_control.descriptor.artifact_id) == (
+        admitted_control
+    )
     with pytest.raises(KeyError):
         backup_store.load(orphan.descriptor.artifact_id)
 
@@ -95,17 +120,23 @@ def test_backup_restore_copies_only_reachable_payloads_and_verifies_identity(
     restored = AtomicFilesystemArtifactPayloadStore(tmp_path / "restored" / "cas")
     assert restored.load(first.descriptor.artifact_id) == first
     assert restored.load(second.descriptor.artifact_id) == second
-    assert result.artifact_count == 2
+    assert restored.load(admitted_control.descriptor.artifact_id) == admitted_control
+    assert result.artifact_count == 3
     assert result.inspection_ready
     assert result.offline_replay_ready
+    restored_configuration = resolve_runtime_configuration(
+        explicit={"working_root": tmp_path / "restored"}
+    )
+    restored_workspace = validate_runtime_workspace(restored_configuration)
+    assert restored_workspace.workspace_id == initialized.workspace_id
 
 
 def test_restore_requires_clean_destination(tmp_path: Path, resolved_flow) -> None:
     configuration = resolve_runtime_configuration(
         explicit={"working_root": tmp_path / "workspace"}
     )
+    initialize_runtime_workspace(configuration)
     layout = configuration.require_workspace_layout()
-    layout.root.mkdir()
     db_path = layout.database_path
     execution = DuckDBExecutionWriteStore(db_path)
     execution.save_run(
@@ -136,8 +167,8 @@ def test_configured_backup_uses_workspace_database_cas_and_backup_root(
     configuration = resolve_runtime_configuration(
         explicit={"working_root": tmp_path / "workspace"}
     )
+    initialize_runtime_workspace(configuration)
     layout = configuration.require_workspace_layout()
-    layout.root.mkdir()
     execution = DuckDBExecutionWriteStore(layout.database_path)
     execution.save_run(
         trace=None,

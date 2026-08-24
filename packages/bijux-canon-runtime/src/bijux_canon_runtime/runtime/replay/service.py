@@ -71,6 +71,7 @@ class RuntimeReplayService:
         request_id: RequestID,
         process_id: str,
         policy: RuntimeReplayPolicy,
+        parent_job_id: str | None = None,
         dispatcher: OperationDispatcher | None = None,
         scheduler_policy: SchedulerPolicy | None = None,
         is_cancelled: Callable[[], bool] | None = None,
@@ -131,7 +132,10 @@ class RuntimeReplayService:
             store=self._store,
             plan=plan,
             attempt=replay_identity,
-            execution_metadata={"replay_policy": _policy_record(policy)},
+            execution_metadata={
+                "parent_job_id": parent_job_id,
+                "replay_policy": _policy_record(policy),
+            },
         )
         schedule = DependencyAwareScheduler(
             dispatcher=selected_dispatcher,

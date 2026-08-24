@@ -166,7 +166,12 @@ answer, research, run, inspection, replay, comparison, job, and evaluation
 operations as the shared application service. Submission responses are bounded
 job documents; result and inspection payloads require deliberate follow-up and
 inspection collections are paginated. The CLI-only backup and restore commands
-operate on local filesystem authority and are not HTTP endpoints.
+operate on local filesystem authority and are not HTTP endpoints. A governed
+backup requires a quiescent workspace and retains the DuckDB authority, every
+admitted CAS payload, workspace controls, local indexes, replay state, and
+workspace-owned model state. Restore verifies that inventory before activating
+an absent destination and preserves the logical workspace identity while
+rewriting governed machine-local paths.
 
 The older v1 run and replay endpoints remain compatibility contracts and return
 `501 Not Implemented`. New integrations should use the v2 schema pinned under
@@ -281,7 +286,9 @@ machine locations, so equivalent relative and absolute spelling reopens the
 same workspace identity after restart. Directly moving or copying a workspace
 directory to a new root is not supported in this release: initialization names
 `layout.root` as incompatible and leaves the moved copy unchanged. Use the
-governed backup/restore path when relocation is required.
+governed backup/restore path when relocation is required. Backup refuses
+queued or running jobs and model state outside the workspace rather than
+claiming an incomplete offline restore.
 
 The v2 execution profile determines the index contract before work is queued.
 `offline-lexical` workspaces may be initialized with only `--workspace`; their

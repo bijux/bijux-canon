@@ -253,6 +253,7 @@ def compose_runtime_application_services(
             request_id=request.request_id,
             process_id=request.process_id,
             policy=request.policy,
+            parent_job_id=request.parent_job_id,
             dispatcher=live_dispatcher,
             is_cancelled=is_cancelled,
         )

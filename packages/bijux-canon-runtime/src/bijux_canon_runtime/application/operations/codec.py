@@ -188,6 +188,7 @@ def replay_request_payload(request: ReplayOperationRequest) -> dict[str, object]
     """Encode complete replay authority for durable worker reconstruction."""
     result = {
         "policy": _json_value(asdict(request.policy)),
+        "parent_job_id": request.parent_job_id,
         "process_id": request.process_id,
         "request_id": str(request.request_id),
         "run_id": request.run_id,
@@ -222,6 +223,7 @@ def replay_request_from_payload(
         ),
         request_id=RequestID(_required_string(payload.get("request_id"), "request_id")),
         process_id=_required_string(payload.get("process_id"), "process_id"),
+        parent_job_id=_optional_string(payload.get("parent_job_id"), "parent_job_id"),
         policy=RuntimeReplayPolicy(
             replay_mode=ReplayMode(
                 _required_string(policy.get("replay_mode"), "policy.replay_mode")

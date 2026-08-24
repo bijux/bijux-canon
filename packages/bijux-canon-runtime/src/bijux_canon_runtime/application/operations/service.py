@@ -136,7 +136,11 @@ def build_runtime_job_handlers(
     ) -> Mapping[str, object]:
         if request.kind is not JobKind.REPLAY:
             raise ValueError("runtime replay handler received the wrong job kind")
-        return replay(replay_request_from_payload(request.payload), is_cancelled)
+        operation_request = replace(
+            replay_request_from_payload(request.payload),
+            parent_job_id=request.job_id,
+        )
+        return replay(operation_request, is_cancelled)
 
     return {JobKind.RUN: execute_job, JobKind.REPLAY: replay_job}
 

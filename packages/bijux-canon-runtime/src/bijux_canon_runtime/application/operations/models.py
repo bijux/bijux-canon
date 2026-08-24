@@ -42,6 +42,7 @@ class ReplayOperationRequest:
     request_id: RequestID
     process_id: str
     policy: RuntimeReplayPolicy
+    parent_job_id: str | None = None
 
     def __post_init__(self) -> None:
         if not self.run_id.strip():
@@ -52,6 +53,8 @@ class ReplayOperationRequest:
             raise ValueError("replay request identity must not be empty")
         if not self.process_id.strip():
             raise ValueError("replay process identity must not be empty")
+        if self.parent_job_id is not None and not self.parent_job_id.strip():
+            raise ValueError("replay parent job identity must not be empty")
 
 
 @dataclass(frozen=True, slots=True)

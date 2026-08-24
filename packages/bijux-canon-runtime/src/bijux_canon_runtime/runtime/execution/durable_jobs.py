@@ -36,6 +36,26 @@ from bijux_canon_runtime.runtime.persistence.payload_store import ArtifactPayloa
 MAX_DURABLE_JOB_REQUEST_BYTES = 1_000_000
 
 
+def _result_artifact_dependencies(value: object) -> tuple[ArtifactID, ...]:
+    """Collect content-addressed artifacts named by a durable result payload."""
+    discovered: set[ArtifactID] = set()
+    pending = [value]
+    while pending:
+        current = pending.pop()
+        if isinstance(current, Mapping):
+            pending.extend(current.values())
+        elif isinstance(current, (list, tuple)):
+            pending.extend(current)
+        elif (
+            isinstance(current, str)
+            and current.startswith("sha256:")
+            and len(current) == 71
+            and all(character in "0123456789abcdef" for character in current[7:])
+        ):
+            discovered.add(ArtifactID(current))
+    return tuple(sorted(discovered))
+
+
 class DurableJobError(RuntimeError):
     """A durable job request or state transition is invalid."""
 
@@ -599,11 +619,19 @@ class DurableJobManager:
 
     def _finish_success(self, job_id: str, result: dict[str, object]) -> None:
         request_artifact_id = self._request_artifact_id(job_id)
+        dependencies = tuple(
+            sorted(
+                {
+                    request_artifact_id,
+                    *_result_artifact_dependencies(result),
+                }
+            )
+        )
         result_artifact = AddressedArtifact.from_json(
             result,
             schema_id="bijux.runtime.durable-job-result.v1",
             producer="bijux-canon-runtime:durable-jobs",
-            dependencies=(request_artifact_id,),
+            dependencies=dependencies,
         )
         self._payload_store.put(result_artifact)
         finished_at = _now()
@@ -793,7 +821,7 @@ class DurableJobManager:
             ) from exc
         if artifact.descriptor.schema_id != "bijux.runtime.durable-job-result.v1":
             raise DurableJobError("durable job result artifact schema is invalid")
-        if artifact.descriptor.dependencies != (expected_request_artifact_id,):
+        if expected_request_artifact_id not in artifact.descriptor.dependencies:
             raise DurableJobError(
                 "durable job result is not linked to its request artifact"
             )
@@ -881,11 +909,19 @@ class DurableJobManager:
             self._payload_store.put(request_artifact)
             result_artifact_id: str | None = None
             if result is not None:
+                dependencies = tuple(
+                    sorted(
+                        {
+                            request_artifact.descriptor.artifact_id,
+                            *_result_artifact_dependencies(result),
+                        }
+                    )
+                )
                 result_artifact = AddressedArtifact.from_json(
                     result,
                     schema_id="bijux.runtime.durable-job-result.v1",
                     producer="bijux-canon-runtime:durable-jobs",
-                    dependencies=(request_artifact.descriptor.artifact_id,),
+                    dependencies=dependencies,
                 )
                 self._payload_store.put(result_artifact)
                 result_artifact_id = str(result_artifact.descriptor.artifact_id)

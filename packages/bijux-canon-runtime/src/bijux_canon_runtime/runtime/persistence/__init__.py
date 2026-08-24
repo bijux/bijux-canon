@@ -16,6 +16,7 @@ from bijux_canon_runtime.runtime.persistence.authoritative_payload_store import 
 )
 from bijux_canon_runtime.runtime.persistence.backup_restore import (
     BackupIntegrityError,
+    RuntimeBackupFile,
     RuntimeBackupManager,
     RuntimeBackupManifest,
     RuntimeRestoreResult,
@@ -88,6 +89,7 @@ __all__ = [
     "AuthoritativeArtifactPayloadStore",
     "AttemptStatus",
     "BackupIntegrityError",
+    "RuntimeBackupFile",
     "CheckStatus",
     "DuckDBMetadataAuthority",
     "DurableArtifactPayloadStore",

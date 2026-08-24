@@ -21,6 +21,7 @@ from bijux_canon_runtime.runtime.inspection.models import (
     RuntimeInspectionError,
 )
 from bijux_canon_runtime.runtime.inspection.parsing import (
+    json_object,
     required_dict,
     required_list,
     required_object,
@@ -28,6 +29,9 @@ from bijux_canon_runtime.runtime.inspection.parsing import (
 )
 from bijux_canon_runtime.runtime.persistence.payload_store import (
     DurableArtifactPayloadStore,
+)
+from bijux_canon_runtime.runtime.persistence.filesystem_payload_store import (
+    PayloadCorruptionError,
 )
 
 
@@ -38,6 +42,7 @@ def resolve_run_provenance(
     steps: tuple[InspectedDagStep, ...],
     artifacts: tuple[InspectedArtifact, ...],
     store: DurableArtifactPayloadStore,
+    attempts: tuple[InspectedAttempt, ...] = (),
 ) -> InspectedRunProvenance:
     """Validate causal edges and resolve every emitted citation to source bytes."""
     by_id = {item.artifact_id: item for item in artifacts}
@@ -92,17 +97,15 @@ def resolve_run_provenance(
             legacy_citation_count += len(required_list(citations, "links"))
             continue
         provenance = required_object(claim, "provenance")
-        if (
-            provenance.get("run_id") != run_id
-            or provenance.get("execution_manifest_artifact_id")
-            != str(selected_attempt.manifest_artifact_id)
-            or provenance.get("execution_configuration_sha256")
-            != configuration_id
-            or provenance.get("parent_job_id") != raw_parent_job_id
-        ):
-            raise RuntimeInspectionError(
-                "claim graph execution provenance is inconsistent"
-            )
+        claim_parent_job_id = _validate_claim_execution_context(
+            provenance=provenance,
+            run_id=run_id,
+            selected_attempt=selected_attempt,
+            selected_parent_job_id=raw_parent_job_id,
+            configuration_id=configuration_id,
+            store=store,
+            attempts=attempts,
+        )
         raw_model_id = provenance.get("model_lock_artifact_id")
         if raw_model_id is not None:
             if not isinstance(raw_model_id, str) or not raw_model_id:
@@ -118,7 +121,7 @@ def resolve_run_provenance(
                     provenance=provenance,
                     configuration_id=configuration_id,
                     run_id=run_id,
-                    parent_job_id=raw_parent_job_id,
+                    parent_job_id=claim_parent_job_id,
                     by_id=by_id,
                     store=store,
                 )
@@ -136,6 +139,85 @@ def resolve_run_provenance(
         citation_count=(legacy_citation_count if legacy_lineage else len(resolved)),
         citations=tuple(resolved),
     )
+
+
+def _validate_claim_execution_context(
+    *,
+    provenance: dict[str, object],
+    run_id: str,
+    selected_attempt: InspectedAttempt,
+    selected_parent_job_id: str | None,
+    configuration_id: str,
+    store: DurableArtifactPayloadStore,
+    attempts: tuple[InspectedAttempt, ...],
+) -> str | None:
+    if (
+        provenance.get("run_id") != run_id
+        or provenance.get("execution_configuration_sha256") != configuration_id
+    ):
+        raise RuntimeInspectionError(
+            "claim graph execution provenance is inconsistent"
+        )
+    claim_manifest_id = provenance.get("execution_manifest_artifact_id")
+    claim_parent_job_id = provenance.get("parent_job_id")
+    if not isinstance(claim_manifest_id, str) or (
+        claim_parent_job_id is not None and not isinstance(claim_parent_job_id, str)
+    ):
+        raise RuntimeInspectionError(
+            "claim graph execution provenance is inconsistent"
+        )
+    if selected_attempt.relation != "replay":
+        if (
+            claim_manifest_id != str(selected_attempt.manifest_artifact_id)
+            or claim_parent_job_id != selected_parent_job_id
+        ):
+            raise RuntimeInspectionError(
+                "claim graph execution provenance is inconsistent"
+            )
+        return claim_parent_job_id
+    if selected_attempt.source_attempt_id is None:
+        raise RuntimeInspectionError("replay claim source attempt is unavailable")
+    try:
+        source_manifest_artifact = store.load(ArtifactID(claim_manifest_id))
+    except (KeyError, PayloadCorruptionError, ValueError) as error:
+        raise RuntimeInspectionError(
+            "replay claim source manifest is unavailable"
+        ) from error
+    if source_manifest_artifact.descriptor.schema_id != (
+        "bijux.runtime.execution-manifest.v1"
+    ):
+        raise RuntimeInspectionError("replay claim source manifest is invalid")
+    source_manifest = json_object(source_manifest_artifact)
+    source_attempt = required_object(source_manifest, "attempt")
+    source_metadata = required_object(source_manifest, "execution_metadata")
+    source_plan = required_object(source_manifest, "plan")
+    claim_source_attempt_id = required_string(source_attempt, "attempt_id")
+    by_attempt_id = {item.attempt_id: item for item in attempts}
+    ancestor_id: str | None = selected_attempt.source_attempt_id
+    source_is_ancestor = False
+    while ancestor_id is not None:
+        ancestor = by_attempt_id.get(ancestor_id)
+        if ancestor is None:
+            break
+        if ancestor_id == claim_source_attempt_id:
+            source_is_ancestor = (
+                ancestor.manifest_artifact_id == ArtifactID(claim_manifest_id)
+            )
+            break
+        ancestor_id = (
+            ancestor.source_attempt_id if ancestor.relation == "replay" else None
+        )
+    if (
+        source_manifest.get("run_id") != run_id
+        or not source_is_ancestor
+        or source_metadata.get("parent_job_id") != claim_parent_job_id
+        or _execution_configuration_identity(source_plan, permit_missing=False)
+        != configuration_id
+    ):
+        raise RuntimeInspectionError(
+            "replay claim source provenance is inconsistent"
+        )
+    return claim_parent_job_id
 
 
 def _validate_step_dependencies(

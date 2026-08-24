@@ -154,6 +154,7 @@ class RuntimeRunInspector:
             steps=steps,
             artifacts=artifacts,
             store=self._store,
+            attempts=attempts,
         )
         return RuntimeRunInspection(
             schema_version="bijux.runtime.run-inspection.v1",

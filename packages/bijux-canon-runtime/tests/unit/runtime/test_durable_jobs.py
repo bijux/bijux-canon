@@ -15,6 +15,7 @@ from time import sleep
 
 import pytest
 
+from bijux_canon_runtime.model.artifact import AddressedArtifact
 from bijux_canon_runtime.ontology.ids import ArtifactID
 from bijux_canon_runtime.runtime.persistence.authoritative_payload_store import (
     AuthoritativeArtifactPayloadStore,
@@ -93,6 +94,51 @@ def test_job_submission_is_idempotent_and_survives_restart(
         assert restarted.status(request.job_id) == completed
         assert restarted.result(request.job_id) == {"accepted": "evidence"}
         assert calls == ["stable-submission"]
+
+
+def test_durable_result_depends_on_every_artifact_identity_it_returns(
+    tmp_path: Path,
+) -> None:
+    database_path = tmp_path / "runtime.duckdb"
+    filesystem = AtomicFilesystemArtifactPayloadStore(tmp_path / "cas")
+    payload_store = AuthoritativeArtifactPayloadStore(
+        payload_store=filesystem,
+        database_path=database_path,
+    )
+    evidence = AddressedArtifact.from_json(
+        {"evidence": "retained"},
+        schema_id="bijux.runtime.job-evidence.v1",
+        producer="bijux-canon-runtime:test",
+    )
+    payload_store.put(evidence)
+
+    def handler(
+        _request: DurableJobRequest,
+        _is_cancelled: Callable[[], bool],
+    ) -> Mapping[str, object]:
+        return {"artifact_id": str(evidence.descriptor.artifact_id)}
+
+    with DurableJobManager(
+        database_path,
+        handlers=_handlers(handler),
+        payload_store=payload_store,
+    ) as manager:
+        submitted = manager.submit(_request("linked-result"))
+        completed = manager.wait(submitted.job_id, timeout_seconds=2.0)
+
+        assert completed.result_artifact_id is not None
+        result_artifact = filesystem.load(ArtifactID(completed.result_artifact_id))
+        assert result_artifact.descriptor.dependencies == tuple(
+            sorted(
+                (
+                    ArtifactID(completed.request_artifact_id),
+                    evidence.descriptor.artifact_id,
+                )
+            )
+        )
+        assert manager.result(submitted.job_id) == {
+            "artifact_id": str(evidence.descriptor.artifact_id)
+        }
 
 
 def test_legacy_sqlite_jobs_migrate_to_duckdb_and_cas(tmp_path: Path) -> None:

@@ -26,7 +26,10 @@ from bijux_canon_index.infra.embeddings.model_cache import (
     load_model_lock,
     materialize_model,
 )
-from bijux_canon_runtime.application.operations import ApplicationCapabilityError
+from bijux_canon_runtime.application.operations import (
+    ApplicationCapabilityError,
+    ReplayOperationRequest,
+)
 from bijux_canon_runtime.application.runtime_configuration import (
     RuntimeConfiguration,
     resolve_runtime_configuration,
@@ -56,6 +59,13 @@ from bijux_canon_runtime.runtime.persistence.authoritative_payload_store import 
 )
 from bijux_canon_runtime.runtime.persistence.filesystem_payload_store import (
     AtomicFilesystemArtifactPayloadStore,
+)
+from bijux_canon_runtime.runtime.persistence.backup_restore import (
+    RuntimeBackupManager,
+)
+from bijux_canon_runtime.runtime.replay.models import (
+    ReplayNetworkPolicy,
+    RuntimeReplayPolicy,
 )
 
 
@@ -322,8 +332,82 @@ def test_installed_offline_lexical_workflow_never_requires_or_loads_a_model(
                 for step in inspection.steps
             )
 
+        run_submission = service.run(
+            RuntimeOperationRequest(
+                request_id=RequestID("offline-linked-run"),
+                operation=RuntimeRequestOperation.RUN,
+                execution_profile=ExecutionProfile.OFFLINE_LEXICAL,
+                budget=budget,
+                replay_mode=ReplayMode.STRICT,
+                scope="local",
+                query="What evidence do ancient genomes preserve?",
+                source_directory=str(source),
+                top_k=1,
+                provider="credential-free",
+                output_policy=output_policy,
+            ),
+            idempotency_key="offline-linked-run",
+        )
+        linked_run = completed_result(service, run_submission)
+        source_inspection = service.inspect(str(linked_run["run_id"]))
+        replay_submission = service.replay(
+            ReplayOperationRequest(
+                run_id=str(linked_run["run_id"]),
+                source_attempt_id=source_inspection.selected_attempt_id,
+                request_id=RequestID("offline-linked-replay"),
+                process_id="offline-linked-replay-process",
+                policy=RuntimeReplayPolicy(
+                    replay_mode=ReplayMode.STRICT,
+                    network_policy=ReplayNetworkPolicy.DISABLED,
+                ),
+            ),
+            idempotency_key="offline-linked-replay",
+            timeout_seconds=30.0,
+        )
+        replay_result = completed_result(service, replay_submission)
+        replay_inspection = service.inspect(
+            str(linked_run["run_id"]),
+            attempt_id=str(replay_result["replay_attempt_id"]),
+        )
+        assert replay_result["accepted"] is True
+        assert replay_result["exact_artifact_identities"] is True
+        assert replay_inspection.provenance.status == "verified"
+        assert replay_inspection.provenance.parent_job_id == replay_submission.job_id
+        assert {
+            item.parent_job_id for item in replay_inspection.provenance.citations
+        } == {run_submission.job_id}
+
     assert initialized.model_lock_artifact_id
     assert not layout.model_root.exists()
+    generation, manifest = RuntimeBackupManager(
+        configuration=configuration
+    ).create_backup(
+        backup_id="offline-linked-workspace",
+        destination_root=tmp_path / "protected-backups",
+        created_at="2026-08-24T00:00:00+00:00",
+    )
+    restored_root = tmp_path / "restored-lexical-workspace"
+    restore = RuntimeBackupManager.restore(
+        backup_generation=generation,
+        restore_root=restored_root,
+    )
+    assert restore.artifact_count == len(manifest.artifact_ids)
+    assert restore.inspection_ready is True
+    assert restore.offline_replay_ready is True
+    restored_configuration = resolve_runtime_configuration(
+        explicit={"working_root": restored_root}
+    )
+    with compose_runtime_application_services(
+        configuration=restored_configuration,
+        max_workers=1,
+    ) as restored:
+        assert restored.status(replay_submission.job_id).status is JobStatus.SUCCEEDED
+        restored_replay = restored.inspect(
+            str(linked_run["run_id"]),
+            attempt_id=str(replay_result["replay_attempt_id"]),
+        )
+        assert restored_replay.provenance.status == "verified"
+        assert restored_replay.provenance.parent_job_id == replay_submission.job_id
 
 
 def test_installed_corpus_inspection_rejects_tampered_retained_source_bytes(
