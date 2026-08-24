@@ -13,6 +13,11 @@ from pydantic import field_validator, model_validator
 
 from bijux_canon_reason.core.models.base import StableModel
 from bijux_canon_reason.evaluation.citation_metrics import CitationIntegrityReport
+from bijux_canon_reason.evaluation.claim_matching import (
+    ClaimMatchOutcome,
+    ClaimMatchRelation,
+    ClaimMatchReport,
+)
 from bijux_canon_reason.evaluation.metrics import ConfidenceInterval, MetricDirection
 from bijux_canon_reason.evaluation.outcomes import (
     SystemCitation,
@@ -110,11 +115,12 @@ class ClaimFaithfulnessMetric(StableModel):
 class ClaimFaithfulnessReport(StableModel):
     """Restart-safe claim judgments and exact aggregate dimensions for one case."""
 
-    schema_version: str = "bijux.canon.evaluation.claim-faithfulness.v1"
+    schema_version: str = "bijux.canon.evaluation.claim-faithfulness.v2"
     artifact_id: str
     case_id: str
     system_output_id: str
     citation_integrity_artifact_id: str
+    claim_match_artifact_id: str
     judgments: tuple[ClaimFaithfulnessJudgment, ...]
     status_completeness: ClaimFaithfulnessMetric
     supported_claim_coverage: ClaimFaithfulnessMetric
@@ -122,7 +128,9 @@ class ClaimFaithfulnessReport(StableModel):
     nonexistent_evidence_claims: ClaimFaithfulnessMetric
     passed: bool
 
-    @field_validator("artifact_id", "citation_integrity_artifact_id")
+    @field_validator(
+        "artifact_id", "citation_integrity_artifact_id", "claim_match_artifact_id"
+    )
     @classmethod
     def _validate_artifact_id(cls, value: str) -> str:
         return require_artifact_id(value)
@@ -170,10 +178,12 @@ class ClaimFaithfulnessEvaluator:
         case: EvaluationCaseTruth,
         output: SystemOutput,
         integrity: CitationIntegrityReport,
+        matching: ClaimMatchReport,
     ) -> ClaimFaithfulnessReport:
         """Measure exact claim status, support, recall, and evidence reachability."""
-        self._validate_inputs(case, output, integrity)
-        truth_by_statement = {claim.statement: claim for claim in case.claims}
+        self._validate_inputs(case, output, integrity, matching)
+        truth_by_id = {claim.claim_truth_id: claim for claim in case.claims}
+        matches = {item.system_claim_id: item for item in matching.outcomes}
         qrels_by_locator: dict[str, set[str]] = {}
         for qrel in case.qrels:
             qrels_by_locator.setdefault(qrel.locator.locator_id, set()).add(
@@ -186,7 +196,8 @@ class ClaimFaithfulnessEvaluator:
         judgments = tuple(
             self._judge(
                 claim,
-                truth_by_statement,
+                matches[claim.claim_id],
+                truth_by_id,
                 qrels_by_locator,
                 citations,
                 integrity_by_citation,
@@ -241,10 +252,11 @@ class ClaimFaithfulnessEvaluator:
             ),
         )
         payload = {
-            "schema_version": "bijux.canon.evaluation.claim-faithfulness.v1",
+            "schema_version": "bijux.canon.evaluation.claim-faithfulness.v2",
             "case_id": case.case_id,
             "system_output_id": output.output_id,
             "citation_integrity_artifact_id": integrity.artifact_id,
+            "claim_match_artifact_id": matching.artifact_id,
             "judgments": tuple(item.model_dump(mode="json") for item in judgments),
             "status_completeness": metrics[0].model_dump(mode="json"),
             "supported_claim_coverage": metrics[1].model_dump(mode="json"),
@@ -257,6 +269,7 @@ class ClaimFaithfulnessEvaluator:
             case_id=case.case_id,
             system_output_id=output.output_id,
             citation_integrity_artifact_id=integrity.artifact_id,
+            claim_match_artifact_id=matching.artifact_id,
             judgments=judgments,
             status_completeness=metrics[0],
             supported_claim_coverage=metrics[1],
@@ -268,12 +281,17 @@ class ClaimFaithfulnessEvaluator:
     @staticmethod
     def _judge(
         claim: SystemClaim,
-        truth_by_statement: dict[str, AtomicClaimTruth],
+        match: ClaimMatchOutcome,
+        truth_by_id: dict[str, AtomicClaimTruth],
         qrels_by_locator: dict[str, set[str]],
         citations: dict[str, SystemCitation],
         integrity_by_citation: dict[str, bool],
     ) -> ClaimFaithfulnessJudgment:
-        truth = truth_by_statement.get(claim.statement)
+        truth = (
+            None
+            if match.truth_claim_id is None
+            else truth_by_id[match.truth_claim_id]
+        )
         typed_citations = tuple(citations[item] for item in claim.citation_ids)
         verified_ids = tuple(
             item.citation_id
@@ -289,15 +307,22 @@ class ClaimFaithfulnessEvaluator:
             if integrity_by_citation[citation.citation_id]
             for qrel_id in qrels_by_locator.get(citation.locator_id, set())
         }
-        if truth is None or not verified_ids:
-            status = ClaimFaithfulnessStatus.unverifiable
-            rationale = (
-                "claim has no independently reviewed exact truth statement"
-                if truth is None
-                else "claim has no integrity-verified cited evidence"
-            )
+        if not match.admitted_equivalence:
+            status = {
+                ClaimMatchRelation.contradicts: ClaimFaithfulnessStatus.opposed,
+                ClaimMatchRelation.overgeneralized: ClaimFaithfulnessStatus.ambiguous,
+                ClaimMatchRelation.ambiguous: ClaimFaithfulnessStatus.ambiguous,
+                ClaimMatchRelation.unrelated: ClaimFaithfulnessStatus.unverifiable,
+            }.get(match.relation, ClaimFaithfulnessStatus.unverifiable)
+            rationale = match.rationale
             matched_qrels: set[str] = set()
+        elif not verified_ids:
+            status = ClaimFaithfulnessStatus.unverifiable
+            rationale = "claim has no integrity-verified cited evidence"
+            matched_qrels = set()
         else:
+            if truth is None:
+                raise AssertionError("admitted claim match has no truth claim")
             relations = {
                 label.relation
                 for label in truth.citations
@@ -341,6 +366,7 @@ class ClaimFaithfulnessEvaluator:
         case: EvaluationCaseTruth,
         output: SystemOutput,
         integrity: CitationIntegrityReport,
+        matching: ClaimMatchReport,
     ) -> None:
         if output.case_id != case.case_id or integrity.case_id != case.case_id:
             raise ClaimFaithfulnessEvaluationError(
@@ -350,10 +376,22 @@ class ClaimFaithfulnessEvaluator:
             raise ClaimFaithfulnessEvaluationError(
                 "citation integrity belongs to another system output"
             )
-        statements = tuple(claim.statement for claim in case.claims)
-        if len(statements) != len(set(statements)):
+        if (
+            matching.case_id != case.case_id
+            or matching.system_output_id != output.output_id
+            or matching.truth_artifact_id
+            != content_artifact_id(case.model_dump(mode="json"))
+            or matching.system_output_artifact_id
+            != content_artifact_id(output.model_dump(mode="json"))
+        ):
             raise ClaimFaithfulnessEvaluationError(
-                "reviewed truth claim statements must be unique for exact matching"
+                "claim matching belongs to another truth or system output"
+            )
+        if {item.system_claim_id for item in matching.outcomes} != {
+            item.claim_id for item in output.claims
+        }:
+            raise ClaimFaithfulnessEvaluationError(
+                "claim matching does not cover the exact emitted claim set"
             )
         if {item.citation_id for item in integrity.citations} != {
             item.citation_id for item in output.citations

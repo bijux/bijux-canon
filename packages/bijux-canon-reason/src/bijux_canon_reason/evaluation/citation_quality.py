@@ -13,6 +13,7 @@ from pydantic import field_validator, model_validator
 
 from bijux_canon_reason.core.models.base import StableModel
 from bijux_canon_reason.evaluation.citation_metrics import CitationIntegrityReport
+from bijux_canon_reason.evaluation.claim_matching import ClaimMatchReport
 from bijux_canon_reason.evaluation.metrics import ConfidenceInterval
 from bijux_canon_reason.evaluation.outcomes import SystemOutput
 from bijux_canon_reason.evaluation.truth import EvaluationCaseTruth
@@ -76,17 +77,20 @@ class CitationQualityMetric(StableModel):
 class CitationQualityReport(StableModel):
     """Precision, recall, and every failed relation for one case."""
 
-    schema_version: str = "bijux.canon.evaluation.citation-quality.v1"
+    schema_version: str = "bijux.canon.evaluation.citation-quality.v2"
     artifact_id: str
     case_id: str
     system_output_id: str
     citation_integrity_artifact_id: str
+    claim_match_artifact_id: str
     precision: CitationQualityMetric
     recall: CitationQualityMetric
     failures: tuple[CitationQualityFailure, ...]
     passed: bool
 
-    @field_validator("artifact_id", "citation_integrity_artifact_id")
+    @field_validator(
+        "artifact_id", "citation_integrity_artifact_id", "claim_match_artifact_id"
+    )
     @classmethod
     def _validate_artifact_id(cls, value: str) -> str:
         return require_artifact_id(value)
@@ -118,10 +122,12 @@ class CitationQualityEvaluator:
         case: EvaluationCaseTruth,
         output: SystemOutput,
         integrity: CitationIntegrityReport,
+        matching: ClaimMatchReport,
     ) -> CitationQualityReport:
         """Compute precision and recall without lexical-overlap or presence credit."""
-        self._validate_inputs(case, output, integrity)
-        truth_claims = {claim.statement: claim for claim in case.claims}
+        self._validate_inputs(case, output, integrity, matching)
+        truth_claims = {claim.claim_truth_id: claim for claim in case.claims}
+        matches = {item.system_claim_id: item for item in matching.outcomes}
         qrel_locators = {qrel.qrel_id: qrel.locator.locator_id for qrel in case.qrels}
         integrity_by_citation = {
             outcome.citation_id: outcome.verified for outcome in integrity.citations
@@ -131,7 +137,12 @@ class CitationQualityEvaluator:
         matched_pairs: set[tuple[str, str]] = set()
         failures: list[CitationQualityFailure] = []
         for system_claim in output.claims:
-            truth_claim = truth_claims.get(system_claim.statement)
+            match = matches[system_claim.claim_id]
+            truth_claim = (
+                truth_claims.get(match.truth_claim_id)
+                if match.admitted_equivalence and match.truth_claim_id is not None
+                else None
+            )
             allowed = (
                 set()
                 if truth_claim is None
@@ -232,10 +243,11 @@ class CitationQualityEvaluator:
             "emitted integrity-verified expected relations / all reviewed expected claim-citation relations",
         )
         payload = {
-            "schema_version": "bijux.canon.evaluation.citation-quality.v1",
+            "schema_version": "bijux.canon.evaluation.citation-quality.v2",
             "case_id": case.case_id,
             "system_output_id": output.output_id,
             "citation_integrity_artifact_id": integrity.artifact_id,
+            "claim_match_artifact_id": matching.artifact_id,
             "precision": precision.model_dump(mode="json"),
             "recall": recall.model_dump(mode="json"),
             "failures": tuple(failure.model_dump(mode="json") for failure in failures),
@@ -246,6 +258,7 @@ class CitationQualityEvaluator:
             case_id=case.case_id,
             system_output_id=output.output_id,
             citation_integrity_artifact_id=integrity.artifact_id,
+            claim_match_artifact_id=matching.artifact_id,
             precision=precision,
             recall=recall,
             failures=tuple(failures),
@@ -257,6 +270,7 @@ class CitationQualityEvaluator:
         case: EvaluationCaseTruth,
         output: SystemOutput,
         integrity: CitationIntegrityReport,
+        matching: ClaimMatchReport,
     ) -> None:
         if output.case_id != case.case_id or integrity.case_id != case.case_id:
             raise CitationQualityEvaluationError(
@@ -266,10 +280,22 @@ class CitationQualityEvaluator:
             raise CitationQualityEvaluationError(
                 "citation integrity belongs to another system output"
             )
-        statements = tuple(claim.statement for claim in case.claims)
-        if len(statements) != len(set(statements)):
+        if (
+            matching.case_id != case.case_id
+            or matching.system_output_id != output.output_id
+            or matching.truth_artifact_id
+            != content_artifact_id(case.model_dump(mode="json"))
+            or matching.system_output_artifact_id
+            != content_artifact_id(output.model_dump(mode="json"))
+        ):
             raise CitationQualityEvaluationError(
-                "reviewed truth claim statements must be unique for exact matching"
+                "claim matching belongs to another truth or system output"
+            )
+        if {item.system_claim_id for item in matching.outcomes} != {
+            item.claim_id for item in output.claims
+        }:
+            raise CitationQualityEvaluationError(
+                "claim matching does not cover the exact emitted claim set"
             )
         if {item.citation_id for item in integrity.citations} != {
             item.citation_id for item in output.citations

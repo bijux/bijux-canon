@@ -20,9 +20,14 @@ from bijux_canon_reason.evaluation import (
     AbstentionSafetyInput,
     AbstentionSafetyReport,
     AtomicClaimTruth,
+    ClaimFaithfulnessEvaluationError,
     ClaimFaithfulnessEvaluator,
     ClaimFaithfulnessReport,
     ClaimFaithfulnessStatus,
+    ClaimMatchEvaluator,
+    ClaimMatchRelation,
+    ClaimMatchReport,
+    ClaimQualifierAlignment,
     CitationIntegrityEvaluator,
     CitationIntegrityFailureCode,
     CitationIntegrityOwner,
@@ -51,6 +56,8 @@ from bijux_canon_reason.evaluation import (
     SystemClaimDisposition,
     SystemOutput,
     TruthProvenance,
+    create_claim_match_adjudication,
+    create_claim_match_review,
 )
 from bijux_canon_reason.research import (
     AnswerVerificationStatus,
@@ -226,6 +233,58 @@ def _sources(case: EvaluationCaseTruth) -> dict[str, bytes]:
     return {locator.source_uri: (REPO_ROOT / locator.source_uri).read_bytes()}
 
 
+def _matching(
+    case: EvaluationCaseTruth,
+    output: SystemOutput,
+    *,
+    force_truth: bool | None = None,
+) -> ClaimMatchReport:
+    truth_statements = {item.statement for item in case.claims}
+    reviews = []
+    for claim in output.claims:
+        matched = (
+            claim.statement in truth_statements if force_truth is None else force_truth
+        )
+        truth = case.claims[0] if matched else None
+        reviews.append(
+            create_claim_match_review(
+                case=case,
+                output=output,
+                system_claim_id=claim.claim_id,
+                truth_claim_id=None if truth is None else truth.claim_truth_id,
+                relation=(
+                    ClaimMatchRelation.unrelated
+                    if truth is None
+                    else ClaimMatchRelation.qualified_equivalent
+                ),
+                qualifier_alignment=ClaimQualifierAlignment(
+                    entity=matched,
+                    scope=matched,
+                    quantity=matched,
+                    modality=matched,
+                    negation=matched,
+                ),
+                reviewed_qrel_ids=(
+                    ()
+                    if truth is None
+                    else tuple(item.qrel_id for item in truth.citations)
+                ),
+                reviewer_id="independent-output-reviewer",
+                reviewed_on=date(2026, 8, 24),
+                rationale=(
+                    "The claim is unrelated to the frozen expected proposition."
+                    if truth is None
+                    else "The paraphrase retains entity, scope, quantity, modality, and negation."
+                ),
+            )
+        )
+    return ClaimMatchEvaluator().evaluate(
+        case=case,
+        output=output,
+        reviews=tuple(reviews),
+    )
+
+
 def test_real_source_citation_resolves_locator_span_text_and_hash() -> None:
     case = _case()
     citation = _citation(case)
@@ -340,6 +399,7 @@ def test_reviewed_claim_span_relation_earns_precision_and_recall_credit() -> Non
         case=case,
         output=output,
         integrity=integrity,
+        matching=_matching(case, output),
     )
     restarted = CitationQualityReport.model_validate_json(report.model_dump_json())
 
@@ -382,6 +442,7 @@ def test_attached_citation_gets_no_credit_without_reviewed_claim_relation() -> N
         case=case,
         output=output,
         integrity=integrity,
+        matching=_matching(case, output),
     )
 
     assert integrity.passed
@@ -418,6 +479,7 @@ def test_empty_citations_keep_zero_precision_denominator_and_expected_recall() -
         case=case,
         output=output,
         integrity=integrity,
+        matching=_matching(case, output),
     )
 
     assert not report.passed
@@ -462,6 +524,7 @@ def test_duplicate_emission_does_not_multiply_reviewed_relation_credit() -> None
         case=case,
         output=output,
         integrity=integrity,
+        matching=_matching(case, output),
     )
 
     assert report.precision.numerator == 1
@@ -485,6 +548,7 @@ def test_real_reviewed_claim_is_faithful_only_with_reachable_related_evidence() 
         case=case,
         output=output,
         integrity=integrity,
+        matching=_matching(case, output),
     )
     restarted = ClaimFaithfulnessReport.model_validate_json(report.model_dump_json())
 
@@ -495,6 +559,222 @@ def test_real_reviewed_claim_is_faithful_only_with_reachable_related_evidence() 
     assert report.supported_claim_coverage.value == 1.0
     assert report.expected_claim_recall.value == 1.0
     assert report.nonexistent_evidence_claims.numerator == 0
+
+
+def test_qualifier_complete_paraphrase_earns_claim_and_citation_credit() -> None:
+    case = _case()
+    citation = _citation(case)
+    claim = SystemClaim(
+        claim_id="paraphrased-system-claim",
+        statement=(
+            "Tissue-specific transcriptomes survived in RNA from historical canids "
+            "and a Late Pleistocene canid preserved in permafrost."
+        ),
+        disposition=SystemClaimDisposition.qualified,
+        citation_ids=(citation.citation_id,),
+    )
+    output = SystemOutput(
+        output_id="paraphrased-system-output",
+        case_id=case.case_id,
+        runtime_run_id="runtime-run",
+        runtime_attempt_id="runtime-attempt",
+        answer=claim.statement,
+        disposition=SystemAnswerDisposition.answered,
+        claims=(claim,),
+        citations=(citation,),
+        trace_identity_sha256="1" * 64,
+    )
+    integrity = CitationIntegrityEvaluator().evaluate(
+        case=case,
+        output=output,
+        source_payloads=_sources(case),
+    )
+    matching = _matching(case, output, force_truth=True)
+
+    citation_report = CitationQualityEvaluator().evaluate(
+        case=case,
+        output=output,
+        integrity=integrity,
+        matching=matching,
+    )
+    faithfulness = ClaimFaithfulnessEvaluator().evaluate(
+        case=case,
+        output=output,
+        integrity=integrity,
+        matching=matching,
+    )
+
+    assert claim.statement != case.claims[0].statement
+    assert citation_report.passed
+    assert faithfulness.passed
+    assert matching.outcomes[0].relation is ClaimMatchRelation.qualified_equivalent
+
+
+def test_overgeneralized_claim_gets_no_credit_despite_valid_citation() -> None:
+    case = _case()
+    citation = _citation(case)
+    claim = SystemClaim(
+        claim_id="overgeneralized-system-claim",
+        statement="Ancient RNA always survives in every canid tissue and environment.",
+        disposition=SystemClaimDisposition.asserted,
+        citation_ids=(citation.citation_id,),
+    )
+    output = SystemOutput(
+        output_id="overgeneralized-system-output",
+        case_id=case.case_id,
+        runtime_run_id="runtime-run",
+        runtime_attempt_id="runtime-attempt",
+        answer=claim.statement,
+        disposition=SystemAnswerDisposition.answered,
+        claims=(claim,),
+        citations=(citation,),
+        trace_identity_sha256="2" * 64,
+    )
+    review = create_claim_match_review(
+        case=case,
+        output=output,
+        system_claim_id=claim.claim_id,
+        truth_claim_id=case.claims[0].claim_truth_id,
+        relation=ClaimMatchRelation.overgeneralized,
+        qualifier_alignment=ClaimQualifierAlignment(
+            entity=True,
+            scope=False,
+            quantity=False,
+            modality=False,
+            negation=True,
+        ),
+        reviewed_qrel_ids=(case.qrels[0].qrel_id,),
+        reviewer_id="independent-output-reviewer",
+        reviewed_on=date(2026, 8, 24),
+        rationale="The emitted universal claim drops the reviewed specimen and tissue scope.",
+    )
+    matching = ClaimMatchEvaluator().evaluate(
+        case=case,
+        output=output,
+        reviews=(review,),
+    )
+    integrity = CitationIntegrityEvaluator().evaluate(
+        case=case,
+        output=output,
+        source_payloads=_sources(case),
+    )
+
+    faithfulness = ClaimFaithfulnessEvaluator().evaluate(
+        case=case,
+        output=output,
+        integrity=integrity,
+        matching=matching,
+    )
+
+    assert integrity.passed
+    assert not faithfulness.passed
+    assert faithfulness.judgments[0].status is ClaimFaithfulnessStatus.ambiguous
+    assert matching.errors[0].kind.value == "overgeneralized"
+
+
+def test_claim_review_is_bound_to_exact_system_output_not_answer_keywords() -> None:
+    case = _case()
+    output = _output(case, _citation(case))
+    matching = _matching(case, output)
+    altered = output.model_copy(
+        update={"answer": "The output changed after independent semantic review."}
+    )
+    integrity = CitationIntegrityEvaluator().evaluate(
+        case=case,
+        output=altered,
+        source_payloads=_sources(case),
+    )
+
+    with pytest.raises(
+        ClaimFaithfulnessEvaluationError,
+        match="another truth or system output",
+    ):
+        ClaimFaithfulnessEvaluator().evaluate(
+            case=case,
+            output=altered,
+            integrity=integrity,
+            matching=matching,
+        )
+
+
+def test_unadjudicated_reviewer_disagreement_remains_visible_and_unresolved() -> None:
+    case = _case()
+    output = _output(case, _citation(case))
+    agreeing = create_claim_match_review(
+        case=case,
+        output=output,
+        system_claim_id=output.claims[0].claim_id,
+        truth_claim_id=case.claims[0].claim_truth_id,
+        relation=ClaimMatchRelation.qualified_equivalent,
+        qualifier_alignment=ClaimQualifierAlignment(
+            entity=True,
+            scope=True,
+            quantity=True,
+            modality=True,
+            negation=True,
+        ),
+        reviewed_qrel_ids=(case.qrels[0].qrel_id,),
+        reviewer_id="independent-reviewer-one",
+        reviewed_on=date(2026, 8, 24),
+        rationale="The first reviewer considers every material qualifier retained.",
+    )
+    disagreeing = create_claim_match_review(
+        case=case,
+        output=output,
+        system_claim_id=output.claims[0].claim_id,
+        truth_claim_id=case.claims[0].claim_truth_id,
+        relation=ClaimMatchRelation.overgeneralized,
+        qualifier_alignment=ClaimQualifierAlignment(
+            entity=True,
+            scope=False,
+            quantity=True,
+            modality=True,
+            negation=True,
+        ),
+        reviewed_qrel_ids=(case.qrels[0].qrel_id,),
+        reviewer_id="independent-reviewer-two",
+        reviewed_on=date(2026, 8, 24),
+        rationale="The second reviewer finds the source population scope missing.",
+    )
+
+    matching = ClaimMatchEvaluator().evaluate(
+        case=case,
+        output=output,
+        reviews=(agreeing, disagreeing),
+    )
+
+    assert matching.outcomes[0].reviewer_disagreement
+    assert matching.outcomes[0].unresolved
+    assert matching.outcomes[0].relation is ClaimMatchRelation.ambiguous
+    assert matching.errors[0].kind.value == "reviewer_disagreement"
+
+    adjudication = create_claim_match_adjudication(
+        reviews=(agreeing, disagreeing),
+        truth_claim_id=case.claims[0].claim_truth_id,
+        relation=ClaimMatchRelation.qualified_equivalent,
+        qualifier_alignment=ClaimQualifierAlignment(
+            entity=True,
+            scope=True,
+            quantity=True,
+            modality=True,
+            negation=True,
+        ),
+        reviewed_qrel_ids=(case.qrels[0].qrel_id,),
+        adjudicator_id="independent-adjudicator",
+        adjudicated_on=date(2026, 8, 24),
+        rationale="Source review confirms that the emitted title retains its source scope.",
+    )
+    resolved = ClaimMatchEvaluator().evaluate(
+        case=case,
+        output=output,
+        reviews=(agreeing, disagreeing),
+        adjudications=(adjudication,),
+    )
+
+    assert resolved.outcomes[0].reviewer_disagreement
+    assert not resolved.outcomes[0].unresolved
+    assert resolved.outcomes[0].admitted_equivalence
+    assert resolved.outcomes[0].adjudication_artifact_id == adjudication.artifact_id
 
 
 @pytest.mark.parametrize(
@@ -544,6 +824,7 @@ def test_reviewed_relation_classifies_opposed_and_ambiguous_claims(
         case=case,
         output=output,
         integrity=integrity,
+        matching=_matching(case, output),
     )
 
     assert report.judgments[0].status is expected_status
@@ -573,6 +854,7 @@ def test_verified_but_unrelated_evidence_is_irrelevant_not_supported() -> None:
         case=case,
         output=output,
         integrity=integrity,
+        matching=_matching(case, output),
     )
 
     assert integrity.passed
@@ -607,6 +889,7 @@ def test_unknown_claim_and_missing_evidence_are_retained_as_failures() -> None:
         case=case,
         output=output,
         integrity=integrity,
+        matching=_matching(case, output),
     )
 
     assert report.judgments[0].status is ClaimFaithfulnessStatus.unverifiable
@@ -729,6 +1012,7 @@ def _faithfulness(
         case=case,
         output=output,
         integrity=integrity,
+        matching=_matching(case, output),
     )
 
 

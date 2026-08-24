@@ -15,6 +15,11 @@ from bijux_canon_reason.evaluation.metrics import (
     EvaluationReport,
     MetricObservation,
 )
+from bijux_canon_reason.evaluation.claim_matching import (
+    ClaimMatchAdjudication,
+    ClaimMatchReport,
+    ClaimMatchReview,
+)
 from bijux_canon_reason.evaluation.outcomes import SystemOutput
 from bijux_canon_reason.evaluation.product_metrics import (
     ProductEvaluationCase,
@@ -34,13 +39,16 @@ from bijux_canon_reason.evaluation.truth import (
     QrelJudgment,
 )
 
-EVALUATION_SCHEMA_CATALOG_VERSION = "bijux.canon.evaluation.schema-catalog.v2"
+EVALUATION_SCHEMA_CATALOG_VERSION = "bijux.canon.evaluation.schema-catalog.v3"
 
 _SCHEMA_MODELS: Mapping[str, type[BaseModel]] = {
     "adjudication": AdjudicationDecision,
     "atomic-claim-truth": AtomicClaimTruth,
     "case-outcome": EvaluationCaseOutcome,
     "case-truth": EvaluationCaseTruth,
+    "claim-match-adjudication": ClaimMatchAdjudication,
+    "claim-match-report": ClaimMatchReport,
+    "claim-match-review": ClaimMatchReview,
     "citation-truth": CitationTruthLabel,
     "metric-observation": MetricObservation,
     "product-case": ProductEvaluationCase,

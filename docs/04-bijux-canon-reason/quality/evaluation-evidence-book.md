@@ -52,9 +52,19 @@ classifications, blocking gaps, unsearched important claims, answer revision,
 conflicts, and marginal evidence. Per-case outcomes retain RAG and RAR tool
 calls, costs, latency, iterations, and exact convergence reasons; tool volume
 never contributes quality credit. Latency uses the deterministic nearest-rank
-p95. Every result also reports per-case values, population standard deviation, an explicit
-uncertainty method, terminal status counts, partial-label counts and deterministic
-worst-case identities.
+p95. Every result also reports per-case values, population standard deviation,
+an explicit uncertainty method, terminal status counts, partial-label counts and
+deterministic worst-case identities.
+
+Claim and citation scoring never matches answer text by exact string or keyword
+overlap. Independently authored claim-match reviews bind the exact frozen truth,
+system output, and emitted atomic claim, then record semantic equivalence plus
+entity, scope, quantity, modality, and negation retention. An overgeneralized,
+contradictory, unrelated, or ambiguous claim receives no equivalence credit even
+when it has an integrity-valid citation. Multiple reviewer decisions remain in
+the content-addressed report; disagreement is unresolved until a distinct
+adjudicator binds and resolves the exact review artifacts. Representative
+semantic errors remain report data rather than disappearing from aggregates.
 
 `budget-exhausted` is an incomplete execution status. It requires a typed failure
 code, cannot claim an answer disposition, scores zero in completion, and receives
