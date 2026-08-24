@@ -7,6 +7,56 @@ from __future__ import annotations
 
 import argparse
 
+_PROFILES = (
+    "offline-lexical",
+    "local-hybrid-exact",
+    "local-hybrid-ann",
+    "qdrant-hybrid",
+)
+
+
+def _add_operation_options(command: argparse.ArgumentParser) -> None:
+    command.add_argument(
+        "--request",
+        help="Optional strict v2 request JSON; direct path/options remain supported.",
+    )
+    command.add_argument(
+        "--idempotency-key",
+        help="Stable retry identity; defaults to the generated or supplied request ID.",
+    )
+    command.add_argument("--request-id", help="Stable caller request identity.")
+    command.add_argument("--scope", default="local")
+    command.add_argument("--profile", choices=_PROFILES, default="offline-lexical")
+    command.add_argument("--operation-timeout-seconds", type=float, default=30.0)
+    command.add_argument("--max-artifact-bytes", type=int, default=10_000_000)
+    command.add_argument("--max-steps", type=int)
+    command.add_argument("--max-provider-tokens", type=int)
+    command.add_argument(
+        "--wait",
+        action="store_true",
+        help="Wait for a terminal job state instead of returning after submission.",
+    )
+    command.add_argument(
+        "--wait-timeout-seconds",
+        type=float,
+        default=30.0,
+        help="Maximum operator wait; job execution retains its own request budget.",
+    )
+
+
+def _add_retrieval_options(command: argparse.ArgumentParser) -> None:
+    command.add_argument("query", nargs="?")
+    command.add_argument("--index-id")
+    command.add_argument("--top-k", type=int, default=5)
+    command.add_argument("--document-id", action="append", default=[])
+    command.add_argument("--source-uri", action="append", default=[])
+
+
+def _add_answer_options(command: argparse.ArgumentParser) -> None:
+    _add_retrieval_options(command)
+    command.add_argument("--corpus-id")
+    command.add_argument("--provider", default="credential-free")
+
 
 def add_v2_commands(
     subparsers: argparse._SubParsersAction[argparse.ArgumentParser],
@@ -59,19 +109,46 @@ def add_v2_commands(
     )
     ready.add_argument(
         "--profile",
-        choices=(
-            "offline-lexical",
-            "local-hybrid-exact",
-            "local-hybrid-ann",
-            "qdrant-hybrid",
-        ),
+        choices=_PROFILES,
         help="Evaluate dependencies for one exact execution profile.",
     )
 
-    for name in ("ingest", "index", "retrieve", "ask", "research", "run"):
-        command = commands.add_parser(name, help=f"Submit the typed {name} operation.")
-        command.add_argument("--request", required=True)
-        command.add_argument("--idempotency-key", required=True)
+    ingest = commands.add_parser(
+        "ingest", help="Prepare a durable corpus from a document directory."
+    )
+    ingest.add_argument("source_directory", nargs="?")
+    _add_operation_options(ingest)
+
+    index = commands.add_parser("index", help="Build indexes for a corpus identity.")
+    index.add_argument("corpus_id", nargs="?")
+    _add_operation_options(index)
+
+    for name in ("search", "retrieve"):
+        search = commands.add_parser(
+            name,
+            help=(
+                "Search an immutable index for bounded evidence."
+                if name == "search"
+                else "Retrieve bounded evidence (automation-compatible search alias)."
+            ),
+        )
+        _add_retrieval_options(search)
+        _add_operation_options(search)
+
+    for name in ("ask", "research"):
+        answer = commands.add_parser(name, help=f"Submit a grounded {name} operation.")
+        _add_answer_options(answer)
+        _add_operation_options(answer)
+
+    run = commands.add_parser("run", help="Run the complete linked workflow.")
+    run.add_argument("query", nargs="?")
+    run.add_argument("--source-directory")
+    run.add_argument("--corpus-id")
+    run.add_argument("--top-k", type=int, default=5)
+    run.add_argument("--document-id", action="append", default=[])
+    run.add_argument("--source-uri", action="append", default=[])
+    run.add_argument("--provider", default="credential-free")
+    _add_operation_options(run)
 
     corpus_inspect = commands.add_parser(
         "corpus-inspect", help="Inspect an immutable corpus snapshot."
@@ -111,6 +188,12 @@ def add_v2_commands(
 
     status = commands.add_parser("status", help="Inspect durable job state.")
     status.add_argument("job_id")
+    status.add_argument(
+        "--follow",
+        action="store_true",
+        help="Wait for terminal state using worker notifications.",
+    )
+    status.add_argument("--timeout-seconds", type=float, default=30.0)
 
     result = commands.add_parser("result", help="Resolve a completed job result.")
     result.add_argument("job_id")
@@ -124,16 +207,50 @@ def add_v2_commands(
 
     replay = commands.add_parser("replay", help="Submit a linked replay attempt.")
     replay.add_argument("run_id")
-    replay.add_argument("--request", required=True)
-    replay.add_argument("--idempotency-key", required=True)
+    replay.add_argument("--request")
+    replay.add_argument("--request-id")
+    replay.add_argument("--source-attempt-id")
+    replay.add_argument("--process-id", default="operator-cli")
+    replay.add_argument(
+        "--network-policy",
+        choices=("disabled", "recorded-only", "permitted"),
+        default="disabled",
+    )
+    replay.add_argument("--provider-allowlist", action="append", default=[])
+    replay.add_argument("--job-timeout-seconds", type=float)
+    replay.add_argument("--idempotency-key")
+    replay.add_argument("--wait", action="store_true")
+    replay.add_argument("--wait-timeout-seconds", type=float, default=30.0)
 
     compare = commands.add_parser("compare", help="Compare immutable attempts.")
-    compare.add_argument("--request", required=True)
+    compare.add_argument("baseline_run_id", nargs="?")
+    compare.add_argument("candidate_run_id", nargs="?")
+    compare.add_argument("--baseline-attempt-id")
+    compare.add_argument("--candidate-attempt-id")
+    compare.add_argument("--dimension", action="append", default=[])
+    compare.add_argument("--limit", type=int, default=100)
+    compare.add_argument("--cursor")
+    compare.add_argument("--request")
+    compare.add_argument("--request-id")
 
     cancel = commands.add_parser("cancel", help="Cancel queued or running work.")
     cancel.add_argument("job_id")
-    cancel.add_argument("--request", required=True)
-    cancel.add_argument("--idempotency-key", required=True)
+    cancel.add_argument("--request")
+    cancel.add_argument("--request-id")
+    cancel.add_argument("--reason", default="operator requested cancellation")
+    cancel.add_argument("--idempotency-key")
+
+    backup = commands.add_parser(
+        "backup", help="Create a verified backup of the configured Runtime store."
+    )
+    backup.add_argument("backup_id")
+    backup.add_argument("--created-at")
+
+    restore = commands.add_parser(
+        "restore", help="Restore a verified backup into a new local root."
+    )
+    restore.add_argument("backup_generation")
+    restore.add_argument("restore_root")
 
 
 __all__ = ["add_v2_commands"]

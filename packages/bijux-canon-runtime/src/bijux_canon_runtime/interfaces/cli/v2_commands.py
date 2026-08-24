@@ -13,6 +13,7 @@ import os
 from pathlib import Path
 import sys
 from typing import TypeVar
+import uuid
 
 from pydantic import BaseModel, ValidationError
 
@@ -61,6 +62,10 @@ from bijux_canon_runtime.application.readiness import (
 )
 from bijux_canon_runtime.application.runtime_configuration import (
     resolve_runtime_configuration,
+)
+from bijux_canon_runtime.application.workspace_protection import (
+    RuntimeWorkspaceProtection,
+    WorkspaceProtectionError,
 )
 from bijux_canon_runtime.model.execution.request_plan import (
     ExecutionProfile,
@@ -134,10 +139,37 @@ def run_v2_command(
             )
             _write(readiness_report)
             return 0 if readiness_report.ready else EXIT_NOT_READY
+        if args.v2_command == "backup":
+            protection = RuntimeWorkspaceProtection(
+                resolve_runtime_configuration(environment=os.environ)
+            )
+            _write(
+                protection.backup(
+                    backup_id=args.backup_id,
+                    created_at=args.created_at,
+                )
+            )
+            return 0
+        if args.v2_command == "restore":
+            _write(
+                RuntimeWorkspaceProtection.restore(
+                    backup_generation=Path(args.backup_generation),
+                    restore_root=Path(args.restore_root),
+                )
+            )
+            return 0
         service = _require_services(services)
         if services is None:
             owned_service = service
-        if args.v2_command in {"ingest", "index", "retrieve", "ask", "research", "run"}:
+        if args.v2_command in {
+            "ingest",
+            "index",
+            "search",
+            "retrieve",
+            "ask",
+            "research",
+            "run",
+        }:
             return _submit(args, service)
         if args.v2_command == "corpus-inspect":
             _write(json_value(service.inspect_corpus(ArtifactID(args.corpus_id))))
@@ -180,7 +212,12 @@ def run_v2_command(
                 _write(evaluation.manifest())
             return 0
         if args.v2_command == "status":
-            _write(job_status(service.status(args.job_id)).model_dump(mode="json"))
+            snapshot = (
+                service.wait(args.job_id, timeout_seconds=args.timeout_seconds)
+                if args.follow
+                else service.status(args.job_id)
+            )
+            _write(job_status(snapshot).model_dump(mode="json"))
             return 0
         if args.v2_command == "result":
             _write(
@@ -198,7 +235,7 @@ def run_v2_command(
         if args.v2_command == "compare":
             return _compare(args, service)
         if args.v2_command == "cancel":
-            _load_model(Path(args.request), CancelRequest)
+            _cancel_body(args)
             _write(job_status(service.cancel(args.job_id)).model_dump(mode="json"))
             return 0
         raise ValueError(f"unsupported v2 command: {args.v2_command}")
@@ -218,6 +255,14 @@ def run_v2_command(
             cause=exc,
         )
         return EXIT_INVALID_REQUEST
+    except TimeoutError as exc:
+        _failure(
+            RuntimeProblemCode.OPERATION_FAILED,
+            correlation_id=correlation_id,
+            run_id=run_id,
+            cause=exc,
+        )
+        return EXIT_OPERATION_FAILED
     except (OSError, json.JSONDecodeError) as exc:
         _failure(
             RuntimeProblemCode.INVALID_REQUEST,
@@ -250,6 +295,14 @@ def run_v2_command(
             cause=exc,
         )
         return EXIT_MISSING_CAPABILITY
+    except WorkspaceProtectionError as exc:
+        _failure(
+            RuntimeProblemCode.OPERATION_FAILED,
+            correlation_id=correlation_id,
+            run_id=run_id,
+            cause=exc,
+        )
+        return EXIT_OPERATION_FAILED
     except RuntimeError as exc:
         _failure(
             RuntimeProblemCode.OPERATION_FAILED,
@@ -307,9 +360,9 @@ def _submit(
     args: argparse.Namespace,
     service: RuntimeApplicationServicesV2,
 ) -> int:
-    command = args.v2_command
+    command = "retrieve" if args.v2_command == "search" else args.v2_command
     if command == "ingest":
-        ingest_body = _load_model(Path(args.request), PrepareCorpusRequest)
+        ingest_body = _operation_body(args, PrepareCorpusRequest)
         request = operation_request(
             context=ingest_body.context,
             operation=RuntimeRequestOperation.CORPUS_PREPARE,
@@ -318,9 +371,12 @@ def _submit(
             scope=ingest_body.scope,
             source_directory=ingest_body.source_directory,
         )
-        snapshot = service.corpus(request, idempotency_key=args.idempotency_key)
+        snapshot = service.corpus(
+            request,
+            idempotency_key=args.idempotency_key or ingest_body.context.request_id,
+        )
     elif command == "index":
-        index_body = _load_model(Path(args.request), BuildIndexRequest)
+        index_body = _operation_body(args, BuildIndexRequest)
         request = operation_request(
             context=index_body.context,
             operation=RuntimeRequestOperation.INDEX_BUILD,
@@ -329,21 +385,33 @@ def _submit(
             scope=index_body.scope,
             corpus_id=index_body.corpus_id,
         )
-        snapshot = service.index(request, idempotency_key=args.idempotency_key)
+        snapshot = service.index(
+            request,
+            idempotency_key=args.idempotency_key or index_body.context.request_id,
+        )
     elif command == "retrieve":
-        retrieve_body = _load_model(Path(args.request), RetrieveRequest)
+        retrieve_body = _operation_body(args, RetrieveRequest)
         request = _retrieval(retrieve_body, RuntimeRequestOperation.RETRIEVE)
-        snapshot = service.retrieve(request, idempotency_key=args.idempotency_key)
+        snapshot = service.retrieve(
+            request,
+            idempotency_key=args.idempotency_key or retrieve_body.context.request_id,
+        )
     elif command == "ask":
-        ask_body = _load_model(Path(args.request), AskRequest)
+        ask_body = _operation_body(args, AskRequest)
         request = _answer(ask_body, RuntimeRequestOperation.ASK)
-        snapshot = service.ask(request, idempotency_key=args.idempotency_key)
+        snapshot = service.ask(
+            request,
+            idempotency_key=args.idempotency_key or ask_body.context.request_id,
+        )
     elif command == "research":
-        research_body = _load_model(Path(args.request), ResearchRequest)
+        research_body = _operation_body(args, ResearchRequest)
         request = _answer(research_body, RuntimeRequestOperation.RESEARCH)
-        snapshot = service.research(request, idempotency_key=args.idempotency_key)
+        snapshot = service.research(
+            request,
+            idempotency_key=args.idempotency_key or research_body.context.request_id,
+        )
     else:
-        run_body = _load_model(Path(args.request), RunRequest)
+        run_body = _operation_body(args, RunRequest)
         request = operation_request(
             context=run_body.context,
             operation=RuntimeRequestOperation.RUN,
@@ -360,9 +428,118 @@ def _submit(
             top_k=run_body.top_k,
             answer_policy=run_body.answer_policy,
         )
-        snapshot = service.run(request, idempotency_key=args.idempotency_key)
+        snapshot = service.run(
+            request,
+            idempotency_key=args.idempotency_key or run_body.context.request_id,
+        )
+    if args.wait:
+        snapshot = service.wait(
+            snapshot.job_id,
+            timeout_seconds=args.wait_timeout_seconds,
+        )
     _write(job_status(snapshot).model_dump(mode="json"))
     return 0
+
+
+def _operation_body(args: argparse.Namespace, model_type: type[ModelT]) -> ModelT:
+    request_path = getattr(args, "request", None)
+    if request_path is not None:
+        return _load_model(Path(request_path), model_type)
+    return model_type.model_validate(_direct_operation_payload(args))
+
+
+def _direct_operation_payload(args: argparse.Namespace) -> dict[str, object]:
+    command = "retrieve" if args.v2_command == "search" else args.v2_command
+    common: dict[str, object] = {
+        "budget": _budget_payload(args),
+        "context": _context_payload(args),
+        "execution_profile": args.profile,
+        "scope": args.scope,
+    }
+    if command == "ingest":
+        return {
+            **common,
+            "source_directory": str(
+                Path(_required(args.source_directory, "source directory")).resolve()
+            ),
+        }
+    if command == "index":
+        return {
+            **common,
+            "corpus_id": _required(args.corpus_id, "corpus identity"),
+        }
+    filters = {
+        "document_ids": args.document_id,
+        "source_uris": args.source_uri,
+    }
+    if command == "retrieve":
+        return {
+            **common,
+            "filters": filters,
+            "index_id": _required(args.index_id, "index identity"),
+            "query": _required(args.query, "query"),
+            "top_k": args.top_k,
+        }
+    answer_policy = {
+        "permit_insufficient_answer": True,
+        "provider": args.provider,
+        "publish": True,
+        "require_citations": True,
+    }
+    if command in {"ask", "research"}:
+        return {
+            **common,
+            "answer_policy": answer_policy,
+            "corpus_id": _required(args.corpus_id, "corpus identity"),
+            "filters": filters,
+            "index_id": _required(args.index_id, "index identity"),
+            "query": _required(args.query, "query"),
+            "top_k": args.top_k,
+        }
+    source_directory = args.source_directory
+    corpus_id = args.corpus_id
+    if (source_directory is None) == (corpus_id is None):
+        raise ValueError(
+            "run requires exactly one of --source-directory or --corpus-id"
+        )
+    return {
+        **common,
+        "answer_policy": answer_policy,
+        "corpus_id": corpus_id,
+        "filters": filters,
+        "query": _required(args.query, "query"),
+        "source_directory": (
+            None if source_directory is None else str(Path(source_directory).resolve())
+        ),
+        "top_k": args.top_k,
+    }
+
+
+def _context_payload(args: argparse.Namespace) -> dict[str, str]:
+    request_id = args.request_id or f"request-{uuid.uuid4().hex}"
+    correlation_id = args.correlation_id or f"correlation-{uuid.uuid4().hex}"
+    args.correlation_id = correlation_id
+    return {
+        "contract_version": "v2",
+        "correlation_id": correlation_id,
+        "replay_mode": "strict",
+        "request_id": request_id,
+    }
+
+
+def _budget_payload(args: argparse.Namespace) -> dict[str, object]:
+    return {
+        "max_artifact_bytes": args.max_artifact_bytes,
+        "max_provider_tokens": args.max_provider_tokens,
+        "max_steps": args.max_steps,
+        "timeout_seconds": args.operation_timeout_seconds,
+    }
+
+
+def _required(value: str | None, label: str) -> str:
+    if value is None or not value.strip():
+        raise ValueError(f"direct command requires {label} or --request JSON")
+    return value
 
 
 def _retrieval(
@@ -415,7 +592,21 @@ def _inspect(args: argparse.Namespace, service: RuntimeApplicationServicesV2) ->
 
 
 def _replay(args: argparse.Namespace, service: RuntimeApplicationServicesV2) -> int:
-    body = _load_model(Path(args.request), ReplayRequest)
+    if args.request is not None:
+        body = _load_model(Path(args.request), ReplayRequest)
+    else:
+        body = ReplayRequest.model_validate(
+            {
+                "context": _context_payload(args),
+                "network_policy": args.network_policy,
+                "process_id": args.process_id,
+                "provider_allowlist": args.provider_allowlist,
+                "source_attempt_id": _required(
+                    args.source_attempt_id, "source attempt identity"
+                ),
+                "timeout_seconds": args.job_timeout_seconds,
+            }
+        )
     request = ReplayOperationRequest(
         run_id=args.run_id,
         source_attempt_id=body.source_attempt_id,
@@ -429,15 +620,42 @@ def _replay(args: argparse.Namespace, service: RuntimeApplicationServicesV2) -> 
     )
     snapshot = service.replay(
         request,
-        idempotency_key=args.idempotency_key,
+        idempotency_key=args.idempotency_key or body.context.request_id,
         timeout_seconds=body.timeout_seconds,
     )
+    if args.wait:
+        snapshot = service.wait(
+            snapshot.job_id,
+            timeout_seconds=args.wait_timeout_seconds,
+        )
     _write(job_status(snapshot).model_dump(mode="json"))
     return 0
 
 
 def _compare(args: argparse.Namespace, service: RuntimeApplicationServicesV2) -> int:
-    body = _load_model(Path(args.request), CompareRequest)
+    if args.request is not None:
+        body = _load_model(Path(args.request), CompareRequest)
+    else:
+        body = CompareRequest.model_validate(
+            {
+                "baseline_attempt_id": _required(
+                    args.baseline_attempt_id, "baseline attempt identity"
+                ),
+                "baseline_run_id": _required(
+                    args.baseline_run_id, "baseline run identity"
+                ),
+                "candidate_attempt_id": _required(
+                    args.candidate_attempt_id, "candidate attempt identity"
+                ),
+                "candidate_run_id": _required(
+                    args.candidate_run_id, "candidate run identity"
+                ),
+                "context": _context_payload(args),
+                "cursor": args.cursor,
+                "dimensions": args.dimension or ["outcome", "claims", "citations"],
+                "limit": args.limit,
+            }
+        )
     dimensions = tuple(ComparisonDimension(item) for item in body.dimensions)
     result = service.compare_page(
         baseline_run_id=body.baseline_run_id,
@@ -456,6 +674,17 @@ def _compare(args: argparse.Namespace, service: RuntimeApplicationServicesV2) ->
     )
     _write(json_value(result))
     return 0
+
+
+def _cancel_body(args: argparse.Namespace) -> CancelRequest:
+    if args.request is not None:
+        return _load_model(Path(args.request), CancelRequest)
+    return CancelRequest.model_validate(
+        {
+            "context": _context_payload(args),
+            "reason": args.reason,
+        }
+    )
 
 
 def _load_model(path: Path, model_type: type[ModelT]) -> ModelT:

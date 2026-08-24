@@ -156,3 +156,22 @@ def test_configured_backup_uses_workspace_database_cas_and_backup_root(
     assert generation == layout.backup_root / "generations" / "configured-backup"
     assert manifest.backup_id == "configured-backup"
     assert (generation / "runtime.duckdb").is_file()
+
+
+@pytest.mark.parametrize("backup_id", ["../escape", "nested/escape", "", " space"])
+def test_backup_identity_cannot_escape_the_generation_root(
+    tmp_path: Path, backup_id: str
+) -> None:
+    configuration = resolve_runtime_configuration(
+        explicit={"working_root": tmp_path / "workspace"}
+    )
+    manager = RuntimeBackupManager(configuration=configuration)
+
+    with pytest.raises(ValueError, match="backup_id must be"):
+        manager.create_backup(
+            backup_id=backup_id,
+            destination_root=tmp_path / "backups",
+            created_at="2026-08-23T00:00:00+00:00",
+        )
+
+    assert not (tmp_path / "escape").exists()

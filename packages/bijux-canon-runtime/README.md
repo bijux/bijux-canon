@@ -115,82 +115,62 @@ verification behavior without proving that live package adapters are
 callable. Live and unsafe execution cross the adapter boundary when their
 steps require agent, retrieval, vector-contract, or reasoning work.
 
-## Executable Integration Boundary
+## Executable Product Boundary
 
 ```mermaid
 flowchart LR
-    manifest["FlowManifest"] --> plan["resolved plan"]
-    plan --> runtime["runtime step executors"]
-    runtime --> adapters["explicit adapters"]
-    adapters --> agent["agent pipeline + trace"]
-    adapters --> ingest["ingest retrieval records"]
-    adapters --> index["index contract verdict"]
-    adapters --> reason["reason claims + support"]
-    adapters --> records["runtime artifacts + evidence + bundle"]
+    request["typed v2 request"] --> plan["deterministic operation plan"]
+    plan --> ingest["durable corpus"]
+    ingest --> index["profile-selected index"]
+    index --> retrieval["bounded evidence"]
+    retrieval --> reason["grounded claims + citations"]
+    reason --> agent["bounded research workflow"]
+    agent --> records["run, attempt, artifacts, events"]
 ```
 
-The step executors currently resolve four package-root callables. None is
-provided by the installed canonical package roots:
-
-| Runtime request | Current package truth | Consequence |
-| --- | --- | --- |
-| `bijux_canon_agent.run(...)` | the root exports only `API_VERSION` | no live agent handoff |
-| `bijux_canon_ingest.retrieve(query, top_k, scope, vector_contract_id)` | retrieval is a path-based application API with a different typed contract | no lossless retrieval handoff |
-| `bijux_canon_index.enforce_contract(contract_id, evidence)` | the root exports version metadata only | no live vector-contract verdict |
-| `bijux_canon_reason.reason(...) -> ReasoningBundle` | the root exports reason-owned models and validators, not this callable or runtime type | no live reasoning handoff |
-
-The `bijux-agent`, `bijux-rag`, `bijux-vex`, and `bijux-rar` compatibility roots
-delegate to their canonical packages; they do not supply extra adapter
-behavior. Consequently, aligned package versions and successful imports are
-dependency evidence, not end-to-end execution evidence.
-
-Each adapter must be explicit about model conversion and custody: agent traces
-to runtime artifacts, prepared retrieval records to runtime evidence, index
-decisions to contract verdicts, and reason claims and support to runtime
-bundles. The acceptance bar is an installed-package test that executes every
-applicable loader and verifies identity, failure, and provenance preservation
-through the resulting runtime records.
+The installed v2 application composes the canonical ingest, index, reason, and
+agent packages behind one durable job authority. `offline-lexical` executes the
+complete local path without an embedding model, hosted provider, or secret.
+Dense profiles are admitted only after readiness validates their locked model
+and backend requirements. Every accepted operation retains its request, plan,
+run, attempt, transition artifacts, and terminal result in the configured
+workspace.
 
 ## CLI Workflow
 
 ```bash
-bijux-canon-runtime run flow.json \
-  --policy policy.json \
-  --db-path artifacts/bijux-canon-runtime/runs.duckdb \
-  --strict-determinism --json
+bijux-canon-runtime init --workspace ./canon-workspace --json
+export BIJUX_CANON_RUNTIME_WORKING_ROOT=./canon-workspace
 
-bijux-canon-runtime replay flow.json \
-  --policy policy.json \
-  --run-id <run-id> \
-  --tenant-id <tenant-id> \
-  --db-path artifacts/bijux-canon-runtime/runs.duckdb \
-  --strict-determinism --json
-
-bijux-canon-runtime inspect run <run-id> \
-  --tenant-id <tenant-id> \
-  --db-path artifacts/bijux-canon-runtime/runs.duckdb --json
+bijux-canon-runtime v2 run \
+  "What evidence does this corpus support?" \
+  --source-directory ./documents \
+  --profile offline-lexical \
+  --wait --wait-timeout-seconds 30
 ```
 
-The CLI also implements `plan`, `dry-run`, `unsafe-run`, run diff, failure
-explanation, and database validation commands. Those commands are currently
-suppressed from the top-level help display; their presence must not be confused
-with the three prominently advertised commands.
+The command emits one JSON job-status document. Use its `job_id` with
+`v2 result JOB_ID` to resolve the run and attempt identities, then use
+`v2 inspect`, `v2 replay`, and `v2 compare` for bounded audit and comparison.
+The same product path is available as separate `v2 ingest`, `v2 index`,
+`v2 search`, `v2 ask`, and `v2 research` commands. Every submission also
+accepts `--request FILE` for strict request-file automation.
 
-The live `run` syntax above documents the CLI contract. With the canonical
-package family as shipped, a flow that reaches one of the four integrations
-stops at its missing or incompatible callable. Use `plan` to inspect resolution
-without step execution and `dry-run` for the package's intelligence-free
-synthetic trace path; neither is a substitute for a successful live adapter
-test.
+The legacy manifest commands remain parseable for compatibility but are hidden
+from top-level help. New integrations should use the v2 command group.
 
 ## HTTP Contract
 
-The experimental v1 application implements health and DuckDB readiness probes.
-Run and replay requests are schema-validated and require authority headers, but
-both endpoints currently return `501 Not Implemented`; no successful
-`FlowRunResponse` is produced over HTTP today. The tracked future-facing
-contract is pinned under
-[`apis/bijux-canon-runtime/v1/`](../../apis/bijux-canon-runtime/v1/).
+The v2 HTTP application exposes the same typed corpus, index, retrieval,
+answer, research, run, inspection, replay, comparison, job, and evaluation
+operations as the shared application service. Submission responses are bounded
+job documents; result and inspection payloads require deliberate follow-up and
+inspection collections are paginated. The CLI-only backup and restore commands
+operate on local filesystem authority and are not HTTP endpoints.
+
+The older v1 run and replay endpoints remain compatibility contracts and return
+`501 Not Implemented`. New integrations should use the v2 schema pinned under
+[`apis/bijux-canon-runtime/v2/`](../../apis/bijux-canon-runtime/v2/).
 
 ## Evaluate A Runtime Claim
 

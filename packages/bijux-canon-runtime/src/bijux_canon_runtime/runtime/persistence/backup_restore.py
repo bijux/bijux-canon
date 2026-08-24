@@ -10,6 +10,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import shutil
 import tempfile
 from typing import TYPE_CHECKING
@@ -97,8 +98,10 @@ class RuntimeBackupManager:
         created_at: str,
     ) -> tuple[Path, RuntimeBackupManifest]:
         """Publish a complete backup generation atomically."""
-        if not backup_id.strip():
-            raise ValueError("backup_id must not be empty")
+        if re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,127}", backup_id) is None:
+            raise ValueError(
+                "backup_id must be 1-128 letters, digits, dots, underscores, or hyphens"
+            )
         destination = destination_root.resolve()
         generation = destination / "generations" / backup_id
         if generation.exists():

@@ -125,6 +125,36 @@ def test_library_cli_and_http_publish_the_same_operation_inventory() -> None:
         assert method in openapi["paths"][path]
 
 
+def test_operator_help_hides_legacy_commands_without_suppress_sentinels() -> None:
+    parser = build_parser(prog_name="bijux-canon-runtime")
+    root_help = parser.format_help()
+    root_subparsers = next(
+        action
+        for action in parser._actions
+        if isinstance(action, argparse._SubParsersAction)
+    )
+    v2_help = root_subparsers.choices["v2"].format_help()
+
+    assert "{v2,init}" in root_help
+    assert "==SUPPRESS==" not in root_help
+    for legacy_command in ("plan", "dry-run", "unsafe-run", "diff", "explain"):
+        assert f"    {legacy_command} " not in root_help
+    for command in (
+        "ingest",
+        "index",
+        "search",
+        "ask",
+        "research",
+        "run",
+        "inspect",
+        "replay",
+        "compare",
+        "backup",
+        "restore",
+    ):
+        assert f"    {command} " in v2_help
+
+
 def test_discover_command_uses_the_ingest_application_boundary(
     tmp_path: Path,
 ) -> None:

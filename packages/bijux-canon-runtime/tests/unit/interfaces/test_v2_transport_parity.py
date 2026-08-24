@@ -107,18 +107,36 @@ def _request_payloads(tmp_path: Path) -> dict[str, dict[str, object]]:
     }
 
 
-def _snapshot(kind: JobKind, *, cancelled: bool = False) -> DurableJobSnapshot:
+def _snapshot(
+    kind: JobKind,
+    *,
+    cancelled: bool = False,
+    status: JobStatus | None = None,
+) -> DurableJobSnapshot:
+    effective_status = (
+        JobStatus.CANCELLED
+        if cancelled
+        else status
+        if status is not None
+        else JobStatus.QUEUED
+    )
+    finished = effective_status in {
+        JobStatus.SUCCEEDED,
+        JobStatus.FAILED,
+        JobStatus.CANCELLED,
+        JobStatus.TIMED_OUT,
+    }
     return DurableJobSnapshot(
         job_id="job_v1_transport_parity",
         kind=kind,
         idempotency_key=_IDEMPOTENCY_KEY,
         request_sha256="c" * 64,
-        status=JobStatus.CANCELLED if cancelled else JobStatus.QUEUED,
+        status=effective_status,
         cancel_requested=cancelled,
         attempt_count=0,
         submitted_at="2026-08-22T00:00:00+00:00",
-        started_at=None,
-        finished_at="2026-08-22T00:00:01+00:00" if cancelled else None,
+        started_at="2026-08-22T00:00:00+00:00" if finished else None,
+        finished_at="2026-08-22T00:00:01+00:00" if finished else None,
         deadline_at="2026-08-22T00:00:30+00:00",
         timeout_seconds=30,
         request_artifact_id="sha256:" + "a" * 64,
@@ -168,6 +186,10 @@ class _RecordingServices(RuntimeApplicationServicesV2):
     def status(self, job_id: str):
         self.calls.append(("status", job_id))
         return _snapshot(JobKind.RUN)
+
+    def wait(self, job_id: str, *, timeout_seconds: float | None = None):
+        self.calls.append(("wait", job_id, timeout_seconds))
+        return _snapshot(JobKind.RUN, status=JobStatus.SUCCEEDED)
 
     def result(self, job_id: str):
         self.calls.append(("result", job_id))
@@ -300,6 +322,103 @@ def test_create_operations_have_identical_requests_and_responses(
     assert cli_service.calls == http_service.calls
 
 
+@pytest.mark.parametrize(
+    ("argv", "operation"),
+    [
+        (["ingest", "."], "corpus.prepare"),
+        (["index", _CORPUS_ID], "index.build"),
+        (["search", "steppe ancestry", "--index-id", _INDEX_ID], "retrieve"),
+        (["retrieve", "steppe ancestry", "--index-id", _INDEX_ID], "retrieve"),
+        (
+            [
+                "ask",
+                "steppe ancestry",
+                "--index-id",
+                _INDEX_ID,
+                "--corpus-id",
+                _CORPUS_ID,
+            ],
+            "ask",
+        ),
+        (
+            [
+                "research",
+                "steppe ancestry",
+                "--index-id",
+                _INDEX_ID,
+                "--corpus-id",
+                _CORPUS_ID,
+            ],
+            "research",
+        ),
+        (["run", "steppe ancestry", "--corpus-id", _CORPUS_ID], "run"),
+    ],
+)
+def test_create_operations_accept_ordinary_direct_options(
+    argv: list[str], operation: str
+) -> None:
+    service = _RecordingServices()
+
+    code, payload = _cli(service, argv)
+
+    assert code == 0
+    assert payload["schema_version"] == "bijux.runtime.http-job-status.v2"
+    name, request, idempotency_key = service.calls[0]
+    assert name == operation
+    assert str(request.request_id).startswith("request-")
+    assert idempotency_key == str(request.request_id)
+
+
+def test_direct_operation_can_wait_for_a_terminal_result() -> None:
+    service = _RecordingServices()
+
+    code, payload = _cli(
+        service,
+        [
+            "search",
+            "steppe ancestry",
+            "--index-id",
+            _INDEX_ID,
+            "--wait",
+            "--wait-timeout-seconds",
+            "2",
+        ],
+    )
+
+    assert code == 0
+    assert payload["status"] == "succeeded"
+    assert service.calls[-1] == ("wait", "job_v1_transport_parity", 2.0)
+
+
+def test_status_follow_waits_with_an_explicit_bound() -> None:
+    service = _RecordingServices()
+
+    code, payload = _cli(
+        service,
+        ["status", "job_v1_transport_parity", "--follow", "--timeout-seconds", "2"],
+    )
+
+    assert code == 0
+    assert payload["status"] == "succeeded"
+    assert service.calls == [("wait", "job_v1_transport_parity", 2.0)]
+
+
+def test_wait_timeout_is_a_typed_bounded_failure() -> None:
+    class _TimeoutServices(_RecordingServices):
+        def wait(self, job_id: str, *, timeout_seconds: float | None = None):
+            del job_id, timeout_seconds
+            raise TimeoutError("operator wait expired")
+
+    code, problem = _cli(
+        _TimeoutServices(),
+        ["status", "job_v1_transport_parity", "--follow", "--timeout-seconds", "1"],
+    )
+
+    assert code == 4
+    assert problem["code"] == "operation-failed"
+    assert problem["cause"] == "operator wait expired"
+
+
 def test_process_owned_cli_services_finish_before_return(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -424,6 +543,33 @@ def test_replay_has_identical_request_and_response(tmp_path: Path) -> None:
     assert cli_code == 0 and response.status_code == 202
     assert cli_payload == response.json()
     assert cli_service.calls == http_service.calls
+
+
+def test_replay_accepts_direct_identity_and_wait_options() -> None:
+    service = _RecordingServices()
+
+    code, payload = _cli(
+        service,
+        [
+            "replay",
+            _RUN_ID,
+            "--source-attempt-id",
+            _ATTEMPT_ID,
+            "--network-policy",
+            "recorded-only",
+            "--wait",
+            "--wait-timeout-seconds",
+            "3",
+        ],
+    )
+
+    assert code == 0
+    assert payload["status"] == "succeeded"
+    replay_call = service.calls[0]
+    assert replay_call[0] == "replay"
+    assert replay_call[1].source_attempt_id == _ATTEMPT_ID
+    assert replay_call[2].startswith("request-")
+    assert service.calls[-1] == ("wait", "job_v1_transport_parity", 3.0)
 
 
 @pytest.mark.parametrize(
@@ -617,6 +763,34 @@ def test_compare_has_identical_policy_and_response(tmp_path: Path) -> None:
     assert cli_service.calls == http_service.calls
 
 
+def test_compare_accepts_direct_attempt_identities() -> None:
+    service = _RecordingServices()
+
+    code, payload = _cli(
+        service,
+        [
+            "compare",
+            _RUN_ID,
+            "run_v1_candidate",
+            "--baseline-attempt-id",
+            _ATTEMPT_ID,
+            "--candidate-attempt-id",
+            "attempt_v1_candidate",
+            "--dimension",
+            "claims",
+            "--limit",
+            "2",
+        ],
+    )
+
+    assert code == 0
+    assert payload["baseline_run_id"] == _RUN_ID
+    assert service.calls[0][0] == "compare"
+    assert service.calls[0][1]["policy"].dimensions == (
+        v2_commands.ComparisonDimension.CLAIMS,
+    )
+
+
 def test_compare_cursor_continuation_is_identical(tmp_path: Path) -> None:
     payload = {
         "baseline_attempt_id": _ATTEMPT_ID,
@@ -683,6 +857,80 @@ def test_cancel_has_identical_request_and_response(tmp_path: Path) -> None:
     assert cli_code == 0 and response.status_code == 202
     assert cli_payload == response.json()
     assert cli_service.calls == http_service.calls
+
+
+def test_cancel_accepts_a_direct_reason() -> None:
+    service = _RecordingServices()
+
+    code, payload = _cli(
+        service,
+        ["cancel", "job_v1_transport_parity", "--reason", "operator shutdown"],
+    )
+
+    assert code == 0
+    assert payload["status"] == "cancelled"
+    assert service.calls == [("cancel", "job_v1_transport_parity")]
+
+
+def test_backup_and_restore_commands_emit_stable_json(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    calls: list[object] = []
+
+    class _Protection:
+        def __init__(self, configuration: RuntimeConfiguration) -> None:
+            calls.append(("configuration", configuration))
+
+        def backup(self, *, backup_id: str, created_at: str | None = None):
+            calls.append(("backup", backup_id, created_at))
+            return {
+                "backup_generation": "/workspace/backups/generations/nightly",
+                "manifest": {"backup_id": backup_id},
+                "schema_version": "bijux.runtime.workspace-backup-result.v1",
+            }
+
+        @staticmethod
+        def restore(*, backup_generation: Path, restore_root: Path):
+            calls.append(("restore", backup_generation, restore_root))
+            return {
+                "artifact_count": 2,
+                "restore_root": str(restore_root),
+                "schema_version": "bijux.runtime.workspace-restore-result.v1",
+            }
+
+    monkeypatch.setattr(v2_commands, "RuntimeWorkspaceProtection", _Protection)
+
+    backup_code, backup = _cli(
+        None,
+        ["backup", "nightly", "--created-at", "2026-08-24T12:00:00+00:00"],
+    )
+    restore_code, restore = _cli(
+        None,
+        ["restore", str(tmp_path / "generation"), str(tmp_path / "restored")],
+    )
+
+    assert backup_code == restore_code == 0
+    assert backup["schema_version"] == "bijux.runtime.workspace-backup-result.v1"
+    assert restore["schema_version"] == "bijux.runtime.workspace-restore-result.v1"
+    assert calls[1] == ("backup", "nightly", "2026-08-24T12:00:00+00:00")
+    assert calls[2] == (
+        "restore",
+        tmp_path / "generation",
+        tmp_path / "restored",
+    )
+
+
+def test_backup_rejects_an_unsafe_identity_as_invalid_request(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("BIJUX_CANON_RUNTIME_WORKING_ROOT", str(tmp_path / "workspace"))
+
+    code, problem = _cli(None, ["backup", "../escape"])
+
+    assert code == 2
+    assert problem["code"] == "invalid-request"
+    assert problem["cause"].startswith("backup_id must be")
+    assert not (tmp_path / "escape").exists()
 
 
 def test_invalid_body_has_compatible_errors(tmp_path: Path) -> None:
