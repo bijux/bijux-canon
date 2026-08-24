@@ -31,7 +31,9 @@ from bijux_canon_runtime.runtime.execution.runtime_event_ledger import (
     RuntimeEventKind,
     RuntimeEventLedger,
 )
-from bijux_canon_runtime.runtime.persistence.payload_store import ArtifactPayloadStore
+from bijux_canon_runtime.runtime.persistence.payload_store import (
+    DurableArtifactPayloadStore,
+)
 
 
 class SchedulerError(RuntimeError):
@@ -138,7 +140,7 @@ class ArtifactTransitionJournal:
     def __init__(
         self,
         *,
-        store: ArtifactPayloadStore,
+        store: DurableArtifactPayloadStore,
         plan_sha256: str,
         clock: Callable[[], datetime] | None = None,
     ) -> None:

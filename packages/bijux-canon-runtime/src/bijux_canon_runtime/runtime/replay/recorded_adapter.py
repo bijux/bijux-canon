@@ -18,7 +18,9 @@ from bijux_canon_runtime.runtime.execution.operation_dispatcher import (
     resolved_input_artifact_ids,
 )
 from bijux_canon_runtime.runtime.inspection import InspectedDagStep
-from bijux_canon_runtime.runtime.persistence.payload_store import ArtifactPayloadStore
+from bijux_canon_runtime.runtime.persistence.payload_store import (
+    DurableArtifactPayloadStore,
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -27,7 +29,7 @@ class RecordedReplayAdapter:
 
     operation: DagOperation
     source_steps: dict[str, InspectedDagStep]
-    store: ArtifactPayloadStore
+    store: DurableArtifactPayloadStore
     adapter_id: str = "bijux-canon-runtime:recorded-replay:v1"
     adapter_version: str = "1.0"
 

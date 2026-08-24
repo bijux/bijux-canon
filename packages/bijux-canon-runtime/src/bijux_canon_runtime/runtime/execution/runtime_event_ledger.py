@@ -21,7 +21,9 @@ from bijux_canon_runtime.ontology.ids import ArtifactID
 from bijux_canon_runtime.runtime.execution.operation_dispatcher import (
     StepOutputArtifact,
 )
-from bijux_canon_runtime.runtime.persistence.payload_store import ArtifactPayloadStore
+from bijux_canon_runtime.runtime.persistence.payload_store import (
+    DurableArtifactPayloadStore,
+)
 
 
 class RuntimeEventKind(StrEnum):
@@ -97,7 +99,7 @@ class RuntimeEventLedger:
     def __init__(
         self,
         *,
-        store: ArtifactPayloadStore,
+        store: DurableArtifactPayloadStore,
         plan: RuntimeRequestPlan,
         attempt: ExecutionAttemptIdentity,
         clock: Callable[[], datetime] | None = None,
