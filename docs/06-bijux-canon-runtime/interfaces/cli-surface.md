@@ -53,6 +53,11 @@ queries. `--human` prints the same report's denominators, headline metrics, and
 one compact stage line per reviewed question. A sealed held-out case is rejected
 rather than silently exposing release labels.
 
+CLI and HTTP adapters pass only paths, identities, mode, split and bounds to the
+shared Runtime application operation. That operation loads reviewed truth,
+invokes the configured Index evaluator, and owns development configuration
+search. Transports neither construct evaluation truth nor rerank observations.
+
 Use the same arguments with `v2 search-retrieval-configurations` to retain the
 installed observations and search candidate depth, symmetric lexical admission,
 RRF rank constants, and channel weights. The integrity-bound report keeps every

@@ -16,17 +16,6 @@ from typing import TypeVar
 
 from pydantic import BaseModel, ValidationError
 
-from bijux_canon_index.evaluation import (
-    ObservedFinalizationConfiguration,
-    RetrievalConfigurationSearchReport,
-    RetrievalSearchConfiguration,
-    PublicRetrievalEvaluationReport,
-    PublicRetrievalMode,
-    default_retrieval_search_configurations,
-    load_reviewed_retrieval_request,
-    observed_finalization_search_configuration,
-    search_retrieval_configurations,
-)
 from bijux_canon_ingest.application.source_discovery import (
     SourceDiscoveryRequest,
     discover_source_directory,
@@ -51,6 +40,10 @@ from bijux_canon_runtime.application.operations import (
     ApplicationCapabilityError,
     ReplayOperationRequest,
     RuntimeApplicationServicesV2,
+    RuntimeRetrievalConfigurationSearchReport,
+    RuntimeRetrievalEvaluationInput,
+    RuntimeRetrievalEvaluationReport,
+    retrieval_configuration_summary,
 )
 from bijux_canon_runtime.application.capability_discovery import (
     RuntimeCapabilityDiscovery,
@@ -159,49 +152,22 @@ def run_v2_command(
             "evaluate-retrieval",
             "search-retrieval-configurations",
         }:
-            evaluation_request = load_reviewed_retrieval_request(
-                cases_path=Path(args.cases),
-                qrels_path=Path(args.qrels),
+            evaluation_input = RuntimeRetrievalEvaluationInput(
+                cases_path=Path(args.cases).resolve(),
+                qrels_path=Path(args.qrels).resolve(),
                 index_artifact_id=args.index_id,
                 split=args.split,
-                mode=PublicRetrievalMode(args.mode),
+                mode=args.mode,
                 top_k=args.top_k,
             )
-            evaluation = service.evaluate_retrieval(evaluation_request)
             if args.v2_command == "search-retrieval-configurations":
-                observed_depth = max(
-                    args.top_k,
-                    max(
-                        (
-                            max(
-                                len(observation.stages.lexical_candidates),
-                                len(observation.stages.dense_candidates),
-                            )
-                            for observation in evaluation.observations
-                            if observation.stages is not None
-                        ),
-                        default=args.top_k,
-                    ),
-                )
-                search = search_retrieval_configurations(
-                    request=evaluation_request,
-                    observations=evaluation.observations,
-                    configurations=(
-                        observed_finalization_search_configuration(
-                            evaluation.observations,
-                            top_k=args.top_k,
-                        ),
-                        *default_retrieval_search_configurations(
-                            observed_candidate_depth=observed_depth,
-                            top_k=args.top_k,
-                        ),
-                    ),
-                )
+                search = service.search_retrieval_configurations(evaluation_input)
                 if args.human:
                     _write_configuration_search_human(search)
                 else:
                     _write(asdict(search))
                 return 0
+            evaluation = service.evaluate_reviewed_retrieval(evaluation_input)
             if args.human:
                 _write_retrieval_evaluation_human(evaluation)
             else:
@@ -561,7 +527,7 @@ def _write_capabilities_human(report: RuntimeCapabilityDiscovery) -> None:
 
 
 def _write_retrieval_evaluation_human(
-    report: PublicRetrievalEvaluationReport,
+    report: RuntimeRetrievalEvaluationReport,
 ) -> None:
     metrics = {item.metric_id: item for item in report.macro.metrics}
     print(f"Queries: {report.query_count}")
@@ -616,7 +582,7 @@ def _write_retrieval_evaluation_human(
 
 
 def _write_configuration_search_human(
-    report: RetrievalConfigurationSearchReport,
+    report: RuntimeRetrievalConfigurationSearchReport,
 ) -> None:
     ranked = sorted(
         report.results,
@@ -633,7 +599,7 @@ def _write_configuration_search_human(
         metrics = {item.metric_id: item.value for item in result.metrics.metrics}
         print(
             f"Configuration {result.configuration.configuration_id}: "
-            f"{_configuration_summary(result.configuration)}; "
+            f"{retrieval_configuration_summary(result.configuration)}; "
             f"Recall@5={metrics['recall-at-5']:.6f}, "
             f"MRR@10={metrics['mrr-at-10']:.6f}, "
             f"nDCG@10={metrics['ndcg-at-10']:.6f}; "
@@ -648,23 +614,6 @@ def _write_configuration_search_human(
             f"nDCG@10={query.ndcg_at_10:.6f}"
         )
     print(f"Evidence: {report.evidence_sha256}")
-
-
-def _configuration_summary(
-    configuration: RetrievalSearchConfiguration | ObservedFinalizationConfiguration,
-) -> str:
-    if isinstance(configuration, ObservedFinalizationConfiguration):
-        return (
-            f"strategy={configuration.ranking_strategy}, "
-            f"policy={configuration.policy_sha256}, top_k={configuration.top_k}"
-        )
-    return (
-        f"strategy=weighted-rrf, depth={configuration.candidate_depth}, "
-        f"lexical={configuration.lexical_admission_limit}, "
-        f"dense={configuration.dense_admission_limit}, "
-        f"k={configuration.rank_constant}, "
-        f"weights={configuration.lexical_weight}:{configuration.dense_weight}"
-    )
 
 
 def _normalize(value: object) -> object:

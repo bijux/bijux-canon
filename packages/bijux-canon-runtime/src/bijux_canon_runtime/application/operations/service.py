@@ -25,6 +25,14 @@ from bijux_canon_runtime.application.operations.models import (
     ReplayOperationRequest,
     RuntimeApplicationCapability,
 )
+from bijux_canon_runtime.application.operations.retrieval_evaluation import (
+    RetrievalEvaluationExecutor,
+    RuntimeRetrievalConfigurationSearchReport,
+    RuntimeRetrievalEvaluationInput,
+    RuntimeRetrievalEvaluationReport,
+    evaluate_reviewed_retrieval,
+    search_reviewed_retrieval_configurations,
+)
 from bijux_canon_runtime.model.execution.request_plan import (
     RuntimeOperationRequest,
     RuntimeRequestOperation,
@@ -82,16 +90,6 @@ class ResourceInspectionExecutor(Protocol):
 
     def __call__(self, artifact_id: ArtifactID) -> Mapping[str, object]:
         """Return transport-neutral, JSON-compatible inspection metadata."""
-        ...
-
-
-class RetrievalEvaluationExecutor(Protocol):
-    """Execute a truth-only retrieval evaluation through installed owners."""
-
-    def __call__(
-        self, request: PublicRetrievalEvaluationRequest
-    ) -> PublicRetrievalEvaluationReport:
-        """Return an integrity-bound report over observed installed hits."""
         ...
 
 
@@ -244,6 +242,36 @@ class RuntimeApplicationServicesV2:
                 "retrieval evaluation capability is not configured"
             )
         return self._retrieval_evaluator(request)
+
+    def evaluate_reviewed_retrieval(
+        self,
+        parameters: RuntimeRetrievalEvaluationInput,
+    ) -> RuntimeRetrievalEvaluationReport:
+        """Load reviewed truth and execute it through the configured Index owner."""
+
+        if self._retrieval_evaluator is None:
+            raise ApplicationCapabilityError(
+                "retrieval evaluation capability is not configured"
+            )
+        return evaluate_reviewed_retrieval(
+            parameters,
+            execute=self._retrieval_evaluator,
+        )
+
+    def search_retrieval_configurations(
+        self,
+        parameters: RuntimeRetrievalEvaluationInput,
+    ) -> RuntimeRetrievalConfigurationSearchReport:
+        """Search development configurations over installed retrieval observations."""
+
+        if self._retrieval_evaluator is None:
+            raise ApplicationCapabilityError(
+                "retrieval evaluation capability is not configured"
+            )
+        return search_reviewed_retrieval_configurations(
+            parameters,
+            execute=self._retrieval_evaluator,
+        )
 
     def ask(
         self,

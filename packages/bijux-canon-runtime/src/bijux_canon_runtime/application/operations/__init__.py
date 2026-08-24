@@ -14,11 +14,18 @@ from bijux_canon_runtime.application.operations.models import (
     ReplayOperationRequest,
     RuntimeApplicationCapability,
 )
+from bijux_canon_runtime.application.operations.retrieval_evaluation import (
+    RetrievalEvaluationExecutor,
+    RuntimeRetrievalConfiguration,
+    RuntimeRetrievalConfigurationSearchReport,
+    RuntimeRetrievalEvaluationInput,
+    RuntimeRetrievalEvaluationReport,
+    retrieval_configuration_summary,
+)
 from bijux_canon_runtime.application.operations.service import (
     ApplicationCapabilityError,
     ReplayOperationExecutor,
     ResourceInspectionExecutor,
-    RetrievalEvaluationExecutor,
     RuntimeApplicationServicesV2,
     RuntimeOperationExecutor,
     build_runtime_job_handlers,
@@ -35,10 +42,15 @@ __all__ = [
     "ReplayOperationRequest",
     "RuntimeApplicationCapability",
     "RuntimeApplicationServicesV2",
+    "RuntimeRetrievalConfiguration",
+    "RuntimeRetrievalConfigurationSearchReport",
+    "RuntimeRetrievalEvaluationInput",
+    "RuntimeRetrievalEvaluationReport",
     "RuntimeOperationExecutor",
     "build_runtime_job_handlers",
     "replay_request_from_payload",
     "replay_request_payload",
     "runtime_request_from_payload",
     "runtime_request_payload",
+    "retrieval_configuration_summary",
 ]

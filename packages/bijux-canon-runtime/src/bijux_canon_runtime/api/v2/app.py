@@ -16,10 +16,6 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.responses import Response
 
-from bijux_canon_index.evaluation import (
-    PublicRetrievalMode,
-    load_reviewed_retrieval_request,
-)
 from bijux_canon_runtime.api.v2.conversion import (
     job_status,
     operation_request,
@@ -52,6 +48,7 @@ from bijux_canon_runtime.application.operations import (
     ApplicationCapabilityError,
     ReplayOperationRequest,
     RuntimeApplicationServicesV2,
+    RuntimeRetrievalEvaluationInput,
 )
 from bijux_canon_runtime.application.problems import (
     RuntimeProblemCode,
@@ -434,16 +431,16 @@ def create_app(
         _: Version,
         service: Services,
     ) -> RetrievalEvaluationResponse:
-        request = load_reviewed_retrieval_request(
-            cases_path=Path(body.cases_path),
-            qrels_path=Path(body.qrels_path),
+        parameters = RuntimeRetrievalEvaluationInput(
+            cases_path=Path(body.cases_path).resolve(),
+            qrels_path=Path(body.qrels_path).resolve(),
             index_artifact_id=body.index_id,
             split=body.split,
-            mode=PublicRetrievalMode(body.mode),
+            mode=body.mode,
             top_k=body.top_k,
         )
         return RetrievalEvaluationResponse.model_validate(
-            service.evaluate_retrieval(request).manifest()
+            service.evaluate_reviewed_retrieval(parameters).manifest()
         )
 
     @api.post(
