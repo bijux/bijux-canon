@@ -34,6 +34,7 @@ from bijux_canon_ingest.application.corpus_publication import (
 from bijux_canon_ingest.application.snapshot_reuse import (
     restore_published_corpus_snapshot,
 )
+from bijux_canon_ingest.domain.semantic_chunking import SemanticChunkingPolicy
 from bijux_canon_ingest.infra import corpus_snapshot_store
 from bijux_canon_ingest.infra.corpus_snapshot_store import PublicationCheckpoint
 
@@ -51,7 +52,13 @@ def _canonical_json(value: object) -> bytes:
     )
 
 
-def _snapshot(source_root: Path, text: str) -> CorpusSnapshot:
+def _snapshot(
+    source_root: Path,
+    text: str,
+    *,
+    chunking_policy: SemanticChunkingPolicy | None = None,
+) -> CorpusSnapshot:
+    chunking_policy = chunking_policy or SemanticChunkingPolicy()
     source_root.mkdir(exist_ok=True)
     source_path = source_root / "research.txt"
     source_path.write_text(text, encoding="utf-8")
@@ -70,7 +77,7 @@ def _snapshot(source_root: Path, text: str) -> CorpusSnapshot:
     document = parse_text(admission)
     metadata = normalize_source_metadata(source, format_id="text")
     mappings = build_document_span_mappings(content, document)
-    chunks = chunk_document_mappings(document, mappings)
+    chunks = chunk_document_mappings(document, mappings, policy=chunking_policy)
     snapshot_document = CorpusSnapshotDocument(
         admission,
         document,
@@ -79,7 +86,10 @@ def _snapshot(source_root: Path, text: str) -> CorpusSnapshot:
         chunks,
     )
     return build_corpus_snapshot(
-        CorpusSnapshotConfiguration(corpus_name="publication-test"),
+        CorpusSnapshotConfiguration(
+            corpus_name="publication-test",
+            chunking_policy=chunking_policy,
+        ),
         (snapshot_document,),
     )
 
@@ -127,6 +137,27 @@ def test_published_snapshot_restores_exact_typed_members_after_restart(
     assert restored == snapshot
     assert restored.canonical_bytes == snapshot.canonical_bytes
     assert restored.documents[0].document == snapshot.documents[0].document
+
+
+def test_sentence_boundary_policy_restores_after_restart(tmp_path: Path) -> None:
+    sources = tmp_path / "sources"
+    store = tmp_path / "store"
+    policy = SemanticChunkingPolicy(boundary_strategy="sentence")
+    snapshot = _snapshot(
+        sources,
+        "Sentence-aware restoration preserves its explicit policy.",
+        chunking_policy=policy,
+    )
+    publication = publish_corpus_snapshot(store, snapshot)
+
+    restored = restore_published_corpus_snapshot(
+        publication,
+        read_published_snapshot_reuse_bundles(store),
+        root_path=sources,
+    )
+
+    assert restored == snapshot
+    assert restored.configuration.chunking_policy == policy
 
 
 def test_activation_manifest_is_replaced_last(

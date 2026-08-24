@@ -8,7 +8,7 @@ from __future__ import annotations
 import json
 from collections.abc import Mapping
 from pathlib import Path
-from typing import Any, TypeVar, cast
+from typing import Any, Literal, TypeVar, cast
 
 from bijux_canon_ingest.domain.corpus_publication import PublishedCorpusSnapshot
 from bijux_canon_ingest.domain.corpus_snapshot import (
@@ -700,6 +700,23 @@ def _configuration(value: object) -> CorpusSnapshotConfiguration:
     discovery = _mapping(record.get("discovery_limits"), "configuration.discovery")
     budgets = _mapping(record.get("admission_budgets"), "configuration.admission")
     chunking = _mapping(record.get("chunking_policy"), "configuration.chunking")
+    chunking_schema = _typed(
+        chunking.get("schema_version"), str, "chunking.schema_version"
+    )
+    if chunking_schema not in {
+        "bijux.canon.ingest.semantic_chunking_policy.v1",
+        "bijux.canon.ingest.semantic_chunking_policy.v2",
+    }:
+        raise SnapshotReuseError("configuration chunking schema is unsupported")
+    boundary_strategy = (
+        "hard"
+        if chunking_schema == "bijux.canon.ingest.semantic_chunking_policy.v1"
+        else _typed(
+            chunking.get("boundary_strategy"), str, "chunking.boundary_strategy"
+        )
+    )
+    if boundary_strategy not in {"hard", "sentence"}:
+        raise SnapshotReuseError("configuration chunking strategy is unsupported")
     configuration = CorpusSnapshotConfiguration(
         corpus_name=_typed(record.get("corpus_name"), str, "configuration.corpus_name"),
         discovery_limits=DiscoveryLimits(**cast(dict[str, Any], dict(discovery))),
@@ -716,6 +733,7 @@ def _configuration(value: object) -> CorpusSnapshotConfiguration:
             block_separator=_typed(
                 chunking.get("block_separator"), str, "chunking.block_separator"
             ),
+            boundary_strategy=cast(Literal["hard", "sentence"], boundary_strategy),
         ),
     )
     if configuration.manifest() != dict(record):

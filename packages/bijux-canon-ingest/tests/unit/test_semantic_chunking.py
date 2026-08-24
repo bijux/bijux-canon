@@ -114,7 +114,9 @@ def test_oversized_semantic_block_uses_boundary_aligned_overlap() -> None:
     for previous, current in zip(chunks, chunks[1:], strict=False):
         if current.overlap_character_count:
             overlap = current.overlap_character_count
-            assert previous.normalized_text[-overlap:] == current.normalized_text[:overlap]
+            assert (
+                previous.normalized_text[-overlap:] == current.normalized_text[:overlap]
+            )
 
 
 def test_oversized_paragraph_keeps_answer_sentences_whole() -> None:
@@ -140,7 +142,8 @@ def test_oversized_paragraph_keeps_answer_sentences_whole() -> None:
     assert admission.admitted
     document = parse_jats(admission)
     mappings = build_document_span_mappings(content, document)
-    chunks = chunk_document_mappings(document, mappings)
+    policy = SemanticChunkingPolicy(boundary_strategy="sentence")
+    chunks = chunk_document_mappings(document, mappings, policy=policy)
 
     authenticity_sentence = (
         "Other hallmarks of RNA sequencing (RNA-seq) data such as exon-exon "
@@ -156,6 +159,59 @@ def test_oversized_paragraph_keeps_answer_sentences_whole() -> None:
 
     assert any(authenticity_sentence in chunk.normalized_text for chunk in chunks)
     assert any(replication_sentence in chunk.normalized_text for chunk in chunks)
+    assert policy.manifest() == {
+        "block_separator": "\n\n",
+        "boundary_strategy": "sentence",
+        "max_characters": 1_200,
+        "overlap_characters": 120,
+        "schema_version": "bijux.canon.ingest.semantic_chunking_policy.v2",
+    }
+
+
+def test_default_policy_preserves_reviewed_v1_chunk_identities() -> None:
+    research_root = REPOSITORY / "examples" / "ancient-dna-research"
+    qrels = tuple(
+        json.loads(line)
+        for line in (research_root / "truth" / "qrels.jsonl").read_text().splitlines()
+    )
+    reviewed_by_source: dict[str, set[str]] = {}
+    for qrel in qrels:
+        reviewed_by_source.setdefault(qrel["source_sha256"], set()).add(
+            qrel["chunk"]["chunk_id"]
+        )
+
+    observed_by_source: dict[str, set[str]] = {}
+    for path in sorted((research_root / "corpus" / "sources").glob("*.xml")):
+        content = path.read_bytes()
+        source_sha256 = hashlib.sha256(content).hexdigest()
+        source = DiscoveredSource.create(
+            root_name="ancient-dna-research",
+            relative_path=path.name,
+            filesystem_path=path,
+            content_sha256=source_sha256,
+            byte_length=len(content),
+            media_type="application/xml",
+            is_symlink=False,
+        )
+        admission = admit_source(source)
+        assert admission.admitted
+        document = parse_jats(admission)
+        mappings = build_document_span_mappings(content, document)
+        observed_by_source[source_sha256] = {
+            chunk.chunk_id for chunk in chunk_document_mappings(document, mappings)
+        }
+
+    assert SemanticChunkingPolicy().manifest() == {
+        "block_separator": "\n\n",
+        "max_characters": 1_200,
+        "overlap_characters": 120,
+        "schema_version": "bijux.canon.ingest.semantic_chunking_policy.v1",
+    }
+    assert reviewed_by_source.keys() == observed_by_source.keys()
+    assert all(
+        reviewed_by_source[source_sha256] <= observed_by_source[source_sha256]
+        for source_sha256 in reviewed_by_source
+    )
 
 
 def test_canonical_fingerprint_does_not_depend_on_source_bytes() -> None:
@@ -223,8 +279,9 @@ def test_smallest_valid_budget_remains_deterministic() -> None:
         {"max_characters": 10, "overlap_characters": 10},
         {"max_characters": 10, "overlap_characters": -1},
         {"max_characters": True},
+        {"boundary_strategy": "paragraph"},
     ],
 )
-def test_chunking_policy_rejects_invalid_budgets(values: dict[str, int]) -> None:
+def test_chunking_policy_rejects_invalid_budgets(values: dict[str, object]) -> None:
     with pytest.raises(ValueError):
         SemanticChunkingPolicy(**values)

@@ -9,6 +9,7 @@ import hashlib
 import json
 import re
 from dataclasses import dataclass
+from typing import Literal
 
 from bijux_canon_ingest.domain.source_mapping import NormalizedSpanMapping
 
@@ -48,6 +49,7 @@ class SemanticChunkingPolicy:
     max_characters: int = 1_200
     overlap_characters: int = 120
     block_separator: str = "\n\n"
+    boundary_strategy: Literal["hard", "sentence"] = "hard"
 
     def __post_init__(self) -> None:
         if (
@@ -65,18 +67,30 @@ class SemanticChunkingPolicy:
             raise ValueError("overlap_characters must be within the chunk budget")
         if not self.block_separator:
             raise ValueError("block_separator must not be empty")
+        if self.boundary_strategy not in {"hard", "sentence"}:
+            raise ValueError("boundary_strategy must be hard or sentence")
 
     @property
     def policy_sha256(self) -> str:
         return _identity(self.manifest())
 
     def manifest(self) -> dict[str, object]:
-        return {
+        manifest: dict[str, object] = {
             "block_separator": self.block_separator,
             "max_characters": self.max_characters,
             "overlap_characters": self.overlap_characters,
             "schema_version": "bijux.canon.ingest.semantic_chunking_policy.v1",
         }
+        if self.boundary_strategy == "sentence":
+            manifest.update(
+                {
+                    "boundary_strategy": self.boundary_strategy,
+                    "schema_version": (
+                        "bijux.canon.ingest.semantic_chunking_policy.v2"
+                    ),
+                }
+            )
+        return manifest
 
 
 @dataclass(frozen=True, slots=True)

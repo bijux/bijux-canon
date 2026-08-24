@@ -73,9 +73,7 @@ def _bounded_start(text: str, *, prior_start: int, end: int, overlap: int) -> in
     if sentence_boundaries:
         return sentence_boundaries[0]
     word_boundaries = tuple(
-        value
-        for value in _boundaries(text, _WORD_BOUNDARY)
-        if target <= value < end
+        value for value in _boundaries(text, _WORD_BOUNDARY) if target <= value < end
     )
     return word_boundaries[0] if word_boundaries else target
 
@@ -103,11 +101,15 @@ def _fragments(
     start = 0
     previous_end = -1
     while start < len(mapping.normalized_text):
-        end = _bounded_end(
-            mapping.normalized_text,
-            start=start,
-            maximum=policy.max_characters,
-            previous_end=previous_end,
+        end = (
+            min(start + policy.max_characters, len(mapping.normalized_text))
+            if policy.boundary_strategy == "hard"
+            else _bounded_end(
+                mapping.normalized_text,
+                start=start,
+                maximum=policy.max_characters,
+                previous_end=previous_end,
+            )
         )
         result.append(
             _Fragment(
@@ -119,11 +121,15 @@ def _fragments(
         if end == len(mapping.normalized_text):
             break
         previous_end = end
-        start = _bounded_start(
-            mapping.normalized_text,
-            prior_start=start,
-            end=end,
-            overlap=policy.overlap_characters,
+        start = (
+            end - policy.overlap_characters
+            if policy.boundary_strategy == "hard"
+            else _bounded_start(
+                mapping.normalized_text,
+                prior_start=start,
+                end=end,
+                overlap=policy.overlap_characters,
+            )
         )
     return tuple(result)
 
