@@ -9,6 +9,10 @@ tagged release, including legacy distribution naming where applicable.
 
 ### Changed
 
+- Added installed `model acquire`, `model register`, and `model validate`
+  operations. A successful operation now retains a canonical record of the
+  pinned source, license pointer, exact file set, dimension, compatible runtime,
+  bounded CPU inference, and offline reuse.
 - Standalone verified SQLite FTS5 segments can now produce bounded lexical
   candidates and resolve ingest-owned citation locators without a dense
   generation or embedding model.

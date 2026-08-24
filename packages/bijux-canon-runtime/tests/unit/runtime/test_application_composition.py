@@ -403,6 +403,51 @@ def test_dense_dimension_mismatch_is_refused_before_job_queueing(
         assert authority.execute("SELECT count(*) FROM runtime_jobs").fetchone() == (0,)
 
 
+def test_dense_model_execution_failure_is_refused_before_job_queueing(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    model = _materialized_model(tmp_path)
+    configuration = _initialized_configuration(tmp_path / "workspace", model)
+    layout = configuration.require_workspace_layout()
+    store = AuthoritativeArtifactPayloadStore(
+        payload_store=AtomicFilesystemArtifactPayloadStore(layout.cas_root),
+        database_path=layout.database_path,
+    )
+    corpus = AddressedArtifact.from_json(
+        {"documents": [], "schema_version": "test.corpus.v1"},
+        schema_id="ingest.corpus-snapshot.v1",
+        producer="test:model-preflight",
+    )
+    store.put(corpus)
+
+    def refuse_model(_embedding: object) -> str:
+        raise ValueError("embedding vector dimension does not match model lock")
+
+    monkeypatch.setattr(
+        application_composition._LazyLocalEmbeddingModel,
+        "validate",
+        refuse_model,
+    )
+    with compose_runtime_application_services(configuration=configuration) as service:
+        with pytest.raises(ApplicationCapabilityError, match="CPU validation"):
+            service.index(
+                RuntimeOperationRequest(
+                    request_id=RequestID("invalid-model-dimension"),
+                    operation=RuntimeRequestOperation.INDEX_BUILD,
+                    execution_profile=ExecutionProfile.LOCAL_HYBRID_EXACT,
+                    budget=RuntimeRequestBudget(30.0, 10_000_000),
+                    replay_mode=ReplayMode.STRICT,
+                    scope="local",
+                    corpus_id=corpus.descriptor.artifact_id,
+                ),
+                idempotency_key="invalid-model-dimension",
+            )
+
+    with duckdb.connect(str(layout.database_path), read_only=True) as authority:
+        assert authority.execute("SELECT count(*) FROM runtime_jobs").fetchone() == (0,)
+
+
 def test_two_composed_workspaces_cannot_cross_read_or_write(
     tmp_path: Path,
 ) -> None:

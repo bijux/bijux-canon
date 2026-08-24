@@ -25,6 +25,7 @@ from bijux_canon_index.interfaces.cli.execution_commands import (
 from bijux_canon_index.interfaces.cli.index_generation_commands import (
     register_index_generation_commands,
 )
+from bijux_canon_index.interfaces.cli.model_commands import register_model_commands
 from bijux_canon_index.interfaces.cli.performance_commands import (
     register_performance_commands,
 )
@@ -44,6 +45,8 @@ artifact_app = typer.Typer(add_completion=False, help="Artifact bundle utilities
 app.add_typer(artifact_app, name="artifact")
 index_app = typer.Typer(add_completion=False, help="Immutable index generations")
 app.add_typer(index_app, name="index")
+model_app = typer.Typer(add_completion=False, help="Pinned local embedding models")
+app.add_typer(model_app, name="model")
 
 
 def _version_callback(value: bool) -> None:
@@ -105,6 +108,7 @@ register_artifact_commands(artifact_app)
 register_performance_commands(app, nd_app)
 register_diagnostic_commands(app, config_app)
 register_index_generation_commands(index_app)
+register_model_commands(model_app)
 
 
 if __name__ == "__main__":

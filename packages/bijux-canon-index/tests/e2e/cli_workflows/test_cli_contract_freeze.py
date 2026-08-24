@@ -46,6 +46,7 @@ CLI_HELP = """
 │ config           Configuration utilities                                     │
 │ artifact         Artifact bundle utilities                                   │
 │ index            Immutable index generations                                 │
+│ model            Pinned local embedding models                               │
 ╰──────────────────────────────────────────────────────────────────────────────╯
 
 """

@@ -279,10 +279,58 @@ def materialize_model(
         raise
 
 
+def register_model(
+    profile: EmbeddingProfile,
+    model_root: str | Path,
+    *,
+    library_versions: tuple[tuple[str, str], ...],
+    expected_artifacts: tuple[ArtifactDigest, ...] | None = None,
+) -> EmbeddingModelLock:
+    """Bind an existing pinned model directory to a canonical offline lock."""
+
+    root = Path(model_root)
+    if not root.is_dir() or root.is_symlink():
+        raise ModelMaterializationError(
+            "model registration requires an existing ordinary directory"
+        )
+    lock_path = root / "model.lock.json"
+    if lock_path.exists():
+        lock = load_model_lock(lock_path)
+        if lock.profile != profile:
+            raise ModelMaterializationError(
+                "existing model lock does not match the selected pinned profile"
+            )
+        verify_materialized_model(root, lock)
+        return lock
+    artifacts: list[ArtifactDigest] = []
+    for relative_path in profile.required_artifacts:
+        path = root / relative_path
+        if not path.is_file() or path.is_symlink():
+            raise ModelMaterializationError(
+                f"model registration is missing required artifact: {relative_path}"
+            )
+        artifacts.append(_digest(path, relative_path))
+    if expected_artifacts is not None and tuple(artifacts) != expected_artifacts:
+        raise ModelMaterializationError(
+            "model files do not match the selected pinned revision"
+        )
+    lock = EmbeddingModelLock(profile, tuple(artifacts), library_versions)
+    temporary_lock = root / f".model.lock.{uuid.uuid4().hex}.json"
+    try:
+        _write_lock(temporary_lock, _canonical_json(lock.manifest()))
+        os.replace(temporary_lock, lock_path)
+        _fsync_directory(root)
+    finally:
+        temporary_lock.unlink(missing_ok=True)
+    verify_materialized_model(root, lock)
+    return lock
+
+
 __all__ = [
     "load_model_lock",
     "materialization_command",
     "ModelMaterializationError",
     "materialize_model",
+    "register_model",
     "verify_materialized_model",
 ]

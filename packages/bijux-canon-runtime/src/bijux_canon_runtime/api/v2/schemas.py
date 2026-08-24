@@ -584,6 +584,12 @@ class ModelDiscoveryResponse(StrictModel):
     model_id: str | None
     revision: str | None
     dimension: int | None
+    validation_record_id: str | None
+    artifact_set_digest: str | None
+    license_pointer: str | None
+    compatibility_status: str | None
+    validation_result: str | None
+    offline_reuse: bool
 
 
 class IndexDiscoveryResponse(StrictModel):

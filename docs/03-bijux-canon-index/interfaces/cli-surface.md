@@ -33,6 +33,7 @@ Global options precede the command: `--format json|table`, `--output PATH`,
 | vector database | `vdb status`, `vdb rebuild`, `vdb compact` | inspect and maintain configured vector stores |
 | approximation | `nd tune`, `bench` | tune ANN policy and measure behavior |
 | configuration | `config show` | render resolved configuration |
+| local models | `model acquire`, `model register`, `model validate` | bind and validate pinned embedding files for offline CPU reuse |
 | diagnostics | `metrics-snapshot`, `debug-bundle` | capture runtime evidence |
 | bundles | `artifact pack`, `artifact unpack` | move retained run evidence as an archive |
 
@@ -48,6 +49,25 @@ Capabilities report exact and ANN support, replay posture, selected backends,
 metrics, and vector-store descriptors. Audit interprets those capabilities as
 trust guarantees and limitations. Doctor checks configuration and environment
 readiness. None of these commands creates a retrieval artifact.
+
+## Validate a local embedding model
+
+```bash
+bijux-canon-index model acquire \
+  --profile local-minilm-384 \
+  --cache-root artifacts/bijux-canon-index/models
+
+bijux-canon-index model validate \
+  --model-root artifacts/bijux-canon-index/models/local-minilm-384/1110a243fdf4706b3f48f1d95db1a4f5529b4d41
+```
+
+Acquisition is the only model command that needs network access, and an already
+present revision is validated without contacting the source. Registration
+accepts a directory of already downloaded files. All three commands succeed
+only after exact-file verification, supported library checks, and a bounded
+offline CPU embedding whose dtype, dimension, finiteness, and normalization
+match the lock. The emitted JSON is also retained as `model.record.json` beside
+`model.lock.json`.
 
 ## Ingest and Materialize
 

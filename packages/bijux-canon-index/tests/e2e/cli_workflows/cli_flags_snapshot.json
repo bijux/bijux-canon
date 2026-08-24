@@ -1161,6 +1161,79 @@
     "params": []
   },
   {
+    "command": "model",
+    "params": []
+  },
+  {
+    "command": "model acquire",
+    "params": [
+      {
+        "default": null,
+        "name": "cache_root",
+        "opts": [
+          "--cache-root"
+        ],
+        "param_type": "option",
+        "required": true
+      },
+      {
+        "default": "local-minilm-384",
+        "name": "profile",
+        "opts": [
+          "--profile"
+        ],
+        "param_type": "option",
+        "required": false
+      }
+    ]
+  },
+  {
+    "command": "model register",
+    "params": [
+      {
+        "default": null,
+        "name": "model_root",
+        "opts": [
+          "--model-root"
+        ],
+        "param_type": "option",
+        "required": true
+      },
+      {
+        "default": "local-minilm-384",
+        "name": "profile",
+        "opts": [
+          "--profile"
+        ],
+        "param_type": "option",
+        "required": false
+      }
+    ]
+  },
+  {
+    "command": "model validate",
+    "params": [
+      {
+        "default": null,
+        "name": "model_root",
+        "opts": [
+          "--model-root"
+        ],
+        "param_type": "option",
+        "required": true
+      },
+      {
+        "default": "local-minilm-384",
+        "name": "profile",
+        "opts": [
+          "--profile"
+        ],
+        "param_type": "option",
+        "required": false
+      }
+    ]
+  },
+  {
     "command": "nd",
     "params": []
   },

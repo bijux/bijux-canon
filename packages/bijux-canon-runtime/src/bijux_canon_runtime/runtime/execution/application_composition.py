@@ -107,6 +107,13 @@ class _LazyLocalEmbeddingModel:
         with self._lock:
             return self._load().embed(texts)
 
+    def validate(self) -> str:
+        """Prove actual locked dimension and numeric behavior before queueing."""
+
+        with self._lock:
+            result = self._load().embed(("bijux-canon offline model validation",))
+            return result.model_lock_id
+
     def _load(self) -> LocalEmbeddingModel:
         with self._lock:
             lock_path = self._model_root / "model.lock.json"
@@ -345,7 +352,11 @@ def compose_runtime_application_services(
         retrieval_evaluator=PublicRetrievalEvaluator(
             installed_retrieval_evaluation.execute
         ).evaluate,
-        operation_preflight=InstalledProfilePreflight(layout=layout, store=store),
+        operation_preflight=InstalledProfilePreflight(
+            layout=layout,
+            store=store,
+            model_validator=embedding.validate,
+        ),
         resource_closers=(embedding.close, index.close),
     )
 

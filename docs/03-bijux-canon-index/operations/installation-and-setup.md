@@ -31,13 +31,13 @@ python -m pip install --upgrade pip
 python -m pip install bijux-canon-index
 ```
 
-The canonical wheel does not currently register a `bijux-canon-index`
-executable. Verify the import and invoke the Typer application as a module:
+The canonical wheel registers `bijux-canon-index`. Verify the import and the
+installed application:
 
 ```bash
 python -c "import bijux_canon_index; print(bijux_canon_index.__version__)"
-python -m bijux_canon_index.interfaces.cli.app --help
-python -m bijux_canon_index.interfaces.cli.app capabilities
+bijux-canon-index --help
+bijux-canon-index capabilities
 ```
 
 ## Choose Optional Capabilities
@@ -52,6 +52,9 @@ python -m pip install 'bijux-canon-index[nd]'
 # NumPy, FAISS, and Qdrant client adapters
 python -m pip install 'bijux-canon-index[vdb]'
 
+# CPU-local embedding acquisition and inference
+python -m pip install 'bijux-canon-index[embeddings]'
+
 # Uvicorn and API validation dependencies
 python -m pip install 'bijux-canon-index[api]'
 ```
@@ -60,6 +63,31 @@ Extras install client libraries, not external services. A Qdrant deployment
 still needs an accessible service and its own authentication, persistence, and
 backup configuration. Capability discovery reports whether an adapter can
 actually be used in the current environment.
+
+## Acquire a pinned model for dense retrieval
+
+Model acquisition is explicit and network-backed. It never runs during lexical
+workspace initialization or as an implicit side effect of a retrieval request:
+
+```bash
+bijux-canon-index model acquire \
+  --profile local-minilm-384 \
+  --cache-root artifacts/bijux-canon-index/models
+```
+
+The output is a stable validation record. It includes the immutable source and
+revision, Apache-2.0 model-card pointer, exact local file digests, dimension,
+runtime compatibility, validation result, and offline-reuse status. Subsequent
+validation is network-free:
+
+```bash
+bijux-canon-index model validate \
+  --model-root artifacts/bijux-canon-index/models/local-minilm-384/1110a243fdf4706b3f48f1d95db1a4f5529b4d41
+```
+
+If the pinned files were acquired by another controlled process, replace
+`validate` with `register`. Registration writes the canonical lock only after
+every required ordinary file is present, then performs the same CPU smoke.
 
 ## Read Capability Output Conservatively
 

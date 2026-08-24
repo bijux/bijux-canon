@@ -13,6 +13,8 @@ from fastapi.testclient import TestClient
 import pytest
 
 from bijux_canon_index.domain.embedding import LOCAL_MINILM_PROFILE
+from bijux_canon_index.application import model_lifecycle
+from bijux_canon_index.application.model_lifecycle import validate_model
 from bijux_canon_index.infra.embeddings.model_cache import materialize_model
 from bijux_canon_runtime import discover_runtime_capabilities
 from bijux_canon_runtime.api.v2 import create_app
@@ -30,7 +32,20 @@ from bijux_canon_runtime.interfaces.cli.parser import build_parser
 from bijux_canon_runtime.interfaces.cli.v2_commands import run_v2_command
 
 
-def _materialized_model(tmp_path: Path) -> Path:
+class _Encoded(list[list[float]]):
+    dtype = "float32"
+
+
+class _Model:
+    def encode(self, _texts: list[str], **_options: object) -> _Encoded:
+        value = 1.0 / (LOCAL_MINILM_PROFILE.dimension**0.5)
+        return _Encoded([[value] * LOCAL_MINILM_PROFILE.dimension])
+
+
+def _materialized_model(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> Path:
     cache_root = tmp_path / "model-cache"
     metadata: dict[str, object] = {
         "sha": LOCAL_MINILM_PROFILE.revision,
@@ -43,14 +58,17 @@ def _materialized_model(tmp_path: Path) -> Path:
     def fetch_artifact(_url: str, destination: Path) -> None:
         destination.write_bytes(b"valid")
 
-    materialize_model(
+    lock = materialize_model(
         LOCAL_MINILM_PROFILE,
         cache_root,
         library_versions=(("sentence-transformers", "5.1.0"),),
         metadata_fetcher=lambda _url: metadata,
         artifact_fetcher=fetch_artifact,
     )
-    return cache_root / LOCAL_MINILM_PROFILE.profile_id / LOCAL_MINILM_PROFILE.revision
+    root = cache_root / LOCAL_MINILM_PROFILE.profile_id / LOCAL_MINILM_PROFILE.revision
+    monkeypatch.setattr(model_lifecycle, "_PINNED_ARTIFACTS", lock.artifacts)
+    validate_model(root, loader=lambda *_: _Model())
+    return root
 
 
 def _service(
@@ -59,7 +77,7 @@ def _service(
     *,
     secret: str,
 ) -> tuple[RuntimeCapabilityDiscoveryService, RuntimeConfiguration]:
-    model = _materialized_model(tmp_path)
+    model = _materialized_model(tmp_path, monkeypatch)
     configuration = resolve_runtime_configuration(
         explicit={
             "embedding_model_path": model,
@@ -140,6 +158,12 @@ def test_python_discovery_reports_real_support_without_secret_values(
     assert report.configuration["origins"]["working_root"] == "explicit"
     assert report.workspace.status == "initialized"
     assert report.model.status == "verified"
+    assert report.model.validation_record_id is not None
+    assert report.model.artifact_set_digest is not None
+    assert report.model.license_pointer is not None
+    assert report.model.compatibility_status == "compatible"
+    assert report.model.validation_result == "passed"
+    assert report.model.offline_reuse
     assert report.index.status == "active"
     assert report.index.chunk_count == 493
     assert [item.format_id for item in report.parsers] == [

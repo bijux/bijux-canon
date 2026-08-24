@@ -12,6 +12,11 @@ import os
 from typing import cast, get_args
 
 from bijux_canon_index.application import IndexService
+from bijux_canon_index.application.model_lifecycle import (
+    MODEL_RECORD_NAME,
+    ModelLifecycleError,
+    load_model_record,
+)
 from bijux_canon_index.infra.embeddings.model_cache import (
     load_model_lock,
     verify_materialized_model,
@@ -83,6 +88,12 @@ class ModelDiscovery:
     model_id: str | None
     revision: str | None
     dimension: int | None
+    validation_record_id: str | None
+    artifact_set_digest: str | None
+    license_pointer: str | None
+    compatibility_status: str | None
+    validation_result: str | None
+    offline_reuse: bool
 
 
 @dataclass(frozen=True, slots=True)
@@ -192,6 +203,28 @@ class RuntimeCapabilityDiscoveryService:
             verify_materialized_model(layout.model_root, lock)
         except Exception:
             return _empty_model("unavailable")
+        validation_record_id: str | None = None
+        artifact_set_digest: str | None = None
+        license_pointer: str | None = None
+        compatibility_status: str | None = None
+        validation_result: str | None = "not_recorded"
+        offline_reuse = False
+        record_path = layout.model_root / MODEL_RECORD_NAME
+        if record_path.exists():
+            try:
+                record = load_model_record(record_path)
+            except ModelLifecycleError:
+                validation_result = "record_invalid"
+            else:
+                if record.model_lock_artifact_id != lock.lock_id:
+                    validation_result = "record_mismatch"
+                else:
+                    validation_record_id = record.record_id
+                    artifact_set_digest = record.artifact_set_digest
+                    license_pointer = record.license_pointer
+                    compatibility_status = record.compatibility.status
+                    validation_result = record.validation_result
+                    offline_reuse = record.offline_reuse
         return ModelDiscovery(
             status="verified",
             model_lock_artifact_id=lock.lock_id,
@@ -200,6 +233,12 @@ class RuntimeCapabilityDiscoveryService:
             model_id=lock.profile.model_id,
             revision=lock.profile.revision,
             dimension=lock.profile.dimension,
+            validation_record_id=validation_record_id,
+            artifact_set_digest=artifact_set_digest,
+            license_pointer=license_pointer,
+            compatibility_status=compatibility_status,
+            validation_result=validation_result,
+            offline_reuse=offline_reuse,
         )
 
     def _index(self) -> IndexDiscovery:
@@ -231,7 +270,21 @@ class RuntimeCapabilityDiscoveryService:
 
 
 def _empty_model(status: str) -> ModelDiscovery:
-    return ModelDiscovery(status, None, None, None, None, None, None)
+    return ModelDiscovery(
+        status,
+        None,
+        None,
+        None,
+        None,
+        None,
+        None,
+        None,
+        None,
+        None,
+        None,
+        None,
+        False,
+    )
 
 
 def _json_value(value: object) -> object:

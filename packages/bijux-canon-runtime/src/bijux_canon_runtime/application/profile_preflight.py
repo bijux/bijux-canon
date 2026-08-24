@@ -7,6 +7,7 @@
 from __future__ import annotations
 
 import importlib
+from collections.abc import Callable
 from pathlib import Path
 import tempfile
 
@@ -41,9 +42,11 @@ class InstalledProfilePreflight:
         *,
         layout: RuntimeWorkspaceLayout,
         store: ArtifactPayloadStore,
+        model_validator: Callable[[], str] | None = None,
     ) -> None:
         self._layout = layout
         self._store = store
+        self._model_validator = model_validator
 
     def __call__(self, request: RuntimeOperationRequest) -> None:
         if request.execution_profile is ExecutionProfile.QDRANT_HYBRID:
@@ -95,6 +98,8 @@ class InstalledProfilePreflight:
                     "dense index backend or archive validation failed; install the "
                     "CPU-local dense profile and rebuild the index"
                 ) from error
+        if request.operation is not RuntimeRequestOperation.CORPUS_PREPARE:
+            self._validate_model_execution(lock)
 
     def _preflight_lexical(self, request: RuntimeOperationRequest) -> None:
         if request.operation is RuntimeRequestOperation.INDEX_BUILD:
@@ -148,6 +153,25 @@ class InstalledProfilePreflight:
                 "embedding model; acquire or register the model and retry"
             ) from error
         return lock
+
+    def _validate_model_execution(self, lock: EmbeddingModelLock) -> None:
+        if self._model_validator is None:
+            raise ApplicationCapabilityError(
+                "selected dense or hybrid profile requires model execution "
+                "validation before a run can be scheduled"
+            )
+        try:
+            validated_lock_id = self._model_validator()
+        except Exception as error:
+            raise ApplicationCapabilityError(
+                "configured local embedding model failed bounded CPU validation; "
+                "validate or register the pinned model and retry"
+            ) from error
+        if validated_lock_id != lock.lock_id:
+            raise ApplicationCapabilityError(
+                "model execution validation returned a different lock identity; "
+                "restore the configured pinned model and retry"
+            )
 
     @staticmethod
     def _verify_local_dense_backend() -> None:

@@ -93,6 +93,25 @@ bijux-canon-index execute \
 `python -m bijux_canon_index.interfaces.cli.app` invokes the same application
 when a module command is preferable.
 
+For local dense or hybrid retrieval, install the embedding dependencies and
+explicitly acquire the pinned CPU model:
+
+```bash
+python -m pip install 'bijux-canon-index[embeddings]'
+bijux-canon-index model acquire \
+  --profile local-minilm-384 \
+  --cache-root artifacts/bijux-canon-index/models
+```
+
+The command downloads only the immutable declared revision, verifies every
+required file, performs a one-vector offline CPU inference, and writes
+`model.lock.json` plus `model.record.json`. The validation record binds the
+source, revision, license pointer, file digests, dimension, installed runtime
+compatibility, and offline-reuse result. Re-run `model validate --model-root
+PATH` without network access before configuring Runtime. Use `model register`
+for an existing directory containing the exact pinned files; registration does
+not accept a different model or revision.
+
 | Integration need | Supported surface | Authority to pin |
 | --- | --- | --- |
 | typed composition | application, domain, contract, and interface modules | imported symbol and distribution version |
