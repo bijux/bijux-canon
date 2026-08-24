@@ -8,7 +8,7 @@ from enum import StrEnum
 import math
 from typing import Literal, Self
 
-from pydantic import field_validator, model_validator
+from pydantic import Field, field_validator, model_validator
 
 from bijux_canon_reason.core.models.base import StableModel
 from bijux_canon_reason.grounding.provider_contracts import (
@@ -40,6 +40,15 @@ class ConvergenceOutcome(StrEnum):
     insufficient = "insufficient"
     cancelled = "cancelled"
     budget_exhausted = "budget_exhausted"
+
+
+class AnswerVerificationStatus(StrEnum):
+    """Grounding disposition used by research convergence."""
+
+    admitted = "admitted"
+    partially_admitted = "partially_admitted"
+    abstained = "abstained"
+    not_run = "not_run"
 
 
 class ConvergenceErrorCode(StrEnum):
@@ -154,12 +163,123 @@ class ConvergenceObservation(StableModel):
         return self
 
 
+class ResearchConvergenceEvidence(StableModel):
+    """Versioned semantic evidence for one terminal convergence decision."""
+
+    schema_version: Literal["bijux.canon.reason.research_convergence_evidence.v1"] = (
+        "bijux.canon.reason.research_convergence_evidence.v1"
+    )
+    artifact_id: str
+    current_graph_artifact_id: str
+    material_requirement_count: int
+    satisfied_requirement_artifact_ids: tuple[str, ...]
+    remaining_requirement_artifact_ids: tuple[str, ...]
+    material_candidate_count: int
+    classified_candidate_count: int
+    unresolved_classification_artifact_ids: tuple[str, ...]
+    blocking_gap_artifact_ids: tuple[str, ...]
+    unsearched_important_claim_artifact_ids: tuple[str, ...]
+    answer_verification_status: AnswerVerificationStatus
+    answer_revision_artifact_id: str | None
+    material_conflict_count: int
+    marginal_evidence_values: tuple[float, ...]
+
+    @field_validator("artifact_id", "current_graph_artifact_id")
+    @classmethod
+    def _validate_artifact_id(cls, value: str) -> str:
+        return require_artifact_id(value)
+
+    @field_validator("answer_revision_artifact_id")
+    @classmethod
+    def _validate_optional_artifact_id(cls, value: str | None) -> str | None:
+        return None if value is None else require_artifact_id(value)
+
+    @field_validator(
+        "satisfied_requirement_artifact_ids",
+        "remaining_requirement_artifact_ids",
+        "unresolved_classification_artifact_ids",
+        "blocking_gap_artifact_ids",
+        "unsearched_important_claim_artifact_ids",
+    )
+    @classmethod
+    def _validate_artifact_ids(cls, value: tuple[str, ...]) -> tuple[str, ...]:
+        if len(value) != len(set(value)):
+            raise ValueError("convergence evidence identities must be unique")
+        return tuple(require_artifact_id(item) for item in value)
+
+    @model_validator(mode="after")
+    def _validate_evidence(self) -> Self:
+        counts = (
+            self.material_requirement_count,
+            self.material_candidate_count,
+            self.classified_candidate_count,
+            self.material_conflict_count,
+        )
+        if any(item < 0 for item in counts):
+            raise ValueError("convergence evidence counts cannot be negative")
+        if len(self.satisfied_requirement_artifact_ids) + len(
+            self.remaining_requirement_artifact_ids
+        ) != self.material_requirement_count or set(
+            self.satisfied_requirement_artifact_ids
+        ) & set(self.remaining_requirement_artifact_ids):
+            raise ValueError("material requirement accounting is incomplete")
+        if self.classified_candidate_count > self.material_candidate_count:
+            raise ValueError("classified candidates exceed material candidates")
+        if any(
+            not math.isfinite(item) or not 0 <= item <= 1
+            for item in self.marginal_evidence_values
+        ):
+            raise ValueError("marginal evidence values must be finite and bounded")
+        payload = self.model_dump(mode="json", exclude={"artifact_id"})
+        if self.artifact_id != content_artifact_id(payload):
+            raise ValueError("research convergence evidence identity does not match")
+        return self
+
+    @property
+    def requirement_coverage(self) -> float:
+        """Return material requirement coverage without a hidden denominator."""
+
+        if self.material_requirement_count == 0:
+            return 0.0
+        return (
+            len(self.satisfied_requirement_artifact_ids)
+            / self.material_requirement_count
+        )
+
+    @property
+    def classification_complete(self) -> bool:
+        """Return whether every material candidate has a resolved classification."""
+
+        return (
+            self.classified_candidate_count == self.material_candidate_count
+            and not self.unresolved_classification_artifact_ids
+        )
+
+    @property
+    def answerable(self) -> bool:
+        """Return whether verified state permits a completed research answer."""
+
+        return (
+            self.material_requirement_count > 0
+            and not self.remaining_requirement_artifact_ids
+            and self.classification_complete
+            and not self.blocking_gap_artifact_ids
+            and not self.unsearched_important_claim_artifact_ids
+            and self.answer_verification_status
+            in {
+                AnswerVerificationStatus.admitted,
+                AnswerVerificationStatus.partially_admitted,
+            }
+        )
+
+
 class ConvergenceDecision(StableModel):
     """Content-addressed decision that can never continue past a stop condition."""
 
-    schema_version: Literal["bijux.canon.reason.convergence_decision.v1"] = (
-        "bijux.canon.reason.convergence_decision.v1"
-    )
+    schema_version: Literal[
+        "bijux.canon.reason.convergence_decision.v1",
+        "bijux.canon.reason.convergence_decision.v2",
+    ] = "bijux.canon.reason.convergence_decision.v1"
     artifact_id: str
     policy: ConvergencePolicy
     observation_artifact_ids: tuple[str, ...]
@@ -167,6 +287,10 @@ class ConvergenceDecision(StableModel):
     outcome: ConvergenceOutcome
     stop: bool
     reasons: tuple[ConvergenceReason, ...]
+    evidence: ResearchConvergenceEvidence | None = Field(
+        default=None,
+        exclude_if=lambda value: value is None,
+    )
 
     @field_validator("artifact_id", "current_graph_artifact_id")
     @classmethod
@@ -182,6 +306,8 @@ class ConvergenceDecision(StableModel):
 
     @model_validator(mode="after")
     def _validate_decision(self) -> Self:
+        if (self.schema_version.endswith(".v2")) != (self.evidence is not None):
+            raise ValueError("convergence decision version and evidence differ")
         if tuple(sorted(set(self.reasons))) != self.reasons:
             raise ValueError("convergence reasons must be unique and sorted")
         continuing = self.outcome is ConvergenceOutcome.continue_research
@@ -189,6 +315,10 @@ class ConvergenceDecision(StableModel):
             raise ValueError("only continue_research decisions may keep cycling")
         if continuing != (self.reasons == (ConvergenceReason.continue_research,)):
             raise ValueError("continuing requires the sole continue reason")
+        if self.evidence is not None and (
+            self.evidence.current_graph_artifact_id != self.current_graph_artifact_id
+        ):
+            raise ValueError("convergence evidence refers to another graph")
         if self.artifact_id != content_artifact_id(
             self.model_dump(mode="json", exclude={"artifact_id"})
         ):
@@ -203,7 +333,10 @@ class ConvergenceService:
         self.policy = policy or ConvergencePolicy()
 
     def evaluate(
-        self, observations: tuple[ConvergenceObservation, ...]
+        self,
+        observations: tuple[ConvergenceObservation, ...],
+        *,
+        evidence: ResearchConvergenceEvidence | None = None,
     ) -> ConvergenceDecision:
         """Return a terminal decision whenever any declared stop condition holds."""
 
@@ -214,16 +347,26 @@ class ConvergenceService:
             )
         self._validate_history(observations)
         current = observations[-1]
-        reasons = self._terminal_reasons(observations)
+        if evidence is not None:
+            self._validate_evidence_binding(current, evidence)
+        reasons = self._terminal_reasons(observations, evidence=evidence)
         if not reasons:
             reasons = (ConvergenceReason.continue_research,)
             outcome = ConvergenceOutcome.continue_research
             stop = False
         else:
-            outcome = _outcome(reasons, current)
+            outcome = _outcome(reasons, current, evidence=evidence)
             stop = True
+        schema_version: Literal[
+            "bijux.canon.reason.convergence_decision.v1",
+            "bijux.canon.reason.convergence_decision.v2",
+        ] = (
+            "bijux.canon.reason.convergence_decision.v1"
+            if evidence is None
+            else "bijux.canon.reason.convergence_decision.v2"
+        )
         payload = {
-            "schema_version": "bijux.canon.reason.convergence_decision.v1",
+            "schema_version": schema_version,
             "policy": self.policy.model_dump(mode="json"),
             "observation_artifact_ids": tuple(
                 item.artifact_id for item in observations
@@ -233,7 +376,10 @@ class ConvergenceService:
             "stop": stop,
             "reasons": tuple(item.value for item in reasons),
         }
+        if evidence is not None:
+            payload["evidence"] = evidence.model_dump(mode="json")
         return ConvergenceDecision(
+            schema_version=schema_version,
             artifact_id=content_artifact_id(payload),
             policy=self.policy,
             observation_artifact_ids=tuple(item.artifact_id for item in observations),
@@ -241,7 +387,23 @@ class ConvergenceService:
             outcome=outcome,
             stop=stop,
             reasons=reasons,
+            evidence=evidence,
         )
+
+    @staticmethod
+    def _validate_evidence_binding(
+        current: ConvergenceObservation,
+        evidence: ResearchConvergenceEvidence,
+    ) -> None:
+        if (
+            current.graph_artifact_id != evidence.current_graph_artifact_id
+            or current.required_claims != evidence.material_requirement_count
+            or current.verified_answerable_claims
+            != len(evidence.satisfied_requirement_artifact_ids)
+            or current.blocking_gap_count != len(evidence.blocking_gap_artifact_ids)
+            or current.coverage != evidence.requirement_coverage
+        ):
+            raise ValueError("convergence observation differs from semantic evidence")
 
     def _validate_history(
         self, observations: tuple[ConvergenceObservation, ...]
@@ -273,7 +435,10 @@ class ConvergenceService:
                 )
 
     def _terminal_reasons(
-        self, observations: tuple[ConvergenceObservation, ...]
+        self,
+        observations: tuple[ConvergenceObservation, ...],
+        *,
+        evidence: ResearchConvergenceEvidence | None = None,
     ) -> tuple[ConvergenceReason, ...]:
         current = observations[-1]
         reasons = set()
@@ -290,9 +455,13 @@ class ConvergenceService:
         if current.cumulative_elapsed_ms >= self.policy.max_elapsed_ms:
             reasons.add(ConvergenceReason.time_limit)
         answerable = (
-            current.required_claims > 0
-            and current.verified_answerable_claims == current.required_claims
-            and current.blocking_gap_count == 0
+            evidence.answerable
+            if evidence is not None
+            else (
+                current.required_claims > 0
+                and current.verified_answerable_claims == current.required_claims
+                and current.blocking_gap_count == 0
+            )
         )
         if current.coverage >= self.policy.minimum_coverage and answerable:
             reasons.add(ConvergenceReason.coverage_and_answerability)
@@ -308,7 +477,60 @@ class ConvergenceService:
             for item in value_window
         ):
             reasons.add(ConvergenceReason.diminishing_evidence_value)
+        if (
+            evidence is not None
+            and len(evidence.marginal_evidence_values)
+            >= self.policy.diminishing_value_observations
+            and all(
+                item < self.policy.minimum_marginal_evidence_value
+                for item in evidence.marginal_evidence_values[
+                    -self.policy.diminishing_value_observations :
+                ]
+            )
+        ):
+            reasons.add(ConvergenceReason.diminishing_evidence_value)
         return tuple(sorted(reasons))
+
+
+def create_research_convergence_evidence(
+    *,
+    current_graph_artifact_id: str,
+    material_requirement_count: int,
+    satisfied_requirement_artifact_ids: tuple[str, ...],
+    remaining_requirement_artifact_ids: tuple[str, ...],
+    material_candidate_count: int,
+    classified_candidate_count: int,
+    unresolved_classification_artifact_ids: tuple[str, ...],
+    blocking_gap_artifact_ids: tuple[str, ...],
+    unsearched_important_claim_artifact_ids: tuple[str, ...],
+    answer_verification_status: AnswerVerificationStatus,
+    answer_revision_artifact_id: str | None,
+    material_conflict_count: int,
+    marginal_evidence_values: tuple[float, ...],
+) -> ResearchConvergenceEvidence:
+    """Create immutable semantic convergence evidence."""
+
+    payload = {
+        "schema_version": "bijux.canon.reason.research_convergence_evidence.v1",
+        "current_graph_artifact_id": current_graph_artifact_id,
+        "material_requirement_count": material_requirement_count,
+        "satisfied_requirement_artifact_ids": satisfied_requirement_artifact_ids,
+        "remaining_requirement_artifact_ids": remaining_requirement_artifact_ids,
+        "material_candidate_count": material_candidate_count,
+        "classified_candidate_count": classified_candidate_count,
+        "unresolved_classification_artifact_ids": unresolved_classification_artifact_ids,
+        "blocking_gap_artifact_ids": blocking_gap_artifact_ids,
+        "unsearched_important_claim_artifact_ids": (
+            unsearched_important_claim_artifact_ids
+        ),
+        "answer_verification_status": answer_verification_status.value,
+        "answer_revision_artifact_id": answer_revision_artifact_id,
+        "material_conflict_count": material_conflict_count,
+        "marginal_evidence_values": marginal_evidence_values,
+    }
+    return ResearchConvergenceEvidence.model_validate(
+        {"artifact_id": content_artifact_id(payload), **payload}
+    )
 
 
 def create_convergence_observation(
@@ -363,7 +585,10 @@ def create_convergence_observation(
 
 
 def _outcome(
-    reasons: tuple[ConvergenceReason, ...], current: ConvergenceObservation
+    reasons: tuple[ConvergenceReason, ...],
+    current: ConvergenceObservation,
+    *,
+    evidence: ResearchConvergenceEvidence | None = None,
 ) -> ConvergenceOutcome:
     reason_set = set(reasons)
     if ConvergenceReason.cancelled in reason_set:
@@ -380,9 +605,13 @@ def _outcome(
     }:
         return ConvergenceOutcome.budget_exhausted
     answerable = (
-        current.required_claims > 0
-        and current.verified_answerable_claims == current.required_claims
-        and current.blocking_gap_count == 0
+        evidence.answerable
+        if evidence is not None
+        else (
+            current.required_claims > 0
+            and current.verified_answerable_claims == current.required_claims
+            and current.blocking_gap_count == 0
+        )
     )
     return (
         ConvergenceOutcome.converged if answerable else ConvergenceOutcome.insufficient
@@ -391,6 +620,7 @@ def _outcome(
 
 __all__ = [
     "ConvergenceDecision",
+    "AnswerVerificationStatus",
     "ConvergenceError",
     "ConvergenceErrorCode",
     "ConvergenceObservation",
@@ -398,5 +628,7 @@ __all__ = [
     "ConvergencePolicy",
     "ConvergenceReason",
     "ConvergenceService",
+    "ResearchConvergenceEvidence",
     "create_convergence_observation",
+    "create_research_convergence_evidence",
 ]

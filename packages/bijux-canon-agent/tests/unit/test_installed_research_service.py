@@ -59,6 +59,7 @@ def _request(
     relation: ObservedEvidenceRelationKind | None = None,
     include_opposition: bool = True,
     max_searches: int = 1,
+    grounding_admission_outcome: str = "admitted",
 ) -> InstalledResearchRequest:
     requirement = InstalledResearchRequirement.create(
         description="Establish whether the method improves endogenous DNA recovery.",
@@ -131,6 +132,7 @@ def _request(
             artifact_bytes=1_000_000,
         ),
         maximum_search_candidates=1,
+        grounding_admission_outcome=grounding_admission_outcome,
     )
 
 
@@ -424,6 +426,23 @@ def test_semantically_classified_support_resolves_the_searched_requirement() -> 
     assert result.terminal_outcome.kind == "converged"
 
 
+def test_verified_revision_replaces_the_stale_initial_admission() -> None:
+    port = _Port(
+        classification_relation="supporting",
+        convergence_outcome="converged",
+    )
+
+    result = InstalledResearchService().research(
+        _request(grounding_admission_outcome="abstained"),
+        port,
+    )
+
+    assert result.revision is not None
+    assert result.revision.outcome == "revised"
+    assert result.final_state.terminal_status == "completed"
+    assert result.terminal_outcome.kind == "converged"
+
+
 def test_semantically_classified_opposition_is_resolved_by_answer_revision() -> None:
     port = _Port(
         classification_relation="opposing",
@@ -568,6 +587,32 @@ def test_no_results_cause_a_distinct_second_query_before_candidates_stop() -> No
     assert result.terminal_outcome.remaining_work.unsatisfied_requirement_artifact_ids
 
 
+def test_reason_time_limit_remains_incomplete_budget() -> None:
+    class TimeLimitedPort(_Port):
+        def evaluate(
+            self,
+            request: InstalledResearchRequest,
+            plan: InstalledResearchPlan,
+            search: InstalledResearchSearch | None,
+        ) -> InstalledResearchConvergence:
+            result = super().evaluate(request, plan, search)
+            return replace(
+                result,
+                outcome="budget_exhausted",
+                record={"reasons": ["time_limit"], "stop": True},
+            )
+
+    result = InstalledResearchService().research(
+        _request(max_searches=2),
+        TimeLimitedPort(classification_relation="ambiguous"),
+    )
+
+    assert result.convergence.outcome == "budget_exhausted"
+    assert result.terminal_outcome.kind == "incomplete_budget"
+    assert result.terminal_outcome.exhausted_budget_dimensions == ("elapsed_ms",)
+    assert result.terminal_outcome.remaining_work.pending
+
+
 def test_search_tool_failure_is_an_incomplete_data_dependent_branch() -> None:
     port = _Port(search_error=TimeoutError("secret-bearing provider failure"))
     result = InstalledResearchService().research(_request(), port)
@@ -609,6 +654,9 @@ def test_installed_search_reservation_denial_executes_no_tool_call() -> None:
     assert result.budget_usage.documents == 0
     assert result.terminal_outcome.kind == "incomplete_budget"
     assert result.terminal_outcome.exhausted_budget_dimensions == ("documents",)
+    assert result.convergence.record["schema_version"] == (
+        "bijux.canon.agent.budget_convergence.v1"
+    )
     assert any(
         event.operation == "refuse_unbudgeted_search"
         for event in result.causal_events
@@ -692,6 +740,9 @@ def test_installed_cancellation_before_call_is_terminal_without_port_work() -> N
     assert result.cancellation_signal == signal
     assert result.terminal_outcome.kind == "cancelled"
     assert result.terminal_outcome.cancellation_artifact_id == signal.artifact_id
+    assert result.convergence.record["schema_version"] == (
+        "bijux.canon.agent.cancellation_convergence.v1"
+    )
     assert result.final_state.terminal_status == "incomplete"
     assert result.causal_events[-1].operation == "cancel_research"
 

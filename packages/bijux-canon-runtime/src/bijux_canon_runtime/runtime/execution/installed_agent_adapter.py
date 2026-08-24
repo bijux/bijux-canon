@@ -43,6 +43,7 @@ from bijux_canon_reason.grounding import (
 )
 from bijux_canon_reason.grounding.provider_contracts import content_artifact_id
 from bijux_canon_reason.research import (
+    AnswerVerificationStatus,
     AnswerRequirementKind,
     AnswerRequirementPlanningService,
     AnswerRequirementStatus,
@@ -53,6 +54,7 @@ from bijux_canon_reason.research import (
     CounterevidenceSearchService,
     CounterevidenceTarget,
     ResearchCandidateAdjudicationService,
+    ResearchAnswerRevision,
     ResearchAnswerRevisionService,
     ResearchCandidateClassification,
     RetrievalBatchStatus,
@@ -60,6 +62,7 @@ from bijux_canon_reason.research import (
     ScopedRetrievalRequest,
     create_convergence_observation,
     create_counterevidence_target,
+    create_research_convergence_evidence,
     create_retrieval_evidence_batch,
 )
 from bijux_canon_runtime.model.artifact import canonical_json_bytes
@@ -254,8 +257,9 @@ class _ReasonResearchPort:
         self._reason_plan: CounterevidencePlan | None = None
         self._targeted_attempt: TargetedSearchAttempt | None = None
         self._search_count = 0
+        self._search_history: list[InstalledResearchSearch] = []
+        self._revision: ResearchAnswerRevision | None = None
         self._resolved_requirement_ids: set[str] = set()
-        self._blocking_classification_ids: set[str] = set()
 
     def revise(
         self,
@@ -326,9 +330,7 @@ class _ReasonResearchPort:
             raise StepDispatchError(
                 "research evidence cannot produce a verified answer revision"
             ) from error
-        self._blocking_classification_ids.difference_update(
-            revision.resolved_classification_artifact_ids
-        )
+        self._revision = revision
         return InstalledResearchRevision(
             artifact_id=revision.artifact_id,
             outcome=revision.outcome.value,
@@ -459,11 +461,6 @@ class _ReasonResearchPort:
                 for item in report.classifications
             ):
                 self._resolved_requirement_ids.add(requirement.artifact_id)
-            self._blocking_classification_ids.update(
-                item.artifact_id
-                for item in report.classifications
-                if item.material and item.relation.value in {"opposing", "limiting"}
-            )
             classifications.extend(
                 InstalledCandidateClassification(
                     artifact_id=item.artifact_id,
@@ -479,7 +476,7 @@ class _ReasonResearchPort:
                 )
                 for item in report.classifications
             )
-        return InstalledResearchSearch(
+        search = InstalledResearchSearch(
             artifact_id=counter_run.artifact_id,
             document_artifact_ids=tuple(
                 dict.fromkeys(item.document_id for item in candidate_evidence)
@@ -515,6 +512,8 @@ class _ReasonResearchPort:
             record=counter_run.model_dump(mode="json"),
             adjudication_records=tuple(adjudication_records),
         )
+        self._search_history.append(search)
+        return search
 
     def evaluate(
         self,
@@ -522,62 +521,168 @@ class _ReasonResearchPort:
         plan: InstalledResearchPlan,
         search: InstalledResearchSearch | None,
     ) -> InstalledResearchConvergence:
-        candidates = (
-            ()
-            if search is None
-            else tuple(
+        del plan, search
+        material_requirements = tuple(
+            item for item in request.requirements if item.material
+        )
+        satisfied_requirements = tuple(
+            item
+            for item in material_requirements
+            if item.satisfied or item.artifact_id in self._resolved_requirement_ids
+        )
+        remaining_requirements = tuple(
+            item for item in material_requirements if item not in satisfied_requirements
+        )
+        satisfied_ids = tuple(
+            self._requirement_reference(item) for item in satisfied_requirements
+        )
+        remaining_ids = tuple(
+            self._requirement_reference(item) for item in remaining_requirements
+        )
+        candidate_ids = tuple(
+            dict.fromkeys(
                 artifact_id
-                for record in search.records
+                for completed_search in self._search_history
+                for record in completed_search.records
                 for artifact_id in record.candidate_evidence_artifact_ids
             )
         )
-        unsearched = (
-            () if search is None else search.unsearched_important_claim_artifact_ids
+        classifications = tuple(
+            classification
+            for completed_search in self._search_history
+            for record in completed_search.records
+            for classification in record.classifications
         )
-        required_count = len(request.claims)
-        unresolved_requirements = sum(
-            item.material
-            and not item.satisfied
-            and item.artifact_id not in self._resolved_requirement_ids
-            for item in request.requirements
+        classified_candidate_ids = {
+            item.evidence_artifact_id for item in classifications
+        }
+        unresolved_classification_ids = tuple(
+            dict.fromkeys(
+                tuple(
+                    item.artifact_id
+                    for item in classifications
+                    if item.material and item.relation in {"ambiguous", "unclassified"}
+                )
+                + tuple(
+                    artifact_id
+                    for artifact_id in candidate_ids
+                    if artifact_id not in classified_candidate_ids
+                )
+            )
+        )
+        unsearched = tuple(
+            dict.fromkeys(
+                artifact_id
+                for completed_search in self._search_history
+                for artifact_id in (
+                    completed_search.unsearched_important_claim_artifact_ids
+                )
+            )
+        )
+        blocking_ids = tuple(
+            dict.fromkeys(remaining_ids + unresolved_classification_ids + unsearched)
+        )
+        marginal_values, latest_new_evidence_count = self._marginal_evidence_values()
+        revision = self._revision
+        current_graph_id = (
+            self._claim_graph_artifact_id
+            if revision is None
+            else revision.revised_answer.artifact_id
+        )
+        answer_status = AnswerVerificationStatus(
+            request.grounding_admission_outcome
+            if revision is None
+            else revision.revised_answer.outcome.value
+        )
+        contextualized = self._claim_graph.get("contextualized")
+        initial_conflicts = (
+            contextualized.get("conflicts")
+            if isinstance(contextualized, dict)
+            else None
+        )
+        evidence = create_research_convergence_evidence(
+            current_graph_artifact_id=current_graph_id,
+            material_requirement_count=len(material_requirements),
+            satisfied_requirement_artifact_ids=satisfied_ids,
+            remaining_requirement_artifact_ids=remaining_ids,
+            material_candidate_count=len(candidate_ids),
+            classified_candidate_count=len(
+                set(candidate_ids) & classified_candidate_ids
+            ),
+            unresolved_classification_artifact_ids=(unresolved_classification_ids),
+            blocking_gap_artifact_ids=blocking_ids,
+            unsearched_important_claim_artifact_ids=unsearched,
+            answer_verification_status=answer_status,
+            answer_revision_artifact_id=(
+                None if revision is None else revision.artifact_id
+            ),
+            material_conflict_count=(
+                len(initial_conflicts) if isinstance(initial_conflicts, list) else 0
+            )
+            if revision is None
+            else len(revision.revised_answer.contextualized.conflicts),
+            marginal_evidence_values=marginal_values,
+        )
+        at_hard_limit = (
+            self._search_count >= self._convergence.policy.max_tool_calls
+            or 1 >= self._convergence.policy.max_elapsed_ms
         )
         observation = create_convergence_observation(
             iteration=1,
-            graph_artifact_id=request.claim_graph_artifact_id,
-            coverage=(
-                0.0
-                if required_count == 0
-                else request.verified_claim_count / required_count
+            graph_artifact_id=current_graph_id,
+            coverage=evidence.requirement_coverage,
+            verified_answerable_claims=len(satisfied_ids),
+            required_claims=len(material_requirements),
+            blocking_gap_count=len(blocking_ids),
+            new_evidence_count=latest_new_evidence_count,
+            marginal_evidence_value=(
+                0.0 if not marginal_values else marginal_values[-1]
             ),
-            verified_answerable_claims=min(
-                request.verified_claim_count,
-                required_count,
-            ),
-            required_claims=required_count,
-            blocking_gap_count=(
-                unresolved_requirements
-                + len(self._blocking_classification_ids)
-                + len(unsearched)
-            ),
-            new_evidence_count=len(candidates),
-            marginal_evidence_value=(1.0 if candidates else 0.0),
             cumulative_tool_calls=self._search_count,
             cumulative_tokens=0,
             cumulative_elapsed_ms=1,
             explicit_insufficiency=(
-                required_count == 0
-                or bool(unresolved_requirements)
-                or bool(self._blocking_classification_ids)
-                or bool(unsearched)
+                not material_requirements
+                or (
+                    not at_hard_limit
+                    and (
+                        bool(blocking_ids)
+                        or answer_status is AnswerVerificationStatus.abstained
+                    )
+                )
             ),
         )
-        decision = self._convergence.evaluate((observation,))
+        decision = self._convergence.evaluate((observation,), evidence=evidence)
         return InstalledResearchConvergence(
             artifact_id=decision.artifact_id,
             outcome=decision.outcome.value,
             stop=decision.stop,
             record=decision.model_dump(mode="json"),
         )
+
+    @staticmethod
+    def _requirement_reference(requirement: InstalledResearchRequirement) -> str:
+        return requirement.source_requirement_artifact_id or requirement.artifact_id
+
+    def _marginal_evidence_values(self) -> tuple[tuple[float, ...], int]:
+        seen: set[str] = set()
+        values: list[float] = []
+        latest_new_count = 0
+        for search in self._search_history:
+            candidate_ids = tuple(
+                dict.fromkeys(
+                    artifact_id
+                    for record in search.records
+                    for artifact_id in record.candidate_evidence_artifact_ids
+                )
+            )
+            new_ids = tuple(item for item in candidate_ids if item not in seen)
+            latest_new_count = len(new_ids)
+            values.append(
+                0.0 if not candidate_ids else len(new_ids) / len(candidate_ids)
+            )
+            seen.update(candidate_ids)
+        return tuple(values), latest_new_count
 
 
 def _research_request(
@@ -996,6 +1101,7 @@ class CanonicalAgentOperationAdapter:
                     else _json_value(asdict(research.cancellation_signal))
                 ),
                 "generation_id": generation_id,
+                "grounding_admission_outcome": request.grounding_admission_outcome,
                 "insufficiencies": list(research.insufficiencies),
                 "opposition_candidates": list(research.opposition_candidate_ids),
                 "research_candidates": list(research.opposition_candidate_ids),

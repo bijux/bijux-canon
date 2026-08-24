@@ -379,22 +379,18 @@ def _verify_research_trace(subject: Mapping[str, object]) -> tuple[str, ...]:
             if raw_run is None
             else CounterevidenceSearchRun.model_validate(raw_run)
         )
+        raw_termination = _object(subject["termination"], "termination")
         convergence = (
-            InstalledResearchConvergence(
-                artifact_id=str(
-                    _object(subject["termination"], "termination")["artifact_id"]
-                ),
-                outcome=str(
-                    _object(subject["termination"], "termination")["outcome"]
-                ),
-                stop=_boolean(
-                    _object(subject["termination"], "termination")["stop"],
-                    "termination.stop",
-                ),
-                record=_object(subject["termination"], "termination"),
+            ConvergenceDecision.model_validate(raw_termination)
+            if str(raw_termination.get("schema_version", "")).startswith(
+                "bijux.canon.reason.convergence_decision."
             )
-            if subject.get("status") == "cancelled"
-            else ConvergenceDecision.model_validate(subject["termination"])
+            else InstalledResearchConvergence(
+                artifact_id=str(raw_termination["artifact_id"]),
+                outcome=str(raw_termination["outcome"]),
+                stop=_boolean(raw_termination["stop"], "termination.stop"),
+                record=raw_termination,
+            )
         )
         raw_research_outcome = _object(subject["research_outcome"], "research_outcome")
         raw_remaining_work = _object(
@@ -464,6 +460,31 @@ def _verify_research_trace(subject: Mapping[str, object]) -> tuple[str, ...]:
         raise StepDispatchError("research trace records are invalid") from error
     if run is not None and run.plan_artifact_id != plan.artifact_id:
         raise StepDispatchError("counterevidence run refers to another plan")
+    if isinstance(convergence, InstalledResearchConvergence):
+        raw_convergence = dict(convergence.record)
+        schema_version = raw_convergence.get("schema_version")
+        expected_outcome = (
+            {
+                "bijux.canon.agent.budget_convergence.v1": "budget_exhausted",
+                "bijux.canon.agent.cancellation_convergence.v1": "cancelled",
+            }.get(schema_version)
+            if isinstance(schema_version, str)
+            else None
+        )
+        if (
+            expected_outcome is None
+            or convergence.outcome != expected_outcome
+            or not convergence.stop
+            or convergence.artifact_id
+            != content_artifact_id(
+                {
+                    key: value
+                    for key, value in raw_convergence.items()
+                    if key != "artifact_id"
+                }
+            )
+        ):
+            raise StepDispatchError("Agent terminal convergence record is invalid")
     convergence_outcome = (
         convergence.outcome
         if isinstance(convergence, InstalledResearchConvergence)
@@ -605,6 +626,22 @@ def _verify_research_trace(subject: Mapping[str, object]) -> tuple[str, ...]:
     }
     if decision_ids != referenced_budget_ids:
         raise StepDispatchError("research causal trace omits budget decisions")
+    convergence_budget_dimensions = (
+        tuple(
+            {
+                "iteration_limit": "iterations",
+                "tool_limit": "tool_calls",
+                "token_limit": "tokens",
+                "time_limit": "elapsed_ms",
+            }[item.value]
+            for item in convergence.reasons
+            if item.value
+            in {"iteration_limit", "tool_limit", "token_limit", "time_limit"}
+        )
+        if isinstance(convergence, ConvergenceDecision)
+        and convergence.outcome.value == "budget_exhausted"
+        else ()
+    )
     if budget.exhausted_dimensions:
         if (
             research_outcome.exhausted_budget_dimensions
@@ -612,10 +649,25 @@ def _verify_research_trace(subject: Mapping[str, object]) -> tuple[str, ...]:
         ):
             raise StepDispatchError("research budget exhaustion differs from ledger")
     elif research_outcome.kind is InstalledResearchTerminalKind.INCOMPLETE_BUDGET:
+        raw_search_budget = _object(raw_state["search_budget"], "search_budget")
+        search_budget_exhausted = (
+            remaining_work.pending
+            and _integer(raw_search_budget["used"], "search_budget.used")
+            >= _integer(raw_search_budget["limit"], "search_budget.limit")
+            and bool(
+                remaining_work.unsatisfied_requirement_artifact_ids
+                or remaining_work.unsearched_important_claim_artifact_ids
+            )
+        )
+        expected_dimensions = tuple(
+            dict.fromkeys(
+                convergence_budget_dimensions
+                + (("retrievals",) if search_budget_exhausted else ())
+            )
+        )
         if (
-            research_outcome.exhausted_budget_dimensions != ("retrievals",)
-            or budget.global_usage.retrievals
-            != budget_policy.global_limits.retrievals
+            not expected_dimensions
+            or research_outcome.exhausted_budget_dimensions != expected_dimensions
         ):
             raise StepDispatchError("research search-budget exhaustion is invalid")
     if not convergence.stop:
@@ -752,7 +804,104 @@ def _verify_research_trace(subject: Mapping[str, object]) -> tuple[str, ...]:
         or remaining_work.unsearched_important_claim_artifact_ids != expected_unsearched
     ):
         raise StepDispatchError("research terminal remaining work is incomplete")
-    return (
+    if isinstance(convergence, ConvergenceDecision):
+        evidence = convergence.evidence
+        if evidence is None:
+            raise StepDispatchError("semantic convergence evidence is missing")
+        material_requirements = tuple(
+            item for item in raw_requirements if item.get("material") is True
+        )
+        satisfied_requirement_ids = tuple(
+            str(item.get("source_requirement_artifact_id") or item["artifact_id"])
+            for item in material_requirements
+            if item.get("status") == "satisfied"
+        )
+        remaining_requirement_ids = tuple(
+            str(item.get("source_requirement_artifact_id") or item["artifact_id"])
+            for item in material_requirements
+            if item.get("status") != "satisfied"
+        )
+        unresolved_classification_ids = tuple(
+            dict.fromkeys(
+                tuple(
+                    item.artifact_id
+                    for item in classifications
+                    if item.material
+                    and item.relation.value in {"ambiguous", "unclassified"}
+                )
+                + tuple(
+                    artifact_id
+                    for artifact_id in candidate_ids
+                    if artifact_id not in classified_candidate_ids
+                )
+            )
+        )
+        blocking_ids = tuple(
+            dict.fromkeys(
+                remaining_requirement_ids
+                + unresolved_classification_ids
+                + expected_unsearched
+            )
+        )
+        seen_candidates: set[str] = set()
+        marginal_values: list[float] = []
+        for history_run in counter_runs:
+            run_candidate_ids = tuple(
+                dict.fromkeys(
+                    artifact_id
+                    for record in history_run.records
+                    for artifact_id in record.candidate_evidence_artifact_ids
+                )
+            )
+            new_candidate_ids = tuple(
+                item for item in run_candidate_ids if item not in seen_candidates
+            )
+            marginal_values.append(
+                0.0
+                if not run_candidate_ids
+                else len(new_candidate_ids) / len(run_candidate_ids)
+            )
+            seen_candidates.update(run_candidate_ids)
+        expected_answer_status = (
+            revision.revised_answer.outcome.value
+            if revision is not None
+            else subject.get("grounding_admission_outcome")
+        )
+        expected_current_graph_id = (
+            str(subject["claim_graph_artifact_id"])
+            if revision is None
+            else revision.revised_answer.artifact_id
+        )
+        if (
+            evidence.current_graph_artifact_id != expected_current_graph_id
+            or evidence.material_requirement_count != len(material_requirements)
+            or evidence.satisfied_requirement_artifact_ids != satisfied_requirement_ids
+            or evidence.remaining_requirement_artifact_ids != remaining_requirement_ids
+            or evidence.material_candidate_count != len(set(candidate_ids))
+            or evidence.classified_candidate_count
+            != len(set(candidate_ids) & classified_candidate_ids)
+            or evidence.unresolved_classification_artifact_ids
+            != unresolved_classification_ids
+            or evidence.blocking_gap_artifact_ids != blocking_ids
+            or evidence.unsearched_important_claim_artifact_ids != expected_unsearched
+            or evidence.answer_verification_status.value != expected_answer_status
+            or evidence.answer_revision_artifact_id
+            != (None if revision is None else revision.artifact_id)
+            or evidence.marginal_evidence_values != tuple(marginal_values)
+        ):
+            raise StepDispatchError("semantic convergence evidence differs from trace")
+        if revision is not None and evidence.material_conflict_count != len(
+            revision.revised_answer.contextualized.conflicts
+        ):
+            raise StepDispatchError("semantic convergence conflict count differs")
+        if (
+            research_outcome.kind is InstalledResearchTerminalKind.CONVERGED
+            and not evidence.answerable
+        ):
+            raise StepDispatchError(
+                "research completion differs from convergence evidence"
+            )
+    checks = (
         "answer-requirement-plan-identity",
         "targeted-search-plan-identity",
         "targeted-search-history-lineage",
@@ -764,6 +913,11 @@ def _verify_research_trace(subject: Mapping[str, object]) -> tuple[str, ...]:
         "transactional-budget-ledger",
         "typed-terminal-outcome",
         "causal-event-chain",
+    )
+    return checks + (
+        ("semantic-convergence-evidence",)
+        if isinstance(convergence, ConvergenceDecision)
+        else ()
     )
 
 

@@ -306,6 +306,16 @@ Reason decision. Runtime verification reconstructs the content-addressed
 remaining-work record from observed requirements, material candidate
 classifications, blocking gaps, and important unsearched claims; a coherent
 but incomplete run cannot erase that work by relabeling itself completed.
+The bound v2 convergence evidence also retains exact satisfied and remaining
+requirement identities, candidate and classification denominators, unresolved
+classification and gap identities, revised-answer verification, material
+conflicts, and per-search marginal evidence values. Runtime recomputes these
+facts from the persisted trace and refuses tampered or semantically divergent
+termination records.
+If cancellation or an Agent ledger limit prevents a Reason evaluation, Runtime
+validates the separately versioned Agent terminal identity and the exact
+remaining-work and budget records without claiming that semantic convergence
+ran.
 
 ## Source Map
 

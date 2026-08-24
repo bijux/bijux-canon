@@ -7,6 +7,7 @@ from __future__ import annotations
 import pytest
 
 from bijux_canon_reason.research import (
+    AnswerVerificationStatus,
     ConvergenceDecision,
     ConvergenceError,
     ConvergenceErrorCode,
@@ -15,7 +16,9 @@ from bijux_canon_reason.research import (
     ConvergencePolicy,
     ConvergenceReason,
     ConvergenceService,
+    ResearchConvergenceEvidence,
     create_convergence_observation,
+    create_research_convergence_evidence,
 )
 
 
@@ -52,6 +55,44 @@ def _observation(
         cumulative_elapsed_ms=elapsed,
         cancellation_requested=cancelled,
         explicit_insufficiency=insufficient,
+    )
+
+
+def _evidence(
+    *,
+    satisfied: int = 1,
+    remaining: int = 1,
+    candidates: int = 1,
+    classified: int = 1,
+    unresolved: int = 0,
+    gaps: int = 1,
+    unsearched: int = 0,
+    answer: AnswerVerificationStatus = AnswerVerificationStatus.admitted,
+    marginal: tuple[float, ...] = (0.5,),
+) -> ResearchConvergenceEvidence:
+    requirement_ids = tuple(_artifact(str(index + 1)) for index in range(2))
+    return create_research_convergence_evidence(
+        current_graph_artifact_id=_artifact("a"),
+        material_requirement_count=satisfied + remaining,
+        satisfied_requirement_artifact_ids=requirement_ids[:satisfied],
+        remaining_requirement_artifact_ids=requirement_ids[
+            satisfied : satisfied + remaining
+        ],
+        material_candidate_count=candidates,
+        classified_candidate_count=classified,
+        unresolved_classification_artifact_ids=tuple(
+            _artifact(("c", "d")[index]) for index in range(unresolved)
+        ),
+        blocking_gap_artifact_ids=tuple(
+            _artifact(("e", "f")[index]) for index in range(gaps)
+        ),
+        unsearched_important_claim_artifact_ids=tuple(
+            _artifact(("7", "8")[index]) for index in range(unsearched)
+        ),
+        answer_verification_status=answer,
+        answer_revision_artifact_id=_artifact("9"),
+        material_conflict_count=0,
+        marginal_evidence_values=marginal,
     )
 
 
@@ -93,6 +134,99 @@ def test_coverage_and_verified_answerability_converge() -> None:
     assert decision.stop
     assert decision.outcome is ConvergenceOutcome.converged
     assert ConvergenceReason.coverage_and_answerability in decision.reasons
+
+
+def test_versioned_semantic_evidence_drives_early_convergence() -> None:
+    evidence = _evidence(satisfied=2, remaining=0, gaps=0)
+    observation = _observation(
+        coverage=1.0,
+        verified=2,
+        required=2,
+        gaps=0,
+    )
+
+    decision = ConvergenceService().evaluate(
+        (observation,),
+        evidence=evidence,
+    )
+    restarted = ConvergenceDecision.model_validate_json(decision.model_dump_json())
+
+    assert restarted == decision
+    assert decision.schema_version.endswith(".v2")
+    assert decision.evidence == evidence
+    assert decision.outcome is ConvergenceOutcome.converged
+    assert evidence.requirement_coverage == 1.0
+    assert evidence.classification_complete
+    assert evidence.answerable
+
+
+def test_material_new_evidence_continues_while_requirements_remain() -> None:
+    evidence = _evidence(satisfied=1, remaining=1, gaps=1, marginal=(1.0,))
+
+    decision = ConvergenceService().evaluate(
+        (_observation(coverage=0.5, verified=1, required=2, gaps=1),),
+        evidence=evidence,
+    )
+
+    assert not decision.stop
+    assert decision.outcome is ConvergenceOutcome.continue_research
+    assert decision.reasons == (ConvergenceReason.continue_research,)
+
+
+def test_diminishing_novelty_justifies_insufficiency_without_false_completion() -> None:
+    evidence = _evidence(
+        satisfied=1,
+        remaining=1,
+        gaps=1,
+        marginal=(0.0, 0.0),
+    )
+
+    decision = ConvergenceService().evaluate(
+        (_observation(coverage=0.5, verified=1, required=2, gaps=1, value=0.0),),
+        evidence=evidence,
+    )
+
+    assert decision.stop
+    assert decision.outcome is ConvergenceOutcome.insufficient
+    assert decision.reasons == (ConvergenceReason.diminishing_evidence_value,)
+
+
+def test_unresolved_classification_and_abstention_never_converge() -> None:
+    evidence = _evidence(
+        satisfied=2,
+        remaining=0,
+        candidates=1,
+        classified=1,
+        unresolved=1,
+        gaps=1,
+        answer=AnswerVerificationStatus.abstained,
+    )
+
+    decision = ConvergenceService().evaluate(
+        (
+            _observation(
+                coverage=1.0,
+                verified=2,
+                required=2,
+                gaps=1,
+                insufficient=True,
+            ),
+        ),
+        evidence=evidence,
+    )
+
+    assert decision.outcome is ConvergenceOutcome.insufficient
+    assert ConvergenceReason.coverage_and_answerability not in decision.reasons
+    assert not evidence.classification_complete
+    assert not evidence.answerable
+
+
+def test_semantic_evidence_must_match_the_terminal_observation() -> None:
+    with pytest.raises(ValueError, match="differs from semantic evidence"):
+        ConvergenceService().evaluate(
+            (_observation(coverage=0.5, verified=1, required=2, gaps=0),),
+            evidence=_evidence(satisfied=1, remaining=1, gaps=1),
+        )
 
 
 def test_stable_graph_and_diminishing_value_stop_insufficient_research() -> None:

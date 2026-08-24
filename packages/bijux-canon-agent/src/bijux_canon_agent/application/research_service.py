@@ -545,6 +545,7 @@ class InstalledResearchService:
         decision: BudgetDecision,
     ) -> InstalledResearchConvergence:
         identity_record = {
+            "schema_version": "bijux.canon.agent.budget_convergence.v1",
             "budget_decision_artifact_id": decision.artifact_id,
             "claim_graph_artifact_id": request.claim_graph_artifact_id,
             "outcome": "budget_exhausted",
@@ -582,6 +583,7 @@ class InstalledResearchService:
         signal: CancellationSignal,
     ) -> InstalledResearchConvergence:
         identity_record: dict[str, object] = {
+            "schema_version": "bijux.canon.agent.cancellation_convergence.v1",
             "cancellation_artifact_id": signal.artifact_id,
             "claim_graph_artifact_id": request.claim_graph_artifact_id,
             "outcome": "cancelled",
@@ -1262,15 +1264,23 @@ class InstalledResearchService:
                 else budget.decisions[-1].artifact_id
             ),
         )
-        exhausted_dimensions = budget.exhausted_dimensions or (
-            ("retrievals",)
-            if remaining_work.pending
-            and state.search_budget_used >= state.search_budget_limit
-            and (
-                remaining_work.unsatisfied_requirement_artifact_ids
-                or remaining_work.unsearched_important_claim_artifact_ids
+        convergence_exhausted_dimensions = self._convergence_exhausted_dimensions(
+            convergence
+        )
+        exhausted_dimensions = budget.exhausted_dimensions or tuple(
+            dict.fromkeys(
+                convergence_exhausted_dimensions
+                + (
+                    ("retrievals",)
+                    if remaining_work.pending
+                    and state.search_budget_used >= state.search_budget_limit
+                    and (
+                        remaining_work.unsatisfied_requirement_artifact_ids
+                        or remaining_work.unsearched_important_claim_artifact_ids
+                    )
+                    else ()
+                )
             )
-            else ()
         )
         if cancellation_signal is not None:
             terminal_kind = InstalledResearchTerminalKind.CANCELLED
@@ -1279,8 +1289,10 @@ class InstalledResearchService:
         elif exhausted_dimensions:
             terminal_kind = InstalledResearchTerminalKind.INCOMPLETE_BUDGET
         elif (
-            request.grounding_admission_outcome == "abstained" or remaining_work.pending
-        ):
+            revision.outcome == "abstained"
+            if revision is not None
+            else request.grounding_admission_outcome == "abstained"
+        ) or remaining_work.pending:
             terminal_kind = InstalledResearchTerminalKind.ABSTAINED
         else:
             terminal_kind = InstalledResearchTerminalKind.CONVERGED
@@ -1320,6 +1332,29 @@ class InstalledResearchService:
             cancellation_signal=cancellation_signal,
             terminal_outcome=terminal_outcome,
             revision=revision,
+        )
+
+    @staticmethod
+    def _convergence_exhausted_dimensions(
+        convergence: InstalledResearchConvergence,
+    ) -> tuple[str, ...]:
+        if convergence.outcome != "budget_exhausted":
+            return ()
+        raw_reasons = convergence.record.get("reasons")
+        if not isinstance(raw_reasons, list | tuple):
+            return ()
+        dimensions = {
+            "iteration_limit": "iterations",
+            "tool_limit": "tool_calls",
+            "token_limit": "tokens",
+            "time_limit": "elapsed_ms",
+        }
+        return tuple(
+            dict.fromkeys(
+                dimensions[reason]
+                for reason in raw_reasons
+                if isinstance(reason, str) and reason in dimensions
+            )
         )
 
     @staticmethod

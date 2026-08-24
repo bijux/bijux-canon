@@ -163,6 +163,16 @@ Duplicate text is recorded explicitly, evaluator disagreement remains
 unclassified, and a query framed as contradiction cannot turn supporting text
 into opposition.
 
+`ResearchConvergenceEvidence` closes the loop with explicit denominators. It
+records every material requirement as satisfied or remaining, every retrieved
+candidate as classified or unresolved, blocking gaps, important claims that
+were not searched, answer-verification disposition, revision identity,
+material conflicts, and marginal evidence value across searches. A v2
+convergence decision can report `converged` only when those requirements are
+complete and the grounded answer is admitted; stable repetition or low novelty
+with remaining work produces insufficiency, while hard iteration, tool, token,
+or time limits remain `budget_exhausted`.
+
 Credential-free synthesis uses a closed set of conservative projections, such
 as removing source-attribution boilerplate or resolving a labeled definition.
 The verifier independently reproduces the projection from exact cited text;

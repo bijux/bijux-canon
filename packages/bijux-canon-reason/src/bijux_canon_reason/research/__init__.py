@@ -61,6 +61,7 @@ from bijux_canon_reason.research.candidate_adjudication import (
     StructuredCandidateJudgment,
 )
 from bijux_canon_reason.research.convergence import (
+    AnswerVerificationStatus,
     ConvergenceDecision,
     ConvergenceError,
     ConvergenceErrorCode,
@@ -69,7 +70,9 @@ from bijux_canon_reason.research.convergence import (
     ConvergencePolicy,
     ConvergenceReason,
     ConvergenceService,
+    ResearchConvergenceEvidence,
     create_convergence_observation,
+    create_research_convergence_evidence,
 )
 from bijux_canon_reason.research.counterevidence import (
     CounterevidenceError,
@@ -188,6 +191,7 @@ __all__ = [
     "AnswerRequirementPlanOutcome",
     "AnswerRequirementPlanningService",
     "AnswerRequirementStatus",
+    "AnswerVerificationStatus",
     "AssumptionCandidate",
     "AssumptionImpact",
     "AssumptionInsufficiencyDelta",
@@ -284,6 +288,7 @@ __all__ = [
     "ResearchChangeAction",
     "ResearchChangeAttribution",
     "ResearchChangeAuthority",
+    "ResearchConvergenceEvidence",
     "ResearchGraphEvent",
     "ResearchGraphEventKind",
     "ResearchGraphSurface",
@@ -326,6 +331,7 @@ __all__ = [
     "create_skeptical_search_completion",
     "create_counterevidence_target",
     "create_convergence_observation",
+    "create_research_convergence_evidence",
     "create_mergeable_claim",
     "create_retrieval_evidence_batch",
     "create_research_graph_event",

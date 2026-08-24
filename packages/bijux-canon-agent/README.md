@@ -220,11 +220,22 @@ and opposition, ambiguity, refusal, tool failure, or unclassified material
 evidence keep the run incomplete. A convergence flag cannot override a
 blocking evidence gap.
 
+Convergence is a terminal semantic decision, not a fixed-loop success signal.
+Reason receives the accumulated search novelty, requirement coverage,
+classification completeness, revised-answer verification, conflict count, and
+remaining uncertainty. Agent then keeps `converged`, justified `abstained`,
+`incomplete_budget`, `cancelled`, and `failed` disjoint. If research changes an
+initially abstained answer into a verified answer, the revision disposition
+replaces that stale initial admission; if the revision abstains, completion is
+forbidden.
+
 The installed terminal record uses disjoint `converged`, `abstained`,
 `incomplete_budget`, `cancelled`, and `failed` dispositions. An incomplete
 budget result names the exhausted dimensions plus every unsatisfied
 requirement, unresolved evidence item, blocking gap, and important unsearched
-claim. Reaching a call limit is therefore not represented as completion.
+claim. Agent-owned budget and cancellation convergence records are separately
+versioned and content-addressed when policy forbids another Reason call.
+Reaching a call limit is therefore not represented as completion.
 
 The existing CLI, HTTP, and Python pipeline remain package-local supported
 surfaces. The package root still exports only `API_VERSION`; installed

@@ -867,6 +867,9 @@ def _verify_reason_and_agent(grounded: _GroundedRuntime) -> None:
     ]
     assert research_trace["termination"]["stop"] is True
     assert research_trace["termination"]["reasons"] == ["explicit_insufficiency"]
+    assert research_trace["termination"]["schema_version"] == (
+        "bijux.canon.reason.convergence_decision.v2"
+    )
     assert research_trace["counterevidence_plan"]["requests"]
     targeted_search = research_trace["targeted_search_plan"]
     assert targeted_search["attempt"]["intent"] == "opposition"
@@ -921,6 +924,26 @@ def _verify_reason_and_agent(grounded: _GroundedRuntime) -> None:
     assert research_trace["answer"] == revision["after_answer"]
     assert revision["unresolved_classification_artifact_ids"]
     assert revision["actions"][0]["kind"] == "abstain"
+    convergence_evidence = research_trace["termination"]["evidence"]
+    material_requirements = [
+        item
+        for item in research_trace["research_state"]["requirements"]
+        if item["material"]
+    ]
+    assert convergence_evidence["material_requirement_count"] == len(
+        material_requirements
+    )
+    assert len(convergence_evidence["satisfied_requirement_artifact_ids"]) + len(
+        convergence_evidence["remaining_requirement_artifact_ids"]
+    ) == len(material_requirements)
+    assert convergence_evidence["material_candidate_count"] == len(
+        set(research_trace["research_candidates"])
+    )
+    assert convergence_evidence["answer_verification_status"] == "abstained"
+    assert convergence_evidence["answer_revision_artifact_id"] == (
+        revision["artifact_id"]
+    )
+    assert convergence_evidence["marginal_evidence_values"] == [1.0]
     assert [event["role"] for event in research_trace["causal_events"]] == [
         "plan",
         "researcher",
@@ -994,6 +1017,48 @@ def _verify_reason_and_agent(grounded: _GroundedRuntime) -> None:
         for step in planner.plan(research_request).steps
         if step.operation is DagOperation.VERIFY
     )
+    verified_research = OperationDispatcher(
+        (CanonicalVerificationOperationAdapter(),)
+    ).dispatch(
+        research_verification_step,
+        (research.artifacts[0],),
+    )
+    assert "semantic-convergence-evidence" in json.loads(
+        verified_research.artifacts[0].payload
+    )["checks"]
+
+    time_limited_agent_step = replace(
+        agent_step,
+        inputs=replace(
+            agent_step.inputs,
+            budget=replace(agent_step.inputs.budget, timeout_seconds=0.001),
+        ),
+    )
+    time_limited_research = OperationDispatcher(
+        (
+            CanonicalAgentOperationAdapter(
+                store=store,
+                index=index_service,
+                embedding=_Embedding(),
+                vex_store_root=tmp_path / "runtime" / "vex-time-limited",
+            ),
+        )
+    ).dispatch(time_limited_agent_step, (agent_upstream,))
+    time_limited_trace = json.loads(time_limited_research.artifacts[0].payload)
+    assert time_limited_trace["status"] == "incomplete_budget"
+    assert time_limited_trace["convergence_status"] == "budget_exhausted"
+    assert time_limited_trace["research_outcome"][
+        "exhausted_budget_dimensions"
+    ] == ["elapsed_ms", "tool_calls", "retrievals"]
+    verified_time_limited = OperationDispatcher(
+        (CanonicalVerificationOperationAdapter(),)
+    ).dispatch(
+        research_verification_step,
+        (time_limited_research.artifacts[0],),
+    )
+    assert json.loads(verified_time_limited.artifacts[0].payload)["status"] == (
+        "verified"
+    )
     with pytest.raises(StepDispatchError, match="research trace records are invalid"):
         OperationDispatcher((CanonicalVerificationOperationAdapter(),)).dispatch(
             research_verification_step,
@@ -1037,6 +1102,30 @@ def _verify_reason_and_agent(grounded: _GroundedRuntime) -> None:
         OperationDispatcher((CanonicalVerificationOperationAdapter(),)).dispatch(
             research_verification_step,
             (tampered_revision,),
+        )
+
+    tampered_convergence_trace = json.loads(research.artifacts[0].payload)
+    tampered_termination = tampered_convergence_trace["termination"]
+    tampered_evidence = tampered_termination["evidence"]
+    tampered_evidence["marginal_evidence_values"] = [0.5]
+    tampered_convergence = StepOutputArtifact(
+        contract_id="agent.research-trace.v1",
+        producer_step_id="agent",
+        producer_operation=DagOperation.AGENT,
+        artifact=AddressedArtifact.from_json(
+            tampered_convergence_trace,
+            schema_id="agent.research-trace.v1",
+            producer="bijux-canon-runtime:agent",
+            dependencies=research.artifacts[0].artifact.descriptor.dependencies,
+        ),
+    )
+    with pytest.raises(
+        StepDispatchError,
+        match="research trace records are invalid",
+    ):
+        OperationDispatcher((CanonicalVerificationOperationAdapter(),)).dispatch(
+            research_verification_step,
+            (tampered_convergence,),
         )
 
     cancellation_checks = 0
@@ -1318,7 +1407,7 @@ def test_installed_ingest_and_index_adapters_persist_restartable_payloads(
     grounded = _retrieve_and_reason(indexed)
 
     _verify_reason_and_agent(grounded)
-    assert len(delegated_requests) == 2
+    assert len(delegated_requests) == 3
     assert delegated_requests[0].claims
     assert delegated_requests[0].question == (
         "What evidence do ancient genomes preserve?"
@@ -1331,7 +1420,7 @@ def test_installed_ingest_and_index_adapters_persist_restartable_payloads(
     )
     assert delegated_requests[0].evidence_relations
     _verify_linked_runs(grounded)
-    assert len(delegated_requests) == 3
+    assert len(delegated_requests) == 4
     _verify_offline_boundaries(grounded)
     _verify_replay(indexed)
 
