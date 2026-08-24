@@ -17,6 +17,7 @@ from bijux_canon_agent.application import (
     InstalledResearchPlan,
     InstalledResearchRequest,
     InstalledResearchRequirement,
+    InstalledResearchRevision,
     InstalledResearchSearch,
     InstalledResearchSearchRecord,
     InstalledResearchService,
@@ -40,6 +41,8 @@ _CONVERGENCE = "sha256:" + "c" * 64
 _REQUIREMENT = "sha256:" + "d" * 64
 _CLASSIFICATION = "sha256:" + "e" * 64
 _DOCUMENT = "sha256:" + "0" * 64
+_REVISION = "sha256:" + "f" * 64
+_REVISED_CLAIM = "sha256:" + "9" * 64
 
 
 @dataclass
@@ -147,6 +150,7 @@ class _Port:
     plan_execution_usage: BudgetDimensions = BudgetDimensions()
     search_execution_usage: BudgetDimensions = BudgetDimensions()
     evaluation_execution_usage: BudgetDimensions = BudgetDimensions()
+    revision_execution_usage: BudgetDimensions = BudgetDimensions()
     calls: list[str] = field(default_factory=list)
 
     def plan(
@@ -267,20 +271,66 @@ class _Port:
             execution_usage=self.evaluation_execution_usage,
         )
 
+    def revise(
+        self,
+        request: InstalledResearchRequest,
+        searches: tuple[InstalledResearchSearch, ...],
+    ) -> InstalledResearchRevision:
+        self.calls.append("revise")
+        classifications = tuple(
+            item
+            for search in searches
+            for record in search.records
+            for item in record.classifications
+        )
+        unresolved = tuple(
+            item.artifact_id
+            for item in classifications
+            if item.material and item.relation in {"ambiguous", "unclassified"}
+        )
+        resolved = tuple(
+            item.artifact_id
+            for item in classifications
+            if item.artifact_id not in unresolved
+        )
+        changed = bool(classifications)
+        outcome = "abstained" if unresolved else "revised" if changed else "preserved"
+        revised_claims = () if unresolved else (_REVISED_CLAIM,) if changed else (_CLAIM,)
+        return InstalledResearchRevision(
+            artifact_id=_REVISION,
+            outcome=outcome,
+            changed=changed,
+            prior_claim_artifact_ids=(_CLAIM,),
+            revised_claim_artifact_ids=revised_claims,
+            resolved_classification_artifact_ids=resolved,
+            unresolved_classification_artifact_ids=unresolved,
+            before_answer="The method improves endogenous DNA recovery.",
+            after_answer=(
+                "Insufficient evidence after research."
+                if unresolved
+                else "The revised evidence changes the recovery answer."
+                if changed
+                else "The method improves endogenous DNA recovery."
+            ),
+            record={"artifact_id": _REVISION, "outcome": outcome},
+            execution_usage=self.revision_execution_usage,
+        )
+
 
 def test_service_owns_search_decision_and_causal_trace() -> None:
     port = _Port()
     result = InstalledResearchService().research(_request(), port)
 
-    assert port.calls == ["plan", "search", "evaluate"]
+    assert port.calls == ["plan", "search", "revise", "evaluate"]
     assert result.opposition_candidate_ids == (_CANDIDATE,)
     assert result.relation_status == "unclassified"
-    assert len(result.causal_events) == 5
+    assert len(result.causal_events) == 6
     assert [event.role for event in result.causal_events] == [
         "plan",
         "researcher",
         "skeptic",
         "adjudicator",
+        "synthesizer",
         "verifier",
     ]
     assert result.causal_events[2].evidence_artifact_ids == (_CANDIDATE,)
@@ -374,23 +424,66 @@ def test_semantically_classified_support_resolves_the_searched_requirement() -> 
     assert result.terminal_outcome.kind == "converged"
 
 
-def test_semantically_classified_opposition_blocks_completion() -> None:
+def test_semantically_classified_opposition_is_resolved_by_answer_revision() -> None:
     port = _Port(
         classification_relation="opposing",
-        convergence_outcome="insufficient",
+        convergence_outcome="converged",
     )
 
     result = InstalledResearchService().research(_request(), port)
 
     assert result.relation_status == "opposing"
-    assert result.final_state.terminal_status == "insufficient"
-    assert any(
-        gap.kind is ObservedResearchGapKind.MATERIAL_OPPOSITION
-        for gap in result.final_state.blocking_gaps
-    )
+    assert result.revision is not None
+    assert result.revision.changed
+    assert result.final_state.terminal_status == "completed"
+    assert not result.final_state.blocking_gaps
     assert result.targeted_search_observations[0].outcome == "opposition"
+    assert result.terminal_outcome.kind == "converged"
+    assert not result.terminal_outcome.remaining_work.pending
+
+
+def test_material_opposition_cannot_claim_revision_with_an_unchanged_answer() -> None:
+    class StaleRevisionPort(_Port):
+        def revise(
+            self,
+            request: InstalledResearchRequest,
+            searches: tuple[InstalledResearchSearch, ...],
+        ) -> InstalledResearchRevision:
+            self.calls.append("revise")
+            return InstalledResearchRevision(
+                artifact_id=_REVISION,
+                outcome="preserved",
+                changed=False,
+                prior_claim_artifact_ids=(_CLAIM,),
+                revised_claim_artifact_ids=(_CLAIM,),
+                resolved_classification_artifact_ids=(_CLASSIFICATION,),
+                unresolved_classification_artifact_ids=(),
+                before_answer="The method improves endogenous DNA recovery.",
+                after_answer="The method improves endogenous DNA recovery.",
+                record={"artifact_id": _REVISION, "outcome": "preserved"},
+            )
+
+    port = StaleRevisionPort(classification_relation="opposing")
+
+    with pytest.raises(ValueError, match="left the answer unchanged"):
+        InstalledResearchService().research(_request(), port)
+
+
+def test_ambiguous_classified_evidence_withdraws_the_answer() -> None:
+    port = _Port(
+        classification_relation="ambiguous",
+        convergence_outcome="insufficient",
+    )
+
+    result = InstalledResearchService().research(_request(max_searches=2), port)
+
+    assert result.revision is not None
+    assert result.revision.outcome == "abstained"
+    assert result.revision.revised_claim_artifact_ids == ()
     assert result.terminal_outcome.kind == "abstained"
-    assert result.terminal_outcome.remaining_work.unresolved_gap_artifact_ids
+    assert result.terminal_outcome.remaining_work.unresolved_evidence_artifact_ids == (
+        _CANDIDATE,
+    )
 
 
 def test_ambiguous_search_takes_the_adjudication_branch() -> None:
@@ -421,6 +514,7 @@ def test_no_results_are_retained_without_closing_the_opposition_need() -> None:
         "researcher",
         "verifier",
         "adjudicator",
+        "synthesizer",
         "verifier",
     ]
     assert result.final_state.terminal_status == "incomplete"
@@ -444,7 +538,14 @@ def test_no_results_cause_a_distinct_second_query_before_candidates_stop() -> No
 
     result = InstalledResearchService().research(_request(max_searches=2), port)
 
-    assert port.calls == ["plan", "search", "plan", "search", "evaluate"]
+    assert port.calls == [
+        "plan",
+        "search",
+        "plan",
+        "search",
+        "revise",
+        "evaluate",
+    ]
     assert len(result.plan_history) == 2
     assert len(result.search_history) == 2
     attempts = tuple(
@@ -552,6 +653,24 @@ def test_installed_provider_usage_overrun_is_not_admitted() -> None:
     assert result.terminal_outcome.kind == "incomplete_budget"
     assert result.terminal_outcome.exhausted_budget_dimensions == (
         "provider_calls",
+    )
+
+
+def test_installed_oversized_revision_is_not_admitted() -> None:
+    port = _Port(
+        classification_relation="supporting",
+        revision_execution_usage=BudgetDimensions(artifact_bytes=1_000_001),
+    )
+
+    result = InstalledResearchService().research(_request(), port)
+
+    assert port.calls == ["plan", "search", "revise"]
+    assert result.revision is None
+    assert result.terminal_outcome.kind == "incomplete_budget"
+    assert result.terminal_outcome.exhausted_budget_dimensions == ("artifact_bytes",)
+    assert any(
+        event.operation == "refuse_oversized_revision_result"
+        for event in result.causal_events
     )
 
 

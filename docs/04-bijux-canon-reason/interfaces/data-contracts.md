@@ -126,6 +126,17 @@ source-supported findings section.
 Internal artifact and citation-link identifiers remain in the persisted graph
 but are not used as reader-facing prose.
 
+`ResearchAnswerRevisionService` closes the RAR feedback loop over this same
+grounding authority. It combines the prior immutable evidence packet with
+classified new evidence, preserves source metadata and locators, and re-runs
+synthesis, atomic normalization, citation linking, entailment verification,
+context rendering, and admission. Its content-addressed result records typed
+add, remove, qualify, split, merge, strengthen, abstain, or preserve actions.
+Each action links prior claims, revised claims, exact evidence, and the
+classification that caused it. Material ambiguity or unclassified evidence
+produces a verified abstention instead of silently retaining the earlier
+answer.
+
 ## Validation Layers
 
 Validation is intentionally cumulative:

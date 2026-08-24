@@ -234,6 +234,7 @@ class CredentialFreeSynthesisPolicy(StableModel):
     required_sources: int = 2
     minimum_query_term_overlap: int = 1
     semantic_duplicate_threshold: float = 0.8
+    retain_cross_source_corroboration: bool = False
     method: str = "credential-free-constrained-synthesis-v3"
 
     @field_validator("max_points", "required_sources")
@@ -572,6 +573,10 @@ class CredentialFreeSynthesizer:
                     threshold=self._policy.semantic_duplicate_threshold,
                 )
                 for prior in selected
+                if not (
+                    self._policy.retain_cross_source_corroboration
+                    and item.source_id != prior.source_id
+                )
             ):
                 continue
             selected.append(item)

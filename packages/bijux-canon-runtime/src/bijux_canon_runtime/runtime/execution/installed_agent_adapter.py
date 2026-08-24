@@ -22,6 +22,7 @@ from bijux_canon_agent.application import (
     InstalledResearchPlan,
     InstalledResearchRequest,
     InstalledResearchRequirement,
+    InstalledResearchRevision,
     InstalledResearchSearch,
     InstalledResearchSearchRecord,
     InstalledResearchService,
@@ -32,9 +33,12 @@ from bijux_canon_agent.application import (
 from bijux_canon_index.application import HybridRetrievalPolicy, IndexService
 from bijux_canon_reason.grounding import (
     CitationEvidence,
+    CitationSourceDescriptor,
     CitationVerificationReport,
     CredentialFreeSynthesis,
+    EvidencePacket,
     GroundingAdmissionDecision,
+    LocalGroundedAnswer,
     NormalizedClaimSet,
 )
 from bijux_canon_reason.grounding.provider_contracts import content_artifact_id
@@ -49,6 +53,8 @@ from bijux_canon_reason.research import (
     CounterevidenceSearchService,
     CounterevidenceTarget,
     ResearchCandidateAdjudicationService,
+    ResearchAnswerRevisionService,
+    ResearchCandidateClassification,
     RetrievalBatchStatus,
     RetrievalEvidenceBatch,
     ScopedRetrievalRequest,
@@ -137,6 +143,7 @@ class _IndexCounterevidencePort:
         self.outputs: list[dict[str, object]] = []
         self.output_artifact_ids: list[ArtifactID] = []
         self.evidence: dict[str, CitationEvidence] = {}
+        self.sources: dict[str, CitationSourceDescriptor] = {}
 
     def retrieve(self, request: ScopedRetrievalRequest) -> RetrievalEvidenceBatch:
         self._context.raise_if_stopped()
@@ -176,12 +183,17 @@ class _IndexCounterevidencePort:
         self._store.put(output.artifact)
         self.outputs.append(record)
         self.output_artifact_ids.append(output.artifact_id)
-        candidate_evidence, _sources = citation_inputs_from_evidence_set(
+        candidate_evidence, sources = citation_inputs_from_evidence_set(
             record,
             retrieval_artifact_id=str(output.artifact_id),
             claim_key=request.target_artifact_id,
         )
         canonical: list[CitationEvidence] = []
+        for source in sources:
+            existing_source = self.sources.get(source.source_id)
+            if existing_source is not None and existing_source != source:
+                raise StepDispatchError("counterevidence source metadata collision")
+            self.sources[source.source_id] = source
         seen_text: set[str] = set()
         for evidence in candidate_evidence:
             if evidence.exact_text_sha256 in seen_text:
@@ -231,15 +243,110 @@ class _ReasonResearchPort:
         counterevidence: CounterevidenceSearchService,
         convergence: ConvergenceService,
         retrieval: _IndexCounterevidencePort,
+        claim_graph: dict[str, object],
+        claim_graph_artifact_id: str,
     ) -> None:
         self._counterevidence = counterevidence
         self._convergence = convergence
         self._retrieval = retrieval
+        self._claim_graph = claim_graph
+        self._claim_graph_artifact_id = claim_graph_artifact_id
         self._reason_plan: CounterevidencePlan | None = None
         self._targeted_attempt: TargetedSearchAttempt | None = None
         self._search_count = 0
         self._resolved_requirement_ids: set[str] = set()
         self._blocking_classification_ids: set[str] = set()
+
+    def revise(
+        self,
+        request: InstalledResearchRequest,
+        searches: tuple[InstalledResearchSearch, ...],
+    ) -> InstalledResearchRevision:
+        """Re-run the installed grounded-answer pipeline over classified evidence."""
+
+        if request.claim_graph_artifact_id != self._claim_graph_artifact_id:
+            raise StepDispatchError("research revision targets another claim graph")
+        raw = self._claim_graph
+        try:
+            prior_answer = LocalGroundedAnswer.model_validate(
+                {
+                    "artifact_id": raw.get("grounded_answer_artifact_id"),
+                    "answer_text": raw.get("answer"),
+                    "outcome": raw.get("answer_disposition"),
+                    "synthesis": raw.get("synthesis"),
+                    "claims": raw.get("claims"),
+                    "citations": raw.get("citations"),
+                    "citation_presentation": raw.get("citation_presentation"),
+                    "verification": raw.get("citation_verification"),
+                    "admission": raw.get("grounding_admission"),
+                    "contextualized": raw.get("contextualized"),
+                    "evidence_state": raw.get("evidence_state"),
+                }
+            )
+            prior_packet = EvidencePacket.model_validate(raw.get("evidence_packet"))
+            classifications = tuple(
+                ResearchCandidateClassification.model_validate(item.record)
+                for search in searches
+                for record in search.records
+                for item in record.classifications
+            )
+            candidate_ids = tuple(
+                dict.fromkeys(
+                    item.evidence_artifact_id for item in classifications
+                )
+            )
+            candidates = tuple(
+                self._retrieval.evidence[artifact_id]
+                for artifact_id in candidate_ids
+            )
+            raw_sources = raw.get("sources")
+            if not isinstance(raw_sources, list):
+                raise ValueError("prior claim graph source records are invalid")
+            source_by_id = {
+                source.source_id: source
+                for source in (
+                    CitationSourceDescriptor.model_validate(item)
+                    for item in raw_sources
+                )
+            }
+            for source_id, source in self._retrieval.sources.items():
+                previous = source_by_id.get(source_id)
+                if previous is not None and previous != source:
+                    raise ValueError("research revision source metadata collides")
+                source_by_id[source_id] = source
+            revision = ResearchAnswerRevisionService().revise(
+                prior_claim_graph_artifact_id=self._claim_graph_artifact_id,
+                prior_answer=prior_answer,
+                prior_evidence_packet=prior_packet,
+                classifications=classifications,
+                candidate_evidence=candidates,
+                sources=tuple(source_by_id.values()),
+            )
+        except (KeyError, ValidationError, ValueError) as error:
+            raise StepDispatchError(
+                "research evidence cannot produce a verified answer revision"
+            ) from error
+        self._blocking_classification_ids.difference_update(
+            revision.resolved_classification_artifact_ids
+        )
+        return InstalledResearchRevision(
+            artifact_id=revision.artifact_id,
+            outcome=revision.outcome.value,
+            changed=revision.before_answer != revision.after_answer,
+            prior_claim_artifact_ids=revision.prior_claim_artifact_ids,
+            revised_claim_artifact_ids=(
+                revision.revised_answer.admission.admitted_claim_artifact_ids
+            ),
+            resolved_classification_artifact_ids=(
+                revision.resolved_classification_artifact_ids
+            ),
+            unresolved_classification_artifact_ids=(
+                revision.unresolved_classification_artifact_ids
+            ),
+            before_answer=revision.before_answer,
+            after_answer=revision.after_answer,
+            record=revision.model_dump(mode="json"),
+        )
 
     def plan(
         self,
@@ -776,6 +883,8 @@ class CanonicalAgentOperationAdapter:
                 counterevidence=CounterevidenceSearchService(counter_policy),
                 convergence=ConvergenceService(convergence_policy),
                 retrieval=retrieval_port,
+                claim_graph=claim_graph,
+                claim_graph_artifact_id=graph_id,
             ),
             _RuntimeCancellationPort(
                 context,
@@ -789,7 +898,21 @@ class CanonicalAgentOperationAdapter:
         )
         payload = canonical_json_bytes(
             {
-                "answer": claim_graph.get("answer"),
+                "answer": (
+                    claim_graph.get("answer")
+                    if research.revision is None
+                    else research.revision.after_answer
+                ),
+                "answer_revision": (
+                    None
+                    if research.revision is None
+                    else dict(research.revision.record)
+                ),
+                "answer_revision_artifact_id": (
+                    None
+                    if research.revision is None
+                    else research.revision.artifact_id
+                ),
                 "answer_requirement_plan": dict(request.requirement_plan_record),
                 "budget_decisions": [
                     _json_value(asdict(item)) for item in research.budget_decisions

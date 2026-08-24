@@ -52,6 +52,7 @@ from bijux_canon_reason.research import (
     CounterevidencePlan,
     CounterevidenceSearchRun,
     ResearchCandidateClassification,
+    ResearchAnswerRevision,
 )
 from bijux_canon_runtime.model.artifact import canonical_json_bytes
 from bijux_canon_runtime.model.execution.request_plan import (
@@ -664,6 +665,36 @@ def _verify_research_trace(subject: Mapping[str, object]) -> tuple[str, ...]:
     }
     if reported_candidate_ids != set(candidate_ids):
         raise StepDispatchError("candidate adjudication coverage is incomplete")
+    raw_revision = subject.get("answer_revision")
+    revision = None
+    if raw_revision is not None:
+        try:
+            revision = ResearchAnswerRevision.model_validate(raw_revision)
+        except ValidationError as error:
+            raise StepDispatchError("research answer revision is invalid") from error
+        if (
+            subject.get("answer_revision_artifact_id") != revision.artifact_id
+            or subject.get("answer") != revision.after_answer
+            or revision.prior_claim_graph_artifact_id
+            != subject.get("claim_graph_artifact_id")
+            or revision.classification_artifact_ids
+            != tuple(item.artifact_id for item in classifications)
+            or set(revision.candidate_evidence_artifact_ids) != set(candidate_ids)
+        ):
+            raise StepDispatchError("research answer revision lineage is invalid")
+        material_opposition_ids = {
+            item.artifact_id
+            for item in classifications
+            if item.material and item.relation.value in {"opposing", "limiting"}
+        }
+        if material_opposition_ids <= set(
+            revision.resolved_classification_artifact_ids
+        ) and material_opposition_ids and revision.before_answer == revision.after_answer:
+            raise StepDispatchError(
+                "material counterevidence did not revise the answer"
+            )
+    elif subject.get("answer_revision_artifact_id") is not None:
+        raise StepDispatchError("research answer revision record is missing")
     material_unresolved = {
         classification.evidence_artifact_id
         for classification in classifications
@@ -728,6 +759,7 @@ def _verify_research_trace(subject: Mapping[str, object]) -> tuple[str, ...]:
         "counterevidence-plan-identity",
         "counterevidence-search-lineage",
         "semantic-candidate-adjudication",
+        "verified-answer-revision",
         "bounded-convergence-decision",
         "transactional-budget-ledger",
         "typed-terminal-outcome",

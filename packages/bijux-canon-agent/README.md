@@ -207,6 +207,13 @@ irrelevant, ambiguous, or unclassified relations in observed state; retrieval
 query intent alone is never interpreted as opposition. Resolved search needs
 can close, while material opposition, limitations, ambiguity, or missing
 classification remain blocking inputs to answer revision.
+After classified evidence is available, Agent explicitly invokes the Reason
+revision port before convergence. The returned artifact names every resolved
+and unresolved classification, the prior and revised claim identities, and the
+before/after answer. Agent removes opposition or limitation gaps only when that
+artifact re-ran support, exact-citation, and abstention verification. Material
+opposition or limitation with unchanged answer text is rejected as an invalid
+revision; unresolved ambiguity withdraws the answer and remains blocking.
 Different observations produce different role paths: already-sufficient
 evidence can skip search, no-result searches remain bounded negative evidence,
 and opposition, ambiguity, refusal, tool failure, or unclassified material

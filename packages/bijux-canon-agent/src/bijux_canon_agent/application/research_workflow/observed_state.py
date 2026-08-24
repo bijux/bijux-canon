@@ -567,6 +567,7 @@ class ObservedResearchStateMachine:
         evidence_relations: tuple[InstalledEvidenceRelation, ...] | None = None,
         requirements: tuple[InstalledResearchRequirement, ...] | None = None,
         gaps: tuple[ObservedResearchGap, ...] | None = None,
+        claim_artifact_ids: tuple[str, ...] | None = None,
         consume_search: bool = False,
         terminal_status: str | None = None,
     ) -> ObservedResearchState:
@@ -588,7 +589,11 @@ class ObservedResearchStateMachine:
         return cls._create(
             question=state.question,
             requirements=state.requirements if requirements is None else requirements,
-            claim_artifact_ids=state.claim_artifact_ids,
+            claim_artifact_ids=(
+                state.claim_artifact_ids
+                if claim_artifact_ids is None
+                else claim_artifact_ids
+            ),
             evidence_relations=(
                 state.evidence_relations
                 if evidence_relations is None

@@ -29,6 +29,13 @@ from bijux_canon_reason.research.answer_requirements import (
     SkepticalSearchCompletion,
     create_skeptical_search_completion,
 )
+from bijux_canon_reason.research.answer_revision import (
+    ClaimRevisionAction,
+    ClaimRevisionActionKind,
+    ResearchAnswerRevision,
+    ResearchAnswerRevisionService,
+    ResearchRevisionOutcome,
+)
 from bijux_canon_reason.research.claim_merging import (
     CanonicalClaimVariant,
     CanonicalDerivationDependency,
@@ -190,6 +197,8 @@ __all__ = [
     "CandidateAdjudicationReport",
     "CandidateClassificationMethod",
     "ClaimSourceCoverage",
+    "ClaimRevisionAction",
+    "ClaimRevisionActionKind",
     "CanonicalClaimVariant",
     "CanonicalDerivationDependency",
     "CanonicalResearchClaim",
@@ -270,6 +279,8 @@ __all__ = [
     "ResearchDeficiencyStatus",
     "ReplayedResearchAttempt",
     "ResearchAttemptComparison",
+    "ResearchAnswerRevision",
+    "ResearchAnswerRevisionService",
     "ResearchChangeAction",
     "ResearchChangeAttribution",
     "ResearchChangeAuthority",
@@ -280,6 +291,7 @@ __all__ = [
     "ResearchReasoningReplayService",
     "ResearchReplayError",
     "ResearchReplayErrorCode",
+    "ResearchRevisionOutcome",
     "ReasoningProvenanceError",
     "ReasoningProvenanceErrorCode",
     "ReasoningProvenanceReport",

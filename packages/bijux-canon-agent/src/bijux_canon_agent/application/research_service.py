@@ -334,6 +334,51 @@ class InstalledResearchConvergence:
             raise TypeError("research convergence execution usage is invalid")
 
 
+@dataclass(frozen=True, slots=True)
+class InstalledResearchRevision:
+    """Reason-owned revised claim graph projected into Agent orchestration."""
+
+    artifact_id: str
+    outcome: str
+    changed: bool
+    prior_claim_artifact_ids: tuple[str, ...]
+    revised_claim_artifact_ids: tuple[str, ...]
+    resolved_classification_artifact_ids: tuple[str, ...]
+    unresolved_classification_artifact_ids: tuple[str, ...]
+    before_answer: str
+    after_answer: str
+    record: Mapping[str, object]
+    execution_usage: BudgetDimensions = BudgetDimensions()
+
+    def __post_init__(self) -> None:
+        _require_artifact_id(self.artifact_id, "research revision artifact_id")
+        for artifact_id in (
+            self.prior_claim_artifact_ids
+            + self.revised_claim_artifact_ids
+            + self.resolved_classification_artifact_ids
+            + self.unresolved_classification_artifact_ids
+        ):
+            _require_artifact_id(artifact_id, "research revision reference")
+        if self.outcome not in {"revised", "preserved", "abstained"}:
+            raise ValueError("research revision outcome is invalid")
+        if self.changed != (self.before_answer != self.after_answer):
+            raise ValueError("research revision changed flag differs from answer delta")
+        if self.outcome == "preserved" and self.changed:
+            raise ValueError("preserved research revision cannot change the answer")
+        if self.outcome != "preserved" and not self.changed:
+            raise ValueError("material research revision must change the answer")
+        if set(self.resolved_classification_artifact_ids) & set(
+            self.unresolved_classification_artifact_ids
+        ):
+            raise ValueError("research revision classification sets overlap")
+        if not self.before_answer.strip() or not self.after_answer.strip():
+            raise ValueError("research revision requires before and after answers")
+        if not isinstance(self.record, Mapping):
+            raise TypeError("research revision record must be a mapping")
+        if not isinstance(self.execution_usage, BudgetDimensions):
+            raise TypeError("research revision execution usage is invalid")
+
+
 @runtime_checkable
 class InstalledResearchPort(Protocol):
     """Runtime-supplied Reason and retrieval operations used by Agent."""
@@ -356,6 +401,12 @@ class InstalledResearchPort(Protocol):
         plan: InstalledResearchPlan,
         search: InstalledResearchSearch | None,
     ) -> InstalledResearchConvergence: ...
+
+    def revise(
+        self,
+        request: InstalledResearchRequest,
+        searches: tuple[InstalledResearchSearch, ...],
+    ) -> InstalledResearchRevision: ...
 
 
 @dataclass(frozen=True, slots=True)
@@ -382,6 +433,7 @@ class InstalledResearchResult:
     budget_usage: BudgetDimensions
     cancellation_signal: CancellationSignal | None
     terminal_outcome: InstalledResearchTerminalOutcome
+    revision: InstalledResearchRevision | None
 
 
 class InstalledResearchService:
@@ -414,6 +466,7 @@ class InstalledResearchService:
                 "plan": role_limits,
                 "search": role_limits,
                 "evaluate": role_limits,
+                "revise": role_limits,
             },
         )
 
@@ -607,6 +660,7 @@ class InstalledResearchService:
         cancellation_signal: CancellationSignal | None = None
         cancellation_budget_decision_ids: tuple[str, ...] = ()
         cancellation_consumed_search = False
+        revision: InstalledResearchRevision | None = None
         while True:
             signal = self._cancellation(cancellation_port)
             if signal.requested:
@@ -952,6 +1006,127 @@ class InstalledResearchService:
                 break
 
         plan = plans[-1]
+        revision_budget_start = len(budget.decisions)
+        if cancellation_signal is None and searches and not budget.exhausted_dimensions:
+            revision_start_usage = BudgetDimensions(iterations=1)
+            revision_reservation = self._reservation(
+                budget,
+                role="revise",
+                label="revise_claim_graph",
+                start=revision_start_usage,
+            )
+            if revision_reservation.action is BudgetAction.TERMINATE:
+                state = self._record_decision(
+                    events,
+                    state_machine=state_machine,
+                    state=state,
+                    state_history=state_history,
+                    role="synthesizer",
+                    operation="refuse_unbudgeted_revision",
+                    rationale="do not revise the claim graph without a reserved output envelope",
+                    observation_ids=(revision_reservation.artifact_id,),
+                    evidence_ids=(),
+                    policy_ids=policy_ids,
+                    budget_decision_ids=tuple(
+                        item.artifact_id
+                        for item in budget.decisions[revision_budget_start:]
+                    ),
+                )
+            else:
+                budget.charge(
+                    role="revise",
+                    label="revise_claim_graph:start",
+                    usage=revision_start_usage,
+                )
+                revision = port.revise(request, tuple(searches))
+                if not isinstance(revision, InstalledResearchRevision):
+                    raise TypeError("installed research port returned invalid revision")
+                revision_finish = budget.charge(
+                    role="revise",
+                    label="revise_claim_graph:finish",
+                    usage=self._output_charge(asdict(revision)).plus(
+                        revision.execution_usage
+                    ),
+                )
+                if revision_finish.action is BudgetAction.TERMINATE:
+                    state = self._record_decision(
+                        events,
+                        state_machine=state_machine,
+                        state=state,
+                        state_history=state_history,
+                        role="synthesizer",
+                        operation="refuse_oversized_revision_result",
+                        rationale="do not admit a revised claim graph beyond its reserved envelope",
+                        observation_ids=(revision.artifact_id,),
+                        evidence_ids=(),
+                        policy_ids=policy_ids,
+                        budget_decision_ids=tuple(
+                            item.artifact_id
+                            for item in budget.decisions[revision_budget_start:]
+                        ),
+                    )
+                    revision = None
+            if revision is not None:
+                classification_ids = {
+                    item.artifact_id
+                    for completed_search in searches
+                    for record in completed_search.records
+                    for item in record.classifications
+                }
+                accounted = set(revision.resolved_classification_artifact_ids) | set(
+                    revision.unresolved_classification_artifact_ids
+                )
+                if accounted != classification_ids:
+                    raise ValueError(
+                        "research revision did not account for every classification"
+                    )
+                material_opposition = any(
+                    item.material and item.relation in {"opposing", "limiting"}
+                    for completed_search in searches
+                    for record in completed_search.records
+                    for item in record.classifications
+                )
+                if material_opposition and not revision.changed:
+                    raise ValueError(
+                        "material counterevidence left the answer unchanged"
+                    )
+                resolved_ids = set(revision.resolved_classification_artifact_ids)
+                state = self._record_decision(
+                    events,
+                    state_machine=state_machine,
+                    state=state,
+                    state_history=state_history,
+                    role="synthesizer",
+                    operation=(
+                        "abstain_from_revised_answer"
+                        if revision.outcome == "abstained"
+                        else "revise_claim_graph"
+                        if revision.changed
+                        else "preserve_verified_claim_graph"
+                    ),
+                    rationale=(
+                        "re-run claim support, exact citation, and abstention verification over every classified evidence change"
+                    ),
+                    observation_ids=(revision.artifact_id,),
+                    evidence_ids=tuple(
+                        item.evidence_artifact_id
+                        for completed_search in searches
+                        for record in completed_search.records
+                        for item in record.classifications
+                        if item.artifact_id in accounted
+                    ),
+                    policy_ids=policy_ids,
+                    budget_decision_ids=tuple(
+                        item.artifact_id
+                        for item in budget.decisions[revision_budget_start:]
+                    ),
+                    gaps=tuple(
+                        gap
+                        for gap in state.gaps
+                        if gap.subject_artifact_id not in resolved_ids
+                    ),
+                    claim_artifact_ids=revision.revised_claim_artifact_ids,
+                )
         tool_failure_ids = tuple(tool_failures)
         relation_status = self._relation_status(state, search, tool_failure_ids)
         evaluation_budget_start = len(budget.decisions)
@@ -1144,6 +1319,7 @@ class InstalledResearchService:
             budget_usage=budget.global_usage,
             cancellation_signal=cancellation_signal,
             terminal_outcome=terminal_outcome,
+            revision=revision,
         )
 
     @staticmethod
@@ -1281,6 +1457,7 @@ class InstalledResearchService:
         gaps: tuple[ObservedResearchGap, ...] | None = None,
         consume_search: bool = False,
         terminal_status: str | None = None,
+        claim_artifact_ids: tuple[str, ...] | None = None,
     ) -> ObservedResearchState:
         decision = ObservedResearchDecision.create(
             role=role,
@@ -1296,6 +1473,7 @@ class InstalledResearchService:
             gaps=gaps,
             consume_search=consume_search,
             terminal_status=terminal_status,
+            claim_artifact_ids=claim_artifact_ids,
         )
         sequence = len(events)
         transition_id = _artifact_id(
@@ -1740,6 +1918,7 @@ __all__ = [
     "InstalledResearchPort",
     "InstalledResearchRequest",
     "InstalledResearchResult",
+    "InstalledResearchRevision",
     "InstalledResearchSearch",
     "InstalledResearchSearchRecord",
     "InstalledResearchService",

@@ -129,6 +129,17 @@ attempt or query-equivalence identities, requires observations to reference the
 executed attempts in order, and binds the terminal compatibility records to the
 last history entries.
 
+`answer_revision` is the closed Reason-owned RAR result. It preserves the
+prior grounded-answer and claim-graph identities, typed claim actions, exact
+candidate evidence and classification identities, the revised grounded answer,
+and a concise before/after explanation. Runtime displays `after_answer` as the
+research answer; it does not copy the original RAG answer after material
+evidence is found. Verification reconstructs the revision identity and rejects
+missing classification coverage, changed lineage, an answer that differs from
+the verified rendering, or resolved opposition/limitations that leave the
+answer unchanged. `answer_revision_artifact_id` binds the summary field to the
+complete embedded artifact.
+
 ## DuckDB Execution Store
 
 The execution store is the durable audit-and-replay boundary. It is explicitly

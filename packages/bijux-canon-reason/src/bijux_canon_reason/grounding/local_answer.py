@@ -137,6 +137,8 @@ class LocalGroundedAnswerService:
         sources: tuple[CitationSourceDescriptor, ...],
         max_points: int,
         evidence_state: GroundingEvidenceState | None = None,
+        synthesis_style: SynthesisStyle | None = None,
+        retain_cross_source_corroboration: bool = False,
     ) -> LocalGroundedAnswer:
         """Execute the deterministic provider-free answer workflow."""
 
@@ -151,11 +153,14 @@ class LocalGroundedAnswerService:
             selected_evidence_count=len(evidence_packet.selected),
             packet_completeness=evidence_packet.completeness,
         )
-        style = infer_synthesis_style(question)
+        style = synthesis_style or infer_synthesis_style(question)
         synthesis = CredentialFreeSynthesizer(
             CredentialFreeSynthesisPolicy(
                 max_points=min(max_points, recommended_point_count(question)),
                 required_sources=required_source_count(question),
+                retain_cross_source_corroboration=(
+                    retain_cross_source_corroboration
+                ),
             )
         ).synthesize(
             question=question,

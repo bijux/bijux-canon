@@ -915,11 +915,18 @@ def _verify_reason_and_agent(grounded: _GroundedRuntime) -> None:
     assert counterevidence_ids
     assert len(counterevidence_ids) == len(set(counterevidence_ids))
     assert "require relation classification" in research_trace["insufficiencies"][0]
+    revision = research_trace["answer_revision"]
+    assert revision["outcome"] == "abstained"
+    assert revision["before_answer"] != revision["after_answer"]
+    assert research_trace["answer"] == revision["after_answer"]
+    assert revision["unresolved_classification_artifact_ids"]
+    assert revision["actions"][0]["kind"] == "abstain"
     assert [event["role"] for event in research_trace["causal_events"]] == [
         "plan",
         "researcher",
         "skeptic",
         "adjudicator",
+        "synthesizer",
         "verifier",
     ]
     assert research_trace["research_state"]["question"] == (
@@ -1009,6 +1016,27 @@ def _verify_reason_and_agent(grounded: _GroundedRuntime) -> None:
         OperationDispatcher((CanonicalVerificationOperationAdapter(),)).dispatch(
             research_verification_step,
             (tampered_budget,),
+        )
+
+    tampered_revision_trace = json.loads(research.artifacts[0].payload)
+    tampered_revision_trace["answer_revision"]["after_answer"] = (
+        "The original answer was silently retained."
+    )
+    tampered_revision = StepOutputArtifact(
+        contract_id="agent.research-trace.v1",
+        producer_step_id="agent",
+        producer_operation=DagOperation.AGENT,
+        artifact=AddressedArtifact.from_json(
+            tampered_revision_trace,
+            schema_id="agent.research-trace.v1",
+            producer="bijux-canon-runtime:agent",
+            dependencies=research.artifacts[0].artifact.descriptor.dependencies,
+        ),
+    )
+    with pytest.raises(StepDispatchError, match="answer revision is invalid"):
+        OperationDispatcher((CanonicalVerificationOperationAdapter(),)).dispatch(
+            research_verification_step,
+            (tampered_revision,),
         )
 
     cancellation_checks = 0
