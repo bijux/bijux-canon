@@ -57,15 +57,21 @@ from bijux_canon_reason.grounding.claim_normalization import (
     NormalizedClaimSet,
 )
 from bijux_canon_reason.grounding.context_representation import (
+    AnswerAnnotationKind,
     ClaimConflictDeclaration,
     ClaimContextAnnotation,
+    ClaimPresentationRole,
+    CompatibleClaimScopeGroup,
     ConflictRelationship,
     ContextualizedClaimNode,
+    GroundedAnswerAnnotation,
     GroundingContextService,
     NuancedGroundingRepresentation,
     SourceQualityGrade,
+    create_answer_annotation,
     create_claim_conflict,
     create_claim_context,
+    render_contextualized_answer,
 )
 from bijux_canon_reason.grounding.evidence_packets import (
     CitationEvidence,
@@ -151,6 +157,7 @@ from bijux_canon_reason.grounding.structured_provider import (
 )
 
 __all__ = [
+    "AnswerAnnotationKind",
     "AtomicClaim",
     "AtomicClaimNormalizer",
     "AtomicClaimPolarity",
@@ -176,6 +183,7 @@ __all__ = [
     "ClaimCitationSet",
     "ClaimConflictDeclaration",
     "ClaimContextAnnotation",
+    "ClaimPresentationRole",
     "ClaimConfidenceBasis",
     "ClaimContentKind",
     "ClaimModality",
@@ -183,6 +191,7 @@ __all__ = [
     "ClaimNormalizationErrorCode",
     "ClaimNormalizationOutcome",
     "ConflictRelationship",
+    "CompatibleClaimScopeGroup",
     "ContentAddressedRagExecutionStore",
     "ContextualizedClaimNode",
     "CredentialFreeSynthesis",
@@ -209,6 +218,7 @@ __all__ = [
     "GroundingAdmissionDecision",
     "GroundingAdmissionOutcome",
     "GroundingAdmissionService",
+    "GroundedAnswerAnnotation",
     "GroundingContextService",
     "GroundingEvidenceState",
     "GroundingRequestStatus",
@@ -218,6 +228,7 @@ __all__ = [
     "LocalGroundedAnswer",
     "LocalGroundedAnswerService",
     "render_grounded_answer",
+    "render_contextualized_answer",
     "NormalizedClaimSet",
     "NuancedGroundingRepresentation",
     "OpenAICompatibleStructuredSynthesizer",
@@ -261,6 +272,7 @@ __all__ = [
     "VerifiedAtomicClaim",
     "create_claim_conflict",
     "create_claim_context",
+    "create_answer_annotation",
     "create_rag_execution_budget",
     "create_rag_execution_failure",
     "prompt_artifact_id",

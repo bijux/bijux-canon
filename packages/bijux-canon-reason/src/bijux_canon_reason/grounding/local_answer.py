@@ -33,13 +33,17 @@ from bijux_canon_reason.grounding.claim_normalization import (
     NormalizedClaimSet,
 )
 from bijux_canon_reason.grounding.context_representation import (
+    AnswerAnnotationKind,
     ClaimConflictDeclaration,
+    ClaimPresentationRole,
     ConflictRelationship,
     GroundingContextService,
     NuancedGroundingRepresentation,
     SourceQualityGrade,
+    create_answer_annotation,
     create_claim_conflict,
     create_claim_context,
+    render_contextualized_answer,
 )
 from bijux_canon_reason.grounding.evidence_packets import EvidencePacket
 from bijux_canon_reason.grounding.evidence_state import (
@@ -66,7 +70,7 @@ from bijux_canon_reason.grounding.provider_contracts import (
 class LocalGroundedAnswer(StableModel):
     """One content-addressed local answer with complete grounding decisions."""
 
-    schema_version: str = "bijux.canon.reason.local_grounded_answer.v3"
+    schema_version: str = "bijux.canon.reason.local_grounded_answer.v4"
     artifact_id: str
     answer_text: str
     outcome: GroundingAdmissionOutcome
@@ -104,6 +108,8 @@ class LocalGroundedAnswer(StableModel):
             or self.admission.source_claim_set_artifact_id != self.claims.artifact_id
             or self.contextualized.source_claim_set_artifact_id
             != self.claims.artifact_id
+            or self.contextualized.citation_presentation_artifact_id
+            != self.citation_presentation.artifact_id
             or self.admission.evidence_state_artifact_id
             != self.evidence_state.artifact_id
         ):
@@ -180,7 +186,6 @@ class LocalGroundedAnswerService:
             claims=claims,
             citations=citations,
             verification=verification,
-            style=style,
         )
         answer_text = render_grounded_answer(
             synthesis=synthesis,
@@ -188,9 +193,10 @@ class LocalGroundedAnswerService:
             citations=citations,
             admission=admission,
             citation_presentation=citation_presentation,
+            contextualized=contextualized,
         )
         payload = {
-            "schema_version": "bijux.canon.reason.local_grounded_answer.v3",
+            "schema_version": "bijux.canon.reason.local_grounded_answer.v4",
             "answer_text": answer_text,
             "outcome": admission.outcome.value,
             "synthesis": synthesis.model_dump(mode="json"),
@@ -223,7 +229,6 @@ class LocalGroundedAnswerService:
         claims: NormalizedClaimSet,
         citations: ClaimCitationSet,
         verification: CitationVerificationReport,
-        style: SynthesisStyle,
     ) -> NuancedGroundingRepresentation:
         links_by_claim = {
             claim.artifact_id: tuple(
@@ -234,8 +239,11 @@ class LocalGroundedAnswerService:
             for claim in claims.claims
         }
         contexts = []
+        roles_by_claim: dict[str, ClaimPresentationRole] = {}
         for claim in claims.claims:
             point = synthesis.points[claim.source_candidate_ordinal - 1]
+            presentation_role = _presentation_role(point.role)
+            roles_by_claim[claim.artifact_id] = presentation_role
             qualification = claim.qualification
             links = links_by_claim[claim.artifact_id]
             section_paths = tuple(" / ".join(link.section_path) for link in links) or (
@@ -268,32 +276,65 @@ class LocalGroundedAnswerService:
                     source_quality_basis=(
                         "citation integrity is verified; study quality was not inferred"
                     ),
+                    presentation_role=presentation_role,
                 )
             )
         conflicts: tuple[ClaimConflictDeclaration, ...] = ()
-        if style is SynthesisStyle.conflict_preserving and len(claims.claims) >= 2:
+        finding_ids = tuple(
+            claim.artifact_id
+            for claim in claims.claims
+            if roles_by_claim[claim.artifact_id] is ClaimPresentationRole.finding
+        )
+        counterevidence_ids = tuple(
+            claim.artifact_id
+            for claim in claims.claims
+            if roles_by_claim[claim.artifact_id]
+            is ClaimPresentationRole.counterevidence
+        )
+        explicit_polarities = {
+            claim.qualification.negated for claim in claims.claims
+        }
+        explicit_conflict_ids = (
+            tuple(claim.artifact_id for claim in claims.claims)
+            if synthesis.style is SynthesisStyle.conflict_preserving
+            and explicit_polarities == {False, True}
+            else ()
+        )
+        conflict_ids = (
+            (*finding_ids, *counterevidence_ids)
+            if finding_ids and counterevidence_ids
+            else explicit_conflict_ids
+        )
+        if conflict_ids:
             conflicts = (
                 create_claim_conflict(
                     relationship=ConflictRelationship.divergent,
-                    claim_artifact_ids=tuple(
-                        claim.artifact_id for claim in claims.claims
-                    ),
+                    claim_artifact_ids=conflict_ids,
                     summary=(
-                        "The retrieved clauses remain differently scoped and are not "
-                        "collapsed into one adjudicated claim."
+                        "The retrieved findings and counterevidence remain unresolved "
+                        "and are not collapsed by majority vote."
                     ),
                     scope_note=(
-                        "Divergence is preserved for review; contradiction is not "
-                        "asserted without semantic verification."
+                        "Each record retains its explicit population, method, and "
+                        "temporal scope; scientific equivalence is not assumed."
                     ),
                 ),
             )
+        annotations = tuple(
+            create_answer_annotation(
+                kind=AnswerAnnotationKind.answer_limitation,
+                statement=item,
+                basis_artifact_ids=(synthesis.artifact_id,),
+            )
+            for item in synthesis.limitations
+        )
         return GroundingContextService().represent(
             claim_set=claims,
             citation_set=citations,
             verification_report=verification,
             contexts=tuple(contexts),
             conflicts=conflicts,
+            annotations=annotations,
         )
 
 
@@ -315,34 +356,56 @@ def render_grounded_answer(
     citations: ClaimCitationSet,
     admission: GroundingAdmissionDecision,
     citation_presentation: CitationPresentation,
+    contextualized: NuancedGroundingRepresentation,
 ) -> str:
     """Render only claims admitted by the recorded grounding decision."""
 
+    if (
+        claims.source_synthesis_artifact_id != synthesis.artifact_id
+        or contextualized.source_claim_set_artifact_id != claims.artifact_id
+        or contextualized.claim_citation_set_artifact_id != citations.artifact_id
+        or contextualized.citation_presentation_artifact_id
+        != citation_presentation.artifact_id
+    ):
+        raise ValueError("grounded answer presentation lineage diverged")
+
     if admission.outcome is GroundingAdmissionOutcome.admitted:
-        return _render_with_references(
-            synthesis.answer_text,
+        return _append_references(
+            render_contextualized_answer(
+                nodes=contextualized.nodes,
+                contexts=contextualized.contexts,
+                scope_groups=contextualized.scope_groups,
+                conflicts=contextualized.conflicts,
+                annotations=contextualized.annotations,
+                citation_set=citations,
+                citation_presentation=citation_presentation,
+                admitted_claim_artifact_ids=frozenset(
+                    admission.admitted_claim_artifact_ids
+                ),
+            ),
             citation_presentation=citation_presentation,
+            admitted_claim_artifact_ids=set(
+                admission.admitted_claim_artifact_ids
+            ),
         )
     if admission.outcome is GroundingAdmissionOutcome.abstained:
         details = " ".join(gap.detail for gap in admission.evidence_gaps)
         actions = " ".join(gap.required_action for gap in admission.evidence_gaps)
         return f"Insufficient evidence. {details} Next action: {actions}"
     admitted = set(admission.admitted_claim_artifact_ids)
-    lines = ["Supported answer:"]
-    for claim in claims.claims:
-        if claim.artifact_id not in admitted:
-            continue
-        links = tuple(
-            link
-            for link in citations.links
-            if link.claim_artifact_id == claim.artifact_id
-        )
-        citation_numbers = ", ".join(
-            str(citation_presentation.number_for(link.citation_evidence_artifact_id))
-            for link in links
-        )
-        lines.append(f"- {claim.statement} [{citation_numbers}]")
-    lines.append("Unresolved evidence gaps:")
+    lines = [
+        render_contextualized_answer(
+            nodes=contextualized.nodes,
+            contexts=contextualized.contexts,
+            scope_groups=contextualized.scope_groups,
+            conflicts=contextualized.conflicts,
+            annotations=contextualized.annotations,
+            citation_set=citations,
+            citation_presentation=citation_presentation,
+            admitted_claim_artifact_ids=frozenset(admitted),
+        ),
+        "Unresolved evidence gaps:",
+    ]
     lines.extend(f"- {gap.detail}" for gap in admission.evidence_gaps)
     return _append_references(
         "\n".join(lines),
@@ -351,22 +414,14 @@ def render_grounded_answer(
     )
 
 
-def _render_with_references(
-    answer_text: str, *, citation_presentation: CitationPresentation
-) -> str:
-    rendered = answer_text
-    for entry in citation_presentation.entries:
-        rendered = rendered.replace(
-            f"[citation:{entry.citation_evidence_artifact_id}]",
-            f"[{entry.number}]",
-        )
-    if "[citation:" in rendered:
-        raise ValueError("grounded answer references an unpresented citation")
-    return _append_references(
-        rendered,
-        citation_presentation=citation_presentation,
-        admitted_claim_artifact_ids=None,
-    )
+def _presentation_role(role: EvidenceRole) -> ClaimPresentationRole:
+    return {
+        EvidenceRole.finding: ClaimPresentationRole.finding,
+        EvidenceRole.context: ClaimPresentationRole.finding,
+        EvidenceRole.method: ClaimPresentationRole.method,
+        EvidenceRole.limitation: ClaimPresentationRole.limitation,
+        EvidenceRole.counterevidence: ClaimPresentationRole.counterevidence,
+    }[role]
 
 
 def _append_references(

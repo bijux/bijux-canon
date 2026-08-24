@@ -110,6 +110,22 @@ retains a concrete remediation. An upstream refusal therefore cannot be
 converted into an answer merely because a downstream synthesizer can form a
 sentence.
 
+The admitted answer is rendered from `NuancedGroundingRepresentation`, not
+from the synthesizer's prose. Claims are grouped only when their explicit
+population, method, and temporal scopes match. Findings, methods, reported
+limitations, and counterevidence appear in separate sections with the same
+numbered exact citations used by verification. A finding/counterevidence pair
+is material conflict: omitting its conflict declaration makes the record
+invalid, and the renderer states that ambiguity instead of selecting a
+majority view.
+
+Product limitations, assumptions, and interpretations are separate typed
+annotations labeled “not source-supported facts.” They carry provenance basis
+identities rather than exact-citation fields and never enter the
+source-supported findings section.
+Internal artifact and citation-link identifiers remain in the persisted graph
+but are not used as reader-facing prose.
+
 ## Validation Layers
 
 Validation is intentionally cumulative:

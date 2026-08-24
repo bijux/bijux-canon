@@ -12,6 +12,7 @@ from pydantic import ValidationError
 import pytest
 
 from bijux_canon_reason.grounding import (
+    AnswerAnnotationKind,
     AtomicClaimNormalizer,
     CitationEvidence,
     CitationSourceDescriptor,
@@ -19,6 +20,7 @@ from bijux_canon_reason.grounding import (
     ClaimCitationLinker,
     ClaimCitationSet,
     ClaimContextAnnotation,
+    ClaimPresentationRole,
     ConflictRelationship,
     DeterministicCitationVerifier,
     EvidencePacketBuilder,
@@ -31,6 +33,7 @@ from bijux_canon_reason.grounding import (
     OpenAICompatibleStructuredSynthesizer,
     SourceQualityGrade,
     StructuredProviderConfiguration,
+    create_answer_annotation,
     create_claim_conflict,
     create_claim_context,
 )
@@ -183,6 +186,25 @@ def _pipeline(
     return claims, citations, report, contexts
 
 
+def _with_role(
+    context: ClaimContextAnnotation,
+    role: ClaimPresentationRole,
+    *,
+    population_scope: tuple[str, ...] | None = None,
+) -> ClaimContextAnnotation:
+    return create_claim_context(
+        claim_artifact_id=context.claim_artifact_id,
+        population_scope=population_scope or context.population_scope,
+        method_scope=context.method_scope,
+        temporal_scope=context.temporal_scope,
+        uncertainty=context.uncertainty,
+        limitations=context.limitations,
+        source_quality=context.source_quality,
+        source_quality_basis=context.source_quality_basis,
+        presentation_role=role,
+    )
+
+
 def test_claim_graph_and_answer_preserve_every_context_dimension() -> None:
     claims, citations, report, contexts = _pipeline(
         ("Ancient DNA fragments were shorter.",)
@@ -206,10 +228,11 @@ def test_claim_graph_and_answer_preserve_every_context_dimension() -> None:
         "time window 1",
         "broader generalization is unverified",
         "source-scoped result",
-        "source_quality=moderate",
-        contexts[0].artifact_id,
+        "source quality=moderate",
+        "[1]",
     ):
         assert retained in result.user_answer
+    assert contexts[0].artifact_id not in result.user_answer
 
 
 def test_divergent_claims_remain_separate_and_conflict_is_rendered() -> None:
@@ -240,7 +263,121 @@ def test_divergent_claims_remain_separate_and_conflict_is_rendered() -> None:
     )
     assert conflict.summary in result.user_answer
     assert conflict.scope_note in result.user_answer
-    assert "contradictory claims 1, 2" in result.user_answer
+    assert "Unresolved conflicts and ambiguity:" in result.user_answer
+    assert "[1, 2]" in result.user_answer
+
+
+def test_scope_groups_merge_only_identical_explicit_dimensions() -> None:
+    claims, citations, report, contexts = _pipeline(
+        ("First scoped result.", "Second scoped result.", "Third scoped result.")
+    )
+    aligned = (
+        _with_role(
+            contexts[0],
+            ClaimPresentationRole.finding,
+            population_scope=("shared population",),
+        ),
+        create_claim_context(
+            claim_artifact_id=contexts[1].claim_artifact_id,
+            population_scope=("shared population",),
+            method_scope=contexts[0].method_scope,
+            temporal_scope=contexts[0].temporal_scope,
+            uncertainty=contexts[1].uncertainty,
+            limitations=contexts[1].limitations,
+            source_quality=contexts[1].source_quality,
+            source_quality_basis=contexts[1].source_quality_basis,
+        ),
+        contexts[2],
+    )
+
+    result = GroundingContextService().represent(
+        claim_set=claims,
+        citation_set=citations,
+        verification_report=report,
+        contexts=aligned,
+    )
+
+    assert tuple(len(group.claim_artifact_ids) for group in result.scope_groups) == (
+        2,
+        1,
+    )
+    assert result.user_answer.count("population=shared population") == 1
+
+
+def test_material_counterevidence_cannot_be_omitted_or_majority_voted_away() -> None:
+    claims, citations, report, contexts = _pipeline(
+        ("The first source found preservation.", "The second source found loss.")
+    )
+    contextualized = (
+        _with_role(contexts[0], ClaimPresentationRole.finding),
+        _with_role(contexts[1], ClaimPresentationRole.counterevidence),
+    )
+
+    with pytest.raises(ValueError, match="material counterevidence conflict"):
+        GroundingContextService().represent(
+            claim_set=claims,
+            citation_set=citations,
+            verification_report=report,
+            contexts=contextualized,
+        )
+
+    conflict = create_claim_conflict(
+        relationship=ConflictRelationship.divergent,
+        claim_artifact_ids=tuple(claim.artifact_id for claim in claims.claims),
+        summary="Preservation and loss remain unresolved across the two sources.",
+        scope_note="The source populations and methods are retained separately.",
+    )
+    result = GroundingContextService().represent(
+        claim_set=claims,
+        citation_set=citations,
+        verification_report=report,
+        contexts=contextualized,
+        conflicts=(conflict,),
+    )
+
+    assert "Source-supported findings:" in result.user_answer
+    assert "Cited counterevidence:" in result.user_answer
+    assert conflict.summary in result.user_answer
+    assert "[1, 2]" in result.user_answer
+    assert all(
+        link.artifact_id not in result.user_answer for link in citations.links
+    )
+    omitted = result.model_dump(mode="json")
+    omitted["conflicts"] = []
+    with pytest.raises(ValidationError, match="material counterevidence conflict"):
+        NuancedGroundingRepresentation.model_validate(omitted)
+
+
+def test_assumptions_and_interpretation_remain_explicitly_non_factual() -> None:
+    claims, citations, report, contexts = _pipeline(("One supported result.",))
+    annotations = (
+        create_answer_annotation(
+            kind=AnswerAnnotationKind.assumption,
+            statement="Comparable sampling frames are assumed for this comparison.",
+            basis_artifact_ids=(claims.artifact_id,),
+        ),
+        create_answer_annotation(
+            kind=AnswerAnnotationKind.interpretation,
+            statement="The product groups these records as a cautious comparison.",
+            basis_artifact_ids=(claims.artifact_id,),
+        ),
+    )
+
+    result = GroundingContextService().represent(
+        claim_set=claims,
+        citation_set=citations,
+        verification_report=report,
+        contexts=contexts,
+        annotations=annotations,
+    )
+
+    assert "Assumptions (not source-supported facts):" in result.user_answer
+    assert "Product interpretation (not source-supported facts):" in result.user_answer
+    for annotation in annotations:
+        line = next(
+            item for item in result.user_answer.splitlines() if annotation.statement in item
+        )
+        assert "[" not in line
 
 
 def test_missing_claim_context_fails_closed() -> None:

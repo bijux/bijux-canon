@@ -464,7 +464,8 @@ def _retrieve_and_reason(indexed: _IndexedRuntime) -> _GroundedRuntime:
         claim_graph["evidence_state"]["artifact_id"]
     )
     assert "Ancient genomes preserve" in claim_graph["answer"]
-    assert "Answer:" in claim_graph["answer"]
+    assert "Source-supported findings:" in claim_graph["answer"]
+    assert "Claim scope and quality limits:" in claim_graph["answer"]
     assert "Citations:\n[1]" in claim_graph["answer"]
     assert "[citation:" not in claim_graph["answer"]
     assert "reports: “" not in claim_graph["answer"]

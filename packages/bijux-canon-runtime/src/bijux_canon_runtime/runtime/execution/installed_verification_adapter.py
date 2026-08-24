@@ -322,6 +322,7 @@ def _verify_claim_graph(
                 citations=citations,
                 admission=admission,
                 citation_presentation=citation_presentation,
+                contextualized=contextualized,
             )
             if answer != expected_answer:
                 raise StepDispatchError("grounded answer differs from its admission")

@@ -102,7 +102,7 @@ def test_local_answer_admits_exact_claims_with_complete_context() -> None:
 
     assert restarted == result
     assert result.outcome is GroundingAdmissionOutcome.admitted
-    assert result.answer_text.startswith("Answer:\n-")
+    assert result.answer_text.startswith("Source-supported findings:\n")
     assert result.claims.claims[0].statement == (
         "Endogenous DNA yield reached 65 percent."
     )
@@ -176,7 +176,65 @@ def test_conflict_question_preserves_divergence_without_claiming_contradiction()
     }
     conflict = result.contextualized.conflicts[0]
     assert conflict.relationship.value == "divergent"
-    assert "contradiction is not asserted" in conflict.scope_note
+    assert "scientific equivalence is not assumed" in conflict.scope_note
+    assert "Unresolved conflicts and ambiguity:" in result.answer_text
+    assert "[1, 2]" in result.answer_text
+
+
+def test_reported_limitation_is_a_cited_record_not_an_uncited_footnote() -> None:
+    result = _answer(
+        "What limitation did the study report?",
+        _evidence(
+            "limited",
+            "A limitation was that DNA recovery varied among sampled tissues.",
+            1,
+        ),
+    )
+
+    assert result.outcome is GroundingAdmissionOutcome.admitted
+    assert result.contextualized.contexts[0].presentation_role.value == "limitation"
+    assert "Cited limitations:" in result.answer_text
+    assert "DNA recovery varied among sampled tissues" in result.answer_text
+    assert "[1]" in result.answer_text
+    assert "Answer limitations (not source-supported facts):" in result.answer_text
+
+
+def test_petrous_content_answer_separates_finding_from_cited_limitation() -> None:
+    result = _answer(
+        (
+            "Which petrous-bone region produced the highest endogenous DNA yield, "
+            "by how much, and what hot-climate limitation was reported?"
+        ),
+        _evidence(
+            "pinhasi-finding",
+            (
+                "Dense petrous part C exceeded part B by up to 65-fold and part A "
+                "by up to 177-fold."
+            ),
+            1,
+        ),
+        _evidence(
+            "pinhasi-limit",
+            (
+                "A limitation was that petrous-bone DNA preservation could fall "
+                "below 1 percent in hot climates."
+            ),
+            2,
+        ),
+    )
+
+    assert result.outcome is GroundingAdmissionOutcome.admitted
+    assert "Source-supported findings:" in result.answer_text
+    assert "Cited limitations:" in result.answer_text
+    assert "65-fold" in result.answer_text
+    assert "177-fold" in result.answer_text
+    assert "below 1 percent" in result.answer_text
+    assert {context.presentation_role.value for context in result.contextualized.contexts} == {
+        "finding",
+        "limitation",
+    }
+    assert len(result.citation_presentation.entries) == 2
+    assert all(link.exact_text in result.answer_text for link in result.citations.links)
 
 
 @pytest.mark.parametrize(
