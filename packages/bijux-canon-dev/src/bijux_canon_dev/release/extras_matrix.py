@@ -19,6 +19,7 @@ import time
 from typing import cast
 import zipfile
 
+from packaging.markers import Marker, default_environment
 from packaging.requirements import Requirement
 from packaging.utils import canonicalize_name
 
@@ -116,6 +117,15 @@ CPU_PROFILE_TARGETS = {
     "bijux-canon-runtime[local-cpu]",
 }
 
+_MARKER_PLATFORMS = (
+    ("darwin", "posix", "Darwin"),
+    ("freebsd", "posix", "FreeBSD"),
+    ("linux", "posix", "Linux"),
+    ("win32", "nt", "Windows"),
+)
+_MARKER_MACHINES = ("AMD64", "aarch64", "arm64", "x86_64")
+_MARKER_PYTHONS = ("3.11", "3.12", "3.13", "3.14")
+
 
 def _default_runner(
     command: Sequence[str], cwd: Path, environment: Mapping[str, str]
@@ -202,7 +212,7 @@ def _wheel_extra_requirements(path: Path) -> dict[str, tuple[str, ...]]:
                 str(requirement)
                 for requirement in requirements
                 if requirement.marker is not None
-                and requirement.marker.evaluate({"extra": extra})
+                and _marker_can_target_extra(requirement.marker, extra)
             )
         )
         for extra in extras
@@ -213,6 +223,28 @@ def _wheel_extra_requirements(path: Path) -> dict[str, tuple[str, ...]]:
             f"wheel {path.name} advertises empty extras: {', '.join(empty)}"
         )
     return result
+
+
+def _marker_can_target_extra(marker: Marker, extra: str) -> bool:
+    """Return whether a wheel marker can apply on a supported environment."""
+
+    baseline = {key: str(value) for key, value in default_environment().items()}
+    for sys_platform, os_name, platform_system in _MARKER_PLATFORMS:
+        for platform_machine in _MARKER_MACHINES:
+            for python_version in _MARKER_PYTHONS:
+                environment: dict[str, str] = {
+                    **baseline,
+                    "extra": extra,
+                    "os_name": os_name,
+                    "platform_machine": platform_machine,
+                    "platform_system": platform_system,
+                    "python_full_version": f"{python_version}.0",
+                    "python_version": python_version,
+                    "sys_platform": sys_platform,
+                }
+                if marker.evaluate(environment):
+                    return True
+    return False
 
 
 def _source_extra_requirements(policy: PackagePolicy) -> dict[str, tuple[str, ...]]:

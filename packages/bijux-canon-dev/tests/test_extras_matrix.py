@@ -14,6 +14,7 @@ from bijux_canon_dev.release.extras_matrix import (
     _cpu_profile_probe,
     _normalized_requirements,
     _reader_probe,
+    _wheel_extra_requirements,
     run_extras_matrix,
 )
 from bijux_canon_dev.release.python_support_matrix import CommandResult
@@ -214,6 +215,30 @@ def test_extra_alias_comparison_ignores_its_own_marker_name() -> None:
     assert _normalized_requirements(
         ('pypdf<7,>=6; extra == "extra"',)
     ) == _normalized_requirements(('pypdf<7,>=6; extra == "document-readers"',))
+
+
+def test_wheel_extra_inventory_retains_all_supported_platform_branches(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "example-1.2.3-py3-none-any.whl"
+    metadata = (
+        "Metadata-Version: 2.4\n"
+        "Name: example\n"
+        "Version: 1.2.3\n"
+        "Provides-Extra: local-cpu\n"
+        'Requires-Dist: faiss-cpu==1.7.4; sys_platform == "darwin" and '
+        'extra == "local-cpu"\n'
+        'Requires-Dist: faiss-cpu>=1.13; sys_platform != "darwin" and '
+        'extra == "local-cpu"\n'
+    )
+    with zipfile.ZipFile(path, "w") as archive:
+        archive.writestr("example-1.2.3.dist-info/METADATA", metadata)
+
+    requirements = _wheel_extra_requirements(path)["local-cpu"]
+
+    assert len(requirements) == 2
+    assert any("==1.7.4" in requirement for requirement in requirements)
+    assert any(">=1.13" in requirement for requirement in requirements)
 
 
 def test_reader_probe_requires_explicit_installed_ocr_processing(
