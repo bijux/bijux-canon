@@ -457,6 +457,12 @@ def _retrieve_and_reason(indexed: _IndexedRuntime) -> _GroundedRuntime:
     )
     claim_graph = json.loads(reason.artifacts[0].payload)
     assert claim_graph["status"] == "answered"
+    assert claim_graph["synthesis_status"] == "answered"
+    assert claim_graph["evidence_state"]["retrieval_status"] == "success"
+    assert claim_graph["evidence_state"]["vex_status"] == "verified"
+    assert claim_graph["grounding_admission"]["evidence_state_artifact_id"] == (
+        claim_graph["evidence_state"]["artifact_id"]
+    )
     assert "Ancient genomes preserve" in claim_graph["answer"]
     assert "Answer:" in claim_graph["answer"]
     assert "Citations:\n[1]" in claim_graph["answer"]
@@ -674,7 +680,15 @@ def test_exhausted_vex_fallback_returns_run_linkable_typed_refusal(
         (refused_upstream,),
     )
     refused_answer = json.loads(reason_result.artifacts[0].payload)
+    assert refused_answer["status"] == "abstained"
+    assert refused_answer["synthesis_status"] == "insufficient"
     assert refused_answer["answer_disposition"] == "abstained"
+    assert refused_answer["evidence_state"]["retrieval_status"] == "refused"
+    assert refused_answer["evidence_state"]["vex_status"] == "below-policy"
+    assert refused_answer["grounding_admission"]["evidence_gaps"][0]["code"] == (
+        "policy_or_budget_refusal"
+    )
+    assert "exact retrieval profile" in refused_answer["answer"]
     assert refused_answer["claims"]["claims"] == []
     assert refused_answer["citations"]["links"] == []
     assert "Ancient genomes preserve" not in refused_answer["answer"]

@@ -37,6 +37,7 @@ from bijux_canon_reason.grounding import (
     DeterministicCitationVerifier,
     EvidencePacket,
     GroundingAdmissionDecision,
+    GroundingEvidenceState,
     GroundingAdmissionService,
     LocalGroundedAnswer,
     NormalizedClaimSet,
@@ -309,6 +310,9 @@ def _verify_claim_graph(
             admission = GroundingAdmissionDecision.model_validate(
                 subject["grounding_admission"]
             )
+            evidence_state = GroundingEvidenceState.model_validate(
+                subject["evidence_state"]
+            )
             contextualized = NuancedGroundingRepresentation.model_validate(
                 subject["contextualized"]
             )
@@ -334,6 +338,7 @@ def _verify_claim_graph(
                 verification=verification,
                 admission=admission,
                 contextualized=contextualized,
+                evidence_state=evidence_state,
             )
         except (KeyError, TypeError, ValidationError) as error:
             raise StepDispatchError("local grounded answer is invalid") from error
@@ -342,6 +347,7 @@ def _verify_claim_graph(
                 claim_set=claims,
                 citation_set=citations,
                 verification_report=verification,
+                evidence_state=evidence_state,
             )
             != admission
         ):

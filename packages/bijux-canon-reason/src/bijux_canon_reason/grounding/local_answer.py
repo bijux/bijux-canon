@@ -42,6 +42,11 @@ from bijux_canon_reason.grounding.context_representation import (
     create_claim_context,
 )
 from bijux_canon_reason.grounding.evidence_packets import EvidencePacket
+from bijux_canon_reason.grounding.evidence_state import (
+    GroundingEvidenceState,
+    RetrievalEvidenceStatus,
+    VexEvidenceStatus,
+)
 from bijux_canon_reason.grounding.extractive_synthesis import (
     CredentialFreeSynthesis,
     CredentialFreeSynthesisPolicy,
@@ -61,7 +66,7 @@ from bijux_canon_reason.grounding.provider_contracts import (
 class LocalGroundedAnswer(StableModel):
     """One content-addressed local answer with complete grounding decisions."""
 
-    schema_version: str = "bijux.canon.reason.local_grounded_answer.v2"
+    schema_version: str = "bijux.canon.reason.local_grounded_answer.v3"
     artifact_id: str
     answer_text: str
     outcome: GroundingAdmissionOutcome
@@ -72,6 +77,7 @@ class LocalGroundedAnswer(StableModel):
     verification: CitationVerificationReport
     admission: GroundingAdmissionDecision
     contextualized: NuancedGroundingRepresentation
+    evidence_state: GroundingEvidenceState
 
     @field_validator("artifact_id")
     @classmethod
@@ -98,6 +104,8 @@ class LocalGroundedAnswer(StableModel):
             or self.admission.source_claim_set_artifact_id != self.claims.artifact_id
             or self.contextualized.source_claim_set_artifact_id
             != self.claims.artifact_id
+            or self.admission.evidence_state_artifact_id
+            != self.evidence_state.artifact_id
         ):
             raise ValueError("local grounded answer lineage diverged")
         if self.outcome is not self.admission.outcome:
@@ -122,9 +130,21 @@ class LocalGroundedAnswerService:
         evidence_packet: EvidencePacket,
         sources: tuple[CitationSourceDescriptor, ...],
         max_points: int,
+        evidence_state: GroundingEvidenceState | None = None,
     ) -> LocalGroundedAnswer:
         """Execute the deterministic provider-free answer workflow."""
 
+        effective_evidence_state = evidence_state or GroundingEvidenceState.create(
+            retrieval_status=(
+                RetrievalEvidenceStatus.success
+                if evidence_packet.selected
+                else RetrievalEvidenceStatus.insufficient
+            ),
+            vex_status=VexEvidenceStatus.not_applicable,
+            retrieved_evidence_count=len(evidence_packet.selected),
+            selected_evidence_count=len(evidence_packet.selected),
+            packet_completeness=evidence_packet.completeness,
+        )
         style = infer_synthesis_style(question)
         synthesis = CredentialFreeSynthesizer(
             CredentialFreeSynthesisPolicy(
@@ -153,6 +173,7 @@ class LocalGroundedAnswerService:
             claim_set=claims,
             citation_set=citations,
             verification_report=verification,
+            evidence_state=effective_evidence_state,
         )
         contextualized = self._contextualize(
             synthesis=synthesis,
@@ -169,7 +190,7 @@ class LocalGroundedAnswerService:
             citation_presentation=citation_presentation,
         )
         payload = {
-            "schema_version": "bijux.canon.reason.local_grounded_answer.v2",
+            "schema_version": "bijux.canon.reason.local_grounded_answer.v3",
             "answer_text": answer_text,
             "outcome": admission.outcome.value,
             "synthesis": synthesis.model_dump(mode="json"),
@@ -179,6 +200,7 @@ class LocalGroundedAnswerService:
             "verification": verification.model_dump(mode="json"),
             "admission": admission.model_dump(mode="json"),
             "contextualized": contextualized.model_dump(mode="json"),
+            "evidence_state": effective_evidence_state.model_dump(mode="json"),
         }
         return LocalGroundedAnswer(
             artifact_id=content_artifact_id(payload),
@@ -191,6 +213,7 @@ class LocalGroundedAnswerService:
             verification=verification,
             admission=admission,
             contextualized=contextualized,
+            evidence_state=effective_evidence_state,
         )
 
     @staticmethod

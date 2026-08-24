@@ -14,8 +14,15 @@ from bijux_canon_reason.grounding.citation_linking import ClaimCitationSet
 from bijux_canon_reason.grounding.citation_verification import (
     CitationVerificationReport,
     EntailmentVerdict,
+    EvidenceEntailmentAssessment,
 )
 from bijux_canon_reason.grounding.claim_normalization import NormalizedClaimSet
+from bijux_canon_reason.grounding.evidence_state import (
+    GroundingEvidenceState,
+    RetrievalEvidenceStatus,
+    VexEvidenceStatus,
+)
+from bijux_canon_reason.grounding.evidence_packets import PacketCompleteness
 from bijux_canon_reason.grounding.provider_contracts import (
     content_artifact_id,
     require_artifact_id,
@@ -51,6 +58,11 @@ class EvidenceGapCode(StrEnum):
     irrelevant_evidence = "irrelevant_evidence"
     insufficient_evidence = "insufficient_evidence"
     support_coverage_below_policy = "support_coverage_below_policy"
+    unresolved_conflict = "unresolved_conflict"
+    unsafe_or_unverified_evidence = "unsafe_or_unverified_evidence"
+    retrieval_refused = "retrieval_refused"
+    retrieval_failed = "retrieval_failed"
+    policy_or_budget_refusal = "policy_or_budget_refusal"
 
 
 class EvidenceGap(StableModel):
@@ -101,11 +113,12 @@ class RejectedGroundingClaim(StableModel):
 
 
 class CalibratedAbstentionPolicy(StableModel):
-    """Explicit minimum support count and ratio for answer admission."""
+    """Versioned evidence, coverage, conflict, and confidence admission policy."""
 
-    schema_version: str = "bijux.canon.reason.calibrated_abstention_policy.v1"
+    schema_version: str = "bijux.canon.reason.calibrated_abstention_policy.v2"
     minimum_direct_support_claims: int = 1
     minimum_supported_fraction: float = 0.5
+    minimum_support_confidence: float = 0.9
     allow_partial_answers: bool = True
 
     @model_validator(mode="after")
@@ -114,6 +127,8 @@ class CalibratedAbstentionPolicy(StableModel):
             raise ValueError("minimum direct support claims must be positive")
         if not 0 < self.minimum_supported_fraction <= 1:
             raise ValueError("minimum supported fraction must be within (0, 1]")
+        if not 0 < self.minimum_support_confidence <= 1:
+            raise ValueError("minimum support confidence must be within (0, 1]")
         return self
 
     @property
@@ -126,24 +141,30 @@ class CalibratedAbstentionPolicy(StableModel):
 class GroundingAdmissionDecision(StableModel):
     """Restart-safe answer admission, rejection, citations, and evidence gaps."""
 
-    schema_version: str = "bijux.canon.reason.grounding_admission_decision.v1"
+    schema_version: str = "bijux.canon.reason.grounding_admission_decision.v2"
     artifact_id: str
     source_claim_set_artifact_id: str
     claim_citation_set_artifact_id: str
     verification_report_artifact_id: str | None
     policy_artifact_id: str
+    evidence_state_artifact_id: str
     request_status: GroundingRequestStatus
     outcome: GroundingAdmissionOutcome
     admitted_claim_artifact_ids: tuple[str, ...]
     admitted_citation_link_artifact_ids: tuple[str, ...]
     rejected_claims: tuple[RejectedGroundingClaim, ...]
     evidence_gaps: tuple[EvidenceGap, ...]
+    direct_support_claims: int
+    evaluated_claims: int
+    minimum_support_confidence: float
+    unresolved_opposition_claims: int
 
     @field_validator(
         "artifact_id",
         "source_claim_set_artifact_id",
         "claim_citation_set_artifact_id",
         "policy_artifact_id",
+        "evidence_state_artifact_id",
     )
     @classmethod
     def _validate_artifact_id(cls, value: str) -> str:
@@ -165,6 +186,12 @@ class GroundingAdmissionDecision(StableModel):
 
     @model_validator(mode="after")
     def _validate_decision(self) -> Self:
+        if not 0 <= self.direct_support_claims <= self.evaluated_claims:
+            raise ValueError("admission support counts are invalid")
+        if not 0 <= self.minimum_support_confidence <= 1:
+            raise ValueError("admission support confidence is invalid")
+        if self.unresolved_opposition_claims < 0:
+            raise ValueError("admission opposition count is invalid")
         if self.outcome is GroundingAdmissionOutcome.abstained:
             if (
                 self.admitted_claim_artifact_ids
@@ -219,6 +246,7 @@ class GroundingAdmissionService:
         citation_set: ClaimCitationSet,
         verification_report: CitationVerificationReport | None,
         request_status: GroundingRequestStatus = GroundingRequestStatus.in_scope,
+        evidence_state: GroundingEvidenceState | None = None,
     ) -> GroundingAdmissionDecision:
         """Admit only policy-qualified direct support or abstain with gaps."""
 
@@ -237,6 +265,7 @@ class GroundingAdmissionService:
                     "verification report does not belong to supplied inputs"
                 )
 
+        state = evidence_state or _derived_evidence_state(verification_report)
         if request_status is not GroundingRequestStatus.in_scope:
             code, detail, action = _request_gap(request_status)
             gap = _gap(code, None, detail, action)
@@ -250,9 +279,24 @@ class GroundingAdmissionService:
                 admitted_citations=(),
                 rejected=(),
                 gaps=(gap,),
+                evidence_state=state,
             )
 
         assert verification_report is not None
+        state_gap = _state_gap(state)
+        if state_gap is not None:
+            return self._decision(
+                claim_set=claim_set,
+                citation_set=citation_set,
+                report=verification_report,
+                request_status=request_status,
+                outcome=GroundingAdmissionOutcome.abstained,
+                admitted_claims=(),
+                admitted_citations=(),
+                rejected=(),
+                gaps=(state_gap,),
+                evidence_state=state,
+            )
         if not verification_report.claims:
             gap = _gap(
                 EvidenceGapCode.no_retrieved_evidence,
@@ -270,6 +314,7 @@ class GroundingAdmissionService:
                 admitted_citations=(),
                 rejected=(),
                 gaps=(gap,),
+                evidence_state=state,
             )
 
         supported = tuple(
@@ -278,9 +323,21 @@ class GroundingAdmissionService:
             if claim.verdict is EntailmentVerdict.direct_support
         )
         supported_fraction = len(supported) / len(verification_report.claims)
+        support_confidence = min(
+            (
+                max(_support_confidence(item) for item in claim.assessments)
+                for claim in supported
+            ),
+            default=0.0,
+        )
+        opposition_count = sum(
+            claim.verdict is EntailmentVerdict.opposition
+            for claim in verification_report.claims
+        )
         meets_coverage = (
             len(supported) >= self._policy.minimum_direct_support_claims
             and supported_fraction >= self._policy.minimum_supported_fraction
+            and support_confidence >= self._policy.minimum_support_confidence
         )
         unsupported = tuple(
             claim
@@ -299,6 +356,25 @@ class GroundingAdmissionService:
             )
             for claim, gap in zip(unsupported, gaps, strict=True)
         )
+        if opposition_count:
+            conflict_gap = _gap(
+                EvidenceGapCode.unresolved_conflict,
+                None,
+                "Retrieved evidence materially opposes at least one candidate claim.",
+                "Resolve the conflict or qualify the answer before emitting claims.",
+            )
+            return self._decision(
+                claim_set=claim_set,
+                citation_set=citation_set,
+                report=verification_report,
+                request_status=request_status,
+                outcome=GroundingAdmissionOutcome.abstained,
+                admitted_claims=(),
+                admitted_citations=(),
+                rejected=rejected,
+                gaps=(*gaps, conflict_gap),
+                evidence_state=state,
+            )
         if not meets_coverage or (
             unsupported and not self._policy.allow_partial_answers
         ):
@@ -318,6 +394,7 @@ class GroundingAdmissionService:
                 admitted_citations=(),
                 rejected=rejected,
                 gaps=(*gaps, coverage_gap),
+                evidence_state=state,
             )
 
         admitted_claim_ids = tuple(claim.claim_artifact_id for claim in supported)
@@ -342,6 +419,7 @@ class GroundingAdmissionService:
             admitted_citations=admitted_citation_ids,
             rejected=rejected,
             gaps=gaps,
+            evidence_state=state,
         )
 
     def _decision(
@@ -356,21 +434,42 @@ class GroundingAdmissionService:
         admitted_citations: tuple[str, ...],
         rejected: tuple[RejectedGroundingClaim, ...],
         gaps: tuple[EvidenceGap, ...],
+        evidence_state: GroundingEvidenceState,
     ) -> GroundingAdmissionDecision:
+        report_claims = () if report is None else report.claims
+        direct_support_claims = sum(
+            item.verdict is EntailmentVerdict.direct_support for item in report_claims
+        )
+        minimum_support_confidence = min(
+            (
+                max(_support_confidence(assessment) for assessment in item.assessments)
+                for item in report_claims
+                if item.verdict is EntailmentVerdict.direct_support
+            ),
+            default=0.0,
+        )
+        opposition_claims = sum(
+            item.verdict is EntailmentVerdict.opposition for item in report_claims
+        )
         payload = {
-            "schema_version": "bijux.canon.reason.grounding_admission_decision.v1",
+            "schema_version": "bijux.canon.reason.grounding_admission_decision.v2",
             "source_claim_set_artifact_id": claim_set.artifact_id,
             "claim_citation_set_artifact_id": citation_set.artifact_id,
             "verification_report_artifact_id": (
                 None if report is None else report.artifact_id
             ),
             "policy_artifact_id": self._policy.artifact_id,
+            "evidence_state_artifact_id": evidence_state.artifact_id,
             "request_status": request_status.value,
             "outcome": outcome.value,
             "admitted_claim_artifact_ids": admitted_claims,
             "admitted_citation_link_artifact_ids": admitted_citations,
             "rejected_claims": tuple(item.model_dump(mode="json") for item in rejected),
             "evidence_gaps": tuple(item.model_dump(mode="json") for item in gaps),
+            "direct_support_claims": direct_support_claims,
+            "evaluated_claims": len(report_claims),
+            "minimum_support_confidence": minimum_support_confidence,
+            "unresolved_opposition_claims": opposition_claims,
         }
         return GroundingAdmissionDecision(
             artifact_id=content_artifact_id(payload),
@@ -380,12 +479,17 @@ class GroundingAdmissionService:
                 None if report is None else report.artifact_id
             ),
             policy_artifact_id=self._policy.artifact_id,
+            evidence_state_artifact_id=evidence_state.artifact_id,
             request_status=request_status,
             outcome=outcome,
             admitted_claim_artifact_ids=admitted_claims,
             admitted_citation_link_artifact_ids=admitted_citations,
             rejected_claims=rejected,
             evidence_gaps=gaps,
+            direct_support_claims=direct_support_claims,
+            evaluated_claims=len(report_claims),
+            minimum_support_confidence=minimum_support_confidence,
+            unresolved_opposition_claims=opposition_claims,
         )
 
 
@@ -456,6 +560,81 @@ def _request_gap(
             "Re-retrieve and verify immutable source text and locator digests.",
         ),
     }[status]
+
+
+def _derived_evidence_state(
+    report: CitationVerificationReport | None,
+) -> GroundingEvidenceState:
+    count = 0 if report is None else len(report.claims)
+    return GroundingEvidenceState.create(
+        retrieval_status=(
+            RetrievalEvidenceStatus.success
+            if count
+            else RetrievalEvidenceStatus.insufficient
+        ),
+        vex_status=VexEvidenceStatus.not_applicable,
+        retrieved_evidence_count=count,
+        selected_evidence_count=count,
+        packet_completeness=(
+            PacketCompleteness.complete if count else PacketCompleteness.insufficient
+        ),
+    )
+
+
+def _support_confidence(assessment: EvidenceEntailmentAssessment) -> float:
+    structured = assessment.structured_decision
+    return (
+        assessment.claim_term_coverage
+        if structured is None
+        else structured.confidence
+    )
+
+
+def _state_gap(state: GroundingEvidenceState) -> EvidenceGap | None:
+    if state.budget_exhausted:
+        return _gap(
+            EvidenceGapCode.policy_or_budget_refusal,
+            None,
+            state.policy_detail or "The declared evidence budget was exhausted.",
+            state.remediation or "Increase the bounded budget or narrow the question.",
+        )
+    if state.unsafe_or_unverified or state.vex_status in {
+        VexEvidenceStatus.below_policy,
+        VexEvidenceStatus.failed,
+    }:
+        return _gap(
+            EvidenceGapCode.unsafe_or_unverified_evidence,
+            None,
+            state.policy_detail
+            or "Retrieved evidence did not satisfy integrity or witness policy.",
+            state.remediation or "Re-retrieve evidence under a verified policy.",
+        )
+    if state.retrieval_status is RetrievalEvidenceStatus.refused:
+        return _gap(
+            EvidenceGapCode.retrieval_refused,
+            None,
+            state.policy_detail or "Retrieval was refused by its declared policy.",
+            state.remediation or "Use the typed retrieval remediation before retrying.",
+        )
+    if state.retrieval_status is RetrievalEvidenceStatus.failed:
+        return _gap(
+            EvidenceGapCode.retrieval_failed,
+            None,
+            state.policy_detail or "Retrieval failed before evidence was admitted.",
+            state.remediation or "Repair the retrieval authority and retry.",
+        )
+    if (
+        state.retrieval_status is RetrievalEvidenceStatus.insufficient
+        or not state.selected_evidence_count
+        or state.packet_completeness is PacketCompleteness.insufficient
+    ):
+        return _gap(
+            EvidenceGapCode.no_retrieved_evidence,
+            None,
+            state.policy_detail or "No usable evidence was retrieved for the question.",
+            state.remediation or "Retrieve in-scope citation-ready evidence.",
+        )
+    return None
 
 
 __all__ = [

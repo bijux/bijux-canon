@@ -79,7 +79,8 @@ records rather than accepting citation dictionaries from a caller:
 
 ```text
 retrieval artifact -> evidence packet -> normalized claim -> citation link
-                   -> verification report -> numbered presentation
+                   -> verification report -> evidence-aware admission
+                   -> numbered presentation
 ```
 
 Each citation link retains the exact retrieval, document, chunk, source,
@@ -97,6 +98,17 @@ provides them. An admitted factual claim without a verified citation is
 invalid; an abstention exposes no claims or citations. Bibliographic metadata
 helps a reader identify the source but is never treated as evidence for the
 claim.
+
+`GroundingEvidenceState` binds admission to the installed retrieval outcome,
+VEX witness or bounded exact fallback, selected-evidence count, packet
+completeness, and any policy or budget refusal. The versioned admission policy
+also measures direct-support coverage and confidence and rejects unresolved
+opposition. Its typed evidence gaps distinguish out-of-scope requests, absent
+evidence, inadequate support, unresolved conflicts, unsafe or unverified
+evidence, retrieval failure or refusal, and policy or budget refusal. Every gap
+retains a concrete remediation. An upstream refusal therefore cannot be
+converted into an answer merely because a downstream synthesizer can form a
+sentence.
 
 ## Validation Layers
 

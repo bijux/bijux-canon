@@ -12,9 +12,14 @@ from bijux_canon_reason.grounding import (
     CitationSourceDescriptor,
     EvidencePacketBuilder,
     EvidencePacketPolicy,
+    GroundingAdmissionOutcome,
+    GroundingEvidenceState,
     ImmutableEvidenceLocator,
     LocalGroundedAnswerService,
+    PacketCompleteness,
+    RetrievalEvidenceStatus,
     SynthesisOutcome,
+    VexEvidenceStatus,
 )
 from bijux_canon_reason.grounding.provider_contracts import content_artifact_id
 from bijux_canon_runtime.model.artifact import canonical_json_bytes
@@ -371,11 +376,18 @@ class CanonicalReasonOperationAdapter:
             ),
             candidates=candidates,
         )
+        evidence_state = _grounding_evidence_state(
+            evidence_set,
+            retrieved_evidence_count=len(candidates),
+            selected_evidence_count=len(packet.selected),
+            packet_completeness=packet.completeness,
+        )
         grounded = LocalGroundedAnswerService().answer(
             question=step.inputs.query,
             evidence_packet=packet,
             sources=sources,
             max_points=min(citation_budget, 6),
+            evidence_state=evidence_state,
         )
         if (
             grounded.synthesis.outcome is SynthesisOutcome.insufficient
@@ -394,6 +406,7 @@ class CanonicalReasonOperationAdapter:
                 "claims": grounded.claims.model_dump(mode="json"),
                 "contextualized": grounded.contextualized.model_dump(mode="json"),
                 "evidence_packet": packet.model_dump(mode="json"),
+                "evidence_state": evidence_state.model_dump(mode="json"),
                 "evidence_set_artifact_id": str(
                     retrieval_artifact.descriptor.artifact_id
                 ),
@@ -407,8 +420,9 @@ class CanonicalReasonOperationAdapter:
                 "grounding_admission": grounded.admission.model_dump(mode="json"),
                 "grounded_answer_artifact_id": grounded.artifact_id,
                 "sources": [source.model_dump(mode="json") for source in sources],
-                "status": grounded.synthesis.outcome.value,
+                "status": _answer_status(grounded.outcome),
                 "synthesis": grounded.synthesis.model_dump(mode="json"),
+                "synthesis_status": grounded.synthesis.outcome.value,
             }
         )
         context.raise_if_stopped()
@@ -419,6 +433,71 @@ class CanonicalReasonOperationAdapter:
             payload=payload,
             upstream=upstream_artifacts,
         )
+
+
+def _grounding_evidence_state(
+    evidence_set: dict[str, object],
+    *,
+    retrieved_evidence_count: int,
+    selected_evidence_count: int,
+    packet_completeness: PacketCompleteness,
+) -> GroundingEvidenceState:
+    raw_status = _required_string(evidence_set.get("status"), "status")
+    try:
+        retrieval_status = RetrievalEvidenceStatus(raw_status)
+    except ValueError as error:
+        raise StepDispatchError("retrieval evidence status is unsupported") from error
+    raw_retrieval = evidence_set.get("retrieval")
+    if not isinstance(raw_retrieval, dict):
+        raise StepDispatchError("retrieval execution evidence is invalid")
+    raw_attempts = raw_retrieval.get("vex_attempts", [])
+    if not isinstance(raw_attempts, list):
+        raise StepDispatchError("retrieval VEX attempts are invalid")
+    fallback = raw_retrieval.get("fallback_action")
+    if raw_attempts:
+        vex_status = (
+            VexEvidenceStatus.below_policy
+            if retrieval_status is RetrievalEvidenceStatus.refused
+            else VexEvidenceStatus.exact_fallback_verified
+            if fallback == "bounded-exact-after-ann-refusal"
+            else VexEvidenceStatus.verified
+        )
+    else:
+        vex_status = VexEvidenceStatus.not_applicable
+    raw_refusal = evidence_set.get("refusal")
+    detail = remediation = None
+    budget_exhausted = False
+    if raw_refusal is not None:
+        if not isinstance(raw_refusal, dict):
+            raise StepDispatchError("retrieval refusal evidence is invalid")
+        detail = _required_string(raw_refusal.get("detail"), "refusal.detail")
+        remediation = _required_string(
+            raw_refusal.get("remediation"), "refusal.remediation"
+        )
+        violations = raw_refusal.get("violations", [])
+        if not isinstance(violations, list):
+            raise StepDispatchError("retrieval refusal violations are invalid")
+        budget_exhausted = any(
+            isinstance(item, str) and "budget" in item for item in violations
+        )
+    return GroundingEvidenceState.create(
+        retrieval_status=retrieval_status,
+        vex_status=vex_status,
+        retrieved_evidence_count=retrieved_evidence_count,
+        selected_evidence_count=selected_evidence_count,
+        packet_completeness=packet_completeness,
+        budget_exhausted=budget_exhausted,
+        policy_detail=detail,
+        remediation=remediation,
+    )
+
+
+def _answer_status(outcome: GroundingAdmissionOutcome) -> str:
+    return {
+        GroundingAdmissionOutcome.admitted: "answered",
+        GroundingAdmissionOutcome.partially_admitted: "partially-abstained",
+        GroundingAdmissionOutcome.abstained: "abstained",
+    }[outcome]
 
 
 __all__ = ["CanonicalReasonOperationAdapter", "citation_inputs_from_evidence_set"]

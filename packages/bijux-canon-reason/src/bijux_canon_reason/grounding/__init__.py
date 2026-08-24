@@ -83,6 +83,11 @@ from bijux_canon_reason.grounding.evidence_packets import (
     TokenCounter,
     UnicodeLexicalTokenCounter,
 )
+from bijux_canon_reason.grounding.evidence_state import (
+    GroundingEvidenceState,
+    RetrievalEvidenceStatus,
+    VexEvidenceStatus,
+)
 from bijux_canon_reason.grounding.execution_persistence import (
     ContentAddressedRagExecutionStore,
     RagExecutionBudget,
@@ -205,6 +210,7 @@ __all__ = [
     "GroundingAdmissionOutcome",
     "GroundingAdmissionService",
     "GroundingContextService",
+    "GroundingEvidenceState",
     "GroundingRequestStatus",
     "ImmutableEvidenceLocator",
     "JsonHttpResponse",
@@ -232,6 +238,7 @@ __all__ = [
     "RagExecutionStage",
     "RagExecutionStageKind",
     "RejectedGroundingClaim",
+    "RetrievalEvidenceStatus",
     "SelectionDisposition",
     "SynthesisOutcome",
     "SynthesisStyle",
@@ -250,6 +257,7 @@ __all__ = [
     "TokenCounter",
     "UnicodeLexicalTokenCounter",
     "UrllibJsonTransport",
+    "VexEvidenceStatus",
     "VerifiedAtomicClaim",
     "create_claim_conflict",
     "create_claim_context",

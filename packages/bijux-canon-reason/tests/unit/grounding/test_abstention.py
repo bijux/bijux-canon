@@ -12,12 +12,15 @@ from pydantic import ValidationError
 import pytest
 
 from bijux_canon_reason.grounding import (
+    AtomicClaim,
     AtomicClaimNormalizer,
     CalibratedAbstentionPolicy,
     CitationEvidence,
     CitationSourceDescriptor,
+    CitationVerificationPolicy,
     CitationVerificationReport,
     ClaimCitationLinker,
+    ClaimCitationLink,
     ClaimCitationSet,
     CredentialFreeSynthesizer,
     DeterministicCitationVerifier,
@@ -28,12 +31,18 @@ from bijux_canon_reason.grounding import (
     GroundingAdmissionDecision,
     GroundingAdmissionOutcome,
     GroundingAdmissionService,
+    GroundingEvidenceState,
     GroundingRequestStatus,
     ImmutableEvidenceLocator,
     JsonHttpResponse,
     NormalizedClaimSet,
     OpenAICompatibleStructuredSynthesizer,
     StructuredProviderConfiguration,
+    StructuredEntailmentDecision,
+    StructuredEntailmentVerifier,
+    PacketCompleteness,
+    RetrievalEvidenceStatus,
+    VexEvidenceStatus,
 )
 
 
@@ -75,6 +84,9 @@ class _Transport:
 
 def _pipeline(
     pairs: tuple[tuple[str, str], ...],
+    *,
+    verifier: StructuredEntailmentVerifier | None = None,
+    verification_policy: CitationVerificationPolicy | None = None,
 ) -> tuple[NormalizedClaimSet, ClaimCitationSet, CitationVerificationReport]:
     evidence_items = []
     sources = []
@@ -157,13 +169,38 @@ def _pipeline(
     citations = ClaimCitationLinker().link(
         claim_set=claims, evidence_packet=packet, sources=tuple(sources)
     )
-    report = DeterministicCitationVerifier().verify(
+    report = DeterministicCitationVerifier(
+        policy=verification_policy,
+        structured_verifier=verifier,
+    ).verify(
         claim_set=claims,
         citation_set=citations,
         evidence_packet=packet,
         sources=tuple(sources),
     )
     return claims, citations, report
+
+
+class _SemanticVerifier:
+    def __init__(self, confidence: float) -> None:
+        self._confidence = confidence
+
+    def assess(
+        self, *, claim: AtomicClaim, citation: ClaimCitationLink
+    ) -> StructuredEntailmentDecision:
+        return StructuredEntailmentDecision.create(
+            verifier_id="reviewed-test-semantic-verifier",
+            verifier_configuration_artifact_id=_artifact("semantic-config"),
+            claim_artifact_id=claim.artifact_id,
+            claim_citation_link_artifact_id=citation.artifact_id,
+            verdict=EntailmentVerdict.direct_support,
+            confidence=self._confidence,
+            entity_alignment=True,
+            scope_alignment=True,
+            negation_alignment=True,
+            qualifier_alignment=True,
+            rationale_code="reviewed_semantic_support",
+        )
 
 
 def _empty_pipeline() -> tuple[
@@ -282,6 +319,91 @@ def test_no_claims_abstains_with_actionable_retrieval_gap() -> None:
 
 
 @pytest.mark.parametrize(
+    ("retrieval_status", "vex_status", "unsafe", "budget", "gap_code"),
+    [
+        (
+            RetrievalEvidenceStatus.insufficient,
+            VexEvidenceStatus.not_applicable,
+            False,
+            False,
+            EvidenceGapCode.no_retrieved_evidence,
+        ),
+        (
+            RetrievalEvidenceStatus.refused,
+            VexEvidenceStatus.not_applicable,
+            False,
+            False,
+            EvidenceGapCode.retrieval_refused,
+        ),
+        (
+            RetrievalEvidenceStatus.failed,
+            VexEvidenceStatus.not_applicable,
+            False,
+            False,
+            EvidenceGapCode.retrieval_failed,
+        ),
+        (
+            RetrievalEvidenceStatus.refused,
+            VexEvidenceStatus.below_policy,
+            False,
+            False,
+            EvidenceGapCode.unsafe_or_unverified_evidence,
+        ),
+        (
+            RetrievalEvidenceStatus.refused,
+            VexEvidenceStatus.not_applicable,
+            False,
+            True,
+            EvidenceGapCode.policy_or_budget_refusal,
+        ),
+        (
+            RetrievalEvidenceStatus.success,
+            VexEvidenceStatus.verified,
+            True,
+            False,
+            EvidenceGapCode.unsafe_or_unverified_evidence,
+        ),
+    ],
+)
+def test_upstream_evidence_state_overrides_apparently_supported_claims(
+    retrieval_status: RetrievalEvidenceStatus,
+    vex_status: VexEvidenceStatus,
+    unsafe: bool,
+    budget: bool,
+    gap_code: EvidenceGapCode,
+) -> None:
+    claim = "Ancient DNA fragments were shorter."
+    claims, citations, report = _pipeline(((claim, claim),))
+    usable = retrieval_status is RetrievalEvidenceStatus.success
+    state = GroundingEvidenceState.create(
+        retrieval_status=retrieval_status,
+        vex_status=vex_status,
+        retrieved_evidence_count=1 if usable else 0,
+        selected_evidence_count=1 if usable else 0,
+        packet_completeness=(
+            PacketCompleteness.complete if usable else PacketCompleteness.insufficient
+        ),
+        unsafe_or_unverified=unsafe,
+        budget_exhausted=budget,
+        policy_detail="Typed upstream evidence condition.",
+        remediation="Apply the typed remediation.",
+    )
+
+    decision = GroundingAdmissionService().decide(
+        claim_set=claims,
+        citation_set=citations,
+        verification_report=report,
+        evidence_state=state,
+    )
+
+    assert decision.outcome is GroundingAdmissionOutcome.abstained
+    assert decision.admitted_claim_artifact_ids == ()
+    assert decision.admitted_citation_link_artifact_ids == ()
+    assert decision.evidence_state_artifact_id == state.artifact_id
+    assert decision.evidence_gaps[0].code is gap_code
+
+
+@pytest.mark.parametrize(
     ("status", "gap_code"),
     [
         (GroundingRequestStatus.fabricated_entity, EvidenceGapCode.fabricated_entity),
@@ -344,6 +466,58 @@ def test_stricter_policy_abstains_on_partial_support() -> None:
     assert decision.outcome is GroundingAdmissionOutcome.abstained
     assert not decision.admitted_claim_artifact_ids
     assert not decision.admitted_citation_link_artifact_ids
+
+
+def test_material_opposition_forces_unresolved_conflict_abstention() -> None:
+    supported = "Ancient DNA fragments were shorter."
+    opposed = "Ancient DNA fragments were not shorter."
+    claims, citations, report = _pipeline(
+        ((supported, supported), (opposed, supported))
+    )
+    assert EntailmentVerdict.opposition in {
+        item.verdict for item in report.claims
+    }
+
+    decision = GroundingAdmissionService().decide(
+        claim_set=claims,
+        citation_set=citations,
+        verification_report=report,
+    )
+
+    assert decision.outcome is GroundingAdmissionOutcome.abstained
+    assert decision.unresolved_opposition_claims == 1
+    assert EvidenceGapCode.unresolved_conflict in {
+        item.code for item in decision.evidence_gaps
+    }
+    assert decision.admitted_claim_artifact_ids == ()
+
+
+def test_semantic_support_below_admission_confidence_abstains() -> None:
+    claims, citations, report = _pipeline(
+        (
+            (
+                "DNA preservation declined in the sampled tissue.",
+                "Genetic material became less recoverable in the sampled tissue.",
+            ),
+        ),
+        verifier=_SemanticVerifier(0.85),
+        verification_policy=CitationVerificationPolicy(
+            structured_minimum_confidence=0.8
+        ),
+    )
+    assert report.claims[0].verdict is EntailmentVerdict.direct_support
+
+    decision = GroundingAdmissionService().decide(
+        claim_set=claims,
+        citation_set=citations,
+        verification_report=report,
+    )
+
+    assert decision.outcome is GroundingAdmissionOutcome.abstained
+    assert decision.minimum_support_confidence == 0.85
+    assert decision.evidence_gaps[-1].code is (
+        EvidenceGapCode.support_coverage_below_policy
+    )
 
 
 def test_verification_report_for_other_inputs_is_rejected() -> None:
