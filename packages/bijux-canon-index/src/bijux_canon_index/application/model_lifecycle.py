@@ -345,12 +345,15 @@ def acquire_model(
 
     profile = supported_model_profile(profile_id)
     root = Path(cache_root) / profile.profile_id / profile.revision
-    if not root.exists():
-        materialize_model(
-            profile,
-            cache_root,
-            library_versions=installed_library_versions(),
-        )
+    try:
+        if not root.exists():
+            materialize_model(
+                profile,
+                cache_root,
+                library_versions=installed_library_versions(),
+            )
+    except (ModelMaterializationError, OSError, ValueError) as error:
+        raise ModelLifecycleError(f"model acquisition failed: {error}") from error
     return validate_model(root, profile_id=profile_id)
 
 
@@ -362,12 +365,15 @@ def register_existing_model(
     """Register already downloaded pinned files and validate offline inference."""
 
     profile = supported_model_profile(profile_id)
-    register_model(
-        profile,
-        model_root,
-        library_versions=installed_library_versions(),
-        expected_artifacts=_PINNED_ARTIFACTS,
-    )
+    try:
+        register_model(
+            profile,
+            model_root,
+            library_versions=installed_library_versions(),
+            expected_artifacts=_PINNED_ARTIFACTS,
+        )
+    except (ModelMaterializationError, OSError, ValueError) as error:
+        raise ModelLifecycleError(f"model registration failed: {error}") from error
     return validate_model(model_root, profile_id=profile_id)
 
 

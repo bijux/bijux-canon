@@ -16,7 +16,6 @@ from bijux_canon_index.application.model_lifecycle import (
     register_existing_model,
     validate_model,
 )
-from bijux_canon_index.infra.embeddings.model_cache import ModelMaterializationError
 from bijux_canon_index.interfaces.cli.rendering import emit
 
 PROFILE_OPTION = typer.Option(
@@ -60,7 +59,7 @@ def acquire(
 
     try:
         emit(ctx, acquire_model(cache_root, profile_id=profile).record())
-    except (ModelLifecycleError, ModelMaterializationError) as error:
+    except ModelLifecycleError as error:
         _fail(error)
 
 
@@ -73,7 +72,7 @@ def register(
 
     try:
         emit(ctx, register_existing_model(model_root, profile_id=profile).record())
-    except (ModelLifecycleError, ModelMaterializationError) as error:
+    except ModelLifecycleError as error:
         _fail(error)
 
 
@@ -86,7 +85,7 @@ def validate(
 
     try:
         emit(ctx, validate_model(model_root, profile_id=profile).record())
-    except (ModelLifecycleError, ModelMaterializationError) as error:
+    except ModelLifecycleError as error:
         _fail(error)
 
 

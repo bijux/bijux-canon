@@ -189,7 +189,22 @@ def test_public_registration_refuses_files_not_from_the_pinned_revision(
     _model_files(tmp_path)
     _compatible_versions(monkeypatch)
 
-    with pytest.raises(ModelMaterializationError, match="pinned revision"):
+    with pytest.raises(ModelLifecycleError, match="pinned revision"):
         register_existing_model(tmp_path)
 
     assert not (tmp_path / "model.lock.json").exists()
+
+
+def test_public_acquisition_translates_materialization_failures(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _compatible_versions(monkeypatch)
+
+    def fail(*_args: object, **_kwargs: object) -> None:
+        raise ModelMaterializationError("download digest mismatch")
+
+    monkeypatch.setattr(model_lifecycle, "materialize_model", fail)
+
+    with pytest.raises(ModelLifecycleError, match="download digest mismatch"):
+        model_lifecycle.acquire_model(tmp_path)
