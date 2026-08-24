@@ -84,6 +84,15 @@ payload page is at most 65,536 bytes and is base64 encoded with total size,
 digest, and continuation offset. HTTP uses the same bounds at
 `GET /api/v2/artifacts/{artifact_id}/payload`.
 
+The top-level `provenance` object is a bounded, fail-closed traversal result.
+For each citation it identifies the parent durable job, run, execution
+configuration, optional model lock, index, corpus snapshot, retained source
+archive, document, chunk, portable relative source name, source digest, and
+verified source-byte spans. A
+`verified` status applies only when every causal dependency and retained payload
+resolves; runs created before source-archive retention report
+`legacy-unresolved` instead of claiming equivalent evidence.
+
 Every submission command accepts strict `--request FILE` JSON as an alternative
 to direct options. `backup` authenticates an existing generation when the same
 identity is reused. `restore` verifies database and artifact checksums and

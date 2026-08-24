@@ -112,6 +112,13 @@ class RuntimeExecutionService:
             raise RuntimeFirstExecutionError(
                 "first execution requires a resolved corpus or index artifact"
             )
+        if source_selection is not None:
+            request = replace(
+                request,
+                source_selection_artifact_id=(
+                    source_selection.descriptor.artifact_id
+                ),
+            )
         plan = self._planner.plan(request)
         run = SemanticRunIdentity.derive(
             SemanticRunInputs(
@@ -162,6 +169,7 @@ class RuntimeExecutionService:
             attempt=attempt,
             execution_metadata={
                 "execution_kind": attempt.relation.value,
+                "parent_job_id": request.parent_job_id,
                 "process_id": self._process_id,
             },
             manifest_dependencies=(

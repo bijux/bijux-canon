@@ -98,7 +98,10 @@ from bijux_canon_runtime.runtime.execution.operation_dispatcher import (
 from bijux_canon_runtime.runtime.execution.retrieval_evaluation import (
     InstalledRetrievalEvaluationExecutor,
 )
+from bijux_canon_runtime.runtime.persistence.source_archive import read_source_archive
 from bijux_canon_runtime.runtime.inspection import RuntimeRunInspector
+from bijux_canon_runtime.runtime.inspection.models import RuntimeInspectionError
+from bijux_canon_runtime.runtime.inspection.provenance import resolve_run_provenance
 from bijux_canon_runtime.runtime.persistence import (
     AtomicFilesystemArtifactPayloadStore,
 )
@@ -268,6 +271,30 @@ def _build_indexed_runtime(tmp_path: Path) -> _IndexedRuntime:
     )
     assert corpus_inspection.status.value == "completed"
     assert corpus_inspection.terminal_step_ids == ("snapshot",)
+    assert corpus_inspection.provenance.status == "verified"
+    assert len(corpus_inspection.provenance.source_archive_artifact_ids) == 1
+    ingest_step = next(
+        step for step in corpus_inspection.steps if step.step_id == "ingest"
+    )
+    assert len(ingest_step.input_artifact_ids) == 1
+    assert {artifact.schema_id for artifact in corpus_inspection.artifacts}.issuperset(
+        {
+            "ingest.source-selection.v1",
+            "ingest.source-documents.v1",
+            "ingest.source-archive.v1",
+            "ingest.corpus-snapshot.v1",
+        }
+    )
+    retained_archive = store.load(
+        corpus_inspection.provenance.source_archive_artifact_ids[0]
+    )
+    retained_sources = read_source_archive(retained_archive.canonical_bytes)
+    assert [(item.relative_path, item.content) for item in retained_sources] == [
+        (
+            "evidence.md",
+            b"# Ancient DNA\n\nAncient genomes preserve direct population evidence.\n",
+        )
+    ]
 
     index_request = RuntimeOperationRequest(
         request_id=RequestID("request-index"),
@@ -344,6 +371,12 @@ def _build_indexed_runtime(tmp_path: Path) -> _IndexedRuntime:
         "lexical_index",
         "dense_index",
     ]
+    assert all(
+        step.input_artifact_ids == (snapshot.artifact_id,)
+        for step in inspection.steps
+        if step.step_id in {"embed", "lexical_index"}
+    )
+    assert inspection.provenance.status == "verified"
 
     retry = execution_service.execute(
         replace(index_request, request_id=RequestID("request-index-retry")),
@@ -1293,6 +1326,17 @@ def _verify_linked_runs(grounded: _GroundedRuntime) -> None:
     assert all(citation.exact_text for citation in evaluated.citations)
     assert all(citation.chunk_id for citation in evaluated.citations)
     assert all(claim.citation_ids for claim in evaluated.claims)
+    assert linked_ask_inspection.provenance.status == "verified"
+    assert linked_ask_inspection.provenance.citation_count == len(
+        evaluated.citations
+    )
+    resolved_citation = linked_ask_inspection.provenance.citations[0]
+    assert resolved_citation.run_id == linked_ask_inspection.run_id
+    assert resolved_citation.index_artifact_id == indexed.composite.artifact_id
+    assert resolved_citation.model_lock_artifact_id == _Embedding.model_lock_id
+    assert resolved_citation.execution_configuration_sha256 == "1" * 64
+    assert resolved_citation.source_relative_path == "evidence.md"
+    assert resolved_citation.source_byte_spans
 
     with pytest.raises(
         PersistedAnswerEvaluationError,
@@ -1329,6 +1373,56 @@ def _verify_linked_runs(grounded: _GroundedRuntime) -> None:
             case_id="content-question",
             question="What evidence do ancient genomes preserve?",
             inspection=tampered_inspection,
+        )
+    tampered_provenance = dict(tampered_graph["provenance"])
+    tampered_provenance["run_id"] = "run_v1_" + "0" * 64
+    tampered_graph["provenance"] = tampered_provenance
+    tampered_artifacts = tuple(
+        replace(item, json_value=tampered_graph)
+        if item.artifact_id == claim_graph_artifact.artifact_id
+        else item
+        for item in linked_ask_inspection.artifacts
+    )
+    with pytest.raises(
+        RuntimeInspectionError,
+        match="execution provenance is inconsistent",
+    ):
+        resolve_run_provenance(
+            run_id=linked_ask_inspection.run_id,
+            selected_attempt=next(
+                item
+                for item in linked_ask_inspection.attempts
+                if item.attempt_id == linked_ask_inspection.selected_attempt_id
+            ),
+            steps=linked_ask_inspection.steps,
+            artifacts=tampered_artifacts,
+            store=store,
+        )
+    retrieval_artifact = next(
+        item
+        for item in linked_ask_inspection.artifacts
+        if item.schema_id == "index.evidence-set.v1"
+    )
+    broken_causal_artifacts = tuple(
+        replace(item, dependency_artifact_ids=())
+        if item.artifact_id == retrieval_artifact.artifact_id
+        else item
+        for item in linked_ask_inspection.artifacts
+    )
+    with pytest.raises(
+        RuntimeInspectionError,
+        match="output causal dependencies are invalid",
+    ):
+        resolve_run_provenance(
+            run_id=linked_ask_inspection.run_id,
+            selected_attempt=next(
+                item
+                for item in linked_ask_inspection.attempts
+                if item.attempt_id == linked_ask_inspection.selected_attempt_id
+            ),
+            steps=linked_ask_inspection.steps,
+            artifacts=broken_causal_artifacts,
+            store=store,
         )
 
 

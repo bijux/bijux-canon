@@ -89,13 +89,13 @@ class RuntimeRequestPlanner:
             DagOperation.INGEST,
             (),
             ("ingest.source-selection.v1",),
-            ("ingest.source-documents.v1",),
+            ("ingest.source-documents.v1", "ingest.source-archive.v1"),
         )
         snapshot = _StepSpec(
             "snapshot",
             DagOperation.SNAPSHOT,
             ("ingest",),
-            ("ingest.source-documents.v1",),
+            ("ingest.source-documents.v1", "ingest.source-archive.v1"),
             ("ingest.corpus-snapshot.v1",),
         )
         embed = _StepSpec(
@@ -247,11 +247,15 @@ class RuntimeRequestPlanner:
             execution_configuration_sha256=(request.execution_configuration_sha256),
             replay_attempt_id=request.replay_attempt_id,
             source_attempt_id=request.replay_attempt_id,
+            parent_job_id=request.parent_job_id,
         )
         if operation is DagOperation.INGEST:
             return replace(
                 common,
                 source_directory=request.source_directory,
+                source_selection_artifact_id=(
+                    request.source_selection_artifact_id
+                ),
             )
         if operation is DagOperation.SNAPSHOT:
             return replace(

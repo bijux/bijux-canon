@@ -286,8 +286,10 @@ governed backup/restore path when relocation is required.
 The v2 execution profile determines the index contract before work is queued.
 `offline-lexical` workspaces may be initialized with only `--workspace`; their
 index, retrieval, answer, and research plans never contain embedding or dense
-steps, and the standalone SQLite FTS5 artifact retains its corpus snapshot and
-citation lineage. `v2 ready --operation retrieve --profile offline-lexical`
+steps. Corpus preparation retains a deterministic source archive containing the
+verified original bytes, and each snapshot depends on both that archive and its
+parsed preparation. The standalone SQLite FTS5 artifact retains the resulting
+snapshot and citation lineage. `v2 ready --operation retrieve --profile offline-lexical`
 therefore does not require a model or an active dense generation. Local hybrid
 profiles instead preflight the locked model, installed archive backends, model
 identity, and vector dimension before durable submission.
@@ -306,6 +308,16 @@ chunk, source descriptor, exact locator and quote hashes, bibliography,
 license, and provenance. Runtime inspection recomputes the citation set and
 presentation from the persisted retrieval dependency; it refuses an internally
 consistent claim graph that is detached from that dependency.
+
+The inspection `provenance` record also traverses every citation from the claim
+graph through retrieval, index, corpus snapshot, chunk mapping, and byte spans in
+the retained source archive. It reports the parent durable job, authoritative
+run, configuration, model lock (or explicit absence for lexical execution), and
+artifact identities.
+New-format runs fail inspection when any causal edge, identity, locator mapping,
+source range, or retained byte digest is inconsistent. Older retained runs remain
+inspectable with `legacy-unresolved` provenance because they predate source-byte
+retention.
 
 Runtime projects the request timeout, artifact ceiling, retrieval count, and
 per-search candidate bound into an explicit installed Agent budget. Agent

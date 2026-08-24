@@ -41,6 +41,12 @@ from bijux_canon_runtime.runtime.execution.operation_dispatcher import (
     StepDispatchError,
     StepOutputArtifact,
 )
+from bijux_canon_runtime.runtime.persistence.source_archive import (
+    SourceArchiveEntry,
+    SourceArchiveError,
+    build_source_archive,
+    read_source_archive,
+)
 from bijux_canon_runtime.runtime.persistence.payload_store import ArtifactPayloadStore
 
 
@@ -264,6 +270,7 @@ class CanonicalIngestOperationAdapter:
             )
         )
         payload = canonical_json_bytes(preparation.manifest())
+        archive_payload = build_source_archive(preparation.retained_sources())
         context.raise_if_stopped()
         return _bounded_output(
             step=step,
@@ -271,6 +278,22 @@ class CanonicalIngestOperationAdapter:
             media_type="application/json",
             payload=payload,
             upstream=upstream_artifacts,
+            external_dependencies=(
+                ()
+                if step.inputs.source_selection_artifact_id is None
+                else (step.inputs.source_selection_artifact_id,)
+            ),
+        ) + _bounded_output(
+            step=step,
+            contract_id="ingest.source-archive.v1",
+            media_type="application/vnd.bijux.source-archive",
+            payload=archive_payload,
+            upstream=upstream_artifacts,
+            external_dependencies=(
+                ()
+                if step.inputs.source_selection_artifact_id is None
+                else (step.inputs.source_selection_artifact_id,)
+            ),
         )
 
 
@@ -288,13 +311,41 @@ class CanonicalSnapshotOperationAdapter:
         context: StepDispatchContext,
     ) -> tuple[StepOutputArtifact, ...]:
         context.raise_if_stopped()
-        if len(upstream_artifacts) != 1:
-            raise StepDispatchError("snapshot requires one preparation artifact")
+        if {item.contract_id for item in upstream_artifacts} != {
+            "ingest.source-documents.v1",
+            "ingest.source-archive.v1",
+        }:
+            raise StepDispatchError(
+                "snapshot requires one preparation and one source archive"
+            )
+        preparation_artifact = next(
+            item.artifact
+            for item in upstream_artifacts
+            if item.contract_id == "ingest.source-documents.v1"
+        )
+        source_archive_artifact = next(
+            item.artifact
+            for item in upstream_artifacts
+            if item.contract_id == "ingest.source-archive.v1"
+        )
         preparation = _json_object(
-            upstream_artifacts[0].artifact,
+            preparation_artifact,
             "ingest.source-documents.v1",
         )
         snapshot = assemble_corpus_snapshot_manifest(preparation)
+        try:
+            retained_sources = read_source_archive(
+                source_archive_artifact.canonical_bytes
+            )
+        except SourceArchiveError as error:
+            raise StepDispatchError("retained source archive is invalid") from error
+        _validate_retained_snapshot_sources(snapshot, retained_sources)
+        snapshot_body = dict(snapshot)
+        snapshot_body.pop("snapshot_id", None)
+        snapshot_body["source_archive_artifact_id"] = str(
+            source_archive_artifact.descriptor.artifact_id
+        )
+        snapshot = {"snapshot_id": _identity(snapshot_body), **snapshot_body}
         payload = canonical_json_bytes(snapshot)
         return _bounded_output(
             step=step,
@@ -302,6 +353,42 @@ class CanonicalSnapshotOperationAdapter:
             media_type="application/json",
             payload=payload,
             upstream=upstream_artifacts,
+        )
+
+
+def _validate_retained_snapshot_sources(
+    snapshot: Mapping[str, object],
+    retained_sources: Sequence[SourceArchiveEntry],
+) -> None:
+    raw_documents = snapshot.get("documents")
+    if not isinstance(raw_documents, list):
+        raise StepDispatchError("corpus snapshot documents are invalid")
+    archived = {
+        (item.relative_path, item.content_sha256, item.media_type)
+        for item in retained_sources
+    }
+    documented: set[tuple[str, str, str]] = set()
+    for raw_document in raw_documents:
+        if not isinstance(raw_document, dict):
+            raise StepDispatchError("corpus snapshot document is invalid")
+        metadata = raw_document.get("metadata")
+        if not isinstance(metadata, dict):
+            raise StepDispatchError("corpus snapshot metadata is invalid")
+        relative_path = metadata.get("relative_path")
+        content_sha256 = metadata.get("source_content_sha256")
+        media_type = metadata.get("media_type")
+        if not all(
+            isinstance(item, str)
+            for item in (relative_path, content_sha256, media_type)
+        ):
+            raise StepDispatchError("corpus snapshot source identity is invalid")
+        assert isinstance(relative_path, str)
+        assert isinstance(content_sha256, str)
+        assert isinstance(media_type, str)
+        documented.add((relative_path, content_sha256, media_type))
+    if documented != archived:
+        raise StepDispatchError(
+            "retained source archive does not match corpus snapshot documents"
         )
 
 

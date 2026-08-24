@@ -68,9 +68,12 @@ detail matters.
 
 DuckDB stores run, dataset, step, event, checkpoint, artifact, evidence,
 entropy, tool, and claim projections. Artifact and evidence rows retain hashes
-and metadata, not content payloads. Exact inspection or replay therefore also
-requires an external content store whose retention, authorization, and hash
-verification are bound to the run.
+and metadata, while the workspace CAS retains the corresponding payloads. New
+corpus preparations include a deterministic original-source archive in that CAS;
+the snapshot and every downstream artifact preserve its dependency. Exact
+inspection verifies both stores together and resolves citations through chunk
+mappings to byte ranges in that retained archive. A database without its CAS is
+not a complete Runtime authority.
 
 ## Bind Answer Evaluation To The Persisted Attempt
 

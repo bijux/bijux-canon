@@ -222,6 +222,10 @@ def _reconstruct_step(
             execution_configuration_sha256=optional_string(
                 inputs, "execution_configuration_sha256"
             ),
+            source_selection_artifact_id=_optional_artifact_id(
+                inputs, "source_selection_artifact_id"
+            ),
+            parent_job_id=optional_string(inputs, "parent_job_id"),
         ),
     )
 

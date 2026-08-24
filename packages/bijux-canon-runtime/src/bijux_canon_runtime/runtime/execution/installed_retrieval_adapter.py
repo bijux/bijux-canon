@@ -859,11 +859,15 @@ class CanonicalRetrievalOperationAdapter:
                         else [asdict(hit) for hit in resolution.hits]
                     ),
                     "index_artifact_id": str(index_artifact.descriptor.artifact_id),
+                    "execution_configuration_sha256": (
+                        step.inputs.execution_configuration_sha256
+                    ),
                     "locator_catalog_id": (
                         None if resolution is None else resolution.locator_catalog_id
                     ),
                     "query_text_sha256": lexical.query_text_sha256,
                     "requested_retrieval_mode": step.inputs.execution_profile.value,
+                    "model_lock_artifact_id": inspection.model_lock_artifact_id,
                     "retrieval": {
                         "dense": None if dense is None else asdict(dense),
                         "dense_attempts": dense_attempts,
@@ -892,6 +896,9 @@ class CanonicalRetrievalOperationAdapter:
                     "retrieval_mode": retrieval_mode.value,
                     "schema_version": "bijux.canon.index.evidence_set.v1",
                     "snapshot_artifact_id": inspection.snapshot_artifact_id,
+                    "source_archive_artifact_id": snapshot.get(
+                        "source_archive_artifact_id"
+                    ),
                     "status": (
                         "refused"
                         if refused
@@ -1005,9 +1012,13 @@ class CanonicalRetrievalOperationAdapter:
                     "generation_id": generation_id,
                     "hits": [asdict(hit) for hit in resolution.hits],
                     "index_artifact_id": str(index_artifact.descriptor.artifact_id),
+                    "execution_configuration_sha256": (
+                        step.inputs.execution_configuration_sha256
+                    ),
                     "locator_catalog_id": resolution.locator_catalog_id,
                     "query_text_sha256": lexical.query_text_sha256,
                     "requested_retrieval_mode": step.inputs.execution_profile.value,
+                    "model_lock_artifact_id": None,
                     "retrieval": {
                         "dense": None,
                         "dense_attempts": [],
@@ -1040,6 +1051,9 @@ class CanonicalRetrievalOperationAdapter:
                     "schema_version": "bijux.canon.index.evidence_set.v1",
                     "snapshot_artifact_id": str(
                         snapshot_artifact.descriptor.artifact_id
+                    ),
+                    "source_archive_artifact_id": snapshot.get(
+                        "source_archive_artifact_id"
                     ),
                     "status": "success" if resolution.hits else "insufficient",
                     "vex_execution": None,

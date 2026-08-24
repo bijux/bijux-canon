@@ -43,6 +43,8 @@ class StepDispatchContext:
     is_cancelled: Callable[[], bool] = _never_cancelled
     deadline_monotonic: float | None = None
     monotonic_clock: Callable[[], float] = monotonic
+    run_id: str | None = None
+    execution_manifest_artifact_id: ArtifactID | None = None
 
     @property
     def remaining_seconds(self) -> float | None:
@@ -340,6 +342,12 @@ class OperationDispatcher:
 def _external_input_artifact_ids(step: ConcreteDagStep) -> tuple[ArtifactID, ...]:
     result: list[ArtifactID] = []
     contracts = set(step.input_artifact_contract_ids)
+    if (
+        "ingest.source-selection.v1" in contracts
+        and step.inputs.source_selection_artifact_id is not None
+        and not step.depends_on
+    ):
+        result.append(step.inputs.source_selection_artifact_id)
     if (
         "ingest.corpus-snapshot.v1" in contracts
         and step.inputs.corpus_id is not None

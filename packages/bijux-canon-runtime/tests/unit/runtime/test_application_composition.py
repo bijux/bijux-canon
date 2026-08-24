@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 from concurrent.futures import ThreadPoolExecutor
+from dataclasses import replace
 import hashlib
 import json
 from pathlib import Path
@@ -49,6 +50,7 @@ from bijux_canon_runtime.runtime.execution.application_composition import (
 )
 from bijux_canon_runtime.runtime.execution import application_composition
 from bijux_canon_runtime.runtime.execution.durable_jobs import JobStatus
+from bijux_canon_runtime.runtime.inspection import RuntimeInspectionError
 from bijux_canon_runtime.runtime.persistence.authoritative_payload_store import (
     AuthoritativeArtifactPayloadStore,
 )
@@ -138,6 +140,8 @@ def test_composed_corpus_job_survives_application_restart_without_model_load(
 
         assert completed.status is JobStatus.SUCCEEDED
         assert inspection.status.value == "completed"
+        assert inspection.provenance.parent_job_id == submitted.job_id
+        assert inspection.provenance.status == "verified"
         workspace_manifest = json.loads(
             configuration.require_workspace_layout().manifest_path.read_bytes()
         )
@@ -320,6 +324,45 @@ def test_installed_offline_lexical_workflow_never_requires_or_loads_a_model(
 
     assert initialized.model_lock_artifact_id
     assert not layout.model_root.exists()
+
+
+def test_installed_corpus_inspection_rejects_tampered_retained_source_bytes(
+    tmp_path: Path,
+) -> None:
+    source = tmp_path / "papers"
+    source.mkdir()
+    (source / "evidence.md").write_text("Immutable evidence.\n", encoding="utf-8")
+    configuration = resolve_runtime_configuration(
+        explicit={"working_root": tmp_path / "tamper-workspace"}
+    )
+    initialize_runtime_workspace(configuration)
+
+    with compose_runtime_application_services(configuration=configuration) as service:
+        submitted = service.corpus(
+            replace(
+                _corpus_request(source, "request-tamper-source"),
+                execution_profile=ExecutionProfile.OFFLINE_LEXICAL,
+            ),
+            idempotency_key="tamper-source",
+        )
+        service.wait(submitted.job_id, timeout_seconds=10.0)
+        result = service.result(submitted.job_id)
+        inspection = service.inspect(str(result["run_id"]))
+        archive_id = inspection.provenance.source_archive_artifact_ids[0]
+        digest = str(archive_id).removeprefix("sha256:")
+        payload_path = (
+            configuration.require_workspace_layout().cas_root
+            / "objects"
+            / "sha256"
+            / digest[:2]
+            / digest
+            / "payload"
+        )
+        payload = payload_path.read_bytes()
+        payload_path.write_bytes(payload[:-1] + bytes((payload[-1] ^ 1,)))
+
+        with pytest.raises(RuntimeInspectionError, match="unavailable artifact"):
+            service.inspect(str(result["run_id"]))
 
 
 def test_composition_refuses_an_uninitialized_effective_workspace(

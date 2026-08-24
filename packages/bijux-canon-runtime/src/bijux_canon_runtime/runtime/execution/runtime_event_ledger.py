@@ -154,6 +154,11 @@ class RuntimeEventLedger:
         """Return the immutable plan and attempt manifest for inspection."""
         return self._manifest_artifact_id
 
+    @property
+    def run_id(self) -> str:
+        """Return the authoritative semantic run identity."""
+        return str(self._attempt.run_id)
+
     def record(
         self,
         *,
@@ -161,6 +166,7 @@ class RuntimeEventLedger:
         event_kind: RuntimeEventKind,
         inputs: tuple[StepOutputArtifact, ...] = (),
         outputs: tuple[StepOutputArtifact, ...] = (),
+        external_input_artifact_ids: tuple[ArtifactID, ...] = (),
         duration_ms: float | None = None,
         error: Exception | None = None,
     ) -> RuntimeEventRecord:
@@ -194,7 +200,15 @@ class RuntimeEventLedger:
                 duration_ms=duration_ms,
                 declared_input_contract_ids=step.input_artifact_contract_ids,
                 declared_output_contract_ids=step.output_artifact_contract_ids,
-                input_artifact_ids=tuple(str(item.artifact_id) for item in inputs),
+                input_artifact_ids=tuple(
+                    str(item)
+                    for item in sorted(
+                        {
+                            *(input_.artifact_id for input_ in inputs),
+                            *external_input_artifact_ids,
+                        }
+                    )
+                ),
                 output_artifact_ids=tuple(str(item.artifact_id) for item in outputs),
                 check_ids=(
                     tuple(f"artifact-contract:{item.contract_id}" for item in outputs)
@@ -218,6 +232,7 @@ class RuntimeEventLedger:
                             if self._artifact_ids
                             else self._manifest_artifact_id,
                             *(item.artifact_id for item in inputs),
+                            *external_input_artifact_ids,
                             *(item.artifact_id for item in outputs),
                         }
                     )

@@ -26,6 +26,7 @@ from bijux_canon_runtime.runtime.execution.operation_dispatcher import (
     StepDispatchResult,
     StepDispatchTimedOut,
     StepOutputArtifact,
+    resolved_input_artifact_ids,
 )
 from bijux_canon_runtime.runtime.execution.runtime_event_ledger import (
     RuntimeEventKind,
@@ -367,6 +368,7 @@ class DependencyAwareScheduler:
                 futures = {}
                 started_ns: dict[str, int] = {}
                 upstream_by_step: dict[str, tuple[StepOutputArtifact, ...]] = {}
+                external_inputs_by_step: dict[str, tuple[ArtifactID, ...]] = {}
                 for step in wave:
                     statuses[step.step_id] = StepNodeStatus.RUNNING
                     self._journal.append(
@@ -380,11 +382,19 @@ class DependencyAwareScheduler:
                         for artifact in outputs[dependency]
                     )
                     upstream_by_step[step.step_id] = upstream
+                    upstream_ids = {item.artifact_id for item in upstream}
+                    external_inputs = tuple(
+                        item
+                        for item in resolved_input_artifact_ids(step, upstream)
+                        if item not in upstream_ids
+                    )
+                    external_inputs_by_step[step.step_id] = external_inputs
                     if self._events is not None:
                         self._events.record(
                             step=step,
                             event_kind=RuntimeEventKind.STARTED,
                             inputs=upstream,
+                            external_input_artifact_ids=external_inputs,
                         )
                     started_ns[step.step_id] = perf_counter_ns()
                     futures[step.step_id] = executor.submit(
@@ -392,9 +402,19 @@ class DependencyAwareScheduler:
                         step,
                         upstream,
                         context=StepDispatchContext(
-                            cancelled,
-                            deadline,
-                            monotonic_clock,
+                            is_cancelled=cancelled,
+                            deadline_monotonic=deadline,
+                            monotonic_clock=monotonic_clock,
+                            run_id=(
+                                None
+                                if self._events is None
+                                else self._events.run_id
+                            ),
+                            execution_manifest_artifact_id=(
+                                None
+                                if self._events is None
+                                else self._events.manifest_artifact_id
+                            ),
                         ),
                     )
                 for step in wave:
@@ -418,6 +438,9 @@ class DependencyAwareScheduler:
                                 step=step,
                                 event_kind=RuntimeEventKind.CANCELLED,
                                 inputs=upstream_by_step[step.step_id],
+                                external_input_artifact_ids=(
+                                    external_inputs_by_step[step.step_id]
+                                ),
                                 duration_ms=duration_ms,
                                 error=exc,
                             )
@@ -435,6 +458,9 @@ class DependencyAwareScheduler:
                                 step=step,
                                 event_kind=RuntimeEventKind.TIMED_OUT,
                                 inputs=upstream_by_step[step.step_id],
+                                external_input_artifact_ids=(
+                                    external_inputs_by_step[step.step_id]
+                                ),
                                 duration_ms=duration_ms,
                                 error=exc,
                             )
@@ -452,6 +478,9 @@ class DependencyAwareScheduler:
                                 step=step,
                                 event_kind=RuntimeEventKind.FAILED,
                                 inputs=upstream_by_step[step.step_id],
+                                external_input_artifact_ids=(
+                                    external_inputs_by_step[step.step_id]
+                                ),
                                 duration_ms=duration_ms,
                                 error=exc,
                             )
@@ -469,6 +498,9 @@ class DependencyAwareScheduler:
                                 step=step,
                                 event_kind=RuntimeEventKind.COMPLETED,
                                 inputs=upstream_by_step[step.step_id],
+                                external_input_artifact_ids=(
+                                    external_inputs_by_step[step.step_id]
+                                ),
                                 outputs=result.artifacts,
                                 duration_ms=duration_ms,
                             )
@@ -477,6 +509,9 @@ class DependencyAwareScheduler:
                                     step=step,
                                     event_kind=RuntimeEventKind.PUBLISHED,
                                     inputs=upstream_by_step[step.step_id],
+                                    external_input_artifact_ids=(
+                                        external_inputs_by_step[step.step_id]
+                                    ),
                                     outputs=result.artifacts,
                                     duration_ms=0.0,
                                 )

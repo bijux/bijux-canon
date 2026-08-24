@@ -196,6 +196,25 @@ class CanonicalCorpusPreparation:
             rejections=self.rejections,
         )
 
+    def retained_sources(self) -> tuple[CanonicalRetainedSource, ...]:
+        """Re-read and verify admitted source bytes for durable CAS retention."""
+        retained = []
+        for document in sorted(
+            self.documents,
+            key=lambda item: item.admission.source.relative_path,
+        ):
+            source = document.admission.source
+            content = read_current_source(source, document.admission.budgets)
+            retained.append(
+                CanonicalRetainedSource(
+                    relative_path=source.relative_path,
+                    media_type=source.media_type,
+                    content_sha256=source.content_sha256,
+                    content=content,
+                )
+            )
+        return tuple(retained)
+
     def manifest(self) -> dict[str, object]:
         """Return restart-safe source-document input for snapshot assembly."""
         payload: dict[str, object] = {
@@ -209,6 +228,24 @@ class CanonicalCorpusPreparation:
             "schema_version": "bijux.canon.ingest.corpus_preparation.v2",
         }
         return {"preparation_id": _identity(payload), **payload}
+
+
+@dataclass(frozen=True, slots=True)
+class CanonicalRetainedSource:
+    """One verified original source payload prepared for immutable retention."""
+
+    relative_path: str
+    media_type: str
+    content_sha256: str
+    content: bytes
+
+    def __post_init__(self) -> None:
+        if not self.relative_path or self.relative_path.startswith("/"):
+            raise ValueError("retained source path must be portable and relative")
+        if hashlib.sha256(self.content).hexdigest() != self.content_sha256:
+            raise ValueError("retained source bytes do not match their identity")
+        if "/" not in self.media_type:
+            raise ValueError("retained source media type is invalid")
 
 
 def assemble_corpus_snapshot_manifest(
@@ -600,6 +637,7 @@ __all__ = [
     "CanonicalIngestResult",
     "CanonicalIngestRuntime",
     "CanonicalCorpusPreparation",
+    "CanonicalRetainedSource",
     "CorpusDiscoveryLimits",
     "CorpusSnapshotConfiguration",
     "assemble_corpus_snapshot_manifest",

@@ -119,6 +119,8 @@ class RuntimeOperationRequest:
     output_policy: RuntimeOutputPolicy | None = None
     replay_attempt_id: str | None = None
     execution_configuration_sha256: str | None = None
+    source_selection_artifact_id: ArtifactID | None = None
+    parent_job_id: str | None = None
 
     def __post_init__(self) -> None:
         if not str(self.request_id).strip() or not self.scope.strip():
@@ -137,6 +139,8 @@ class RuntimeOperationRequest:
             r"[0-9a-f]{64}", self.execution_configuration_sha256
         ) is None:
             raise ValueError("execution configuration identity must be a sha256")
+        if self.parent_job_id is not None and not self.parent_job_id.strip():
+            raise ValueError("parent job identity must not be empty")
         self._validate_operation_inputs()
 
     def _validate_operation_inputs(self) -> None:
@@ -214,6 +218,8 @@ class ConcreteStepInputs:
     replay_attempt_id: str | None = None
     source_attempt_id: str | None = None
     execution_configuration_sha256: str | None = None
+    source_selection_artifact_id: ArtifactID | None = None
+    parent_job_id: str | None = None
 
 
 @dataclass(frozen=True, slots=True)

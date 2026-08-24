@@ -183,6 +183,44 @@ class InspectedFailure:
 
 
 @dataclass(frozen=True, slots=True)
+class InspectedCitationProvenance:
+    """Resolved immutable source and execution lineage for one citation."""
+
+    citation_id: str
+    claim_graph_artifact_id: ArtifactID
+    retrieval_artifact_id: ArtifactID
+    index_artifact_id: ArtifactID
+    corpus_snapshot_artifact_id: ArtifactID
+    source_archive_artifact_id: ArtifactID
+    chunk_id: str
+    document_id: str
+    source_relative_path: str
+    source_content_sha256: str
+    source_byte_spans: tuple[tuple[int, int], ...]
+    model_lock_artifact_id: str | None
+    execution_configuration_sha256: str
+    run_id: str
+    parent_job_id: str | None
+
+
+@dataclass(frozen=True, slots=True)
+class InspectedRunProvenance:
+    """Fail-closed causal provenance resolved from retained Runtime artifacts."""
+
+    status: str
+    run_id: str
+    execution_manifest_artifact_id: ArtifactID
+    execution_configuration_sha256: str
+    parent_job_id: str | None
+    corpus_snapshot_artifact_ids: tuple[ArtifactID, ...]
+    source_archive_artifact_ids: tuple[ArtifactID, ...]
+    index_artifact_ids: tuple[ArtifactID, ...]
+    model_lock_artifact_ids: tuple[str, ...]
+    citation_count: int
+    citations: tuple[InspectedCitationProvenance, ...]
+
+
+@dataclass(frozen=True, slots=True)
 class RuntimeRunInspection:
     """Complete restart-safe view of one selected attempt and run lineage."""
 
@@ -208,6 +246,7 @@ class RuntimeRunInspection:
     budgets: tuple[PersistedInspectionValue, ...]
     checks: tuple[PersistedInspectionValue, ...]
     failures: tuple[InspectedFailure, ...]
+    provenance: InspectedRunProvenance
 
 
 __all__ = [
@@ -219,6 +258,8 @@ __all__ = [
     "InspectedEvent",
     "InspectedEventKind",
     "InspectedFailure",
+    "InspectedCitationProvenance",
+    "InspectedRunProvenance",
     "InspectedRunStatus",
     "InspectedStepStatus",
     "PersistedInspectionValue",

@@ -41,6 +41,7 @@ from bijux_canon_runtime.runtime.inspection.validation import (
     validate_attempt_lineage,
     validate_plan,
 )
+from bijux_canon_runtime.runtime.inspection.provenance import resolve_run_provenance
 from bijux_canon_runtime.runtime.persistence.filesystem_payload_store import (
     PayloadCorruptionError,
 )
@@ -147,6 +148,13 @@ class RuntimeRunInspector:
             for event in events
             if event.error is not None
         )
+        provenance = resolve_run_provenance(
+            run_id=run_id,
+            selected_attempt=selected_attempt,
+            steps=steps,
+            artifacts=artifacts,
+            store=self._store,
+        )
         return RuntimeRunInspection(
             schema_version="bijux.runtime.run-inspection.v1",
             run_id=run_id,
@@ -170,6 +178,7 @@ class RuntimeRunInspector:
             budgets=budgets,
             checks=tuple(checks),
             failures=failures,
+            provenance=provenance,
         )
 
     def read_artifact_payload_page(

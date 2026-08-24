@@ -425,6 +425,33 @@ class CanonicalReasonOperationAdapter:
                 "generation_id": evidence_set.get("generation_id"),
                 "index_artifact_id": evidence_set.get("index_artifact_id"),
                 "mode": "credential-free-rag-v1",
+                "provenance": {
+                    "execution_configuration_sha256": evidence_set.get(
+                        "execution_configuration_sha256"
+                    ),
+                    "execution_manifest_artifact_id": (
+                        None
+                        if context.execution_manifest_artifact_id is None
+                        else str(context.execution_manifest_artifact_id)
+                    ),
+                    "execution_profile": step.inputs.execution_profile.value,
+                    "index_artifact_id": evidence_set.get("index_artifact_id"),
+                    "model_lock_artifact_id": evidence_set.get(
+                        "model_lock_artifact_id"
+                    ),
+                    "parent_job_id": step.inputs.parent_job_id,
+                    "retrieval_artifact_id": str(
+                        retrieval_artifact.descriptor.artifact_id
+                    ),
+                    "run_id": context.run_id,
+                    "schema_version": "bijux.runtime.answer-provenance.v1",
+                    "snapshot_artifact_id": evidence_set.get(
+                        "snapshot_artifact_id"
+                    ),
+                    "source_archive_artifact_id": evidence_set.get(
+                        "source_archive_artifact_id"
+                    ),
+                },
                 "provider": step.inputs.provider,
                 "query": step.inputs.query,
                 "schema_version": "bijux.canon.reason.claim_graph.v1",

@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Mapping
-from dataclasses import fields, is_dataclass
+from dataclasses import fields, is_dataclass, replace
 import re
 from typing import Protocol
 
@@ -124,7 +124,11 @@ def build_runtime_job_handlers(
     ) -> Mapping[str, object]:
         if request.kind is not JobKind.RUN:
             raise ValueError("runtime execution handler received the wrong job kind")
-        return execute(runtime_request_from_payload(request.payload), is_cancelled)
+        operation_request = replace(
+            runtime_request_from_payload(request.payload),
+            parent_job_id=request.job_id,
+        )
+        return execute(operation_request, is_cancelled)
 
     def replay_job(
         request: DurableJobRequest,
