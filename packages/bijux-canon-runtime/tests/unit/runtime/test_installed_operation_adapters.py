@@ -42,6 +42,10 @@ from bijux_canon_index.evaluation import (
 )
 from bijux_canon_index.infra.embeddings.local_model import EmbeddedBatch
 from bijux_canon_runtime.application.request_planner import RuntimeRequestPlanner
+from bijux_canon_runtime.application.operations import (
+    PersistedAnswerEvaluationAdapter,
+    PersistedAnswerEvaluationError,
+)
 from bijux_canon_runtime.model.artifact import AddressedArtifact
 from bijux_canon_runtime.model.execution.request_plan import (
     DagOperation,
@@ -1261,6 +1265,56 @@ def _verify_linked_runs(grounded: _GroundedRuntime) -> None:
         item["schema_id"] == "reason.claim-graph.v1"
         for item in ask_manifest["artifacts"]
     )
+    evaluated = PersistedAnswerEvaluationAdapter().adapt(
+        case_id="content-question",
+        question="What evidence do ancient genomes preserve?",
+        inspection=linked_ask_inspection,
+    )
+    assert evaluated.runtime_run_id == linked_ask_inspection.run_id
+    assert evaluated.runtime_attempt_id == linked_ask_inspection.selected_attempt_id
+    assert evaluated.answer
+    assert evaluated.claims
+    assert evaluated.citations
+    assert all(citation.exact_text for citation in evaluated.citations)
+    assert all(citation.chunk_id for citation in evaluated.citations)
+    assert all(claim.citation_ids for claim in evaluated.claims)
+
+    with pytest.raises(
+        PersistedAnswerEvaluationError,
+        match="question differs",
+    ):
+        PersistedAnswerEvaluationAdapter().adapt(
+            case_id="content-question",
+            question="A different reviewed question",
+            inspection=linked_ask_inspection,
+        )
+
+    claim_graph_artifact = next(
+        item
+        for item in linked_ask_inspection.artifacts
+        if item.schema_id == "reason.claim-graph.v1"
+    )
+    assert isinstance(claim_graph_artifact.json_value, dict)
+    tampered_graph = dict(claim_graph_artifact.json_value)
+    tampered_graph["answer"] = "A replacement answer without matching lineage."
+    tampered_inspection = replace(
+        linked_ask_inspection,
+        artifacts=tuple(
+            replace(item, json_value=tampered_graph)
+            if item.artifact_id == claim_graph_artifact.artifact_id
+            else item
+            for item in linked_ask_inspection.artifacts
+        ),
+    )
+    with pytest.raises(
+        PersistedAnswerEvaluationError,
+        match="content or lineage validation",
+    ):
+        PersistedAnswerEvaluationAdapter().adapt(
+            case_id="content-question",
+            question="What evidence do ancient genomes preserve?",
+            inspection=tampered_inspection,
+        )
 
 
 def _verify_offline_boundaries(grounded: _GroundedRuntime) -> None:

@@ -3,6 +3,11 @@
 
 """Versioned application operations shared by every Runtime transport."""
 
+from bijux_canon_runtime.application.operations.answer_evaluation import (
+    PersistedAnswerEvaluationAdapter,
+    PersistedAnswerEvaluationError,
+)
+
 from bijux_canon_runtime.application.operations.codec import (
     replay_request_from_payload,
     replay_request_payload,
@@ -36,6 +41,8 @@ __all__ = [
     "ApplicationCapabilityError",
     "ApplicationOperation",
     "PageRequest",
+    "PersistedAnswerEvaluationAdapter",
+    "PersistedAnswerEvaluationError",
     "ReplayOperationExecutor",
     "ResourceInspectionExecutor",
     "RetrievalEvaluationExecutor",
