@@ -63,6 +63,7 @@ from bijux_canon_runtime.application.runtime_configuration import (
     resolve_runtime_configuration,
 )
 from bijux_canon_runtime.model.execution.request_plan import (
+    ExecutionProfile,
     RuntimeOperationRequest,
     RuntimeRequestOperation,
 )
@@ -125,7 +126,12 @@ def run_v2_command(
                 resolve_runtime_configuration(environment=os.environ),
                 environment=os.environ,
             )
-            readiness_report = readiness.evaluate(ReadinessCapability(args.operation))
+            readiness_report = readiness.evaluate(
+                ReadinessCapability(args.operation),
+                execution_profile=(
+                    None if args.profile is None else ExecutionProfile(args.profile)
+                ),
+            )
             _write(readiness_report)
             return 0 if readiness_report.ready else EXIT_NOT_READY
         service = _require_services(services)

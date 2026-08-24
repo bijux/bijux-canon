@@ -347,7 +347,7 @@ def _external_input_artifact_ids(step: ConcreteDagStep) -> tuple[ArtifactID, ...
     ):
         result.append(step.inputs.corpus_id)
     if (
-        "index.composite.v1" in contracts
+        {"index.composite.v1", "index.lexical.v1"}.intersection(contracts)
         and step.inputs.index_id is not None
         and not step.depends_on
     ):

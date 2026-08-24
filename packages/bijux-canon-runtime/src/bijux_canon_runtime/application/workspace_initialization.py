@@ -184,6 +184,15 @@ def _record_identity(record: Mapping[str, object]) -> str:
     return _content_sha256(canonical_json_bytes(record))
 
 
+NO_MODEL_LOCK_ARTIFACT_ID = _record_identity(
+    {
+        "capability": "embedding-model",
+        "schema_version": "bijux.runtime.absent-capability.v1",
+        "status": "not-configured",
+    }
+)
+
+
 def _migration_ledger(
     *,
     workspace_id: str,
@@ -462,6 +471,15 @@ def _verify_model(layout: RuntimeWorkspaceLayout) -> str:
             str(exc),
         ) from exc
     return lock.lock_id
+
+
+def _configured_model_lock_id(
+    configuration: RuntimeConfiguration,
+    layout: RuntimeWorkspaceLayout,
+) -> str:
+    if configuration.embedding_model_path is None:
+        return NO_MODEL_LOCK_ARTIFACT_ID
+    return _verify_model(layout)
 
 
 def _state_path(layout: RuntimeWorkspaceLayout, path: Path) -> Path:
@@ -2478,7 +2496,7 @@ def initialize_runtime_workspace(
             "select a non-symlink workspace path",
         )
     layout.root.parent.mkdir(parents=True, exist_ok=True)
-    model_lock_id = _verify_model(layout)
+    model_lock_id = _configured_model_lock_id(configuration, layout)
     try:
         with _initialization_lock(layout):
             if layout.root.exists():
@@ -2570,7 +2588,7 @@ def validate_runtime_workspace(
     if not layout.root.exists():
         return _validate_existing(configuration, layout, "")
     if verify_model:
-        model_lock_id = _verify_model(layout)
+        model_lock_id = _configured_model_lock_id(configuration, layout)
     else:
         manifest = _load_manifest(layout.manifest_path)
         recorded_model_lock_id = manifest.get("model_lock_artifact_id")
@@ -2585,6 +2603,7 @@ def validate_runtime_workspace(
 
 
 __all__ = [
+    "NO_MODEL_LOCK_ARTIFACT_ID",
     "initialize_runtime_workspace",
     "validate_runtime_workspace",
     "WorkspaceInitializationError",

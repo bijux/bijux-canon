@@ -61,6 +61,24 @@ def _configuration(workspace: Path, model: Path, **extra: object):
     )
 
 
+def test_model_free_workspace_initialization_is_repeatable_and_valid(
+    tmp_path: Path,
+) -> None:
+    configuration = resolve_runtime_configuration(
+        explicit={"working_root": tmp_path / "lexical-workspace"}
+    )
+
+    initialized = initialize_runtime_workspace(configuration)
+    validated = validate_runtime_workspace(configuration)
+    repeated = initialize_runtime_workspace(configuration)
+
+    assert initialized.status is WorkspaceInitializationStatus.INITIALIZED
+    assert validated.status is WorkspaceInitializationStatus.UNCHANGED
+    assert repeated == validated
+    assert initialized.model_lock_artifact_id.startswith("sha256:")
+    assert not configuration.require_workspace_layout().model_root.exists()
+
+
 def _install_known_v1_layout(configuration) -> bytes:
     layout = configuration.require_workspace_layout()
     current = json.loads(layout.manifest_path.read_bytes())

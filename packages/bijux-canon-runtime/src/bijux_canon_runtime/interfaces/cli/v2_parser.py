@@ -57,6 +57,16 @@ def add_v2_commands(
         ),
         default="initialized",
     )
+    ready.add_argument(
+        "--profile",
+        choices=(
+            "offline-lexical",
+            "local-hybrid-exact",
+            "local-hybrid-ann",
+            "qdrant-hybrid",
+        ),
+        help="Evaluate dependencies for one exact execution profile.",
+    )
 
     for name in ("ingest", "index", "retrieve", "ask", "research", "run"):
         command = commands.add_parser(name, help=f"Submit the typed {name} operation.")

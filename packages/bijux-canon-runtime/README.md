@@ -275,6 +275,15 @@ directory to a new root is not supported in this release: initialization names
 `layout.root` as incompatible and leaves the moved copy unchanged. Use the
 governed backup/restore path when relocation is required.
 
+The v2 execution profile determines the index contract before work is queued.
+`offline-lexical` workspaces may be initialized with only `--workspace`; their
+index, retrieval, answer, and research plans never contain embedding or dense
+steps, and the standalone SQLite FTS5 artifact retains its corpus snapshot and
+citation lineage. `v2 ready --operation retrieve --profile offline-lexical`
+therefore does not require a model or an active dense generation. Local hybrid
+profiles instead preflight the locked model, installed archive backends, model
+identity, and vector dimension before durable submission.
+
 Installed research traces persist the complete candidate-adjudication reports,
 not merely retrieval hit identifiers. Verification recomputes each report and
 classification identity and requires coverage of every candidate across the

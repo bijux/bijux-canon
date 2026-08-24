@@ -28,6 +28,7 @@ from bijux_canon_runtime.model.execution.request_plan import (
     SUPPORTED_LOCAL_REASON_PROVIDERS,
     ConcreteDagStep,
     DagOperation,
+    ExecutionProfile,
 )
 from bijux_canon_runtime.runtime.execution.installed_operation_adapters import (
     _bounded_output,
@@ -224,9 +225,7 @@ def citation_inputs_from_evidence_set(
                     else None
                 ),
                 publication_date=(
-                    _required_string(
-                        raw_source["publication_date"], "publication_date"
-                    )
+                    _required_string(raw_source["publication_date"], "publication_date")
                     if raw_source.get("publication_date") is not None
                     else None
                 ),
@@ -390,9 +389,12 @@ class CanonicalReasonOperationAdapter:
             selected_evidence_count=len(packet.selected),
             packet_completeness=packet.completeness,
         )
-        grounded = LocalGroundedAnswerService(
-            semantic_encoder=self._semantic_encoder
-        ).answer(
+        semantic_encoder = (
+            None
+            if step.inputs.execution_profile is ExecutionProfile.OFFLINE_LEXICAL
+            else self._semantic_encoder
+        )
+        grounded = LocalGroundedAnswerService(semantic_encoder=semantic_encoder).answer(
             question=step.inputs.query,
             evidence_packet=packet,
             sources=sources,

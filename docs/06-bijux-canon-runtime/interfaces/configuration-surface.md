@@ -4,7 +4,7 @@ audience: mixed
 type: reference
 status: canonical
 owner: bijux-canon-runtime-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-08-24
 ---
 
 # Configuration Surface
@@ -16,7 +16,7 @@ the CLI does not infer missing governance from ambient defaults.
 ## Effective workspace configuration
 
 A local Runtime workspace has one versioned layout. Its manifest binds the
-effective configuration identity, layout identity, locked embedding model,
+effective configuration identity, layout identity, optional locked embedding model,
 CAS, DuckDB execution and durable-job authority, legacy job-import path,
 persistent index root, locks,
 staging, process state, VEX records, operations, backups, and the ordered
@@ -32,6 +32,10 @@ new state there.
 Initialize or validate the layout before admitting documents:
 
 ```bash
+# Offline lexical profile: no model or network/cache access.
+bijux-canon-runtime init --workspace /srv/bijux-canon/research
+
+# Local dense and hybrid profiles: bind a verified materialized model.
 bijux-canon-runtime init \
   --workspace /srv/bijux-canon/research \
   --model /srv/bijux-models/local-minilm-384/<locked-revision>
@@ -39,7 +43,7 @@ bijux-canon-runtime init \
 
 Add `--json` for a stable machine-readable result. A compatible repeat reports
 `unchanged` without rewriting state. A partial workspace, incompatible version
-or configuration, missing/corrupt model, external state override, unsafe path,
+or configuration, configured but missing/corrupt model, external state override, unsafe path,
 or unwritable activation is refused with a typed code and remediation. A known
 older layout is preflighted, backed up, and migrated with manifest-last
 activation; the result names the ordered migration and rollback identity. Init
@@ -65,22 +69,22 @@ jobs, model, index, or backup state for the admitted execution. A configured
 backup derives its database, CAS, and default backup generation root from the
 same workspace layout.
 
-Readiness is capability-specific because ingest does not require an active
-index or a loaded model, while retrieval does. Query it explicitly:
+Readiness is capability- and profile-specific. Query it explicitly:
 
 ```bash
-bijux-canon-runtime v2 ready --operation ingest
-bijux-canon-runtime v2 ready --operation retrieve
-bijux-canon-runtime v2 ready --operation research
+bijux-canon-runtime v2 ready --operation ingest --profile offline-lexical
+bijux-canon-runtime v2 ready --operation retrieve --profile offline-lexical
+bijux-canon-runtime v2 ready --operation research --profile local-hybrid-ann
 ```
 
 `initialized` and `ingest` validate the workspace, exact DuckDB schema, CAS,
-and write authority. `index` additionally verifies the locked local model.
-`retrieve` also requires an active, integrity-checked generation built with
-that exact model lock and dimension. `ask`, `research`, and `run` add provider
-configuration only when the effective profile explicitly enables online
-operation; the mandatory offline profile never requires provider credentials.
-The HTTP equivalent is `GET /api/v2/ready?operation=<name>`.
+and write authority. For `offline-lexical`, index, retrieval, answer, and
+research readiness do not require a model or active dense generation; each
+supplied corpus or lexical artifact is verified before queueing. Dense and
+hybrid readiness additionally requires the locked local model and active
+generation. Submission preflight then validates archive backends, model lock,
+and vector dimension. The HTTP equivalent is
+`GET /api/v2/ready?operation=<name>&profile=<profile>`.
 
 Inspect the complete effective product without opening environment files or
 state databases by hand:

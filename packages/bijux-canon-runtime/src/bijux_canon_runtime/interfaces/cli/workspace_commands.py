@@ -30,7 +30,11 @@ def initialize_workspace(args: argparse.Namespace) -> int:
         configuration = resolve_runtime_configuration(
             environment=os.environ,
             explicit={
-                "embedding_model_path": Path(args.model).expanduser().resolve(),
+                "embedding_model_path": (
+                    None
+                    if args.model is None
+                    else Path(args.model).expanduser().resolve()
+                ),
                 "working_root": args.workspace,
             },
         )
@@ -74,7 +78,10 @@ def initialize_workspace(args: argparse.Namespace) -> int:
     else:
         print(f"Workspace {result.status.value}: {result.workspace_root}")
         print(f"Workspace ID: {result.workspace_id}")
-        print(f"Model lock: {result.model_lock_artifact_id}")
+        print(
+            "Model lock: "
+            + (result.model_lock_artifact_id if args.model is not None else "none")
+        )
         if result.applied_migration_ids:
             print("Applied migrations: " + ", ".join(result.applied_migration_ids))
         if result.rollback_backup_path is not None:

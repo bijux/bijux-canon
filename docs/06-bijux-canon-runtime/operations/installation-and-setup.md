@@ -4,7 +4,7 @@ audience: mixed
 type: how-to
 status: canonical
 owner: bijux-canon-runtime-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-08-24
 ---
 
 # Installation and Setup
@@ -40,10 +40,25 @@ bijux-canon-runtime --help
 
 ## Initialize a local workspace
 
-Materialize a supported embedding model into a durable local cache first. The
-model directory passed to Runtime is the revision directory containing the
-canonical `model.lock.json` and all artifacts named by that lock. Workspace
-initialization is deliberately offline and verifies every locked artifact.
+An offline lexical workspace does not need an embedding model:
+
+```bash
+WORKSPACE=/srv/bijux-canon/research
+bijux-canon-runtime init --workspace "$WORKSPACE" --json
+bijux-canon-runtime v2 ready \
+  --operation index \
+  --profile offline-lexical
+```
+
+Omitting `--model` records that the model capability is not configured; it does
+not access a model cache or network. Lexical ingest, index, retrieval, answer,
+and research requests remain usable in that workspace.
+
+For a local dense or hybrid profile, materialize a supported embedding model
+into a durable local cache first. The model directory passed to Runtime is the
+revision directory containing the canonical `model.lock.json` and all artifacts
+named by that lock. Workspace initialization is offline and verifies every
+locked artifact.
 
 ```bash
 WORKSPACE=/srv/bijux-canon/research
@@ -97,13 +112,15 @@ Verify the exact operation boundary before submitting work:
 ```bash
 BIJUX_CANON_RUNTIME_WORKING_ROOT="$WORKSPACE" \
 BIJUX_CANON_RUNTIME_EMBEDDING_MODEL_PATH="$MODEL" \
-  bijux-canon-runtime v2 ready --operation ingest
+  bijux-canon-runtime v2 ready \
+    --operation retrieve \
+    --profile local-hybrid-ann
 ```
 
-A new workspace is ready for ingest before it has an active index. Retrieval,
-answering, and research readiness remain degraded until a verified generation
-is active; this is an actionable capability result, not a process-health
-failure.
+A new workspace is ready for ingest before it has an index. Profile-specific
+readiness reports only shared workspace dependencies for `offline-lexical`;
+the supplied lexical artifact is validated immediately before submission.
+Hybrid readiness additionally requires a verified dense generation and model.
 
 Install `bijux-canon` or `agentic-flows` only when an application still needs a
 compatibility import or command. New code should install the canonical runtime.

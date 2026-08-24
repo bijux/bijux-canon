@@ -35,10 +35,10 @@ def build_parser(*, prog_name: str) -> argparse.ArgumentParser:
     init_parser.add_argument("--workspace", required=True)
     init_parser.add_argument(
         "--model",
-        required=True,
         help=(
-            "Path to a materialized model directory containing model.lock.json; "
-            "relative paths resolve from the calling directory."
+            "Optional materialized model directory containing model.lock.json; "
+            "omit it for an offline lexical workspace. Relative paths resolve "
+            "from the calling directory."
         ),
     )
     init_parser.add_argument("--json", action="store_true")

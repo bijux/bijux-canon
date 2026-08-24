@@ -73,6 +73,14 @@ class RuntimeOperationExecutor(Protocol):
         ...
 
 
+class RuntimeOperationPreflight(Protocol):
+    """Validate an operation's installed capabilities before durable queueing."""
+
+    def __call__(self, request: RuntimeOperationRequest) -> None:
+        """Raise an actionable capability error before the job is persisted."""
+        ...
+
+
 class ReplayOperationExecutor(Protocol):
     """Execute one reconstructed replay request for a durable worker."""
 
@@ -162,6 +170,7 @@ class RuntimeApplicationServicesV2:
         corpus_inspector: ResourceInspectionExecutor | None = None,
         index_inspector: ResourceInspectionExecutor | None = None,
         retrieval_evaluator: RetrievalEvaluationExecutor | None = None,
+        operation_preflight: RuntimeOperationPreflight | None = None,
         resource_closers: tuple[Callable[[], None], ...] = (),
     ) -> None:
         self._jobs = jobs
@@ -170,6 +179,7 @@ class RuntimeApplicationServicesV2:
         self._corpus_inspector = corpus_inspector
         self._index_inspector = index_inspector
         self._retrieval_evaluator = retrieval_evaluator
+        self._operation_preflight = operation_preflight
         self._resource_closers = resource_closers
         self._closed = False
 
@@ -458,6 +468,8 @@ class RuntimeApplicationServicesV2:
             raise ValueError(
                 f"{operation.value} service requires operation {expected.value}"
             )
+        if self._operation_preflight is not None:
+            self._operation_preflight(request)
         return self._jobs.submit(
             DurableJobRequest(
                 kind=JobKind.RUN,
@@ -483,5 +495,6 @@ __all__ = [
     "ResourceInspectionExecutor",
     "RuntimeApplicationServicesV2",
     "RuntimeOperationExecutor",
+    "RuntimeOperationPreflight",
     "build_runtime_job_handlers",
 ]

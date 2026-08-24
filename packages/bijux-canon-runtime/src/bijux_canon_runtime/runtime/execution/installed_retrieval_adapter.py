@@ -10,12 +10,14 @@ from dataclasses import asdict
 from enum import Enum
 import hashlib
 from pathlib import Path
+import tempfile
 
 from bijux_canon_index.application import (
     CitationLocatorCatalog,
     CitationLocatorRecord,
     CitationLocatorSegment,
     CitationLocatorService,
+    CitationCandidate,
     CitationRetrievalMode,
     CitationSourceMetadata,
     DenseCandidateBatch,
@@ -46,6 +48,7 @@ from bijux_canon_index.domain.metadata_filters import (
     MetadataOperator,
     UserMetadataPredicate,
 )
+from bijux_canon_index.infra.adapters.sqlite.lexical import SQLiteLexicalIndex
 from bijux_canon_runtime.model.artifact import AddressedArtifact, canonical_json_bytes
 from bijux_canon_runtime.model.execution.request_plan import (
     ConcreteDagStep,
@@ -611,6 +614,9 @@ class CanonicalRetrievalOperationAdapter:
             raise StepDispatchError(
                 "qdrant retrieval requires separately admitted service authority"
             )
+        if step.inputs.execution_profile is ExecutionProfile.OFFLINE_LEXICAL:
+            return self._execute_lexical(step, upstream_artifacts, context)
+        profile = ExecutionProfile(step.inputs.execution_profile.value)
         index_artifact = _artifact_input(
             store=self._store,
             upstream=upstream_artifacts,
@@ -634,7 +640,7 @@ class CanonicalRetrievalOperationAdapter:
         passages = _evidence_passage_contexts(snapshot)
         query = step.inputs.query
         top_k = step.inputs.top_k
-        hybrid = step.inputs.execution_profile is not ExecutionProfile.OFFLINE_LEXICAL
+        hybrid = profile is not ExecutionProfile.OFFLINE_LEXICAL
         candidate_limit = (
             self._policy.candidate_limit(top_k)
             if hybrid
@@ -662,13 +668,14 @@ class CanonicalRetrievalOperationAdapter:
         expansion_lexical = []
         vex_record = None
         fallback_action = "none"
-        if step.inputs.execution_profile is ExecutionProfile.OFFLINE_LEXICAL:
+        candidates: tuple[CitationCandidate, ...]
+        if profile is ExecutionProfile.OFFLINE_LEXICAL:
             retrieval_mode = CitationRetrievalMode.lexical
             candidates = citation_candidates_from_lexical(lexical)
         else:
             dense_mode = (
                 DenseCandidateMode.exact
-                if step.inputs.execution_profile is ExecutionProfile.LOCAL_HYBRID_EXACT
+                if profile is ExecutionProfile.LOCAL_HYBRID_EXACT
                 else DenseCandidateMode.ann
             )
             self._vex_store_root.mkdir(parents=True, exist_ok=True)
@@ -893,6 +900,149 @@ class CanonicalRetrievalOperationAdapter:
                         else "insufficient"
                     ),
                     "vex_execution": vex_record,
+                }
+            )
+        )
+        context.raise_if_stopped()
+        return _bounded_output(
+            step=step,
+            contract_id="index.evidence-set.v1",
+            media_type="application/json",
+            payload=payload,
+            upstream=upstream_artifacts,
+            external_dependencies=(
+                () if upstream_artifacts else (index_artifact.descriptor.artifact_id,)
+            ),
+        )
+
+    def _execute_lexical(
+        self,
+        step: ConcreteDagStep,
+        upstream_artifacts: tuple[StepOutputArtifact, ...],
+        context: StepDispatchContext,
+    ) -> tuple[StepOutputArtifact, ...]:
+        """Retrieve from a standalone lexical artifact without model resolution."""
+
+        index_artifact = _artifact_input(
+            store=self._store,
+            upstream=upstream_artifacts,
+            contract_id="index.lexical.v1",
+            fallback_id=step.inputs.index_id,
+        )
+        dependencies = index_artifact.descriptor.dependencies
+        if len(dependencies) != 1:
+            raise StepDispatchError(
+                "standalone lexical index must retain exactly one corpus snapshot"
+            )
+        try:
+            snapshot_artifact = self._store.load(dependencies[0])
+        except KeyError as error:
+            raise StepDispatchError(
+                "lexical index snapshot lineage is unavailable in Runtime CAS"
+            ) from error
+        snapshot = _validated_snapshot(
+            _json_object(snapshot_artifact, "ingest.corpus-snapshot.v1")
+        )
+        catalog = _citation_catalog(snapshot_artifact, snapshot)
+        query = step.inputs.query
+        top_k = step.inputs.top_k
+        if query is None or top_k is None:
+            raise StepDispatchError("lexical retrieval requires query and result bound")
+        candidate_limit = min(1000, max(top_k, top_k * 4))
+        metadata_filter = _retrieval_filter(step)
+        working_root = self._vex_store_root.parent / "operations"
+        working_root.mkdir(parents=True, exist_ok=True)
+        with tempfile.TemporaryDirectory(
+            prefix=".lexical-retrieval-",
+            dir=working_root,
+        ) as work:
+            segment_path = Path(work) / "lexical.sqlite"
+            segment_path.write_bytes(index_artifact.canonical_bytes)
+            with SQLiteLexicalIndex(segment_path) as segment:
+                generation_id = segment.manifest.generation_id
+                chunk_count = segment.manifest.chunk_count
+                chunk_set_sha256 = segment.manifest.chunk_set_sha256
+                tokenizer_sha256 = segment.manifest.tokenizer_configuration_sha256
+            authorization_scope = _retrieval_authorization_scope(
+                generation_id=generation_id,
+                catalog=catalog,
+            )
+            lexical = self._lexical.generate_from_segment(
+                segment_path,
+                query,
+                generation_id=generation_id,
+                top_k=top_k,
+                candidate_limit=candidate_limit,
+                metadata_filter=metadata_filter,
+                authorization_scope=authorization_scope,
+            )
+            candidates = citation_candidates_from_lexical(lexical)
+            resolution = self._locators.resolve(
+                candidates,
+                generation_id=generation_id,
+                query_text_sha256=lexical.query_text_sha256,
+                retrieval_mode=CitationRetrievalMode.lexical,
+                catalog=catalog,
+                lexical_segment_path=segment_path,
+            )
+        payload = canonical_json_bytes(
+            _json_value(
+                {
+                    "authorization_scope_id": authorization_scope.artifact_id,
+                    "content_trust": "untrusted-source-text",
+                    "filters": {
+                        "document_ids": list(
+                            ()
+                            if step.inputs.filters is None
+                            else step.inputs.filters.document_ids
+                        ),
+                        "source_uris": list(
+                            ()
+                            if step.inputs.filters is None
+                            else step.inputs.filters.source_uris
+                        ),
+                    },
+                    "generation_id": generation_id,
+                    "hits": [asdict(hit) for hit in resolution.hits],
+                    "index_artifact_id": str(index_artifact.descriptor.artifact_id),
+                    "locator_catalog_id": resolution.locator_catalog_id,
+                    "query_text_sha256": lexical.query_text_sha256,
+                    "requested_retrieval_mode": step.inputs.execution_profile.value,
+                    "retrieval": {
+                        "dense": None,
+                        "dense_attempts": [],
+                        "fallback_action": "none",
+                        "fusion": None,
+                        "lexical": asdict(lexical),
+                        "lexical_expansions": [],
+                        "policy": self._policy.record(top_k=top_k),
+                        "query_plan": None,
+                        "rerank": None,
+                        "vex_attempts": [],
+                    },
+                    "refusal": None,
+                    "resource_reuse": {
+                        "archive_content_sha256": hashlib.sha256(
+                            index_artifact.canonical_bytes
+                        ).hexdigest(),
+                        "archive_preparation_ms": 0.0,
+                        "archive_status": "verified-standalone",
+                        "embedding": None,
+                        "generation": {
+                            "chunk_count": chunk_count,
+                            "chunk_set_sha256": chunk_set_sha256,
+                            "load_count": 1,
+                            "tokenizer_configuration_sha256": tokenizer_sha256,
+                        },
+                        "schema_version": "bijux.canon.index.resource_reuse.v1",
+                    },
+                    "retrieval_mode": CitationRetrievalMode.lexical.value,
+                    "schema_version": "bijux.canon.index.evidence_set.v1",
+                    "snapshot_artifact_id": str(
+                        snapshot_artifact.descriptor.artifact_id
+                    ),
+                    "status": "success" if resolution.hits else "insufficient",
+                    "vex_execution": None,
                 }
             )
         )

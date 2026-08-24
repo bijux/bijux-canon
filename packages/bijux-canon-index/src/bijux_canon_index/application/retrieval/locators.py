@@ -14,8 +14,13 @@ from pathlib import Path
 
 from bijux_canon_index.application.index_activation import IndexGenerationRegistry
 from bijux_canon_index.application.index_audit import IndexCompatibility
+from bijux_canon_index.application.index_generation import AdmittedIndexChunk
 from bijux_canon_index.application.index_resource_cache import (
     IndexGenerationResourceCache,
+)
+from bijux_canon_index.infra.adapters.sqlite.lexical import (
+    LexicalChunk,
+    SQLiteLexicalIndex,
 )
 
 from .dense import DenseCandidateBatch, DenseCandidateMode, DenseCandidateOutcome
@@ -705,6 +710,7 @@ class CitationLocatorService:
         query_text_sha256: str,
         retrieval_mode: CitationRetrievalMode,
         catalog: CitationLocatorCatalog,
+        lexical_segment_path: str | Path | None = None,
     ) -> CitationResolutionBatch:
         """Resolve every candidate exactly once or refuse the whole result."""
 
@@ -758,19 +764,31 @@ class CitationLocatorService:
                 "citation locator catalog contains duplicate chunk mappings",
             )
 
-        with self._registry.lease(generation_id) as generation:
-            manifest = generation.manifest
-            if manifest.generation_id != generation_id:
-                raise CitationResolutionError(
-                    CitationResolutionErrorCode.generation_mismatch,
-                    "opened index generation identity changed",
-                )
-            if manifest.snapshot_artifact_id != catalog.snapshot_artifact_id:
-                raise CitationResolutionError(
-                    CitationResolutionErrorCode.generation_mismatch,
-                    "locator catalog snapshot does not match index generation",
-                )
-            admitted = {chunk.chunk_id: chunk for chunk in generation.admitted_chunks()}
+        admitted: dict[str, AdmittedIndexChunk | LexicalChunk]
+        if lexical_segment_path is None:
+            with self._registry.lease(generation_id) as generation:
+                manifest = generation.manifest
+                if manifest.generation_id != generation_id:
+                    raise CitationResolutionError(
+                        CitationResolutionErrorCode.generation_mismatch,
+                        "opened index generation identity changed",
+                    )
+                if manifest.snapshot_artifact_id != catalog.snapshot_artifact_id:
+                    raise CitationResolutionError(
+                        CitationResolutionErrorCode.generation_mismatch,
+                        "locator catalog snapshot does not match index generation",
+                    )
+                admitted = {
+                    chunk.chunk_id: chunk for chunk in generation.admitted_chunks()
+                }
+        else:
+            with SQLiteLexicalIndex(lexical_segment_path) as lexical:
+                if lexical.manifest.generation_id != generation_id:
+                    raise CitationResolutionError(
+                        CitationResolutionErrorCode.generation_mismatch,
+                        "standalone lexical generation identity changed",
+                    )
+                admitted = {chunk.chunk_id: chunk for chunk in lexical.chunks()}
 
         hits = []
         for candidate in candidates:

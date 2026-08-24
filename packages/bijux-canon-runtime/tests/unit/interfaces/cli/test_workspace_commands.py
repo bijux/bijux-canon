@@ -47,6 +47,23 @@ def test_parser_exposes_documented_workspace_init() -> None:
     assert args.json is True
 
 
+def test_cli_initializes_offline_lexical_workspace_without_model(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    workspace = tmp_path / "lexical-workspace"
+    args = build_parser(prog_name="bijux-canon-runtime").parse_args(
+        ["init", "--workspace", str(workspace), "--json"]
+    )
+
+    assert initialize_workspace(args) == 0
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["status"] == "initialized"
+    assert payload["model_lock_artifact_id"].startswith("sha256:")
+    assert not (workspace / "models").exists()
+
+
 def test_cli_entrypoint_routes_workspace_init(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

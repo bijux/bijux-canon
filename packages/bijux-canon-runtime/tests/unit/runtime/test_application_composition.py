@@ -15,6 +15,11 @@ import threading
 import duckdb
 import pytest
 
+from bijux_canon_index.application import (
+    AdmittedIndexChunk,
+    IndexBuildLimits,
+    IndexService,
+)
 from bijux_canon_index.domain.embedding import LOCAL_MINILM_PROFILE
 from bijux_canon_index.infra.embeddings.model_cache import (
     load_model_lock,
@@ -29,11 +34,14 @@ from bijux_canon_runtime.application.workspace_initialization import (
     initialize_runtime_workspace,
 )
 from bijux_canon_runtime.model.execution.request_plan import (
+    DagOperation,
     ExecutionProfile,
     RuntimeOperationRequest,
+    RuntimeOutputPolicy,
     RuntimeRequestBudget,
     RuntimeRequestOperation,
 )
+from bijux_canon_runtime.model.artifact import AddressedArtifact
 from bijux_canon_runtime.ontology.ids import ArtifactID, RequestID
 from bijux_canon_runtime.ontology.public import ReplayMode
 from bijux_canon_runtime.runtime.execution.application_composition import (
@@ -41,6 +49,12 @@ from bijux_canon_runtime.runtime.execution.application_composition import (
 )
 from bijux_canon_runtime.runtime.execution import application_composition
 from bijux_canon_runtime.runtime.execution.durable_jobs import JobStatus
+from bijux_canon_runtime.runtime.persistence.authoritative_payload_store import (
+    AuthoritativeArtifactPayloadStore,
+)
+from bijux_canon_runtime.runtime.persistence.filesystem_payload_store import (
+    AtomicFilesystemArtifactPayloadStore,
+)
 
 
 def _materialized_model(tmp_path: Path) -> Path:
@@ -158,9 +172,9 @@ def test_composed_corpus_job_survives_application_restart_without_model_load(
         f"{layout.job_store_path.as_uri()}?mode=ro",
         uri=True,
     ) as legacy_jobs:
-        assert legacy_jobs.execute(
-            "SELECT count(*) FROM runtime_jobs"
-        ).fetchone() == (0,)
+        assert legacy_jobs.execute("SELECT count(*) FROM runtime_jobs").fetchone() == (
+            0,
+        )
     lock = load_model_lock(layout.model_lock_path)
     (layout.model_root / lock.artifacts[0].path).unlink()
 
@@ -171,6 +185,141 @@ def test_composed_corpus_job_survives_application_restart_without_model_load(
         assert restarted.status(submitted.job_id).status is JobStatus.SUCCEEDED
         assert restarted.result(submitted.job_id) == result
         assert restarted.inspect(str(result["run_id"])) == inspection
+
+
+def test_installed_offline_lexical_workflow_never_requires_or_loads_a_model(
+    tmp_path: Path,
+) -> None:
+    source = tmp_path / "papers"
+    source.mkdir()
+    (source / "evidence.md").write_text(
+        "# Ancient DNA\n\nAncient genomes preserve direct population evidence.\n",
+        encoding="utf-8",
+    )
+    configuration = resolve_runtime_configuration(
+        explicit={"working_root": tmp_path / "lexical-workspace"}
+    )
+    initialized = initialize_runtime_workspace(configuration)
+    layout = configuration.require_workspace_layout()
+
+    assert configuration.embedding_model_path is None
+    assert not layout.model_lock_path.exists()
+
+    budget = RuntimeRequestBudget(30.0, 10_000_000, max_provider_tokens=1000)
+    output_policy = RuntimeOutputPolicy(True, True, True)
+
+    def completed_result(service, snapshot):
+        completed = service.wait(snapshot.job_id, timeout_seconds=10.0)
+        assert completed.status is JobStatus.SUCCEEDED
+        return service.result(snapshot.job_id)
+
+    with compose_runtime_application_services(
+        configuration=configuration,
+        max_workers=2,
+    ) as service:
+        corpus = completed_result(
+            service,
+            service.corpus(
+                RuntimeOperationRequest(
+                    request_id=RequestID("offline-corpus"),
+                    operation=RuntimeRequestOperation.CORPUS_PREPARE,
+                    execution_profile=ExecutionProfile.OFFLINE_LEXICAL,
+                    budget=budget,
+                    replay_mode=ReplayMode.STRICT,
+                    scope="local",
+                    source_directory=str(source),
+                ),
+                idempotency_key="offline-corpus",
+            ),
+        )
+        corpus_id = ArtifactID(str(corpus["terminal_artifact_ids"][0]))
+        with pytest.raises(
+            ApplicationCapabilityError,
+            match="requires a verified locked local embedding model",
+        ):
+            service.index(
+                RuntimeOperationRequest(
+                    request_id=RequestID("refused-dense-index"),
+                    operation=RuntimeRequestOperation.INDEX_BUILD,
+                    execution_profile=ExecutionProfile.LOCAL_HYBRID_EXACT,
+                    budget=budget,
+                    replay_mode=ReplayMode.STRICT,
+                    scope="local",
+                    corpus_id=corpus_id,
+                ),
+                idempotency_key="refused-dense-index",
+            )
+        with duckdb.connect(str(layout.database_path), read_only=True) as authority:
+            assert authority.execute(
+                "SELECT count(*) FROM runtime_jobs"
+            ).fetchone() == (1,)
+        indexed = completed_result(
+            service,
+            service.index(
+                RuntimeOperationRequest(
+                    request_id=RequestID("offline-index"),
+                    operation=RuntimeRequestOperation.INDEX_BUILD,
+                    execution_profile=ExecutionProfile.OFFLINE_LEXICAL,
+                    budget=budget,
+                    replay_mode=ReplayMode.STRICT,
+                    scope="local",
+                    corpus_id=corpus_id,
+                ),
+                idempotency_key="offline-index",
+            ),
+        )
+        index_id = ArtifactID(str(indexed["terminal_artifact_ids"][0]))
+        index_report = service.inspect_index(index_id)
+        assert index_report["backend"] == "sqlite-fts5"
+
+        operation_results = []
+        for operation in (
+            RuntimeRequestOperation.RETRIEVE,
+            RuntimeRequestOperation.ASK,
+            RuntimeRequestOperation.RESEARCH,
+        ):
+            request = RuntimeOperationRequest(
+                request_id=RequestID(f"offline-{operation.value}"),
+                operation=operation,
+                execution_profile=ExecutionProfile.OFFLINE_LEXICAL,
+                budget=budget,
+                replay_mode=ReplayMode.STRICT,
+                scope="local",
+                query="What evidence do ancient genomes preserve?",
+                index_id=index_id,
+                top_k=1,
+                provider=(
+                    None
+                    if operation is RuntimeRequestOperation.RETRIEVE
+                    else "credential-free"
+                ),
+                output_policy=(
+                    None
+                    if operation is RuntimeRequestOperation.RETRIEVE
+                    else output_policy
+                ),
+            )
+            submit = {
+                RuntimeRequestOperation.RETRIEVE: service.retrieve,
+                RuntimeRequestOperation.ASK: service.ask,
+                RuntimeRequestOperation.RESEARCH: service.research,
+            }[operation]
+            result = completed_result(
+                service,
+                submit(request, idempotency_key=f"offline-{operation.value}"),
+            )
+            operation_results.append(result)
+
+        for result in (indexed, *operation_results):
+            inspection = service.inspect(str(result["run_id"]))
+            assert all(
+                step.operation
+                not in {DagOperation.EMBED.value, DagOperation.DENSE_INDEX.value}
+                for step in inspection.steps
+            )
+
+    assert initialized.model_lock_artifact_id
+    assert not layout.model_root.exists()
 
 
 def test_composition_refuses_an_uninitialized_effective_workspace(
@@ -187,6 +336,71 @@ def test_composition_refuses_an_uninitialized_effective_workspace(
         compose_runtime_application_services(configuration=configuration)
 
     assert not (tmp_path / "missing-workspace").exists()
+
+
+def test_dense_dimension_mismatch_is_refused_before_job_queueing(
+    tmp_path: Path,
+) -> None:
+    model = _materialized_model(tmp_path)
+    configuration = _initialized_configuration(tmp_path / "workspace", model)
+    layout = configuration.require_workspace_layout()
+    lock = load_model_lock(layout.model_lock_path)
+    source_index = IndexService(tmp_path / "source-index")
+    inspection = source_index.build(
+        (
+            AdmittedIndexChunk(
+                chunk_id="sha256:" + "c" * 64,
+                document_id="sha256:" + "d" * 64,
+                ordinal=0,
+                text="Dimension mismatch evidence.",
+                vector=(1.0, 0.0, 0.0),
+                metadata={},
+            ),
+        ),
+        snapshot_artifact_id="sha256:" + "a" * 64,
+        model_lock_artifact_id=lock.lock_id,
+        limits=IndexBuildLimits(
+            max_chunks=1,
+            max_text_bytes=1000,
+            max_vector_bytes=1000,
+            max_metadata_bytes=1000,
+        ),
+    )
+    archive = source_index.export(inspection.generation_id)
+    index_artifact = AddressedArtifact.from_bytes(
+        archive.canonical_bytes,
+        schema_id="index.composite.v1",
+        media_type="application/vnd.bijux.index-generation+json",
+        producer="bijux-canon-runtime:dense-index",
+    )
+    store = AuthoritativeArtifactPayloadStore(
+        payload_store=AtomicFilesystemArtifactPayloadStore(layout.cas_root),
+        database_path=layout.database_path,
+    )
+    store.put(index_artifact)
+
+    with compose_runtime_application_services(configuration=configuration) as service:
+        with pytest.raises(
+            ApplicationCapabilityError,
+            match="dense index dimension differs",
+        ):
+            service.retrieve(
+                RuntimeOperationRequest(
+                    request_id=RequestID("dimension-mismatch"),
+                    operation=RuntimeRequestOperation.RETRIEVE,
+                    execution_profile=ExecutionProfile.LOCAL_HYBRID_EXACT,
+                    budget=RuntimeRequestBudget(30.0, 10_000_000),
+                    replay_mode=ReplayMode.STRICT,
+                    scope="local",
+                    query="What is retained?",
+                    index_id=index_artifact.descriptor.artifact_id,
+                    top_k=1,
+                ),
+                idempotency_key="dimension-mismatch",
+            )
+
+    with duckdb.connect(str(layout.database_path), read_only=True) as authority:
+        assert authority.execute("SELECT count(*) FROM runtime_jobs").fetchone() == (0,)
 
 
 def test_two_composed_workspaces_cannot_cross_read_or_write(

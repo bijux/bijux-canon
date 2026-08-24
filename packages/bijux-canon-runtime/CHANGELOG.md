@@ -10,6 +10,12 @@ tagged release, including legacy distribution naming where applicable.
 
 ### Changed
 
+- The `offline-lexical` profile now initializes without a model, builds and
+  inspects standalone lexical indexes, and carries those artifacts through
+  retrieval, grounded answers, research, restart-safe runs, and citations.
+- Request planning and readiness are profile-aware. Local dense and hybrid
+  submissions validate the installed model, backend archive, model lock, and
+  vector dimension before a durable job is queued.
 - Workspace format 5 separates logical configuration identity from resolved
   machine paths, migrates format-4 state with a verified rollback backup, and
   reports direct relocation as an explicit field-level incompatibility.

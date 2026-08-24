@@ -23,6 +23,7 @@ from bijux_canon_runtime.application.runtime_configuration import (
 from bijux_canon_runtime.application.workspace_initialization import (
     validate_runtime_workspace,
 )
+from bijux_canon_runtime.model.execution.request_plan import ExecutionProfile
 from bijux_canon_runtime.observability.storage.execution_store import (
     DuckDBExecutionStore,
 )
@@ -155,6 +156,8 @@ class RuntimeReadinessService:
     def evaluate(
         self,
         capability: ReadinessCapability = ReadinessCapability.INITIALIZED,
+        *,
+        execution_profile: ExecutionProfile | None = None,
     ) -> ReadinessReport:
         """Return all required dependency verdicts without hidden allocation."""
         if not isinstance(capability, ReadinessCapability):
@@ -162,7 +165,19 @@ class RuntimeReadinessService:
         layout = self._configuration.workspace_layout
         generation: object | None = None
         checks: list[ReadinessCheck] = []
-        for name in _CAPABILITY_CHECKS[capability]:
+        required_checks = _CAPABILITY_CHECKS[capability]
+        if execution_profile is ExecutionProfile.OFFLINE_LEXICAL:
+            required_checks = tuple(
+                name
+                for name in required_checks
+                if name
+                not in {
+                    ReadinessCheckName.ACTIVE_GENERATION,
+                    ReadinessCheckName.MODEL,
+                    ReadinessCheckName.PROVIDER,
+                }
+            )
+        for name in required_checks:
             if name is ReadinessCheckName.WORKSPACE:
                 check = self._workspace_check(layout)
             elif name is ReadinessCheckName.SCHEMA:

@@ -14,6 +14,7 @@ from bijux_canon_runtime.model.execution.request_plan import (
     ConcreteDagStep,
     ConcreteStepInputs,
     DagOperation,
+    ExecutionProfile,
     RuntimeOperationRequest,
     RuntimeRequestOperation,
     RuntimeRequestPlan,
@@ -82,6 +83,7 @@ class RuntimeRequestPlanner:
 
     @staticmethod
     def _specs(request: RuntimeOperationRequest) -> tuple[_StepSpec, ...]:
+        lexical_only = request.execution_profile is ExecutionProfile.OFFLINE_LEXICAL
         ingest = _StepSpec(
             "ingest",
             DagOperation.INGEST,
@@ -117,18 +119,19 @@ class RuntimeRequestPlanner:
             ("index.embedding-matrix.v1", "index.lexical.v1"),
             ("index.composite.v1",),
         )
+        index_contract = "index.lexical.v1" if lexical_only else "index.composite.v1"
         retrieve_from_existing = _StepSpec(
             "retrieve",
             DagOperation.RETRIEVE,
             (),
-            ("index.composite.v1",),
+            (index_contract,),
             ("index.evidence-set.v1",),
         )
         retrieve_from_build = _StepSpec(
             "retrieve",
             DagOperation.RETRIEVE,
-            ("dense_index",),
-            ("index.composite.v1",),
+            (("lexical_index",) if lexical_only else ("dense_index",)),
+            (index_contract,),
             ("index.evidence-set.v1",),
         )
         reason = _StepSpec(
@@ -176,7 +179,7 @@ class RuntimeRequestPlanner:
         if request.operation is RuntimeRequestOperation.CORPUS_PREPARE:
             return (ingest, snapshot)
         if request.operation is RuntimeRequestOperation.INDEX_BUILD:
-            return (embed, lexical, dense)
+            return (lexical,) if lexical_only else (embed, lexical, dense)
         if request.operation is RuntimeRequestOperation.RETRIEVE:
             return (retrieve_from_existing,)
         if request.operation is RuntimeRequestOperation.ASK:
@@ -212,9 +215,13 @@ class RuntimeRequestPlanner:
                 lexical.input_contracts,
                 lexical.output_contracts,
             )
-            prefix = (ingest, snapshot, embed, lexical, dense)
+            prefix = (
+                (ingest, snapshot, lexical)
+                if lexical_only
+                else (ingest, snapshot, embed, lexical, dense)
+            )
         else:
-            prefix = (embed, lexical, dense)
+            prefix = (lexical,) if lexical_only else (embed, lexical, dense)
         return (
             *prefix,
             retrieve_from_build,
@@ -237,9 +244,7 @@ class RuntimeRequestPlanner:
             budget=request.budget,
             replay_mode=request.replay_mode,
             scope=request.scope,
-            execution_configuration_sha256=(
-                request.execution_configuration_sha256
-            ),
+            execution_configuration_sha256=(request.execution_configuration_sha256),
             replay_attempt_id=request.replay_attempt_id,
             source_attempt_id=request.replay_attempt_id,
         )

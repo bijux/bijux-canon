@@ -135,6 +135,7 @@ class _IndexedRuntime:
     planner: RuntimeRequestPlanner
     store: AtomicFilesystemArtifactPayloadStore
     index_service: IndexService
+    lexical: StepOutputArtifact
     composite: StepOutputArtifact
     retry: Mapping[str, object]
 
@@ -308,12 +309,14 @@ def _build_indexed_runtime(tmp_path: Path) -> _IndexedRuntime:
     assert index_results[1].artifacts[0].artifact.descriptor.dependencies == (
         snapshot.artifact_id,
     )
+    lexical = index_results[1].artifacts[0]
     composite = index_results[-1].artifacts[0]
     archive = IndexGenerationArchive.from_bytes(composite.payload)
     assert composite.contract_id == "index.composite.v1"
     assert archive.generation_id == index_service.inspect().generation_id
     assert tuple((tmp_path / "runtime" / "operations").iterdir()) == ()
 
+    store.put(lexical.artifact)
     store.put(composite.artifact)
     restarted_store = AtomicFilesystemArtifactPayloadStore(store.root)
     assert restarted_store.load(composite.artifact_id) == composite.artifact
@@ -356,6 +359,7 @@ def _build_indexed_runtime(tmp_path: Path) -> _IndexedRuntime:
         planner=planner,
         store=store,
         index_service=index_service,
+        lexical=lexical,
         composite=composite,
         retry=retry,
     )
@@ -464,8 +468,9 @@ def _retrieve_and_reason(indexed: _IndexedRuntime) -> _GroundedRuntime:
     assert claim_graph["synthesis_status"] == "answered"
     assert claim_graph["evidence_state"]["retrieval_status"] == "success"
     assert claim_graph["evidence_state"]["vex_status"] == "verified"
-    assert claim_graph["grounding_admission"]["evidence_state_artifact_id"] == (
-        claim_graph["evidence_state"]["artifact_id"]
+    assert (
+        claim_graph["grounding_admission"]["evidence_state_artifact_id"]
+        == (claim_graph["evidence_state"]["artifact_id"])
     )
     assert "Ancient genomes preserve" in claim_graph["answer"]
     assert "Source-supported findings:" in claim_graph["answer"]
@@ -490,8 +495,12 @@ def _retrieve_and_reason(indexed: _IndexedRuntime) -> _GroundedRuntime:
         )
     presentation = claim_graph["citation_presentation"]
     assert len(presentation["entries"]) == len(claim_graph["citations"]["links"])
-    assert all(entry["exact_quote"] in segment_hashes for entry in presentation["entries"])
-    assert all(entry["document_id"] == hit["document_id"] for entry in presentation["entries"])
+    assert all(
+        entry["exact_quote"] in segment_hashes for entry in presentation["entries"]
+    )
+    assert all(
+        entry["document_id"] == hit["document_id"] for entry in presentation["entries"]
+    )
     assert claim_graph["citation_verification"]["integrity_verified_links"] == len(
         claim_graph["citations"]["links"]
     )
@@ -946,8 +955,8 @@ def _verify_reason_and_agent(grounded: _GroundedRuntime) -> None:
         set(research_trace["research_candidates"])
     )
     assert convergence_evidence["answer_verification_status"] == "abstained"
-    assert convergence_evidence["answer_revision_artifact_id"] == (
-        revision["artifact_id"]
+    assert (
+        convergence_evidence["answer_revision_artifact_id"] == (revision["artifact_id"])
     )
     assert convergence_evidence["marginal_evidence_values"] == [1.0]
     assert [event["role"] for event in research_trace["causal_events"]] == [
@@ -966,8 +975,9 @@ def _verify_reason_and_agent(grounded: _GroundedRuntime) -> None:
         "limit": 2,
         "used": 1,
     }
-    assert research_trace["budget_policy_artifact_id"] == (
-        research_trace["budget_policy"]["artifact_id"]
+    assert (
+        research_trace["budget_policy_artifact_id"]
+        == (research_trace["budget_policy"]["artifact_id"])
     )
     assert research_trace["budget_usage"]["retrievals"] == 1
     assert research_trace["budget_usage"]["documents"] == len(
@@ -1029,9 +1039,10 @@ def _verify_reason_and_agent(grounded: _GroundedRuntime) -> None:
         research_verification_step,
         (research.artifacts[0],),
     )
-    assert "semantic-convergence-evidence" in json.loads(
-        verified_research.artifacts[0].payload
-    )["checks"]
+    assert (
+        "semantic-convergence-evidence"
+        in json.loads(verified_research.artifacts[0].payload)["checks"]
+    )
 
     time_limited_agent_step = replace(
         agent_step,
@@ -1053,9 +1064,11 @@ def _verify_reason_and_agent(grounded: _GroundedRuntime) -> None:
     time_limited_trace = json.loads(time_limited_research.artifacts[0].payload)
     assert time_limited_trace["status"] == "incomplete_budget"
     assert time_limited_trace["convergence_status"] == "budget_exhausted"
-    assert time_limited_trace["research_outcome"][
-        "exhausted_budget_dimensions"
-    ] == ["elapsed_ms", "tool_calls", "retrievals"]
+    assert time_limited_trace["research_outcome"]["exhausted_budget_dimensions"] == [
+        "elapsed_ms",
+        "tool_calls",
+        "retrievals",
+    ]
     verified_time_limited = OperationDispatcher(
         (CanonicalVerificationOperationAdapter(),)
     ).dispatch(
@@ -1338,6 +1351,7 @@ def _verify_offline_boundaries(grounded: _GroundedRuntime) -> None:
         retrieval_request,
         request_id=RequestID("request-retrieve-filtered"),
         execution_profile=ExecutionProfile.OFFLINE_LEXICAL,
+        index_id=indexed.lexical.artifact_id,
         filters=RetrievalFilters(document_ids=("missing-document",)),
     )
     offline_result = OperationDispatcher(
@@ -1353,7 +1367,7 @@ def _verify_offline_boundaries(grounded: _GroundedRuntime) -> None:
     offline = json.loads(offline_result.artifacts[0].payload)
     assert offline["status"] == "insufficient"
     assert offline["retrieval_mode"] == "lexical"
-    assert offline["resource_reuse"]["archive_status"] == "warm"
+    assert offline["resource_reuse"]["archive_status"] == "verified-standalone"
     assert offline["resource_reuse"]["generation"]["load_count"] == 1
     assert offline["hits"] == []
     scope_id = offline["authorization_scope_id"]

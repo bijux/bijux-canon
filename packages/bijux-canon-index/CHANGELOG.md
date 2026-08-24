@@ -9,6 +9,9 @@ tagged release, including legacy distribution naming where applicable.
 
 ### Changed
 
+- Standalone verified SQLite FTS5 segments can now produce bounded lexical
+  candidates and resolve ingest-owned citation locators without a dense
+  generation or embedding model.
 - Added stable generation interfaces, typed backend contracts, and installed
   production search dependencies.
 - Added qrel-based retrieval evaluation, retrieval-mode comparison, and

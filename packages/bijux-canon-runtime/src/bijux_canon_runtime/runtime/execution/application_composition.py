@@ -12,6 +12,7 @@ import hashlib
 import json
 from pathlib import Path
 import threading
+import tempfile
 from time import perf_counter
 
 from bijux_canon_index.application import (
@@ -25,6 +26,7 @@ from bijux_canon_index.infra.embeddings.local_model import (
     LocalEmbeddingModel,
 )
 from bijux_canon_index.infra.embeddings.model_cache import load_model_lock
+from bijux_canon_index.infra.adapters.sqlite.lexical import SQLiteLexicalIndex
 from bijux_canon_runtime.application.operations import (
     ApplicationCapabilityError,
     ReplayOperationRequest,
@@ -32,6 +34,7 @@ from bijux_canon_runtime.application.operations import (
     build_runtime_job_handlers,
 )
 from bijux_canon_runtime.application.runtime_configuration import RuntimeConfiguration
+from bijux_canon_runtime.application.profile_preflight import InstalledProfilePreflight
 from bijux_canon_runtime.application.workspace_initialization import (
     validate_runtime_workspace,
 )
@@ -294,8 +297,42 @@ def compose_runtime_application_services(
 
     def inspect_index(artifact_id: ArtifactID) -> dict[str, object]:
         artifact = store.load(artifact_id)
+        if artifact.descriptor.schema_id == "index.lexical.v1":
+            layout.operations_root.mkdir(parents=True, exist_ok=True)
+            with tempfile.TemporaryDirectory(
+                prefix=".lexical-inspection-",
+                dir=layout.operations_root,
+            ) as work:
+                path = Path(work) / "lexical.sqlite"
+                path.write_bytes(artifact.canonical_bytes)
+                with SQLiteLexicalIndex(path) as lexical:
+                    manifest = lexical.manifest
+                    return {
+                        "artifact_id": str(artifact_id),
+                        "backend": "sqlite-fts5",
+                        "chunk_count": manifest.chunk_count,
+                        "chunk_set_sha256": manifest.chunk_set_sha256,
+                        "generation_id": manifest.generation_id,
+                        "schema_version": "bijux.canon.index.lexical_inspection.v1",
+                        "segments": (
+                            {
+                                "backend": "sqlite-fts5",
+                                "item_count": manifest.chunk_count,
+                                "segment_generation_id": manifest.generation_id,
+                            },
+                        ),
+                        "snapshot_artifact_id": (
+                            str(artifact.descriptor.dependencies[0])
+                            if len(artifact.descriptor.dependencies) == 1
+                            else None
+                        ),
+                        "tokenizer": manifest.tokenizer,
+                        "tokenizer_configuration_sha256": (
+                            manifest.tokenizer_configuration_sha256
+                        ),
+                    }
         if artifact.descriptor.schema_id != "index.composite.v1":
-            raise ValueError("artifact is not a composite index")
+            raise ValueError("artifact is not a supported index")
         archive = IndexGenerationArchive.from_bytes(artifact.canonical_bytes)
         report = index.admit_archive(archive.canonical_bytes)
         return asdict(report)
@@ -308,6 +345,7 @@ def compose_runtime_application_services(
         retrieval_evaluator=PublicRetrievalEvaluator(
             installed_retrieval_evaluation.execute
         ).evaluate,
+        operation_preflight=InstalledProfilePreflight(layout=layout, store=store),
         resource_closers=(embedding.close, index.close),
     )
 

@@ -37,6 +37,7 @@ from bijux_canon_runtime.interfaces.cli.v2_commands import (
     EXIT_NOT_READY,
     run_v2_command,
 )
+from bijux_canon_runtime.model.execution.request_plan import ExecutionProfile
 
 
 def _materialized_model(tmp_path: Path) -> Path:
@@ -116,10 +117,12 @@ def _cli(
     capability: ReadinessCapability,
     *,
     readiness: RuntimeReadinessService,
+    profile: ExecutionProfile | None = None,
 ) -> tuple[int, dict[str, object]]:
-    args = build_parser(prog_name="bijux-canon-runtime").parse_args(
-        ["v2", "ready", "--operation", capability.value]
-    )
+    arguments = ["v2", "ready", "--operation", capability.value]
+    if profile is not None:
+        arguments.extend(("--profile", profile.value))
+    args = build_parser(prog_name="bijux-canon-runtime").parse_args(arguments)
     stdout, stderr = StringIO(), StringIO()
     with redirect_stdout(stdout), redirect_stderr(stderr):
         code = run_v2_command(
@@ -183,6 +186,39 @@ def test_ingest_remains_ready_when_the_optional_model_is_missing(
     assert ingest.ready
     assert not index.ready
     assert index.reasons == (ReadinessReason.MODEL_CONFIGURATION_UNAVAILABLE,)
+
+
+def test_offline_lexical_readiness_does_not_require_model_or_dense_generation(
+    tmp_path: Path,
+) -> None:
+    configuration = resolve_runtime_configuration(
+        explicit={"working_root": tmp_path / "lexical-workspace"}
+    )
+    initialize_runtime_workspace(configuration)
+
+    report = RuntimeReadinessService(configuration).evaluate(
+        ReadinessCapability.RETRIEVE,
+        execution_profile=ExecutionProfile.OFFLINE_LEXICAL,
+    )
+
+    assert report.ready
+    assert all(
+        check.name.value not in {"active-generation", "model-configuration"}
+        for check in report.checks
+    )
+
+    cli_code, cli_payload = _cli(
+        ReadinessCapability.RETRIEVE,
+        readiness=RuntimeReadinessService(configuration),
+        profile=ExecutionProfile.OFFLINE_LEXICAL,
+    )
+    http = TestClient(create_app(readiness=RuntimeReadinessService(configuration))).get(
+        "/api/v2/ready",
+        params={"operation": "retrieve", "profile": "offline-lexical"},
+        headers={"Bijux-API-Version": "v2"},
+    )
+    assert cli_code == 0 and http.status_code == 200
+    assert cli_payload == http.json()
 
 
 def test_retrieval_requires_an_active_generation_bound_to_the_model(

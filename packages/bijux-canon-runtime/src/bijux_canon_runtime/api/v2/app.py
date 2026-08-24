@@ -60,6 +60,7 @@ from bijux_canon_runtime.application.readiness import (
     RuntimeReadinessService,
     runtime_liveness,
 )
+from bijux_canon_runtime.model.execution.request_plan import ExecutionProfile
 from bijux_canon_runtime.application.runtime_configuration import (
     RuntimeConfiguration,
     resolve_runtime_configuration,
@@ -319,8 +320,9 @@ def create_app(
         operation: Annotated[ReadinessCapability, Query()] = (
             ReadinessCapability.INITIALIZED
         ),
+        profile: Annotated[ExecutionProfile | None, Query()] = None,
     ) -> JSONResponse:
-        report = readiness_service.evaluate(operation)
+        report = readiness_service.evaluate(operation, execution_profile=profile)
         payload = ReadinessResponse.model_validate(asdict(report)).model_dump(
             mode="json"
         )

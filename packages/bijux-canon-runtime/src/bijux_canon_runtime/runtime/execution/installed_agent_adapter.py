@@ -69,6 +69,7 @@ from bijux_canon_runtime.model.artifact import canonical_json_bytes
 from bijux_canon_runtime.model.execution.request_plan import (
     ConcreteDagStep,
     DagOperation,
+    ExecutionProfile,
     RetrievalFilters,
 )
 from bijux_canon_runtime.ontology.ids import ArtifactID
@@ -154,7 +155,14 @@ class _IndexCounterevidencePort:
             step_id=f"counterevidence-{len(self.outputs) + 1}",
             operation=DagOperation.RETRIEVE,
             depends_on=(),
-            input_artifact_contract_ids=("index.composite.v1",),
+            input_artifact_contract_ids=(
+                (
+                    "index.lexical.v1"
+                    if self._step.inputs.execution_profile
+                    is ExecutionProfile.OFFLINE_LEXICAL
+                    else "index.composite.v1"
+                ),
+            ),
             output_artifact_contract_ids=("index.evidence-set.v1",),
             inputs=replace(
                 self._step.inputs,
@@ -295,13 +303,10 @@ class _ReasonResearchPort:
                 for item in record.classifications
             )
             candidate_ids = tuple(
-                dict.fromkeys(
-                    item.evidence_artifact_id for item in classifications
-                )
+                dict.fromkeys(item.evidence_artifact_id for item in classifications)
             )
             candidates = tuple(
-                self._retrieval.evidence[artifact_id]
-                for artifact_id in candidate_ids
+                self._retrieval.evidence[artifact_id] for artifact_id in candidate_ids
             )
             raw_sources = raw.get("sources")
             if not isinstance(raw_sources, list):
@@ -954,12 +959,8 @@ class CanonicalAgentOperationAdapter:
             budget_limits=BudgetDimensions(
                 iterations=convergence_policy.max_tool_calls * 2 + 2,
                 retrievals=convergence_policy.max_tool_calls,
-                documents=(
-                    convergence_policy.max_tool_calls * counter_policy.top_k
-                ),
-                candidates=(
-                    convergence_policy.max_tool_calls * counter_policy.top_k
-                ),
+                documents=(convergence_policy.max_tool_calls * counter_policy.top_k),
+                candidates=(convergence_policy.max_tool_calls * counter_policy.top_k),
                 evidence_items=(
                     convergence_policy.max_tool_calls * counter_policy.top_k
                 ),
@@ -1014,9 +1015,7 @@ class CanonicalAgentOperationAdapter:
                     else dict(research.revision.record)
                 ),
                 "answer_revision_artifact_id": (
-                    None
-                    if research.revision is None
-                    else research.revision.artifact_id
+                    None if research.revision is None else research.revision.artifact_id
                 ),
                 "answer_requirement_plan": dict(request.requirement_plan_record),
                 "budget_decisions": [
