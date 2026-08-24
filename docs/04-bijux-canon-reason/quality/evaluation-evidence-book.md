@@ -66,6 +66,15 @@ the content-addressed report; disagreement is unresolved until a distinct
 adjudicator binds and resolves the exact review artifacts. Representative
 semantic errors remain report data rather than disappearing from aggregates.
 
+The ancient-DNA development adapter consumes the sealed case inventory,
+source-first question-claim crosswalk, reviewed qrels, and immutable source URIs.
+It exposes 12 development questions, 31 reviewed answer or abstention points,
+and 48 exact claim-evidence relations as typed evaluation truth; held-out labels
+are not an adapter input. Installed citations use the v2 system-citation record,
+which retains the emitted exact quote and retrieval chunk identity. Integrity is
+measured from that quote, its hash, the immutable source bytes, and the reviewed
+chunk binding instead of requiring a system locator to copy a truth locator.
+
 `budget-exhausted` is an incomplete execution status. It requires a typed failure
 code, cannot claim an answer disposition, scores zero in completion, and receives
 the declared conservative values for counterevidence, revision and unsupported

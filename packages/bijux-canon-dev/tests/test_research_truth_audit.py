@@ -15,6 +15,7 @@ def _audit() -> dict[str, object]:
     return audit_research_truth(
         cases_path=TRUTH_ROOT / "evaluation-cases.jsonl",
         claim_truth_path=TRUTH_ROOT / "claim-truth.jsonl",
+        question_claim_truth_path=TRUTH_ROOT / "question-claim-truth.jsonl",
         qrels_path=TRUTH_ROOT / "qrels.jsonl",
         questions_path=TRUTH_ROOT / "research-questions.jsonl",
         split_path=TRUTH_ROOT / "split.json",
@@ -96,7 +97,7 @@ def test_audit_is_restart_stable_and_canonically_identified() -> None:
     second = _audit()
 
     assert first == second
-    assert first["schema_version"] == "bijux.canon.research_truth_audit.v3"
+    assert first["schema_version"] == "bijux.canon.research_truth_audit.v4"
     assert first["audit_identity_sha256"] == second["audit_identity_sha256"]
     assert len(str(first["audit_identity_sha256"])) == 64
     json.dumps(first, sort_keys=True)

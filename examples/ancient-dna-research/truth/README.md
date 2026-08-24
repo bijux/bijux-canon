@@ -93,6 +93,13 @@ are absent. The release evaluator is the sole executable interface that joins
 a complete held-out submission to sealed labels, and it returns aggregates
 rather than the labels.
 
+`question-claim-truth.jsonl` makes the 31 visible development answer points
+executable without deriving truth from a system answer. It binds every point to
+its exact reviewed qrels and support, opposition, limitation, or insufficiency
+relation. Twenty-five points are expected answer claims; six are grounded
+abstention reasons. The crosswalk was reviewed source-first without consulting
+system output. It does not expose or reconstruct held-out labels.
+
 Publication metadata is an integrity prerequisite, not research evidence.
 Checks for eight titles, DOIs, authors, journals, licenses, and provenance prove
 that ingest retained bibliographic truth; they do not prove retrieval or RAG.
@@ -155,6 +162,7 @@ label sealing, and development/held-out family overlap with:
 python -m bijux_canon_dev.corpus.research_truth_audit \
   --qrels examples/ancient-dna-research/truth/qrels.jsonl \
   --questions examples/ancient-dna-research/truth/research-questions.jsonl \
+  --question-claim-truth examples/ancient-dna-research/truth/question-claim-truth.jsonl \
   --claim-truth examples/ancient-dna-research/truth/claim-truth.jsonl \
   --split examples/ancient-dna-research/truth/split.json \
   --cases examples/ancient-dna-research/truth/evaluation-cases.jsonl

@@ -185,10 +185,12 @@ class ClaimFaithfulnessEvaluator:
         truth_by_id = {claim.claim_truth_id: claim for claim in case.claims}
         matches = {item.system_claim_id: item for item in matching.outcomes}
         qrels_by_locator: dict[str, set[str]] = {}
+        qrels_by_chunk: dict[str, set[str]] = {}
         for qrel in case.qrels:
             qrels_by_locator.setdefault(qrel.locator.locator_id, set()).add(
                 qrel.qrel_id
             )
+            qrels_by_chunk.setdefault(qrel.locator.chunk_id, set()).add(qrel.qrel_id)
         citations = {item.citation_id: item for item in output.citations}
         integrity_by_citation = {
             item.citation_id: item.verified for item in integrity.citations
@@ -199,6 +201,7 @@ class ClaimFaithfulnessEvaluator:
                 matches[claim.claim_id],
                 truth_by_id,
                 qrels_by_locator,
+                qrels_by_chunk,
                 citations,
                 integrity_by_citation,
             )
@@ -284,6 +287,7 @@ class ClaimFaithfulnessEvaluator:
         match: ClaimMatchOutcome,
         truth_by_id: dict[str, AtomicClaimTruth],
         qrels_by_locator: dict[str, set[str]],
+        qrels_by_chunk: dict[str, set[str]],
         citations: dict[str, SystemCitation],
         integrity_by_citation: dict[str, bool],
     ) -> ClaimFaithfulnessJudgment:
@@ -305,7 +309,11 @@ class ClaimFaithfulnessEvaluator:
             qrel_id
             for citation in typed_citations
             if integrity_by_citation[citation.citation_id]
-            for qrel_id in qrels_by_locator.get(citation.locator_id, set())
+            for qrel_id in (
+                qrels_by_chunk.get(citation.chunk_id or "", set())
+                if citation.schema_version.endswith(".v2")
+                else qrels_by_locator.get(citation.locator_id, set())
+            )
         }
         if not match.admitted_equivalence:
             status = {
@@ -327,11 +335,13 @@ class ClaimFaithfulnessEvaluator:
                 label.relation
                 for label in truth.citations
                 if label.qrel_id in reviewed_qrels
+                and label.qrel_id in match.reviewed_qrel_ids
             }
             matched_qrels = {
                 label.qrel_id
                 for label in truth.citations
                 if label.qrel_id in reviewed_qrels
+                and label.qrel_id in match.reviewed_qrel_ids
             }
             if not relations:
                 status = ClaimFaithfulnessStatus.irrelevant

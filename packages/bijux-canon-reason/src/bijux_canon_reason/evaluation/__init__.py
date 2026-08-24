@@ -127,6 +127,10 @@ from bijux_canon_reason.evaluation.research_utility import (
     ResearchUtilityMetric,
     ResearchUtilityReport,
 )
+from bijux_canon_reason.evaluation.research_truth import (
+    ResearchQuestionTruthAdapter,
+    ResearchTruthAdaptationError,
+)
 from bijux_canon_reason.evaluation.schema_catalog import (
     EVALUATION_SCHEMA_CATALOG_VERSION,
     evaluation_json_schemas,
@@ -245,6 +249,8 @@ __all__ = [
     "ResearchUtilityEvaluator",
     "ResearchUtilityMetric",
     "ResearchUtilityReport",
+    "ResearchQuestionTruthAdapter",
+    "ResearchTruthAdaptationError",
     "RetentionKind",
     "RetentionOutcome",
     "RetentionTruthItem",

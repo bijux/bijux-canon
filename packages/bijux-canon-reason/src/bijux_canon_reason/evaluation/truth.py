@@ -188,10 +188,14 @@ class AtomicClaimTruth(StableModel):
                 raise ValueError("opposed claims must require abstention")
         elif self.claim_class is ClaimTruthClass.forbidden:
             if self.expected_in_answer or not relations.intersection(
-                {CitationTruthRelation.limits, CitationTruthRelation.opposes}
+                {
+                    CitationTruthRelation.insufficient,
+                    CitationTruthRelation.limits,
+                    CitationTruthRelation.opposes,
+                }
             ):
                 raise ValueError(
-                    "forbidden claims require limiting or opposing evidence"
+                    "forbidden claims require insufficient, limiting, or opposing evidence"
                 )
             if self.abstention_expectation is not AbstentionExpectation.required:
                 raise ValueError("forbidden claims must require abstention")

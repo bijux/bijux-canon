@@ -18,12 +18,16 @@ from bijux_canon_dev.corpus.research_evaluation_split import (
     question_label_identity,
 )
 from bijux_canon_dev.corpus.research_qrels import load_qrels
+from bijux_canon_dev.corpus.research_question_claim_truth import (
+    load_question_claim_truth,
+    validate_question_claim_truth,
+)
 from bijux_canon_dev.corpus.research_questions import (
     load_questions,
     validate_questions,
 )
 
-SCHEMA_VERSION = "bijux.canon.research_truth_audit.v3"
+SCHEMA_VERSION = "bijux.canon.research_truth_audit.v4"
 
 
 def _load_jsonl(path: Path) -> tuple[dict[str, Any], ...]:
@@ -122,6 +126,7 @@ def audit_research_truth(
     *,
     cases_path: Path,
     claim_truth_path: Path,
+    question_claim_truth_path: Path,
     qrels_path: Path,
     questions_path: Path,
     split_path: Path,
@@ -134,6 +139,12 @@ def audit_research_truth(
     claims = tuple(load_claim_truth(claim_truth_path))
     cases = _load_jsonl(cases_path)
     split = load_split(split_path)
+    question_claim_result = validate_question_claim_truth(
+        load_question_claim_truth(question_claim_truth_path),
+        cases_path=cases_path,
+        questions_path=questions_path,
+        qrels_path=qrels_path,
+    )
 
     legacy_query_ids = _string_set(qrels, "query_id")
     legacy_query_texts = _string_set(qrels, "query")
@@ -336,6 +347,7 @@ def audit_research_truth(
             sorted(Counter(str(record["category"]) for record in questions).items())
         ),
         "question_inventory": question_inventory,
+        "question_claim_truth": question_claim_result,
         "release_eligible": False,
         "review_provenance": {
             "claims": claim_provenance,
@@ -371,6 +383,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--cases", type=Path, required=True)
     parser.add_argument("--claim-truth", type=Path, required=True)
+    parser.add_argument("--question-claim-truth", type=Path, required=True)
     parser.add_argument("--qrels", type=Path, required=True)
     parser.add_argument("--questions", type=Path, required=True)
     parser.add_argument("--split", type=Path, required=True)
@@ -379,6 +392,7 @@ def main() -> None:
         audit_research_truth(
             cases_path=args.cases,
             claim_truth_path=args.claim_truth,
+            question_claim_truth_path=args.question_claim_truth,
             qrels_path=args.qrels,
             questions_path=args.questions,
             split_path=args.split,

@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 from datetime import date
+import hashlib
 import json
 from pathlib import Path
 
@@ -228,6 +229,28 @@ def _citation(case: EvaluationCaseTruth, **changes: object) -> SystemCitation:
     return SystemCitation.model_validate(values)
 
 
+def _chunk_citation(
+    case: EvaluationCaseTruth,
+    *,
+    exact_text: str | None = None,
+) -> SystemCitation:
+    locator = case.qrels[0].locator
+    quote = locator.exact_text if exact_text is None else exact_text
+    return SystemCitation(
+        schema_version="bijux.canon.evaluation.system-citation.v2",
+        citation_id="chunk-system-citation",
+        source_id=locator.source_id,
+        source_uri=locator.source_uri,
+        source_sha256=locator.source_sha256,
+        locator_id="sha256:" + "4" * 64,
+        exact_text_sha256=hashlib.sha256(quote.encode("utf-8")).hexdigest(),
+        character_start=0,
+        character_end=len(quote),
+        exact_text=quote,
+        chunk_id=locator.chunk_id,
+    )
+
+
 def _sources(case: EvaluationCaseTruth) -> dict[str, bytes]:
     locator = case.qrels[0].locator
     return {locator.source_uri: (REPO_ROOT / locator.source_uri).read_bytes()}
@@ -301,6 +324,56 @@ def test_real_source_citation_resolves_locator_span_text_and_hash() -> None:
     assert report.verified_citations == report.total_citations == 1
     assert report.integrity_ratio == 1.0
     assert report.failures == ()
+
+
+def test_real_chunk_citation_verifies_emitted_quote_without_truth_locator_equality() -> None:
+    case = _case()
+    citation = _chunk_citation(case)
+    output = _output(case, citation)
+
+    report = CitationIntegrityEvaluator().evaluate(
+        case=case,
+        output=output,
+        source_payloads=_sources(case),
+    )
+    matching = _matching(case, output)
+    quality = CitationQualityEvaluator().evaluate(
+        case=case,
+        output=output,
+        integrity=report,
+        matching=matching,
+    )
+    faithfulness = ClaimFaithfulnessEvaluator().evaluate(
+        case=case,
+        output=output,
+        integrity=report,
+        matching=matching,
+    )
+
+    assert citation.locator_id != case.qrels[0].locator.locator_id
+    assert report.passed
+    assert report.verified_citations == 1
+    assert quality.passed
+    assert faithfulness.passed
+
+
+def test_chunk_citation_rejects_quote_absent_from_immutable_source() -> None:
+    case = _case()
+    citation = _chunk_citation(
+        case,
+        exact_text="This fabricated quote is absent from the immutable article.",
+    )
+
+    report = CitationIntegrityEvaluator().evaluate(
+        case=case,
+        output=_output(case, citation),
+        source_payloads=_sources(case),
+    )
+
+    assert not report.passed
+    assert report.failures[0].code is (
+        CitationIntegrityFailureCode.source_text_unreachable
+    )
 
 
 def test_emitted_binding_failures_are_owned_by_reason() -> None:

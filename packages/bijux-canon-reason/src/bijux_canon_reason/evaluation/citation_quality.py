@@ -128,7 +128,10 @@ class CitationQualityEvaluator:
         self._validate_inputs(case, output, integrity, matching)
         truth_claims = {claim.claim_truth_id: claim for claim in case.claims}
         matches = {item.system_claim_id: item for item in matching.outcomes}
-        qrel_locators = {qrel.qrel_id: qrel.locator.locator_id for qrel in case.qrels}
+        qrel_locators = {
+            qrel.qrel_id: (qrel.locator.locator_id, qrel.locator.chunk_id)
+            for qrel in case.qrels
+        }
         integrity_by_citation = {
             outcome.citation_id: outcome.verified for outcome in integrity.citations
         }
@@ -149,6 +152,7 @@ class CitationQualityEvaluator:
                 else {
                     (truth_claim.claim_truth_id, citation.qrel_id)
                     for citation in truth_claim.citations
+                    if citation.qrel_id in match.reviewed_qrel_ids
                 }
             )
             for citation_id in system_claim.citation_ids:
@@ -170,7 +174,12 @@ class CitationQualityEvaluator:
                     (
                         candidate_qrel_id
                         for _, candidate_qrel_id in allowed
-                        if qrel_locators[candidate_qrel_id] == citation.locator_id
+                        if (
+                            qrel_locators[candidate_qrel_id][1] == citation.chunk_id
+                            if citation.schema_version.endswith(".v2")
+                            else qrel_locators[candidate_qrel_id][0]
+                            == citation.locator_id
+                        )
                     ),
                     None,
                 )

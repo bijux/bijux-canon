@@ -139,8 +139,14 @@ class CitationIntegrityEvaluator:
                 "system output belongs to another evaluation case"
             )
         locators = self._locators(case)
+        locators_by_chunk = self._locators_by_chunk(locators)
         outcomes = tuple(
-            self._evaluate_citation(citation, locators, source_payloads)
+            self._evaluate_citation(
+                citation,
+                locators,
+                locators_by_chunk,
+                source_payloads,
+            )
             for citation in output.citations
         )
         failures = tuple(
@@ -186,11 +192,35 @@ class CitationIntegrityEvaluator:
         return locators
 
     @staticmethod
+    def _locators_by_chunk(
+        locators: Mapping[str, ExactEvidenceLocator],
+    ) -> dict[str, ExactEvidenceLocator]:
+        result: dict[str, ExactEvidenceLocator] = {}
+        for locator in locators.values():
+            existing = result.get(locator.chunk_id)
+            if existing is not None and (
+                existing.source_id != locator.source_id
+                or existing.source_sha256 != locator.source_sha256
+            ):
+                raise CitationIntegrityEvaluationError(
+                    "evaluation truth contains conflicting chunk source identities"
+                )
+            result[locator.chunk_id] = locator
+        return result
+
+    @staticmethod
     def _evaluate_citation(
         citation: SystemCitation,
         locators: Mapping[str, ExactEvidenceLocator],
+        locators_by_chunk: Mapping[str, ExactEvidenceLocator],
         source_payloads: Mapping[str, bytes],
     ) -> CitationIntegrityOutcome:
+        if citation.schema_version.endswith(".v2"):
+            return CitationIntegrityEvaluator._evaluate_chunk_citation(
+                citation,
+                locators_by_chunk,
+                source_payloads,
+            )
         locator = locators.get(citation.locator_id)
         failures: list[CitationIntegrityFailure] = []
         if locator is None:
@@ -230,6 +260,71 @@ class CitationIntegrityEvaluator:
                         CitationIntegrityOwner.ingest,
                         CitationIntegrityFailureCode.source_text_unreachable,
                         "reviewed exact text cannot be resolved in the source payload",
+                    )
+                )
+        return CitationIntegrityOutcome(
+            citation_id=citation.citation_id,
+            locator_id=citation.locator_id,
+            verified=not failures,
+            failures=tuple(failures),
+        )
+
+    @staticmethod
+    def _evaluate_chunk_citation(
+        citation: SystemCitation,
+        locators_by_chunk: Mapping[str, ExactEvidenceLocator],
+        source_payloads: Mapping[str, bytes],
+    ) -> CitationIntegrityOutcome:
+        locator = locators_by_chunk.get(citation.chunk_id or "")
+        failures: list[CitationIntegrityFailure] = []
+        if locator is None:
+            failures.append(
+                _failure(
+                    citation,
+                    CitationIntegrityOwner.reason,
+                    CitationIntegrityFailureCode.locator_missing,
+                    "emitted retrieval chunk is absent from reviewed truth",
+                )
+            )
+        else:
+            if (
+                citation.source_id != locator.source_id
+                or citation.source_sha256 != locator.source_sha256
+            ):
+                failures.append(
+                    _failure(
+                        citation,
+                        CitationIntegrityOwner.reason,
+                        CitationIntegrityFailureCode.source_binding_mismatch,
+                        "citation source identity differs from its reviewed chunk",
+                    )
+                )
+            source = source_payloads.get(citation.source_uri)
+            if source is None:
+                failures.append(
+                    _failure(
+                        citation,
+                        CitationIntegrityOwner.ingest,
+                        CitationIntegrityFailureCode.source_unavailable,
+                        "immutable source payload is unavailable",
+                    )
+                )
+            elif hashlib.sha256(source).hexdigest() != citation.source_sha256:
+                failures.append(
+                    _failure(
+                        citation,
+                        CitationIntegrityOwner.ingest,
+                        CitationIntegrityFailureCode.source_hash_mismatch,
+                        "immutable source payload hash differs from citation lineage",
+                    )
+                )
+            elif (citation.exact_text or "").encode("utf-8") not in source:
+                failures.append(
+                    _failure(
+                        citation,
+                        CitationIntegrityOwner.ingest,
+                        CitationIntegrityFailureCode.source_text_unreachable,
+                        "emitted exact quote cannot be resolved in source bytes",
                     )
                 )
         return CitationIntegrityOutcome(

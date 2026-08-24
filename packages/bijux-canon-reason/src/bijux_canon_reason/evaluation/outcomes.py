@@ -5,9 +5,10 @@
 from __future__ import annotations
 
 from enum import StrEnum
+import hashlib
 from typing import Literal
 
-from pydantic import Field, model_validator
+from pydantic import Field, field_validator, model_validator
 
 from bijux_canon_reason.core.models.base import StableModel
 from bijux_canon_reason.evaluation.truth import Identifier, NonEmptyText, Sha256
@@ -33,7 +34,10 @@ class SystemClaimDisposition(StrEnum):
 class SystemCitation(StableModel):
     """Exact citation emitted by the evaluated system."""
 
-    schema_version: Literal["bijux.canon.evaluation.system-citation.v1"] = (
+    schema_version: Literal[
+        "bijux.canon.evaluation.system-citation.v1",
+        "bijux.canon.evaluation.system-citation.v2",
+    ] = (
         "bijux.canon.evaluation.system-citation.v1"
     )
     citation_id: Identifier
@@ -44,11 +48,36 @@ class SystemCitation(StableModel):
     exact_text_sha256: Sha256
     character_start: int = Field(ge=0)
     character_end: int = Field(gt=0)
+    exact_text: str | None = Field(
+        default=None,
+        exclude_if=lambda value: value is None,
+    )
+    chunk_id: str | None = Field(
+        default=None,
+        exclude_if=lambda value: value is None,
+    )
+
+    @field_validator("chunk_id")
+    @classmethod
+    def _validate_chunk_id(cls, value: str | None) -> str | None:
+        if value is not None and not value.startswith("sha256:"):
+            raise ValueError("system citation chunk ID must be content-addressed")
+        return value
 
     @model_validator(mode="after")
     def _validate_span(self) -> SystemCitation:
         if self.character_end <= self.character_start:
             raise ValueError("system citation end must follow its start")
+        is_v2 = self.schema_version.endswith(".v2")
+        if is_v2 != (self.exact_text is not None and self.chunk_id is not None):
+            raise ValueError("system citation version and exact evidence differ")
+        if self.exact_text is not None and (
+            not self.exact_text
+            or self.character_end - self.character_start != len(self.exact_text)
+            or hashlib.sha256(self.exact_text.encode("utf-8")).hexdigest()
+            != self.exact_text_sha256
+        ):
+            raise ValueError("system citation exact text, bounds, or hash differ")
         return self
 
 
