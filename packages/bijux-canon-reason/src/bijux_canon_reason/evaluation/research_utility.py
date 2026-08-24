@@ -24,31 +24,58 @@ from bijux_canon_reason.grounding.provider_contracts import (
     content_artifact_id,
     require_artifact_id,
 )
+from bijux_canon_reason.research import (
+    AnswerVerificationStatus,
+    ConvergenceReason,
+    ResearchConvergenceEvidence,
+)
 
 Sha256 = Annotated[str, StringConstraints(pattern=r"^[0-9a-f]{64}$")]
 _COUNTEREVIDENCE_RECALL_MINIMUM = 0.90
 _EXPECTED_CLAIM_GAIN_MINIMUM = 0.05
 _UNSUPPORTED_RATE_DELTA_MAXIMUM = 0.0
+_REQUIREMENT_COVERAGE_MINIMUM = 1.0
+_CLASSIFICATION_COMPLETENESS_MINIMUM = 1.0
+_COMPLETED_MATERIAL_CLOSURE_MINIMUM = 1.0
+
+
+class PairedResearchBinding(StableModel):
+    """Exact question, corpus, and base retrieval shared by RAG and RAR."""
+
+    question_sha256: Sha256
+    corpus_artifact_id: str
+    base_retrieval_artifact_id: str
+    retrieval_config_sha256: Sha256
+
+    @field_validator("corpus_artifact_id", "base_retrieval_artifact_id")
+    @classmethod
+    def _validate_artifact_id(cls, value: str) -> str:
+        return require_artifact_id(value)
 
 
 class PairedResearchCase(StableModel):
     """Identical-input RAG/RAR outputs plus bounded execution observations."""
 
     case_id: str
-    input_identity_sha256: Sha256
+    rag_binding: PairedResearchBinding
+    rar_binding: PairedResearchBinding
     source_identity_sha256: Sha256
     model_identity_sha256: Sha256
     config_identity_sha256: Sha256
     rag_faithfulness: ClaimFaithfulnessReport
     rar_faithfulness: ClaimFaithfulnessReport
-    expected_counterevidence_qrel_ids: tuple[str, ...] = Field(min_length=1)
+    expected_counterevidence_qrel_ids: tuple[str, ...]
     rar_counterevidence_qrel_ids: tuple[str, ...]
+    rar_convergence_evidence: ResearchConvergenceEvidence
+    rar_convergence_reasons: tuple[ConvergenceReason, ...]
+    rar_answer_changed: bool
     rag_cost_usd: float = Field(ge=0.0)
     rar_cost_usd: float = Field(ge=0.0)
     rag_latency_ms: int = Field(ge=0)
     rar_latency_ms: int = Field(ge=0)
     rar_iterations: int = Field(gt=0)
-    rar_convergence_reason: str
+    rag_tool_calls: int = Field(ge=0)
+    rar_tool_calls: int = Field(ge=0)
     rag_execution_status: ProductExecutionStatus = ProductExecutionStatus.completed
     rar_execution_status: ProductExecutionStatus = ProductExecutionStatus.completed
     rag_failure_code: str | None = None
@@ -65,6 +92,10 @@ class PairedResearchCase(StableModel):
             raise ValueError("paired faithfulness reports belong to another case")
         if reports[0].system_output_id == reports[1].system_output_id:
             raise ValueError("paired RAG and RAR outputs must be distinct")
+        if self.rag_binding != self.rar_binding:
+            raise ValueError(
+                "paired RAG and RAR must share question, corpus, retrieval, and config"
+            )
         if len(set(self.expected_counterevidence_qrel_ids)) != len(
             self.expected_counterevidence_qrel_ids
         ):
@@ -73,8 +104,15 @@ class PairedResearchCase(StableModel):
             self.rar_counterevidence_qrel_ids
         ):
             raise ValueError("retrieved counterevidence qrel IDs must be unique")
-        if not self.rar_convergence_reason.strip():
-            raise ValueError("RAR convergence reason must not be empty")
+        if not self.rar_convergence_reasons or tuple(
+            sorted(set(self.rar_convergence_reasons))
+        ) != self.rar_convergence_reasons:
+            raise ValueError("RAR convergence reasons must be nonempty, unique, and sorted")
+        if (
+            self.rar_answer_changed
+            and self.rar_convergence_evidence.answer_revision_artifact_id is None
+        ):
+            raise ValueError("a changed RAR answer requires a revision identity")
         for owner, status, failure_code in (
             ("RAG", self.rag_execution_status, self.rag_failure_code),
             ("RAR", self.rar_execution_status, self.rar_failure_code),
@@ -97,6 +135,17 @@ class ResearchUtilityCaseOutcome(StableModel):
     case_id: str
     counterevidence_found: int
     counterevidence_expected: int
+    requirement_satisfied: int
+    requirement_expected: int
+    classified_candidates: int
+    material_candidates: int
+    unresolved_classification_count: int
+    blocking_gap_count: int
+    unsearched_material_count: int
+    material_conflict_count: int
+    answer_verification_status: AnswerVerificationStatus
+    revision_artifact_id: str | None
+    answer_changed: bool
     rag_expected_claim_recall: float
     rar_expected_claim_recall: float
     rag_unsupported_claim_rate: float
@@ -106,7 +155,9 @@ class ResearchUtilityCaseOutcome(StableModel):
     rag_latency_ms: int
     rar_latency_ms: int
     rar_iterations: int
-    rar_convergence_reason: str
+    rag_tool_calls: int
+    rar_tool_calls: int
+    rar_convergence_reasons: tuple[ConvergenceReason, ...]
     rag_execution_status: ProductExecutionStatus
     rar_execution_status: ProductExecutionStatus
     rar_failure_code: str | None
@@ -137,18 +188,23 @@ class ResearchUtilityMetric(StableModel):
 class ResearchUtilityReport(StableModel):
     """Content-addressed paired utility result for the frozen research subset."""
 
-    schema_version: str = "bijux.canon.evaluation.research-utility.v2"
+    schema_version: str = "bijux.canon.evaluation.research-utility.v3"
     artifact_id: str
     input_identity_sha256: str
     outcomes: tuple[ResearchUtilityCaseOutcome, ...]
     counterevidence_recall: ResearchUtilityMetric
     expected_claim_recall_gain: ResearchUtilityMetric
     unsupported_claim_rate_delta: ResearchUtilityMetric
+    requirement_coverage: ResearchUtilityMetric
+    classification_completeness: ResearchUtilityMetric
+    completed_material_closure: ResearchUtilityMetric
     rag_total_cost_usd: float
     rar_total_cost_usd: float
     rag_total_latency_ms: int
     rar_total_latency_ms: int
     rar_total_iterations: int
+    rag_total_tool_calls: int
+    rar_total_tool_calls: int
     unconditional_metrics: ProductMetricReport
     passed: bool
 
@@ -167,11 +223,17 @@ class ResearchUtilityReport(StableModel):
             self.counterevidence_recall,
             self.expected_claim_recall_gain,
             self.unsupported_claim_rate_delta,
+            self.requirement_coverage,
+            self.classification_completeness,
+            self.completed_material_closure,
         )
         if tuple(item.metric_id for item in metrics) != (
             "rar-counterevidence-recall",
             "rar-expected-claim-gain",
             "rar-unsupported-rate-delta",
+            "rar-requirement-coverage",
+            "rar-classification-completeness",
+            "rar-completed-material-closure",
         ):
             raise ValueError("research utility dimensions are incomplete")
         if self.passed != (
@@ -203,7 +265,7 @@ class ResearchUtilityEvaluator:
         outcomes = tuple(_outcome(item) for item in cases)
         found = sum(item.counterevidence_found for item in outcomes)
         expected = sum(item.counterevidence_expected for item in outcomes)
-        counter_recall = found / expected
+        counter_recall = 1.0 if expected == 0 else found / expected
         rag_expected = _expected_recall(cases, rar=False)
         rar_expected = _expected_recall(cases, rar=True)
         expected_gain = rar_expected - rag_expected
@@ -232,10 +294,37 @@ class ResearchUtilityEvaluator:
                 True,
                 "RAR unsupported-claim rate minus paired RAG unsupported-claim rate",
             ),
+            _metric(
+                "rar-requirement-coverage",
+                _ratio(
+                    sum(item.requirement_satisfied for item in outcomes),
+                    sum(item.requirement_expected for item in outcomes),
+                ),
+                _REQUIREMENT_COVERAGE_MINIMUM,
+                False,
+                "satisfied material answer requirements / all material answer requirements",
+            ),
+            _metric(
+                "rar-classification-completeness",
+                _ratio(
+                    sum(item.classified_candidates for item in outcomes),
+                    sum(item.material_candidates for item in outcomes),
+                ),
+                _CLASSIFICATION_COMPLETENESS_MINIMUM,
+                False,
+                "classified material candidates / all material candidates",
+            ),
+            _metric(
+                "rar-completed-material-closure",
+                _completed_material_closure(outcomes),
+                _COMPLETED_MATERIAL_CLOSURE_MINIMUM,
+                False,
+                "completed cases with no remaining material requirement, classification, or search work / completed cases",
+            ),
         )
         input_identity = hashlib.sha256(
             "\n".join(
-                f"{item.case_id}:{item.input_identity_sha256}"
+                f"{item.case_id}:{content_artifact_id(item.rag_binding.model_dump(mode='json'))}"
                 for item in sorted(cases, key=lambda candidate: candidate.case_id)
             ).encode("utf-8")
         ).hexdigest()
@@ -244,20 +333,27 @@ class ResearchUtilityEvaluator:
         rag_total_latency = sum(item.rag_latency_ms for item in cases)
         rar_total_latency = sum(item.rar_latency_ms for item in cases)
         rar_total_iterations = sum(item.rar_iterations for item in cases)
+        rag_total_tool_calls = sum(item.rag_tool_calls for item in cases)
+        rar_total_tool_calls = sum(item.rar_tool_calls for item in cases)
         unconditional = _unconditional_report(cases, outcomes, input_identity)
         passed = all(metric.passed for metric in metrics) and unconditional.passed
         payload = {
-            "schema_version": "bijux.canon.evaluation.research-utility.v2",
+            "schema_version": "bijux.canon.evaluation.research-utility.v3",
             "input_identity_sha256": input_identity,
             "outcomes": tuple(item.model_dump(mode="json") for item in outcomes),
             "counterevidence_recall": metrics[0].model_dump(mode="json"),
             "expected_claim_recall_gain": metrics[1].model_dump(mode="json"),
             "unsupported_claim_rate_delta": metrics[2].model_dump(mode="json"),
+            "requirement_coverage": metrics[3].model_dump(mode="json"),
+            "classification_completeness": metrics[4].model_dump(mode="json"),
+            "completed_material_closure": metrics[5].model_dump(mode="json"),
             "rag_total_cost_usd": rag_total_cost,
             "rar_total_cost_usd": rar_total_cost,
             "rag_total_latency_ms": rag_total_latency,
             "rar_total_latency_ms": rar_total_latency,
             "rar_total_iterations": rar_total_iterations,
+            "rag_total_tool_calls": rag_total_tool_calls,
+            "rar_total_tool_calls": rar_total_tool_calls,
             "unconditional_metrics": unconditional.model_dump(mode="json"),
             "passed": passed,
         }
@@ -268,11 +364,16 @@ class ResearchUtilityEvaluator:
             counterevidence_recall=metrics[0],
             expected_claim_recall_gain=metrics[1],
             unsupported_claim_rate_delta=metrics[2],
+            requirement_coverage=metrics[3],
+            classification_completeness=metrics[4],
+            completed_material_closure=metrics[5],
             rag_total_cost_usd=rag_total_cost,
             rar_total_cost_usd=rar_total_cost,
             rag_total_latency_ms=rag_total_latency,
             rar_total_latency_ms=rar_total_latency,
             rar_total_iterations=rar_total_iterations,
+            rag_total_tool_calls=rag_total_tool_calls,
+            rar_total_tool_calls=rar_total_tool_calls,
             unconditional_metrics=unconditional,
             passed=passed,
         )
@@ -280,6 +381,7 @@ class ResearchUtilityEvaluator:
 
 def _outcome(item: PairedResearchCase) -> ResearchUtilityCaseOutcome:
     expected = set(item.expected_counterevidence_qrel_ids)
+    evidence = item.rar_convergence_evidence
     completed = item.rar_execution_status is ProductExecutionStatus.completed
     rag_completed = item.rag_execution_status is ProductExecutionStatus.completed
     found = (
@@ -291,6 +393,21 @@ def _outcome(item: PairedResearchCase) -> ResearchUtilityCaseOutcome:
         case_id=item.case_id,
         counterevidence_found=len(found),
         counterevidence_expected=len(expected),
+        requirement_satisfied=len(evidence.satisfied_requirement_artifact_ids),
+        requirement_expected=evidence.material_requirement_count,
+        classified_candidates=evidence.classified_candidate_count,
+        material_candidates=evidence.material_candidate_count,
+        unresolved_classification_count=len(
+            evidence.unresolved_classification_artifact_ids
+        ),
+        blocking_gap_count=len(evidence.blocking_gap_artifact_ids),
+        unsearched_material_count=len(
+            evidence.unsearched_important_claim_artifact_ids
+        ),
+        material_conflict_count=evidence.material_conflict_count,
+        answer_verification_status=evidence.answer_verification_status,
+        revision_artifact_id=evidence.answer_revision_artifact_id,
+        answer_changed=item.rar_answer_changed,
         rag_expected_claim_recall=(
             item.rag_faithfulness.expected_claim_recall.value
             if rag_completed
@@ -314,7 +431,9 @@ def _outcome(item: PairedResearchCase) -> ResearchUtilityCaseOutcome:
         rag_latency_ms=item.rag_latency_ms,
         rar_latency_ms=item.rar_latency_ms,
         rar_iterations=item.rar_iterations,
-        rar_convergence_reason=item.rar_convergence_reason,
+        rag_tool_calls=item.rag_tool_calls,
+        rar_tool_calls=item.rar_tool_calls,
+        rar_convergence_reasons=item.rar_convergence_reasons,
         rag_execution_status=item.rag_execution_status,
         rar_execution_status=item.rar_execution_status,
         rar_failure_code=item.rar_failure_code,
@@ -447,6 +566,29 @@ def _completed(case: PairedResearchCase, *, rar: bool) -> bool:
     return status is ProductExecutionStatus.completed
 
 
+def _ratio(numerator: int, denominator: int) -> float:
+    return 1.0 if denominator == 0 else numerator / denominator
+
+
+def _completed_material_closure(
+    outcomes: tuple[ResearchUtilityCaseOutcome, ...],
+) -> float:
+    completed = tuple(
+        item
+        for item in outcomes
+        if item.rar_execution_status is ProductExecutionStatus.completed
+    )
+    closed = sum(
+        item.requirement_satisfied == item.requirement_expected
+        and item.classified_candidates == item.material_candidates
+        and item.unresolved_classification_count == 0
+        and item.blocking_gap_count == 0
+        and item.unsearched_material_count == 0
+        for item in completed
+    )
+    return _ratio(closed, len(completed))
+
+
 def _population_identity(
     cases: tuple[PairedResearchCase, ...],
     field: str,
@@ -478,6 +620,7 @@ def _metric(
 
 
 __all__ = [
+    "PairedResearchBinding",
     "PairedResearchCase",
     "ResearchUtilityCaseOutcome",
     "ResearchUtilityEvaluationError",

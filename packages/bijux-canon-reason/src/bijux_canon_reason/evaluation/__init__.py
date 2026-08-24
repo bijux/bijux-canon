@@ -105,6 +105,7 @@ from bijux_canon_reason.evaluation.reviews import (
     ReviewVerdict,
 )
 from bijux_canon_reason.evaluation.research_utility import (
+    PairedResearchBinding,
     PairedResearchCase,
     ResearchUtilityCaseOutcome,
     ResearchUtilityEvaluationError,
@@ -209,6 +210,7 @@ __all__ = [
     "ProductMetricMeasurement",
     "ProductMetricReport",
     "ProductMetricResult",
+    "PairedResearchBinding",
     "PairedResearchCase",
     "QrelJudgment",
     "ReviewerDecision",

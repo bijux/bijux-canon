@@ -39,15 +39,20 @@ The catalog covers the release quality surfaces and their semantic populations:
 | citations | precision and recall | reviewed claim-to-evidence relations; an answered output with no citations receives a zero-valued case charge |
 | abstention | correctness | unique reviewed answerability cases; grounded abstention can be a completed correct outcome |
 | conflicts | retention and false-consensus rate | independently reviewed conflicts and qualifications |
-| RAR | counterevidence recall, paired expected-claim gain, unsupported-claim rate | identical paired RAG/RAR questions; incomplete research receives conservative values |
+| RAR | requirement coverage, counterevidence recall, classification completeness, paired expected-claim gain, unsupported-claim rate, completed material closure | identical question, corpus, base retrieval, and retrieval configuration; incomplete research receives conservative values |
 | latency | warm hybrid engine and operator p95 | every attempted query, including terminal failures |
 | completion | product success rate | every attempted case; refusal, failure, cancellation and budget exhaustion score zero |
 
 Macro means are used only when each unique question is the population unit.
 Micro ratios are used for reviewed relations or claims and retain their raw
 numerators and denominators. Paired RAG/RAR gain is averaged across identical
-question pairs. Latency uses the deterministic nearest-rank p95. Every result
-also reports per-case values, population standard deviation, an explicit
+question pairs. Each pair binds the content-addressed convergence evidence from
+the research trace, including remaining requirements, unresolved
+classifications, blocking gaps, unsearched important claims, answer revision,
+conflicts, and marginal evidence. Per-case outcomes retain RAG and RAR tool
+calls, costs, latency, iterations, and exact convergence reasons; tool volume
+never contributes quality credit. Latency uses the deterministic nearest-rank
+p95. Every result also reports per-case values, population standard deviation, an explicit
 uncertainty method, terminal status counts, partial-label counts and deterministic
 worst-case identities.
 

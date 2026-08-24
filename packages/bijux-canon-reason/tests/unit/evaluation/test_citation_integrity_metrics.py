@@ -38,6 +38,7 @@ from bijux_canon_reason.evaluation import (
     EvaluationQuery,
     EvaluationSplit,
     ExactEvidenceLocator,
+    PairedResearchBinding,
     PairedResearchCase,
     ProductAnswerDisposition,
     ProductExecutionStatus,
@@ -51,9 +52,60 @@ from bijux_canon_reason.evaluation import (
     SystemOutput,
     TruthProvenance,
 )
+from bijux_canon_reason.research import (
+    AnswerVerificationStatus,
+    ConvergenceReason,
+    ResearchConvergenceEvidence,
+    create_research_convergence_evidence,
+)
 
 REPO_ROOT = Path(__file__).resolve().parents[5]
 RESEARCH_ROOT = REPO_ROOT / "examples/ancient-dna-research"
+
+
+def _paired_binding() -> PairedResearchBinding:
+    return PairedResearchBinding(
+        question_sha256="7" * 64,
+        corpus_artifact_id="sha256:" + "8" * 64,
+        base_retrieval_artifact_id="sha256:" + "9" * 64,
+        retrieval_config_sha256="a" * 64,
+    )
+
+
+def _convergence_evidence(
+    *,
+    material_requirement_count: int = 1,
+    satisfied_requirement_artifact_ids: tuple[str, ...] = ("sha256:" + "1" * 64,),
+    remaining_requirement_artifact_ids: tuple[str, ...] = (),
+    material_candidate_count: int = 1,
+    classified_candidate_count: int = 1,
+    unresolved_classification_artifact_ids: tuple[str, ...] = (),
+    blocking_gap_artifact_ids: tuple[str, ...] = (),
+    unsearched_important_claim_artifact_ids: tuple[str, ...] = (),
+    answer_verification_status: AnswerVerificationStatus = (
+        AnswerVerificationStatus.admitted
+    ),
+    answer_revision_artifact_id: str | None = None,
+) -> ResearchConvergenceEvidence:
+    return create_research_convergence_evidence(
+        current_graph_artifact_id="sha256:" + "2" * 64,
+        material_requirement_count=material_requirement_count,
+        satisfied_requirement_artifact_ids=satisfied_requirement_artifact_ids,
+        remaining_requirement_artifact_ids=remaining_requirement_artifact_ids,
+        material_candidate_count=material_candidate_count,
+        classified_candidate_count=classified_candidate_count,
+        unresolved_classification_artifact_ids=(
+            unresolved_classification_artifact_ids
+        ),
+        blocking_gap_artifact_ids=blocking_gap_artifact_ids,
+        unsearched_important_claim_artifact_ids=(
+            unsearched_important_claim_artifact_ids
+        ),
+        answer_verification_status=answer_verification_status,
+        answer_revision_artifact_id=answer_revision_artifact_id,
+        material_conflict_count=0,
+        marginal_evidence_values=(0.5,),
+    )
 
 
 def _case() -> EvaluationCaseTruth:
@@ -697,7 +749,8 @@ def test_bounded_research_reports_paired_quality_cost_latency_and_convergence() 
     )
     paired = PairedResearchCase(
         case_id=case.case_id,
-        input_identity_sha256="7" * 64,
+        rag_binding=_paired_binding(),
+        rar_binding=_paired_binding(),
         source_identity_sha256="a" * 64,
         model_identity_sha256="b" * 64,
         config_identity_sha256="c" * 64,
@@ -705,12 +758,18 @@ def test_bounded_research_reports_paired_quality_cost_latency_and_convergence() 
         rar_faithfulness=_faithfulness(case, rar_output, _sources(case)),
         expected_counterevidence_qrel_ids=(case.qrels[0].qrel_id,),
         rar_counterevidence_qrel_ids=(case.qrels[0].qrel_id,),
+        rar_convergence_evidence=_convergence_evidence(
+            answer_revision_artifact_id="sha256:" + "d" * 64
+        ),
+        rar_convergence_reasons=(ConvergenceReason.coverage_and_answerability,),
+        rar_answer_changed=True,
         rag_cost_usd=0.01,
         rar_cost_usd=0.03,
         rag_latency_ms=10,
         rar_latency_ms=30,
         rar_iterations=2,
-        rar_convergence_reason="expected claim and counterevidence coverage stabilized",
+        rag_tool_calls=1,
+        rar_tool_calls=1,
     )
 
     report = ResearchUtilityEvaluator().evaluate((paired,))
@@ -724,6 +783,92 @@ def test_bounded_research_reports_paired_quality_cost_latency_and_convergence() 
     assert report.rag_total_cost_usd == 0.01
     assert report.rar_total_latency_ms == 30
     assert report.rar_total_iterations == 2
+    assert report.rag_total_tool_calls == 1
+    assert report.rar_total_tool_calls == 1
+    assert report.requirement_coverage.value == 1.0
+    assert report.classification_completeness.value == 1.0
+    assert report.completed_material_closure.value == 1.0
+
+
+def test_bounded_research_no_change_case_requires_no_counterevidence() -> None:
+    case = _case()
+    rag_output = _output(case, _citation(case)).model_copy(
+        update={"output_id": "verified-rag-output"}
+    )
+    rar_output = rag_output.model_copy(update={"output_id": "preserved-rar-output"})
+    paired = PairedResearchCase(
+        case_id=case.case_id,
+        rag_binding=_paired_binding(),
+        rar_binding=_paired_binding(),
+        source_identity_sha256="a" * 64,
+        model_identity_sha256="b" * 64,
+        config_identity_sha256="c" * 64,
+        rag_faithfulness=_faithfulness(case, rag_output, _sources(case)),
+        rar_faithfulness=_faithfulness(case, rar_output, _sources(case)),
+        expected_counterevidence_qrel_ids=(),
+        rar_counterevidence_qrel_ids=(),
+        rar_convergence_evidence=_convergence_evidence(
+            material_candidate_count=0,
+            classified_candidate_count=0,
+        ),
+        rar_convergence_reasons=(ConvergenceReason.stable_graph,),
+        rar_answer_changed=False,
+        rag_cost_usd=0.0,
+        rar_cost_usd=0.0,
+        rag_latency_ms=10,
+        rar_latency_ms=11,
+        rar_iterations=1,
+        rag_tool_calls=1,
+        rar_tool_calls=0,
+    )
+
+    report = ResearchUtilityEvaluator().evaluate((paired,))
+
+    assert report.counterevidence_recall.value == 1.0
+    assert report.outcomes[0].counterevidence_expected == 0
+    assert not report.outcomes[0].answer_changed
+    assert report.outcomes[0].revision_artifact_id is None
+    assert report.completed_material_closure.value == 1.0
+
+
+def test_paired_research_rejects_different_base_retrieval() -> None:
+    case = _case()
+    output = _output(case, _citation(case))
+    faithfulness = _faithfulness(case, output, _sources(case))
+    rar_output = output.model_copy(update={"output_id": "different-output"})
+    rar_faithfulness = _faithfulness(case, rar_output, _sources(case))
+
+    with pytest.raises(ValidationError, match="must share question, corpus, retrieval"):
+        PairedResearchCase(
+            case_id=case.case_id,
+            rag_binding=_paired_binding(),
+            rar_binding=_paired_binding().model_copy(
+                update={"base_retrieval_artifact_id": "sha256:" + "0" * 64}
+            ),
+            source_identity_sha256="a" * 64,
+            model_identity_sha256="b" * 64,
+            config_identity_sha256="c" * 64,
+            rag_faithfulness=faithfulness,
+            rar_faithfulness=rar_faithfulness,
+            expected_counterevidence_qrel_ids=(),
+            rar_counterevidence_qrel_ids=(),
+            rar_convergence_evidence=_convergence_evidence(
+                material_requirement_count=0,
+                satisfied_requirement_artifact_ids=(),
+                material_candidate_count=0,
+                classified_candidate_count=0,
+                answer_verification_status=AnswerVerificationStatus.not_run,
+            ),
+            rar_convergence_reasons=(ConvergenceReason.explicit_insufficiency,),
+            rar_answer_changed=False,
+            rag_cost_usd=0.0,
+            rar_cost_usd=0.0,
+            rag_latency_ms=1,
+            rar_latency_ms=1,
+            rar_iterations=1,
+            rag_tool_calls=0,
+            rar_tool_calls=0,
+        )
 
 
 def test_bounded_research_failure_keeps_pair_and_negative_deltas() -> None:
@@ -751,7 +896,8 @@ def test_bounded_research_failure_keeps_pair_and_negative_deltas() -> None:
     )
     paired = PairedResearchCase(
         case_id=case.case_id,
-        input_identity_sha256="5" * 64,
+        rag_binding=_paired_binding(),
+        rar_binding=_paired_binding(),
         source_identity_sha256="a" * 64,
         model_identity_sha256="b" * 64,
         config_identity_sha256="c" * 64,
@@ -759,12 +905,28 @@ def test_bounded_research_failure_keeps_pair_and_negative_deltas() -> None:
         rar_faithfulness=_faithfulness(case, rar_output, _sources(case)),
         expected_counterevidence_qrel_ids=(case.qrels[0].qrel_id,),
         rar_counterevidence_qrel_ids=(),
+        rar_convergence_evidence=_convergence_evidence(
+            satisfied_requirement_artifact_ids=(),
+            remaining_requirement_artifact_ids=("sha256:" + "3" * 64,),
+            classified_candidate_count=0,
+            unresolved_classification_artifact_ids=("sha256:" + "e" * 64,),
+            blocking_gap_artifact_ids=(
+                "sha256:" + "3" * 64,
+                "sha256:" + "e" * 64,
+                "sha256:" + "f" * 64,
+            ),
+            unsearched_important_claim_artifact_ids=("sha256:" + "f" * 64,),
+            answer_verification_status=AnswerVerificationStatus.not_run,
+        ),
+        rar_convergence_reasons=(ConvergenceReason.tool_limit,),
+        rar_answer_changed=False,
         rag_cost_usd=0.01,
         rar_cost_usd=0.04,
         rag_latency_ms=10,
         rar_latency_ms=40,
         rar_iterations=3,
-        rar_convergence_reason="budget exhausted before evidence coverage",
+        rag_tool_calls=1,
+        rar_tool_calls=2,
         rar_execution_status=ProductExecutionStatus.budget_exhausted,
         rar_failure_code="research-budget-exhausted",
         rar_answer_disposition=ProductAnswerDisposition.not_produced,
@@ -802,7 +964,8 @@ def test_budget_exhaustion_cannot_inherit_successful_partial_output_scores() -> 
     )
     paired = PairedResearchCase(
         case_id=case.case_id,
-        input_identity_sha256="9" * 64,
+        rag_binding=_paired_binding(),
+        rar_binding=_paired_binding(),
         source_identity_sha256="a" * 64,
         model_identity_sha256="b" * 64,
         config_identity_sha256="c" * 64,
@@ -810,12 +973,25 @@ def test_budget_exhaustion_cannot_inherit_successful_partial_output_scores() -> 
         rar_faithfulness=_faithfulness(case, apparently_good_rar, _sources(case)),
         expected_counterevidence_qrel_ids=(case.qrels[0].qrel_id,),
         rar_counterevidence_qrel_ids=(case.qrels[0].qrel_id,),
+        rar_convergence_evidence=_convergence_evidence(
+            satisfied_requirement_artifact_ids=(),
+            remaining_requirement_artifact_ids=("sha256:" + "3" * 64,),
+            blocking_gap_artifact_ids=(
+                "sha256:" + "3" * 64,
+                "sha256:" + "f" * 64,
+            ),
+            unsearched_important_claim_artifact_ids=("sha256:" + "f" * 64,),
+            answer_revision_artifact_id="sha256:" + "d" * 64,
+        ),
+        rar_convergence_reasons=(ConvergenceReason.tool_limit,),
+        rar_answer_changed=True,
         rag_cost_usd=0.0,
         rar_cost_usd=0.0,
         rag_latency_ms=10,
         rar_latency_ms=20,
         rar_iterations=2,
-        rar_convergence_reason="budget exhausted with declared work remaining",
+        rag_tool_calls=0,
+        rar_tool_calls=2,
         rar_execution_status=ProductExecutionStatus.budget_exhausted,
         rar_failure_code="research-budget-exhausted",
         rar_answer_disposition=ProductAnswerDisposition.not_produced,
