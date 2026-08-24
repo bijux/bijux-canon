@@ -10,6 +10,9 @@ tagged release, including legacy distribution naming where applicable.
 
 ### Changed
 
+- Workspace format 5 separates logical configuration identity from resolved
+  machine paths, migrates format-4 state with a verified rollback backup, and
+  reports direct relocation as an explicit field-level incompatibility.
 - Bound agent, ingest, reason, and index peers to the exact runtime version and
   defined dependency-ordered family publication.
 - Added immutable run publication, interrupted-attempt recovery, explicit

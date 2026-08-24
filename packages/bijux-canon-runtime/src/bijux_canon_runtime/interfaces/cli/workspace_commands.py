@@ -8,6 +8,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+from pathlib import Path
 import sys
 from typing import TextIO
 
@@ -29,7 +30,7 @@ def initialize_workspace(args: argparse.Namespace) -> int:
         configuration = resolve_runtime_configuration(
             environment=os.environ,
             explicit={
-                "embedding_model_path": args.model,
+                "embedding_model_path": Path(args.model).expanduser().resolve(),
                 "working_root": args.workspace,
             },
         )

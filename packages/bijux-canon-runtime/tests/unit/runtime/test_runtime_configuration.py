@@ -132,8 +132,8 @@ def test_workspace_layout_resolves_every_runtime_authority(tmp_path: Path) -> No
     assert layout.staging_root == workspace / "staging"
     assert layout.temporary_root == workspace / "process"
     assert layout.backup_root == workspace / "backups"
-    assert layout.schema_version == "bijux.runtime.workspace-layout.v4"
-    assert layout.workspace_version == 4
+    assert layout.schema_version == "bijux.runtime.workspace-layout.v5"
+    assert layout.workspace_version == 5
     assert len(layout.identity_sha256) == 64
 
 
@@ -169,6 +169,30 @@ def test_workspace_layout_normalizes_overrides_against_root(tmp_path: Path) -> N
     assert configuration.identity_sha256 == equivalent.identity_sha256
     assert configuration.identity_sha256 != changed.identity_sha256
     assert configuration.redacted_record()["workspace_layout"] == layout.record()
+
+
+def test_workspace_identity_excludes_machine_local_locations(tmp_path: Path) -> None:
+    first = resolve_runtime_configuration(
+        explicit={
+            "working_root": tmp_path / "machine-a" / "workspace",
+            "embedding_model_path": tmp_path / "machine-a" / "model",
+        }
+    )
+    second = resolve_runtime_configuration(
+        explicit={
+            "working_root": tmp_path / "machine-b" / "workspace",
+            "embedding_model_path": tmp_path / "machine-b" / "model",
+        }
+    )
+
+    first_layout = first.require_workspace_layout()
+    second_layout = second.require_workspace_layout()
+
+    assert first_layout.root != second_layout.root
+    assert first_layout.record() != second_layout.record()
+    assert first_layout.identity_record() == second_layout.identity_record()
+    assert first_layout.identity_sha256 == second_layout.identity_sha256
+    assert first.identity_sha256 == second.identity_sha256
 
 
 def test_workspace_layout_rejects_role_collisions(tmp_path: Path) -> None:

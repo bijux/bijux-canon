@@ -268,6 +268,13 @@ are authoritative in `runtime.duckdb`. Moving or restoring a workspace therefore
 requires the governed backup/restore path; a database file without its verified
 CAS is not a complete Runtime authority.
 
+Workspace format 5 hashes logical path roles separately from their resolved
+machine locations, so equivalent relative and absolute spelling reopens the
+same workspace identity after restart. Directly moving or copying a workspace
+directory to a new root is not supported in this release: initialization names
+`layout.root` as incompatible and leaves the moved copy unchanged. Use the
+governed backup/restore path when relocation is required.
+
 Installed research traces persist the complete candidate-adjudication reports,
 not merely retrieval hit identifiers. Verification recomputes each report and
 classification identity and requires coverage of every candidate across the

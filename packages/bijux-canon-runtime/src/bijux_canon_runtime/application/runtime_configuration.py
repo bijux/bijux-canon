@@ -86,8 +86,8 @@ class RuntimeWorkspaceLayout:
     staging_root: Path
     temporary_root: Path
     backup_root: Path
-    schema_version: str = "bijux.runtime.workspace-layout.v4"
-    workspace_version: int = 4
+    schema_version: str = "bijux.runtime.workspace-layout.v5"
+    workspace_version: int = 5
 
     @classmethod
     def resolve(
@@ -170,8 +170,46 @@ class RuntimeWorkspaceLayout:
 
     @property
     def identity_sha256(self) -> str:
-        """Return the deterministic identity of this effective layout."""
-        return _record_sha256(self.record(include_identity=False))
+        """Return a logical identity that excludes machine-local locations."""
+        return _record_sha256(self.identity_record())
+
+    def identity_record(self) -> dict[str, object]:
+        """Return stable path roles without absolute machine-local locations."""
+
+        def location(path: Path, *, external_role: str | None = None) -> object:
+            try:
+                relative = path.relative_to(self.root).as_posix()
+            except ValueError:
+                if external_role is None:
+                    return {"authority": "external"}
+                return {"authority": "external", "role": external_role}
+            return {"authority": "workspace", "relative_path": relative}
+
+        return {
+            "active_generation_path": location(self.active_generation_path),
+            "backup_root": location(self.backup_root),
+            "cas_root": location(self.cas_root),
+            "database_path": location(self.database_path),
+            "index_root": location(self.index_root),
+            "job_store_path": location(self.job_store_path),
+            "locks_root": location(self.locks_root),
+            "manifest_path": location(self.manifest_path),
+            "migration_ledger_path": location(self.migration_ledger_path),
+            "model_lock_path": location(
+                self.model_lock_path,
+                external_role="locked-embedding-model",
+            ),
+            "model_root": location(
+                self.model_root,
+                external_role="locked-embedding-model",
+            ),
+            "operations_root": location(self.operations_root),
+            "schema_version": self.schema_version,
+            "staging_root": location(self.staging_root),
+            "temporary_root": location(self.temporary_root),
+            "vex_root": location(self.vex_root),
+            "workspace_version": self.workspace_version,
+        }
 
     def record(self, *, include_identity: bool = True) -> dict[str, object]:
         """Return a stable JSON-compatible representation."""
@@ -325,7 +363,7 @@ class RuntimeConfiguration:
             "schema_version": self.schema_version,
             "strict_determinism": self.strict_determinism,
             "retrieval_policy_id": self.retrieval_policy_id,
-            "workspace_layout": None if layout is None else layout.record(),
+            "workspace_layout": None if layout is None else layout.identity_record(),
         }
 
 

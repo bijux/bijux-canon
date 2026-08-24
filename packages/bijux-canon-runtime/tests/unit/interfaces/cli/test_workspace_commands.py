@@ -111,6 +111,28 @@ def test_json_init_emits_one_stable_success_document(
     assert layout.model_root == (tmp_path / "model").resolve()
 
 
+def test_cli_resolves_relative_model_from_the_calling_directory(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    captured: list[RuntimeConfiguration] = []
+    expected = _result(tmp_path)
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(
+        "bijux_canon_runtime.interfaces.cli.workspace_commands."
+        "initialize_runtime_workspace",
+        lambda configuration: captured.append(configuration) or expected,
+    )
+    args = build_parser(prog_name="bijux-canon-runtime").parse_args(
+        ["init", "--workspace", "workspace", "--model", "model", "--json"]
+    )
+
+    assert initialize_workspace(args) == 0
+    layout = captured[0].require_workspace_layout()
+    assert layout.root == tmp_path / "workspace"
+    assert layout.model_root == tmp_path / "model"
+
+
 def test_human_init_identifies_outcome_workspace_and_identities(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,

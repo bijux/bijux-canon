@@ -6,6 +6,7 @@ from __future__ import annotations
 import json
 import os
 from pathlib import Path
+import shutil
 import sqlite3
 
 import duckdb
@@ -135,14 +136,10 @@ def _install_known_v3_layout(configuration) -> tuple[bytes, bytes]:
     legacy_configuration = workspace_initialization._configuration_record_for_layout(
         configuration,
         legacy_layout,
-        retrieval_policy_id=(
-            "bijux.canon.index.hybrid-retrieval.content-evidence-v1"
-        ),
+        retrieval_policy_id=("bijux.canon.index.hybrid-retrieval.content-evidence-v1"),
     )
     workspace_id = workspace_initialization._workspace_id_for_version(
-        configuration_identity_sha256=str(
-            legacy_configuration["identity_sha256"]
-        ),
+        configuration_identity_sha256=str(legacy_configuration["identity_sha256"]),
         layout_identity_sha256=str(legacy_layout["identity_sha256"]),
         model_lock_id=model_lock_id,
         workspace_version=3,
@@ -157,9 +154,41 @@ def _install_known_v3_layout(configuration) -> tuple[bytes, bytes]:
         model_lock_id,
         str(ledger["ledger_sha256"]),
         created_at=str(current["created_at"]),
-        retrieval_policy_id=(
-            "bijux.canon.index.hybrid-retrieval.content-evidence-v1"
-        ),
+        retrieval_policy_id=("bijux.canon.index.hybrid-retrieval.content-evidence-v1"),
+    )
+    manifest_content = canonical_json_bytes(manifest)
+    ledger_content = canonical_json_bytes(ledger)
+    layout.manifest_path.write_bytes(manifest_content)
+    layout.migration_ledger_path.write_bytes(ledger_content)
+    return manifest_content, ledger_content
+
+
+def _install_known_v4_layout(configuration) -> tuple[bytes, bytes]:
+    layout = configuration.require_workspace_layout()
+    current = json.loads(layout.manifest_path.read_bytes())
+    model_lock_id = str(current["model_lock_artifact_id"])
+    legacy_layout = workspace_initialization._legacy_v4_layout_record(layout)
+    legacy_configuration = workspace_initialization._configuration_record_for_layout(
+        configuration,
+        legacy_layout,
+        retrieval_policy_id=configuration.retrieval_policy_id,
+    )
+    workspace_id = workspace_initialization._workspace_id_for_version(
+        configuration_identity_sha256=str(legacy_configuration["identity_sha256"]),
+        layout_identity_sha256=str(legacy_layout["identity_sha256"]),
+        model_lock_id=model_lock_id,
+        workspace_version=4,
+    )
+    ledger = workspace_initialization._migration_ledger(
+        workspace_id=workspace_id,
+        migrations=[],
+    )
+    manifest = workspace_initialization._legacy_v4_manifest_record(
+        configuration,
+        layout,
+        model_lock_id,
+        str(ledger["ledger_sha256"]),
+        created_at=str(current["created_at"]),
     )
     manifest_content = canonical_json_bytes(manifest)
     ledger_content = canonical_json_bytes(ledger)
@@ -229,13 +258,13 @@ def test_known_v1_workspace_is_backed_up_migrated_and_not_reapplied(
     migration_ledger = json.loads(ledger_after)
 
     assert migrated.status is WorkspaceInitializationStatus.MIGRATED
-    assert migrated.workspace_version == 4
-    assert len(migrated.applied_migration_ids) == 3
+    assert migrated.workspace_version == 5
+    assert len(migrated.applied_migration_ids) == 4
     assert migrated.rollback_backup_path is not None
     backup = Path(migrated.rollback_backup_path)
     assert (backup / "workspace.json").read_bytes() == legacy_manifest
     assert (backup / "backup.json").is_file()
-    assert len(migration_ledger["migrations"]) == 3
+    assert len(migration_ledger["migrations"]) == 4
     assert (
         migration_ledger["migrations"][0]["migration_id"]
         == migrated.applied_migration_ids[0]
@@ -249,7 +278,7 @@ def test_known_v1_workspace_is_backed_up_migrated_and_not_reapplied(
     assert layout.migration_ledger_path.read_bytes() == ledger_after
     assert (
         len(tuple((layout.backup_root / "workspace-migrations/generations").iterdir()))
-        == 3
+        == 4
     )
 
 
@@ -284,7 +313,7 @@ def test_interrupted_manifest_activation_resumes_from_bound_backup(
     monkeypatch.setattr(os, "replace", real_replace)
     recovered = initialize_runtime_workspace(configuration)
     assert recovered.status is WorkspaceInitializationStatus.MIGRATED
-    assert validate_runtime_workspace(configuration).workspace_version == 4
+    assert validate_runtime_workspace(configuration).workspace_version == 5
 
 
 def test_known_v2_workspace_is_backed_up_and_binds_retrieval_policy(
@@ -300,8 +329,8 @@ def test_known_v2_workspace_is_backed_up_and_binds_retrieval_policy(
     migrated = initialize_runtime_workspace(configuration)
 
     assert migrated.status is WorkspaceInitializationStatus.MIGRATED
-    assert migrated.workspace_version == 4
-    assert len(migrated.applied_migration_ids) == 2
+    assert migrated.workspace_version == 5
+    assert len(migrated.applied_migration_ids) == 3
     assert migrated.rollback_backup_path is not None
     backup = Path(migrated.rollback_backup_path)
     assert (backup / "workspace.json").read_bytes() == legacy_manifest
@@ -310,7 +339,7 @@ def test_known_v2_workspace_is_backed_up_and_binds_retrieval_policy(
     assert manifest["configuration"]["retrieval_policy_id"] == (
         configuration.retrieval_policy_id
     )
-    assert validate_runtime_workspace(configuration).workspace_version == 4
+    assert validate_runtime_workspace(configuration).workspace_version == 5
 
 
 def test_interrupted_v2_policy_migration_resumes_from_bound_backup(
@@ -343,7 +372,7 @@ def test_interrupted_v2_policy_migration_resumes_from_bound_backup(
     monkeypatch.setattr(os, "replace", real_replace)
     recovered = initialize_runtime_workspace(configuration)
     assert recovered.status is WorkspaceInitializationStatus.MIGRATED
-    assert recovered.workspace_version == 4
+    assert recovered.workspace_version == 5
     assert validate_runtime_workspace(configuration).status is (
         WorkspaceInitializationStatus.UNCHANGED
     )
@@ -362,8 +391,8 @@ def test_known_v3_workspace_activates_content_evidence_policy_with_backup(
     migrated = initialize_runtime_workspace(configuration)
 
     assert migrated.status is WorkspaceInitializationStatus.MIGRATED
-    assert migrated.workspace_version == 4
-    assert len(migrated.applied_migration_ids) == 1
+    assert migrated.workspace_version == 5
+    assert len(migrated.applied_migration_ids) == 2
     assert migrated.rollback_backup_path is not None
     backup = Path(migrated.rollback_backup_path)
     assert (backup / "workspace.json").read_bytes() == legacy_manifest
@@ -407,10 +436,60 @@ def test_interrupted_v3_policy_activation_resumes_from_bound_backup(
     monkeypatch.setattr(os, "replace", real_replace)
     recovered = initialize_runtime_workspace(configuration)
     assert recovered.status is WorkspaceInitializationStatus.MIGRATED
-    assert recovered.workspace_version == 4
+    assert recovered.workspace_version == 5
     assert validate_runtime_workspace(configuration).status is (
         WorkspaceInitializationStatus.UNCHANGED
     )
+
+
+def test_known_v4_workspace_migrates_to_portable_logical_identity(
+    tmp_path: Path,
+) -> None:
+    model = _materialized_model(tmp_path)
+    workspace = tmp_path / "workspace"
+    configuration = _configuration(workspace, model)
+    initialize_runtime_workspace(configuration)
+    layout = configuration.require_workspace_layout()
+    legacy_manifest, legacy_ledger = _install_known_v4_layout(configuration)
+
+    migrated = initialize_runtime_workspace(configuration)
+
+    assert migrated.status is WorkspaceInitializationStatus.MIGRATED
+    assert migrated.workspace_version == 5
+    assert migrated.applied_migration_ids == (
+        workspace_initialization._V4_TO_V5_MIGRATION_ID,
+    )
+    assert migrated.rollback_backup_path is not None
+    backup = Path(migrated.rollback_backup_path)
+    assert (backup / "workspace.json").read_bytes() == legacy_manifest
+    assert (backup / "workspace-migrations.json").read_bytes() == legacy_ledger
+    manifest = json.loads(layout.manifest_path.read_bytes())
+    assert manifest["schema_version"] == "bijux.runtime.workspace.v5"
+    assert manifest["layout_identity_sha256"] == layout.identity_sha256
+    assert manifest["workspace_id"] == migrated.workspace_id
+
+
+def test_direct_workspace_relocation_names_the_incompatible_field_without_mutation(
+    tmp_path: Path,
+) -> None:
+    model = _materialized_model(tmp_path)
+    original_root = tmp_path / "original" / "workspace"
+    initialize_runtime_workspace(_configuration(original_root, model))
+    relocated_root = tmp_path / "relocated" / "workspace"
+    shutil.copytree(original_root, relocated_root)
+    relocated = _configuration(relocated_root, model)
+    relocated_manifest = relocated.require_workspace_layout().manifest_path
+    before = relocated_manifest.read_bytes()
+
+    with pytest.raises(WorkspaceInitializationError) as raised:
+        initialize_runtime_workspace(relocated)
+
+    assert (
+        raised.value.code is WorkspaceInitializationErrorCode.INCOMPATIBLE_CONFIGURATION
+    )
+    assert "layout.root" in raised.value.detail
+    assert "direct workspace relocation is unsupported" in raised.value.remediation
+    assert relocated_manifest.read_bytes() == before
 
 
 def test_v2_policy_migration_refuses_other_configuration_drift(
@@ -575,6 +654,7 @@ def test_existing_workspace_refuses_configuration_change_without_mutation(
     assert (
         raised.value.code is WorkspaceInitializationErrorCode.INCOMPATIBLE_CONFIGURATION
     )
+    assert "configuration.offline" in raised.value.detail
     assert original.require_workspace_layout().manifest_path.read_bytes() == before
 
 
