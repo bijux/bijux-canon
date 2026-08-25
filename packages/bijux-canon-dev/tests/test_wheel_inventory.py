@@ -155,6 +155,7 @@ def _wheel(
     leak: bool = False,
     corrupt_record: bool = False,
     duplicate_python: bool = False,
+    duplicate_empty_python: bool = False,
 ) -> Path:
     wheel_dir = root / "artifacts" / "wheels"
     wheel_dir.mkdir(parents=True, exist_ok=True)
@@ -200,6 +201,9 @@ def _wheel(
         payloads["src/private.py"] = b"secret\n"
     if duplicate_python and module:
         payloads[f"{module}/duplicate.py"] = payloads[f"{module}/__init__.py"]
+    if duplicate_empty_python and module:
+        payloads[f"{module}/namespace_a.py"] = b""
+        payloads[f"{module}/namespace_b.py"] = b""
     record_name = f"{dist_info}/RECORD"
     payloads[record_name] = _record(payloads, record_name)
     if corrupt_record:
@@ -377,6 +381,22 @@ def test_inventory_rejects_missing_leaked_and_corrupt_contents(
         item for item in evidence["records"] if item["package_id"] == "example"
     )
     assert any(expected_issue in issue for issue in example["issues"])
+
+
+def test_inventory_allows_empty_namespace_markers(tmp_path: Path) -> None:
+    root = _repository(tmp_path)
+    wheel_dir = _wheel_set(root, duplicate_empty_python=True)
+
+    evidence = run_wheel_inventory(
+        repo_root=root,
+        wheel_dir=wheel_dir,
+        output_path=root / "artifacts" / "inventory" / "result.json",
+        source_commit=SOURCE_COMMIT,
+        twine_python=Path("/usr/bin/true"),
+        runner=_passing_runner,
+    )
+
+    assert evidence["result"] == "passed"
 
 
 def test_inventory_requires_disposable_output_boundaries(tmp_path: Path) -> None:

@@ -410,7 +410,10 @@ def _duplicate_python_files(
     payloads: dict[str, list[str]] = {}
     for name in members:
         if name.endswith(".py"):
-            digest = hashlib.sha256(archive.read(name)).hexdigest()
+            payload = archive.read(name)
+            if not payload:
+                continue
+            digest = hashlib.sha256(payload).hexdigest()
             payloads.setdefault(digest, []).append(name)
     return sorted(sorted(paths) for paths in payloads.values() if len(paths) > 1)
 
