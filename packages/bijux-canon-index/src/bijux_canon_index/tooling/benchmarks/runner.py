@@ -80,7 +80,9 @@ def _build_engine(
 
 
 def _ingest(
-    engine: VectorExecutionEngine, documents: list[str], vectors: np.ndarray
+    engine: VectorExecutionEngine,
+    documents: list[str],
+    vectors: np.ndarray[Any, np.dtype[np.float32]],
 ) -> None:
     """Handle ingest."""
     req = IngestRequest(
@@ -109,7 +111,7 @@ def _execute_queries(
     contract: ExecutionContract,
     mode: ExecutionMode,
     intent: ExecutionIntent,
-    queries: Iterable[np.ndarray],
+    queries: Iterable[np.ndarray[Any, np.dtype[np.float32]]],
     top_k: int,
     budget: ExecutionBudgetPayload | None,
     randomness: RandomnessProfilePayload | None,
@@ -161,7 +163,10 @@ def _execute_queries(
 
 
 def _exact_top_k(
-    vectors: np.ndarray, vector_ids: list[str], query: np.ndarray, top_k: int
+    vectors: np.ndarray[Any, np.dtype[np.float32]],
+    vector_ids: list[str],
+    query: np.ndarray[Any, np.dtype[np.float32]],
+    top_k: int,
 ) -> list[str]:
     """Handle exact top k."""
     import numpy as np
@@ -179,8 +184,8 @@ def _exact_top_k(
 def run_benchmark(
     *,
     documents: list[str],
-    vectors: np.ndarray,
-    queries: np.ndarray,
+    vectors: np.ndarray[Any, np.dtype[np.float32]],
+    queries: np.ndarray[Any, np.dtype[np.float32]],
     store_backend: str | None,
     store_uri: str | None,
     mode: str,

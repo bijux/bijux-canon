@@ -6,7 +6,7 @@ API_MODE := freeze
 FMT_DIRS          := src tests
 CODESPELL         = $(VENV_PYTHON) -m codespell_lib --ignore-words-list=ND,nd
 MYPY_FLAGS        := --strict --explicit-package-bases
-export MYPYPATH   := $(CURDIR)
+export MYPYPATH   := $(CURDIR)/stubs:$(CURDIR)
 API_LOG                   = $(API_ARTIFACTS_DIR)/openapi_drift.log
 API_OPENAPI_DRIFT_COMMAND = $(VENV_PYTHON) -m bijux_canon_dev.api.openapi_drift --app-import bijux_canon_index.api.v1:build_app --schema "$(API_DIR)/v1/schema.yaml" --out "$(API_ARTIFACTS_DIR)/openapi.generated.json"
 SECURITY_AUDIT_PREPARE_MODE := pyproject

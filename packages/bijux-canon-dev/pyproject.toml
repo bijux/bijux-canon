@@ -93,6 +93,11 @@ markers = [
   "slow: long-running checks excluded from default ci and tox lanes",
 ]
 
+[tool.interrogate]
+# Keep documentation coverage fatal and ratcheted at the measured package baseline.
+fail-under = 62
+color = true
+
 [tool.hatch.build.targets.wheel]
 packages = ["src/bijux_canon_dev"]
 include = ["src/bijux_canon_dev/py.typed"]

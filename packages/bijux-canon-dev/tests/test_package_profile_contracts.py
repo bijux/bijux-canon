@@ -21,7 +21,7 @@ def test_index_typing_resolves_package_local_test_namespace() -> None:
     )
 
     assert "MYPY_FLAGS        := --strict --explicit-package-bases" in profile
-    assert "export MYPYPATH   := $(CURDIR)" in profile
+    assert "export MYPYPATH   := $(CURDIR)/stubs:$(CURDIR)" in profile
 
 
 def test_runtime_category_lanes_do_not_apply_unit_coverage_floors() -> None:
