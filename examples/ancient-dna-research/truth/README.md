@@ -167,3 +167,49 @@ python -m bijux_canon_dev.corpus.research_truth_audit \
   --split examples/ancient-dna-research/truth/split.json \
   --cases examples/ancient-dna-research/truth/evaluation-cases.jsonl
 ```
+
+## Independent release review
+
+The legacy qrel and claim records still have only their original reviewer. They
+cannot become release truth through an automated assertion or self-review. An
+operator prepares a commit-bound, reviewer-blind packet for external review:
+
+```console
+bijux-canon-truth-review packet \
+  --truth-root examples/ancient-dna-research/truth \
+  --corpus-lock examples/ancient-dna-research/corpus.lock.json \
+  --research-root examples/ancient-dna-research \
+  --protocol docs/04-bijux-canon-reason/quality/annotation-protocol.md \
+  --source-commit "$(git rev-parse HEAD)" \
+  --output-directory artifacts/truth-review/packet
+```
+
+The packet contains the immutable source material, annotation protocol, all 142
+required truth subjects, and a complete review template. It removes existing
+reviewer provenance and contains no system output. Each external reviewer must
+inspect the packet sources, fill every decision and use a real, stable reviewer
+identity. Seal each completed draft independently:
+
+```console
+bijux-canon-truth-review seal-review \
+  --packet artifacts/truth-review/packet \
+  --draft /path/to/completed-review.json > /path/to/sealed-review.json
+```
+
+Admission requires at least two distinct reviewers who are not the truth
+authors or prior reviewers. Any disagreement, conflict, rejection, or requested
+change requires a third independent adjudicator and an exact adjudication
+record. A requested correction always leaves the current packet ineligible;
+apply the source-grounded correction, create a new packet on the resulting
+commit, and repeat review. Never invent reviewer identities, dates, rationales,
+decisions, or signoffs.
+
+```console
+bijux-canon-truth-review admit \
+  --packet artifacts/truth-review/packet \
+  --review /path/to/sealed-review-a.json \
+  --review /path/to/sealed-review-b.json
+```
+
+Only an admission report with `release_eligible: true` and
+`manual_signoff_verified: true` satisfies this external approval checkpoint.

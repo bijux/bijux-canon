@@ -40,6 +40,7 @@ Security = "https://github.com/bijux/bijux-canon/blob/main/SECURITY.md"
 
 [project.scripts]
 bijux-canon-development-evaluation = "bijux_canon_dev.quality.development_evaluation:main"
+bijux-canon-truth-review = "bijux_canon_dev.corpus.research_truth_review:main"
 bijux-canon-impact-tests = "bijux_canon_dev.verification.impact_selection:main"
 bijux-canon-extras-matrix = "bijux_canon_dev.release.extras_matrix:main"
 bijux-canon-family-compatibility = "bijux_canon_dev.release.family_compatibility:main"
