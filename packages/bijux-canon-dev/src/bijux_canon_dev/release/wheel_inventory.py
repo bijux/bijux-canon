@@ -299,6 +299,23 @@ def inspect_workspace_policy(repo_root: Path) -> tuple[PackagePolicy, ...]:
     normalized = [canonicalize_name(policy.distribution_name) for policy in policies]
     if len(normalized) != len(set(normalized)):
         raise WheelInventoryError("workspace distribution names are not unique")
+    script_owners: dict[str, list[str]] = {}
+    for policy in policies:
+        for script, _entrypoint in policy.scripts:
+            script_owners.setdefault(script, []).append(policy.distribution_name)
+    duplicate_scripts = {
+        script: sorted(owners)
+        for script, owners in script_owners.items()
+        if len(owners) > 1
+    }
+    if duplicate_scripts:
+        details = ", ".join(
+            f"{script} ({', '.join(owners)})"
+            for script, owners in sorted(duplicate_scripts.items())
+        )
+        raise WheelInventoryError(
+            f"workspace console scripts require one owning distribution: {details}"
+        )
     return tuple(
         sorted(policies, key=lambda item: canonicalize_name(item.distribution_name))
     )

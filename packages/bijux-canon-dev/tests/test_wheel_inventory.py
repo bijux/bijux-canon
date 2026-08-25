@@ -95,6 +95,45 @@ example = ["py.typed", "api/schema.hash"]
     return root
 
 
+def test_workspace_policy_rejects_duplicate_console_script_ownership(
+    tmp_path: Path,
+) -> None:
+    root = _repository(tmp_path)
+    root_pyproject = root / "pyproject.toml"
+    root_pyproject.write_text(
+        root_pyproject.read_text(encoding="utf-8")
+        .replace(
+            'primary_packages = ["example"]',
+            'primary_packages = ["example", "second"]',
+        )
+        .replace(
+            'example = "packages/example"',
+            'example = "packages/example"\nsecond = "packages/second"',
+        ),
+        encoding="utf-8",
+    )
+    example_pyproject = root / "packages" / "example" / "pyproject.toml"
+    second = root / "packages" / "second"
+    second.mkdir()
+    (second / "pyproject.toml").write_text(
+        example_pyproject.read_text(encoding="utf-8")
+        .replace('name = "example"', 'name = "second"', 1)
+        .replace('packages = ["src/example"]', 'packages = ["src/second"]')
+        .replace('include = ["src/example/py.typed"]', 'include = ["src/second/py.typed"]')
+        .replace(
+            'example = ["py.typed", "api/schema.hash"]',
+            'second = ["py.typed", "api/schema.hash"]',
+        ),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(
+        WheelInventoryError,
+        match=r"example \(example, second\)",
+    ):
+        inspect_workspace_policy(root)
+
+
 def _record(payloads: dict[str, bytes], record_name: str) -> bytes:
     rows: list[str] = []
     for name, payload in sorted(payloads.items()):

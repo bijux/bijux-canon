@@ -155,7 +155,6 @@ include = [
 
 [project.scripts]
 bijux-canon-reason = "bijux_canon_reason.interfaces.cli:app"
-bijux-rar = "bijux_canon_reason.interfaces.cli:app"
 
 [tool.pytest.ini_options]
 addopts = "--benchmark-storage=file://./.pytest_cache/benchmarks"
