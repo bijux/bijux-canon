@@ -186,6 +186,15 @@ def add_v2_commands(
         retrieval_evaluation.add_argument("--top-k", type=int, default=10)
         retrieval_evaluation.add_argument("--human", action="store_true")
 
+    answer_evaluation = commands.add_parser(
+        "evaluate-answer",
+        help="Adapt one persisted grounded answer into output-only evaluation input.",
+    )
+    answer_evaluation.add_argument("run_id")
+    answer_evaluation.add_argument("--attempt-id")
+    answer_evaluation.add_argument("--case-id", required=True)
+    answer_evaluation.add_argument("--question", required=True)
+
     status = commands.add_parser("status", help="Inspect durable job state.")
     status.add_argument("job_id")
     status.add_argument(

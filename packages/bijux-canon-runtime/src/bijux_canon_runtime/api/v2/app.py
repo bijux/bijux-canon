@@ -16,11 +16,13 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.responses import Response
 
+from bijux_canon_reason.evaluation import SystemOutput
 from bijux_canon_runtime.api.v2.conversion import (
     job_status,
     operation_request,
 )
 from bijux_canon_runtime.api.v2.schemas import (
+    AnswerEvaluationRequest,
     AskRequest,
     BuildIndexRequest,
     CancelRequest,
@@ -467,6 +469,23 @@ def create_app(
         )
         return RetrievalEvaluationResponse.model_validate(
             service.evaluate_reviewed_retrieval(parameters).manifest()
+        )
+
+    @api.post(
+        "/api/v2/answer-evaluations",
+        response_model=SystemOutput,
+        responses=PROBLEM_RESPONSES,
+    )
+    def evaluate_answer(
+        body: Annotated[AnswerEvaluationRequest, Body(...)],
+        _: Version,
+        service: Services,
+    ) -> SystemOutput:
+        return service.evaluate_persisted_answer(
+            case_id=body.case_id,
+            question=body.question,
+            run_id=body.run_id,
+            attempt_id=body.attempt_id,
         )
 
     @api.post(

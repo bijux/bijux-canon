@@ -138,6 +138,15 @@ class RetrievalEvaluationRequest(StrictModel):
     top_k: Annotated[int, Field(ge=10, le=1000)] = 10
 
 
+class AnswerEvaluationRequest(StrictModel):
+    """Adapt one persisted grounded answer without supplying truth labels."""
+
+    case_id: StableIdentity
+    question: Annotated[str, Field(min_length=1, max_length=32768)]
+    run_id: StableIdentity
+    attempt_id: StableIdentity | None = None
+
+
 class RetrievalLocatorSegmentResponse(StrictModel):
     """One exact content-bound citation locator segment."""
 
@@ -689,6 +698,7 @@ class ProblemDetail(StrictModel):
 
 
 __all__ = [
+    "AnswerEvaluationRequest",
     "AskRequest",
     "BuildIndexRequest",
     "CancelRequest",

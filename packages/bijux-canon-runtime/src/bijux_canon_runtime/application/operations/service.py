@@ -14,6 +14,10 @@ from bijux_canon_index.evaluation import (
     PublicRetrievalEvaluationReport,
     PublicRetrievalEvaluationRequest,
 )
+from bijux_canon_reason.evaluation import SystemOutput
+from bijux_canon_runtime.application.operations.answer_evaluation import (
+    PersistedAnswerEvaluationAdapter,
+)
 from bijux_canon_runtime.application.operations.codec import (
     replay_request_from_payload,
     replay_request_payload,
@@ -182,6 +186,7 @@ class RuntimeApplicationServicesV2:
         corpus_inspector: ResourceInspectionExecutor | None = None,
         index_inspector: ResourceInspectionExecutor | None = None,
         retrieval_evaluator: RetrievalEvaluationExecutor | None = None,
+        answer_evaluator: PersistedAnswerEvaluationAdapter | None = None,
         operation_preflight: RuntimeOperationPreflight | None = None,
         resource_closers: tuple[Callable[[], None], ...] = (),
     ) -> None:
@@ -191,6 +196,7 @@ class RuntimeApplicationServicesV2:
         self._corpus_inspector = corpus_inspector
         self._index_inspector = index_inspector
         self._retrieval_evaluator = retrieval_evaluator
+        self._answer_evaluator = answer_evaluator or PersistedAnswerEvaluationAdapter()
         self._operation_preflight = operation_preflight
         self._resource_closers = resource_closers
         self._closed = False
@@ -347,6 +353,21 @@ class RuntimeApplicationServicesV2:
     ) -> RuntimeRunInspection:
         """Inspect a persisted run without relying on live process state."""
         return self._inspector.inspect(run_id, attempt_id=attempt_id)
+
+    def evaluate_persisted_answer(
+        self,
+        *,
+        case_id: str,
+        question: str,
+        run_id: str,
+        attempt_id: str | None = None,
+    ) -> SystemOutput:
+        """Adapt one completed persisted answer into output-only evaluation input."""
+        return self._answer_evaluator.adapt(
+            case_id=case_id,
+            question=question,
+            inspection=self.inspect(run_id, attempt_id=attempt_id),
+        )
 
     def inspect_page(
         self,

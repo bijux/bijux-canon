@@ -211,6 +211,16 @@ def run_v2_command(
             else:
                 _write(evaluation.manifest())
             return 0
+        if args.v2_command == "evaluate-answer":
+            _write(
+                service.evaluate_persisted_answer(
+                    case_id=args.case_id,
+                    question=args.question,
+                    run_id=args.run_id,
+                    attempt_id=args.attempt_id,
+                ).model_dump(mode="json")
+            )
+            return 0
         if args.v2_command == "status":
             snapshot = (
                 service.wait(args.job_id, timeout_seconds=args.timeout_seconds)
