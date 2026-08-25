@@ -22,16 +22,26 @@ _EXAMPLE = _REPOSITORY_ROOT / "examples" / "ancient-dna-research"
 def test_installed_wheels_complete_cpu_hybrid_workflow(tmp_path: Path) -> None:
     runtime_value = os.environ.get("BIJUX_CANON_RUNTIME_INSTALLED_COMMAND")
     index_value = os.environ.get("BIJUX_CANON_INDEX_INSTALLED_COMMAND")
+    development_value = os.environ.get(
+        "BIJUX_CANON_DEVELOPMENT_EVALUATION_INSTALLED_COMMAND"
+    )
     model_value = os.environ.get("BIJUX_CANON_INSTALLED_MODEL_DIRECTORY")
-    if runtime_value is None or index_value is None or model_value is None:
+    if (
+        runtime_value is None
+        or index_value is None
+        or development_value is None
+        or model_value is None
+    ):
         pytest.skip(
-            "set installed Runtime, Index, and materialized model environment paths"
+            "set installed Runtime, Index, development evaluation, and model paths"
         )
     runtime = Path(runtime_value).resolve()
     index = Path(index_value).resolve()
+    development = Path(development_value).resolve()
     model = Path(model_value).resolve()
     assert runtime.is_file()
     assert index.is_file()
+    assert development.is_file()
     assert model.is_dir()
 
     copied_example = tmp_path / "ancient-dna-research"
@@ -52,6 +62,16 @@ def test_installed_wheels_complete_cpu_hybrid_workflow(tmp_path: Path) -> None:
         str(runtime),
         "--index-command",
         str(index),
+        "--development-evaluation-command",
+        str(development),
+        "--source-commit",
+        subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            cwd=_REPOSITORY_ROOT,
+            capture_output=True,
+            check=True,
+            text=True,
+        ).stdout.strip(),
         "--model-directory",
         str(model),
         "--workspace",
@@ -116,6 +136,32 @@ def test_installed_wheels_complete_cpu_hybrid_workflow(tmp_path: Path) -> None:
     assert summary["evaluation"]["qrel_count"] == 29
     for metric_id, floor in summary["evaluation"]["quality_floors"].items():
         assert summary["evaluation"]["metrics"][metric_id] >= floor
+    development_evaluation = summary["development_evaluation"]
+    assert development_evaluation["case_count"] == 12
+    assert development_evaluation["retrieval_gate_passed"] is True
+    assert development_evaluation["release_readiness"] == (
+        "blocked-independent-review"
+    )
+    assert set(development_evaluation["pending_dimensions"]) == {
+        "citation-quality",
+        "claim-faithfulness",
+        "qualifier-retention",
+        "conflict-retention",
+        "research-utility",
+    }
+    assert (
+        tmp_path
+        / "evidence"
+        / "development-evaluation"
+        / "development-evaluation.json"
+    ).is_file()
+    assert (
+        tmp_path
+        / "evidence"
+        / "development-evaluation"
+        / "evidence-book"
+        / "evidence-book.json"
+    ).is_file()
     assert summary["rag"]["case_count"] == 12
     assert summary["rag"]["development_disposition_matches"] == 12
     assert summary["rag"]["citation_resolution_ratio"] == 1.0

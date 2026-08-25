@@ -56,6 +56,11 @@ def _arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--runtime-command", default="bijux-canon-runtime")
     parser.add_argument("--index-command", default="bijux-canon-index")
+    parser.add_argument(
+        "--development-evaluation-command",
+        default="bijux-canon-development-evaluation",
+    )
+    parser.add_argument("--source-commit", required=True)
     parser.add_argument("--model-directory", type=Path, required=True)
     parser.add_argument("--workspace", type=Path, required=True)
     parser.add_argument(
@@ -74,6 +79,79 @@ def _command(value: str, label: str) -> Path:
     selected = Path(shutil.which(value) or value).resolve()
     _require(selected.is_file(), f"{label} command not found: {value}")
     return selected
+
+
+def _run_development_evaluation(
+    *,
+    command: Path,
+    source_commit: str,
+    cases: Path,
+    research: dict[str, Any],
+    evidence: Path,
+    environment: dict[str, str],
+) -> dict[str, Any]:
+    research_path = evidence / "bounded-research-evaluation.json"
+    research_path.write_text(
+        json.dumps(research, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+    output_directory = evidence / "development-evaluation"
+    arguments = [
+        str(command),
+        "--cases",
+        str(cases),
+        "--retrieval-report",
+        str(evidence / "development-retrieval-evaluation.json"),
+        "--system-outputs",
+        str(evidence / "rag-system-outputs.jsonl"),
+        "--research-report",
+        str(research_path),
+        "--source-commit",
+        source_commit,
+        "--output-directory",
+        str(output_directory),
+    ]
+    completed = subprocess.run(  # noqa: S603 - installed evaluation command
+        arguments,
+        cwd=evidence.parent,
+        env=environment,
+        capture_output=True,
+        check=False,
+        text=True,
+    )
+    (evidence / "development-evaluation.exchange.json").write_text(
+        json.dumps(
+            {
+                "arguments": arguments[1:],
+                "returncode": completed.returncode,
+                "stderr": completed.stderr,
+                "stdout": completed.stdout,
+            },
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    _require(
+        completed.returncode == 0,
+        f"development evaluation failed: {completed.stderr.strip()}",
+    )
+    try:
+        result = _mapping(
+            json.loads(completed.stdout),
+            "development evaluation returned a non-object",
+        )
+    except json.JSONDecodeError as error:
+        raise WorkflowFailure("development evaluation did not return JSON") from error
+    _require(
+        result.get("retrieval_gate_passed") is True,
+        "development retrieval floors did not pass",
+    )
+    _require(
+        result.get("release_readiness") == "blocked-independent-review",
+        "development evaluation did not preserve the review checkpoint",
+    )
+    return result
 
 
 def _channels(evidence_set: dict[str, Any]) -> set[str]:
@@ -1075,6 +1153,9 @@ def main() -> int:
     args = _arguments()
     runtime_command = _command(args.runtime_command, "Runtime")
     index_command = _command(args.index_command, "Index")
+    development_evaluation_command = _command(
+        args.development_evaluation_command, "development evaluation"
+    )
     workspace = args.workspace.resolve()
     model_directory = args.model_directory.resolve()
     sources = args.corpus_directory.resolve()
@@ -1358,6 +1439,14 @@ def main() -> int:
         corpus_id=corpus_id,
         sources=sources,
     )
+    development = _run_development_evaluation(
+        command=development_evaluation_command,
+        source_commit=args.source_commit,
+        cases=cases,
+        research=research,
+        evidence=evidence,
+        environment=runtime.environment,
+    )
 
     exact_run_id = _string(
         exact_result.get("run_id"), "exact search run identity is missing"
@@ -1373,6 +1462,18 @@ def main() -> int:
             "chunk_count": corpus_inspection["chunk_count"],
             "document_count": corpus_inspection["document_count"],
             "rejection_count": corpus_inspection["rejection_count"],
+        },
+        "development_evaluation": {
+            "artifact_id": development["artifact_id"],
+            "case_count": development["case_count"],
+            "evidence_book_artifact_id": _mapping(
+                development.get("evidence_book"),
+                "development evidence book is missing",
+            )["artifact_id"],
+            "pending_dimensions": development["pending_dimensions"],
+            "release_readiness": development["release_readiness"],
+            "retrieval_gate_passed": development["retrieval_gate_passed"],
+            "source_commit": development["source_commit"],
         },
         "agentic": agentic,
         "evaluation": {
