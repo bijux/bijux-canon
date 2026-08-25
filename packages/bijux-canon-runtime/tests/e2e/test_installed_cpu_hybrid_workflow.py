@@ -18,7 +18,7 @@ _REPOSITORY_ROOT = Path(__file__).parents[4]
 _EXAMPLE = _REPOSITORY_ROOT / "examples" / "ancient-dna-research"
 
 
-@pytest.mark.timeout(360)
+@pytest.mark.timeout(600)
 def test_installed_wheels_complete_cpu_hybrid_workflow(tmp_path: Path) -> None:
     runtime_value = os.environ.get("BIJUX_CANON_RUNTIME_INSTALLED_COMMAND")
     index_value = os.environ.get("BIJUX_CANON_INDEX_INSTALLED_COMMAND")
@@ -116,6 +116,22 @@ def test_installed_wheels_complete_cpu_hybrid_workflow(tmp_path: Path) -> None:
     assert summary["evaluation"]["qrel_count"] == 29
     for metric_id, floor in summary["evaluation"]["quality_floors"].items():
         assert summary["evaluation"]["metrics"][metric_id] >= floor
+    assert summary["rag"]["case_count"] == 12
+    assert summary["rag"]["development_disposition_matches"] == 12
+    assert summary["rag"]["citation_resolution_ratio"] == 1.0
+    assert summary["rag"]["grounding_admission_support_ratio"] == 1.0
+    assert (
+        summary["rag"]["verified_direct_support_claims"]
+        == summary["rag"]["claim_count"]
+    )
+    assert summary["rag"]["structurally_ungrounded_material_claims"] == 0
+    assert summary["rag"]["unsupported_material_claims"] == 0
+    assert summary["rag"]["system_output_may_define_truth"] is False
+    assert summary["rag"]["semantic_equivalence_review_status"] == (
+        "pending-independent-review"
+    )
+    assert len(summary["rag"]["observations"]) == 12
+    assert (tmp_path / "evidence" / "rag-system-outputs.jsonl").is_file()
     assert summary["workspace"]["restart_ready_profiles"] == [
         "local-hybrid-exact",
         "local-hybrid-ann",

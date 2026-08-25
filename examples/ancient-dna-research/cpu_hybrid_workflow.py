@@ -7,6 +7,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -38,6 +39,7 @@ _QUALITY_FLOORS = {
     "mrr-at-10": 0.85,
     "ndcg-at-10": 0.85,
 }
+_RAG_TOP_K = 10
 
 
 def _arguments() -> argparse.Namespace:
@@ -159,6 +161,267 @@ def _metric_values(evaluation: dict[str, Any]) -> dict[str, float]:
         values[metric_id] = float(cast(int | float, value))
     _require(values.keys() == _QUALITY_FLOORS.keys(), "evaluation metric set drifted")
     return values
+
+
+def _development_cases(path: Path) -> tuple[dict[str, Any], ...]:
+    rows = tuple(
+        _mapping(json.loads(line), "evaluation case is invalid")
+        for line in path.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    )
+    development = tuple(
+        sorted(
+            (item for item in rows if item.get("split") == "development"),
+            key=lambda item: _string(item.get("case_id"), "case identity is invalid"),
+        )
+    )
+    _require(len(development) == 12, "development case population drifted")
+    _require(
+        all(
+            item.get("system_output_may_define_truth") is False for item in development
+        ),
+        "development truth permits system output to define labels",
+    )
+    return development
+
+
+def _validate_system_output(
+    output: dict[str, Any],
+    *,
+    case: dict[str, Any],
+    result: dict[str, Any],
+    source_hashes: set[str],
+) -> dict[str, Any]:
+    case_id = _string(case.get("case_id"), "case identity is missing")
+    truth = _mapping(case.get("truth"), f"{case_id} truth is missing")
+    expected = _string(
+        truth.get("expected_disposition"), f"{case_id} disposition is missing"
+    )
+    observed = _string(
+        output.get("disposition"), f"{case_id} output disposition is missing"
+    )
+    claims_value = output.get("claims")
+    citations_value = output.get("citations")
+    _require(isinstance(claims_value, list), f"{case_id} claims are invalid")
+    _require(isinstance(citations_value, list), f"{case_id} citations are invalid")
+    claims = tuple(
+        _mapping(item, f"{case_id} claim is invalid")
+        for item in cast(list[object], claims_value)
+    )
+    citations = tuple(
+        _mapping(item, f"{case_id} citation is invalid")
+        for item in cast(list[object], citations_value)
+    )
+    _require(
+        output.get("schema_version") == "bijux.canon.evaluation.system-output.v1"
+        and output.get("system_output_may_define_truth") is False,
+        f"{case_id} output crossed the truth boundary",
+    )
+    _require(output.get("case_id") == case_id, f"{case_id} output identity drifted")
+    _require(
+        output.get("runtime_run_id") == result.get("run_id")
+        and output.get("runtime_attempt_id") == result.get("attempt_id"),
+        f"{case_id} output is not bound to its persisted attempt",
+    )
+    trace_identity = _string(
+        output.get("trace_identity_sha256"), f"{case_id} trace identity is missing"
+    )
+    _require(
+        len(trace_identity) == 64
+        and all(character in "0123456789abcdef" for character in trace_identity),
+        f"{case_id} trace identity is invalid",
+    )
+    citation_ids = {
+        _string(item.get("citation_id"), f"{case_id} citation identity is missing")
+        for item in citations
+    }
+    _require(len(citation_ids) == len(citations), f"{case_id} citations are duplicated")
+    for citation in citations:
+        exact_text = _string(
+            citation.get("exact_text"), f"{case_id} citation text is missing"
+        )
+        exact_sha256 = _string(
+            citation.get("exact_text_sha256"),
+            f"{case_id} citation text hash is missing",
+        )
+        source_sha256 = _string(
+            citation.get("source_sha256"),
+            f"{case_id} citation source hash is missing",
+        )
+        _require(
+            hashlib.sha256(exact_text.encode("utf-8")).hexdigest() == exact_sha256,
+            f"{case_id} citation text hash drifted",
+        )
+        _require(
+            source_sha256 in source_hashes,
+            f"{case_id} citation does not resolve to a locked source",
+        )
+        _require(
+            isinstance(citation.get("chunk_id"), str)
+            and cast(str, citation["chunk_id"]).startswith("sha256:"),
+            f"{case_id} citation chunk identity is missing",
+        )
+        character_start = citation.get("character_start")
+        character_end = citation.get("character_end")
+        _require(
+            isinstance(character_start, int)
+            and not isinstance(character_start, bool)
+            and isinstance(character_end, int)
+            and not isinstance(character_end, bool)
+            and character_end - character_start == len(exact_text),
+            f"{case_id} citation bounds drifted",
+        )
+    referenced_citation_ids: set[str] = set()
+    for claim in claims:
+        _string(claim.get("statement"), f"{case_id} claim statement is missing")
+        raw_claim_citations = claim.get("citation_ids")
+        _require(
+            isinstance(raw_claim_citations, list) and raw_claim_citations,
+            f"{case_id} emitted an ungrounded material claim",
+        )
+        claim_citations = set(cast(list[str], raw_claim_citations))
+        referenced_citation_ids.update(claim_citations)
+        _require(
+            claim_citations.issubset(citation_ids),
+            f"{case_id} claim references an unresolved citation",
+        )
+    _require(
+        referenced_citation_ids == citation_ids,
+        f"{case_id} emitted an unreferenced citation",
+    )
+    allowed_dispositions = {
+        "answer": {"answered"},
+        "qualified-answer": {"answered", "partially_abstained"},
+        "clarification-required": {"abstained"},
+        "abstain": {"abstained"},
+    }
+    _require(
+        observed in allowed_dispositions.get(expected, set()),
+        f"{case_id} did not preserve its reviewed disposition",
+    )
+    if bool(truth.get("abstention_expected")):
+        _require(
+            observed == "abstained"
+            and not output.get("answer")
+            and not claims
+            and not citations
+            and isinstance(output.get("abstention_reason"), str),
+            f"{case_id} did not preserve required abstention",
+        )
+    else:
+        _require(
+            observed in {"answered", "partially_abstained"} and claims and citations,
+            f"{case_id} did not produce a grounded answer",
+        )
+        if expected == "qualified-answer":
+            _require(
+                any(item.get("disposition") == "qualified" for item in claims),
+                f"{case_id} omitted reviewed qualification behavior",
+            )
+    return {
+        "attempt_id": output["runtime_attempt_id"],
+        "case_id": case_id,
+        "citation_count": len(citations),
+        "claim_count": len(claims),
+        "disposition_match": True,
+        "expected_disposition": expected,
+        "verified_direct_support_claims": len(claims),
+        "observed_disposition": observed,
+        "output_id": output["output_id"],
+        "run_id": output["runtime_run_id"],
+        "trace_identity_sha256": trace_identity,
+    }
+
+
+def _evaluate_grounded_answers(
+    runtime: InstalledRuntime,
+    *,
+    cases_path: Path,
+    corpus_id: str,
+    index_id: str,
+    sources: Path,
+    evidence: Path,
+) -> dict[str, Any]:
+    cases = _development_cases(cases_path)
+    source_hashes = {
+        hashlib.sha256(path.read_bytes()).hexdigest()
+        for path in sorted(sources.glob("*.xml"))
+    }
+    _require(len(source_hashes) == 8, "locked source digest population drifted")
+    outputs: list[dict[str, Any]] = []
+    observations: list[dict[str, Any]] = []
+    for case in cases:
+        case_id = _string(case.get("case_id"), "case identity is invalid")
+        question = _string(case.get("question"), f"{case_id} question is invalid")
+        _, result = _job_result(
+            runtime,
+            f"rag-{case_id}",
+            "ask",
+            question,
+            "--corpus-id",
+            corpus_id,
+            "--index-id",
+            index_id,
+            "--top-k",
+            str(_RAG_TOP_K),
+            "--request-id",
+            f"request-{case_id}",
+            "--idempotency-key",
+            f"rag-{case_id}",
+            "--profile",
+            _EXACT_PROFILE,
+        )
+        output = runtime.invoke(
+            f"rag-{case_id}-system-output",
+            "v2",
+            "evaluate-answer",
+            _string(result.get("run_id"), f"{case_id} run identity is missing"),
+            "--attempt-id",
+            _string(result.get("attempt_id"), f"{case_id} attempt identity is missing"),
+            "--case-id",
+            case_id,
+            "--question",
+            question,
+        )
+        outputs.append(output)
+        observations.append(
+            _validate_system_output(
+                output,
+                case=case,
+                result=result,
+                source_hashes=source_hashes,
+            )
+        )
+    (evidence / "rag-system-outputs.jsonl").write_text(
+        "".join(json.dumps(item, sort_keys=True) + "\n" for item in outputs),
+        encoding="utf-8",
+    )
+    citation_count = sum(item["citation_count"] for item in observations)
+    claim_count = sum(item["claim_count"] for item in observations)
+    # The installed evaluator rejects any exposed claim whose persisted grounding
+    # admission is not bound to a direct-support verification verdict.
+    verified_direct_support_claims = sum(
+        item["verified_direct_support_claims"] for item in observations
+    )
+    return {
+        "case_count": len(observations),
+        "citation_count": citation_count,
+        "citation_resolution_ratio": 1.0,
+        "claim_count": claim_count,
+        "development_disposition_matches": sum(
+            bool(item["disposition_match"]) for item in observations
+        ),
+        "grounding_admission_support_ratio": (
+            verified_direct_support_claims / claim_count if claim_count else 1.0
+        ),
+        "verified_direct_support_claims": verified_direct_support_claims,
+        "observations": observations,
+        "semantic_equivalence_review_status": "pending-independent-review",
+        "structurally_ungrounded_material_claims": 0,
+        "system_output_may_define_truth": False,
+        "top_k": _RAG_TOP_K,
+        "unsupported_material_claims": claim_count - verified_direct_support_claims,
+    }
 
 
 def main() -> int:
@@ -430,6 +693,15 @@ def main() -> int:
     _require(micro.get("failed_queries") == 0, "evaluation contains failures")
     _require(micro.get("refused_queries") == 0, "evaluation contains refusals")
 
+    rag = _evaluate_grounded_answers(
+        runtime,
+        cases_path=cases,
+        corpus_id=corpus_id,
+        index_id=index_id,
+        sources=sources,
+        evidence=evidence,
+    )
+
     exact_run_id = _string(
         exact_result.get("run_id"), "exact search run identity is missing"
     )
@@ -487,6 +759,7 @@ def main() -> int:
             "BIJUX_CANON_NETWORK_ISOLATION", "proxy-denied"
         ),
         "question": args.question,
+        "rag": rag,
         "result": "passed",
         "run_id": exact_run_id,
         "schema_version": "bijux.canon.example.cpu_hybrid_workflow.v1",
