@@ -112,9 +112,12 @@ Inspect both wheel and source archive for:
 - current repository, handbook, migration, and security URLs.
 
 Install the bridge and canonical wheels into a fresh environment without
-workspace or editable sources. Run `python -m pip check`, inspect installed
+workspace or editable sources, with public-index access disabled and a hashed
+dependency wheelhouse recorded in the evidence. Run `python -m pip check`, inspect installed
 versions, import the preserved and canonical roots, and execute the preserved
-console and module routes. Retain artifact hashes and resolver output.
+console and module routes. Require both the fresh import and console invocation
+to emit the migration warning naming the canonical replacement. Retain artifact
+hashes and resolver output.
 
 ## Import and Command Assertions
 

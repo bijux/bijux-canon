@@ -56,7 +56,7 @@ Security = "https://github.com/bijux/bijux-canon/blob/main/SECURITY.md"
 Funding = "https://github.com/sponsors/bijux"
 
 [project.scripts]
-bijux-canon = "bijux_canon_runtime.interfaces.cli.entrypoint:main"
+bijux-canon = "bijux_canon.__main__:main"
 
 [tool.hatch.version]
 source = "vcs"

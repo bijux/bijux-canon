@@ -44,6 +44,7 @@ class InstallTarget:
     import_names: tuple[str, ...]
     console_scripts: tuple[str, ...]
     required_assets: tuple[tuple[str, tuple[str, ...]], ...]
+    compatibility_replacement: str | None
 
 
 def _default_runner(
@@ -113,6 +114,14 @@ def _targets(
     targets: list[InstallTarget] = []
     for record in records:
         policy = policy_by_name[canonicalize_name(record.distribution_name)]
+        if (
+            policy.package_class == "compatibility"
+            and len(policy.dynamic_dependency_names) != 1
+        ):
+            raise InstallationMatrixError(
+                f"compatibility distribution needs one canonical replacement: "
+                f"{record.distribution_name}"
+            )
         targets.append(
             InstallTarget(
                 target_id=record.distribution_name,
@@ -124,6 +133,12 @@ def _targets(
                         record.distribution_name,
                         policy.required_asset_patterns,
                     ),
+                ),
+                compatibility_replacement=(
+                    policy.dynamic_dependency_names[0]
+                    if policy.package_class == "compatibility"
+                    and len(policy.dynamic_dependency_names) == 1
+                    else None
                 ),
             )
         )
@@ -148,6 +163,7 @@ def _targets(
                 )
                 for record in records
             ),
+            compatibility_replacement=None,
         )
     )
     return tuple(targets)
@@ -169,10 +185,12 @@ def _inspector(
             "from pathlib import Path",
             "import sys",
             "import sysconfig",
+            "import warnings",
             f"target_distributions = {target.distributions!r}",
             f"candidate_versions = {dict(versions)!r}",
             f"import_names = {target.import_names!r}",
             f"required_assets = {assets!r}",
+            f"compatibility_replacement = {target.compatibility_replacement!r}",
             f"source_roots = tuple(Path(value).resolve() for value in {tuple(map(str, source_roots))!r})",
             "purelib = Path(sysconfig.get_paths()['purelib']).resolve()",
             "assert all(not any(Path(value or '.').resolve().is_relative_to(root) for root in source_roots) for value in sys.path)",
@@ -187,12 +205,17 @@ def _inspector(
             "for name in target_distributions:",
             "    assert name in installed_candidates, (name, installed_candidates)",
             "module_origins = {}",
-            "for name in import_names:",
-            "    module = importlib.import_module(name)",
-            "    origin = Path(module.__file__).resolve()",
-            "    assert origin.is_relative_to(purelib), (name, origin, purelib)",
-            "    assert not any(origin.is_relative_to(root) for root in source_roots), (name, origin, source_roots)",
-            "    module_origins[name] = str(origin)",
+            "with warnings.catch_warnings(record=True) as compatibility_warnings:",
+            "    warnings.simplefilter('always', FutureWarning)",
+            "    for name in import_names:",
+            "        module = importlib.import_module(name)",
+            "        origin = Path(module.__file__).resolve()",
+            "        assert origin.is_relative_to(purelib), (name, origin, purelib)",
+            "        assert not any(origin.is_relative_to(root) for root in source_roots), (name, origin, source_roots)",
+            "        module_origins[name] = str(origin)",
+            "warning_messages = [str(item.message) for item in compatibility_warnings if issubclass(item.category, FutureWarning)]",
+            "if compatibility_replacement is not None:",
+            "    assert any(compatibility_replacement in message for message in warning_messages), (compatibility_replacement, warning_messages)",
             "entry_points = {}",
             "data_files = {}",
             "for name in target_distributions:",
@@ -210,7 +233,7 @@ def _inspector(
             "        loaded = entry.load()",
             "        assert loaded is not None, (name, entry.group, entry.name)",
             "        entry_points[f'{name}:{entry.group}:{entry.name}'] = entry.value",
-            "print(json.dumps({'installed_candidates': installed_candidates, 'module_origins': module_origins, 'entry_points': entry_points, 'data_files': data_files}, sort_keys=True))",
+            "print(json.dumps({'installed_candidates': installed_candidates, 'module_origins': module_origins, 'entry_points': entry_points, 'data_files': data_files, 'compatibility_warnings': warning_messages}, sort_keys=True))",
         ]
     )
 
@@ -417,8 +440,21 @@ def run_installation_matrix(
             if outcome.exit_code != 0:
                 failures.append(f"{target.target_id}:{len(outcomes)}")
                 break
-        passed = len(outcomes) == len(commands) and all(
-            outcome.exit_code == 0 for outcome in outcomes
+        compatibility_cli_warning = target.compatibility_replacement is None
+        if target.compatibility_replacement is not None:
+            console_outcomes = outcomes[4 : 4 + len(target.console_scripts)]
+            compatibility_cli_warning = len(console_outcomes) == len(
+                target.console_scripts
+            ) and all(
+                target.compatibility_replacement in outcome.stderr
+                for outcome in console_outcomes
+            )
+            if not compatibility_cli_warning:
+                failures.append(f"{target.target_id}:compatibility-cli-warning")
+        passed = (
+            len(outcomes) == len(commands)
+            and all(outcome.exit_code == 0 for outcome in outcomes)
+            and compatibility_cli_warning
         )
         results.append(
             {
@@ -426,6 +462,8 @@ def run_installation_matrix(
                 "distributions": list(target.distributions),
                 "imports": list(target.import_names),
                 "console_scripts": list(target.console_scripts),
+                "compatibility_replacement": target.compatibility_replacement,
+                "compatibility_cli_warning": compatibility_cli_warning,
                 "product_probe": (
                     _json_stdout(outcomes[product_probe_index])
                     if product_probe_index is not None

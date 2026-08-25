@@ -26,6 +26,12 @@ imports or commands.
 | `bijux-rar` | `bijux-canon-reason` | `bijux_canon_reason` | `bijux-canon-reason` |
 | `bijux-vex` | `bijux-canon-index` | `bijux_canon_index` | `bijux-canon-index` |
 
+Importing a preserved root or invoking its console command emits one
+process-local `FutureWarning`. The warning names the canonical distribution,
+import root, and executable from this matrix; it does not change delegated
+output or exit semantics. Treat that notice as migration inventory, not as a
+runtime failure.
+
 ## Inventory Before Editing
 
 Search dependency and executable spellings separately from Python imports. Exclude

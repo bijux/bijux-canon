@@ -9,6 +9,7 @@ from bijux_canon_dev.release.family_compatibility import (
     FamilyCompatibilityError,
     FamilyWheel,
     _artifact_path,
+    _parser,
     analyze_family,
 )
 
@@ -101,3 +102,11 @@ def test_installed_command_is_published_by_the_dev_package() -> None:
     assert data["project"]["scripts"]["bijux-canon-family-compatibility"] == (
         "bijux_canon_dev.release.family_compatibility:main"
     )
+
+
+def test_cli_requires_offline_dependency_wheelhouse() -> None:
+    action = next(
+        item for item in _parser()._actions if item.dest == "dependency_wheel_dir"
+    )
+
+    assert action.required is True

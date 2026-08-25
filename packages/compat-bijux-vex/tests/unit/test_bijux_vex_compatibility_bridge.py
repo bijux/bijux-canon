@@ -47,19 +47,13 @@ def test_nested_runtime_types_keep_identity_under_alias_imports() -> None:
 def test_legacy_and_canonical_commands_delegate_to_one_public_entrypoint() -> None:
     packages = Path(__file__).resolve().parents[3]
     canonical = tomllib.loads(
-        (packages / "bijux-canon-index" / "pyproject.toml").read_text(
-            encoding="utf-8"
-        )
+        (packages / "bijux-canon-index" / "pyproject.toml").read_text(encoding="utf-8")
     )
     legacy = tomllib.loads(
-        (packages / "compat-bijux-vex" / "pyproject.toml").read_text(
-            encoding="utf-8"
-        )
+        (packages / "compat-bijux-vex" / "pyproject.toml").read_text(encoding="utf-8")
     )
 
     assert canonical["project"]["scripts"]["bijux-canon-index"] == (
         "bijux_canon_index.interfaces.cli.app:app"
     )
-    assert legacy["project"]["scripts"]["bijux-vex"] == (
-        canonical["project"]["scripts"]["bijux-canon-index"]
-    )
+    assert legacy["project"]["scripts"]["bijux-vex"] == ("bijux_vex.__main__:main")

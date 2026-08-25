@@ -53,7 +53,7 @@ MigrationGuide = "https://bijux.io/bijux-canon/08-compat-packages/migration/migr
 LegacyNameMap = "https://bijux.io/bijux-canon/08-compat-packages/catalog/legacy-name-map/"
 
 [project.scripts]
-bijux-agent = "bijux_canon_agent.interfaces.cli.entrypoint:cli"
+bijux-agent = "bijux_agent.__main__:main"
 
 [tool.hatch.version]
 source = "vcs"

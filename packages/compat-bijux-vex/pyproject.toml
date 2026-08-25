@@ -52,7 +52,7 @@ classifiers = [
 "LegacyNameMap" = "https://bijux.io/bijux-canon/08-compat-packages/catalog/legacy-name-map/"
 
 [project.scripts]
-bijux-vex = "bijux_canon_index.interfaces.cli.app:app"
+bijux-vex = "bijux_vex.__main__:main"
 
 [tool.hatch.version]
 source = "vcs"
