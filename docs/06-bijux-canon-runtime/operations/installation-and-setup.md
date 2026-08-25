@@ -166,6 +166,30 @@ python examples/ancient-dna-research/offline_lexical_workflow.py \
   --evidence-directory artifacts/ancient-dna-offline/evidence
 ```
 
+The real CPU workflow uses the public pinned-model lifecycle and the same
+installed Runtime service. Acquire once while online; every later validation,
+index, exact/ANN query, restart, and development evaluation can run with the
+network denied:
+
+```bash
+bijux-canon-index model acquire \
+  --profile local-minilm-384 \
+  --cache-root artifacts/ancient-dna-cpu/models
+
+python examples/ancient-dna-research/cpu_hybrid_workflow.py \
+  --runtime-command bijux-canon-runtime \
+  --index-command bijux-canon-index \
+  --model-directory artifacts/ancient-dna-cpu/models/local-minilm-384/1110a243fdf4706b3f48f1d95db1a4f5529b4d41 \
+  --workspace artifacts/ancient-dna-cpu/runtime-workspace \
+  --evidence-directory artifacts/ancient-dna-cpu/evidence
+```
+
+The compact result binds the model source, revision, Apache-2.0 license,
+artifact-set digest, dimension and lock to the persistent lexical, exact, and
+HNSW segments. It also records separate exact and ANN attempts under the
+authoritative Runtime run identity and rejects a candidate unless the installed
+development evaluator clears all frozen retrieval floors.
+
 It discovers and ingests eight real JATS articles, builds a persistent SQLite
 FTS5 index, retrieves evidence, answers with verified citations, reopens the
 same workspace using its absolute spelling, and performs an exact replay and

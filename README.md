@@ -94,6 +94,33 @@ identities. See the
 [offline ancient-DNA workflow](examples/ancient-dna-research/README.md) for
 network-denied release acceptance and manual inspection commands.
 
+For real CPU embeddings, install the `local-cpu` profile, acquire the pinned
+MiniLM model once, then run the sibling hybrid workflow. Model acquisition is
+the only networked step; validation, ingest, exact and ANN queries, restart,
+and the 12-question development evaluation run from retained local bytes:
+
+```bash
+python -m venv artifacts/ancient-dna-cpu/venv
+artifacts/ancient-dna-cpu/venv/bin/python -m pip install \
+  'bijux-canon-runtime[local-cpu]'
+
+artifacts/ancient-dna-cpu/venv/bin/bijux-canon-index model acquire \
+  --profile local-minilm-384 \
+  --cache-root artifacts/ancient-dna-cpu/models
+
+python examples/ancient-dna-research/cpu_hybrid_workflow.py \
+  --runtime-command artifacts/ancient-dna-cpu/venv/bin/bijux-canon-runtime \
+  --index-command artifacts/ancient-dna-cpu/venv/bin/bijux-canon-index \
+  --model-directory artifacts/ancient-dna-cpu/models/local-minilm-384/1110a243fdf4706b3f48f1d95db1a4f5529b4d41 \
+  --workspace artifacts/ancient-dna-cpu/runtime-workspace \
+  --evidence-directory artifacts/ancient-dna-cpu/evidence
+```
+
+The workflow fails unless exact and ANN retrieval both execute without
+fallback, hybrid results retain their lexical and dense contributions, and the
+development set clears the frozen 0.90 Recall@5, 0.85 MRR@10, and 0.85
+nDCG@10 floors.
+
 This repository defines `11` publishable package records. PyPI, GHCR, and
 GitHub Release are independent publication workflows. Each resolves the
 checked-in release matrix and invokes the same reusable artifact-building

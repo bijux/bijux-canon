@@ -87,3 +87,54 @@ decoded bytes per request.
 The sibling [`truth`](truth) directory is governed evaluation material. The
 workflow does not read it: product output is generated from the corpus alone,
 and held-out labels remain outside development execution.
+
+## CPU exact and ANN hybrid workflow
+
+The sibling `cpu_hybrid_workflow.py` exercises the installed `local-cpu`
+profile with the pinned `sentence-transformers/all-MiniLM-L6-v2` revision. It
+validates the retained model files and license metadata with a real bounded CPU
+inference, ingests the eight JATS sources, and persists one generation with
+SQLite FTS5, FAISS exact, and FAISS HNSW segments. After switching from a
+relative to an absolute workspace spelling, separate Runtime processes execute
+both exact and ANN hybrid searches. The runner rejects fallback and requires
+the returned evidence to retain both lexical and selected dense-channel
+contributions.
+
+Acquire the model while network access is permitted, then run the workflow
+with network disabled:
+
+```bash
+python -m venv artifacts/ancient-dna-cpu/venv
+artifacts/ancient-dna-cpu/venv/bin/python -m pip install \
+  'bijux-canon-runtime[local-cpu]'
+
+artifacts/ancient-dna-cpu/venv/bin/bijux-canon-index model acquire \
+  --profile local-minilm-384 \
+  --cache-root artifacts/ancient-dna-cpu/models
+
+python examples/ancient-dna-research/cpu_hybrid_workflow.py \
+  --runtime-command artifacts/ancient-dna-cpu/venv/bin/bijux-canon-runtime \
+  --index-command artifacts/ancient-dna-cpu/venv/bin/bijux-canon-index \
+  --model-directory artifacts/ancient-dna-cpu/models/local-minilm-384/1110a243fdf4706b3f48f1d95db1a4f5529b4d41 \
+  --workspace artifacts/ancient-dna-cpu/runtime-workspace \
+  --evidence-directory artifacts/ancient-dna-cpu/evidence
+```
+
+The workflow uses only the visible development split. It executes all 12
+questions and 29 reviewed qrels from persisted system results and fails below
+Recall@5 `0.90`, MRR@10 `0.85`, or nDCG@10 `0.85`. It never opens sealed
+held-out labels. `summary.json` retains the model revision, license, file-set
+digest, 384-dimensional model lock, segment backends, corpus/index/configuration
+identities, exact and ANN run/attempt identities, ordered-evidence
+reproducibility, and evaluation arithmetic.
+
+On macOS, run the installed acceptance test with OS-level network denial:
+
+```bash
+BIJUX_CANON_RUNTIME_INSTALLED_COMMAND="$PWD/artifacts/ancient-dna-cpu/venv/bin/bijux-canon-runtime" \
+BIJUX_CANON_INDEX_INSTALLED_COMMAND="$PWD/artifacts/ancient-dna-cpu/venv/bin/bijux-canon-index" \
+BIJUX_CANON_INSTALLED_MODEL_DIRECTORY="$PWD/artifacts/ancient-dna-cpu/models/local-minilm-384/1110a243fdf4706b3f48f1d95db1a4f5529b4d41" \
+  artifacts/root/check-venv/bin/python -m pytest -q -c configs/pytest.ini \
+    -p no:cacheprovider -o addopts= \
+    packages/bijux-canon-runtime/tests/e2e/test_installed_cpu_hybrid_workflow.py
+```
