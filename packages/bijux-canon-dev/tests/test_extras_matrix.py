@@ -114,7 +114,6 @@ def _wheel(
 def _wheel_set(root: Path, *, extra_dependencies: bool = True) -> Path:
     wheel_dir = root / "artifacts" / "wheels"
     wheel_dir.mkdir(parents=True)
-    _wheel(wheel_dir, "workspace-repository", module=None)
     _wheel(
         wheel_dir,
         "example",

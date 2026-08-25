@@ -100,7 +100,6 @@ def _wheel(directory: Path, name: str, *, module: str | None) -> Path:
 def _wheel_set(root: Path) -> Path:
     wheel_dir = root / "artifacts" / "wheels"
     wheel_dir.mkdir(parents=True)
-    _wheel(wheel_dir, "workspace-repository", module=None)
     _wheel(wheel_dir, "example", module="example")
     return wheel_dir
 
@@ -143,8 +142,8 @@ def test_matrix_installs_each_wheel_and_complete_family(tmp_path: Path) -> None:
     )
 
     assert evidence["result"] == "passed"
-    assert evidence["wheel_count"] == 2
-    assert evidence["individual_install_count"] == 2
+    assert evidence["wheel_count"] == 1
+    assert evidence["individual_install_count"] == 1
     assert evidence["family_install_count"] == 1
     assert evidence["dependency_wheel_count"] == 0
     assert evidence["public_index_access"] is False
@@ -155,7 +154,7 @@ def test_matrix_installs_each_wheel_and_complete_family(tmp_path: Path) -> None:
             "status": "passed",
         }
     ]
-    assert len(commands) == 14
+    assert len(commands) == 10
     assert any("--constraint" in command for command in commands)
     assert all(
         "--no-index" in command
@@ -168,9 +167,7 @@ def test_matrix_installs_each_wheel_and_complete_family(tmp_path: Path) -> None:
     assert "source_roots" in inspector
     constraints = root / str(evidence["constraint_file"])
     assert constraints == root / "artifacts" / "install" / "candidate-constraints.txt"
-    assert constraints.read_text(encoding="utf-8") == (
-        "example==1.2.3\nworkspace-repository==1.2.3\n"
-    )
+    assert constraints.read_text(encoding="utf-8") == "example==1.2.3\n"
 
 
 def test_matrix_retains_one_row_failure_and_continues(tmp_path: Path) -> None:
@@ -211,7 +208,6 @@ def test_matrix_retains_one_row_failure_and_continues(tmp_path: Path) -> None:
     assert "package-installation-closure" in evidence["retained_failures"]
     assert [row["status"] for row in evidence["install_results"]] == [
         "failed",
-        "passed",
         "passed",
     ]
 

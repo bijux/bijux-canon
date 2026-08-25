@@ -89,8 +89,10 @@ assuming all distributions have identical evidence.
 
 ## Wheel Family Verification
 
-The installed `bijux-canon-wheel-inventory` command validates the exact root
-and package wheel family against the checked-in workspace and package metadata.
+The installed `bijux-canon-wheel-inventory` command validates the exact
+workspace package wheel family against checked-in metadata. The repository
+workspace currently declares twelve distributions; the non-publishable root
+project is not a thirteenth release artifact.
 It compares names, one shared version, Python constraints, dependencies,
 optional extras, console entry points, and license declarations. It also
 verifies archive paths, wheel tags, every `RECORD` hash and byte count, exact

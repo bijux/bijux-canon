@@ -21,6 +21,17 @@ from bijux_canon_dev.release.wheel_inventory import (
 
 
 SOURCE_COMMIT = "2" * 40
+REPO_ROOT = Path(__file__).resolve().parents[3]
+
+
+def test_live_workspace_declares_exact_twelve_distributions() -> None:
+    policies = inspect_workspace_policy(REPO_ROOT)
+
+    assert len(policies) == 12
+    assert all(policy.package_key is not None for policy in policies)
+    assert "bijux-canon-repository" not in {
+        policy.distribution_name for policy in policies
+    }
 
 
 def _repository(tmp_path: Path) -> Path:
@@ -157,7 +168,6 @@ def _wheel(
 
 
 def _wheel_set(root: Path, **example_options: Any) -> Path:
-    _wheel(root, "workspace-repository")
     _wheel(root, "example", module="example", **example_options)
     return root / "artifacts" / "wheels"
 
@@ -168,17 +178,14 @@ def _passing_runner(
     return CommandResult(tuple(command), 0, "PASSED\n", "", 0.01)
 
 
-def test_workspace_policy_derives_repository_and_package_contracts(
+def test_workspace_policy_derives_package_contracts(
     tmp_path: Path,
 ) -> None:
     root = _repository(tmp_path)
 
     policies = inspect_workspace_policy(root)
 
-    assert [policy.distribution_name for policy in policies] == [
-        "example",
-        "workspace-repository",
-    ]
+    assert [policy.distribution_name for policy in policies] == ["example"]
     example = policies[0]
     assert example.package_class == "canonical"
     assert example.required_asset_patterns == (
@@ -205,7 +212,7 @@ def test_inventory_validates_complete_family_and_retains_bindings(
     )
 
     assert evidence["result"] == "passed"
-    assert evidence["wheel_count"] == 2
+    assert evidence["wheel_count"] == 1
     assert evidence["package_count"] == 1
     assert evidence["version"] == "1.2.3"
     assert evidence["lock_identity"] == hashlib.sha256(b"version = 1\n").hexdigest()

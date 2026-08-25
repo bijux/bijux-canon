@@ -129,7 +129,7 @@ def inspect_workspace(repo_root: Path) -> WorkspaceSupport:
             "primary and compatibility package inventories must partition package_dirs"
         )
 
-    pyprojects = [root_pyproject]
+    pyprojects: list[Path] = []
     package_class_by_path: dict[Path, str] = {}
     for package_key, value in package_dirs.items():
         if not isinstance(value, str):

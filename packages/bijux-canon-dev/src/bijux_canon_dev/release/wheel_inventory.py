@@ -273,13 +273,7 @@ def inspect_workspace_policy(repo_root: Path) -> tuple[PackagePolicy, ...]:
             "primary and compatibility inventories must partition package_dirs"
         )
 
-    policies = [
-        _package_policy(
-            package_key=None,
-            package_class="repository",
-            pyproject_path=root_path,
-        )
-    ]
+    policies: list[PackagePolicy] = []
     for package_key, relative in sorted(cast(dict[str, str], package_dirs).items()):
         path = (repo_root / relative / "pyproject.toml").resolve()
         try:

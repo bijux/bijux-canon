@@ -92,7 +92,6 @@ def _wheel(
 def _wheel_set(root: Path) -> Path:
     wheel_dir = root / "artifacts" / "wheels"
     wheel_dir.mkdir(parents=True)
-    _wheel(wheel_dir, "workspace-repository", module=None)
     _wheel(wheel_dir, "example", module="example", script="example")
     return wheel_dir
 
@@ -105,7 +104,7 @@ def test_workspace_support_is_derived_from_every_package_classifier(
     support = inspect_workspace(root)
 
     assert support.python_versions == PYTHON_VERSIONS
-    assert support.distribution_names == ("example", "workspace-repository")
+    assert support.distribution_names == ("example",)
     assert support.package_classes == (("example", "canonical"),)
 
 
@@ -165,7 +164,7 @@ def test_wheel_inventory_reads_imports_scripts_and_hashes(tmp_path: Path) -> Non
     root = _repository(tmp_path)
     wheel_dir = _wheel_set(root)
 
-    records = inspect_wheels(wheel_dir, ("workspace-repository", "example"))
+    records = inspect_wheels(wheel_dir, ("example",))
 
     example = next(
         record for record in records if record.distribution_name == "example"
@@ -179,16 +178,16 @@ def test_wheel_inventory_reads_imports_scripts_and_hashes(tmp_path: Path) -> Non
 def test_wheel_inventory_rejects_missing_and_unsafe_inputs(tmp_path: Path) -> None:
     root = _repository(tmp_path)
     wheel_dir = _wheel_set(root)
-    (wheel_dir / "workspace_repository-1.2.3-py3-none-any.whl").unlink()
+    (wheel_dir / "example-1.2.3-py3-none-any.whl").unlink()
 
     with pytest.raises(PythonSupportVerificationError, match="missing"):
-        inspect_wheels(wheel_dir, ("workspace-repository", "example"))
+        inspect_wheels(wheel_dir, ("example",))
 
-    bad = wheel_dir / "workspace_repository-1.2.3-py3-none-any.whl"
+    bad = wheel_dir / "example-1.2.3-py3-none-any.whl"
     with zipfile.ZipFile(bad, "w") as archive:
         archive.writestr("../METADATA", "unsafe")
     with pytest.raises(PythonSupportVerificationError, match="unsafe member"):
-        inspect_wheels(wheel_dir, ("workspace-repository", "example"))
+        inspect_wheels(wheel_dir, ("example",))
 
 
 def test_matrix_runs_every_declared_version_and_retains_evidence(
@@ -217,7 +216,7 @@ def test_matrix_runs_every_declared_version_and_retains_evidence(
 
     assert evidence["result"] == "passed"
     assert evidence["advertised_python_versions"] == list(PYTHON_VERSIONS)
-    assert evidence["distribution_count"] == 2
+    assert evidence["distribution_count"] == 1
     assert evidence["import_count"] == 1
     assert evidence["console_script_count"] == 1
     assert [
