@@ -118,6 +118,14 @@ def test_index_build_does_not_reformat_the_submitted_source() -> None:
     assert "fmt" not in build_prerequisites.split(":=", 1)[1].split()
 
 
+def test_index_verification_installs_exercised_vdb_dependencies() -> None:
+    index_make = (REPO_ROOT / "makes" / "packages" / "bijux-canon-index.mk").read_text(
+        encoding="utf-8"
+    )
+
+    assert "PACKAGE_INSTALL_SPEC := .[dev,vdb]" in index_make.splitlines()
+
+
 def test_recursive_gate_prerequisites_propagate_failures(tmp_path: Path) -> None:
     marker = tmp_path / "unexpected-success"
     makefile = tmp_path / "Makefile"

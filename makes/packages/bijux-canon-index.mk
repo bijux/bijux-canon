@@ -15,6 +15,7 @@ DOCS_DEV_ADDR := 0.0.0.0:8000
 DOCS_EXTRA_CLEAN_PATHS := docs/site
 TEST_COVERAGE_TARGETS := $(abspath tests/unit)
 TEST_COVERAGE_FAIL_UNDER := 70
+PACKAGE_INSTALL_SPEC := .[dev,vdb]
 BUILD_PRE_TARGETS := clean install lint test quality security sbom
 BUILD_POST_TARGETS := build-release-metadata
 PUBLISH_DIST_DIR = $(PROJECT_ARTIFACTS_DIR)/release
