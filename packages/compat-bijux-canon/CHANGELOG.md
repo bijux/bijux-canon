@@ -17,6 +17,12 @@ changelog update are reconstructed from tag annotations and release diffs.
   `bijux-canon-runtime` release and retained its documented delegation
   contract and legal distribution files.
 
+### Deprecated
+
+- The distribution, `bijux_canon` import, and `bijux-canon` command are
+  deprecated in favor of `bijux-canon-runtime`; removal will not occur before
+  1.0.0.
+
 ## 0.3.9 - 2026-07-04
 
 ### Changed

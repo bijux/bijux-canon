@@ -16,6 +16,12 @@ releases when a tagged changelog existed.
   `bijux-canon-agent` release and retained its documented delegation contract
   and legal distribution files.
 
+### Deprecated
+
+- The distribution, `bijux_agent` import, and `bijux-agent` command are
+  deprecated in favor of `bijux-canon-agent`; removal will not occur before
+  1.0.0.
+
 ## 0.3.9 - 2026-07-04
 
 ### Changed

@@ -22,11 +22,17 @@ whole workspace.
 - Added reproducible wheel, clean installation, extras capability, supported
   Python, and release-candidate identity checks to the maintained product
   tooling.
+- Published the candidate-derived 0.4.0 distribution matrix, install profiles,
+  migration and deprecation guidance, verification record, publication order,
+  rollback triggers, and post-release checks.
 
 ### Security
 
 - Added parser and archive bounds, untrusted-content handling, secret
   redaction, resource budgets, and artifact/database tamper detection.
+- Bound wheels and source distributions to SBOMs, build environment, source,
+  locks, legal and corpus records, strict vulnerability reports, and the
+  tracked-source secret scan.
 
 ## 0.3.9 - 2026-07-04
 

@@ -16,6 +16,11 @@ releases when a tagged changelog existed.
   `bijux-canon-reason` release and exposed its delegated command through the
   installed compatibility interface.
 
+### Deprecated
+
+- The distribution, `bijux_rar` import, and `bijux-rar` command are deprecated
+  in favor of `bijux-canon-reason`; removal will not occur before 1.0.0.
+
 ## 0.3.9 - 2026-07-04
 
 ### Changed

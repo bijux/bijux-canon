@@ -32,6 +32,11 @@ tagged release, including legacy distribution naming where applicable.
 - Strengthened replay comparison, secret handling, and persisted-artifact
   tamper detection.
 
+### Deprecated
+
+- Runtime v1 run and replay remain compatible in 0.4.0, but Runtime v2 is the
+  primary executable contract. Removal will not occur before 1.0.0.
+
 ## [0.3.9] - 2026-07-04
 
 ### Changed
