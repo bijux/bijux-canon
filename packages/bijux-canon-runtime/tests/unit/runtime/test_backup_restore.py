@@ -189,6 +189,66 @@ def test_configured_backup_uses_workspace_database_cas_and_backup_root(
     assert (generation / "runtime.duckdb").is_file()
 
 
+def test_restore_preserves_partial_fixture_and_rejects_missing_backup_payload(
+    tmp_path: Path,
+    resolved_flow,
+) -> None:
+    configuration = resolve_runtime_configuration(
+        explicit={"working_root": tmp_path / "workspace"}
+    )
+    initialize_runtime_workspace(configuration)
+    layout = configuration.require_workspace_layout()
+    execution = DuckDBExecutionWriteStore(layout.database_path)
+    execution.save_run(
+        trace=None,
+        plan=resolved_flow.plan,
+        mode=RunMode.DRY_RUN,
+    )
+    execution._store.close()
+    artifact = AddressedArtifact.from_json(
+        {"retained": "lifecycle evidence"},
+        schema_id="bijux.runtime.lifecycle-evidence.v1",
+        producer="bijux-canon-runtime:test",
+    )
+    AuthoritativeArtifactPayloadStore(
+        payload_store=AtomicFilesystemArtifactPayloadStore(layout.cas_root),
+        database_path=layout.database_path,
+    ).put(artifact)
+    generation, _manifest = RuntimeBackupManager(
+        configuration=configuration
+    ).create_workspace_backup(
+        backup_id="recovery-regression",
+        created_at="2026-08-25T00:00:00+00:00",
+    )
+
+    partial_restore = tmp_path / "partial-restore"
+    partial_staging = tmp_path / "partial-restore.partial"
+    partial_staging.mkdir()
+    marker = partial_staging / "retained.txt"
+    marker.write_text("operator-owned recovery state", encoding="utf-8")
+    with pytest.raises(BackupIntegrityError, match="staging root already exists"):
+        RuntimeBackupManager.restore(
+            backup_generation=generation,
+            restore_root=partial_restore,
+        )
+    assert marker.read_text(encoding="utf-8") == "operator-owned recovery state"
+    assert not partial_restore.exists()
+
+    digest = str(artifact.descriptor.artifact_id).removeprefix("sha256:")
+    payload = (
+        generation / "cas" / "objects" / "sha256" / digest[:2] / digest / "payload"
+    )
+    payload.unlink()
+    corrupt_restore = tmp_path / "corrupt-restore"
+    with pytest.raises(BackupIntegrityError, match="absent or corrupt"):
+        RuntimeBackupManager.restore(
+            backup_generation=generation,
+            restore_root=corrupt_restore,
+        )
+    assert not corrupt_restore.exists()
+    assert not (tmp_path / "corrupt-restore.partial").exists()
+
+
 @pytest.mark.parametrize("backup_id", ["../escape", "nested/escape", "", " space"])
 def test_backup_identity_cannot_escape_the_generation_root(
     tmp_path: Path, backup_id: str

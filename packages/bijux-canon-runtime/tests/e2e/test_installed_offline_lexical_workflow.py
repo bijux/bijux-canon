@@ -18,6 +18,7 @@ _REPOSITORY_ROOT = Path(__file__).parents[4]
 _EXAMPLE = _REPOSITORY_ROOT / "examples" / "ancient-dna-research"
 
 
+@pytest.mark.timeout(300)
 def test_installed_wheels_complete_offline_lexical_workflow(tmp_path: Path) -> None:
     runtime_value = os.environ.get("BIJUX_CANON_RUNTIME_INSTALLED_COMMAND")
     if runtime_value is None:
@@ -60,7 +61,7 @@ def test_installed_wheels_complete_offline_lexical_workflow(tmp_path: Path) -> N
         capture_output=True,
         check=False,
         text=True,
-        timeout=120,
+        timeout=240,
     )
 
     assert completed.returncode == 0, completed.stderr
@@ -78,6 +79,19 @@ def test_installed_wheels_complete_offline_lexical_workflow(tmp_path: Path) -> N
     assert summary["workspace"]["restart_ready"] is True
     assert summary["replay"]["equivalent"] is True
     assert summary["replay"]["exact_artifact_identities"] is True
+    lifecycle = summary["lifecycle"]
+    assert lifecycle["configuration_comparison"]["equivalent"] is False
+    assert lifecycle["configuration_comparison"]["classification"] == "regression"
+    assert lifecycle["failed_run"]["status"] == "failed"
+    assert lifecycle["failed_run"]["idempotent_retry"] is True
+    assert lifecycle["failed_run"]["failure_count"] > 0
+    backup_restore = lifecycle["backup_restore"]
+    assert backup_restore["artifact_count"] > 0
+    assert backup_restore["original_path_unavailable"] is True
+    assert backup_restore["failed_job_status"] == "failed"
+    assert backup_restore["configuration_mismatch_code"] == "missing-capability"
+    assert backup_restore["tampered_restore_code"] == "operation-failed"
+    assert backup_restore["restored_replay_attempt_id"]
     assert summary["run"]["bounded_inspection_limit"] == 5
     assert summary["run"]["provenance_status"] == "verified"
     assert all(

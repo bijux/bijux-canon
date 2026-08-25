@@ -23,6 +23,7 @@ _PROFILE = "offline-lexical"
 _QUESTION = "What contamination controls are recommended for ancient DNA?"
 _PAGE_BYTES = 65_536
 _PATH_PART = re.compile(r"^([^\[]+)\[(\d+)\]$")
+_RUN_ID = re.compile(r"\b(run_v1_[0-9a-f]{64})\b")
 
 
 class WorkflowFailure(RuntimeError):
@@ -133,6 +134,45 @@ class InstalledRuntime:
             raise WorkflowFailure(f"{evidence_name} did not return JSON") from error
         value = _mapping(value, f"{evidence_name} returned a non-object")
         (self.evidence_directory / f"{evidence_name}.json").write_text(
+            json.dumps(value, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+        return value
+
+    def invoke_problem(
+        self,
+        evidence_name: str,
+        *arguments: str,
+        environment: dict[str, str] | None = None,
+    ) -> dict[str, Any]:
+        """Capture one expected public failure without weakening its assertions."""
+        completed = subprocess.run(  # noqa: S603 - explicit installed command
+            [str(self.command), *arguments],
+            cwd=self.cwd,
+            env=environment or self.environment,
+            capture_output=True,
+            check=False,
+            text=True,
+        )
+        record = {
+            "arguments": list(arguments),
+            "returncode": completed.returncode,
+            "stderr": completed.stderr,
+            "stdout": completed.stdout,
+        }
+        (self.evidence_directory / f"{evidence_name}.exchange.json").write_text(
+            json.dumps(record, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+        _require(completed.returncode != 0, f"{evidence_name} unexpectedly succeeded")
+        try:
+            value = json.loads(completed.stderr)
+        except json.JSONDecodeError as error:
+            raise WorkflowFailure(
+                f"{evidence_name} did not return a JSON problem"
+            ) from error
+        value = _mapping(value, f"{evidence_name} returned a non-object problem")
+        (self.evidence_directory / f"{evidence_name}.problem.json").write_text(
             json.dumps(value, indent=2, sort_keys=True) + "\n",
             encoding="utf-8",
         )
@@ -340,6 +380,335 @@ def _verify_citations(
             }
         )
     return verified
+
+
+def _compare_configurations(
+    runtime: InstalledRuntime,
+    *,
+    question: str,
+    corpus_id: str,
+    index_id: str,
+    baseline_result: dict[str, Any],
+) -> dict[str, Any]:
+    job, candidate = _job_result(
+        runtime,
+        "alternate-answer",
+        "ask",
+        question,
+        "--index-id",
+        index_id,
+        "--corpus-id",
+        corpus_id,
+        "--top-k",
+        "3",
+        "--request-id",
+        "request-ancient-dna-offline-answer-top-3",
+        "--idempotency-key",
+        "ancient-dna-offline-answer-top-3",
+        "--profile",
+        _PROFILE,
+    )
+    comparison = runtime.invoke(
+        "answer-configuration-comparison",
+        "v2",
+        "compare",
+        _string(baseline_result.get("run_id"), "baseline run identity is missing"),
+        _string(candidate.get("run_id"), "candidate run identity is missing"),
+        "--baseline-attempt-id",
+        _string(
+            baseline_result.get("attempt_id"), "baseline attempt identity is missing"
+        ),
+        "--candidate-attempt-id",
+        _string(candidate.get("attempt_id"), "candidate attempt identity is missing"),
+        "--dimension",
+        "configuration",
+    )
+    raw_differences = comparison.get("differences")
+    _require(
+        comparison.get("equivalent") is False
+        and isinstance(raw_differences, list)
+        and len(raw_differences) == 1,
+        "configuration comparison did not expose one material difference",
+    )
+    difference = _mapping(
+        cast(list[object], raw_differences)[0],
+        "configuration difference is invalid",
+    )
+    _require(
+        difference.get("dimension") == "configuration"
+        and difference.get("classification") == "regression"
+        and difference.get("baseline") != difference.get("candidate"),
+        "top-k configuration difference was not classified explicitly",
+    )
+    return {
+        "baseline_run_id": baseline_result["run_id"],
+        "candidate_job_id": job["job_id"],
+        "candidate_run_id": candidate["run_id"],
+        "classification": difference["classification"],
+        "comparison_sha256": comparison["comparison_sha256"],
+        "equivalent": comparison["equivalent"],
+    }
+
+
+def _deliberate_failed_run(
+    runtime: InstalledRuntime,
+    *,
+    missing_source: Path,
+) -> dict[str, Any]:
+    arguments = (
+        "v2",
+        "ingest",
+        str(missing_source),
+        "--request-id",
+        "request-ancient-dna-missing-source",
+        "--idempotency-key",
+        "ancient-dna-missing-source",
+        "--profile",
+        _PROFILE,
+        "--wait",
+        "--wait-timeout-seconds",
+        "120",
+    )
+    failed = runtime.invoke("missing-source-run", *arguments)
+    _require(
+        failed.get("status") == "failed"
+        and failed.get("result_available") is False
+        and failed.get("error_type") == "RuntimeFirstExecutionError",
+        "missing-source run did not retain an explicit failed terminal state",
+    )
+    retry = runtime.invoke("missing-source-idempotent-retry", *arguments)
+    _require(
+        retry.get("job_id") == failed.get("job_id")
+        and retry.get("status") == "failed"
+        and retry.get("attempt_count") == failed.get("attempt_count") == 1,
+        "idempotent retry changed the failed job identity or reran it",
+    )
+    message = _string(failed.get("error_message"), "failed job omitted diagnostics")
+    match = _RUN_ID.search(message)
+    _require(match is not None, "failed job diagnostics omitted its run identity")
+    assert match is not None
+    run_id = match.group(1)
+    inspection = runtime.invoke(
+        "missing-source-run-inspection",
+        "v2",
+        "inspect",
+        run_id,
+        "--limit",
+        "20",
+    )
+    counts = _mapping(
+        inspection.get("collection_counts"),
+        "failed run inspection omitted collection counts",
+    )
+    _require(
+        inspection.get("status") == "failed"
+        and inspection.get("provenance", {}).get("parent_job_id")
+        == failed.get("job_id")
+        and isinstance(counts.get("failures"), int)
+        and counts["failures"] > 0,
+        "failed run did not retain inspectable causal diagnostics",
+    )
+    return {
+        "attempt_count": failed["attempt_count"],
+        "error_type": failed["error_type"],
+        "failure_count": counts["failures"],
+        "idempotent_retry": True,
+        "job_id": failed["job_id"],
+        "run_id": run_id,
+        "status": failed["status"],
+    }
+
+
+def _backup_restore_lifecycle(
+    runtime: InstalledRuntime,
+    *,
+    workspace: Path,
+    answer_job_id: str,
+    answer_result: dict[str, Any],
+    failed_run: dict[str, Any],
+    replay_attempt_id: str,
+    replay_job_id: str,
+) -> dict[str, Any]:
+    backup = runtime.invoke(
+        "workspace-backup",
+        "v2",
+        "backup",
+        "offline-lexical-lifecycle",
+        "--created-at",
+        "2026-08-25T00:00:00+00:00",
+    )
+    manifest = _mapping(backup.get("manifest"), "backup manifest is missing")
+    raw_artifact_ids = manifest.get("artifact_ids")
+    _require(
+        manifest.get("backup_id") == "offline-lexical-lifecycle"
+        and isinstance(raw_artifact_ids, list)
+        and raw_artifact_ids,
+        "backup omitted its retained artifact inventory",
+    )
+    artifact_ids = cast(list[str], raw_artifact_ids)
+    original_generation = Path(
+        _string(backup.get("backup_generation"), "backup generation is missing")
+    )
+    retired_workspace = workspace.with_name(workspace.name + "-source-unavailable")
+    restored_workspace = workspace.with_name(workspace.name + "-restored")
+    _require(
+        not retired_workspace.exists() and not restored_workspace.exists(),
+        "lifecycle fixture destinations must not exist",
+    )
+    generation_relative = original_generation.relative_to(workspace)
+    workspace.rename(retired_workspace)
+    _require(not workspace.exists(), "original workspace path remained accessible")
+    backup_generation = retired_workspace / generation_relative
+    restore = runtime.invoke(
+        "workspace-restore",
+        "v2",
+        "restore",
+        str(backup_generation),
+        str(restored_workspace),
+    )
+    _require(
+        restore.get("backup_id") == manifest.get("backup_id")
+        and restore.get("manifest_sha256") == manifest.get("manifest_sha256")
+        and restore.get("artifact_count") == len(artifact_ids)
+        and restore.get("inspection_ready") is True
+        and restore.get("offline_replay_ready") is True,
+        "restored workspace did not retain the verified backup identity",
+    )
+    restored_environment = dict(runtime.environment)
+    restored_environment["BIJUX_CANON_RUNTIME_WORKING_ROOT"] = str(restored_workspace)
+    runtime.environment = restored_environment
+    restored_readiness = runtime.invoke(
+        "restored-readiness",
+        "v2",
+        "ready",
+        "--operation",
+        "ask",
+        "--profile",
+        _PROFILE,
+    )
+    _require(restored_readiness.get("ready") is True, "restored workspace is not ready")
+    answer_status = runtime.invoke(
+        "restored-answer-status", "v2", "status", answer_job_id
+    )
+    answer_envelope = runtime.invoke(
+        "restored-answer-result", "v2", "result", answer_job_id
+    )
+    restored_answer = _mapping(
+        answer_envelope.get("result"), "restored answer result is missing"
+    )
+    failed_status = runtime.invoke(
+        "restored-failed-status", "v2", "status", str(failed_run["job_id"])
+    )
+    prior_replay_status = runtime.invoke(
+        "restored-prior-replay-status", "v2", "status", replay_job_id
+    )
+    _require(
+        answer_status.get("status") == "succeeded"
+        and restored_answer.get("run_id") == answer_result.get("run_id")
+        and failed_status.get("status") == "failed"
+        and failed_status.get("error_type") == failed_run.get("error_type")
+        and prior_replay_status.get("status") == "succeeded",
+        "restored job authority changed a terminal lifecycle identity",
+    )
+    restored_inspection = runtime.invoke(
+        "restored-answer-inspection",
+        "v2",
+        "inspect",
+        str(answer_result["run_id"]),
+        "--attempt-id",
+        str(answer_result["attempt_id"]),
+        "--limit",
+        "20",
+    )
+    _require(
+        restored_inspection.get("status") == "completed"
+        and restored_inspection.get("selected_attempt_id")
+        == answer_result.get("attempt_id"),
+        "restored run inspection changed the selected attempt",
+    )
+    restored_replay_job, restored_replay = _job_result(
+        runtime,
+        "restored-answer-replay",
+        "replay",
+        str(answer_result["run_id"]),
+        "--source-attempt-id",
+        replay_attempt_id,
+        "--network-policy",
+        "disabled",
+        "--request-id",
+        "request-ancient-dna-restored-replay",
+        "--idempotency-key",
+        "ancient-dna-restored-replay",
+    )
+    _require(
+        restored_replay.get("accepted") is True
+        and restored_replay.get("exact_artifact_identities") is True,
+        "restored strict replay was not exactly accepted",
+    )
+
+    manifest_path = restored_workspace / "workspace.json"
+    manifest_before = hashlib.sha256(manifest_path.read_bytes()).hexdigest()
+    mismatched_environment = dict(restored_environment)
+    mismatched_environment["BIJUX_CANON_RUNTIME_OFFLINE"] = "0"
+    mismatch = runtime.invoke_problem(
+        "restored-configuration-mismatch",
+        "v2",
+        "status",
+        answer_job_id,
+        environment=mismatched_environment,
+    )
+    _require(
+        mismatch.get("code") == "missing-capability"
+        and "incompatible_configuration" in str(mismatch.get("cause"))
+        and hashlib.sha256(manifest_path.read_bytes()).hexdigest() == manifest_before,
+        "configuration mismatch did not fail before workspace mutation",
+    )
+
+    tampered_generation = workspace.parent / "tampered-backup-generation"
+    tampered_restore = workspace.parent / "tampered-backup-restore"
+    _require(
+        not tampered_generation.exists() and not tampered_restore.exists(),
+        "tamper fixture destinations must not exist",
+    )
+    shutil.copytree(backup_generation, tampered_generation)
+    digest = artifact_ids[0].removeprefix("sha256:")
+    tampered_payload = (
+        tampered_generation
+        / "cas"
+        / "objects"
+        / "sha256"
+        / digest[:2]
+        / digest
+        / "payload"
+    )
+    _require(tampered_payload.is_file(), "tamper fixture payload is missing")
+    tampered_payload.unlink()
+    tamper_problem = runtime.invoke_problem(
+        "tampered-backup-restore",
+        "v2",
+        "restore",
+        str(tampered_generation),
+        str(tampered_restore),
+    )
+    _require(
+        tamper_problem.get("code") == "operation-failed"
+        and "absent or corrupt" in str(tamper_problem.get("cause"))
+        and not tampered_restore.exists()
+        and not tampered_restore.with_name(tampered_restore.name + ".partial").exists(),
+        "tampered backup did not fail closed without partial activation",
+    )
+    return {
+        "artifact_count": restore["artifact_count"],
+        "backup_id": manifest["backup_id"],
+        "configuration_mismatch_code": mismatch["code"],
+        "failed_job_status": failed_status["status"],
+        "manifest_sha256": manifest["manifest_sha256"],
+        "original_path_unavailable": not workspace.exists(),
+        "restored_replay_attempt_id": restored_replay["replay_attempt_id"],
+        "restored_replay_job_id": restored_replay_job["job_id"],
+        "restored_root": str(restored_workspace),
+        "tampered_restore_code": tamper_problem["code"],
+    }
 
 
 def _installed_environment(command: Path, evidence_directory: Path) -> dict[str, Any]:
@@ -656,6 +1025,30 @@ def main() -> int:
         ),
         "replay comparison contains a changed dimension",
     )
+    configuration_comparison = _compare_configurations(
+        runtime,
+        question=args.question,
+        corpus_id=corpus_id,
+        index_id=index_id,
+        baseline_result=answer_result,
+    )
+    failed_run = _deliberate_failed_run(
+        runtime,
+        missing_source=workspace.parent / "deliberately-missing-source",
+    )
+    lifecycle = _backup_restore_lifecycle(
+        runtime,
+        workspace=workspace,
+        answer_job_id=_string(
+            answer_job.get("job_id"), "answer job identity is missing"
+        ),
+        answer_result=answer_result,
+        failed_run=failed_run,
+        replay_attempt_id=replay_attempt_id,
+        replay_job_id=_string(
+            replay_job.get("job_id"), "replay job identity is missing"
+        ),
+    )
 
     summary = {
         "answer": claim_graph.get("answer"),
@@ -676,6 +1069,11 @@ def main() -> int:
             "chunk_count": index_inspection["chunk_count"],
         },
         "installed_environment": installed,
+        "lifecycle": {
+            "backup_restore": lifecycle,
+            "configuration_comparison": configuration_comparison,
+            "failed_run": failed_run,
+        },
         "jobs": {
             "answer": answer_job["job_id"],
             "corpus": corpus_job["job_id"],
@@ -712,6 +1110,7 @@ def main() -> int:
             "absolute_reopen": str(workspace),
             "initial_spelling": workspace.name,
             "restart_ready": reopened["ready"],
+            "restored_root": lifecycle["restored_root"],
         },
     }
     summary_path = evidence / "summary.json"
