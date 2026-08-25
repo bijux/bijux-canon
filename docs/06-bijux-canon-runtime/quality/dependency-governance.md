@@ -70,17 +70,17 @@ versions and the contract actually consumed from each lower package:
 
 | Boundary | Record | Executable proof |
 | --- | --- | --- |
-| ingest adapter | callable/import identity, request arguments, prepared/retrieval output schema and failure mapping | installed-package resolution plus valid, malformed and failed output cases |
-| index adapter | capability/contract request, decision/result schema, provenance and refusal mapping | exact and approximate cases with unsupported capability and backend failure |
-| reason adapter | problem/evidence input, claim/support/check bundle and verification failure mapping | supported, insufficient, tampered and unavailable-check cases |
-| agent adapter | pipeline/run input, result/trace schema, convergence and terminal failure mapping | converged, non-converged, partial, vetoed and failed workflows |
-| runtime | manifest/plan/policy versions, adapter expectations and final authority mapping | governed execution retaining all producer and consumer identities |
+| ingest service | parser/configuration identity, retained source, corpus and chunk schemas, failure mapping | installed valid, hostile, malformed and unsupported document cases |
+| index service | profile, model, backend, generation, ranking provenance and refusal mapping | installed lexical, exact and ANN cases with unsupported capability and corrupt state |
+| reason service | retrieval dependency, claims, qualifiers, citations and verification mapping | installed supported, insufficient, conflicting and tampered evidence cases |
+| agent service | budget, tool calls, decisions, convergence and terminal failure mapping | installed converged, exhausted, cancelled, partial and failed workflows |
+| runtime | workspace/configuration, request plan, job, run, attempt and artifact authority | governed execution retaining all producer and consumer identities across restart |
 
-Dependency resolution proves that distributions can coexist. It does not prove
-that package-root callables exist or that their typed semantics match runtime's
-loader contract. Until the canonical live adapters are supplied and exercised
-without substituting seam-specific callables, record installed live composition
-as unproven rather than inferring it from package installation or plan mode.
+Dependency resolution proves only that distributions can coexist. Installed
+composition additionally requires typed application execution without
+source-tree imports, causal identity checks, restart, replay, comparison and
+failure tests. Record those results rather than inferring capability from
+imports or metadata.
 
 ## Admit persistence and interface upgrades
 

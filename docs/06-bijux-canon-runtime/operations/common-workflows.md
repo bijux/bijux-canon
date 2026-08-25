@@ -4,109 +4,115 @@ audience: mixed
 type: how-to
 status: canonical
 owner: bijux-canon-runtime-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-08-25
 ---
 
 # Common Workflows
 
-Runtime operations follow an evidence-preserving sequence: resolve authority,
-execute under an explicit mode, persist causal state, arbitrate verification,
-and compare replay against the original acceptance contract.
+Runtime v2 operations preserve evidence through one sequence: validate the
+workspace and profile, submit durable work, resolve the terminal result,
+inspect causal state, then replay, compare, cancel, or recover deliberately.
 
-```mermaid
-flowchart TD
-    A[Validate manifest and dataset identity] --> B[Resolve immutable plan]
-    B --> C[Choose mode and authority]
-    C --> D[Bind stores, policies, and budget]
-    D --> E[Execute and record causal events]
-    E --> F[Arbitrate verification]
-    F --> G[Finalize and persist]
-    G --> H[Inspect, replay, or resume]
+## Run the complete lexical workflow
+
+```bash
+bijux-canon-runtime init --workspace ./canon-workspace --json
+export BIJUX_CANON_RUNTIME_WORKING_ROOT=./canon-workspace
+
+bijux-canon-runtime v2 run \
+  "What evidence does this corpus support?" \
+  --source-directory ./documents \
+  --profile offline-lexical \
+  --wait \
+  --wait-timeout-seconds 30
 ```
 
-## Review a flow without execution
+The operation discovers regular admitted documents, retains their original
+bytes, prepares an immutable corpus, builds the selected index, retrieves
+bounded evidence, produces a citation-required answer, and records bounded
+research and agent evidence. Each transition is retained under one job, run,
+attempt, configuration and causal artifact graph.
 
-Use plan mode whenever the question is structural: dependency order, dataset
-binding, determinism declaration, entropy authorization, retrieval contract,
-or verification-gate placement. A plan result has a resolved flow but no trace
-and no run identifier. That absence is intentional and must not be represented
-as a persisted run.
+## Control each lifecycle explicitly
 
-## Run with explicit authority
+Use separate commands when corpus and index reuse matters:
 
-Before live execution, bind:
+```bash
+bijux-canon-runtime v2 ingest ./documents \
+  --profile offline-lexical \
+  --wait
+bijux-canon-runtime v2 index CORPUS_ID \
+  --profile offline-lexical \
+  --wait
+bijux-canon-runtime v2 search "bounded query" \
+  --index-id INDEX_ID \
+  --profile offline-lexical \
+  --wait
+bijux-canon-runtime v2 ask "grounded question" \
+  --corpus-id CORPUS_ID \
+  --index-id INDEX_ID \
+  --profile offline-lexical \
+  --wait
+```
 
-- immutable flow and tenant identity;
-- frozen or explicitly permitted dataset state and fingerprint;
-- run mode and determinism level;
-- replay acceptability and envelope;
-- entropy sources, bounds, exhaustion action, and non-determinism intent;
-- verification policy and declared gates;
-- execution and artifact stores;
-- latency, step, resource, or other execution budgets;
-- authority for any intervention or override.
+Use `v2 research` for counterevidence-aware bounded research. Every submission
+accepts a strict `--request FILE` alternative for automation.
 
-`dry-run` exercises preparation and execution checks without the normal live
-side-effect posture. `observe` does not silently acquire live authority.
-`unsafe` permits explicitly reduced guarantees and remains labeled unsafe in
-the run record.
+## Follow or cancel durable work
 
-## Inspect and explain persisted state
+```bash
+bijux-canon-runtime v2 status JOB_ID \
+  --follow \
+  --timeout-seconds 30
+bijux-canon-runtime v2 cancel JOB_ID
+```
 
-Use `inspect run` for event, tool-invocation, and entropy counts or the complete
-JSON trace. Use `explain failure` to find the last recorded step, retrieval,
-reasoning, verification, tool, or interruption failure. Use `validate db`
-before operational work that depends on an existing DuckDB store.
+Follow mode uses worker notification and a deadline. Client timeout and durable
+cancellation are distinct states; inspect the job after either event.
 
-An incomplete or failed run remains inspectable. Do not mutate its finalized
-trace or overwrite its terminal status to make it appear successful; start a
-new run or resume from a recorded checkpoint under the resume contract.
+## Inspect retained evidence
 
-## Resume after interruption
+```bash
+bijux-canon-runtime v2 result JOB_ID
+bijux-canon-runtime v2 inspect RUN_ID \
+  --attempt-id ATTEMPT_ID \
+  --limit 20
+bijux-canon-runtime v2 artifact-payload ARTIFACT_ID \
+  --offset 0 \
+  --max-bytes 65536
+```
 
-Resume uses the persisted run identifier and continues after the last durable
-checkpoint. It restores starting event, evidence, tool invocation, entropy,
-claim, and artifact state so new entries preserve causal order.
+Inspection is bounded by default and summarizes oversized arbitrary values.
+The payload command returns an independently verifiable digest, total size and
+continuation offset for one immutable byte page.
 
-Before resuming, confirm that tenant, manifest, plan, dataset, policy, and store
-identity still match. If they changed, begin a new run and compare it with the
-interrupted one rather than extending history under altered authority.
+## Replay and compare
 
-## Replay and classify differences
+```bash
+bijux-canon-runtime v2 replay RUN_ID \
+  --source-attempt-id ATTEMPT_ID \
+  --network-policy disabled \
+  --wait
 
-Replay reloads the original run, resolves the current manifest, executes with
-the replay configuration, and applies semantic trace comparison. Inspect diffs
-in this order:
+bijux-canon-runtime v2 compare RUN_ID RUN_ID \
+  --baseline-attempt-id ATTEMPT_ID \
+  --candidate-attempt-id REPLAY_ATTEMPT_ID \
+  --dimension outcome \
+  --dimension claims \
+  --dimension citations
+```
 
-1. tenant, flow, run, dataset, and plan identity;
-2. mode, authority, policy, and verification gates;
-3. environment and external-tool identity;
-4. entropy sources, magnitude, and consumption;
-5. artifacts, evidence, claims, and causal events;
-6. replay-envelope thresholds and final acceptability.
+Replay produces a new attempt and refuses changed or missing governed inputs.
+Comparison retains both attempt identities and the selected comparison
+dimensions; it never chooses tolerance after observing a favorable result.
 
-An exact-match declaration permits no semantic drift. Bounded acceptance
-permits only the variance declared by the original flow; it is not a general
-waiver for backend or policy changes.
+## Back up or relocate
 
-## Compare two independent runs
+```bash
+bijux-canon-runtime v2 backup nightly-2026-08-25
+bijux-canon-runtime v2 restore BACKUP_GENERATION ./restored-workspace
+```
 
-Use `diff run` when both executions are first-class histories rather than an
-original/replay pair. The comparison uses the first trace's replay
-acceptability. Retain both run identifiers and the JSON diff so reviewers can
-distinguish a clean comparison from a command that was never run.
-
-## Preserve runtime evidence
-
-For every governed run, retain:
-
-- manifest, resolved plan, policy, authority, and budget;
-- dataset descriptor, version, state, hash, and storage identity;
-- execution trace with stable event identities and causal order;
-- tool invocations, entropy ledger, evidence, reasoning bundles, and artifacts;
-- verification results, arbitrations, and human interventions;
-- persisted run and replay envelopes;
-- resume metadata, replay diff, and acceptability verdict where applicable.
-
-This record is the basis for execution authority and replay claims. Final
-output without it is an application result, not a governed runtime run.
+Backup requires a quiescent workspace. Restore verifies the database, admitted
+CAS, indexes, controls and workspace-owned model state before activating a new
+destination. Use restore for relocation rather than moving a workspace tree.

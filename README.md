@@ -133,24 +133,24 @@ re-export canonical package surfaces directly.
 
 ## What Works As Shipped
 
-The repository contains substantial package-local implementations, but the
-working boundary is not the same for every surface. Use this table before
-choosing an example or making an integration claim:
+The installed Runtime v2 application is the supported whole-product boundary.
+It composes the five canonical packages behind one workspace, durable job
+authority, and causal artifact graph. Package-local surfaces remain available
+when an integration needs one narrower authority:
 
 | Capability | Supported entry | Evidence produced | Important limit |
 | --- | --- | --- | --- |
-| deterministic document preparation and local retrieval | ingest Python, CLI, and HTTP v1 | prepared records, chunk identity, persisted local indexes, ranked candidates, citations | not the governed vector-execution contract owned by index |
-| exact or bounded vector execution | index Python, module-invoked CLI, and HTTP v1 | request, capability resolution, execution artifact, provenance, cost, replay comparison | no installed `bijux-canon-index` console script and no runtime contract-enforcement adapter |
-| evidence-backed claim construction and verification | reason Python, CLI, and HTTP v1 | claims, support edges, checks, manifests, traces, replay records | verification is scoped to registered evidence and rules; runtime has no reason adapter |
-| traced role orchestration | agent Python, CLI, replay, and fixed offline HTTP v1 | ordered calls, lifecycle transitions, convergence and termination records, `RunTrace` | provider determinism is not implied; runtime has no agent adapter |
-| manifest resolution, planning, runtime-local policy, storage, inspection, and replay analysis | runtime Python and CLI; HTTP health/readiness | immutable plans, causal traces, stored run projections, arbitration and replay verdicts | HTTP run/replay return `501`; canonical live package adapters are not complete |
+| durable document admission | Runtime v2 CLI, Python application service, and HTTP v2; Ingest Python and CLI | retained source archive, normalized records, chunk mapping, corpus snapshot, provenance | document bytes must use an admitted parser and fit configured resource bounds |
+| lexical, exact, ANN, and hybrid retrieval | Runtime v2 CLI/HTTP; Index Python and installed `bijux-canon-index` CLI | immutable index, ranked evidence, stage contributions, locators, replay identity | dense and hybrid profiles require a validated local model and matching backend |
+| grounded answering and bounded research | Runtime v2 `ask`, `research`, and `run` commands or matching HTTP operations | citations, claim graph, candidate adjudication, budgets, run and attempt identities | cited evidence supports only the claims and qualifiers retained in the run |
+| observable agent research | Runtime v2 research/run path; Agent Python and CLI | ordered tool calls, decisions, convergence, termination, complete trace | provider determinism is not implied and hosted providers are not required |
+| lifecycle, recovery, and comparison | Runtime v2 status, result, inspect, replay, compare, cancel, backup, and restore | durable jobs, causal artifacts, bounded inspection, replay and restore evidence | backup requires a quiescent workspace; relocation uses restore rather than copying |
 
-The strongest immediately reproducible whole-repository demonstration is
-runtime plan mode because it resolves checked-in authority, data, dependency,
-entropy, and replay declarations without crossing an unavailable live adapter.
-The strongest product demonstrations remain package-local: exercise the
-owning package, retain its evidence record, and state the boundary that was not
-tested. This is more informative than treating co-installation as integration.
+The offline ancient-DNA workflow is the secret-free whole-product smoke. The
+CPU hybrid workflow additionally proves locked-model acquisition, exact and ANN
+retrieval, restart, persisted grounded answers, bounded research and agent
+traces, replay, backup/restore, and development evaluation. Both workflows run
+installed wheels outside the source tree and retain compact evidence summaries.
 
 ## One System, Five Authorities
 
@@ -186,42 +186,29 @@ insufficient evidence remains a reasoning result; orchestration failures remain
 traceable agent outcomes; policy violations remain runtime verdicts. No layer
 has to disguise another layer's failure as success.
 
-### Current Composition Boundary
+### Composition Boundary
 
-The diagram is an ownership model, not evidence that the installed packages
-currently form a turnkey live pipeline. Runtime resolves four integration
-callables lazily at execution time, while the corresponding canonical package
-roots do not currently publish those callables:
-
-| Runtime integration request | Current canonical root | Consequence |
-| --- | --- | --- |
-| `bijux_canon_ingest.retrieve` | not exported; the package-local retrieval function also requires an `index_path` rather than runtime's scope and vector-contract arguments | an explicit retrieval adapter is required |
-| `bijux_canon_index.enforce_contract` | not exported | runtime cannot use the canonical index root as its vector-contract enforcer |
-| `bijux_canon_reason.reason` | not exported | runtime cannot use the canonical reason root as its reasoning runner |
-| `bijux_canon_agent.run` | not exported; the root intentionally exposes only `API_VERSION` | runtime cannot use the canonical agent root as its agent runner |
-
-The legacy-module fallbacks are aliases to the same canonical roots, so they do
-not supply a missing callable. Package-local Python, CLI, and implemented HTTP
-surfaces remain independently usable, and runtime plan mode does not invoke
-these adapters. Do not claim supported end-to-end live composition until the
-adapter contracts are explicit and an installed-package integration test
-exercises them.
+Runtime v2 composes domain application services rather than guessing uniform
+functions at package roots. Ingest owns source parsing and chunk lineage; Index
+owns backend execution and model validation; Reason owns claims and citations;
+Agent owns bounded decisions and tool traces; Runtime owns workspace identity,
+jobs, persistence, inspection, replay, and recovery. The complete workflow
+retains those ownership boundaries in its causal artifact graph.
 
 ## Contract Surfaces
 
 The public contract is larger than Python imports:
 
 - Python distributions and typed root imports provide in-process use.
-- Canonical console commands provide automation-friendly entry points for
-  ingest, reason, agent, and runtime. Index is an in-process execution library;
-  its preserved `bijux-vex` compatibility distribution supplies the historical
-  command name.
-- Versioned OpenAPI documents under `apis/<package>/v1/` pin HTTP behavior for
-  all five canonical packages.
-- Package tests cover local semantics; API, invariant, integration, end-to-end,
-  and regression suites protect their selected boundaries. The runtime's
-  package-root adapter seam is not currently covered by a live canonical-package
-  integration test.
+- Canonical console commands provide automation-friendly entry points for all
+  five authorities. Runtime additionally publishes `bijux-canon-runtime-server`
+  from its API installation profile.
+- Versioned OpenAPI documents under `apis/<package>/` pin package-specific HTTP
+  behavior. The supported whole-product server uses Runtime v2; older v1
+  schemas remain compatibility contracts and are not its implementation path.
+- Package tests cover local semantics; API, invariant, integration, installed
+  end-to-end, restart, recovery, and regression suites protect their selected
+  boundaries.
 - Compatibility distributions preserve six existing names while canonical
   ownership remains with the five `bijux-canon-*` packages.
 
@@ -237,10 +224,10 @@ shape:
 | Package | Package-root contract | Operational entry points |
 | --- | --- | --- |
 | ingest | broad, explicitly enumerated preparation primitives and lazily resolved application exports | canonical CLI and versioned HTTP API |
-| index | package version only at the root; execution contracts live in named application, core, domain, and infrastructure modules | Python and versioned HTTP API; no renamed canonical console script |
+| index | package version only at the root; execution contracts live in named application, core, domain, and infrastructure modules | Python, installed canonical CLI, and versioned HTTP API |
 | reason | typed claims, evidence references, plans, traces, checks, validators, and stable hashing helpers | canonical CLI, preserved `bijux-rar` command, and versioned HTTP API |
 | agent | deliberately minimal root exposing `API_VERSION` lazily | canonical CLI, workflow modules, and versioned HTTP API |
-| runtime | `FlowManifest`, `RunMode`, and `execute_flow` | canonical CLI and versioned HTTP API |
+| runtime | `FlowManifest`, `RunMode`, and `execute_flow` | canonical v2 CLI and installed v2 HTTP server |
 
 Do not infer an import from a sibling package or from a diagram. Confirm the
 owning package's exported names, documented module boundary, command help, or
@@ -268,52 +255,34 @@ After installation, inspect the owning public surface before wiring a workflow:
 
 ```bash
 bijux-canon-ingest --help
+bijux-canon-index --help
 bijux-canon-reason --help
 bijux-canon-agent --help
 bijux-canon-runtime --help
 ```
 
-For index integrations, begin with the
-[index handbook](https://bijux.io/bijux-canon/03-bijux-canon-index/) and its
-typed execution contracts. Existing `bijux-vex` automation remains available
-through the compatibility package, but new integrations should target
-`bijux-canon-index` directly.
+Existing `bijux-vex` automation remains available through the compatibility
+package, but new integrations should target `bijux-canon-index` directly.
 
-## Inspect A Governed Plan
+## Inspect A Governed Run
 
-The repository includes a manifest that can be resolved without executing a
-provider, retrieval adapter, reasoning adapter, or agent workflow. This is the
-safest concrete starting point for understanding runtime authority:
+Run the v2 quickstart above, then use its returned identities instead of
+reconstructing state from the final prose:
 
 ```bash
-uv sync --frozen
-uv run bijux-canon-runtime plan \
-  packages/bijux-canon-runtime/examples/boring/flow.json \
-  --json
+bijux-canon-runtime v2 result JOB_ID
+bijux-canon-runtime v2 inspect RUN_ID \
+  --attempt-id ATTEMPT_ID \
+  --limit 20
 ```
 
-The resulting plan records the flow and tenant, frozen dataset identity,
-ordered steps, determinism level, entropy budget, replay envelope,
-environment fingerprint, and `plan_hash`. It does not allocate a run ID,
-persist a trace, or establish that the four live package adapters are
-callable. That distinction is useful: planning proves that declared authority
-can be normalized into an immutable execution contract without confusing that
-contract with execution.
-
-Read the output in this order:
-
-1. confirm `flow_id`, `tenant_id`, and the dataset hash identify the intended
-   authority boundary;
-2. inspect every resolved step and dependency before trusting execution order;
-3. verify the determinism and entropy declarations match the intended replay
-   claim; and
-4. retain `plan_hash` as the identity against which later execution or replay
-   evidence must be compared.
-
-The example manifest is deliberately uneventful. It demonstrates admission
-and planning, not model quality or end-to-end live composition. Continue with
-the [runtime entrypoint guide](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/entrypoints-and-examples/)
-before granting execution authority.
+Confirm the operation and configuration identities, source archive, corpus,
+index, model lock or explicit lexical absence, retrieval, citations, claims,
+agent decisions, budgets, and terminal attempt all resolve through the causal
+graph. Default inspection is bounded; large immutable payloads require the
+explicit `v2 artifact-payload` command with byte limits. Continue with the
+[Runtime operator guide](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/operator-workflows/)
+for replay, cancellation, backup, and restore.
 
 ## Read The Repository By Ownership
 

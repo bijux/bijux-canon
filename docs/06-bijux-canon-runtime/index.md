@@ -4,7 +4,7 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-runtime-docs
-last_reviewed: 2026-07-22
+last_reviewed: 2026-08-25
 ---
 
 # Runtime Handbook
@@ -48,7 +48,7 @@ flowchart LR
 planning, authority checks, execution, verification, and replay. Constructing
 the dataclass alone does not prove that a flow is executable.
 
-## Run Modes
+## Legacy Manifest Authority Modes
 
 - `plan` resolves and plans without executing steps
 - `dry-run` exercises runtime preparation without live side effects
@@ -56,71 +56,56 @@ the dataclass alone does not prove that a flow is executable.
 - `observe` captures evidence without granting normal execution authority
 - `unsafe` is an explicit reduced-guarantee mode, not an alias for live
 
-Plan and dry-run deliberately avoid lower-package intelligence, and observe
-evaluates a supplied run. Success in those modes does not establish that the
-live agent, retrieval, vector-contract, and reasoning adapters are callable.
+These modes belong to the hidden manifest-oriented compatibility surface. Plan
+and dry-run deliberately avoid product execution, and observe evaluates a
+supplied run. Success in those modes does not establish v2 operation or profile
+readiness. New whole-product workflows use the v2 commands below.
 
-## Inspect The Bundled Execution Plan
+## Run The Installed Product
 
-Resolve the repository-owned example before granting runtime any execution
-authority:
+Initialize a workspace and execute the complete secret-free lexical path:
 
 ```bash
-uv run bijux-canon-runtime plan \
-  packages/bijux-canon-runtime/examples/boring/flow.json \
-  --json
+bijux-canon-runtime init --workspace ./canon-workspace --json
+export BIJUX_CANON_RUNTIME_WORKING_ROOT=./canon-workspace
+
+bijux-canon-runtime v2 run \
+  "What evidence does this corpus support?" \
+  --source-directory ./documents \
+  --profile offline-lexical \
+  --wait \
+  --wait-timeout-seconds 30
 ```
 
-The command is useful because every important planning claim has a visible
-field:
+The terminal job document identifies the authoritative run and attempt. Use
+`v2 result` to resolve the output, then `v2 inspect`, `v2 replay`, and
+`v2 compare` to examine or reproduce the causal history. The same application
+service exposes separate ingest, index, search, answer, and research operations
+when an operator needs explicit lifecycle control.
 
-| Planning claim | Output to inspect |
-| --- | --- |
-| the intended tenant and flow were admitted | `tenant_id`, `flow_id`, and `flow_state` |
-| the intended data was bound | dataset ID, version, hash, state, and storage URI |
-| dependency order is stable | ordered `steps` and each step's declared dependencies |
-| variability is declared | determinism level, entropy budget, nondeterminism intent, and allowed variance |
-| replay expectations were fixed before execution | replay mode, acceptability, and replay envelope |
-| the resolved contract is addressable | environment fingerprint, resolution metadata, and `plan_hash` |
+The execution profile determines the plan before the durable job is accepted.
+`offline-lexical` never schedules a model or dense step. Local dense and hybrid
+profiles first require the `local-cpu` installation extra and a model acquired
+and validated through `bijux-canon-index model` commands.
 
-Plan mode returns neither a run ID nor a trace because nothing executed. Store
-the manifest and plan output together when they are used to authorize later
-work; a `plan_hash` without the declaration it summarizes is not a sufficient
-review record. The [entrypoint guide](interfaces/entrypoints-and-examples.md)
-shows how executable modes add policy, storage, inspection, and replay.
-
-## Live Composition Status
+## Installed Composition
 
 ```mermaid
 flowchart TD
-    executor["runtime step executor"] --> loader["integration loader"]
-    loader --> adapter["domain-aware adapter required"]
-    adapter --> package["canonical package contract"]
-    adapter --> record["runtime record"]
-    package --> adapter
+    request["typed v2 request"] --> runtime["Runtime application service"]
+    runtime --> ingest["durable corpus + source archive"]
+    ingest --> index["profile-selected immutable index"]
+    index --> reason["grounded claims + citations"]
+    reason --> agent["bounded research decisions"]
+    agent --> record["job + run + attempt + causal artifacts"]
 ```
 
-The current loaders ask package roots for four callables:
-
-| Step boundary | Callable expected by runtime | Current status |
-| --- | --- | --- |
-| agent | `bijux_canon_agent.run` | absent; agent exposes a pipeline-and-trace contract |
-| retrieval | `bijux_canon_ingest.retrieve` | absent at the root; the application retrieval signature and output model differ |
-| vector enforcement | `bijux_canon_index.enforce_contract` | absent; index owns a richer request, capability, provenance, and refusal contract |
-| reasoning | `bijux_canon_reason.reason` returning runtime `ReasoningBundle` | absent; reason owns different claim, support, trace, and verification models |
-
-Compatibility import roots mirror canonical behavior and do not repair these
-seams. This means the package can plan flows, produce dry-run records, observe
-supplied results, and exercise runtime-local policy and storage behavior, while
-a canonical live flow that reaches these loaders is not currently an
-established end-to-end path.
-
-The durable proof is an installed-package integration test, not an import
-check. It must execute the loaders and demonstrate that source, evidence,
-contract, claim, trace, artifact, and failure identities survive conversion
-into runtime-owned records. Until then, live CLI examples describe the runtime
-interface and required policy posture rather than a turnkey composition of all
-canonical packages.
+Runtime composes domain application services without requiring uniform
+package-root callables. Every operation retains request, plan, configuration,
+input and output artifact identities in the workspace DuckDB and CAS. Installed
+wheel acceptance executes this composition outside the source checkout and
+proves restart, bounded inspection, replay, comparison, cancellation,
+backup/restore, grounded answers, research, and agent traces.
 
 ## Follow One Governed Run
 
@@ -201,13 +186,13 @@ presence of a run row.
 | resume preserved authority | tenant, manifest, plan, dataset, policy, checkpoint, store identity | changed authority requires a new run |
 | replay is exact | original envelope, retained inputs, event and artifact identity, zero disallowed diff | cannot control state never captured |
 | bounded replay is acceptable | original allowed variance and evaluated semantic diff | tolerance cannot be invented after divergence |
-| storage is complete | schema contract, finalized records, external artifact availability | metadata does not guarantee payload retention |
-| live composition works | installed loader execution plus cross-package identity and failure assertions | dependency resolution, plan mode, or dry-run success |
+| storage is complete | workspace schema, DuckDB authority, admitted CAS inventory and verified causal edges | hashes cannot reconstruct deliberately deleted bytes |
+| installed composition works | terminal jobs, causal artifact graph, source locators, grounded claims, research trace, replay and restore evidence | import success or a fabricated result document |
 
-The [entrypoint examples](interfaces/entrypoints-and-examples.md) show persisted
-execution, inspection, replay, comparison, and the installed HTTP v2 server.
-The separately hosted v1 compatibility application implements health and
-readiness; its run and replay requests return `501 Not Implemented`.
+The [entrypoint examples](interfaces/entrypoints-and-examples.md) show installed
+execution, inspection, replay, comparison, backup/restore, and the HTTP v2
+server. The separately importable v1 module is compatibility-only and is not
+mounted by the installed server.
 
 ## Continue By Question
 

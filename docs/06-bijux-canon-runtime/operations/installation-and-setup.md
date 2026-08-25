@@ -15,11 +15,10 @@ and agent packages so runtime contracts can bind their artifacts.
 
 ```mermaid
 flowchart LR
-    P[Install canonical runtime] --> M[Declare manifest and policy]
-    M --> L[Resolve plan]
-    L --> S[Create governed store]
-    S --> R[Execute and inspect run]
-    R --> V[Validate persistence and replay inputs]
+    P[Install canonical Runtime] --> I[Initialize workspace]
+    I --> C[Check operation and profile]
+    C --> R[Submit and resolve v2 job]
+    R --> V[Inspect, replay, and retain evidence]
 ```
 
 ## Install
@@ -109,17 +108,15 @@ the DuckDB file alone is not the complete authority.
 ### Workspace migration and rollback
 
 Stop Runtime workers before running `init` against an older workspace. The
-current Runtime recognizes exact version-1 and version-2 layouts, validates the
+current Runtime recognizes exact version-1 through version-4 layouts, validates the
 manifest, model, DuckDB migrations, durable-job schema, CAS, and index structure
 before changing anything, and creates content-bound rollback generations below
-`backups/workspace-migrations/generations/`. Version 2 to version 3 binds the
-Index-owned retrieval policy into effective configuration identity; its backup
-contains both the source `workspace.json` and `workspace-migrations.json`.
-Version 1 workspaces apply the two ordered migrations. Runtime writes the
-updated migration ledger first and activates the version-3 `workspace.json`
-last. A successful upgrade reports `migrated`, the applied migration identities,
-and the exact rollback backup path. Repeating `init` does not append or reapply
-a migration.
+`backups/workspace-migrations/generations/`. The ordered migrations culminate
+in workspace format 5, which separates logical path-role identity from resolved
+machine-local locations. Runtime writes the updated migration ledger before
+activating the new `workspace.json`. A successful upgrade reports `migrated`,
+the applied migration identities, and the exact rollback backup path. Repeating
+`init` does not append or reapply a migration.
 
 If the process stops after ledger publication but before manifest activation,
 repeat the same `init` command. Runtime verifies the source manifest and
@@ -127,14 +124,12 @@ rollback backup identities and resumes the same migration. Do not delete the
 ledger or edit either checksum. A newer workspace or a layout older than the
 supported migration floor is refused before a backup or state mutation.
 
-For an immediate rollback before admitting new work, stop Runtime and preserve
-the failed/upgraded workspace. For version 3 to version 2, verify the reported
-backup generation and restore both its exact `workspace.json` and
-`workspace-migrations.json`, then reopen with the prior Runtime release. A
-version-1 rollback similarly restores its manifest and removes the version-2
-ledger that did not exist at the source version. If any work was admitted after
-migration, restore a complete pre-upgrade workspace backup instead; migration
-rollback generations cover workspace authority, not later application writes.
+For an immediate rollback before admitting new work, stop Runtime, preserve the
+failed or upgraded workspace, verify the reported rollback generation, and
+restore the exact manifest and ledger expected by the prior Runtime release. If
+any work was admitted after migration, restore a complete pre-upgrade workspace
+backup instead; migration rollback generations cover workspace authority, not
+later application writes.
 
 Verify the exact operation boundary before submitting work:
 
@@ -195,117 +190,36 @@ FTS5 index, retrieves evidence, answers with verified citations, reopens the
 same workspace using its absolute spelling, and performs an exact replay and
 comparison. Each CLI exchange and bounded artifact page is retained below the
 selected evidence directory. The example's
-[`README`](../../../examples/ancient-dna-research/README.md) documents the
+[`README`](https://github.com/bijux/bijux-canon/tree/main/examples/ancient-dna-research)
+documents the
 network-denied installed-wheel acceptance command and the resulting identities.
 
-For an application-owned legacy flow manifest, `plan` remains available to
-validate and resolve the manifest without executing steps, writing a trace, or
-allocating a run identifier.
+The hidden manifest-oriented commands remain available only for existing
+integrations. New installed-wheel workflows use `v2`; see the
+[operator workflow](../interfaces/operator-workflows.md) for result,
+inspection, replay, comparison, cancellation, backup, and restore commands.
 
-The command determines how much authority is exercised:
+## HTTP V2 Service
 
-| Command | Effects and persistence | Appropriate use |
-| --- | --- | --- |
-| `plan` | resolves contracts without executing steps or writing a run | manifest and dependency review |
-| `dry-run` | exercises dry-run contracts against an explicit store without live authority | execution-shape and refusal checks |
-| `run` | performs governed live execution with the supplied verification policy | accepted operational work |
-| `unsafe-run` | enters the explicit unsafe execution mode | isolated evidence for behavior that cannot meet the governed live posture |
-| `replay` | executes against a persisted envelope and compares the new record with the original | declared replay-acceptability checks |
-
-`unsafe-run` is not a faster form of `run`. Its mode is part of the retained
-record and prevents unsafe execution from being presented as governed live
-authority.
-
-For an installed-wheel integration, create equivalent application-owned
-`flow.json` and `policy.json` files from the
-[data contracts](../interfaces/data-contracts.md). Do not copy identifiers,
-dataset hashes, storage URIs, or tenant values from an example into production
-without replacing them with real governed values.
-
-## Create the Execution Store
-
-Choose a durable path explicitly:
-
-```bash
-mkdir -p artifacts/bijux-canon-runtime
-
-bijux-canon-runtime run \
-  packages/bijux-canon-runtime/examples/boring/flow.json \
-  --policy packages/bijux-canon-runtime/examples/boring/policy.json \
-  --db-path artifacts/bijux-canon-runtime/runs.duckdb \
-  --strict-determinism \
-  --json
-```
-
-The operating-system user needs create, read, write, replace, and lock-file
-permissions in the database directory. The execution store supports a
-single-writer posture; do not point independent runtime processes at the same
-file for concurrent mutation.
-
-Validate the store before using it for inspection or replay:
-
-```bash
-bijux-canon-runtime validate db \
-  --db-path artifacts/bijux-canon-runtime/runs.duckdb \
-  --json
-```
-
-## Inspect the First Run
-
-Use the `run_id` and tenant returned by execution:
-
-```bash
-bijux-canon-runtime inspect run <run-id> \
-  --tenant-id tenant-a \
-  --db-path artifacts/bijux-canon-runtime/runs.duckdb \
-  --json
-```
-
-Confirm that the trace is finalized, dataset identity matches the manifest,
-and the arbitration, entropy, artifact, evidence, and event records agree with
-the intended authority.
-
-## Replay Under the Original Identity
-
-Replay requires the current manifest and policy as well as the original run
-and tenant identities:
-
-```bash
-bijux-canon-runtime replay \
-  packages/bijux-canon-runtime/examples/boring/flow.json \
-  --policy packages/bijux-canon-runtime/examples/boring/policy.json \
-  --run-id <run-id> \
-  --tenant-id tenant-a \
-  --db-path artifacts/bijux-canon-runtime/runs.duckdb \
-  --strict-determinism \
-  --json
-```
-
-A clean replay means the comparison found no difference outside the declared
-contract. A contract-violation exit identifies a blocking difference; retain
-its reason code and JSON diff. Replay does not establish that external facts
-remain true, and an acceptability threshold does not erase an observed drift.
-
-## HTTP Health and Readiness
-
-The API extra supports operational probes:
+The API extra installs the supported v2 server command:
 
 ```bash
 python -m pip install 'bijux-canon-runtime[api]'
 
-AGENTIC_FLOWS_DB_PATH=artifacts/bijux-canon-runtime/runs.duckdb \
-  uvicorn bijux_canon_runtime.api.v1.app:app \
-  --host 127.0.0.1 --port 8000
+bijux-canon-runtime init --workspace ./canon-workspace --json
+bijux-canon-runtime-server --workspace ./canon-workspace
 ```
 
 ```bash
-curl --fail-with-body http://127.0.0.1:8000/api/v1/health
-curl --fail-with-body http://127.0.0.1:8000/api/v1/ready
+curl --fail-with-body -H 'Bijux-API-Version: v2' \
+  http://127.0.0.1:8000/api/v2/live
+curl --fail-with-body -H 'Bijux-API-Version: v2' \
+  'http://127.0.0.1:8000/api/v2/ready?operation=initialized'
 ```
 
-Readiness checks storage; it does not make HTTP run or replay operational.
-Those endpoints currently return `501 Not Implemented` after validating their
-request boundary.
+Readiness is operation- and profile-specific. The v2 server exposes the same
+durable ingest, index, retrieval, answer, research, linked-run, inspection,
+replay, comparison, job and evaluation application service as the v2 CLI.
 
 ## Repository Checkout
 

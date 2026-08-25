@@ -74,10 +74,10 @@ Mode is part of the result identity. A successful plan cannot be promoted to a
 run, a dry-run trace cannot certify live permissions, and an unsafe result
 cannot be relabelled after execution.
 
-## Composition capability is currently bounded
+## Composition capability
 
-Runtime contains planning, execution, verification, persistence, recovery and
-replay machinery, but capability also depends on the callable integration seam:
+Runtime combines planning, execution, verification, persistence, recovery and
+replay through the installed v2 application-service composition:
 
 | Composition | Current status | Evidence-backed interpretation |
 | --- | --- | --- |
@@ -87,10 +87,9 @@ replay machinery, but capability also depends on the callable integration seam:
 | HTTP v2 workflow and replay | implemented through durable jobs | shares application behavior, failures, pagination, and workspace authority with Python and CLI |
 | HTTP v1 flow run and replay | contract validation with `501` response | legacy schema/error compatibility, not execution |
 
-The compatibility packages delegate to the same canonical roots and therefore
-do not supply missing adapters. A supported end-to-end live claim requires
-explicit typed adapters and an installed-package test that resolves and
-executes them without substituting seam-specific callables.
+The compatibility packages delegate to the canonical implementations and do
+not create extra capability. End-to-end claims remain bound to installed-wheel
+tests that execute the typed services without source-tree imports.
 
 ## Interface availability
 

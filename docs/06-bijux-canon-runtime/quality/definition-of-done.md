@@ -73,11 +73,10 @@ For each governed-run acceptance decision, retain:
 - the replay envelope, comparison inputs, semantic diff, verdict, and reason.
 
 The packet must be sufficient to derive the terminal state without trusting a
-summary field or database filename. Package-local seam tests establish runtime
-behavior but do not establish installed-package live composition. Until the
-canonical adapters described in [known limitations](known-limitations.md) have
-an installed-package execution test, release evidence must state that boundary
-and must not claim end-to-end live composition.
+summary field or database filename. Installed-package evidence must exercise
+the selected v2 profile outside the source tree and retain source, corpus,
+index, model/configuration, citation, claim, agent, run, attempt, replay and
+recovery identities. Package-local seam tests alone remain insufficient.
 
 ## Custody boundary
 
