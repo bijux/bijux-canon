@@ -18,7 +18,7 @@ _REPOSITORY_ROOT = Path(__file__).parents[4]
 _EXAMPLE = _REPOSITORY_ROOT / "examples" / "ancient-dna-research"
 
 
-@pytest.mark.timeout(600)
+@pytest.mark.timeout(900)
 def test_installed_wheels_complete_cpu_hybrid_workflow(tmp_path: Path) -> None:
     runtime_value = os.environ.get("BIJUX_CANON_RUNTIME_INSTALLED_COMMAND")
     index_value = os.environ.get("BIJUX_CANON_INDEX_INSTALLED_COMMAND")
@@ -78,7 +78,7 @@ def test_installed_wheels_complete_cpu_hybrid_workflow(tmp_path: Path) -> None:
         capture_output=True,
         check=False,
         text=True,
-        timeout=300,
+        timeout=600,
     )
 
     assert completed.returncode == 0, completed.stderr
@@ -132,6 +132,36 @@ def test_installed_wheels_complete_cpu_hybrid_workflow(tmp_path: Path) -> None:
     )
     assert len(summary["rag"]["observations"]) == 12
     assert (tmp_path / "evidence" / "rag-system-outputs.jsonl").is_file()
+    research = summary["research"]
+    assert research["question_id"] == "adna-multihop-contamination-strategy"
+    assert research["initial_answer_retained"] is True
+    assert research["distinct_evidence_needs"] >= 2
+    assert research["distinct_searches"] >= 2
+    assert research["classification_count"] > 0
+    assert sum(research["classification_relations"].values()) == research[
+        "classification_count"
+    ]
+    assert research["revision_outcome"] == "revised"
+    assert research["answer_changed"] is True
+    assert research["final_admitted_claim_count"] > 0
+    assert research["final_citation_count"] > 0
+    assert research["tool_failure_count"] == 0
+    assert research["terminal_outcome"] in {"complete", "incomplete_budget"}
+    assert research["stop_reasons"]
+    for dimension in (
+        "artifact_bytes",
+        "candidates",
+        "documents",
+        "elapsed_ms",
+        "evidence_items",
+        "iterations",
+        "retrievals",
+        "tokens",
+        "tool_calls",
+    ):
+        assert research["budget_usage"][dimension] <= research["budget_limits"][
+            dimension
+        ]
     assert summary["workspace"]["restart_ready_profiles"] == [
         "local-hybrid-exact",
         "local-hybrid-ann",

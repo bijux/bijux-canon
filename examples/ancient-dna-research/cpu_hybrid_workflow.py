@@ -40,6 +40,14 @@ _QUALITY_FLOORS = {
     "ndcg-at-10": 0.85,
 }
 _RAG_TOP_K = 10
+_RESEARCH_QUESTION_ID = "adna-multihop-contamination-strategy"
+_RESEARCH_TOP_K = 10
+_RESEARCH_BUDGET = {
+    "max_artifact_bytes": 10_000_000,
+    "max_provider_tokens": 100_000,
+    "max_steps": 20,
+    "operation_timeout_seconds": 120,
+}
 
 
 def _arguments() -> argparse.Namespace:
@@ -424,6 +432,273 @@ def _evaluate_grounded_answers(
     }
 
 
+def _evaluate_bounded_research(
+    runtime: InstalledRuntime,
+    *,
+    cases_path: Path,
+    corpus_id: str,
+    index_id: str,
+) -> dict[str, Any]:
+    cases = tuple(
+        item
+        for item in _development_cases(cases_path)
+        if item.get("question_id") == _RESEARCH_QUESTION_ID
+    )
+    _require(len(cases) == 1, "bounded research case selection drifted")
+    case = cases[0]
+    case_id = _string(case.get("case_id"), "research case identity is missing")
+    question = _string(case.get("question"), "research question is missing")
+    _require(
+        case.get("system_output_may_define_truth") is False,
+        "research case permits system output to define truth",
+    )
+    job, result = _job_result(
+        runtime,
+        "bounded-research",
+        "research",
+        question,
+        "--corpus-id",
+        corpus_id,
+        "--index-id",
+        index_id,
+        "--top-k",
+        str(_RESEARCH_TOP_K),
+        "--request-id",
+        f"request-{case_id}-research",
+        "--idempotency-key",
+        f"research-{case_id}",
+        "--profile",
+        _EXACT_PROFILE,
+        "--operation-timeout-seconds",
+        str(_RESEARCH_BUDGET["operation_timeout_seconds"]),
+        "--max-artifact-bytes",
+        str(_RESEARCH_BUDGET["max_artifact_bytes"]),
+        "--max-steps",
+        str(_RESEARCH_BUDGET["max_steps"]),
+        "--max-provider-tokens",
+        str(_RESEARCH_BUDGET["max_provider_tokens"]),
+    )
+    _require(result.get("status") == "completed", "research run did not complete")
+    publication_id = _terminal_identity(result, "bounded research")
+    publication = _mapping(
+        json.loads(_read_artifact(runtime, publication_id, "bounded-research-receipt")),
+        "research publication receipt is invalid",
+    )
+    _require(
+        publication.get("schema_version")
+        == "bijux.canon.runtime.publication_receipt.v1"
+        and publication.get("status") == "published-local",
+        "research publication receipt is invalid",
+    )
+    trace_id = _string(
+        publication.get("subject_artifact_id"), "research trace identity is missing"
+    )
+    trace = _mapping(
+        json.loads(_read_artifact(runtime, trace_id, "bounded-research-trace")),
+        "research trace is invalid",
+    )
+    _require(
+        trace.get("schema_version") == "bijux.canon.agent.research_trace.v1",
+        "research trace schema drifted",
+    )
+
+    raw_plans = trace.get("targeted_search_plans")
+    _require(isinstance(raw_plans, list), "research search plans are invalid")
+    plans = tuple(
+        _mapping(item, "research search plan is invalid")
+        for item in cast(list[object], raw_plans)
+    )
+    _require(len(plans) >= 2, "research did not pursue distinct evidence needs")
+    attempts = tuple(
+        _mapping(item.get("attempt"), "research search attempt is invalid")
+        for item in plans
+    )
+    query_identities = tuple(
+        _string(
+            item.get("query_equivalence_sha256"),
+            "research query identity is missing",
+        )
+        for item in attempts
+    )
+    requirement_identities = tuple(
+        _string(
+            item.get("requirement_artifact_id"),
+            "research requirement identity is missing",
+        )
+        for item in attempts
+    )
+    _require(
+        len(query_identities) == len(set(query_identities))
+        and len(requirement_identities) == len(set(requirement_identities)),
+        "research repeated an equivalent query or evidence need",
+    )
+    raw_observations = trace.get("targeted_search_observations")
+    raw_runs = trace.get("counterevidence_runs")
+    raw_retrieval_ids = trace.get("counterevidence_retrieval_artifact_ids")
+    _require(
+        isinstance(raw_observations, list)
+        and isinstance(raw_runs, list)
+        and isinstance(raw_retrieval_ids, list)
+        and len(raw_observations) == len(plans)
+        and len(raw_runs) == len(plans)
+        and len(raw_retrieval_ids) == len(plans),
+        "research search evidence is incomplete",
+    )
+
+    raw_classifications = trace.get("candidate_classifications")
+    _require(
+        isinstance(raw_classifications, list) and raw_classifications,
+        "research omitted candidate classifications",
+    )
+    classifications = tuple(
+        _mapping(item, "research candidate classification is invalid")
+        for item in cast(list[object], raw_classifications)
+    )
+    relations = tuple(
+        _string(item.get("relation"), "research candidate relation is missing")
+        for item in classifications
+    )
+    _require(
+        all(
+            relation
+            in {
+                "supporting",
+                "opposing",
+                "limiting",
+                "irrelevant",
+                "ambiguous",
+                "unclassified",
+            }
+            for relation in relations
+        )
+        and any(item.get("material") is True for item in classifications),
+        "research candidate classifications are not admissible",
+    )
+
+    revision = _mapping(trace.get("answer_revision"), "research revision is missing")
+    before_answer = _string(
+        revision.get("before_answer"), "research initial answer is missing"
+    )
+    after_answer = _string(
+        revision.get("after_answer"), "research revised answer is missing"
+    )
+    _require(
+        revision.get("outcome") == "revised"
+        and before_answer
+        and after_answer
+        and before_answer != after_answer
+        and trace.get("answer") == after_answer,
+        "research did not retain and warrant its answer revision",
+    )
+    revised_answer = _mapping(
+        revision.get("revised_answer"), "research revised answer record is missing"
+    )
+    presentation = _mapping(
+        revised_answer.get("citation_presentation"),
+        "research citation presentation is missing",
+    )
+    raw_citations = presentation.get("entries")
+    admission = _mapping(
+        revised_answer.get("admission"), "research answer admission is missing"
+    )
+    raw_admitted_claims = admission.get("admitted_claim_artifact_ids")
+    _require(
+        isinstance(raw_citations, list)
+        and raw_citations
+        and isinstance(raw_admitted_claims, list)
+        and raw_admitted_claims,
+        "research final conclusion is not cited and admitted",
+    )
+    citations = tuple(
+        _mapping(item, "research citation is invalid")
+        for item in cast(list[object], raw_citations)
+    )
+    cited_claim_ids = {
+        claim_id
+        for citation in citations
+        for claim_id in cast(list[str], citation.get("claim_artifact_ids", []))
+    }
+    admitted_claim_ids = set(cast(list[str], raw_admitted_claims))
+    _require(
+        admitted_claim_ids.issubset(cited_claim_ids),
+        "research final conclusion contains an uncited admitted claim",
+    )
+
+    termination = _mapping(
+        trace.get("termination"), "research termination evidence is missing"
+    )
+    raw_reasons = termination.get("reasons")
+    outcome = _mapping(
+        trace.get("research_outcome"), "research terminal outcome is missing"
+    )
+    _require(
+        termination.get("stop") is True
+        and isinstance(raw_reasons, list)
+        and raw_reasons
+        and outcome.get("kind") in {"complete", "incomplete_budget"}
+        and trace.get("tool_failure_artifact_ids") == [],
+        "research did not stop with an inspectable successful reason",
+    )
+    budget_policy = _mapping(
+        trace.get("budget_policy"), "research budget policy is missing"
+    )
+    global_limits = _mapping(
+        budget_policy.get("global_limits"), "research global limits are missing"
+    )
+    budget_usage = _mapping(
+        trace.get("budget_usage"), "research budget usage is missing"
+    )
+    for dimension in (
+        "artifact_bytes",
+        "candidates",
+        "documents",
+        "elapsed_ms",
+        "evidence_items",
+        "iterations",
+        "retrievals",
+        "tokens",
+        "tool_calls",
+    ):
+        limit = global_limits.get(dimension)
+        used = budget_usage.get(dimension)
+        _require(
+            isinstance(limit, int)
+            and not isinstance(limit, bool)
+            and isinstance(used, int)
+            and not isinstance(used, bool)
+            and 0 <= used <= limit,
+            f"research {dimension} budget is invalid",
+        )
+
+    relation_counts = {
+        relation: relations.count(relation) for relation in sorted(set(relations))
+    }
+    return {
+        "answer_changed": True,
+        "attempt_id": result["attempt_id"],
+        "budget_limits": global_limits,
+        "budget_usage": budget_usage,
+        "case_id": case_id,
+        "classification_count": len(classifications),
+        "classification_relations": relation_counts,
+        "convergence_outcome": outcome["convergence_outcome"],
+        "distinct_evidence_needs": len(requirement_identities),
+        "distinct_searches": len(query_identities),
+        "final_admitted_claim_count": len(admitted_claim_ids),
+        "final_citation_count": len(citations),
+        "initial_answer_retained": True,
+        "job_id": job["job_id"],
+        "question_id": _RESEARCH_QUESTION_ID,
+        "revision_outcome": revision["outcome"],
+        "run_id": result["run_id"],
+        "stop_reasons": raw_reasons,
+        "system_output_may_define_truth": False,
+        "terminal_outcome": outcome["kind"],
+        "tool_failure_count": 0,
+        "trace_artifact_id": trace_id,
+    }
+
+
 def main() -> int:
     """Execute real model validation, indexing, retrieval, restart, and scoring."""
 
@@ -701,6 +976,12 @@ def main() -> int:
         sources=sources,
         evidence=evidence,
     )
+    research = _evaluate_bounded_research(
+        runtime,
+        cases_path=cases,
+        corpus_id=corpus_id,
+        index_id=index_id,
+    )
 
     exact_run_id = _string(
         exact_result.get("run_id"), "exact search run identity is missing"
@@ -760,6 +1041,7 @@ def main() -> int:
         ),
         "question": args.question,
         "rag": rag,
+        "research": research,
         "result": "passed",
         "run_id": exact_run_id,
         "schema_version": "bijux.canon.example.cpu_hybrid_workflow.v1",

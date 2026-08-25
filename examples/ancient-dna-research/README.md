@@ -123,10 +123,15 @@ python examples/ancient-dna-research/cpu_hybrid_workflow.py \
 The workflow uses only the visible development split. It executes all 12
 questions and 29 reviewed qrels from persisted system results and fails below
 Recall@5 `0.90`, MRR@10 `0.85`, or nDCG@10 `0.85`. It never opens sealed
-held-out labels. `summary.json` retains the model revision, license, file-set
-digest, 384-dimensional model lock, segment backends, corpus/index/configuration
-identities, exact and ANN run/attempt identities, ordered-evidence
-reproducibility, and evaluation arithmetic.
+held-out labels. It also executes the development
+`adna-multihop-contamination-strategy` case through bounded research and rejects
+the run unless it retains the initial answer, pursues distinct evidence needs,
+classifies candidates, makes a warranted cited revision, and stops under an
+inspectable iteration/tool/result/time/token policy. `summary.json` retains the
+model revision, license, file-set digest, 384-dimensional model lock, segment
+backends, corpus/index/configuration identities, exact and ANN run/attempt
+identities, ordered-evidence reproducibility, evaluation arithmetic, and the
+research trace and terminal identities.
 
 On macOS, run the installed acceptance test with OS-level network denial:
 
