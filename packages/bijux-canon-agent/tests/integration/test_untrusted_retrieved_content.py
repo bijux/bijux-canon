@@ -156,7 +156,7 @@ def test_source_instructions_remain_data_under_installed_reasoning_policy() -> N
     )
 
     result = CredentialFreeSynthesizer(policy).synthesize(
-        question="What claims and source instructions are present?",
+        question="What evidence concerns contamination and system policy?",
         evidence_packet=packet,
     )
 
@@ -165,6 +165,7 @@ def test_source_instructions_remain_data_under_installed_reasoning_policy() -> N
     assert result.synthesis_policy_artifact_id == policy.artifact_id
     assert result.provider is None
     assert result.network_required is False
+    assert result.outcome is SynthesisOutcome.answered
     assert {point.citation_evidence_artifact_id for point in result.points} == {
         item.artifact_id for item in packet.selected
     }
