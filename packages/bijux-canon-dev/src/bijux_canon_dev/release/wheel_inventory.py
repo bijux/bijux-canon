@@ -404,6 +404,17 @@ def _entry_points(
     return dict(sorted(parser.items("console_scripts")))
 
 
+def _duplicate_python_files(
+    archive: zipfile.ZipFile, members: Sequence[str]
+) -> list[list[str]]:
+    payloads: dict[str, list[str]] = {}
+    for name in members:
+        if name.endswith(".py"):
+            digest = hashlib.sha256(archive.read(name)).hexdigest()
+            payloads.setdefault(digest, []).append(name)
+    return sorted(sorted(paths) for paths in payloads.values() if len(paths) > 1)
+
+
 def _validate_record(
     archive: zipfile.ZipFile,
     members: Sequence[str],
@@ -547,6 +558,9 @@ def _inspect_wheel(
         scripts = _entry_points(archive, members, wheel)
         if scripts != dict(policy.scripts):
             issues.append("entry-points")
+        duplicate_python_files = _duplicate_python_files(archive, members)
+        if duplicate_python_files:
+            issues.append("duplicate-python-files")
         missing_assets = [
             pattern
             for pattern in policy.required_asset_patterns
@@ -581,6 +595,7 @@ def _inspect_wheel(
         "extras": actual_extras,
         "license": actual_license,
         "entry_points": scripts,
+        "duplicate_python_files": duplicate_python_files,
         "tags": sorted(actual_tags),
         "file_count": len(members),
         "files": sorted(members),

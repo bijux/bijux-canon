@@ -1,5 +1,1 @@
-"""Domain model definitions.
-
-Immutable unless explicitly finalized.
-No runtime side effects.
-"""
+"""Verification finding, policy, and result domain models."""

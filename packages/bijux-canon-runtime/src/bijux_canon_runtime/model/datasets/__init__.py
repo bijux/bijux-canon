@@ -1,5 +1,1 @@
-"""Domain model definitions.
-
-Immutable unless explicitly finalized.
-No runtime side effects.
-"""
+"""Dataset identity, version, and partition domain models."""

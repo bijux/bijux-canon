@@ -154,6 +154,7 @@ def _wheel(
     include_assets: bool = True,
     leak: bool = False,
     corrupt_record: bool = False,
+    duplicate_python: bool = False,
 ) -> Path:
     wheel_dir = root / "artifacts" / "wheels"
     wheel_dir.mkdir(parents=True, exist_ok=True)
@@ -197,6 +198,8 @@ def _wheel(
             payloads[f"{module}/api/schema.hash"] = b"abc\n"
     if leak:
         payloads["src/private.py"] = b"secret\n"
+    if duplicate_python and module:
+        payloads[f"{module}/duplicate.py"] = payloads[f"{module}/__init__.py"]
     record_name = f"{dist_info}/RECORD"
     payloads[record_name] = _record(payloads, record_name)
     if corrupt_record:
@@ -349,6 +352,7 @@ def test_inventory_retains_dependency_and_twine_failures(tmp_path: Path) -> None
         ({"include_assets": False}, "runtime-assets"),
         ({"leak": True}, "source-leaks"),
         ({"corrupt_record": True}, "record-hash"),
+        ({"duplicate_python": True}, "duplicate-python-files"),
     ],
 )
 def test_inventory_rejects_missing_leaked_and_corrupt_contents(
