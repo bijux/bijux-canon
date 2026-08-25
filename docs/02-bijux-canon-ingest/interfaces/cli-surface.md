@@ -31,7 +31,7 @@ flowchart LR
 | Form | Required inputs | Primary output |
 | --- | --- | --- |
 | `corpus build` | document root, logical root name, corpus name | canonical snapshot summary; optional atomic publication |
-| `INPUT.csv --config CONFIG` | CSV and pipeline JSON | validation/process outcome; optional chunk JSONL |
+| `legacy-csv INPUT.csv --config CONFIG` | CSV and pipeline JSON | preserved validation/process outcome; optional chunk JSONL |
 | `index build` | CSV and output path | MessagePack index and fingerprint summary |
 | `retrieve` | index and query | ranked candidate JSON |
 | `ask` | index and query | extractive answer with citations in JSON or YAML |
@@ -69,10 +69,10 @@ status `2` and its stable `*_limit_exceeded` code; it never publishes the files
 seen before exhaustion as a complete snapshot. `--symlink-policy` defaults to
 `reject`; the two within-root modes still reject escapes and cycles.
 
-## Configured Document Pipeline
+## Preserved CSV Compatibility Pipeline
 
 ```bash
-bijux-canon-ingest documents.csv \
+bijux-canon-ingest legacy-csv documents.csv \
   --config pipeline.json \
   --set chunk.chunk_size=384 \
   --out artifacts/ingest/chunks.jsonl
@@ -82,7 +82,9 @@ bijux-canon-ingest documents.csv \
 loads all admissible documents, builds the configured step sequence, and writes
 only successful chunks when `--out` is present. The JSONL file does not contain
 error rows or a run manifest; retain the command outcome and effective
-configuration separately.
+configuration separately. The historical path-first form remains an exact
+alias during the 0.4 release line; new multi-format workflows should use
+`corpus build` rather than converting documents to CSV.
 
 ## Build an Index
 

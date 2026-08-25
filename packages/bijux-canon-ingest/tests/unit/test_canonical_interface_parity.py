@@ -21,6 +21,9 @@ from bijux_canon_ingest.interfaces.cli.entrypoint import main
 from bijux_canon_ingest.interfaces.http.app import create_app
 
 
+REPOSITORY_ROOT = Path(__file__).resolve().parents[4]
+
+
 def test_application_translates_portable_discovery_limits() -> None:
     request = CanonicalIngestRequest.for_directory(
         root_path=Path("sources"),
@@ -80,6 +83,44 @@ def test_library_cli_runtime_and_http_share_result_schema(
     assert response.status_code == 200
     assert cli_payload == expected
     assert response.json() == expected
+
+
+def test_standalone_interfaces_accept_every_supported_real_format(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    sources = REPOSITORY_ROOT / "examples" / "document-formats" / "corpus"
+    request = CanonicalIngestRequest.for_directory(
+        root_path=sources,
+        root_name="real-formats",
+        corpus_name="real-formats",
+    )
+    expected = ingest_corpus(request).manifest()
+
+    exit_code = main(
+        [
+            "corpus",
+            "build",
+            "--root",
+            str(sources),
+            "--root-name",
+            "real-formats",
+            "--corpus-name",
+            "real-formats",
+        ]
+    )
+
+    assert exit_code == 0
+    assert json.loads(capsys.readouterr().out) == expected
+    assert expected["formats"] == {
+        "docx": 1,
+        "html": 1,
+        "jats": 1,
+        "markdown": 1,
+        "pdf-digital": 1,
+        "text": 1,
+    }
+    assert expected["ocr_required_count"] == 1
+    assert expected["rejection_count"] == 0
 
 
 def test_cli_and_http_share_explicit_lock_refusal(
@@ -171,3 +212,52 @@ def test_python_cli_and_http_share_discovery_limit_refusal(
     assert "file_count_limit_exceeded" in cli_error
     assert response.status_code == 400
     assert "file_count_limit_exceeded" in response.json()["detail"]
+
+
+def test_explicit_legacy_csv_command_preserves_implicit_pipeline(
+    tmp_path: Path,
+) -> None:
+    source = tmp_path / "documents.csv"
+    source.write_text(
+        "doc_id,title,abstract,categories\n"
+        "evidence-1,Release evidence,Stable compatibility output,release\n",
+        encoding="utf-8",
+    )
+    config = tmp_path / "pipeline.json"
+    config.write_text(
+        json.dumps(
+            {
+                "steps": [
+                    {"name": "clean", "params": {}},
+                    {
+                        "name": "chunk",
+                        "params": {
+                            "chunk_size": 64,
+                            "overlap": 0,
+                            "tail_policy": "emit_short",
+                        },
+                    },
+                    {"name": "embed", "params": {}},
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+    implicit = tmp_path / "implicit.jsonl"
+    explicit = tmp_path / "explicit.jsonl"
+
+    assert main([str(source), "--config", str(config), "--out", str(implicit)]) == 0
+    assert (
+        main(
+            [
+                "legacy-csv",
+                str(source),
+                "--config",
+                str(config),
+                "--out",
+                str(explicit),
+            ]
+        )
+        == 0
+    )
+    assert explicit.read_bytes() == implicit.read_bytes()

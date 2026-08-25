@@ -11,6 +11,7 @@ import pytest
 
 from bijux_canon_dev.release.installation_matrix import (
     InstallationMatrixError,
+    _ingest_document_probe,
     run_installation_matrix,
 )
 from bijux_canon_dev.release.python_support_matrix import CommandResult
@@ -238,6 +239,17 @@ def test_project_publishes_installed_installation_matrix_command() -> None:
     assert scripts["bijux-canon-installation-matrix"] == (
         "bijux_canon_dev.release.installation_matrix:main"
     )
+
+
+def test_installed_ingest_probe_requires_every_supported_real_format(
+    tmp_path: Path,
+) -> None:
+    probe = _ingest_document_probe(tmp_path)
+
+    assert "CanonicalIngestRequest" in probe
+    assert "pdf-digital" in probe
+    assert "'document_count'] == 6" in probe
+    assert "'ocr_required_count'] == 1" in probe
 
 
 def test_matrix_rejects_candidate_wheel_in_dependency_closure(tmp_path: Path) -> None:

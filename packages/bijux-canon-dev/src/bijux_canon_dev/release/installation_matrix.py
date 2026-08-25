@@ -215,6 +215,26 @@ def _inspector(
     )
 
 
+def _ingest_document_probe(repo_root: Path) -> str:
+    corpus = repo_root / "examples" / "document-formats" / "corpus"
+    return "\n".join(
+        [
+            "import json",
+            "from pathlib import Path",
+            "from bijux_canon_ingest import CanonicalIngestRequest, ingest_corpus",
+            f"corpus = Path({str(corpus)!r})",
+            "result = ingest_corpus(CanonicalIngestRequest.for_directory(root_path=corpus, root_name='installed-formats', corpus_name='installed-formats'))",
+            "manifest = result.manifest()",
+            "expected = {'docx': 1, 'html': 1, 'jats': 1, 'markdown': 1, 'pdf-digital': 1, 'text': 1}",
+            "assert manifest['formats'] == expected, manifest['formats']",
+            "assert manifest['document_count'] == 6, manifest",
+            "assert manifest['ocr_required_count'] == 1, manifest",
+            "assert manifest['rejection_count'] == 0, manifest",
+            "print(json.dumps(manifest, sort_keys=True))",
+        ]
+    )
+
+
 def _constraint_file(records: Sequence[WheelRecord], *, environment_root: Path) -> Path:
     path = environment_root.parent / "candidate-constraints.txt"
     path.write_text(
@@ -384,6 +404,12 @@ def run_installation_matrix(
                 for script in target.console_scripts
             ],
         ]
+        product_probe_index: int | None = None
+        if canonicalize_name(target.target_id) == "bijux-canon-ingest":
+            commands.append(
+                [str(python), "-I", "-c", _ingest_document_probe(repo_root)]
+            )
+            product_probe_index = len(commands) - 1
         outcomes: list[CommandResult] = []
         for command in commands:
             outcome = runner(command, environment_root, environment)
@@ -400,6 +426,12 @@ def run_installation_matrix(
                 "distributions": list(target.distributions),
                 "imports": list(target.import_names),
                 "console_scripts": list(target.console_scripts),
+                "product_probe": (
+                    _json_stdout(outcomes[product_probe_index])
+                    if product_probe_index is not None
+                    and len(outcomes) > product_probe_index
+                    else {}
+                ),
                 "status": "passed" if passed else "failed",
                 "commands": [_command_payload(outcome) for outcome in outcomes],
             }
@@ -477,6 +509,16 @@ def run_installation_matrix(
             f"one or more clean installation rows failed; inspect {output_path}"
         )
     return evidence
+
+
+def _json_stdout(result: CommandResult) -> dict[str, object]:
+    if result.exit_code != 0 or not result.stdout.strip():
+        return {}
+    try:
+        value = json.loads(result.stdout)
+    except json.JSONDecodeError:
+        return {}
+    return value if isinstance(value, dict) else {}
 
 
 def _sha256(path: Path) -> str:

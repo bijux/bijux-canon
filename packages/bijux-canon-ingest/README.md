@@ -84,15 +84,21 @@ identity make later retrieval evidence traceable to its source.
 
 ## Command Workflows
 
-The console script routes two command shapes. With a document path first, it
-runs the configured CSV preparation pipeline. With `index`, `retrieve`, `ask`,
-or `eval` first, it enters the ingest-local retrieval command family. This
-dispatch is intentional: `bijux-canon-ingest --help` describes the preparation
-form, while command-specific help describes the retrieval form.
+The primary product command is `corpus build`. It discovers, admits, parses,
+and chunks a bounded directory containing real text, Markdown, HTML, JATS,
+DOCX, digital PDF, and OCR-required inputs through the same service consumed by
+Runtime. The older configured CSV preparation pipeline remains supported as an
+explicit compatibility surface under `legacy-csv`; its historical path-first
+invocation remains equivalent for the 0.4 line.
 
 ```bash
-# Run a configured CSV-to-JSONL preparation pipeline.
-bijux-canon-ingest documents.csv --config pipeline.json --out chunks.jsonl
+# Build the canonical multi-format corpus.
+bijux-canon-ingest corpus build \
+  --root documents --root-name documents --corpus-name documents
+
+# Run the preserved CSV-to-JSONL compatibility pipeline.
+bijux-canon-ingest legacy-csv documents.csv \
+  --config pipeline.json --out chunks.jsonl
 
 # Build and query a deterministic local BM25 index.
 bijux-canon-ingest index build \
