@@ -16,6 +16,7 @@ import shutil
 import subprocess
 import time
 import tomllib
+from typing import cast
 
 from packaging.utils import canonicalize_name
 from packaging.version import InvalidVersion, Version
@@ -25,6 +26,10 @@ from bijux_canon_dev.release.python_support_matrix import (
     CommandRunner,
     WheelRecord,
     inspect_wheels,
+)
+from bijux_canon_dev.release.registry_preflight import (
+    RegistryPreflightError,
+    run_registry_preflight,
 )
 from bijux_canon_dev.release.wheel_inventory import inspect_workspace_policy
 
@@ -159,6 +164,32 @@ def _candidate_packages(repo_root: Path, version: str) -> tuple[CandidatePackage
     return tuple(packages)
 
 
+def _public_release_names(
+    repo_root: Path, packages: Sequence[CandidatePackage]
+) -> tuple[str, ...]:
+    data = tomllib.loads((repo_root / "pyproject.toml").read_text(encoding="utf-8"))
+    value = data.get("tool", {}).get("bijux_canon", {}).get("public_release_packages")
+    if (
+        not isinstance(value, list)
+        or not value
+        or not all(isinstance(item, str) and item for item in value)
+    ):
+        raise ReleaseCandidateIdentityError(
+            "public_release_packages must be a nonempty string list"
+        )
+    names_by_key = {
+        package.package_key: package.distribution_name
+        for package in packages
+        if package.package_key is not None
+    }
+    missing = sorted(set(cast(list[str], value)) - set(names_by_key))
+    if missing:
+        raise ReleaseCandidateIdentityError(
+            f"public release inventory names unknown package keys: {missing}"
+        )
+    return tuple(names_by_key[item] for item in cast(list[str], value))
+
+
 def analyze_release_candidate(
     *,
     version: str,
@@ -252,6 +283,9 @@ def run_release_candidate_identity(
     tag: str,
     target_commit: str,
     uv_executable: Path,
+    gh_executable: Path | None = None,
+    github_repository: str = "bijux/bijux-canon",
+    remote: str = "origin",
     runner: CommandRunner = _default_runner,
 ) -> dict[str, object]:
     """Validate an uncreated tag against current source and candidate wheels."""
@@ -274,6 +308,35 @@ def run_release_candidate_identity(
         packages=packages,
         wheels=wheels,
     )
+    git_value = shutil.which("git")
+    gh_value = gh_executable or (Path(value) if (value := shutil.which("gh")) else None)
+    if git_value is None:
+        raise ReleaseCandidateIdentityError("git executable not found")
+    if gh_value is None:
+        raise ReleaseCandidateIdentityError(
+            "GitHub CLI is required for authenticated draft and GHCR visibility"
+        )
+    public_names = _public_release_names(repo_root, packages)
+    package_names = tuple(package.distribution_name for package in packages)
+    if not set(public_names).issubset(package_names):
+        raise ReleaseCandidateIdentityError(
+            "public release inventory is not a candidate package subset"
+        )
+    try:
+        registry_preflight = run_registry_preflight(
+            repo_root=repo_root,
+            version=version,
+            tag=tag,
+            package_names=package_names,
+            container_names=public_names,
+            github_repository=github_repository,
+            remote=remote,
+            git_executable=Path(git_value),
+            gh_executable=gh_value,
+            runner=runner,
+        )
+    except RegistryPreflightError as exc:
+        raise ReleaseCandidateIdentityError(str(exc)) from exc
     environment = dict(os.environ)
     environment.update(
         {
@@ -285,7 +348,9 @@ def run_release_candidate_identity(
     lock_check = runner(
         [str(uv_executable.resolve()), "lock", "--check"], repo_root, environment
     )
-    failures = [] if lock_check.exit_code == 0 else ["lock-check"]
+    failures = list(cast(list[str], registry_preflight["retained_failures"]))
+    if lock_check.exit_code != 0:
+        failures.append("lock-check")
     package_results = [
         {
             "package_id": record["distribution_name"],
@@ -296,7 +361,7 @@ def run_release_candidate_identity(
         if record["package_key"] is not None
     ]
     evidence: dict[str, object] = {
-        "schema_version": "bijux.canon.release_candidate_identity.v1",
+        "schema_version": "bijux.canon.release_candidate_identity.v2",
         "source_commit": source_commit,
         "created_at": datetime.now(UTC).isoformat(),
         "result": "passed" if not failures else "failed",
@@ -308,6 +373,7 @@ def run_release_candidate_identity(
         "proposed_target_commit": target_commit,
         "tag_created": False,
         "candidate_version": version,
+        "live_registry_preflight": registry_preflight,
         "git_commands": [_command_payload(outcome) for outcome in git_outcomes],
         "lock": {
             "path": "uv.lock",
@@ -321,7 +387,7 @@ def run_release_candidate_identity(
         "retained_failures": failures,
         "limitations": [
             "the tag and registry publication remain explicit external actions",
-            "remote registry availability is not inferred from local candidate proof",
+            "live availability observations are time-sensitive and must be refreshed immediately before approval",
         ],
     }
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -345,6 +411,9 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--tag", required=True)
     parser.add_argument("--target-commit")
     parser.add_argument("--uv", type=Path)
+    parser.add_argument("--gh", type=Path)
+    parser.add_argument("--github-repository", default="bijux/bijux-canon")
+    parser.add_argument("--remote", default="origin")
     return parser
 
 
@@ -375,6 +444,9 @@ def main(argv: Sequence[str] | None = None) -> int:
             tag=args.tag,
             target_commit=args.target_commit or head.stdout.strip(),
             uv_executable=uv,
+            gh_executable=args.gh,
+            github_repository=args.github_repository,
+            remote=args.remote,
         )
     except ReleaseCandidateIdentityError as exc:
         raise SystemExit(str(exc)) from exc

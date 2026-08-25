@@ -11,6 +11,7 @@ from bijux_canon_dev.release.release_candidate_identity import (
     ReleaseCandidateIdentityError,
     _artifact_path,
     _changelog_has_version,
+    _public_release_names,
     analyze_release_candidate,
     validate_release_tag,
 )
@@ -92,6 +93,27 @@ def test_candidate_requires_fallback_and_changelog_alignment(tmp_path: Path) -> 
             ),
             wheels=(_wheel(tmp_path, "example"),),
         )
+
+
+def test_public_release_keys_resolve_to_distribution_names(tmp_path: Path) -> None:
+    (tmp_path / "pyproject.toml").write_text(
+        """\
+[tool.bijux_canon]
+public_release_packages = ["compat-example-key"]
+""",
+        encoding="utf-8",
+    )
+    package = CandidatePackage(
+        distribution_name="example",
+        package_key="compat-example-key",
+        package_class="compatibility",
+        pyproject_path=tmp_path / "pyproject.toml",
+        changelog_path=tmp_path / "CHANGELOG.md",
+        fallback_version=VERSION,
+        changelog_has_version=True,
+    )
+
+    assert _public_release_names(tmp_path, (package,)) == ("example",)
 
 
 def test_changelog_match_requires_a_release_heading() -> None:

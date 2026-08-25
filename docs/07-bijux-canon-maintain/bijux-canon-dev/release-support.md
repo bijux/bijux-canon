@@ -188,6 +188,32 @@ source. The local result records its platform explicitly. Multi-platform
 enforcement remains a remote-runner responsibility and must not be inferred
 from a single local pass.
 
+## Release Identity Preflight
+
+The installed `bijux-canon-release-candidate` command binds a proposed stable
+tag to the clean source commit, lockfile, all twelve same-version wheels,
+fallback versions, and candidate changelog headings. Its live preflight also
+requires an unused remote Git tag, no published or draft GitHub Release, an
+unused exact PyPI version for all twelve distribution names, and no matching
+tag on the eleven GHCR packages selected by the public-release inventory.
+Authenticated repository push permission is required because GitHub exposes
+draft releases only to suitably authorized callers. Registry failures are
+indeterminate failures, not evidence that a name is available.
+
+```bash
+bijux-canon-release-candidate \
+  --repo-root . \
+  --wheel-dir artifacts/release/wheels \
+  --output artifacts/release/release-candidate.json \
+  --tag v0.4.0 \
+  --github-repository bijux/bijux-canon \
+  --remote origin
+```
+
+The result records the timestamp and exact read-only queries. Refresh it
+immediately before approval because registry availability can change after a
+successful run. The command never creates a tag, release, or registry object.
+
 ## Local Publication Is Safe by Default
 
 ```bash
