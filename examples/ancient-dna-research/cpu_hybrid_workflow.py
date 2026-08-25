@@ -12,6 +12,7 @@ import json
 import os
 from pathlib import Path
 import shutil
+import subprocess
 import sys
 from typing import Any, cast
 
@@ -699,6 +700,375 @@ def _evaluate_bounded_research(
     }
 
 
+def _agentic_trace(
+    runtime: InstalledRuntime,
+    *,
+    result: dict[str, Any],
+) -> tuple[str, dict[str, Any]]:
+    publication_id = _terminal_identity(result, "agentic research")
+    publication = _mapping(
+        json.loads(_read_artifact(runtime, publication_id, "agentic-publication")),
+        "agentic publication receipt is invalid",
+    )
+    _require(
+        publication.get("status") == "published-local",
+        "agentic run was not published locally",
+    )
+    trace_id = _string(
+        publication.get("subject_artifact_id"),
+        "agentic trace identity is missing",
+    )
+    trace = _mapping(
+        json.loads(_read_artifact(runtime, trace_id, "agentic-trace")),
+        "agentic trace is invalid",
+    )
+    _require(
+        trace.get("schema_version") == "bijux.canon.agent.research_trace.v1",
+        "agentic trace schema drifted",
+    )
+    return trace_id, trace
+
+
+def _cancel_agentic_run(
+    runtime: InstalledRuntime,
+    *,
+    question: str,
+    sources: Path,
+) -> dict[str, Any]:
+    environment = dict(runtime.environment)
+    environment["PYTHONUNBUFFERED"] = "1"
+    arguments = [
+        "v2",
+        "run",
+        question,
+        "--source-directory",
+        str(sources),
+        "--top-k",
+        "50",
+        "--request-id",
+        "request-ancient-dna-agentic-cancellation",
+        "--idempotency-key",
+        "ancient-dna-agentic-cancellation",
+        "--profile",
+        _EXACT_PROFILE,
+        "--operation-timeout-seconds",
+        str(_RESEARCH_BUDGET["operation_timeout_seconds"]),
+        "--max-artifact-bytes",
+        str(_RESEARCH_BUDGET["max_artifact_bytes"]),
+        "--max-steps",
+        str(_RESEARCH_BUDGET["max_steps"]),
+        "--max-provider-tokens",
+        str(_RESEARCH_BUDGET["max_provider_tokens"]),
+    ]
+    process = subprocess.Popen(  # noqa: S603 - installed public cancellation probe
+        [str(runtime.command), *arguments],
+        cwd=runtime.cwd,
+        env=environment,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+    _require(process.stdout is not None, "cancellation submission stdout is missing")
+    assert process.stdout is not None
+    first_line = process.stdout.readline()
+    try:
+        submission = _mapping(
+            json.loads(first_line), "cancellation submission returned a non-object"
+        )
+    except json.JSONDecodeError as error:
+        process.terminate()
+        process.wait(timeout=30)
+        raise WorkflowFailure("cancellation submission did not return JSON") from error
+    job_id = _string(
+        submission.get("job_id"), "cancellation submission omitted its job identity"
+    )
+    _require(
+        submission.get("status") in {"queued", "running"},
+        "cancellation probe did not expose live work",
+    )
+    cancellation = runtime.invoke(
+        "agentic-cancellation-request",
+        "v2",
+        "cancel",
+        job_id,
+        "--reason",
+        "installed acceptance cancellation",
+        "--request-id",
+        "request-ancient-dna-agentic-cancel",
+        "--idempotency-key",
+        "ancient-dna-agentic-cancel",
+    )
+    _require(
+        cancellation.get("cancel_requested") is True,
+        "public cancellation request was not retained",
+    )
+    try:
+        remaining_stdout, stderr = process.communicate(timeout=180)
+    except subprocess.TimeoutExpired as error:
+        process.terminate()
+        process.wait(timeout=30)
+        raise WorkflowFailure("cancelled agentic command did not exit") from error
+    (
+        runtime.evidence_directory / "agentic-cancellation-submission.exchange.json"
+    ).write_text(
+        json.dumps(
+            {
+                "arguments": arguments,
+                "returncode": process.returncode,
+                "stderr": stderr,
+                "stdout": first_line + remaining_stdout,
+            },
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    _require(process.returncode == 0, "cancelled agentic submission command failed")
+    final_status = runtime.invoke("agentic-cancellation-status", "v2", "status", job_id)
+    _require(
+        final_status.get("status") == "cancelled"
+        and final_status.get("cancel_requested") is True
+        and final_status.get("error_type") == "DurableJobCancelled"
+        and final_status.get("result_available") is False,
+        "agentic cancellation did not reach an explicit safe terminal outcome",
+    )
+    return {
+        "error_type": final_status["error_type"],
+        "job_id": job_id,
+        "status": final_status["status"],
+    }
+
+
+def _evaluate_agentic_workflow(
+    runtime: InstalledRuntime,
+    *,
+    cases_path: Path,
+    corpus_id: str,
+    sources: Path,
+) -> dict[str, Any]:
+    readiness = runtime.invoke(
+        "agentic-run-readiness",
+        "v2",
+        "ready",
+        "--operation",
+        "run",
+        "--profile",
+        _EXACT_PROFILE,
+    )
+    _require(readiness.get("ready") is True, "agentic run is not ready")
+    case = next(
+        item
+        for item in _development_cases(cases_path)
+        if item.get("question_id") == _RESEARCH_QUESTION_ID
+    )
+    case_id = _string(case.get("case_id"), "agentic case identity is missing")
+    question = _string(case.get("question"), "agentic question is missing")
+    job, result = _job_result(
+        runtime,
+        "agentic-run",
+        "run",
+        question,
+        "--corpus-id",
+        corpus_id,
+        "--top-k",
+        str(_RESEARCH_TOP_K),
+        "--request-id",
+        f"request-{case_id}-agentic",
+        "--idempotency-key",
+        f"agentic-{case_id}",
+        "--profile",
+        _EXACT_PROFILE,
+        "--operation-timeout-seconds",
+        str(_RESEARCH_BUDGET["operation_timeout_seconds"]),
+        "--max-artifact-bytes",
+        str(_RESEARCH_BUDGET["max_artifact_bytes"]),
+        "--max-steps",
+        str(_RESEARCH_BUDGET["max_steps"]),
+        "--max-provider-tokens",
+        str(_RESEARCH_BUDGET["max_provider_tokens"]),
+    )
+    _require(result.get("status") == "completed", "agentic run did not complete")
+    run_id = _string(result.get("run_id"), "agentic run identity is missing")
+    attempt_id = _string(
+        result.get("attempt_id"), "agentic attempt identity is missing"
+    )
+    inspection = runtime.invoke(
+        "agentic-run-inspection", "v2", "inspect", run_id, "--limit", "20"
+    )
+    raw_steps = inspection.get("steps")
+    _require(
+        inspection.get("status") == "completed"
+        and inspection.get("request_operation") == "run"
+        and inspection.get("selected_attempt_id") == attempt_id
+        and isinstance(raw_steps, list),
+        "agentic progress inspection is incomplete",
+    )
+    steps = tuple(
+        _mapping(item, "agentic progress step is invalid")
+        for item in cast(list[object], raw_steps)
+    )
+    expected_operations = (
+        "embed",
+        "lexical-index",
+        "dense-index",
+        "retrieve",
+        "reason",
+        "agent",
+        "verify",
+        "persist",
+        "publish",
+    )
+    _require(
+        tuple(item.get("operation") for item in steps) == expected_operations
+        and all(item.get("status") == "completed" for item in steps),
+        "agentic run did not complete its public plan",
+    )
+    trace_id, trace = _agentic_trace(runtime, result=result)
+    raw_events = trace.get("causal_events")
+    raw_decisions = trace.get("tool_decisions")
+    raw_records = trace.get("tool_execution_records")
+    _require(
+        isinstance(raw_events, list)
+        and isinstance(raw_decisions, list)
+        and isinstance(raw_records, list),
+        "agentic trace omitted decisions or tool calls",
+    )
+    events = tuple(
+        _mapping(item, "agentic causal event is invalid")
+        for item in cast(list[object], raw_events)
+    )
+    decisions = tuple(
+        _mapping(item, "agentic tool decision is invalid")
+        for item in cast(list[object], raw_decisions)
+    )
+    records = tuple(
+        _mapping(item, "agentic tool execution is invalid")
+        for item in cast(list[object], raw_records)
+    )
+    _require(
+        len(decisions) >= 2
+        and len(records) == len(decisions)
+        and all(item.get("action") == "allow" for item in decisions)
+        and all(item.get("reason") == "granted" for item in decisions)
+        and all(item.get("status") == "succeeded" for item in records),
+        "agentic tool decisions did not produce multiple successful calls",
+    )
+    invocations = tuple(
+        _mapping(item.get("invocation"), "agentic tool invocation is invalid")
+        for item in decisions
+    )
+    _require(
+        all(item.get("tool") == "bijux-canon-index.retrieve" for item in invocations)
+        and len({item.get("request_sha256") for item in invocations})
+        == len(invocations),
+        "agentic tool calls are not distinct governed retrievals",
+    )
+    decision_ids = {
+        _string(item.get("artifact_id"), "agentic tool decision identity is missing")
+        for item in decisions
+    }
+    record_ids = {
+        _string(item.get("artifact_id"), "agentic tool execution identity is missing")
+        for item in records
+    }
+    referenced_decisions = {
+        artifact_id
+        for event in events
+        for artifact_id in cast(list[str], event.get("tool_decision_artifact_ids", []))
+    }
+    referenced_records = {
+        artifact_id
+        for event in events
+        for artifact_id in cast(list[str], event.get("observation_artifact_ids", []))
+        if artifact_id in record_ids
+    }
+    roles = {item.get("role") for item in events}
+    _require(
+        decision_ids == referenced_decisions
+        and record_ids == referenced_records
+        and {
+            "plan",
+            "researcher",
+            "skeptic",
+            "adjudicator",
+            "synthesizer",
+            "verifier",
+        }.issubset(roles),
+        "agentic causal trace omits a decision, call, or required role",
+    )
+    tool_policy = _mapping(trace.get("tool_policy"), "agentic tool policy is missing")
+    _require(
+        tool_policy.get("default_action") == "deny"
+        and "network.fetch" in cast(list[str], tool_policy.get("denied_tools", [])),
+        "agentic execution did not retain its default-deny tool policy",
+    )
+    replay_job, replay = _job_result(
+        runtime,
+        "agentic-replay",
+        "replay",
+        run_id,
+        "--source-attempt-id",
+        attempt_id,
+        "--request-id",
+        f"request-{case_id}-agentic-replay",
+        "--idempotency-key",
+        f"agentic-replay-{case_id}",
+    )
+    replay_attempt_id = _string(
+        replay.get("replay_attempt_id"), "agentic replay attempt is missing"
+    )
+    _require(
+        replay.get("accepted") is True
+        and replay.get("exact_artifact_identities") is True
+        and replay.get("run_id") == run_id
+        and replay_attempt_id != attempt_id,
+        "agentic replay was not exactly accepted",
+    )
+    comparison = runtime.invoke(
+        "agentic-comparison",
+        "v2",
+        "compare",
+        run_id,
+        run_id,
+        "--baseline-attempt-id",
+        attempt_id,
+        "--candidate-attempt-id",
+        replay_attempt_id,
+        "--limit",
+        "20",
+    )
+    _require(
+        comparison.get("equivalent") is True,
+        "agentic replay comparison is not equivalent",
+    )
+    cancellation = _cancel_agentic_run(
+        runtime,
+        question=question,
+        sources=sources,
+    )
+    outcome = _mapping(
+        trace.get("research_outcome"), "agentic terminal outcome is missing"
+    )
+    return {
+        "attempt_id": attempt_id,
+        "cancellation": cancellation,
+        "causal_event_count": len(events),
+        "comparison_equivalent": True,
+        "default_tool_policy": tool_policy["default_action"],
+        "job_id": job["job_id"],
+        "operation_sequence": list(expected_operations),
+        "readiness": "ready",
+        "replay_attempt_id": replay_attempt_id,
+        "replay_job_id": replay_job["job_id"],
+        "run_id": run_id,
+        "terminal_outcome": outcome["kind"],
+        "tool_decision_count": len(decisions),
+        "tool_execution_count": len(records),
+        "trace_artifact_id": trace_id,
+    }
+
+
 def main() -> int:
     """Execute real model validation, indexing, retrieval, restart, and scoring."""
 
@@ -982,6 +1352,12 @@ def main() -> int:
         corpus_id=corpus_id,
         index_id=index_id,
     )
+    agentic = _evaluate_agentic_workflow(
+        runtime,
+        cases_path=cases,
+        corpus_id=corpus_id,
+        sources=sources,
+    )
 
     exact_run_id = _string(
         exact_result.get("run_id"), "exact search run identity is missing"
@@ -998,6 +1374,7 @@ def main() -> int:
             "document_count": corpus_inspection["document_count"],
             "rejection_count": corpus_inspection["rejection_count"],
         },
+        "agentic": agentic,
         "evaluation": {
             "evidence_sha256": evaluation["evidence_sha256"],
             "metrics": metrics,

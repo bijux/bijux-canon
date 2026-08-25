@@ -18,7 +18,7 @@ _REPOSITORY_ROOT = Path(__file__).parents[4]
 _EXAMPLE = _REPOSITORY_ROOT / "examples" / "ancient-dna-research"
 
 
-@pytest.mark.timeout(900)
+@pytest.mark.timeout(1200)
 def test_installed_wheels_complete_cpu_hybrid_workflow(tmp_path: Path) -> None:
     runtime_value = os.environ.get("BIJUX_CANON_RUNTIME_INSTALLED_COMMAND")
     index_value = os.environ.get("BIJUX_CANON_INDEX_INSTALLED_COMMAND")
@@ -78,7 +78,7 @@ def test_installed_wheels_complete_cpu_hybrid_workflow(tmp_path: Path) -> None:
         capture_output=True,
         check=False,
         text=True,
-        timeout=600,
+        timeout=750,
     )
 
     assert completed.returncode == 0, completed.stderr
@@ -138,9 +138,10 @@ def test_installed_wheels_complete_cpu_hybrid_workflow(tmp_path: Path) -> None:
     assert research["distinct_evidence_needs"] >= 2
     assert research["distinct_searches"] >= 2
     assert research["classification_count"] > 0
-    assert sum(research["classification_relations"].values()) == research[
-        "classification_count"
-    ]
+    assert (
+        sum(research["classification_relations"].values())
+        == research["classification_count"]
+    )
     assert research["revision_outcome"] == "revised"
     assert research["answer_changed"] is True
     assert research["final_admitted_claim_count"] > 0
@@ -159,9 +160,31 @@ def test_installed_wheels_complete_cpu_hybrid_workflow(tmp_path: Path) -> None:
         "tokens",
         "tool_calls",
     ):
-        assert research["budget_usage"][dimension] <= research["budget_limits"][
-            dimension
-        ]
+        assert (
+            research["budget_usage"][dimension] <= research["budget_limits"][dimension]
+        )
+    agentic = summary["agentic"]
+    assert agentic["readiness"] == "ready"
+    assert agentic["operation_sequence"] == [
+        "embed",
+        "lexical-index",
+        "dense-index",
+        "retrieve",
+        "reason",
+        "agent",
+        "verify",
+        "persist",
+        "publish",
+    ]
+    assert agentic["tool_decision_count"] >= 2
+    assert agentic["tool_execution_count"] == agentic["tool_decision_count"]
+    assert agentic["causal_event_count"] >= 6
+    assert agentic["default_tool_policy"] == "deny"
+    assert agentic["terminal_outcome"] in {"converged", "incomplete_budget"}
+    assert agentic["replay_attempt_id"] != agentic["attempt_id"]
+    assert agentic["comparison_equivalent"] is True
+    assert agentic["cancellation"]["status"] == "cancelled"
+    assert agentic["cancellation"]["error_type"] == "DurableJobCancelled"
     assert summary["workspace"]["restart_ready_profiles"] == [
         "local-hybrid-exact",
         "local-hybrid-ann",
