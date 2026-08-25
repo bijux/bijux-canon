@@ -4,7 +4,7 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-runtime-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-08-25
 ---
 
 # Performance and Scaling
@@ -164,6 +164,49 @@ Retain these fields with every measurement:
 Report median and tail latency, not only throughput. Pair every performance
 result with finalization status, verification decision, certifiability, and
 replay acceptability so a faster incomplete run cannot appear superior.
+
+## Release Resource Envelope
+
+The release benchmark runs the complete eight-source ancient-DNA lexical and
+CPU exact/ANN hybrid workflows from installed commands. It measures process
+startup, ingest, index construction, query, grounded answer production,
+inspection, total wall time, descendant peak RSS, workspace disk, total run
+disk, and index bytes. The hybrid answer measurement covers all twelve visible
+development questions; the result is accepted only after the workflow's
+retrieval, citation, research, and agentic checks pass.
+
+Run the benchmark from a fresh installed environment after acquiring the pinned
+model, with all output retained below `artifacts/`:
+
+```bash
+bijux-canon-resource-envelope \
+  --runtime-command artifacts/ancient-dna-cpu/venv/bin/bijux-canon-runtime \
+  --index-command artifacts/ancient-dna-cpu/venv/bin/bijux-canon-index \
+  --development-evaluation-command artifacts/ancient-dna-cpu/venv/bin/bijux-canon-development-evaluation \
+  --model-directory artifacts/ancient-dna-cpu/models/local-minilm-384/1110a243fdf4706b3f48f1d95db1a4f5529b4d41 \
+  --source-commit "$(git rev-parse HEAD)" \
+  --output-directory artifacts/resource-envelope/observed
+```
+
+The checked-in
+[`resource-ceilings.json`](https://github.com/bijux/bijux-canon/blob/main/examples/ancient-dna-research/resource-ceilings.json)
+is the regression contract. It uses deliberately generous workstation limits
+so ordinary scheduler and filesystem noise do not create false failures while
+still rejecting multi-gigabyte index growth, excessive resident memory, runaway
+disk output, or workflow stages that approach the existing acceptance timeouts.
+`resource-envelope.json` records every observed value beside its ceiling and
+exits nonzero when any limit is exceeded. Compare optimizations with several
+runs when making tighter latency claims; the release ceiling is a safety bound,
+not a p50 performance promise.
+
+The v0.4.0 calibration host was an Apple M1 Max workstation with 10 logical
+CPUs, 32 GiB physical memory, macOS arm64, and Python 3.11.13. One complete
+calibration measured 80.82 seconds and 431 MiB peak RSS for `offline-lexical`,
+and 560.99 seconds and 1.25 GiB peak RSS for `local-cpu-hybrid`. Persisted
+workspace use was 96.9 MiB and 114.1 MiB respectively; the lexical index payload
+was 2.58 MiB and the hybrid segments totalled 4.93 MiB. These observations set
+context for the more generous checked-in regression ceilings; they are not
+cross-platform latency promises.
 
 ## Scaling Topology
 

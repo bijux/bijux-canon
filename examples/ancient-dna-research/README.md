@@ -106,7 +106,7 @@ with network disabled:
 ```bash
 python -m venv artifacts/ancient-dna-cpu/venv
 artifacts/ancient-dna-cpu/venv/bin/python -m pip install \
-  'bijux-canon-runtime[local-cpu]'
+  'bijux-canon-runtime[local-cpu]' bijux-canon-dev
 
 artifacts/ancient-dna-cpu/venv/bin/bijux-canon-index model acquire \
   --profile local-minilm-384 \
@@ -115,6 +115,8 @@ artifacts/ancient-dna-cpu/venv/bin/bijux-canon-index model acquire \
 python examples/ancient-dna-research/cpu_hybrid_workflow.py \
   --runtime-command artifacts/ancient-dna-cpu/venv/bin/bijux-canon-runtime \
   --index-command artifacts/ancient-dna-cpu/venv/bin/bijux-canon-index \
+  --development-evaluation-command artifacts/ancient-dna-cpu/venv/bin/bijux-canon-development-evaluation \
+  --source-commit "$(git rev-parse HEAD)" \
   --model-directory artifacts/ancient-dna-cpu/models/local-minilm-384/1110a243fdf4706b3f48f1d95db1a4f5529b4d41 \
   --workspace artifacts/ancient-dna-cpu/runtime-workspace \
   --evidence-directory artifacts/ancient-dna-cpu/evidence
@@ -143,3 +145,25 @@ BIJUX_CANON_INSTALLED_MODEL_DIRECTORY="$PWD/artifacts/ancient-dna-cpu/models/loc
     -p no:cacheprovider -o addopts= \
     packages/bijux-canon-runtime/tests/e2e/test_installed_cpu_hybrid_workflow.py
 ```
+
+## Reproducible resource envelope
+
+[`resource-ceilings.json`](resource-ceilings.json) predeclares CPU-workstation
+time, peak resident memory, workspace disk, and index-size limits for both
+installed workflows. Run them together with the developer command from the
+same installed environment:
+
+```bash
+artifacts/ancient-dna-cpu/venv/bin/bijux-canon-resource-envelope \
+  --runtime-command artifacts/ancient-dna-cpu/venv/bin/bijux-canon-runtime \
+  --index-command artifacts/ancient-dna-cpu/venv/bin/bijux-canon-index \
+  --development-evaluation-command artifacts/ancient-dna-cpu/venv/bin/bijux-canon-development-evaluation \
+  --model-directory artifacts/ancient-dna-cpu/models/local-minilm-384/1110a243fdf4706b3f48f1d95db1a4f5529b4d41 \
+  --source-commit "$(git rev-parse HEAD)" \
+  --output-directory artifacts/resource-envelope/observed
+```
+
+The output retains machine and Python identity, installed workflow evidence,
+startup and stage timings, total wall time, peak RSS, total workspace bytes,
+total profile bytes, and index bytes. Every observation is paired with its
+declared ceiling; the command exits nonzero on a regression.

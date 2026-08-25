@@ -16,6 +16,7 @@ import re
 import shutil
 import subprocess
 import sys
+from time import perf_counter
 from typing import Any, cast
 import xml.etree.ElementTree as ET
 
@@ -105,6 +106,7 @@ class InstalledRuntime:
         *arguments: str,
         environment: dict[str, str] | None = None,
     ) -> dict[str, Any]:
+        started = perf_counter()
         completed = subprocess.run(  # noqa: S603 - explicit operator-selected command
             [str(self.command), *arguments],
             cwd=self.cwd,
@@ -115,6 +117,7 @@ class InstalledRuntime:
         )
         record = {
             "arguments": list(arguments),
+            "duration_seconds": round(perf_counter() - started, 6),
             "returncode": completed.returncode,
             "stderr": completed.stderr,
             "stdout": completed.stdout,
@@ -146,6 +149,7 @@ class InstalledRuntime:
         environment: dict[str, str] | None = None,
     ) -> dict[str, Any]:
         """Capture one expected public failure without weakening its assertions."""
+        started = perf_counter()
         completed = subprocess.run(  # noqa: S603 - explicit installed command
             [str(self.command), *arguments],
             cwd=self.cwd,
@@ -156,6 +160,7 @@ class InstalledRuntime:
         )
         record = {
             "arguments": list(arguments),
+            "duration_seconds": round(perf_counter() - started, 6),
             "returncode": completed.returncode,
             "stderr": completed.stderr,
             "stdout": completed.stdout,
