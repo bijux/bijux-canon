@@ -1,5 +1,37 @@
 components:
   schemas:
+    AnswerEvaluationRequest:
+      additionalProperties: false
+      description: Adapt one persisted grounded answer without supplying truth labels.
+      properties:
+        attempt_id:
+          anyOf:
+          - maxLength: 200
+            minLength: 1
+            type: string
+          - type: 'null'
+          title: Attempt Id
+        case_id:
+          maxLength: 200
+          minLength: 1
+          title: Case Id
+          type: string
+        question:
+          maxLength: 32768
+          minLength: 1
+          title: Question
+          type: string
+        run_id:
+          maxLength: 200
+          minLength: 1
+          title: Run Id
+          type: string
+      required:
+      - case_id
+      - question
+      - run_id
+      title: AnswerEvaluationRequest
+      type: object
     AnswerPolicy:
       additionalProperties: false
       description: Grounding and publication requirements.
@@ -2229,6 +2261,195 @@ components:
       - missing-capability
       title: RuntimeProblemCode
       type: string
+    SystemAnswerDisposition:
+      description: Top-level behavior of a system answer.
+      enum:
+      - answered
+      - partially_abstained
+      - abstained
+      - failed
+      title: SystemAnswerDisposition
+      type: string
+    SystemCitation:
+      additionalProperties: false
+      description: Exact citation emitted by the evaluated system.
+      properties:
+        character_end:
+          exclusiveMinimum: 0.0
+          title: Character End
+          type: integer
+        character_start:
+          minimum: 0.0
+          title: Character Start
+          type: integer
+        chunk_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Chunk Id
+        citation_id:
+          minLength: 1
+          pattern: ^[A-Za-z0-9][A-Za-z0-9._:-]*$
+          title: Citation Id
+          type: string
+        exact_text:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Exact Text
+        exact_text_sha256:
+          pattern: ^[0-9a-f]{64}$
+          title: Exact Text Sha256
+          type: string
+        locator_id:
+          minLength: 1
+          pattern: ^[A-Za-z0-9][A-Za-z0-9._:-]*$
+          title: Locator Id
+          type: string
+        schema_version:
+          default: bijux.canon.evaluation.system-citation.v1
+          enum:
+          - bijux.canon.evaluation.system-citation.v1
+          - bijux.canon.evaluation.system-citation.v2
+          title: Schema Version
+          type: string
+        source_id:
+          minLength: 1
+          pattern: ^[A-Za-z0-9][A-Za-z0-9._:-]*$
+          title: Source Id
+          type: string
+        source_sha256:
+          pattern: ^[0-9a-f]{64}$
+          title: Source Sha256
+          type: string
+        source_uri:
+          minLength: 1
+          title: Source Uri
+          type: string
+      required:
+      - citation_id
+      - source_id
+      - source_uri
+      - source_sha256
+      - locator_id
+      - exact_text_sha256
+      - character_start
+      - character_end
+      title: SystemCitation
+      type: object
+    SystemClaim:
+      additionalProperties: false
+      description: Atomic claim emitted by the evaluated system.
+      properties:
+        citation_ids:
+          default: []
+          items:
+            minLength: 1
+            pattern: ^[A-Za-z0-9][A-Za-z0-9._:-]*$
+            type: string
+          title: Citation Ids
+          type: array
+        claim_id:
+          minLength: 1
+          pattern: ^[A-Za-z0-9][A-Za-z0-9._:-]*$
+          title: Claim Id
+          type: string
+        disposition:
+          $ref: '#/components/schemas/SystemClaimDisposition'
+        schema_version:
+          const: bijux.canon.evaluation.system-claim.v1
+          default: bijux.canon.evaluation.system-claim.v1
+          title: Schema Version
+          type: string
+        statement:
+          minLength: 1
+          title: Statement
+          type: string
+      required:
+      - claim_id
+      - statement
+      - disposition
+      title: SystemClaim
+      type: object
+    SystemClaimDisposition:
+      description: Behavior expressed for one emitted system claim.
+      enum:
+      - asserted
+      - qualified
+      - abstained
+      title: SystemClaimDisposition
+      type: string
+    SystemOutput:
+      additionalProperties: false
+      description: Replay-addressable system answer that cannot supply its own truth
+        labels.
+      properties:
+        abstention_reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Abstention Reason
+        answer:
+          title: Answer
+          type: string
+        case_id:
+          minLength: 1
+          pattern: ^[A-Za-z0-9][A-Za-z0-9._:-]*$
+          title: Case Id
+          type: string
+        citations:
+          default: []
+          items:
+            $ref: '#/components/schemas/SystemCitation'
+          title: Citations
+          type: array
+        claims:
+          default: []
+          items:
+            $ref: '#/components/schemas/SystemClaim'
+          title: Claims
+          type: array
+        disposition:
+          $ref: '#/components/schemas/SystemAnswerDisposition'
+        output_id:
+          minLength: 1
+          pattern: ^[A-Za-z0-9][A-Za-z0-9._:-]*$
+          title: Output Id
+          type: string
+        runtime_attempt_id:
+          minLength: 1
+          pattern: ^[A-Za-z0-9][A-Za-z0-9._:-]*$
+          title: Runtime Attempt Id
+          type: string
+        runtime_run_id:
+          minLength: 1
+          pattern: ^[A-Za-z0-9][A-Za-z0-9._:-]*$
+          title: Runtime Run Id
+          type: string
+        schema_version:
+          const: bijux.canon.evaluation.system-output.v1
+          default: bijux.canon.evaluation.system-output.v1
+          title: Schema Version
+          type: string
+        system_output_may_define_truth:
+          const: false
+          default: false
+          title: System Output May Define Truth
+          type: boolean
+        trace_identity_sha256:
+          pattern: ^[0-9a-f]{64}$
+          title: Trace Identity Sha256
+          type: string
+      required:
+      - output_id
+      - case_id
+      - runtime_run_id
+      - runtime_attempt_id
+      - answer
+      - disposition
+      - trace_identity_sha256
+      title: SystemOutput
+      type: object
     ValidationError:
       properties:
         ctx:
@@ -2300,6 +2521,101 @@ info:
   version: v2
 openapi: 3.1.0
 paths:
+  /api/v2/answer-evaluations:
+    post:
+      operationId: evaluate_answer_api_v2_answer_evaluations_post
+      parameters:
+      - in: header
+        name: Bijux-API-Version
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Bijux-Api-Version
+      - in: header
+        name: X-Correlation-ID
+        required: false
+        schema:
+          anyOf:
+          - pattern: ^[A-Za-z0-9._:-]{1,200}$
+            type: string
+          - type: 'null'
+          title: X-Correlation-Id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnswerEvaluationRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemOutput'
+          description: Successful Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+          description: Invalid typed request.
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+          description: Resource not found.
+        '406':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+          description: Unsupported API version.
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+          description: Immutable state conflict.
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+          description: Application operation failed.
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+          description: Application service unavailable.
+      summary: Evaluate Answer
   /api/v2/answers:
     post:
       operationId: ask_api_v2_answers_post
