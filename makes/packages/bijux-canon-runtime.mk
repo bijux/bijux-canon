@@ -36,6 +36,7 @@ api-test-workspace:
 	  >"$(API_ARTIFACTS_DIR)/workspace-initialization.json"
 
 api-test: api-test-workspace
+openapi-drift: api-test-workspace
 
 .PHONY: api-versioned-freeze
 api-versioned-freeze:
