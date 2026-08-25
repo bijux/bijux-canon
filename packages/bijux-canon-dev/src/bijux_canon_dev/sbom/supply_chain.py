@@ -3,18 +3,18 @@
 from __future__ import annotations
 
 import argparse
-from collections.abc import Callable, Mapping, Sequence
-from dataclasses import dataclass
 import hashlib
 import json
-from pathlib import Path, PurePosixPath
 import platform
+import shutil
 import subprocess
 import tarfile
 import tempfile
-from typing import Literal, cast
 import zipfile
-
+from collections.abc import Callable, Mapping, Sequence
+from dataclasses import dataclass
+from pathlib import Path, PurePosixPath
+from typing import Literal, cast
 
 ArtifactKind = Literal["wheel", "sdist", "oci-image"]
 SbomGenerator = Callable[["ArtifactInput", Path], Mapping[str, object]]
@@ -445,17 +445,34 @@ def discover_redistribution_evidence(repo_root: Path) -> tuple[Path, ...]:
     return tuple(sorted(path for path in evidence if path.is_file()))
 
 
-def _safe_wheel_members(path: Path) -> None:
+def _extract_safe_wheel(path: Path, destination: Path) -> None:
+    """Extract regular wheel members after validating every archive path."""
     try:
         with zipfile.ZipFile(path) as archive:
-            for name in archive.namelist():
-                member = PurePosixPath(name)
-                if member.is_absolute() or ".." in member.parts or "\\" in name:
+            members = archive.infolist()
+            for member in members:
+                relative = PurePosixPath(member.filename)
+                if (
+                    relative.is_absolute()
+                    or ".." in relative.parts
+                    or "\\" in member.filename
+                ):
                     raise SupplyChainVerificationError(
-                        f"unsafe wheel member in {path.name}: {name}"
+                        f"unsafe wheel member in {path.name}: {member.filename}"
                     )
-    except zipfile.BadZipFile as exc:
-        raise SupplyChainVerificationError(f"invalid wheel archive: {path}") from exc
+            for member in members:
+                relative = PurePosixPath(member.filename)
+                target = destination.joinpath(*relative.parts)
+                if member.is_dir():
+                    target.mkdir(parents=True, exist_ok=True)
+                    continue
+                target.parent.mkdir(parents=True, exist_ok=True)
+                with archive.open(member, "r") as source, target.open("wb") as output:
+                    shutil.copyfileobj(source, output)
+    except (OSError, zipfile.BadZipFile) as exc:
+        raise SupplyChainVerificationError(
+            f"could not safely extract wheel archive: {path}"
+        ) from exc
 
 
 def _safe_sdist_members(path: Path) -> None:
@@ -511,9 +528,7 @@ def external_sbom_generator(
             ) as extracted_name:
                 extracted = Path(extracted_name)
                 if artifact.kind == "wheel":
-                    _safe_wheel_members(artifact.path)
-                    with zipfile.ZipFile(artifact.path) as wheel_archive:
-                        wheel_archive.extractall(extracted)
+                    _extract_safe_wheel(artifact.path, extracted)
                 else:
                     _safe_sdist_members(artifact.path)
                     with tarfile.open(artifact.path, mode="r:gz") as sdist_archive:

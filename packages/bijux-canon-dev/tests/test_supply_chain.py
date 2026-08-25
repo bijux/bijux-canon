@@ -3,13 +3,13 @@ from __future__ import annotations
 import copy
 import io
 import json
-from pathlib import Path
+import subprocess
 import tarfile
-from typing import cast
 import zipfile
+from pathlib import Path
+from typing import cast
 
 import pytest
-
 from bijux_canon_dev.sbom.supply_chain import (
     ArtifactInput,
     SupplyChainVerificationError,
@@ -19,7 +19,6 @@ from bijux_canon_dev.sbom.supply_chain import (
     sha256_file,
     verify_supply_chain_manifest,
 )
-
 
 SOURCE_COMMIT = "1" * 40
 
@@ -211,6 +210,36 @@ def test_external_generator_rejects_wheel_path_traversal(tmp_path: Path) -> None
 
     with pytest.raises(SupplyChainVerificationError, match="unsafe wheel member"):
         generator(ArtifactInput("wheel", wheel), tmp_path / "output.json")
+
+
+def test_external_generator_streams_validated_wheel_members(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    wheel = tmp_path / "package.whl"
+    with zipfile.ZipFile(wheel, "w") as archive:
+        archive.writestr("package/module.py", "VALUE = 1\n")
+
+    def fake_run(
+        command: list[str], **_kwargs: object
+    ) -> subprocess.CompletedProcess[str]:
+        if command[0] == "syft":
+            scan_root = Path(command[2].removeprefix("dir:"))
+            assert (scan_root / "package" / "module.py").read_text(
+                encoding="utf-8"
+            ) == "VALUE = 1\n"
+            output = Path(command[-1].split("=", maxsplit=1)[1])
+            output.write_text(json.dumps(_sbom(ArtifactInput("wheel", wheel), output)))
+        return subprocess.CompletedProcess(command, 0, "", "")
+
+    monkeypatch.setattr(
+        "bijux_canon_dev.sbom.supply_chain.subprocess.run", fake_run
+    )
+    output = tmp_path / "output.json"
+    generator = external_sbom_generator(
+        extract_root=tmp_path / "extract", syft="syft", cyclonedx="cyclonedx"
+    )
+
+    assert generator(ArtifactInput("wheel", wheel), output)["bomFormat"] == "CycloneDX"
 
 
 def test_external_generator_rejects_sdist_links(tmp_path: Path) -> None:
