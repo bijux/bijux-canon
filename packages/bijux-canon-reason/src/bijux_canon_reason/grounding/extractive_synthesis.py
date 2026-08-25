@@ -29,6 +29,10 @@ _ARTIFACT_ID = re.compile(r"sha256:[0-9a-f]{64}")
 _SHA256 = re.compile(r"[0-9a-f]{64}")
 _TERM = re.compile(r"[^\W_]+", flags=re.UNICODE)
 _SENTENCE_BOUNDARY = re.compile(r"(?<=[.!?])\s+", flags=re.UNICODE)
+_NONTERMINAL_ABBREVIATION = re.compile(
+    r"\b(?:al|cf|e\.g|figs?|i\.e|nos?|pp?|secs?|vols?|vs)\.$",
+    flags=re.IGNORECASE,
+)
 _CONTRAST = re.compile(
     r";|,\s+but\s+(?!instead,\s+should\b)|,\s+(?:whereas|while)\s+",
     flags=re.IGNORECASE,
@@ -127,6 +131,14 @@ _METHOD_CUE = re.compile(
 )
 _NUMBER = re.compile(
     r"\b\d+(?:[.,]\d+)?(?:\s*[-–]\s*\d+(?:[.,]\d+)?)?(?:\s*%|\s*-?fold)?\b"
+)
+_ADVANTAGE_CUE = re.compile(
+    r"\b(?:exceed(?:ed|s)?|greater|higher|\d+(?:[.,]\d+)?\s*-?fold|times)\b",
+    flags=re.IGNORECASE,
+)
+_SUPERLATIVE_RESULT_CUE = re.compile(
+    r"\b(?:best|densest|greatest|highest|maximum|optimal)\b",
+    flags=re.IGNORECASE,
 )
 _QUESTION_CONCEPTS: tuple[tuple[frozenset[str], frozenset[str]], ...] = (
     (
@@ -1000,6 +1012,9 @@ def _ranked_clauses(question: str, text: str) -> tuple[tuple[str, int, int, int]
     sentence_spans = []
     cursor = 0
     for boundary in _SENTENCE_BOUNDARY.finditer(text):
+        prefix = text[max(0, boundary.start() - 16) : boundary.start()]
+        if _NONTERMINAL_ABBREVIATION.search(prefix):
+            continue
         sentence_spans.append((cursor, boundary.start()))
         cursor = boundary.end()
     sentence_spans.append((cursor, len(text)))
@@ -1123,16 +1138,26 @@ def _lexical_concepts(text: str) -> frozenset[str]:
 
 
 def _need_term_overlap(need: str, statement: str) -> int:
-    need_terms = _terms(need)
+    primary_need, separator, relation_context = need.partition(" in relation to ")
+    need_terms = _terms(primary_need)
+    context_terms = _terms(relation_context) if separator else frozenset()
     statement_terms = _terms(statement)
-    score = len(_lexical_concepts(need) & _lexical_concepts(statement))
+    score = len(_lexical_concepts(primary_need) & _lexical_concepts(statement))
     for triggers, expressions in _QUESTION_CONCEPTS:
         if need_terms & triggers and statement_terms & expressions:
+            score += 1
+        if context_terms & triggers and statement_terms & expressions:
             score += 1
     if need_terms & {"amount", "quantitative", "quantity"} and _NUMBER.search(
         statement
     ):
         score += 2
+    if "advantage" in need_terms and _ADVANTAGE_CUE.search(statement):
+        score += 8
+    if need_terms & {"best", "greatest", "highest", "most"} and (
+        _SUPERLATIVE_RESULT_CUE.search(statement)
+    ):
+        score += 16
     return score
 
 

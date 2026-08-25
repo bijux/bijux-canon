@@ -298,6 +298,49 @@ def test_semantic_frontier_allocates_distinct_points_to_coordinated_needs() -> N
     assert any("vary substantially" in item for item in statements)
 
 
+def test_semantic_frontier_prefers_slot_specific_result_shapes() -> None:
+    encoder = _CompetingNeedsEncoder()
+    result = CredentialFreeSynthesizer(
+        CredentialFreeSynthesisPolicy(
+            max_points=3,
+            required_sources=1,
+            semantic_encoder_id=encoder.model_lock_id,
+        ),
+        semantic_encoder=encoder,
+    ).synthesize(
+        question=(
+            "Which reactor region produced the highest output, and what quantitative "
+            "advantage and hot-climate caveat were reported?"
+        ),
+        evidence_packet=_packet(
+            _evidence(
+                "reactor-result",
+                "The densest region inside the containment vessel produced the best "
+                "output. Region C exceeded region B (i.e. the outer chamber) by up "
+                "to 65-fold and region A by up to 177-fold. Output from region C "
+                "was lower than 1% for samples from hot regions.",
+            ),
+            _evidence(
+                "generic-output",
+                "Measured output can vary substantially among reactor regions.",
+                rank=2,
+            ),
+        ),
+    )
+
+    statements = tuple(point.statement for point in result.points)
+    assert len(statements) == 3
+    assert any(
+        "densest region" in item and "best output" in item for item in statements
+    ), statements
+    assert any(
+        "65-fold" in item and "177-fold" in item for item in statements
+    ), statements
+    assert any(
+        "lower than 1%" in item and "hot regions" in item for item in statements
+    ), statements
+
+
 def test_source_question_cannot_enter_the_factual_claim_set() -> None:
     result = CredentialFreeSynthesizer(
         CredentialFreeSynthesisPolicy(max_points=1, required_sources=1)
@@ -566,6 +609,32 @@ def test_decimal_point_does_not_truncate_an_extracted_sentence() -> None:
     assert (
         point.quote == "The extraction buffer was adjusted to pH 8.3 before incubation."
     )
+
+
+def test_abbreviation_does_not_split_a_quantitative_comparison() -> None:
+    text = (
+        "Smith et al. measured that output from region C exceeded region B "
+        "(i.e. the outer chamber) by up to 65-fold and region A by up to "
+        "177-fold. A control followed."
+    )
+
+    point = (
+        CredentialFreeSynthesizer(
+            CredentialFreeSynthesisPolicy(max_points=1, required_sources=1)
+        )
+        .synthesize(
+            question=(
+                "What quantitative advantage did region C have over regions B and A?"
+            ),
+            evidence_packet=_packet(_evidence("abbreviation", text)),
+        )
+        .points[0]
+    )
+
+    assert point.quote == text.split(". A control", maxsplit=1)[0] + "."
+    assert "region C exceeded region B" in point.statement
+    assert "65-fold" in point.statement
+    assert "177-fold" in point.statement
 
 
 @pytest.mark.parametrize(
