@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import errno
 from pathlib import Path
 
 import duckdb
@@ -284,4 +285,51 @@ def test_missing_dependency_never_creates_metadata_intent(
     assert connection.execute(
         "SELECT count(*) FROM publication_transactions"
     ).fetchone() == (0,)
+    connection.close()
+
+
+def test_disk_exhaustion_never_advances_publication_metadata(
+    tmp_path: Path,
+    resolved_flow,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    coordinator, payload_root, db_path, tenant_id, run_id = _coordinator(
+        tmp_path, resolved_flow
+    )
+    retained = _item("last good", revision=0)
+    coordinator.publish(
+        tenant_id=tenant_id,
+        run_id=run_id,
+        transaction_id="publish-good",
+        items=(retained,),
+        created_at=_NOW,
+        completed_at=_LATER,
+    )
+
+    def exhaust_disk(path: Path, _payload: bytes) -> None:
+        raise OSError(errno.ENOSPC, "injected storage exhaustion", path)
+
+    monkeypatch.setattr(coordinator._payload_store, "_write_durable", exhaust_disk)
+    with pytest.raises(OSError, match="injected storage exhaustion") as raised:
+        coordinator.publish(
+            tenant_id=tenant_id,
+            run_id=run_id,
+            transaction_id="publish-no-space",
+            items=(_item("not durable", revision=1),),
+            created_at=_LATER,
+            completed_at=_LATER,
+        )
+
+    assert raised.value.errno == errno.ENOSPC
+    assert list((payload_root / "staging").iterdir()) == []
+    connection = duckdb.connect(str(db_path), read_only=True)
+    assert connection.execute(
+        "SELECT transaction_id, status FROM publication_transactions"
+    ).fetchall() == [("publish-good", "committed")]
+    assert connection.execute(
+        "SELECT revision, target_artifact_id, reference_state "
+        "FROM artifact_references"
+    ).fetchall() == [
+        (0, str(retained.artifact.descriptor.artifact_id), "active")
+    ]
     connection.close()

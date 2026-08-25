@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import errno
 import json
+import os
 from pathlib import Path
 
 import pytest
@@ -120,3 +122,38 @@ def test_binding_requires_a_durable_target(tmp_path: Path) -> None:
             logical_artifact_id=ArtifactID("logical-artifact"),
             target_artifact_id=ArtifactID("sha256:" + "a" * 64),
         )
+
+
+def test_disk_exhaustion_removes_partial_bytes_and_retains_last_good_artifact(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    root = tmp_path / "cas"
+    store = AtomicFilesystemArtifactPayloadStore(root)
+    retained = AddressedArtifact.from_json(
+        {"payload": "last known good"},
+        schema_id="bijux.runtime.research-result.v1",
+        producer="bijux-canon-runtime:research",
+    )
+    candidate = AddressedArtifact.from_json(
+        {"payload": "must never become visible"},
+        schema_id="bijux.runtime.research-result.v1",
+        producer="bijux-canon-runtime:research",
+    )
+    store.put(retained)
+
+    def exhaust_disk(path: Path, payload: bytes) -> None:
+        with path.open("xb") as stream:
+            stream.write(payload[:8])
+            stream.flush()
+            os.fsync(stream.fileno())
+        raise OSError(errno.ENOSPC, "injected storage exhaustion", path)
+
+    monkeypatch.setattr(store, "_write_durable", exhaust_disk)
+    with pytest.raises(OSError, match="injected storage exhaustion") as raised:
+        store.put(candidate)
+
+    assert raised.value.errno == errno.ENOSPC
+    assert store.load(retained.descriptor.artifact_id) == retained
+    assert store.artifact_ids() == (retained.descriptor.artifact_id,)
+    assert list((root / "staging").iterdir()) == []

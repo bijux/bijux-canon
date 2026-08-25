@@ -42,6 +42,7 @@ flowchart TD
 | --- | --- | --- |
 | configuration exit | missing or contradictory manifest/policy setting | correct input before creating another run |
 | store failure before run ID | inaccessible path or schema contract failure | repair store availability or migrate through owned schema logic |
+| storage exhaustion while publishing | `ENOSPC` with the failing staging path; no new metadata intent | restore capacity, retain the prior active reference, and retry the same publication identity |
 | partial run with checkpoint | interruption after persisted actions | resume from the recorded action and append indexes |
 | entropy exhaustion | declared budget reached | follow recorded exhaustion action; do not silently raise the budget |
 | verification `FAIL` | rule or cost-budget violation | inspect exact rules and evidence; create corrected run |
@@ -59,6 +60,14 @@ action boundary.
 Do not resume when the plan hash, tenant, dataset descriptor, environment
 fingerprint, verification policy, or replay envelope has changed. Those changes
 describe a different governed execution and require a new run.
+
+Content-addressed payload publication writes and synchronizes a private staging
+directory before activation. If the filesystem reports `ENOSPC`, the partial
+directory is removed, the candidate identity is not inventoried, and publication
+metadata is not prepared. The previous active logical reference remains valid.
+After restoring capacity, retry with the same transaction identity and exact
+payload; do not manufacture a successful transaction or manually point metadata
+at incomplete bytes.
 
 ## Replay Diagnosis
 
