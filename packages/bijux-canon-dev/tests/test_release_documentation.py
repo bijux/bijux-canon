@@ -139,6 +139,7 @@ def test_release_commands_and_navigation_match_installed_surfaces() -> None:
     assert "make candidate-frozen" in release_text
     assert "make frozen-status GATE=candidate" in release_text
     assert "make frozen-summary GATE=candidate" in release_text
+    assert release_text.count("uv run --frozen --python 3.11") >= 2
     assert "Version 0.4.0 Release Candidate" in (REPOSITORY / "mkdocs.yml").read_text(
         encoding="utf-8"
     )

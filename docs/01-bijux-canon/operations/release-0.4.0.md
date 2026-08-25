@@ -144,6 +144,10 @@ Build the candidate exactly once from the clean approved commit. The explicit
 version override is for pre-tag candidate construction only; after tag
 approval, the tag itself must resolve the same stable version:
 
+Use CPython 3.11 as the governed artifact-construction interpreter. The later
+Python support matrix installs the resulting interpreter-independent wheels on
+every declared Python version.
+
 ```bash
 test ! -e artifacts/release-v0.4.0/dist
 mkdir -p artifacts/release-v0.4.0/dist
@@ -162,7 +166,7 @@ for BIJUX_PACKAGE_DIR in \
   packages/compat-bijux-rar \
   packages/compat-bijux-vex
 do
-  uv run --frozen python -m build \
+  uv run --frozen --python 3.11 python -m build \
     --wheel \
     --sdist \
     --outdir artifacts/release-v0.4.0/dist \
@@ -186,7 +190,7 @@ uv export \
   --no-emit-workspace \
   --format requirements.txt \
   --output-file artifacts/release-v0.4.0/dependency-requirements.txt
-uv run --frozen python -m pip download \
+uv run --frozen --python 3.11 python -m pip download \
   --requirement artifacts/release-v0.4.0/dependency-requirements.txt \
   --destination-directory artifacts/release-v0.4.0/dependency-wheels
 ```
