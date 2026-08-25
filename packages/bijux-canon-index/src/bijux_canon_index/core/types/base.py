@@ -336,7 +336,7 @@ class ExecutionArtifact:
                 derive_execution_id,
             )
 
-            placeholder_request = ExecutionRequest(
+            fallback_request = ExecutionRequest(
                 request_id=f"{self.artifact_id}-execution",
                 text=None,
                 vector=None,
@@ -356,7 +356,7 @@ class ExecutionArtifact:
                 self,
                 "execution_id",
                 derive_execution_id(
-                    request=placeholder_request,
+                    request=fallback_request,
                     backend_id="unknown",
                     algorithm="exact_vector_execution",
                     plan=plan,

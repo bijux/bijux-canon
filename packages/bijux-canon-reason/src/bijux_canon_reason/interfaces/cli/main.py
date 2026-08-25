@@ -63,7 +63,7 @@ FAIL_ON_DIFF_OPTION = typer.Option(
     help="Exit non-zero when replay fingerprint differs.",
 )
 EVAL_SUITE_OPTION = typer.Option(
-    "small", "--suite", help="Eval suite name (placeholder until eval suites land)."
+    "small", "--suite", help="Evaluation suite directory name."
 )
 RESEARCH_INPUT_OPTION = typer.Option(
     ..., "--input", exists=True, dir_okay=False, help="Research input JSON."

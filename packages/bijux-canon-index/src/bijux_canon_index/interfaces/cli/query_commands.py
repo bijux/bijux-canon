@@ -358,7 +358,7 @@ def compare(
     execution_contract: str = typer.Option(
         "deterministic",
         "--execution-contract",
-        help="Contract placeholder for payload validation; artifacts govern actual contract",
+        help="Execution contract recorded in the comparison request",
     ),
     artifact_a: str = typer.Option("art-1", "--artifact-a"),
     artifact_b: str = typer.Option("art-1", "--artifact-b"),
