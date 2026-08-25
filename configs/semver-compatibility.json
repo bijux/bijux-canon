@@ -1,0 +1,61 @@
+{
+  "candidate_version": "0.4.0",
+  "deprecations": [
+    {
+      "alternative": "Install bijux-canon-runtime and import bijux_canon_runtime.",
+      "deprecated_since": "0.4.0",
+      "owner": "runtime-api",
+      "removal_not_before": "1.0.0",
+      "surface": "distribution/import/command:bijux-canon"
+    },
+    {
+      "alternative": "Install bijux-canon-runtime and import bijux_canon_runtime.",
+      "deprecated_since": "0.4.0",
+      "owner": "runtime-api",
+      "removal_not_before": "1.0.0",
+      "surface": "distribution/import/command:agentic-flows"
+    },
+    {
+      "alternative": "Install bijux-canon-agent and import bijux_canon_agent.",
+      "deprecated_since": "0.4.0",
+      "owner": "agent-api",
+      "removal_not_before": "1.0.0",
+      "surface": "distribution/import/command:bijux-agent"
+    },
+    {
+      "alternative": "Install bijux-canon-ingest and import bijux_canon_ingest.",
+      "deprecated_since": "0.4.0",
+      "owner": "ingest-api",
+      "removal_not_before": "1.0.0",
+      "surface": "distribution/import/command:bijux-rag"
+    },
+    {
+      "alternative": "Install bijux-canon-reason and import bijux_canon_reason.",
+      "deprecated_since": "0.4.0",
+      "owner": "reason-api",
+      "removal_not_before": "1.0.0",
+      "surface": "distribution/import/command:bijux-rar"
+    },
+    {
+      "alternative": "Install bijux-canon-index and import bijux_canon_index.",
+      "deprecated_since": "0.4.0",
+      "owner": "index-api",
+      "removal_not_before": "1.0.0",
+      "surface": "distribution/import/command:bijux-vex"
+    },
+    {
+      "alternative": "Use the runtime v2 command and HTTP contracts for executable run and replay operations.",
+      "deprecated_since": "0.4.0",
+      "owner": "runtime-api",
+      "removal_not_before": "1.0.0",
+      "surface": "http:bijux-canon-runtime:v1:run-and-replay"
+    }
+  ],
+  "prior_release": "v0.3.9",
+  "schema_version": "bijux.canon.semver_compatibility_policy.v1",
+  "workspace_acceptance_tests": [
+    "packages/bijux-canon-runtime/tests/unit/application/test_workspace_initialization.py",
+    "packages/bijux-canon-runtime/tests/unit/interfaces/cli/test_workspace_commands.py"
+  ],
+  "workspace_rollback_documentation": "docs/06-bijux-canon-runtime/operations/installation-and-setup.md"
+}
