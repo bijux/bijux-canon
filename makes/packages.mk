@@ -27,5 +27,8 @@ COMPAT_PACKAGE_RECORDS := \
 PACKAGE_RECORDS := $(PRIMARY_PACKAGE_RECORDS) $(COMPAT_PACKAGE_RECORDS)
 ROOT_TARGET_SHARED_ENV_security := 0
 ROOT_TARGET_SHARED_ENV_api := 1
+ROOT_TARGET_POST_security := @uv run --offline --frozen --package bijux-canon-dev \
+	bijux-canon-secret-scan --repository "$(MONOREPO_ROOT)" \
+	--output "$(ROOT_ARTIFACTS_DIR)/security/secret-scan.json"
 
 include $(ROOT_MAKEFILE_DIR)/bijux-py/package-catalog.mk

@@ -10,7 +10,8 @@ last_reviewed: 2026-07-21
 # Security Gates
 
 The shared `security` target combines Python static analysis, dependency
-vulnerability auditing, and optional package-specific dependency checks.
+vulnerability auditing, optional package-specific dependency checks, and one
+repository-wide scan of tracked source for high-confidence credential material.
 `bijux-canon-dev` owns normalization of the pip-audit report; Make owns tool
 execution and artifact paths; package profiles own explicit exceptions and
 additional checks.
@@ -26,6 +27,8 @@ flowchart TD
     bandit --> verdict[Security target verdict]
     gate --> verdict
     extras --> verdict
+    tracked[Git-tracked regular files] --> secrets[Credential scan]
+    secrets --> verdict
 ```
 
 ## Gate Composition
@@ -35,7 +38,8 @@ flowchart TD
 | `security-bandit` | configured Python source paths | `bandit.json`, `bandit.txt`, isolated bytecode cache |
 | `security-audit` | active environment or prepared requirements | `pip-audit.json`, `pip-audit.txt`, optional requirements file |
 | `security-deps` | package-specific helper targets | adapter-specific reports or refusal |
-| `security` | all three surfaces | combined exit status |
+| root credential scan | Git-tracked regular files | `artifacts/root/security/secret-scan.json` |
+| `security` | all four surfaces | combined exit status |
 
 Bandit excludes generated build, artifact, tox, mypy, and pytest-cache paths by
 default. High-severity, high-confidence findings are mandatory and fatal.
@@ -81,6 +85,22 @@ may remain useful for diagnosis, but it is not an admissible security result.
 The combined target preserves the tool’s nonzero status. Wrappers must not
 append unconditional success, discard the report, or treat an absent JSON file
 as an empty vulnerability set.
+
+## Tracked-source credential scan
+
+After every package gate succeeds, `bijux-canon-secret-scan` enumerates files
+from Git rather than walking the worktree. It scans tracked regular text files,
+records every scanned file's SHA-256 identity, and reports only finding type,
+path, and line number. Potential secret values are never copied into evidence.
+Binary files are identified by a NUL-byte preflight and listed as skipped.
+
+The initial high-confidence signatures cover AWS access-key identifiers,
+GitHub classic and fine-grained tokens, OpenAI API keys, and private-key PEM
+headers. Any finding is fatal. Enumeration failures, unreadable files,
+non-regular tracked paths, and report-write failures are configuration errors;
+the scanner does not reinterpret them as a clean result. This repository scan
+complements deployment-system secret detection and credential rotation; it
+does not claim to discover every possible secret format.
 
 ## Investigation Order
 

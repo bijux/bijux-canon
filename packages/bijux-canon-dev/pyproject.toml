@@ -47,6 +47,7 @@ bijux-canon-family-compatibility = "bijux_canon_dev.release.family_compatibility
 bijux-canon-installation-matrix = "bijux_canon_dev.release.installation_matrix:main"
 bijux-canon-python-support = "bijux_canon_dev.release.python_support_matrix:main"
 bijux-canon-release-candidate = "bijux_canon_dev.release.release_candidate_identity:main"
+bijux-canon-secret-scan = "bijux_canon_dev.security.secret_scan:main"
 bijux-canon-supply-chain = "bijux_canon_dev.sbom.supply_chain:main"
 bijux-canon-wheel-inventory = "bijux_canon_dev.release.wheel_inventory:main"
 
