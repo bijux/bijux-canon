@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from pathlib import Path
 import tomllib
+from pathlib import Path
 from typing import cast
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -80,6 +80,11 @@ def test_root_security_runs_the_tracked_source_credential_scan() -> None:
 
     assert "ROOT_TARGET_POST_security" in package_catalog
     assert "bijux-canon-secret-scan" in package_catalog
+    assert "uv run --offline" not in package_catalog
+    assert (
+        '"$(MONOREPO_ROOT)/artifacts/bijux-canon-dev/venv/bin/'
+        'bijux-canon-secret-scan"' in package_catalog
+    )
     assert "artifacts/root/security/secret-scan.json" not in package_catalog
     assert "$(ROOT_ARTIFACTS_DIR)/security/secret-scan.json" in package_catalog
 
