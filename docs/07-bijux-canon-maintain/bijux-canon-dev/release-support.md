@@ -122,18 +122,20 @@ The installed `bijux-canon-installation-matrix` command creates a clean
 environment for every wheel and one additional environment for the complete
 exact family. Candidate constraints bind any sibling distribution selected by
 dependency resolution to the same wheel version. A separate sealed dependency
-wheelhouse supplies third-party wheels; every install forces `--no-index` and
-rejects candidate distributions duplicated in that wheelhouse. Each row runs the package
-manager consistency check, imports modules with Python isolation enabled,
-loads all installed entry points, resolves declared runtime data from
-`site-packages`, and invokes each console command's help surface. Imports or
-data that resolve into the repository source tree fail the row.
+installation directory supplies third-party wheels; it is built from the
+lock-exported acquisition cache before the matrix runs. Every install forces
+`--no-index` and rejects candidate distributions duplicated in that directory.
+Each row runs the package manager consistency check, imports modules with
+Python isolation enabled, loads all installed entry points, resolves declared
+runtime data from `site-packages`, and invokes each console command's help
+surface. Imports or data that resolve into the repository source tree fail the
+row.
 
 ```bash
 bijux-canon-installation-matrix \
   --repo-root . \
   --wheel-dir artifacts/release/wheels \
-  --dependency-wheel-dir artifacts/release/dependency-wheels \
+  --dependency-wheel-dir artifacts/release/dependency-install-wheels \
   --environment-root artifacts/release/installations \
   --output artifacts/release/install-matrix.json
 ```
@@ -155,7 +157,7 @@ wheel hashes with every command outcome.
 bijux-canon-extras-matrix \
   --repo-root . \
   --wheel-dir artifacts/release/wheels \
-  --dependency-wheel-dir artifacts/release/dependency-wheels \
+  --dependency-wheel-dir artifacts/release/dependency-install-wheels \
   --environment-root artifacts/release/extras \
   --output artifacts/release/extras-matrix.json
 ```

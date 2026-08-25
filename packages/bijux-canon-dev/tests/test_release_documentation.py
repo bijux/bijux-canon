@@ -1,14 +1,21 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 import tomllib
+from pathlib import Path
 from typing import Any, cast
 
 REPOSITORY = Path(__file__).resolve().parents[3]
 RELEASE_VERSION = "0.4.0"
 RELEASE_DOCUMENT = (
     REPOSITORY / "docs" / "01-bijux-canon" / "operations" / "release-0.4.0.md"
+)
+RELEASE_SUPPORT_DOCUMENT = (
+    REPOSITORY
+    / "docs"
+    / "07-bijux-canon-maintain"
+    / "bijux-canon-dev"
+    / "release-support.md"
 )
 
 
@@ -118,6 +125,7 @@ def test_release_document_covers_governed_deprecations_and_runbook_sections() ->
 
 def test_release_commands_and_navigation_match_installed_surfaces() -> None:
     release_text = RELEASE_DOCUMENT.read_text(encoding="utf-8")
+    release_support_text = RELEASE_SUPPORT_DOCUMENT.read_text(encoding="utf-8")
     pyproject = tomllib.loads(
         (REPOSITORY / "packages" / "bijux-canon-dev" / "pyproject.toml").read_text(
             encoding="utf-8"
@@ -140,6 +148,20 @@ def test_release_commands_and_navigation_match_installed_surfaces() -> None:
     assert "make frozen-status GATE=candidate" in release_text
     assert "make frozen-summary GATE=candidate" in release_text
     assert release_text.count("uv run --frozen --python 3.11") >= 2
+    assert "python -m pip wheel" in release_text
+    assert release_text.count("PIP_NO_CACHE_DIR=1") == 2
+    assert (
+        release_text.count(
+            "--dependency-wheel-dir artifacts/release-v0.4.0/dependency-install-wheels"
+        )
+        == 3
+    )
+    assert (
+        release_support_text.count(
+            "--dependency-wheel-dir artifacts/release/dependency-install-wheels"
+        )
+        == 2
+    )
     assert "Version 0.4.0 Release Candidate" in (REPOSITORY / "mkdocs.yml").read_text(
         encoding="utf-8"
     )

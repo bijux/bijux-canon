@@ -177,11 +177,16 @@ test "$(find artifacts/release-v0.4.0/dist -name '*.whl' | wc -l)" -eq 12
 test "$(find artifacts/release-v0.4.0/dist -name '*.tar.gz' | wc -l)" -eq 12
 ```
 
-Create the current Python dependency wheelhouse from the frozen lock. Preserve
-the exported requirements and wheel hashes with the candidate:
+Create the current Python dependency input cache from the frozen lock, then
+build its source-only inputs into a separate wheel-only installation directory.
+Network access is allowed during this acquisition step; all installed-product
+checks use only the sealed installation directory. Preserve the exported
+requirements and both directories' hashes with the candidate:
 
 ```bash
-mkdir -p artifacts/release-v0.4.0/dependency-wheels
+mkdir -p \
+  artifacts/release-v0.4.0/dependency-wheels \
+  artifacts/release-v0.4.0/dependency-install-wheels
 uv export \
   --frozen \
   --all-packages \
@@ -190,9 +195,14 @@ uv export \
   --no-emit-workspace \
   --format requirements.txt \
   --output-file artifacts/release-v0.4.0/dependency-requirements.txt
-uv run --frozen --python 3.11 python -m pip download \
+PIP_NO_CACHE_DIR=1 uv run --frozen --python 3.11 python -m pip download \
   --requirement artifacts/release-v0.4.0/dependency-requirements.txt \
   --destination-directory artifacts/release-v0.4.0/dependency-wheels
+PIP_NO_CACHE_DIR=1 uv run --frozen --python 3.11 python -m pip wheel \
+  --find-links artifacts/release-v0.4.0/dependency-wheels \
+  --requirement artifacts/release-v0.4.0/dependency-requirements.txt \
+  --wheel-dir artifacts/release-v0.4.0/dependency-install-wheels
+test -z "$(find artifacts/release-v0.4.0/dependency-install-wheels -type f ! -name '*.whl' -print -quit)"
 ```
 
 Run the deduplicated frozen graph once and let it continue in the background
@@ -216,14 +226,14 @@ bijux-canon-wheel-inventory \
 bijux-canon-installation-matrix \
   --repo-root . \
   --wheel-dir artifacts/release-v0.4.0/dist \
-  --dependency-wheel-dir artifacts/release-v0.4.0/dependency-wheels \
+  --dependency-wheel-dir artifacts/release-v0.4.0/dependency-install-wheels \
   --environment-root artifacts/release-v0.4.0/installations \
   --output artifacts/release-v0.4.0/installation-matrix.json
 
 bijux-canon-extras-matrix \
   --repo-root . \
   --wheel-dir artifacts/release-v0.4.0/dist \
-  --dependency-wheel-dir artifacts/release-v0.4.0/dependency-wheels \
+  --dependency-wheel-dir artifacts/release-v0.4.0/dependency-install-wheels \
   --environment-root artifacts/release-v0.4.0/extras \
   --output artifacts/release-v0.4.0/extras-matrix.json
 
@@ -236,7 +246,7 @@ bijux-canon-python-support \
 bijux-canon-family-compatibility \
   --repo-root . \
   --wheel-dir artifacts/release-v0.4.0/dist \
-  --dependency-wheel-dir artifacts/release-v0.4.0/dependency-wheels \
+  --dependency-wheel-dir artifacts/release-v0.4.0/dependency-install-wheels \
   --environment-root artifacts/release-v0.4.0/family \
   --output artifacts/release-v0.4.0/family-compatibility.json \
   --previous-version 0.3.9 \
