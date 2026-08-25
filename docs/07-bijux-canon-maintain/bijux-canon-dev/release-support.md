@@ -117,7 +117,9 @@ particular run's evidence.
 The installed `bijux-canon-installation-matrix` command creates a clean
 environment for every wheel and one additional environment for the complete
 exact family. Candidate constraints bind any sibling distribution selected by
-dependency resolution to the same wheel version. Each row runs the package
+dependency resolution to the same wheel version. A separate sealed dependency
+wheelhouse supplies third-party wheels; every install forces `--no-index` and
+rejects candidate distributions duplicated in that wheelhouse. Each row runs the package
 manager consistency check, imports modules with Python isolation enabled,
 loads all installed entry points, resolves declared runtime data from
 `site-packages`, and invokes each console command's help surface. Imports or
@@ -127,6 +129,7 @@ data that resolve into the repository source tree fail the row.
 bijux-canon-installation-matrix \
   --repo-root . \
   --wheel-dir artifacts/release/wheels \
+  --dependency-wheel-dir artifacts/release/dependency-wheels \
   --environment-root artifacts/release/installations \
   --output artifacts/release/install-matrix.json
 ```

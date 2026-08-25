@@ -105,6 +105,12 @@ def _wheel_set(root: Path) -> Path:
     return wheel_dir
 
 
+def _dependency_wheel_set(root: Path) -> Path:
+    directory = root / "artifacts" / "dependencies"
+    directory.mkdir(parents=True)
+    return directory
+
+
 def _passing_runner(
     command: Sequence[str], _cwd: Path, _environment: Mapping[str, str]
 ) -> CommandResult:
@@ -114,6 +120,7 @@ def _passing_runner(
 def test_matrix_installs_each_wheel_and_complete_family(tmp_path: Path) -> None:
     root = _repository(tmp_path)
     wheel_dir = _wheel_set(root)
+    dependency_wheel_dir = _dependency_wheel_set(root)
     output = root / "artifacts" / "reports" / "result.json"
     commands: list[tuple[str, ...]] = []
 
@@ -126,6 +133,7 @@ def test_matrix_installs_each_wheel_and_complete_family(tmp_path: Path) -> None:
     evidence = run_installation_matrix(
         repo_root=root,
         wheel_dir=wheel_dir,
+        dependency_wheel_dir=dependency_wheel_dir,
         output_path=output,
         environment_root=root / "artifacts" / "install" / "environments",
         source_commit=SOURCE_COMMIT,
@@ -138,6 +146,8 @@ def test_matrix_installs_each_wheel_and_complete_family(tmp_path: Path) -> None:
     assert evidence["wheel_count"] == 2
     assert evidence["individual_install_count"] == 2
     assert evidence["family_install_count"] == 1
+    assert evidence["dependency_wheel_count"] == 0
+    assert evidence["public_index_access"] is False
     assert evidence["package_results"] == [
         {
             "package_id": "example",
@@ -147,6 +157,11 @@ def test_matrix_installs_each_wheel_and_complete_family(tmp_path: Path) -> None:
     ]
     assert len(commands) == 14
     assert any("--constraint" in command for command in commands)
+    assert all(
+        "--no-index" in command
+        for command in commands
+        if "pip" in command and "install" in command
+    )
     assert any(command[-1] == "--help" for command in commands)
     inspector = next(command[-1] for command in commands if "-I" in command)
     assert "packages/example/src" in inspector
@@ -161,6 +176,7 @@ def test_matrix_installs_each_wheel_and_complete_family(tmp_path: Path) -> None:
 def test_matrix_retains_one_row_failure_and_continues(tmp_path: Path) -> None:
     root = _repository(tmp_path)
     wheel_dir = _wheel_set(root)
+    dependency_wheel_dir = _dependency_wheel_set(root)
     output = root / "artifacts" / "install" / "result.json"
 
     def runner(
@@ -181,6 +197,7 @@ def test_matrix_retains_one_row_failure_and_continues(tmp_path: Path) -> None:
         run_installation_matrix(
             repo_root=root,
             wheel_dir=wheel_dir,
+            dependency_wheel_dir=dependency_wheel_dir,
             output_path=output,
             environment_root=root / "artifacts" / "install" / "environments",
             source_commit=SOURCE_COMMIT,
@@ -202,11 +219,13 @@ def test_matrix_retains_one_row_failure_and_continues(tmp_path: Path) -> None:
 def test_matrix_requires_artifact_owned_environments(tmp_path: Path) -> None:
     root = _repository(tmp_path)
     wheel_dir = _wheel_set(root)
+    dependency_wheel_dir = _dependency_wheel_set(root)
 
     with pytest.raises(InstallationMatrixError, match="artifacts directory"):
         run_installation_matrix(
             repo_root=root,
             wheel_dir=wheel_dir,
+            dependency_wheel_dir=dependency_wheel_dir,
             output_path=root / "artifacts" / "install" / "result.json",
             environment_root=root / "environments",
             source_commit=SOURCE_COMMIT,
@@ -223,3 +242,23 @@ def test_project_publishes_installed_installation_matrix_command() -> None:
     assert scripts["bijux-canon-installation-matrix"] == (
         "bijux_canon_dev.release.installation_matrix:main"
     )
+
+
+def test_matrix_rejects_candidate_wheel_in_dependency_closure(tmp_path: Path) -> None:
+    root = _repository(tmp_path)
+    wheel_dir = _wheel_set(root)
+    dependency_wheel_dir = _dependency_wheel_set(root)
+    _wheel(dependency_wheel_dir, "example", module="example")
+
+    with pytest.raises(InstallationMatrixError, match="candidate distribution"):
+        run_installation_matrix(
+            repo_root=root,
+            wheel_dir=wheel_dir,
+            dependency_wheel_dir=dependency_wheel_dir,
+            output_path=root / "artifacts" / "install" / "result.json",
+            environment_root=root / "artifacts" / "install" / "environments",
+            source_commit=SOURCE_COMMIT,
+            python_version="3.11",
+            uv_executable=Path("/usr/bin/true"),
+            runner=_passing_runner,
+        )

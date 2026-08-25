@@ -16,7 +16,7 @@ import subprocess
 import sys
 import time
 
-from packaging.utils import canonicalize_name
+from packaging.utils import canonicalize_name, parse_wheel_filename
 
 from bijux_canon_dev.release.python_support_matrix import (
     CommandResult,
@@ -226,10 +226,56 @@ def _constraint_file(records: Sequence[WheelRecord], *, environment_root: Path) 
     return path
 
 
+def _dependency_wheels(
+    directory: Path,
+    *,
+    candidate_names: Sequence[str],
+) -> tuple[dict[str, object], ...]:
+    if directory.is_symlink() or not directory.is_dir():
+        raise InstallationMatrixError(
+            f"dependency wheel directory must be a regular directory: {directory}"
+        )
+    candidates = {canonicalize_name(name) for name in candidate_names}
+    records: list[dict[str, object]] = []
+    identities: set[tuple[str, str]] = set()
+    for wheel in sorted(directory.iterdir()):
+        if wheel.is_symlink() or not wheel.is_file() or wheel.suffix != ".whl":
+            raise InstallationMatrixError(
+                f"dependency wheelhouse contains a non-wheel entry: {wheel.name}"
+            )
+        try:
+            name, version, _build, _tags = parse_wheel_filename(wheel.name)
+        except ValueError as exc:
+            raise InstallationMatrixError(
+                f"dependency wheel filename is invalid: {wheel.name}"
+            ) from exc
+        normalized = canonicalize_name(str(name))
+        if normalized in candidates:
+            raise InstallationMatrixError(
+                f"candidate distribution duplicated in dependency wheelhouse: {name}"
+            )
+        identity = (normalized, str(version))
+        if identity in identities:
+            raise InstallationMatrixError(
+                f"duplicate dependency wheel identity: {name}=={version}"
+            )
+        identities.add(identity)
+        records.append(
+            {
+                "distribution_name": str(name),
+                "version": str(version),
+                "filename": wheel.name,
+                "sha256": _sha256(wheel),
+            }
+        )
+    return tuple(records)
+
+
 def run_installation_matrix(
     *,
     repo_root: Path,
     wheel_dir: Path,
+    dependency_wheel_dir: Path,
     output_path: Path,
     environment_root: Path,
     source_commit: str,
@@ -244,6 +290,9 @@ def run_installation_matrix(
     ):
         raise InstallationMatrixError("source commit must be a lowercase full Git SHA")
     wheel_dir = _artifact_path(wheel_dir, repo_root, label="wheel directory")
+    dependency_wheel_dir = _artifact_path(
+        dependency_wheel_dir, repo_root, label="dependency wheel directory"
+    )
     output_path = _artifact_path(output_path, repo_root, label="output path")
     environment_root = _artifact_path(
         environment_root, repo_root, label="environment root"
@@ -251,6 +300,10 @@ def run_installation_matrix(
     uv_executable = uv_executable.absolute()
     support = inspect_workspace(repo_root)
     records = inspect_wheels(wheel_dir, support.distribution_names)
+    dependency_wheels = _dependency_wheels(
+        dependency_wheel_dir,
+        candidate_names=[record.distribution_name for record in records],
+    )
     policies = inspect_workspace_policy(repo_root)
     source_roots = tuple(
         (policy.pyproject_path.parent / "src").resolve()
@@ -272,6 +325,7 @@ def run_installation_matrix(
             "PYTHONDONTWRITEBYTECODE": "1",
             "PYTHONPYCACHEPREFIX": str(cache_root / "pycache"),
             "UV_CACHE_DIR": str(cache_root / "uv"),
+            "UV_NO_INDEX": "1",
         }
     )
 
@@ -297,12 +351,15 @@ def run_installation_matrix(
                 str(uv_executable),
                 "pip",
                 "install",
+                "--no-index",
                 "--python",
                 str(python),
                 "--constraint",
                 str(constraints),
                 "--find-links",
                 str(wheel_dir),
+                "--find-links",
+                str(dependency_wheel_dir),
                 *[str(path) for path in requested_wheels],
             ],
             [
@@ -386,9 +443,14 @@ def run_installation_matrix(
             "requested_python": python_version,
         },
         "wheel_count": len(records),
+        "dependency_wheel_count": len(dependency_wheels),
         "individual_install_count": len(records),
         "family_install_count": 1,
         "constraint_file": constraints.relative_to(repo_root).as_posix(),
+        "dependency_wheel_directory": dependency_wheel_dir.relative_to(
+            repo_root
+        ).as_posix(),
+        "public_index_access": False,
         "lock_identity": _sha256(repo_root / "uv.lock"),
         "wheels": [
             {
@@ -399,6 +461,7 @@ def run_installation_matrix(
             }
             for record in records
         ],
+        "dependency_wheels": list(dependency_wheels),
         "install_results": results,
         "package_results": package_results,
         "retained_failures": sorted(set(failures)),
@@ -462,6 +525,7 @@ def _parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--repo-root", type=Path, required=True)
     parser.add_argument("--wheel-dir", type=Path, required=True)
+    parser.add_argument("--dependency-wheel-dir", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--environment-root", type=Path, required=True)
     parser.add_argument(
@@ -483,6 +547,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         run_installation_matrix(
             repo_root=repo_root,
             wheel_dir=args.wheel_dir,
+            dependency_wheel_dir=args.dependency_wheel_dir,
             output_path=args.output,
             environment_root=args.environment_root,
             source_commit=_git_identity(repo_root),
