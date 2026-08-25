@@ -131,30 +131,33 @@ class AuthoritativeArtifactPayloadStore(ArtifactPayloadStore):
         if max_artifacts < 1:
             raise ValueError("payload reconciliation bound must be positive")
         with self._lock:
-            artifact_ids = tuple(self._payload_store.iter_artifact_ids())
-            if len(artifact_ids) > max_artifacts:
-                raise MetadataIntegrityError(
-                    "CAS inventory exceeds the reconciliation bound"
-                )
-            inventory = set(artifact_ids)
-            descriptors = {
-                artifact_id: self._payload_store.load_descriptor(artifact_id)
-                for artifact_id in artifact_ids
-            }
-            missing_dependencies = {
-                dependency
-                for descriptor in descriptors.values()
-                for dependency in descriptor.dependencies
-                if dependency not in inventory
-            }
-            if missing_dependencies:
-                raise MetadataIntegrityError(
-                    "CAS inventory contains artifacts with missing dependencies"
-                )
             with DuckDBMetadataAuthority(
                 self._database_path,
                 lock_timeout_seconds=self._lock_timeout_seconds,
             ) as authority:
+                # Hold the metadata writer lease while taking the CAS snapshot.
+                # Otherwise another process can register a just-published object
+                # after this snapshot and create a false split-authority failure.
+                artifact_ids = tuple(self._payload_store.iter_artifact_ids())
+                if len(artifact_ids) > max_artifacts:
+                    raise MetadataIntegrityError(
+                        "CAS inventory exceeds the reconciliation bound"
+                    )
+                inventory = set(artifact_ids)
+                descriptors = {
+                    artifact_id: self._payload_store.load_descriptor(artifact_id)
+                    for artifact_id in artifact_ids
+                }
+                missing_dependencies = {
+                    dependency
+                    for descriptor in descriptors.values()
+                    for dependency in descriptor.dependencies
+                    if dependency not in inventory
+                }
+                if missing_dependencies:
+                    raise MetadataIntegrityError(
+                        "CAS inventory contains artifacts with missing dependencies"
+                    )
                 registered = set(authority.payload_ids())
                 if registered - inventory:
                     raise MetadataIntegrityError(

@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterator
 from pathlib import Path
 import shutil
 
@@ -12,6 +13,7 @@ from bijux_canon_runtime.model.artifact import AddressedArtifact
 from bijux_canon_runtime.observability.storage.execution_store import (
     DuckDBExecutionStore,
 )
+from bijux_canon_runtime.ontology.ids import ArtifactID
 from bijux_canon_runtime.runtime.persistence.authoritative_payload_store import (
     AuthoritativeArtifactPayloadStore,
 )
@@ -117,3 +119,27 @@ def test_reconciliation_refuses_metadata_whose_cas_bytes_are_absent(
         match="points to absent CAS content",
     ):
         authority_store.reconcile_inventory()
+
+
+def test_reconciliation_leases_metadata_before_snapshotting_cas(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    filesystem, authority_store, _database_path = _store(tmp_path)
+    events: list[str] = []
+    original_enter = DuckDBMetadataAuthority.__enter__
+    original_inventory = filesystem.iter_artifact_ids
+
+    def enter(authority: DuckDBMetadataAuthority) -> DuckDBMetadataAuthority:
+        events.append("metadata-leased")
+        return original_enter(authority)
+
+    def inventory() -> Iterator[ArtifactID]:
+        events.append("cas-snapshotted")
+        yield from original_inventory()
+
+    monkeypatch.setattr(DuckDBMetadataAuthority, "__enter__", enter)
+    monkeypatch.setattr(filesystem, "iter_artifact_ids", inventory)
+
+    assert authority_store.reconcile_inventory() == 0
+    assert events == ["metadata-leased", "cas-snapshotted"]
