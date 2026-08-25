@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from pathlib import Path
+import json
 import re
+from pathlib import Path
 from typing import Any
 
 import yaml
@@ -32,6 +33,19 @@ EXPECTED_VERIFY_PACKAGES = {
     "bijux-canon-reason",
     "bijux-canon-index",
     "bijux-canon-dev",
+}
+EXPECTED_PUBLIC_DISTRIBUTIONS = {
+    "agentic-flows",
+    "bijux-agent",
+    "bijux-canon",
+    "bijux-canon-agent",
+    "bijux-canon-index",
+    "bijux-canon-ingest",
+    "bijux-canon-reason",
+    "bijux-canon-runtime",
+    "bijux-rag",
+    "bijux-rar",
+    "bijux-vex",
 }
 
 
@@ -124,13 +138,84 @@ def test_verify_workflow_uses_repo_contract_job_and_package_matrix() -> None:
     )
     assert runtime["api_toolchain_targets"] == '["api", "openapi-drift"]'
 
-    ingest = next(
-        entry for entry in include if entry["package_slug"] == "bijux-canon-ingest"
-    )
-    assert ingest["test_python_versions"] == '["3.11", "3.12", "3.13"]'
-
     dev = next(entry for entry in include if entry["package_slug"] == "bijux-canon-dev")
     assert dev["check_targets"] == '["quality", "security", "build", "sbom"]'
+
+    supported_python = _as_dict(jobs.get("supported_python"))
+    supported_matrix = _as_dict(
+        _as_dict(supported_python.get("strategy")).get("matrix")
+    )
+    assert [str(version) for version in supported_matrix["python-version"]] == [
+        "3.11",
+        "3.12",
+        "3.13",
+        "3.14",
+    ]
+    supported_command = next(
+        step["run"]
+        for step in supported_python["steps"]
+        if step.get("name") == "Test every canonical and compatibility distribution"
+    )
+    for package in (
+        "compat-bijux-canon",
+        "compat-agentic-flows",
+        "compat-bijux-agent",
+        "compat-bijux-rag",
+        "compat-bijux-rar",
+        "compat-bijux-vex",
+    ):
+        assert package in supported_command
+
+    installed_family = _as_dict(jobs.get("installed_family"))
+    installed_command = next(
+        step["run"]
+        for step in installed_family["steps"]
+        if step.get("name") == "Build and install the distribution family"
+    )
+    assert '" = 12' in installed_command
+    assert "bijux-canon-repository" not in installed_command
+    assert "uv pip check" in installed_command
+
+    verification_ready = _as_dict(jobs.get("verification_ready"))
+    assert verification_ready["needs"] == [
+        "policy_gate",
+        "repository",
+        "package",
+        "supported_python",
+        "installed_family",
+    ]
+
+
+def test_release_matrices_and_branch_protection_require_product_readiness() -> None:
+    release_env = (REPO_ROOT / ".github/release.env").read_text(encoding="utf-8")
+    entries = {
+        line.split("=", maxsplit=1)[0]: line.split("=", maxsplit=1)[1]
+        for line in release_env.splitlines()
+        if "=" in line and not line.startswith("#")
+    }
+    for key in (
+        "BIJUX_RELEASE_BUILD_MATRIX_JSON",
+        "BIJUX_PYPI_PACKAGE_MATRIX_JSON",
+        "BIJUX_GHCR_RELEASE_PACKAGE_MATRIX_JSON",
+    ):
+        matrix = json.loads(entries[key].strip("'"))
+        assert {entry["package_slug"] for entry in matrix} == (
+            EXPECTED_PUBLIC_DISTRIBUTIONS
+        )
+
+    ruleset = json.loads(
+        (REPO_ROOT / ".github/rulesets/main-branch-protection.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    required_rule = next(
+        rule for rule in ruleset["rules"] if rule["type"] == "required_status_checks"
+    )
+    contexts = {
+        check["context"]
+        for check in required_rule["parameters"]["required_status_checks"]
+    }
+    assert "verification-ready" in contexts
 
 
 def test_release_workflows_replace_legacy_publish_workflow() -> None:

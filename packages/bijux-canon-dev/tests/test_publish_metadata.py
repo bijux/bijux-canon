@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 import os
-from pathlib import Path
 import sys
 import tomllib
+from pathlib import Path
 from typing import Any, TypedDict, cast
 
 from packaging.requirements import Requirement
@@ -251,7 +251,7 @@ def test_runtime_build_metadata_binds_canonical_peers_to_its_version() -> None:
         "bijux-canon-index",
     ]
     assert custom["external-dependencies"] == [
-        "bijux-cli>=0.3.6,<0.4.0",
+        "bijux-cli>=0.3.6,<0.5.0",
         "duckdb>=1.1.3,<2.0.0",
         "pydantic>=2.0.2,<3.0.0",
     ]
