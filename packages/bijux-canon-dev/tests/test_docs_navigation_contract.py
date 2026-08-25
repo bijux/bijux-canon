@@ -288,6 +288,7 @@ def test_repository_operations_leaf_pages_keep_section_sidebar(
         "Local Development",
         "Testing and Validation",
         "Release and Versioning",
+        "Version 0.4.0 Release Candidate",
         "API and Schema Governance",
         "Contributor Workflows",
         "Automation Surfaces",
