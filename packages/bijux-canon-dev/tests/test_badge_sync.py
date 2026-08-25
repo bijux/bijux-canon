@@ -37,14 +37,14 @@ def test_repository_badge_block_renders_all_public_badge_groups() -> None:
     assert rendered.count("https://img.shields.io/pypi/v/") == 11
     assert rendered.count("/pkgs/container/") == 11
     assert rendered.count("https://bijux.io/bijux-canon/") == 5
-    assert "https://img.shields.io/badge/runtime-ghcr" in rendered
-    assert "https://img.shields.io/badge/agent-ghcr" in rendered
+    assert "https://img.shields.io/badge/runtime-oci%20bundle" in rendered
+    assert "https://img.shields.io/badge/agent-oci%20bundle" in rendered
     assert rendered.index("https://img.shields.io/pypi/v/") < rendered.index(
-        "https://img.shields.io/badge/runtime-ghcr"
+        "https://img.shields.io/badge/runtime-oci%20bundle"
     )
-    assert rendered.index("https://img.shields.io/badge/runtime-ghcr") < rendered.index(
-        "https://img.shields.io/badge/docs-runtime"
-    )
+    assert rendered.index(
+        "https://img.shields.io/badge/runtime-oci%20bundle"
+    ) < rendered.index("https://img.shields.io/badge/docs-runtime")
 
 
 def test_package_badge_block_prioritizes_the_current_distribution() -> None:
@@ -57,8 +57,8 @@ def test_package_badge_block_prioritizes_the_current_distribution() -> None:
     )
     assert "\n[![agentic-flows](https://img.shields.io/pypi/v/agentic-flows" in rendered
     assert (
-        "\n[![agentic-flows](https://img.shields.io/badge/agentic--flows-ghcr"
-        in rendered
+        "\n[![agentic-flows OCI release bundle]"
+        "(https://img.shields.io/badge/agentic--flows-oci%20bundle" in rendered
     )
     assert (
         "\n[![bijux-canon-runtime docs](https://img.shields.io/badge/docs-runtime"
@@ -67,9 +67,9 @@ def test_package_badge_block_prioritizes_the_current_distribution() -> None:
     assert "agentic-flows docs" not in rendered
     assert rendered.index(
         "https://img.shields.io/pypi/v/agentic-flows"
-    ) < rendered.index("https://img.shields.io/badge/agentic--flows-ghcr")
+    ) < rendered.index("https://img.shields.io/badge/agentic--flows-oci%20bundle")
     assert rendered.index(
-        "https://img.shields.io/badge/agentic--flows-ghcr"
+        "https://img.shields.io/badge/agentic--flows-oci%20bundle"
     ) < rendered.index("https://img.shields.io/badge/docs-runtime")
 
 

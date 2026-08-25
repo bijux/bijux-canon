@@ -4,7 +4,7 @@ audience: maintainer
 type: reference
 status: canonical
 owner: bijux-canon-dev
-last_reviewed: 2026-04-11
+last_reviewed: 2026-08-25
 ---
 
 # Badge Catalog
@@ -24,10 +24,10 @@ Generated badge sections always render in this order:
 
 1. surface summary badges
 2. one line of `PyPI` badges for every public package
-3. one line of `GHCR` badges for every public package
+3. one line of GHCR OCI release-bundle badges for every public package
 4. one line of `Documentation` badges for the canonical `bijux-canon-*` packages
 
-Link policy for GHCR badges is fixed here as part of the contract:
+Link policy for OCI release-bundle badges is fixed here as part of the contract:
 
 - the repository-wide GHCR summary badge links to
   `https://github.com/bijux?tab=packages&repo_name=bijux-canon`
@@ -41,11 +41,11 @@ Link policy for GHCR badges is fixed here as part of the contract:
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-0F766E)](https://github.com/bijux/bijux-canon/blob/main/LICENSE)
 [![Verify](https://github.com/bijux/bijux-canon/actions/workflows/verify.yml/badge.svg?branch=main)](https://github.com/bijux/bijux-canon/actions/workflows/verify.yml?query=branch%3Amain)
 [![Release PyPI](https://img.shields.io/badge/release-pypi%20workflow-2563EB?logo=githubactions&logoColor=white)](https://github.com/bijux/bijux-canon/actions/workflows/release-pypi.yml)
-[![Release GHCR](https://img.shields.io/badge/release-ghcr%20workflow-2563EB?logo=githubactions&logoColor=white)](https://github.com/bijux/bijux-canon/actions/workflows/release-ghcr.yml)
+[![Publish GHCR bundles](https://img.shields.io/badge/publish-ghcr%20bundles-2563EB?logo=githubactions&logoColor=white)](https://github.com/bijux/bijux-canon/actions/workflows/release-ghcr.yml)
 [![Release GitHub](https://img.shields.io/badge/release-github%20workflow-2563EB?logo=githubactions&logoColor=white)](https://github.com/bijux/bijux-canon/actions/workflows/release-github.yml)
 [![Docs](https://github.com/bijux/bijux-canon/actions/workflows/deploy-docs.yml/badge.svg)](https://github.com/bijux/bijux-canon/actions/workflows/deploy-docs.yml)
 [![Release](https://img.shields.io/github/v/release/bijux/bijux-canon?display_name=tag&label=release)](https://github.com/bijux/bijux-canon/releases)
-[![GHCR packages](https://img.shields.io/badge/ghcr-{{ public_package_count }}%20packages-181717?logo=github)](https://github.com/bijux?tab=packages&repo_name=bijux-canon)
+[![GHCR release bundles](https://img.shields.io/badge/ghcr-{{ public_package_count }}%20release%20bundles-181717?logo=github)](https://github.com/bijux?tab=packages&repo_name=bijux-canon)
 [![Published packages](https://img.shields.io/badge/published%20packages-{{ public_package_count }}-2563EB)](https://github.com/bijux/bijux-canon/tree/main/packages)
 <!-- bijux-canon-badges:repository-summary:end -->
 
@@ -65,10 +65,10 @@ Link policy for GHCR badges is fixed here as part of the contract:
 [![{{ distribution_name }}](https://img.shields.io/pypi/v/{{ distribution_name }}?label={{ pypi_badge_label }}&logo=pypi)]({{ package_pypi_url }})
 <!-- bijux-canon-badges:family-pypi-badge:end -->
 
-## Family GHCR Badge
+## Family OCI Release-Bundle Badge
 
 <!-- bijux-canon-badges:family-ghcr-badge:start -->
-[![{{ distribution_name }}](https://img.shields.io/badge/{{ pypi_badge_label }}-ghcr-181717?logo=github)]({{ package_ghcr_url }})
+[![{{ distribution_name }} OCI release bundle](https://img.shields.io/badge/{{ pypi_badge_label }}-oci%20bundle-181717?logo=github)]({{ package_ghcr_url }})
 <!-- bijux-canon-badges:family-ghcr-badge:end -->
 
 ## Family Docs Badge

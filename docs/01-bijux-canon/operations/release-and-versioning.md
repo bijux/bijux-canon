@@ -4,7 +4,7 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-08-25
 ---
 
 # Release and Versioning
@@ -115,6 +115,17 @@ section of the [compatibility handbook](../../08-compat-packages/index.md).
 Version equality alone does not prove behavioral compatibility.
 
 ## Release Boundaries
+
+Version 0.4.0 ships Python distributions only. It does not ship an executable
+container image or a containerized service image. The GHCR destination stores
+the same staged distribution family as non-executable OCI release bundles; a
+registry bundle is a custody and download surface, not a runnable-image claim.
+
+A future service image remains out of scope until it is built from verified
+candidate wheels, runs as a non-root user, persists its workspace on an explicit
+volume, exposes readiness, and passes the installed Runtime v2 workflow. Badges,
+release notes, and automation must not advertise that image before those checks
+exist and pass.
 
 Root configuration owns version discovery, the package catalog, and common
 publication policy. Package metadata owns dependencies, entry points, build

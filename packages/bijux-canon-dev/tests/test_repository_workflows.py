@@ -173,6 +173,35 @@ def test_release_workflows_replace_legacy_publish_workflow() -> None:
     }
 
 
+def test_v040_release_claim_excludes_an_executable_container_image() -> None:
+    badge_catalog = (REPO_ROOT / "docs" / "badges.md").read_text(encoding="utf-8")
+    release_docs = (
+        REPO_ROOT
+        / "docs"
+        / "01-bijux-canon"
+        / "operations"
+        / "release-and-versioning.md"
+    ).read_text(encoding="utf-8")
+    runtime_docs = (
+        REPO_ROOT
+        / "docs"
+        / "06-bijux-canon-runtime"
+        / "operations"
+        / "release-and-versioning.md"
+    ).read_text(encoding="utf-8")
+    ghcr_workflow = (WORKFLOWS_DIR / "release-ghcr.yml").read_text(encoding="utf-8")
+
+    assert "GHCR release bundles" in badge_catalog
+    assert "oci%20bundle" in badge_catalog
+    assert "-ghcr-181717" not in badge_catalog
+    assert "Version 0.4.0 ships Python distributions only" in release_docs
+    assert "does not ship an executable" in release_docs
+    assert "does not provide an executable container or service image" in runtime_docs
+    assert "oras push" in ghcr_workflow
+    assert "docker build" not in ghcr_workflow
+    assert "docker push" not in ghcr_workflow
+
+
 def test_reusable_workflows_use_uv_cache_contract() -> None:
     ci_wrapper = _workflow(WORKFLOWS_DIR / "ci.yml")
     verify_workflow = _workflow(WORKFLOWS_DIR / "verify.yml")
