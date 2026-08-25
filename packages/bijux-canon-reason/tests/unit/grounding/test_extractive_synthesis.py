@@ -7,6 +7,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 from dataclasses import dataclass
 import hashlib
+import math
 
 from pydantic import ValidationError
 import pytest
@@ -94,6 +95,30 @@ class _SemanticEncoder:
                 vectors.append((1.0, 0.0))
             else:
                 vectors.append((0.0, 1.0))
+        return _SemanticBatch(tuple(vectors), self.model_lock_id)
+
+
+class _CompetingNeedsEncoder:
+    """Make one caveat dominate every need while preserving weaker distinct fits."""
+
+    model_lock_id = _artifact("competing-needs-encoder")
+
+    def embed(self, texts: Sequence[str]) -> _SemanticBatch:
+        vectors = []
+        for text in texts:
+            if "lower than 1%" in text:
+                similarity = 0.70
+            elif "vary substantially" in text:
+                similarity = 0.68
+            elif "65-fold" in text:
+                similarity = 0.46
+            elif "Part C denotes" in text:
+                similarity = 0.16
+            elif text.startswith(("Which ", "quantitative ", "hot-climate ")):
+                similarity = 1.0
+            else:
+                similarity = 0.0
+            vectors.append((similarity, math.sqrt(1.0 - similarity**2)))
         return _SemanticBatch(tuple(vectors), self.model_lock_id)
 
 
@@ -222,6 +247,55 @@ def test_answer_bearing_results_outrank_study_aims_and_background() -> None:
     assert result.answer_text.index("65-fold") < result.answer_text.index(
         "lower than 1%"
     )
+
+
+def test_semantic_frontier_allocates_distinct_points_to_coordinated_needs() -> None:
+    encoder = _CompetingNeedsEncoder()
+    result = CredentialFreeSynthesizer(
+        CredentialFreeSynthesisPolicy(
+            max_points=3,
+            required_sources=1,
+            semantic_encoder_id=encoder.model_lock_id,
+        ),
+        semantic_encoder=encoder,
+    ).synthesize(
+        question=(
+            "Which petrous-bone region produced the highest endogenous ancient-DNA "
+            "yield, and what quantitative advantage and hot-climate caveat were "
+            "reported?"
+        ),
+        evidence_packet=_packet(
+            _evidence(
+                "result",
+                "Our results confirm that dense bone parts can provide high "
+                "endogenous yields and indicate that endogenous DNA fractions for "
+                "part C can exceed part B by up to 65-fold and part A by up to "
+                "177-fold. While endogenous yields from part C were lower than 1% "
+                "for samples from hot regions, damage patterns indicated ancient "
+                "DNA molecules.",
+            ),
+            _evidence(
+                "discussion",
+                "Both the total amount of endogenous DNA recovered and the percentage "
+                "of endogenous reads vary substantially for different parts of the "
+                "petrous bone.",
+                rank=2,
+            ),
+            _evidence(
+                "definition",
+                "The sampled regions were trabecular bone (part A), dense bone outside "
+                "the otic capsule (part B), and dense bone within the otic capsule "
+                "(part C).",
+                rank=3,
+            ),
+        ),
+    )
+
+    statements = tuple(point.statement for point in result.points)
+    assert len(statements) == 3
+    assert any("65-fold" in item and "177-fold" in item for item in statements)
+    assert any("lower than 1%" in item for item in statements)
+    assert any("vary substantially" in item for item in statements)
 
 
 def test_source_question_cannot_enter_the_factual_claim_set() -> None:

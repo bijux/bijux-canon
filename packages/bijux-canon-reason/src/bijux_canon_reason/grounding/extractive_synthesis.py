@@ -759,8 +759,13 @@ class CredentialFreeSynthesizer:
         if self._semantic_encoder is not None and ranked:
             need_count = len(ranked[0].semantic_need_similarities)
             for need_index in range(need_count):
+                remaining = tuple(
+                    item for item in ranked if item not in semantic_frontier
+                )
+                if not remaining or len(semantic_frontier) >= self._policy.max_points:
+                    break
                 best = max(
-                    ranked,
+                    remaining,
                     key=lambda item: (
                         round(
                             item.semantic_need_term_overlaps[need_index] * 10
