@@ -211,6 +211,11 @@ _GENERIC_QUESTION_TERMS = frozenset(
         "do",
         "does",
         "changed",
+        "conflict",
+        "conflicts",
+        "contain",
+        "contains",
+        "counterevidence",
         "evidence",
         "happened",
         "how",
@@ -222,6 +227,9 @@ _GENERIC_QUESTION_TERMS = frozenset(
         "shown",
         "source",
         "sources",
+        "study",
+        "studies",
+        "two",
         "what",
         "which",
         "why",
@@ -248,6 +256,7 @@ _DUPLICATE_STOPWORDS = _GENERIC_QUESTION_TERMS | frozenset(
         "including",
         "into",
         "of",
+        "or",
         "our",
         "some",
         "than",
@@ -738,7 +747,7 @@ class CredentialFreeSynthesizer:
                     best_by_evidence[item.citation_evidence_artifact_id] = item
             candidates = tuple(best_by_evidence.values())
         minimum_overlap = self._policy.minimum_query_term_overlap
-        if not (_terms(question) - _GENERIC_QUESTION_TERMS):
+        if not _lexical_concepts(question):
             minimum_overlap = 0
         relevant = tuple(
             item
@@ -881,7 +890,7 @@ class CredentialFreeSynthesizer:
             reference_text=evidence.exact_text,
         )
         statement = projection.statement
-        overlap = len(_terms(question) & _terms(statement))
+        overlap = len(_lexical_concepts(question) & _lexical_concepts(statement))
         score = max(
             0,
             overlap * 10
@@ -1129,10 +1138,16 @@ def _with_semantic_similarity(
 def _lexical_concepts(text: str) -> frozenset[str]:
     concepts = set()
     for term in _terms(text) - _DUPLICATE_STOPWORDS:
-        for suffix in ("ing", "ed", "es", "s"):
-            if term.endswith(suffix) and len(term) > len(suffix) + 3:
-                term = term[: -len(suffix)]
-                break
+        if term.endswith("ies") and len(term) > 6:
+            term = f"{term[:-3]}y"
+        elif term.endswith(("ches", "shes", "sses", "xes", "zes")):
+            term = term[:-2]
+        elif term.endswith("s") and not term.endswith("ss") and len(term) > 4:
+            term = term[:-1]
+        elif term.endswith("ing") and len(term) > 7:
+            term = term[:-3]
+        elif term.endswith("ed") and len(term) > 6:
+            term = term[:-2]
         concepts.add(term)
     return frozenset(concepts)
 

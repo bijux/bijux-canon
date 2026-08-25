@@ -686,6 +686,31 @@ def test_no_evidence_abstains_without_candidate_claims_or_citations() -> None:
     assert "[citation:" not in result.answer_text
 
 
+def test_shared_function_words_do_not_admit_irrelevant_evidence() -> None:
+    result = CredentialFreeSynthesizer(
+        CredentialFreeSynthesisPolicy(required_sources=1)
+    ).synthesize(
+        question="What is the orbital period of the exoplanet Eos-9?",
+        evidence_packet=_packet(
+            _evidence(
+                "transit",
+                "Transit access and multilingual outreach must be part of the operating plan.",
+            ),
+            _evidence(
+                "canopy",
+                "Young trees need watering and years of growth before they provide mature shade.",
+                rank=2,
+            ),
+        ),
+    )
+
+    assert result.outcome is SynthesisOutcome.insufficient
+    assert result.points == ()
+    assert "Insufficient evidence" in result.answer_text
+    assert "Transit access" not in result.answer_text
+    assert "Young trees" not in result.answer_text
+
+
 def test_point_limit_is_reported_instead_of_silently_dropping_evidence() -> None:
     packet = _packet(
         _evidence("alpha", "Alpha observation."),
