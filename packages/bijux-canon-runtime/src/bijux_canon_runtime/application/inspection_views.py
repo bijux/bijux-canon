@@ -59,6 +59,7 @@ def bounded_inspection_record(record: Mapping[str, object]) -> dict[str, object]
 
 
 def _artifact_summary(value: object) -> object:
+    """Expose artifact metadata while replacing its payload with a reference."""
     mapped = _mapping(value)
     if mapped is None:
         return _bounded_structure(value)
@@ -72,6 +73,7 @@ def _artifact_summary(value: object) -> object:
 
 
 def _semantic_summary(value: object) -> object:
+    """Retain semantic record structure without inlining an unbounded value."""
     mapped = _mapping(value)
     if mapped is None:
         return _bounded_structure(value)
@@ -82,6 +84,7 @@ def _semantic_summary(value: object) -> object:
 
 
 def _event_summary(value: object) -> object:
+    """Retain event fields while integrity-binding an attached policy value."""
     mapped = _mapping(value)
     if mapped is None:
         return _bounded_structure(value)
@@ -94,6 +97,7 @@ def _event_summary(value: object) -> object:
 
 
 def _value_reference(value: object) -> dict[str, object]:
+    """Describe a canonical value and inline it only within the byte ceiling."""
     encoded = canonical_json_bytes(value)
     reference: dict[str, object] = {
         "byte_length": len(encoded),
@@ -106,6 +110,7 @@ def _value_reference(value: object) -> dict[str, object]:
 
 
 def _bounded_structure(value: object) -> object:
+    """Recursively bound strings while preserving container shape and identity."""
     if isinstance(value, str):
         if len(value) <= MAX_INSPECTION_STRING_CHARACTERS:
             return value
@@ -128,6 +133,7 @@ def _bounded_structure(value: object) -> object:
 
 
 def _mapping(value: object) -> Mapping[str, object] | None:
+    """Project mappings and dataclass instances onto string-keyed records."""
     if isinstance(value, Mapping):
         return {str(key): item for key, item in value.items()}
     if is_dataclass(value) and not isinstance(value, type):
@@ -136,6 +142,7 @@ def _mapping(value: object) -> Mapping[str, object] | None:
 
 
 def _value_type(value: object) -> str:
+    """Return the stable JSON-oriented type name used in value references."""
     if value is None:
         return "null"
     if isinstance(value, bool):
