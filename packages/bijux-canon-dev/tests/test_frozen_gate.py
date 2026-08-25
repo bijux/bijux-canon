@@ -38,13 +38,21 @@ def _repository(tmp_path: Path) -> tuple[Path, str]:
     _git(repository, "config", "user.email", "frozen@example.invalid")
     _git(repository, "config", "user.name", "Frozen Gate Test")
     (repository / ".gitignore").write_text("artifacts/\nignored.txt\n")
+    constraint_exporter = repository / "makes/tooling/uv-lock-constraints.sh"
+    constraint_exporter.parent.mkdir(parents=True)
+    constraint_exporter.write_text(
+        "#!/bin/sh\nset -eu\nmkdir -p \"$(dirname \"$2\")\"\n"
+        "printf 'packaging==26.0\\n' > \"$2\"\n"
+    )
+    constraint_exporter.chmod(0o755)
+    (repository / "uv.lock").write_text("version = 1\n")
     (repository / "Makefile").write_text(
         ".PHONY: test-all quality security docs api build sbom\n"
         "test-all quality security docs api build sbom:\n"
         "\t@mkdir -p artifacts\n"
         "\t@printf 'frozen gate passed\\n' > artifacts/outcome.txt\n"
     )
-    _git(repository, "add", ".gitignore", "Makefile")
+    _git(repository, "add", ".gitignore", "Makefile", "makes", "uv.lock")
     _git(repository, "commit", "--quiet", "-m", "first")
     first_commit = _git(repository, "rev-parse", "HEAD")
     (repository / "Makefile").write_text("test-all:\n\t@exit 9\n")
@@ -95,6 +103,18 @@ def test_frozen_gate_runs_selected_tracked_revision_in_background(
         for item in GATE_RESPONSIBILITIES["candidate"]
     ]
     assert metadata["pid"] == launch.pid
+    assert metadata["dependency_constraints"] == {
+        "output": str(source / "artifacts/root/locked-constraints.txt"),
+        "source": str(source / "uv.lock"),
+    }
+    assert (source / "artifacts/root/locked-constraints.txt").read_text() == (
+        "packaging==26.0\n"
+    )
+    launcher = Path(launch.artifact_root) / "launch.sh"
+    launcher_text = launcher.read_text(encoding="utf-8")
+    assert "export PIP_CONSTRAINT=" in launcher_text
+    assert "export UV_CONSTRAINT=" in launcher_text
+    assert "makes/tooling/uv-lock-constraints.sh" in launcher_text
 
 
 def test_frozen_gate_defines_independent_complete_gate_commands() -> None:

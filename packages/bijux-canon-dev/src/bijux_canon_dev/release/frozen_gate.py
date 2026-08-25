@@ -374,22 +374,27 @@ def _launcher_script(
     status_file: Path,
 ) -> str:
     artifact_root = source / "artifacts"
+    constraint_file = artifact_root / "root/locked-constraints.txt"
+    constraint_exporter = source / "makes/tooling/uv-lock-constraints.sh"
     exports = {
         "HYPOTHESIS_STORAGE_DIRECTORY": artifact_root / "root/hypothesis",
         "NPM_CONFIG_CACHE": artifact_root / "root/npm-cache",
         "PIP_CACHE_DIR": artifact_root / "root/pip-cache",
+        "PIP_CONSTRAINT": constraint_file,
         "PYTHONDONTWRITEBYTECODE": "1",
         "PYTHONPYCACHEPREFIX": artifact_root / "root/pycache",
         "TMPDIR": artifact_root / "root/process",
         "TOX_WORK_DIR": artifact_root / "root/tox",
         "UV_CACHE_DIR": artifact_root / "root/uv-cache",
+        "UV_CONSTRAINT": constraint_file,
         "XDG_CACHE_HOME": artifact_root / "root/xdg-cache",
     }
     lines = [
         "#!/bin/bash",
         "set -u -o pipefail",
         f"cd {shlex.quote(str(source))}",
-        "unset MAKEFLAGS MFLAGS PYTHONPATH UV_PROJECT_ENVIRONMENT VIRTUAL_ENV",
+        "unset MAKEFLAGS MFLAGS PIP_CONSTRAINT PYTHONPATH UV_CONSTRAINT "
+        "UV_PROJECT_ENVIRONMENT VIRTUAL_ENV",
     ]
     lines.extend(
         f"export {name}={shlex.quote(str(value))}" for name, value in exports.items()
@@ -399,6 +404,10 @@ def _launcher_script(
             f"mkdir -p {shlex.quote(str(artifact_root / 'root/process'))}",
             "status=0",
             "set +e",
+            shlex.join(
+                (str(constraint_exporter), str(source), str(constraint_file))
+            ),
+            "status=$?",
         )
     )
     for command in commands:
@@ -488,6 +497,10 @@ def launch_frozen_gate(
         metadata = {
             **asdict(launch),
             "commands": [list(command) for command in commands],
+            "dependency_constraints": {
+                "output": str(source / "artifacts/root/locked-constraints.txt"),
+                "source": str(source / "uv.lock"),
+            },
             "responsibility_graph": [
                 asdict(item) for item in GATE_RESPONSIBILITIES[gate]
             ],
