@@ -3,6 +3,7 @@ from __future__ import annotations
 import copy
 import io
 import json
+import stat
 import subprocess
 import tarfile
 import zipfile
@@ -17,6 +18,7 @@ from bijux_canon_dev.sbom.supply_chain import (
     discover_redistribution_evidence,
     external_sbom_generator,
     sha256_file,
+    validate_cyclonedx,
     verify_supply_chain_manifest,
 )
 
@@ -212,12 +214,30 @@ def test_external_generator_rejects_wheel_path_traversal(tmp_path: Path) -> None
         generator(ArtifactInput("wheel", wheel), tmp_path / "output.json")
 
 
+def test_external_generator_rejects_wheel_links(tmp_path: Path) -> None:
+    wheel = tmp_path / "malicious.whl"
+    with zipfile.ZipFile(wheel, "w") as archive:
+        member = zipfile.ZipInfo("package/link")
+        member.external_attr = (stat.S_IFLNK | 0o777) << 16
+        archive.writestr(member, "../../outside")
+    generator = external_sbom_generator(
+        extract_root=tmp_path / "extract", syft="syft", cyclonedx="cyclonedx"
+    )
+
+    with pytest.raises(SupplyChainVerificationError, match="unsafe wheel member"):
+        generator(ArtifactInput("wheel", wheel), tmp_path / "output.json")
+
+
 def test_external_generator_streams_validated_wheel_members(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     wheel = tmp_path / "package.whl"
     with zipfile.ZipFile(wheel, "w") as archive:
         archive.writestr("package/module.py", "VALUE = 1\n")
+        archive.writestr(
+            "package-1.0.dist-info/METADATA",
+            "Metadata-Version: 2.4\nName: package\nVersion: 1.0\n",
+        )
 
     def fake_run(
         command: list[str], **_kwargs: object
@@ -231,15 +251,65 @@ def test_external_generator_streams_validated_wheel_members(
             output.write_text(json.dumps(_sbom(ArtifactInput("wheel", wheel), output)))
         return subprocess.CompletedProcess(command, 0, "", "")
 
-    monkeypatch.setattr(
-        "bijux_canon_dev.sbom.supply_chain.subprocess.run", fake_run
-    )
+    monkeypatch.setattr("bijux_canon_dev.sbom.supply_chain.subprocess.run", fake_run)
     output = tmp_path / "output.json"
     generator = external_sbom_generator(
         extract_root=tmp_path / "extract", syft="syft", cyclonedx="cyclonedx"
     )
 
     assert generator(ArtifactInput("wheel", wheel), output)["bomFormat"] == "CycloneDX"
+
+
+def test_external_generator_adds_sdist_identity_when_syft_finds_no_components(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    sdist = tmp_path / "example_package-1.2.3.tar.gz"
+    metadata = b"Metadata-Version: 2.4\nName: example-package\nVersion: 1.2.3\n"
+    with tarfile.open(sdist, mode="w:gz") as archive:
+        member = tarfile.TarInfo("example_package-1.2.3/PKG-INFO")
+        member.size = len(metadata)
+        archive.addfile(member, io.BytesIO(metadata))
+
+    def fake_run(
+        command: list[str], **_kwargs: object
+    ) -> subprocess.CompletedProcess[str]:
+        if command[0] == "syft":
+            output_path = Path(command[-1].split("=", maxsplit=1)[1])
+            output_path.write_text(
+                json.dumps(
+                    {
+                        "bomFormat": "CycloneDX",
+                        "specVersion": "1.6",
+                        "version": 1,
+                        "components": [],
+                    }
+                ),
+                encoding="utf-8",
+            )
+        if command[0] == "cyclonedx":
+            output_path = Path(command[command.index("--input-file") + 1])
+            document = json.loads(output_path.read_text(encoding="utf-8"))
+            assert document["components"] == [
+                {
+                    "bom-ref": "pkg:pypi/example-package@1.2.3",
+                    "hashes": [{"alg": "SHA-256", "content": sha256_file(sdist)}],
+                    "name": "example-package",
+                    "purl": "pkg:pypi/example-package@1.2.3",
+                    "type": "library",
+                    "version": "1.2.3",
+                }
+            ]
+        return subprocess.CompletedProcess(command, 0, "", "")
+
+    monkeypatch.setattr("bijux_canon_dev.sbom.supply_chain.subprocess.run", fake_run)
+    output = tmp_path / "output.json"
+    generator = external_sbom_generator(
+        extract_root=tmp_path / "extract", syft="syft", cyclonedx="cyclonedx"
+    )
+
+    document = generator(ArtifactInput("sdist", sdist), output)
+
+    assert validate_cyclonedx(document, source=output) == 1
 
 
 def test_external_generator_rejects_sdist_links(tmp_path: Path) -> None:
@@ -271,6 +341,4 @@ def test_repository_redistribution_discovery_covers_all_corpus_evidence() -> Non
         "examples/document-formats/corpus.lock.json",
         "examples/urban-heat-research/corpus-manifest.json",
     }.issubset(discovered)
-    assert len(
-        [path for path in discovered if "/acquisition-receipts/" in path]
-    ) == 7
+    assert len([path for path in discovered if "/acquisition-receipts/" in path]) == 7

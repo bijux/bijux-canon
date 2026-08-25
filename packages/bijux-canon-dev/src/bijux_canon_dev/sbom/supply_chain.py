@@ -6,15 +6,19 @@ import argparse
 import hashlib
 import json
 import platform
+import re
 import shutil
+import stat
 import subprocess
 import tarfile
 import tempfile
 import zipfile
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
+from email.parser import Parser
 from pathlib import Path, PurePosixPath
 from typing import Literal, cast
+from urllib.parse import quote
 
 ArtifactKind = Literal["wheel", "sdist", "oci-image"]
 SbomGenerator = Callable[["ArtifactInput", Path], Mapping[str, object]]
@@ -452,10 +456,12 @@ def _extract_safe_wheel(path: Path, destination: Path) -> None:
             members = archive.infolist()
             for member in members:
                 relative = PurePosixPath(member.filename)
+                member_mode = member.external_attr >> 16
                 if (
                     relative.is_absolute()
                     or ".." in relative.parts
                     or "\\" in member.filename
+                    or stat.S_ISLNK(member_mode)
                 ):
                     raise SupplyChainVerificationError(
                         f"unsafe wheel member in {path.name}: {member.filename}"
@@ -496,6 +502,72 @@ def _safe_sdist_members(path: Path) -> None:
         raise SupplyChainVerificationError(f"invalid sdist archive: {path}") from exc
 
 
+def _distribution_component(
+    artifact: ArtifactInput, extracted: Path
+) -> dict[str, object]:
+    """Build a package component from metadata carried inside the artifact."""
+    metadata_name = "METADATA" if artifact.kind == "wheel" else "PKG-INFO"
+    candidates = [
+        path
+        for path in extracted.rglob(metadata_name)
+        if path.is_file()
+        and not path.is_symlink()
+        and (artifact.kind == "sdist" or path.parent.name.endswith(".dist-info"))
+    ]
+    if len(candidates) != 1:
+        raise SupplyChainVerificationError(
+            f"{artifact.kind} must contain exactly one {metadata_name}: {artifact.path}"
+        )
+    metadata_path = candidates[0]
+    if metadata_path.stat().st_size > 4 * 1024 * 1024:
+        raise SupplyChainVerificationError(
+            f"distribution metadata exceeds the size limit: {artifact.path}"
+        )
+    try:
+        metadata = Parser().parsestr(metadata_path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError) as exc:
+        raise SupplyChainVerificationError(
+            f"could not read distribution metadata: {artifact.path}"
+        ) from exc
+    name = str(metadata.get("Name", "")).strip()
+    version = str(metadata.get("Version", "")).strip()
+    if not name or not version:
+        raise SupplyChainVerificationError(
+            f"distribution metadata has no package identity: {artifact.path}"
+        )
+    canonical_name = re.sub(r"[-_.]+", "-", name).lower()
+    purl = f"pkg:pypi/{quote(canonical_name, safe='-.')}@{quote(version, safe='-.')}"
+    return {
+        "type": "library",
+        "bom-ref": purl,
+        "name": name,
+        "version": version,
+        "purl": purl,
+        "hashes": [{"alg": "SHA-256", "content": sha256_file(artifact.path)}],
+    }
+
+
+def _bind_distribution_component(
+    document: dict[str, object], *, artifact: ArtifactInput, extracted: Path
+) -> None:
+    """Ensure a package SBOM explicitly identifies the scanned distribution."""
+    component = _distribution_component(artifact, extracted)
+    components = document.get("components")
+    if components is None:
+        components = []
+        document["components"] = components
+    if not isinstance(components, list):
+        raise SupplyChainVerificationError(
+            f"SBOM components field is invalid: {artifact.path}"
+        )
+    purl = component["purl"]
+    if not any(
+        isinstance(existing, dict) and existing.get("purl") == purl
+        for existing in components
+    ):
+        components.append(component)
+
+
 def external_sbom_generator(
     *, extract_root: Path, syft: str, cyclonedx: str
 ) -> SbomGenerator:
@@ -534,6 +606,11 @@ def external_sbom_generator(
                     with tarfile.open(artifact.path, mode="r:gz") as sdist_archive:
                         sdist_archive.extractall(extracted, filter="data")
                 run_scan(f"dir:{extracted}")
+                document = _load_json_object(output)
+                _bind_distribution_component(
+                    document, artifact=artifact, extracted=extracted
+                )
+                _write_json(output, document)
         else:
             run_scan(f"oci-archive:{artifact.path}")
         validation = subprocess.run(
