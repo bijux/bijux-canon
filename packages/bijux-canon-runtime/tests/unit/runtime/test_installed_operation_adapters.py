@@ -72,6 +72,7 @@ from bijux_canon_runtime.runtime.execution.application_executor import (
 )
 from bijux_canon_runtime.runtime.execution.installed_agent_adapter import (
     CanonicalAgentOperationAdapter,
+    _bounded_counterevidence_candidates,
 )
 from bijux_canon_runtime.runtime.execution.installed_operation_adapters import (
     CanonicalDenseIndexOperationAdapter,
@@ -87,6 +88,7 @@ from bijux_canon_runtime.runtime.execution.installed_persistence_adapters import
 )
 from bijux_canon_runtime.runtime.execution.installed_reason_adapter import (
     CanonicalReasonOperationAdapter,
+    citation_inputs_from_evidence_set,
 )
 from bijux_canon_runtime.runtime.execution.installed_retrieval_adapter import (
     CanonicalRetrievalOperationAdapter,
@@ -468,6 +470,16 @@ def _retrieve_and_reason(indexed: _IndexedRuntime) -> _GroundedRuntime:
         == hashlib.sha256(segment["verbatim_text"].encode()).hexdigest()
         for segment in hit["locator_segments"]
     )
+    citation_candidates, _ = citation_inputs_from_evidence_set(
+        evidence,
+        retrieval_artifact_id=str(evidence_artifact.descriptor.artifact_id),
+        claim_key="sha256:" + "c" * 64,
+    )
+    assert len(citation_candidates) > 1
+    assert _bounded_counterevidence_candidates(
+        citation_candidates,
+        limit=1,
+    ) == (citation_candidates[0],)
 
     ask_request = RuntimeOperationRequest(
         request_id=RequestID("request-ask"),

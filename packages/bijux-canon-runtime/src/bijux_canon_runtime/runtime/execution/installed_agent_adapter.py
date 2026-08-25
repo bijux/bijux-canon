@@ -125,6 +125,41 @@ def _retrieval_filters(value: object) -> RetrievalFilters:
     )
 
 
+def _bounded_counterevidence_candidates(
+    candidates: tuple[CitationEvidence, ...],
+    *,
+    limit: int,
+) -> tuple[CitationEvidence, ...]:
+    """Retain bounded, rank-diverse citation evidence for a retrieval request."""
+
+    unique: list[CitationEvidence] = []
+    seen_text: set[str] = set()
+    for candidate in candidates:
+        if candidate.exact_text_sha256 in seen_text:
+            continue
+        seen_text.add(candidate.exact_text_sha256)
+        unique.append(candidate)
+
+    selected: list[CitationEvidence] = []
+    selected_ids: set[str] = set()
+    seen_ranks: set[int] = set()
+    for candidate in unique:
+        if candidate.rank in seen_ranks:
+            continue
+        seen_ranks.add(candidate.rank)
+        selected.append(candidate)
+        selected_ids.add(candidate.artifact_id)
+        if len(selected) == limit:
+            return tuple(selected)
+    for candidate in unique:
+        if candidate.artifact_id in selected_ids:
+            continue
+        selected.append(candidate)
+        if len(selected) == limit:
+            break
+    return tuple(selected)
+
+
 class _IndexCounterevidencePort:
     def __init__(
         self,
@@ -199,22 +234,23 @@ class _IndexCounterevidencePort:
             retrieval_artifact_id=str(output.artifact_id),
             claim_key=request.target_artifact_id,
         )
-        canonical: list[CitationEvidence] = []
+        canonical = _bounded_counterevidence_candidates(
+            candidate_evidence,
+            limit=request.top_k,
+        )
+        selected_source_ids = {item.source_id for item in canonical}
         for source in sources:
+            if source.source_id not in selected_source_ids:
+                continue
             existing_source = self.sources.get(source.source_id)
             if existing_source is not None and existing_source != source:
                 raise StepDispatchError("counterevidence source metadata collision")
             self.sources[source.source_id] = source
-        seen_text: set[str] = set()
-        for evidence in candidate_evidence:
-            if evidence.exact_text_sha256 in seen_text:
-                continue
-            seen_text.add(evidence.exact_text_sha256)
+        for evidence in canonical:
             existing = self.evidence.get(evidence.artifact_id)
             if existing is not None and existing != evidence:
                 raise StepDispatchError("counterevidence identity collision")
             self.evidence[evidence.artifact_id] = evidence
-            canonical.append(evidence)
         evidence_ids = tuple(item.artifact_id for item in canonical)
         return create_retrieval_evidence_batch(
             request,
