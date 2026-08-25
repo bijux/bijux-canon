@@ -4,8 +4,10 @@ import base64
 from collections.abc import Mapping, Sequence
 from email.message import Message
 import hashlib
+import io
 import json
 from pathlib import Path
+import tarfile
 import tomllib
 from typing import Any, cast
 import zipfile
@@ -167,8 +169,27 @@ def _wheel(
     return path
 
 
+def _sdist(root: Path, name: str, *, version: str = "1.2.3") -> Path:
+    wheel_dir = root / "artifacts" / "wheels"
+    wheel_dir.mkdir(parents=True, exist_ok=True)
+    normalized = name.replace("-", "_")
+    archive_root = f"{normalized}-{version}"
+    path = wheel_dir / f"{normalized}-{version}.tar.gz"
+    metadata = f"Metadata-Version: 2.4\nName: {name}\nVersion: {version}\n"
+    with tarfile.open(path, "w:gz") as archive:
+        for relative, payload in (
+            ("PKG-INFO", metadata.encode()),
+            ("pyproject.toml", b"[build-system]\nrequires = []\n"),
+        ):
+            info = tarfile.TarInfo(f"{archive_root}/{relative}")
+            info.size = len(payload)
+            archive.addfile(info, io.BytesIO(payload))
+    return path
+
+
 def _wheel_set(root: Path, **example_options: Any) -> Path:
     _wheel(root, "example", module="example", **example_options)
+    _sdist(root, "example")
     return root / "artifacts" / "wheels"
 
 
@@ -213,6 +234,8 @@ def test_inventory_validates_complete_family_and_retains_bindings(
 
     assert evidence["result"] == "passed"
     assert evidence["wheel_count"] == 1
+    assert evidence["sdist_count"] == 1
+    assert evidence["artifact_count"] == 2
     assert evidence["package_count"] == 1
     assert evidence["version"] == "1.2.3"
     assert evidence["lock_identity"] == hashlib.sha256(b"version = 1\n").hexdigest()
@@ -226,7 +249,28 @@ def test_inventory_validates_complete_family_and_retains_bindings(
     records = cast(list[dict[str, object]], evidence["records"])
     record = next(item for item in records if item["package_id"] == "example")
     assert record["schema_assets"] == ["example/api/schema.hash"]
+    assert evidence["sdist_records"][0]["status"] == "passed"
     assert output.is_file()
+
+
+def test_inventory_rejects_missing_source_archive(tmp_path: Path) -> None:
+    root = _repository(tmp_path)
+    wheel_dir = _wheel_set(root)
+    next(wheel_dir.glob("*.tar.gz")).unlink()
+    output = root / "artifacts" / "inventory" / "result.json"
+
+    with pytest.raises(WheelInventoryError):
+        run_wheel_inventory(
+            repo_root=root,
+            wheel_dir=wheel_dir,
+            output_path=output,
+            source_commit=SOURCE_COMMIT,
+            twine_python=Path("/usr/bin/true"),
+            runner=_passing_runner,
+        )
+
+    evidence = json.loads(output.read_text(encoding="utf-8"))
+    assert evidence["retained_failures"] == ["missing-sdist:example"]
 
 
 def test_inventory_retains_dependency_and_twine_failures(tmp_path: Path) -> None:

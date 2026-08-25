@@ -123,6 +123,14 @@ def _wheel_set(root: Path, *, extra_dependencies: bool = True) -> Path:
     return wheel_dir
 
 
+def _dependency_wheel_set(root: Path) -> Path:
+    directory = root / "artifacts" / "dependency-wheels"
+    directory.mkdir(parents=True)
+    with zipfile.ZipFile(directory / "fastapi-1.0-py3-none-any.whl", "w"):
+        pass
+    return directory
+
+
 def _passing_runner(
     command: Sequence[str], _cwd: Path, _environment: Mapping[str, str]
 ) -> CommandResult:
@@ -137,6 +145,7 @@ def _passing_runner(
 def test_matrix_installs_and_probes_each_advertised_extra(tmp_path: Path) -> None:
     root = _repository(tmp_path)
     wheel_dir = _wheel_set(root)
+    dependency_wheel_dir = _dependency_wheel_set(root)
     output = root / "artifacts" / "extras" / "result.json"
     commands: list[tuple[str, ...]] = []
 
@@ -149,6 +158,7 @@ def test_matrix_installs_and_probes_each_advertised_extra(tmp_path: Path) -> Non
     evidence = run_extras_matrix(
         repo_root=root,
         wheel_dir=wheel_dir,
+        dependency_wheel_dir=dependency_wheel_dir,
         output_path=output,
         environment_root=root / "artifacts" / "extras" / "environments",
         source_commit=SOURCE_COMMIT,
@@ -160,6 +170,8 @@ def test_matrix_installs_and_probes_each_advertised_extra(tmp_path: Path) -> Non
 
     assert evidence["result"] == "passed"
     assert evidence["extra_count"] == 1
+    assert evidence["public_index_access"] is False
+    assert evidence["dependency_wheel_count"] == 1
     assert evidence["package_results"] == [
         {
             "package_id": "example",
@@ -170,6 +182,8 @@ def test_matrix_installs_and_probes_each_advertised_extra(tmp_path: Path) -> Non
     ]
     assert len(commands) == 4
     assert str(next(wheel_dir.glob("example-*.whl"))) + "[api]" in commands[1]
+    assert "--no-index" in commands[1]
+    assert str(dependency_wheel_dir) in commands[1]
     assert "fastapi" in commands[3][-1]
     assert json.loads(output.read_text(encoding="utf-8"))["result"] == "passed"
 
@@ -177,11 +191,13 @@ def test_matrix_installs_and_probes_each_advertised_extra(tmp_path: Path) -> Non
 def test_matrix_rejects_an_empty_advertised_extra(tmp_path: Path) -> None:
     root = _repository(tmp_path, extra_dependencies=False)
     wheel_dir = _wheel_set(root, extra_dependencies=False)
+    dependency_wheel_dir = _dependency_wheel_set(root)
 
     with pytest.raises(ExtrasMatrixError, match="empty extras"):
         run_extras_matrix(
             repo_root=root,
             wheel_dir=wheel_dir,
+            dependency_wheel_dir=dependency_wheel_dir,
             output_path=root / "artifacts" / "extras" / "result.json",
             environment_root=root / "artifacts" / "extras" / "environments",
             source_commit=SOURCE_COMMIT,
@@ -195,11 +211,13 @@ def test_matrix_rejects_an_empty_advertised_extra(tmp_path: Path) -> None:
 def test_matrix_rejects_an_unmapped_capability(tmp_path: Path) -> None:
     root = _repository(tmp_path)
     wheel_dir = _wheel_set(root)
+    dependency_wheel_dir = _dependency_wheel_set(root)
 
     with pytest.raises(ExtrasMatrixError, match="capability mapping mismatch"):
         run_extras_matrix(
             repo_root=root,
             wheel_dir=wheel_dir,
+            dependency_wheel_dir=dependency_wheel_dir,
             output_path=root / "artifacts" / "extras" / "result.json",
             environment_root=root / "artifacts" / "extras" / "environments",
             source_commit=SOURCE_COMMIT,
@@ -263,6 +281,7 @@ def test_cpu_profile_probe_executes_faiss_and_refuses_gpu_distributions() -> Non
 def test_matrix_retains_a_failed_install_row(tmp_path: Path) -> None:
     root = _repository(tmp_path)
     wheel_dir = _wheel_set(root)
+    dependency_wheel_dir = _dependency_wheel_set(root)
 
     def runner(
         command: Sequence[str], _cwd: Path, _environment: Mapping[str, str]
@@ -275,6 +294,7 @@ def test_matrix_retains_a_failed_install_row(tmp_path: Path) -> None:
         run_extras_matrix(
             repo_root=root,
             wheel_dir=wheel_dir,
+            dependency_wheel_dir=dependency_wheel_dir,
             output_path=output,
             environment_root=root / "artifacts" / "extras" / "environments",
             source_commit=SOURCE_COMMIT,

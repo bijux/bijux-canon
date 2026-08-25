@@ -23,6 +23,7 @@ import shutil
 import stat
 import subprocess
 import sys
+import tarfile
 import time
 import tomllib
 from typing import Any, cast
@@ -30,7 +31,11 @@ import zipfile
 
 from packaging.requirements import InvalidRequirement, Requirement
 from packaging.specifiers import InvalidSpecifier, SpecifierSet
-from packaging.utils import canonicalize_name, parse_wheel_filename
+from packaging.utils import (
+    canonicalize_name,
+    parse_sdist_filename,
+    parse_wheel_filename,
+)
 
 
 class WheelInventoryError(RuntimeError):
@@ -618,6 +623,79 @@ def _command_payload(result: CommandResult) -> dict[str, object]:
     }
 
 
+def _inspect_sdist(
+    *, sdist: Path, policy: PackagePolicy, version: str
+) -> dict[str, object]:
+    """Inspect one source archive without extracting it."""
+    issues: list[str] = []
+    try:
+        parsed_name, parsed_version = parse_sdist_filename(sdist.name)
+    except ValueError as exc:
+        raise WheelInventoryError(f"invalid sdist filename: {sdist.name}") from exc
+    if canonicalize_name(str(parsed_name)) != canonicalize_name(
+        policy.distribution_name
+    ):
+        issues.append("distribution-name")
+    if str(parsed_version) != version:
+        issues.append("version")
+
+    with tarfile.open(sdist, mode="r:gz") as archive:
+        members = archive.getmembers()
+        names = [member.name for member in members]
+        if len(names) != len(set(names)):
+            issues.append("duplicate-members")
+        unsafe = []
+        for member in members:
+            pure = PurePosixPath(member.name)
+            if (
+                not member.name
+                or pure.is_absolute()
+                or ".." in pure.parts
+                or "\\" in member.name
+                or member.issym()
+                or member.islnk()
+                or member.isdev()
+            ):
+                unsafe.append(member.name)
+        if unsafe:
+            issues.append("unsafe-members")
+        roots = {PurePosixPath(name).parts[0] for name in names if name}
+        if roots != {sdist.name.removesuffix(".tar.gz")}:
+            issues.append("archive-root")
+        pkg_info = [member for member in members if member.name.endswith("/PKG-INFO")]
+        pyprojects = [
+            member for member in members if member.name.endswith("/pyproject.toml")
+        ]
+        if len(pkg_info) != 1:
+            issues.append("pkg-info")
+        else:
+            extracted = archive.extractfile(pkg_info[0])
+            if extracted is None:
+                issues.append("pkg-info")
+            else:
+                metadata = BytesParser().parsebytes(extracted.read())
+                if canonicalize_name(metadata.get("Name", "")) != canonicalize_name(
+                    policy.distribution_name
+                ):
+                    issues.append("pkg-info-name")
+                if metadata.get("Version") != version:
+                    issues.append("pkg-info-version")
+        if len(pyprojects) != 1:
+            issues.append("pyproject")
+
+    return {
+        "package_id": policy.distribution_name,
+        "package_class": policy.package_class,
+        "sdist": sdist.name,
+        "sdist_sha256": _sha256(sdist),
+        "sdist_bytes": sdist.stat().st_size,
+        "version": str(parsed_version),
+        "member_count": len(names),
+        "issues": sorted(set(issues)),
+        "status": "passed" if not issues else "failed",
+    }
+
+
 def run_wheel_inventory(
     *,
     repo_root: Path,
@@ -644,6 +722,7 @@ def run_wheel_inventory(
     }
 
     wheel_map: dict[str, list[Path]] = {}
+    sdist_map: dict[str, list[Path]] = {}
     inventory_failures: list[str] = []
     for wheel in sorted(wheel_dir.glob("*.whl")):
         if not wheel.is_file() or wheel.is_symlink():
@@ -655,12 +734,30 @@ def run_wheel_inventory(
             inventory_failures.append(f"invalid-wheel-filename:{wheel.name}")
             continue
         wheel_map.setdefault(canonicalize_name(str(name)), []).append(wheel)
+    for sdist in sorted(wheel_dir.glob("*.tar.gz")):
+        if not sdist.is_file() or sdist.is_symlink():
+            inventory_failures.append(f"invalid-sdist-input:{sdist.name}")
+            continue
+        try:
+            name, _version = parse_sdist_filename(sdist.name)
+        except ValueError:
+            inventory_failures.append(f"invalid-sdist-filename:{sdist.name}")
+            continue
+        sdist_map.setdefault(canonicalize_name(str(name)), []).append(sdist)
     missing = sorted(set(expected) - set(wheel_map))
     unexpected = sorted(set(wheel_map) - set(expected))
     duplicates = sorted(name for name, values in wheel_map.items() if len(values) > 1)
     inventory_failures.extend(f"missing-wheel:{name}" for name in missing)
     inventory_failures.extend(f"unexpected-wheel:{name}" for name in unexpected)
     inventory_failures.extend(f"duplicate-wheel:{name}" for name in duplicates)
+    missing_sdists = sorted(set(expected) - set(sdist_map))
+    unexpected_sdists = sorted(set(sdist_map) - set(expected))
+    duplicate_sdists = sorted(
+        name for name, values in sdist_map.items() if len(values) > 1
+    )
+    inventory_failures.extend(f"missing-sdist:{name}" for name in missing_sdists)
+    inventory_failures.extend(f"unexpected-sdist:{name}" for name in unexpected_sdists)
+    inventory_failures.extend(f"duplicate-sdist:{name}" for name in duplicate_sdists)
 
     records: list[dict[str, object]] = []
     for name, policy in sorted(expected.items()):
@@ -699,7 +796,33 @@ def run_wheel_inventory(
     if len(versions) != 1:
         inventory_failures.append(f"mixed-wheel-versions:{versions}")
 
-    twine_wheels = sorted(path for values in wheel_map.values() for path in values)
+    sdist_records: list[dict[str, object]] = []
+    candidate_version = versions[0] if len(versions) == 1 else ""
+    for name, policy in sorted(expected.items()):
+        sdists = sdist_map.get(name, [])
+        if len(sdists) != 1:
+            continue
+        try:
+            sdist_records.append(
+                _inspect_sdist(
+                    sdist=sdists[0], policy=policy, version=candidate_version
+                )
+            )
+        except (OSError, tarfile.TarError, WheelInventoryError) as exc:
+            sdist_records.append(
+                {
+                    "package_id": policy.distribution_name,
+                    "package_class": policy.package_class,
+                    "sdist": sdists[0].name,
+                    "issues": [f"inspection-error:{exc}"],
+                    "status": "failed",
+                }
+            )
+
+    twine_artifacts = sorted(
+        [path for values in wheel_map.values() for path in values]
+        + [path for values in sdist_map.values() for path in values]
+    )
     environment = dict(os.environ)
     cache_root = output_path.parent / "cache"
     environment.update(
@@ -715,7 +838,7 @@ def run_wheel_inventory(
             "-m",
             "twine",
             "check",
-            *[str(path.resolve()) for path in twine_wheels],
+            *[str(path.resolve()) for path in twine_artifacts],
         ],
         repo_root,
         environment,
@@ -726,6 +849,11 @@ def run_wheel_inventory(
         if record["status"] == "failed":
             inventory_failures.append(
                 f"wheel-contract:{record['package_id']}:{','.join(cast(list[str], record['issues']))}"
+            )
+    for record in sdist_records:
+        if record["status"] == "failed":
+            inventory_failures.append(
+                f"sdist-contract:{record['package_id']}:{','.join(cast(list[str], record['issues']))}"
             )
 
     package_results = [
@@ -747,7 +875,9 @@ def run_wheel_inventory(
             "runner_python": platform.python_version(),
         },
         "wheel_directory": _relative(wheel_dir, repo_root),
-        "wheel_count": len(twine_wheels),
+        "wheel_count": sum(len(values) for values in wheel_map.values()),
+        "sdist_count": sum(len(values) for values in sdist_map.values()),
+        "artifact_count": len(twine_artifacts),
         "package_count": len(package_results),
         "version": versions[0] if len(versions) == 1 else None,
         "pyproject_identities": {
@@ -757,6 +887,7 @@ def run_wheel_inventory(
         "lock_identity": _sha256(repo_root / "uv.lock"),
         "twine": _command_payload(twine_result),
         "records": records,
+        "sdist_records": sdist_records,
         "package_results": package_results,
         "retained_failures": sorted(set(inventory_failures)),
     }

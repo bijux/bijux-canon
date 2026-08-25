@@ -90,7 +90,7 @@ assuming all distributions have identical evidence.
 ## Wheel Family Verification
 
 The installed `bijux-canon-wheel-inventory` command validates the exact
-workspace package wheel family against checked-in metadata. The repository
+workspace wheel and source-archive family against checked-in metadata. The repository
 workspace currently declares twelve distributions; the non-publishable root
 project is not a thirteenth release artifact.
 It compares names, one shared version, Python constraints, dependencies,
@@ -98,7 +98,9 @@ optional extras, console entry points, and license declarations. It also
 verifies archive paths, wheel tags, every `RECORD` hash and byte count, exact
 copies of `LICENSE` and `NOTICE`, declared runtime assets such as `py.typed` and
 schema hashes, and the absence of source-tree, test, cache, and local path
-leaks. A real `twine check` over the same wheel bytes is part of the result.
+leaks. Each distribution must also have exactly one safe, same-version source
+archive with matching `PKG-INFO` and a packaged `pyproject.toml`. A real
+`twine check` over every wheel and source archive is part of the result.
 
 ```bash
 bijux-canon-wheel-inventory \
@@ -108,7 +110,7 @@ bijux-canon-wheel-inventory \
 ```
 
 The command requires a clean checkout and writes the Twine command outcome,
-wheel hashes, source metadata hashes, lock hash, environment identity, package
+wheel and source-archive hashes, source metadata hashes, lock hash, environment identity, package
 results, and retained failures to the requested JSON file. The wheel directory,
 cache, and result must remain under `artifacts/`; the validator and its tests
 remain in `bijux-canon-dev` so the same release contract survives disposal of a
@@ -140,6 +142,23 @@ The result retains every environment-creation, installation, consistency,
 inspection, and command outcome. Cross-platform and cross-Python coverage is
 composed with the supported Python matrix; one local installation run does not
 imply those remote runner results.
+
+## Advertised Extras Verification
+
+The installed `bijux-canon-extras-matrix` command installs and exercises every
+advertised extra in isolation. It uses the same sealed dependency wheelhouse as
+the clean installation matrix, disables public-index access, verifies imported
+capabilities resolve from the isolated environment, and retains dependency
+wheel hashes with every command outcome.
+
+```bash
+bijux-canon-extras-matrix \
+  --repo-root . \
+  --wheel-dir artifacts/release/wheels \
+  --dependency-wheel-dir artifacts/release/dependency-wheels \
+  --environment-root artifacts/release/extras \
+  --output artifacts/release/extras-matrix.json
+```
 
 ## Supported Python Verification
 

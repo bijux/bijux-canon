@@ -30,6 +30,10 @@ from bijux_canon_dev.release.python_support_matrix import (
     inspect_wheels,
     inspect_workspace,
 )
+from bijux_canon_dev.release.installation_matrix import (
+    InstallationMatrixError,
+    _dependency_wheels,
+)
 from bijux_canon_dev.release.wheel_inventory import (
     PackagePolicy,
     inspect_workspace_policy,
@@ -494,6 +498,7 @@ def run_extras_matrix(
     *,
     repo_root: Path,
     wheel_dir: Path,
+    dependency_wheel_dir: Path,
     output_path: Path,
     environment_root: Path,
     source_commit: str,
@@ -509,12 +514,22 @@ def run_extras_matrix(
     ):
         raise ExtrasMatrixError("source commit must be a lowercase full Git SHA")
     wheel_dir = _artifact_path(wheel_dir, repo_root, label="wheel directory")
+    dependency_wheel_dir = _artifact_path(
+        dependency_wheel_dir, repo_root, label="dependency wheel directory"
+    )
     output_path = _artifact_path(output_path, repo_root, label="output path")
     environment_root = _artifact_path(
         environment_root, repo_root, label="environment root"
     )
     support = inspect_workspace(repo_root)
     records = inspect_wheels(wheel_dir, support.distribution_names)
+    try:
+        dependency_wheels = _dependency_wheels(
+            dependency_wheel_dir,
+            candidate_names=tuple(record.distribution_name for record in records),
+        )
+    except InstallationMatrixError as exc:
+        raise ExtrasMatrixError(str(exc)) from exc
     policies = inspect_workspace_policy(repo_root)
     targets = _targets(records, policies, capability_modules)
     records_by_name = {
@@ -535,6 +550,7 @@ def run_extras_matrix(
             "PYTHONDONTWRITEBYTECODE": "1",
             "PYTHONPYCACHEPREFIX": str(cache_root / "pycache"),
             "UV_CACHE_DIR": str(cache_root / "uv"),
+            "UV_NO_INDEX": "1",
         }
     )
 
@@ -554,19 +570,6 @@ def run_extras_matrix(
                 "--clear",
             ],
         ]
-        if platform.system() == "Linux" and target.target_id in CPU_PROFILE_TARGETS:
-            commands.append(
-                [
-                    str(uv_executable.absolute()),
-                    "pip",
-                    "install",
-                    "--python",
-                    str(python),
-                    "--index",
-                    "https://download.pytorch.org/whl/cpu",
-                    "torch>=2.7,<3.0",
-                ]
-            )
         commands.extend(
             [
                 [
@@ -577,8 +580,11 @@ def run_extras_matrix(
                     str(python),
                     "--constraint",
                     str(constraints),
+                    "--no-index",
                     "--find-links",
                     str(wheel_dir),
+                    "--find-links",
+                    str(dependency_wheel_dir),
                     f"{wheel}[{target.extra}]",
                 ],
                 [
@@ -718,9 +724,15 @@ def run_extras_matrix(
             "requested_python": python_version,
         },
         "wheel_count": len(records),
+        "dependency_wheel_count": len(dependency_wheels),
         "extra_count": len(targets),
         "constraint_file": constraints.relative_to(repo_root).as_posix(),
+        "dependency_wheel_directory": dependency_wheel_dir.relative_to(
+            repo_root
+        ).as_posix(),
+        "public_index_access": False,
         "lock_identity": _sha256(repo_root / "uv.lock"),
+        "dependency_wheels": list(dependency_wheels),
         "extra_results": results,
         "package_results": package_results,
         "retained_failures": sorted(set(failures)),
@@ -774,6 +786,7 @@ def _parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--repo-root", type=Path, required=True)
     parser.add_argument("--wheel-dir", type=Path, required=True)
+    parser.add_argument("--dependency-wheel-dir", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--environment-root", type=Path, required=True)
     parser.add_argument(
@@ -795,6 +808,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         run_extras_matrix(
             repo_root=repo_root,
             wheel_dir=args.wheel_dir,
+            dependency_wheel_dir=args.dependency_wheel_dir,
             output_path=args.output,
             environment_root=args.environment_root,
             source_commit=_git_identity(repo_root),
