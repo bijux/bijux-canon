@@ -52,12 +52,6 @@ include $(abspath $(dir $(firstword $(MAKEFILE_LIST))))/../bijux-py/package.mk
 .NOTPARALLEL:
 
 build-release-metadata:
-	@echo "[INFO] Generating SBOM"
-	@if ! command -v $(PIP_AUDIT) >/dev/null 2>&1; then \
-	  echo "→ Installing pip-audit into $(VENV)"; \
-	  $(UV) pip install --python "$(VENV_PYTHON)" --upgrade pip-audit >/dev/null; \
-	fi
-	@$(PIP_AUDIT) $(PIP_AUDIT_FLAGS) --output "$(PROJECT_ARTIFACTS_DIR)/release/sbom.json" || true
 	@echo "[INFO] Verifying checked-in API freeze artifacts"
 	@$(API_SELF_MAKE) api-freeze
 	@cd "$(PROJECT_ARTIFACTS_DIR)/release" && shasum -a 256 *.whl *.tar.gz > SHA256SUMS

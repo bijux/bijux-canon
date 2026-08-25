@@ -63,6 +63,17 @@ def test_security_tooling_has_no_ungoverned_suppressions() -> None:
     assert '--output "$(SBOM_PROD_FILE)" || true' not in sbom_make
     assert '--output "$(SBOM_DEV_FILE)" || true' not in sbom_make
 
+    tolerant_package_audits = []
+    for profile in sorted((REPO_ROOT / "makes" / "packages").glob("*.mk")):
+        for line_number, line in enumerate(
+            profile.read_text(encoding="utf-8").splitlines(), start=1
+        ):
+            if "PIP_AUDIT" in line and "|| true" in line:
+                tolerant_package_audits.append(
+                    f"{profile.relative_to(REPO_ROOT)}:{line_number}:{line.strip()}"
+                )
+    assert tolerant_package_audits == []
+
 
 def test_root_security_runs_the_tracked_source_credential_scan() -> None:
     package_catalog = (REPO_ROOT / "makes" / "packages.mk").read_text(
