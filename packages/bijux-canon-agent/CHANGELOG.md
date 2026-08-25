@@ -5,7 +5,7 @@ All notable changes to `bijux-canon-agent` are documented here.
 Historical release entries below preserve the wording that shipped with the
 tagged release.
 
-## 0.4.0 - 2026-08-22
+## [0.4.0] - Unreleased
 
 ### Changed
 

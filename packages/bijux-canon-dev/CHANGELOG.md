@@ -6,7 +6,7 @@ This package owns repository maintenance helpers, so its release history should
 explain changes to shared tooling, publish support, security checks, and schema
 governance.
 
-## 0.4.0 - 2026-08-22
+## [0.4.0] - Unreleased
 
 ### Changed
 

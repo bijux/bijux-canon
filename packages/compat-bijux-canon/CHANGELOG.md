@@ -9,7 +9,7 @@ Historical release entries below preserve the wording that shipped with tagged
 releases when a tagged changelog existed. Releases that shipped without a
 changelog update are reconstructed from tag annotations and release diffs.
 
-## 0.4.0 - 2026-08-22
+## [0.4.0] - Unreleased
 
 ### Changed
 

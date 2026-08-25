@@ -8,7 +8,7 @@ distribution name while the canonical package lives at `bijux-canon-reason`.
 Historical release entries below preserve the wording that shipped with tagged
 releases when a tagged changelog existed.
 
-## 0.4.0 - 2026-08-22
+## [0.4.0] - Unreleased
 
 ### Changed
 

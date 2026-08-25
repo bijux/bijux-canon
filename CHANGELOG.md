@@ -10,7 +10,7 @@ The goal of this changelog is to explain repository changes that affect more
 than one package or change the way contributors and maintainers work across the
 whole workspace.
 
-## 0.4.0 - 2026-08-22
+## [0.4.0] - Unreleased
 
 ### Changed
 
