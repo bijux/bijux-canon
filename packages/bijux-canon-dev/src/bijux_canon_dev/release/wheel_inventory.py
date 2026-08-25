@@ -299,22 +299,27 @@ def inspect_workspace_policy(repo_root: Path) -> tuple[PackagePolicy, ...]:
     normalized = [canonicalize_name(policy.distribution_name) for policy in policies]
     if len(normalized) != len(set(normalized)):
         raise WheelInventoryError("workspace distribution names are not unique")
-    script_owners: dict[str, list[str]] = {}
+    script_owners: dict[str, dict[str, list[str]]] = {}
     for policy in policies:
-        for script, _entrypoint in policy.scripts:
-            script_owners.setdefault(script, []).append(policy.distribution_name)
-    duplicate_scripts = {
-        script: sorted(owners)
-        for script, owners in script_owners.items()
-        if len(owners) > 1
+        for script, entrypoint in policy.scripts:
+            targets = script_owners.setdefault(script, {})
+            targets.setdefault(entrypoint, []).append(policy.distribution_name)
+    conflicting_scripts = {
+        script: targets
+        for script, targets in script_owners.items()
+        if len(targets) > 1
     }
-    if duplicate_scripts:
-        details = ", ".join(
-            f"{script} ({', '.join(owners)})"
-            for script, owners in sorted(duplicate_scripts.items())
-        )
+    if conflicting_scripts:
+        detail_rows: list[str] = []
+        for script, targets in sorted(conflicting_scripts.items()):
+            target_rows = [
+                f"{target}: {', '.join(sorted(owners))}"
+                for target, owners in sorted(targets.items())
+            ]
+            detail_rows.append(f"{script} ({'; '.join(target_rows)})")
+        details = ", ".join(detail_rows)
         raise WheelInventoryError(
-            f"workspace console scripts require one owning distribution: {details}"
+            f"workspace console scripts require one deterministic entrypoint: {details}"
         )
     return tuple(
         sorted(policies, key=lambda item: canonicalize_name(item.distribution_name))

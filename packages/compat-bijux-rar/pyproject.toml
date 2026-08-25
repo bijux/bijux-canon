@@ -53,7 +53,7 @@ MigrationGuide = "https://bijux.io/bijux-canon/08-compat-packages/migration/migr
 LegacyNameMap = "https://bijux.io/bijux-canon/08-compat-packages/catalog/legacy-name-map/"
 
 [project.scripts]
-bijux-rar = "bijux_rar.__main__:main"
+bijux-rar = "bijux_canon_reason.interfaces.cli.compatibility:legacy_rar"
 
 [tool.hatch.version]
 source = "vcs"

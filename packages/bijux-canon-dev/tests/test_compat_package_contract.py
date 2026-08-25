@@ -34,6 +34,7 @@ COMPATIBILITY_PACKAGES = {
     },
     "compat-bijux-rar": {
         "distribution": "bijux-rar",
+        "entrypoint": "bijux_canon_reason.interfaces.cli.compatibility:legacy_rar",
         "module": "bijux_rar",
         "runtime": "bijux_canon_reason",
         "script": "bijux-rar",
@@ -174,7 +175,9 @@ def test_compatibility_packages_install_runtime_alias_helpers() -> None:
                 failures.append(
                     f"{package_name}: compatibility.py missing {fragment!r}"
                 )
-        expected_entrypoint = f"{module_name}.__main__:main"
+        expected_entrypoint = expectation.get(
+            "entrypoint", f"{module_name}.__main__:main"
+        )
         if pyproject["project"]["scripts"].get(expectation["script"]) != (
             expected_entrypoint
         ):

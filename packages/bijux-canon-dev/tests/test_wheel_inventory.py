@@ -95,7 +95,7 @@ example = ["py.typed", "api/schema.hash"]
     return root
 
 
-def test_workspace_policy_rejects_duplicate_console_script_ownership(
+def test_workspace_policy_rejects_conflicting_console_script_ownership(
     tmp_path: Path,
 ) -> None:
     root = _repository(tmp_path)
@@ -123,13 +123,14 @@ def test_workspace_policy_rejects_duplicate_console_script_ownership(
         .replace(
             'example = ["py.typed", "api/schema.hash"]',
             'second = ["py.typed", "api/schema.hash"]',
-        ),
+        )
+        .replace('example = "example:main"', 'example = "second:main"'),
         encoding="utf-8",
     )
 
     with pytest.raises(
         WheelInventoryError,
-        match=r"example \(example, second\)",
+        match="one deterministic entrypoint",
     ):
         inspect_workspace_policy(root)
 
