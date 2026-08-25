@@ -25,7 +25,7 @@ API_INSTALL_PYTHON_PACKAGES := prance openapi-spec-validator uvicorn schemathesi
 API_OPENAPI_DRIFT_COMMAND = $(VENV_PYTHON) -m bijux_canon_dev.api.openapi_drift --app-import bijux_canon_runtime.api.v2.app:app --schema "$(API_DIR)/schema.yaml" --out "$(API_ARTIFACTS_DIR)/openapi.generated.json"
 SCHEMATHESIS_OPTS = --checks=response_schema_conformance,content_type_conformance,response_headers_conformance --max-failures=1 --request-timeout=30 --max-response-time=5 --max-examples=5 --generation-deterministic --suppress-health-check=filter_too_much --header 'Bijux-API-Version:v2'
 API_TEST_WORKSPACE = $(API_ARTIFACTS_DIR)/workspace
-export BIJUX_CANON_RUNTIME_WORKING_ROOT = $(API_TEST_WORKSPACE)
+api-test-workspace api-test openapi-drift api: export BIJUX_CANON_RUNTIME_WORKING_ROOT = $(API_TEST_WORKSPACE)
 
 .PHONY: api-test-workspace
 api-test-workspace:

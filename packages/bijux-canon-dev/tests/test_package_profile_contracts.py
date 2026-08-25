@@ -39,6 +39,11 @@ def test_runtime_api_workspace_is_initialized_before_application_imports() -> No
 
     assert "api-test: api-test-workspace" in profile
     assert "openapi-drift: api-test-workspace" in profile
+    assert (
+        "api-test-workspace api-test openapi-drift api: export "
+        "BIJUX_CANON_RUNTIME_WORKING_ROOT = $(API_TEST_WORKSPACE)"
+    ) in profile
+    assert "\nexport BIJUX_CANON_RUNTIME_WORKING_ROOT =" not in profile
 
 
 def test_compat_packages_install_security_tooling_without_stamp_shortcuts() -> None:
