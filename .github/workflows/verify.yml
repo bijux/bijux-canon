@@ -55,7 +55,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - name: "Wait for policy and standards prerequisites"
+      - name: "Observe policy and standards prerequisites once"
         shell: bash
         env:
           GITHUB_TOKEN: "${{ github.token }}"
@@ -72,7 +72,7 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: 3.11
-      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d
         with:
           enable-cache: true
           cache-dependency-glob: uv.lock
@@ -101,7 +101,6 @@ jobs:
           - package_slug: bijux-canon-ingest
             package_dir: packages/bijux-canon-ingest
             artifacts_dir: artifacts/bijux-canon-ingest
-            test_python_versions: "[\"3.11\", \"3.12\", \"3.13\"]"
           - package_slug: bijux-canon-reason
             package_dir: packages/bijux-canon-reason
             artifacts_dir: artifacts/bijux-canon-reason
@@ -121,6 +120,147 @@ jobs:
       check_targets: "${{ matrix.check_targets || '[\"quality\", \"security\", \"docs\", \"api\", \"build\", \"sbom\"]' }}"
       api_toolchain_targets: "${{ matrix.api_toolchain_targets || '[\"api\"]' }}"
       post_test_command: "${{ matrix.post_test_command || '' }}"
+  supported_python:
+    name: "all-packages-py${{ matrix.python-version }}"
+    needs:
+      - policy_gate
+      - repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version:
+          - 3.11
+          - 3.12
+          - 3.13
+          - 3.14
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "${{ matrix.python-version }}"
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d
+        with:
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+      - name: "Test every canonical and compatibility distribution"
+        shell: bash
+        run:
+          |
+            set -euo pipefail
+            export PYTHONDONTWRITEBYTECODE=1
+            export UV_CACHE_DIR="${GITHUB_WORKSPACE}/artifacts/root/uv-cache"
+            selected_python="$(command -v python)"
+            make PYTHON="${selected_python}" test
+            for package in \
+              compat-bijux-canon \
+              compat-agentic-flows \
+              compat-bijux-agent \
+              compat-bijux-rag \
+              compat-bijux-rar \
+              compat-bijux-vex; do
+              make PYTHON="${selected_python}" PACKAGE="${package}" test
+            done
+          
+      - name: "Upload package test artifacts"
+        if: "${{ always() }}"
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: "all-packages-test-py${{ matrix.python-version }}"
+          path: "artifacts/*/test"
+          if-no-files-found: ignore
+          retention-days: 14
+  installed_family:
+    name: "installed-family-${{ matrix.runner }}-py${{ matrix.python-version }}"
+    needs:
+      - policy_gate
+      - repository
+    runs-on: "${{ matrix.runner }}"
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        runner:
+          - ubuntu-latest
+          - macos-latest
+        python-version:
+          - 3.11
+          - 3.12
+          - 3.13
+          - 3.14
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "${{ matrix.python-version }}"
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d
+        with:
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+      - name: "Build and install the distribution family"
+        shell: bash
+        run:
+          |
+            set -euo pipefail
+            export PYTHONDONTWRITEBYTECODE=1
+            export UV_CACHE_DIR="${GITHUB_WORKSPACE}/artifacts/root/uv-cache"
+            family_dir="artifacts/installed-family/${RUNNER_OS}/py${{ matrix.python-version }}"
+            wheel_dir="${family_dir}/wheels"
+            venv_dir="${family_dir}/venv"
+            uv build --all-packages --wheel --out-dir "${wheel_dir}"
+            test "$(find "${wheel_dir}" -maxdepth 1 -name '*.whl' | wc -l | tr -d ' ')" = 12
+            uv venv "${venv_dir}" --python "${{ matrix.python-version }}" --clear
+            uv pip install --python "${venv_dir}/bin/python" "${wheel_dir}"/*.whl
+            uv pip check --python "${venv_dir}/bin/python"
+            "${venv_dir}/bin/python" -I - <<'PY'
+            import importlib
+            import importlib.metadata as metadata
+            
+            distributions = (
+                "agentic-flows",
+                "bijux-agent",
+                "bijux-canon",
+                "bijux-canon-agent",
+                "bijux-canon-dev",
+                "bijux-canon-index",
+                "bijux-canon-ingest",
+                "bijux-canon-reason",
+                "bijux-canon-runtime",
+                "bijux-rag",
+                "bijux-rar",
+                "bijux-vex",
+            )
+            modules = (
+                "agentic_flows",
+                "bijux_agent",
+                "bijux_canon",
+                "bijux_canon_agent",
+                "bijux_canon_dev",
+                "bijux_canon_index",
+                "bijux_canon_ingest",
+                "bijux_canon_reason",
+                "bijux_canon_runtime",
+                "bijux_rag",
+                "bijux_rar",
+                "bijux_vex",
+            )
+            loaded = [importlib.import_module(name) for name in modules]
+            assert all("site-packages" in str(module.__file__) for module in loaded)
+            versions = {name: metadata.version(name) for name in distributions}
+            assert len(set(versions.values())) == 1
+            PY
+            "${venv_dir}/bin/bijux" --version
+          
+      - name: "Upload installed-family artifacts"
+        if: "${{ always() }}"
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: "installed-family-${{ matrix.runner }}-py${{ matrix.python-version }}"
+          path: "artifacts/installed-family/**/wheels/*.whl"
+          if-no-files-found: error
+          retention-days: 14
   verification_ready:
     name: verification-ready
     if: "${{ always() }}"
@@ -128,6 +268,8 @@ jobs:
       - policy_gate
       - repository
       - package
+      - supported_python
+      - installed_family
     runs-on: ubuntu-latest
     steps:
       - name: "Require repository and package verification success"
@@ -135,9 +277,13 @@ jobs:
         env:
           REPOSITORY_RESULT: "${{ needs.repository.result }}"
           PACKAGE_RESULT: "${{ needs.package.result }}"
+          SUPPORTED_PYTHON_RESULT: "${{ needs.supported_python.result }}"
+          INSTALLED_FAMILY_RESULT: "${{ needs.installed_family.result }}"
         run:
           |
             set -euo pipefail
             [[ "${REPOSITORY_RESULT}" == "success" ]]
             [[ "${PACKAGE_RESULT}" == "success" ]]
+            [[ "${SUPPORTED_PYTHON_RESULT}" == "success" ]]
+            [[ "${INSTALLED_FAMILY_RESULT}" == "success" ]]
           

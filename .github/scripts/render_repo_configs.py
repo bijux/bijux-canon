@@ -26,6 +26,12 @@ DEPENDABOT_PR_SKIP_CONDITION = (
     "github.event_name != 'pull_request' || "
     "github.event.pull_request.user.login != 'dependabot[bot]'"
 )
+REQUIRED_STATUS_RULESET = (
+    SCRIPT_REPO_ROOT / "shared/bijux-gh/rulesets/main-branch-protection.json"
+)
+REQUIRED_STATUS_REFERENCE = (
+    SCRIPT_REPO_ROOT / "shared/bijux-gh/required-status-checks.md"
+)
 
 
 def repository_checkout_variable(repo_name: str) -> str:
@@ -159,6 +165,59 @@ def render_dependabot_document(data: Any) -> str:
     return "\n".join(rendered) + "\n"
 
 
+def additional_required_status_checks(repo: dict[str, Any]) -> list[dict[str, str]]:
+    """Return validated repository-specific status check definitions."""
+    checks = repo.get("additional_required_status_checks", [])
+    if not isinstance(checks, list):
+        raise ValueError("additional_required_status_checks must be a list")
+    validated: list[dict[str, str]] = []
+    seen: set[str] = set()
+    for check in checks:
+        if not isinstance(check, dict):
+            raise ValueError("additional required status checks must be objects")
+        context = check.get("context")
+        workflow = check.get("workflow")
+        if not isinstance(context, str) or not context.strip():
+            raise ValueError("additional required status check context is required")
+        if not isinstance(workflow, str) or not workflow.strip():
+            raise ValueError("additional required status check workflow is required")
+        if context in seen:
+            raise ValueError(f"duplicate required status check context: {context}")
+        seen.add(context)
+        validated.append({"context": context, "workflow": workflow})
+    return validated
+
+
+def render_required_status_ruleset(repo: dict[str, Any]) -> str:
+    """Render branch protection with repository-specific product gates."""
+    ruleset = json.loads(REQUIRED_STATUS_RULESET.read_text(encoding="utf-8"))
+    required_rule = next(
+        rule for rule in ruleset["rules"] if rule["type"] == "required_status_checks"
+    )
+    configured = required_rule["parameters"]["required_status_checks"]
+    existing = {check["context"] for check in configured}
+    for check in additional_required_status_checks(repo):
+        if check["context"] not in existing:
+            configured.append({"context": check["context"]})
+            existing.add(check["context"])
+    return json.dumps(ruleset, indent=2) + "\n"
+
+
+def render_required_status_reference(repo: dict[str, Any]) -> str:
+    """Render human-readable status check ownership for one repository."""
+    reference = REQUIRED_STATUS_REFERENCE.read_text(encoding="utf-8")
+    checks = additional_required_status_checks(repo)
+    if not checks:
+        return reference
+    details = ["Repository-specific required checks:", ""]
+    details.extend(
+        f"- `{check['context']}` (from workflow `{check['workflow']}`)"
+        for check in checks
+    )
+    details.append("")
+    return reference.replace("\nNotes:\n", "\n" + "\n".join(details) + "\nNotes:\n")
+
+
 def normalize_labeler_rules(data: Any) -> Any:
     if not isinstance(data, dict):
         return data
@@ -280,7 +339,7 @@ def inject_policy_gate(
                 "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
             },
             {
-                "name": "Wait for policy and standards prerequisites",
+                "name": "Observe policy and standards prerequisites once",
                 "shell": "bash",
                 "env": {
                     "GITHUB_TOKEN": "${{ github.token }}",
@@ -356,6 +415,15 @@ def render_repo(repo_name: str, manifest: dict) -> None:
     release_path = repo_root / ".github/release.env"
     release_content = render_release_env(repo.get("release_env", []))
     write_if_needed(release_path, release_content)
+
+    write_if_needed(
+        repo_root / ".github/rulesets/main-branch-protection.json",
+        render_required_status_ruleset(repo),
+    )
+    write_if_needed(
+        repo_root / ".github/required-status-checks.md",
+        render_required_status_reference(repo),
+    )
 
     dependabot_data = repo.get("dependabot")
     if dependabot_data is not None:
