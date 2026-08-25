@@ -275,35 +275,16 @@ class DependencyAwareScheduler:
         monotonic_clock: Callable[[], float] = monotonic,
     ) -> DagScheduleResult:
         """Run the plan until every node is terminal or cancellation wins."""
-        if plan.plan_sha256 != self._journal.plan_sha256:
-            raise SchedulerError("scheduler journal belongs to another plan")
-        if self._events is not None and plan.plan_sha256 != self._events.plan_sha256:
-            raise SchedulerError("scheduler event ledger belongs to another plan")
-        constraints = {item.step_id: item for item in self._policy.constraints}
-        step_ids = {step.step_id for step in plan.steps}
-        if set(constraints) != step_ids:
-            raise SchedulerError("scheduler policy must cover every plan step exactly")
+        constraints, statuses = self._initialize_plan(plan)
         cancelled = is_cancelled or (lambda: False)
         deadline = deadline_monotonic
         if deadline is None:
             deadline = monotonic_clock() + min(
                 step.inputs.budget.timeout_seconds for step in plan.steps
             )
-        statuses = dict.fromkeys(step_ids, StepNodeStatus.QUEUED)
         outputs: dict[str, tuple[StepOutputArtifact, ...]] = {}
         results: dict[str, StepDispatchResult] = {}
         failures: dict[str, str] = {}
-        for step in plan.steps:
-            self._journal.append(
-                step_id=step.step_id,
-                from_status=None,
-                to_status=StepNodeStatus.QUEUED,
-            )
-            if self._events is not None:
-                self._events.record(
-                    step=step,
-                    event_kind=RuntimeEventKind.PLANNED,
-                )
 
         with ThreadPoolExecutor(max_workers=self._policy.max_workers) as executor:
             while any(status is StepNodeStatus.QUEUED for status in statuses.values()):
@@ -315,42 +296,9 @@ class DependencyAwareScheduler:
                 ]
                 if not queued:
                     break
-                stop_error: StepDispatchCancelled | StepDispatchTimedOut | None = None
-                if cancelled():
-                    stop_error = StepDispatchCancelled(
-                        "execution cancelled before dispatch"
-                    )
-                elif monotonic_clock() >= deadline:
-                    stop_error = StepDispatchTimedOut(
-                        "execution deadline exceeded before dispatch"
-                    )
+                stop_error = self._stop_error(cancelled, monotonic_clock, deadline)
                 if stop_error is not None:
-                    timed_out = isinstance(stop_error, StepDispatchTimedOut)
-                    terminal_status = (
-                        StepNodeStatus.TIMED_OUT
-                        if timed_out
-                        else StepNodeStatus.CANCELLED
-                    )
-                    event_kind = (
-                        RuntimeEventKind.TIMED_OUT
-                        if timed_out
-                        else RuntimeEventKind.CANCELLED
-                    )
-                    for step in queued:
-                        statuses[step.step_id] = terminal_status
-                        self._journal.append(
-                            step_id=step.step_id,
-                            from_status=StepNodeStatus.QUEUED,
-                            to_status=terminal_status,
-                            failure=stop_error,
-                        )
-                        if self._events is not None:
-                            self._events.record(
-                                step=step,
-                                event_kind=event_kind,
-                                duration_ms=0.0,
-                                error=stop_error,
-                            )
+                    self._mark_stopped(queued, statuses, stop_error)
                     break
                 ready = [
                     step
@@ -406,9 +354,7 @@ class DependencyAwareScheduler:
                             deadline_monotonic=deadline,
                             monotonic_clock=monotonic_clock,
                             run_id=(
-                                None
-                                if self._events is None
-                                else self._events.run_id
+                                None if self._events is None else self._events.run_id
                             ),
                             execution_manifest_artifact_id=(
                                 None
@@ -531,6 +477,73 @@ class DependencyAwareScheduler:
             ),
             transition_artifact_ids=self._journal.artifact_ids,
         )
+
+    def _initialize_plan(
+        self,
+        plan: RuntimeRequestPlan,
+    ) -> tuple[
+        dict[str, StepSchedulingConstraint],
+        dict[str, StepNodeStatus],
+    ]:
+        if plan.plan_sha256 != self._journal.plan_sha256:
+            raise SchedulerError("scheduler journal belongs to another plan")
+        if self._events is not None and plan.plan_sha256 != self._events.plan_sha256:
+            raise SchedulerError("scheduler event ledger belongs to another plan")
+        constraints = {item.step_id: item for item in self._policy.constraints}
+        step_ids = {step.step_id for step in plan.steps}
+        if set(constraints) != step_ids:
+            raise SchedulerError("scheduler policy must cover every plan step exactly")
+        statuses = dict.fromkeys(step_ids, StepNodeStatus.QUEUED)
+        for step in plan.steps:
+            self._journal.append(
+                step_id=step.step_id,
+                from_status=None,
+                to_status=StepNodeStatus.QUEUED,
+            )
+            if self._events is not None:
+                self._events.record(step=step, event_kind=RuntimeEventKind.PLANNED)
+        return constraints, statuses
+
+    @staticmethod
+    def _stop_error(
+        is_cancelled: Callable[[], bool],
+        monotonic_clock: Callable[[], float],
+        deadline: float,
+    ) -> StepDispatchCancelled | StepDispatchTimedOut | None:
+        if is_cancelled():
+            return StepDispatchCancelled("execution cancelled before dispatch")
+        if monotonic_clock() >= deadline:
+            return StepDispatchTimedOut("execution deadline exceeded before dispatch")
+        return None
+
+    def _mark_stopped(
+        self,
+        queued: list[ConcreteDagStep],
+        statuses: dict[str, StepNodeStatus],
+        error: StepDispatchCancelled | StepDispatchTimedOut,
+    ) -> None:
+        timed_out = isinstance(error, StepDispatchTimedOut)
+        terminal_status = (
+            StepNodeStatus.TIMED_OUT if timed_out else StepNodeStatus.CANCELLED
+        )
+        event_kind = (
+            RuntimeEventKind.TIMED_OUT if timed_out else RuntimeEventKind.CANCELLED
+        )
+        for step in queued:
+            statuses[step.step_id] = terminal_status
+            self._journal.append(
+                step_id=step.step_id,
+                from_status=StepNodeStatus.QUEUED,
+                to_status=terminal_status,
+                failure=error,
+            )
+            if self._events is not None:
+                self._events.record(
+                    step=step,
+                    event_kind=event_kind,
+                    duration_ms=0.0,
+                    error=error,
+                )
 
     def _block_failed_descendants(
         self,

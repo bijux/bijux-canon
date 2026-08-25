@@ -115,9 +115,7 @@ class RuntimeExecutionService:
         if source_selection is not None:
             request = replace(
                 request,
-                source_selection_artifact_id=(
-                    source_selection.descriptor.artifact_id
-                ),
+                source_selection_artifact_id=(source_selection.descriptor.artifact_id),
             )
         plan = self._planner.plan(request)
         run = SemanticRunIdentity.derive(

@@ -8,10 +8,6 @@ import hashlib
 import json
 from typing import Protocol, runtime_checkable
 
-from bijux_canon_agent.contracts.causal_trace import (
-    CausalDecisionEvent,
-    ResearchCausalTrace,
-)
 from bijux_canon_agent.application.research_workflow.observed_state import (
     InstalledEvidenceRelation,
     InstalledResearchRequirement,
@@ -35,16 +31,20 @@ from bijux_canon_agent.application.research_workflow.terminal_outcome import (
     InstalledResearchTerminalOutcome,
     RemainingResearchWork,
 )
+from bijux_canon_agent.contracts.causal_trace import (
+    CausalDecisionEvent,
+    ResearchCausalTrace,
+)
+from bijux_canon_agent.contracts.execution_control import (
+    CancellationPort,
+    CancellationSignal,
+)
 from bijux_canon_agent.contracts.research_budget import (
     BudgetAction,
     BudgetDecision,
     BudgetDimensions,
     ResearchBudgetLedger,
     ResearchBudgetPolicy,
-)
-from bijux_canon_agent.contracts.execution_control import (
-    CancellationPort,
-    CancellationSignal,
 )
 from bijux_canon_agent.contracts.tool_execution import (
     ResearchToolDescriptor,

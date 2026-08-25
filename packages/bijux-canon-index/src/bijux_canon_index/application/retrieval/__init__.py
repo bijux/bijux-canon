@@ -72,19 +72,6 @@ from .multi_query import (
     plan_subqueries,
     query_equivalence_sha256,
 )
-from .policy import (
-    CONTENT_EVIDENCE_RETRIEVAL_POLICY_ID,
-    CONTENT_EVIDENCE_RETRIEVAL_POLICY_V1_ID,
-    HybridRetrievalPolicy,
-    LEGACY_RETRIEVAL_POLICY_ID,
-    resolve_hybrid_retrieval_policy,
-)
-from .planned_reranking import (
-    EvidencePassageContext,
-    PLANNED_RERANK_POLICY_ID,
-    PlannedRerankPolicy,
-    rerank_planned_evidence,
-)
 from .outcomes import (
     ChannelRunner,
     RetrievalChannelResult,
@@ -99,6 +86,19 @@ from .outcomes import (
     RetrievalOutcomeStatus,
     dense_channel_result,
     lexical_channel_result,
+)
+from .planned_reranking import (
+    PLANNED_RERANK_POLICY_ID,
+    EvidencePassageContext,
+    PlannedRerankPolicy,
+    rerank_planned_evidence,
+)
+from .policy import (
+    CONTENT_EVIDENCE_RETRIEVAL_POLICY_ID,
+    CONTENT_EVIDENCE_RETRIEVAL_POLICY_V1_ID,
+    LEGACY_RETRIEVAL_POLICY_ID,
+    HybridRetrievalPolicy,
+    resolve_hybrid_retrieval_policy,
 )
 from .reranking import (
     RerankBatch,

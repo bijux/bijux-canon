@@ -386,9 +386,7 @@ def test_dispatcher_accepts_only_adapter_validated_cancellation_output() -> None
                     contract_id=step.output_artifact_contract_ids[0],
                     media_type="application/json",
                     payload=b'{"status":"cancelled"}',
-                    dependency_artifact_ids=resolved_input_artifact_ids(
-                        step, upstream
-                    ),
+                    dependency_artifact_ids=resolved_input_artifact_ids(step, upstream),
                 ),
             )
 

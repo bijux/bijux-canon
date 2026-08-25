@@ -5,8 +5,8 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 import base64
+from dataclasses import dataclass
 import json
 
 from bijux_canon_runtime.model.artifact import AddressedArtifact
@@ -28,6 +28,7 @@ from bijux_canon_runtime.runtime.inspection.parsing import (
     required_string,
     required_strings,
 )
+from bijux_canon_runtime.runtime.inspection.provenance import resolve_run_provenance
 from bijux_canon_runtime.runtime.inspection.semantic_values import (
     extract_semantics,
     plan_values,
@@ -41,7 +42,6 @@ from bijux_canon_runtime.runtime.inspection.validation import (
     validate_attempt_lineage,
     validate_plan,
 )
-from bijux_canon_runtime.runtime.inspection.provenance import resolve_run_provenance
 from bijux_canon_runtime.runtime.persistence.filesystem_payload_store import (
     PayloadCorruptionError,
 )

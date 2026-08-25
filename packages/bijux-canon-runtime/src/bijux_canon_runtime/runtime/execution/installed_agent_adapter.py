@@ -43,19 +43,19 @@ from bijux_canon_reason.grounding import (
 )
 from bijux_canon_reason.grounding.provider_contracts import content_artifact_id
 from bijux_canon_reason.research import (
-    AnswerVerificationStatus,
     AnswerRequirementKind,
     AnswerRequirementPlanningService,
     AnswerRequirementStatus,
+    AnswerVerificationStatus,
     ConvergencePolicy,
     ConvergenceService,
     CounterevidencePlan,
     CounterevidencePolicy,
     CounterevidenceSearchService,
     CounterevidenceTarget,
-    ResearchCandidateAdjudicationService,
     ResearchAnswerRevision,
     ResearchAnswerRevisionService,
+    ResearchCandidateAdjudicationService,
     ResearchCandidateClassification,
     RetrievalBatchStatus,
     RetrievalEvidenceBatch,
@@ -131,7 +131,6 @@ def _bounded_counterevidence_candidates(
     limit: int,
 ) -> tuple[CitationEvidence, ...]:
     """Retain bounded, rank-diverse citation evidence for a retrieval request."""
-
     unique: list[CitationEvidence] = []
     seen_text: set[str] = set()
     for candidate in candidates:
@@ -311,7 +310,6 @@ class _ReasonResearchPort:
         searches: tuple[InstalledResearchSearch, ...],
     ) -> InstalledResearchRevision:
         """Re-run the installed grounded-answer pipeline over classified evidence."""
-
         if request.claim_graph_artifact_id != self._claim_graph_artifact_id:
             raise StepDispatchError("research revision targets another claim graph")
         raw = self._claim_graph
@@ -666,7 +664,7 @@ class _ReasonResearchPort:
         )
         at_hard_limit = (
             self._search_count >= self._convergence.policy.max_tool_calls
-            or 1 >= self._convergence.policy.max_elapsed_ms
+            or self._convergence.policy.max_elapsed_ms <= 1
         )
         observation = create_convergence_observation(
             iteration=1,
@@ -1114,11 +1112,11 @@ class CanonicalAgentOperationAdapter:
                     if research.search is None
                     else list(research.search.retrieval_artifact_ids)
                 ),
-                "counterevidence_document_artifact_ids": list(
+                "counterevidence_document_artifact_ids": [
                     document_id
                     for item in research.search_history
                     for document_id in item.document_artifact_ids
-                ),
+                ],
                 "counterevidence_retrievals": (
                     []
                     if research.search is None

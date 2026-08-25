@@ -204,9 +204,7 @@ def test_configuration_search_cli_retains_development_denominators() -> None:
         assert run_v2_command(args, services=_services()) == 0
 
     payload = json.loads(stdout.getvalue())
-    assert payload["schema_version"] == (
-        "bijux.canon.index.retrieval-config-search.v1"
-    )
+    assert payload["schema_version"] == ("bijux.canon.index.retrieval-config-search.v1")
     assert payload["split"] == "development"
     assert payload["query_count"] == 12
     assert payload["qrel_count"] == 29

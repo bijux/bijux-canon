@@ -37,6 +37,10 @@ from bijux_canon_runtime.api.v2.schemas import (
     RetrieveRequest,
     RunRequest,
 )
+from bijux_canon_runtime.application.capability_discovery import (
+    RuntimeCapabilityDiscovery,
+    RuntimeCapabilityDiscoveryService,
+)
 from bijux_canon_runtime.application.operations import (
     ApplicationCapabilityError,
     ReplayOperationRequest,
@@ -45,10 +49,6 @@ from bijux_canon_runtime.application.operations import (
     RuntimeRetrievalEvaluationInput,
     RuntimeRetrievalEvaluationReport,
     retrieval_configuration_summary,
-)
-from bijux_canon_runtime.application.capability_discovery import (
-    RuntimeCapabilityDiscovery,
-    RuntimeCapabilityDiscoveryService,
 )
 from bijux_canon_runtime.application.problems import (
     RuntimeProblemCode,

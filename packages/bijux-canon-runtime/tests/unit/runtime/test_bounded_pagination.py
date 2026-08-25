@@ -6,8 +6,8 @@ from pathlib import Path
 
 import pytest
 
-from bijux_canon_runtime.model.artifact import AddressedArtifact
 from bijux_canon_runtime.application.inspection_views import bounded_inspection_record
+from bijux_canon_runtime.model.artifact import AddressedArtifact
 from bijux_canon_runtime.runtime.inspection import (
     RuntimeInspectionError,
     RuntimeInspectionLimits,

@@ -49,7 +49,6 @@ class PersistedAnswerEvaluationAdapter:
         inspection: RuntimeRunInspection,
     ) -> SystemOutput:
         """Bind the exact completed Runtime attempt to its persisted answer graph."""
-
         if not case_id.strip() or not question.strip():
             raise PersistedAnswerEvaluationError(
                 "evaluation case identity and question must not be empty"

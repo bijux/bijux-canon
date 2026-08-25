@@ -9,8 +9,7 @@ from dataclasses import dataclass
 import hashlib
 import json
 import os
-from pathlib import Path
-from pathlib import PurePosixPath
+from pathlib import Path, PurePosixPath
 import re
 import shutil
 import tempfile
@@ -384,8 +383,7 @@ class RuntimeBackupManager:
             }:
                 raise ValueError("unsupported backup schema")
             if (
-                len(manifest.artifact_ids)
-                != len(manifest.artifact_payload_sha256)
+                len(manifest.artifact_ids) != len(manifest.artifact_payload_sha256)
                 or tuple(sorted(manifest.artifact_ids)) != manifest.artifact_ids
                 or len(set(manifest.artifact_ids)) != len(manifest.artifact_ids)
                 or any(
@@ -409,17 +407,14 @@ class RuntimeBackupManager:
                     or re.fullmatch(r"[0-9a-f]{64}", item.sha256) is None
                 ):
                     raise ValueError("backup workspace file inventory is invalid")
-            if (
-                tuple(
-                    sorted(
-                        manifest.workspace_files,
-                        key=lambda item: item.relative_path,
-                    )
+            if tuple(
+                sorted(
+                    manifest.workspace_files,
+                    key=lambda item: item.relative_path,
                 )
-                != manifest.workspace_files
-                or len({item.relative_path for item in manifest.workspace_files})
-                != len(manifest.workspace_files)
-            ):
+            ) != manifest.workspace_files or len(
+                {item.relative_path for item in manifest.workspace_files}
+            ) != len(manifest.workspace_files):
                 raise ValueError("backup workspace file inventory is invalid")
             return manifest
         except (KeyError, OSError, TypeError, ValueError, json.JSONDecodeError) as exc:
@@ -554,7 +549,9 @@ class RuntimeBackupManager:
             payload = path.read_bytes()
             record = json.loads(payload)
         except (OSError, UnicodeDecodeError, json.JSONDecodeError) as error:
-            raise BackupIntegrityError("backup workspace manifest is unreadable") from error
+            raise BackupIntegrityError(
+                "backup workspace manifest is unreadable"
+            ) from error
         if (
             not isinstance(record, dict)
             or canonical_json_bytes(record) != payload

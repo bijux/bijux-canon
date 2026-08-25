@@ -18,6 +18,146 @@ _REPOSITORY_ROOT = Path(__file__).parents[4]
 _EXAMPLE = _REPOSITORY_ROOT / "examples" / "ancient-dna-research"
 
 
+def _assert_index_and_evaluation(stdout: str, evidence_root: Path) -> None:
+    summary = json.loads(stdout)
+    assert summary["result"] == "passed"
+    assert summary["model"]["profile_id"] == "local-minilm-384"
+    assert summary["model"]["validation_result"] == "passed"
+    assert summary["model"]["dimension"] == 384
+    assert summary["corpus"]["document_count"] == 8
+    assert summary["corpus"]["chunk_count"] == 493
+    assert summary["corpus"]["rejection_count"] == 0
+    assert summary["index"]["dimension"] == 384
+    assert summary["index"]["integrity"] == "verified"
+    assert {
+        (item["stage"], item["backend"]) for item in summary["index"]["segments"]
+    } == {
+        ("lexical", "sqlite-fts5"),
+        ("dense_exact", "faiss-flat-ip"),
+        ("dense_hnsw", "faiss-hnsw"),
+    }
+    assert summary["searches"]["exact"]["channels"] == [
+        "dense-exact",
+        "lexical",
+    ]
+    assert summary["searches"]["ann"]["channels"] == ["dense-ann", "lexical"]
+    assert summary["searches"]["exact"]["deterministic_repeat"] is True
+    assert summary["searches"]["ann"]["deterministic_repeat"] is True
+    assert summary["searches"]["exact"]["run_id"] == summary["run_id"]
+    assert summary["searches"]["ann"]["run_id"] == summary["run_id"]
+    assert (
+        summary["searches"]["exact"]["attempt_id"]
+        != (summary["searches"]["ann"]["attempt_id"])
+    )
+    assert summary["evaluation"]["query_count"] == 12
+    assert summary["evaluation"]["qrel_count"] == 29
+    for metric_id, floor in summary["evaluation"]["quality_floors"].items():
+        assert summary["evaluation"]["metrics"][metric_id] >= floor
+    development = summary["development_evaluation"]
+    assert development["case_count"] == 12
+    assert development["retrieval_gate_passed"] is True
+    assert development["release_readiness"] == "blocked-independent-review"
+    assert set(development["pending_dimensions"]) == {
+        "citation-quality",
+        "claim-faithfulness",
+        "qualifier-retention",
+        "conflict-retention",
+        "research-utility",
+    }
+    assert (
+        evidence_root / "development-evaluation" / "development-evaluation.json"
+    ).is_file()
+    assert (
+        evidence_root
+        / "development-evaluation"
+        / "evidence-book"
+        / "evidence-book.json"
+    ).is_file()
+
+
+def _assert_grounding_and_research(stdout: str, evidence_root: Path) -> None:
+    summary = json.loads(stdout)
+    rag = summary["rag"]
+    assert rag["case_count"] == 12
+    assert rag["development_disposition_matches"] == 12
+    assert rag["citation_resolution_ratio"] == 1.0
+    assert rag["grounding_admission_support_ratio"] == 1.0
+    assert rag["verified_direct_support_claims"] == rag["claim_count"]
+    assert rag["structurally_ungrounded_material_claims"] == 0
+    assert rag["unsupported_material_claims"] == 0
+    assert rag["system_output_may_define_truth"] is False
+    assert rag["semantic_equivalence_review_status"] == "pending-independent-review"
+    assert len(rag["observations"]) == 12
+    assert (evidence_root / "rag-system-outputs.jsonl").is_file()
+    research = summary["research"]
+    assert research["question_id"] == "adna-multihop-contamination-strategy"
+    assert research["initial_answer_retained"] is True
+    assert research["distinct_evidence_needs"] >= 2
+    assert research["distinct_searches"] >= 2
+    assert research["classification_count"] > 0
+    assert (
+        sum(research["classification_relations"].values())
+        == (research["classification_count"])
+    )
+    assert research["revision_outcome"] == "revised"
+    assert research["answer_changed"] is True
+    assert research["final_admitted_claim_count"] > 0
+    assert research["final_citation_count"] > 0
+    assert research["tool_failure_count"] == 0
+    assert research["terminal_outcome"] in {"complete", "incomplete_budget"}
+    assert research["stop_reasons"]
+    for dimension in (
+        "artifact_bytes",
+        "candidates",
+        "documents",
+        "elapsed_ms",
+        "evidence_items",
+        "iterations",
+        "retrievals",
+        "tokens",
+        "tool_calls",
+    ):
+        assert (
+            research["budget_usage"][dimension] <= research["budget_limits"][dimension]
+        )
+
+
+def _assert_agentic_runtime(stdout: str) -> None:
+    summary = json.loads(stdout)
+    agentic = summary["agentic"]
+    assert agentic["readiness"] == "ready"
+    assert agentic["operation_sequence"] == [
+        "embed",
+        "lexical-index",
+        "dense-index",
+        "retrieve",
+        "reason",
+        "agent",
+        "verify",
+        "persist",
+        "publish",
+    ]
+    assert agentic["tool_decision_count"] >= 2
+    assert agentic["tool_execution_count"] == agentic["tool_decision_count"]
+    assert agentic["causal_event_count"] >= 6
+    assert agentic["default_tool_policy"] == "deny"
+    assert agentic["terminal_outcome"] in {"converged", "incomplete_budget"}
+    assert agentic["replay_attempt_id"] != agentic["attempt_id"]
+    assert agentic["comparison_equivalent"] is True
+    assert agentic["cancellation"]["status"] == "cancelled"
+    assert agentic["cancellation"]["error_type"] == "DurableJobCancelled"
+    assert summary["workspace"]["restart_ready_profiles"] == [
+        "local-hybrid-exact",
+        "local-hybrid-ann",
+    ]
+    assert all(
+        "/packages/" not in path
+        for path in summary["installed_environment"]["sys_path"]
+    )
+    if sys.platform == "darwin":
+        assert summary["network_isolation"] == "os-denied"
+
+
 @pytest.mark.timeout(1200)
 def test_installed_wheels_complete_cpu_hybrid_workflow(tmp_path: Path) -> None:
     runtime_value = os.environ.get("BIJUX_CANON_RUNTIME_INSTALLED_COMMAND")
@@ -102,142 +242,7 @@ def test_installed_wheels_complete_cpu_hybrid_workflow(tmp_path: Path) -> None:
     )
 
     assert completed.returncode == 0, completed.stderr
-    summary = json.loads(completed.stdout)
-    assert summary["result"] == "passed"
-    assert summary["model"]["profile_id"] == "local-minilm-384"
-    assert summary["model"]["validation_result"] == "passed"
-    assert summary["model"]["dimension"] == 384
-    assert summary["corpus"]["document_count"] == 8
-    assert summary["corpus"]["chunk_count"] == 493
-    assert summary["corpus"]["rejection_count"] == 0
-    assert summary["index"]["dimension"] == 384
-    assert summary["index"]["integrity"] == "verified"
-    assert {
-        (item["stage"], item["backend"]) for item in summary["index"]["segments"]
-    } == {
-        ("lexical", "sqlite-fts5"),
-        ("dense_exact", "faiss-flat-ip"),
-        ("dense_hnsw", "faiss-hnsw"),
-    }
-    assert summary["searches"]["exact"]["channels"] == [
-        "dense-exact",
-        "lexical",
-    ]
-    assert summary["searches"]["ann"]["channels"] == ["dense-ann", "lexical"]
-    assert summary["searches"]["exact"]["deterministic_repeat"] is True
-    assert summary["searches"]["ann"]["deterministic_repeat"] is True
-    assert summary["searches"]["exact"]["run_id"] == summary["run_id"]
-    assert summary["searches"]["ann"]["run_id"] == summary["run_id"]
-    assert (
-        summary["searches"]["exact"]["attempt_id"]
-        != summary["searches"]["ann"]["attempt_id"]
-    )
-    assert summary["evaluation"]["query_count"] == 12
-    assert summary["evaluation"]["qrel_count"] == 29
-    for metric_id, floor in summary["evaluation"]["quality_floors"].items():
-        assert summary["evaluation"]["metrics"][metric_id] >= floor
-    development_evaluation = summary["development_evaluation"]
-    assert development_evaluation["case_count"] == 12
-    assert development_evaluation["retrieval_gate_passed"] is True
-    assert development_evaluation["release_readiness"] == (
-        "blocked-independent-review"
-    )
-    assert set(development_evaluation["pending_dimensions"]) == {
-        "citation-quality",
-        "claim-faithfulness",
-        "qualifier-retention",
-        "conflict-retention",
-        "research-utility",
-    }
-    assert (
-        tmp_path
-        / "evidence"
-        / "development-evaluation"
-        / "development-evaluation.json"
-    ).is_file()
-    assert (
-        tmp_path
-        / "evidence"
-        / "development-evaluation"
-        / "evidence-book"
-        / "evidence-book.json"
-    ).is_file()
-    assert summary["rag"]["case_count"] == 12
-    assert summary["rag"]["development_disposition_matches"] == 12
-    assert summary["rag"]["citation_resolution_ratio"] == 1.0
-    assert summary["rag"]["grounding_admission_support_ratio"] == 1.0
-    assert (
-        summary["rag"]["verified_direct_support_claims"]
-        == summary["rag"]["claim_count"]
-    )
-    assert summary["rag"]["structurally_ungrounded_material_claims"] == 0
-    assert summary["rag"]["unsupported_material_claims"] == 0
-    assert summary["rag"]["system_output_may_define_truth"] is False
-    assert summary["rag"]["semantic_equivalence_review_status"] == (
-        "pending-independent-review"
-    )
-    assert len(summary["rag"]["observations"]) == 12
-    assert (tmp_path / "evidence" / "rag-system-outputs.jsonl").is_file()
-    research = summary["research"]
-    assert research["question_id"] == "adna-multihop-contamination-strategy"
-    assert research["initial_answer_retained"] is True
-    assert research["distinct_evidence_needs"] >= 2
-    assert research["distinct_searches"] >= 2
-    assert research["classification_count"] > 0
-    assert (
-        sum(research["classification_relations"].values())
-        == research["classification_count"]
-    )
-    assert research["revision_outcome"] == "revised"
-    assert research["answer_changed"] is True
-    assert research["final_admitted_claim_count"] > 0
-    assert research["final_citation_count"] > 0
-    assert research["tool_failure_count"] == 0
-    assert research["terminal_outcome"] in {"complete", "incomplete_budget"}
-    assert research["stop_reasons"]
-    for dimension in (
-        "artifact_bytes",
-        "candidates",
-        "documents",
-        "elapsed_ms",
-        "evidence_items",
-        "iterations",
-        "retrievals",
-        "tokens",
-        "tool_calls",
-    ):
-        assert (
-            research["budget_usage"][dimension] <= research["budget_limits"][dimension]
-        )
-    agentic = summary["agentic"]
-    assert agentic["readiness"] == "ready"
-    assert agentic["operation_sequence"] == [
-        "embed",
-        "lexical-index",
-        "dense-index",
-        "retrieve",
-        "reason",
-        "agent",
-        "verify",
-        "persist",
-        "publish",
-    ]
-    assert agentic["tool_decision_count"] >= 2
-    assert agentic["tool_execution_count"] == agentic["tool_decision_count"]
-    assert agentic["causal_event_count"] >= 6
-    assert agentic["default_tool_policy"] == "deny"
-    assert agentic["terminal_outcome"] in {"converged", "incomplete_budget"}
-    assert agentic["replay_attempt_id"] != agentic["attempt_id"]
-    assert agentic["comparison_equivalent"] is True
-    assert agentic["cancellation"]["status"] == "cancelled"
-    assert agentic["cancellation"]["error_type"] == "DurableJobCancelled"
-    assert summary["workspace"]["restart_ready_profiles"] == [
-        "local-hybrid-exact",
-        "local-hybrid-ann",
-    ]
-    assert all(
-        "/packages/" not in path
-        for path in summary["installed_environment"]["sys_path"]
-    )
-    if sys.platform == "darwin":
-        assert summary["network_isolation"] == "os-denied"
+    evidence_root = tmp_path / "evidence"
+    _assert_index_and_evaluation(completed.stdout, evidence_root)
+    _assert_grounding_and_research(completed.stdout, evidence_root)
+    _assert_agentic_runtime(completed.stdout)

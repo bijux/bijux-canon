@@ -20,7 +20,6 @@ from .reranking import (
     RerankOutcome,
 )
 
-
 PLANNED_RERANK_POLICY_ID = "bijux.canon.index.planned-rerank.content-v1"
 
 
@@ -40,7 +39,9 @@ class PlannedRerankPolicy:
 
     def __post_init__(self) -> None:
         if not self.policy_id.strip() or not 1 <= self.rank_constant <= 10_000:
-            raise ValueError("planned rerank policy identity or rank constant is invalid")
+            raise ValueError(
+                "planned rerank policy identity or rank constant is invalid"
+            )
         if any(
             not math.isfinite(value) or value < 0
             for value in (
@@ -62,6 +63,9 @@ class PlannedRerankPolicy:
         """Return the immutable identity of all ranking behavior."""
 
         return _sha256(asdict(self))
+
+
+_DEFAULT_PLANNED_RERANK_POLICY = PlannedRerankPolicy()
 
 
 @dataclass(frozen=True, slots=True)
@@ -95,10 +99,7 @@ def _sha256(value: object) -> str:
 
 
 def _rank_map(batch: LexicalCandidateBatch) -> dict[str, int]:
-    return {
-        item.chunk_id: item.source_rank
-        for item in batch.decisions
-    }
+    return {item.chunk_id: item.source_rank for item in batch.decisions}
 
 
 def rerank_planned_evidence(
@@ -108,7 +109,7 @@ def rerank_planned_evidence(
     lexical_by_subquery_id: dict[str, LexicalCandidateBatch],
     passages: tuple[EvidencePassageContext, ...],
     top_k: int,
-    policy: PlannedRerankPolicy = PlannedRerankPolicy(),
+    policy: PlannedRerankPolicy = _DEFAULT_PLANNED_RERANK_POLICY,
 ) -> RerankBatch:
     """Rank answer-bearing passages while preserving the retrieved candidate set."""
 
@@ -153,9 +154,7 @@ def rerank_planned_evidence(
         for need_index in need_indexes:
             ranks = need_ranks[need_index]
             observed = [
-                ranks[item.chunk_id]
-                for item in candidates
-                if item.chunk_id in ranks
+                ranks[item.chunk_id] for item in candidates if item.chunk_id in ranks
             ]
             if observed:
                 score += policy.evidence_need_weight / (
@@ -204,15 +203,11 @@ def rerank_planned_evidence(
         for ranks in need_ranks:
             rank = ranks.get(item.chunk_id)
             if rank is not None:
-                score += policy.evidence_need_weight / (
-                    policy.rank_constant + rank
-                )
+                score += policy.evidence_need_weight / (policy.rank_constant + rank)
         passage = context[item.chunk_id]
         roles = {role.casefold() for role in passage.block_roles}
         sections = {
-            value.casefold()
-            for path in passage.section_paths
-            for value in path
+            value.casefold() for path in passage.section_paths for value in path
         }
         if "abstract" in roles:
             score += policy.abstract_weight
@@ -226,8 +221,7 @@ def rerank_planned_evidence(
             score += policy.introduction_weight
         if item.ordinal < len(policy.early_ordinal_priors):
             score += (
-                policy.early_ordinal_weight
-                * policy.early_ordinal_priors[item.ordinal]
+                policy.early_ordinal_weight * policy.early_ordinal_priors[item.ordinal]
             )
         return score
 
@@ -251,11 +245,7 @@ def rerank_planned_evidence(
         ordered.append(selected_passage)
         remaining[selected_passage.document_id].pop(0)
     if len(ordered) < top_k:
-        ordered.extend(
-            item
-            for item in fusion.hits
-            if item not in ordered
-        )
+        ordered.extend(item for item in fusion.hits if item not in ordered)
     selected_candidates = tuple(ordered[:top_k])
     candidates = tuple(
         RerankedCandidate(

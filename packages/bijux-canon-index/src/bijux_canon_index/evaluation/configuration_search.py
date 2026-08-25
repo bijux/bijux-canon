@@ -179,12 +179,15 @@ class RetrievalConfigurationSearchReport:
             raise ValueError("retrieval configuration search identity mismatch")
 
 
+_DEFAULT_RETRIEVAL_QUALITY_FLOOR = RetrievalQualityFloor()
+
+
 def search_retrieval_configurations(
     *,
     request: PublicRetrievalEvaluationRequest,
     observations: tuple[RetrievalExecutionObservation, ...],
     configurations: tuple[RetrievalConfiguration, ...],
-    quality_floor: RetrievalQualityFloor = RetrievalQualityFloor(),
+    quality_floor: RetrievalQualityFloor = _DEFAULT_RETRIEVAL_QUALITY_FLOOR,
 ) -> RetrievalConfigurationSearchReport:
     """Rerank observed channel evidence without rerunning or consulting held-out truth."""
 

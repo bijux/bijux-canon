@@ -145,9 +145,7 @@ def run_registry_preflight(
     owner_type = execute(
         [str(gh_executable.resolve()), "api", f"users/{owner}", "--jq", ".type"]
     )
-    viewer = execute(
-        [str(gh_executable.resolve()), "api", "user", "--jq", ".login"]
-    )
+    viewer = execute([str(gh_executable.resolve()), "api", "user", "--jq", ".login"])
     repository_access = execute(
         [
             str(gh_executable.resolve()),

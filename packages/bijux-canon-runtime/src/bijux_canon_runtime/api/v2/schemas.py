@@ -51,9 +51,7 @@ class RequestContext(StrictModel):
 class Budget(StrictModel):
     """Hard execution and persistence bounds."""
 
-    timeout_seconds: Annotated[
-        float, Field(gt=0, le=MAX_RUNTIME_TIMEOUT_SECONDS)
-    ]
+    timeout_seconds: Annotated[float, Field(gt=0, le=MAX_RUNTIME_TIMEOUT_SECONDS)]
     max_artifact_bytes: Annotated[int, Field(ge=1)]
     max_steps: Annotated[int | None, Field(ge=1)] = None
     max_provider_tokens: Annotated[int | None, Field(ge=1)] = None

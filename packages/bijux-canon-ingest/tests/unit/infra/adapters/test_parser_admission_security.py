@@ -145,8 +145,10 @@ def test_minimal_malformed_reproducers_fail_closed(
         (
             "pages.pdf",
             "application/pdf",
-            b"%PDF-1.7\n2 0 obj << /Type /Pages /Count 64 >> endobj\n"
-            b"startxref\n0\n%%EOF\n",
+            (
+                b"%PDF-1.7\n2 0 obj << /Type /Pages /Count 64 >> endobj\n"
+                b"startxref\n0\n%%EOF\n"
+            ),
             "page_budget_exceeded",
         ),
         ("large.md", "text/markdown", b"# " + b"x" * 64, "text_budget_exceeded"),

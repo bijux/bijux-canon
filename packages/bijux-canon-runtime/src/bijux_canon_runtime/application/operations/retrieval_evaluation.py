@@ -61,7 +61,6 @@ def evaluate_reviewed_retrieval(
     execute: RetrievalEvaluationExecutor,
 ) -> RuntimeRetrievalEvaluationReport:
     """Load reviewed truth and execute every query through the installed owner."""
-
     request = _request(parameters)
     return execute(request)
 
@@ -72,7 +71,6 @@ def search_reviewed_retrieval_configurations(
     execute: RetrievalEvaluationExecutor,
 ) -> RuntimeRetrievalConfigurationSearchReport:
     """Search general configurations over one complete development observation set."""
-
     request = _request(parameters)
     evaluation = execute(request)
     observed_depth = max(
@@ -109,7 +107,6 @@ def retrieval_configuration_summary(
     configuration: RuntimeRetrievalConfiguration,
 ) -> str:
     """Describe one evaluated configuration without leaking owner types to transports."""
-
     if isinstance(configuration, ObservedFinalizationConfiguration):
         return (
             f"strategy={configuration.ranking_strategy}, "

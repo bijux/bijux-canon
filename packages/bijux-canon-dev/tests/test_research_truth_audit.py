@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import cast
 
 from bijux_canon_dev.corpus.research_truth_audit import audit_research_truth
 
@@ -22,6 +23,10 @@ def _audit() -> dict[str, object]:
     )
 
 
+def _inventory(report: dict[str, object], field: str) -> list[dict[str, object]]:
+    return cast(list[dict[str, object]], report[field])
+
+
 def test_audit_reports_questions_instead_of_cross_product_rows() -> None:
     report = _audit()
     assert report["inventory"] == {
@@ -36,10 +41,10 @@ def test_audit_reports_questions_instead_of_cross_product_rows() -> None:
         "unique_claim_identity_count": 32,
         "unique_qrel_count": 30,
     }
-    assert len(report["question_inventory"]) == 18
-    assert len(report["legacy_query_inventory"]) == 8
-    assert len(report["qrel_inventory"]) == 30
-    assert len(report["claim_inventory"]) == 32
+    assert len(_inventory(report, "question_inventory")) == 18
+    assert len(_inventory(report, "legacy_query_inventory")) == 8
+    assert len(_inventory(report, "qrel_inventory")) == 30
+    assert len(_inventory(report, "claim_inventory")) == 32
     assert report["case_label_disposition_counts"] == {
         "development-labels-visible": 12,
         "heldout-labels-sealed": 6,

@@ -14,7 +14,6 @@ from bijux_canon_index.evaluation.configuration_search import (
     observed_finalization_search_configuration,
     search_retrieval_configurations,
 )
-
 from bijux_canon_index.evaluation.public_path import (
     ObservedLocatorSegment,
     ObservedRetrievalHit,

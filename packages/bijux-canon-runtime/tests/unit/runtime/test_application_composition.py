@@ -37,6 +37,7 @@ from bijux_canon_runtime.application.runtime_configuration import (
 from bijux_canon_runtime.application.workspace_initialization import (
     initialize_runtime_workspace,
 )
+from bijux_canon_runtime.model.artifact import AddressedArtifact
 from bijux_canon_runtime.model.execution.request_plan import (
     DagOperation,
     ExecutionProfile,
@@ -45,23 +46,22 @@ from bijux_canon_runtime.model.execution.request_plan import (
     RuntimeRequestBudget,
     RuntimeRequestOperation,
 )
-from bijux_canon_runtime.model.artifact import AddressedArtifact
 from bijux_canon_runtime.ontology.ids import ArtifactID, RequestID
 from bijux_canon_runtime.ontology.public import ReplayMode
+from bijux_canon_runtime.runtime.execution import application_composition
 from bijux_canon_runtime.runtime.execution.application_composition import (
     compose_runtime_application_services,
 )
-from bijux_canon_runtime.runtime.execution import application_composition
 from bijux_canon_runtime.runtime.execution.durable_jobs import JobStatus
 from bijux_canon_runtime.runtime.inspection import RuntimeInspectionError
 from bijux_canon_runtime.runtime.persistence.authoritative_payload_store import (
     AuthoritativeArtifactPayloadStore,
 )
-from bijux_canon_runtime.runtime.persistence.filesystem_payload_store import (
-    AtomicFilesystemArtifactPayloadStore,
-)
 from bijux_canon_runtime.runtime.persistence.backup_restore import (
     RuntimeBackupManager,
+)
+from bijux_canon_runtime.runtime.persistence.filesystem_payload_store import (
+    AtomicFilesystemArtifactPayloadStore,
 )
 from bijux_canon_runtime.runtime.replay.models import (
     ReplayNetworkPolicy,
@@ -517,25 +517,27 @@ def test_dense_dimension_mismatch_is_refused_before_job_queueing(
     )
     store.put(index_artifact)
 
-    with compose_runtime_application_services(configuration=configuration) as service:
-        with pytest.raises(
+    with (
+        compose_runtime_application_services(configuration=configuration) as service,
+        pytest.raises(
             ApplicationCapabilityError,
             match="dense index dimension differs",
-        ):
-            service.retrieve(
-                RuntimeOperationRequest(
-                    request_id=RequestID("dimension-mismatch"),
-                    operation=RuntimeRequestOperation.RETRIEVE,
-                    execution_profile=ExecutionProfile.LOCAL_HYBRID_EXACT,
-                    budget=RuntimeRequestBudget(30.0, 10_000_000),
-                    replay_mode=ReplayMode.STRICT,
-                    scope="local",
-                    query="What is retained?",
-                    index_id=index_artifact.descriptor.artifact_id,
-                    top_k=1,
-                ),
-                idempotency_key="dimension-mismatch",
-            )
+        ),
+    ):
+        service.retrieve(
+            RuntimeOperationRequest(
+                request_id=RequestID("dimension-mismatch"),
+                operation=RuntimeRequestOperation.RETRIEVE,
+                execution_profile=ExecutionProfile.LOCAL_HYBRID_EXACT,
+                budget=RuntimeRequestBudget(30.0, 10_000_000),
+                replay_mode=ReplayMode.STRICT,
+                scope="local",
+                query="What is retained?",
+                index_id=index_artifact.descriptor.artifact_id,
+                top_k=1,
+            ),
+            idempotency_key="dimension-mismatch",
+        )
 
     with duckdb.connect(str(layout.database_path), read_only=True) as authority:
         assert authority.execute("SELECT count(*) FROM runtime_jobs").fetchone() == (0,)
@@ -567,20 +569,22 @@ def test_dense_model_execution_failure_is_refused_before_job_queueing(
         "validate",
         refuse_model,
     )
-    with compose_runtime_application_services(configuration=configuration) as service:
-        with pytest.raises(ApplicationCapabilityError, match="CPU validation"):
-            service.index(
-                RuntimeOperationRequest(
-                    request_id=RequestID("invalid-model-dimension"),
-                    operation=RuntimeRequestOperation.INDEX_BUILD,
-                    execution_profile=ExecutionProfile.LOCAL_HYBRID_EXACT,
-                    budget=RuntimeRequestBudget(30.0, 10_000_000),
-                    replay_mode=ReplayMode.STRICT,
-                    scope="local",
-                    corpus_id=corpus.descriptor.artifact_id,
-                ),
-                idempotency_key="invalid-model-dimension",
-            )
+    with (
+        compose_runtime_application_services(configuration=configuration) as service,
+        pytest.raises(ApplicationCapabilityError, match="CPU validation"),
+    ):
+        service.index(
+            RuntimeOperationRequest(
+                request_id=RequestID("invalid-model-dimension"),
+                operation=RuntimeRequestOperation.INDEX_BUILD,
+                execution_profile=ExecutionProfile.LOCAL_HYBRID_EXACT,
+                budget=RuntimeRequestBudget(30.0, 10_000_000),
+                replay_mode=ReplayMode.STRICT,
+                scope="local",
+                corpus_id=corpus.descriptor.artifact_id,
+            ),
+            idempotency_key="invalid-model-dimension",
+        )
 
     with duckdb.connect(str(layout.database_path), read_only=True) as authority:
         assert authority.execute("SELECT count(*) FROM runtime_jobs").fetchone() == (0,)

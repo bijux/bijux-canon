@@ -1,10 +1,11 @@
 from __future__ import annotations
 
+from collections.abc import Mapping, Sequence
 from email.message import Message
 import json
 from pathlib import Path
 import tomllib
-from typing import Any
+from typing import cast
 import zipfile
 
 import pytest
@@ -16,7 +17,6 @@ from bijux_canon_dev.release.python_support_matrix import (
     inspect_workspace,
     run_python_support_matrix,
 )
-
 
 SOURCE_COMMIT = "1" * 40
 PYTHON_VERSIONS = ("3.11", "3.12", "3.13", "3.14")
@@ -198,7 +198,7 @@ def test_matrix_runs_every_declared_version_and_retains_evidence(
     commands: list[tuple[str, ...]] = []
 
     def runner(
-        command: list[str] | tuple[str, ...], _cwd: Path, _env: Any
+        command: Sequence[str], _cwd: Path, _env: Mapping[str, str]
     ) -> CommandResult:
         commands.append(tuple(command))
         return CommandResult(tuple(command), 0, "ok", "", 0.01)
@@ -219,9 +219,10 @@ def test_matrix_runs_every_declared_version_and_retains_evidence(
     assert evidence["distribution_count"] == 1
     assert evidence["import_count"] == 1
     assert evidence["console_script_count"] == 1
-    assert [
-        item["combination_id"] for item in evidence["package_python_combinations"]
-    ] == [
+    combinations = cast(
+        list[dict[str, object]], evidence["package_python_combinations"]
+    )
+    assert [item["combination_id"] for item in combinations] == [
         "example--py311",
         "example--py312",
         "example--py313",
@@ -241,7 +242,7 @@ def test_matrix_retains_failed_command_and_continues_other_versions(
     failed_once = False
 
     def runner(
-        command: list[str] | tuple[str, ...], _cwd: Path, _env: Any
+        command: Sequence[str], _cwd: Path, _env: Mapping[str, str]
     ) -> CommandResult:
         nonlocal failed_once
         should_fail = "3.12" in command and not failed_once

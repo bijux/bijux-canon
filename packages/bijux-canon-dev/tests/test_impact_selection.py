@@ -17,8 +17,10 @@ def _check_ids(*paths: str) -> set[str]:
 def test_runtime_source_selects_owned_and_restart_contracts() -> None:
     selected = select_checks(
         [
-            "packages/bijux-canon-runtime/src/"
-            "bijux_canon_runtime/application/runtime_configuration.py"
+            (
+                "packages/bijux-canon-runtime/src/"
+                "bijux_canon_runtime/application/runtime_configuration.py"
+            )
         ]
     )
 

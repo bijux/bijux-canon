@@ -76,14 +76,12 @@ def test_security_tooling_has_no_ungoverned_suppressions() -> None:
 
 
 def test_root_security_runs_the_tracked_source_credential_scan() -> None:
-    package_catalog = (REPO_ROOT / "makes" / "packages.mk").read_text(
-        encoding="utf-8"
-    )
+    package_catalog = (REPO_ROOT / "makes" / "packages.mk").read_text(encoding="utf-8")
 
     assert "ROOT_TARGET_POST_security" in package_catalog
     assert "bijux-canon-secret-scan" in package_catalog
     assert "artifacts/root/security/secret-scan.json" not in package_catalog
-    assert '$(ROOT_ARTIFACTS_DIR)/security/secret-scan.json' in package_catalog
+    assert "$(ROOT_ARTIFACTS_DIR)/security/secret-scan.json" in package_catalog
 
 
 def test_root_dead_code_gate_is_fatal_and_uses_an_owned_whitelist() -> None:

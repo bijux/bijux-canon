@@ -199,9 +199,11 @@ class ArtifactReachabilityValidator:
         limit: int,
     ) -> set[ArtifactID]:
         queries = (
-            "SELECT artifact_id FROM artifact_payloads WHERE schema_id IN "
-            "('bijux.runtime.execution-manifest.v1', "
-            "'bijux.runtime.execution-event.v1')",
+            (
+                "SELECT artifact_id FROM artifact_payloads WHERE schema_id IN "
+                "('bijux.runtime.execution-manifest.v1', "
+                "'bijux.runtime.execution-event.v1')"
+            ),
             "SELECT target_artifact_id FROM artifact_references WHERE reference_state = 'active'",
             "SELECT payload_artifact_id FROM run_revisions",
             "SELECT payload_artifact_id FROM run_dags",

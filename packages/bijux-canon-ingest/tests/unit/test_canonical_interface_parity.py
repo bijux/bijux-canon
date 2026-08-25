@@ -20,7 +20,6 @@ from bijux_canon_ingest.application import CorpusDiscoveryLimits
 from bijux_canon_ingest.interfaces.cli.entrypoint import main
 from bijux_canon_ingest.interfaces.http.app import create_app
 
-
 REPOSITORY_ROOT = Path(__file__).resolve().parents[4]
 
 

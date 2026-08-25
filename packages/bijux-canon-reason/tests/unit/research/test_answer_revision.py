@@ -23,6 +23,7 @@ from bijux_canon_reason.research import (
     CandidateClassificationMethod,
     ClaimRevisionAction,
     ClaimRevisionActionKind,
+    ResearchAnswerRevision,
     ResearchAnswerRevisionService,
     ResearchCandidateClassification,
     ResearchCandidateRelation,
@@ -139,7 +140,12 @@ def _revise(
     text: str,
     *,
     material: bool = True,
-):
+) -> tuple[
+    LocalGroundedAnswer,
+    CitationEvidence,
+    ResearchCandidateClassification,
+    ResearchAnswerRevision,
+]:
     prior, packet = _prior()
     candidate = _evidence("candidate", text, 2)
     classification = _classification(
@@ -170,9 +176,7 @@ def test_supporting_evidence_strengthens_and_reverifies_the_answer() -> None:
     assert result.after_answer != result.before_answer
     assert result.actions[0].kind is ClaimRevisionActionKind.STRENGTHEN
     assert result.actions[0].evidence_artifact_ids == (candidate.artifact_id,)
-    assert result.resolved_classification_artifact_ids == (
-        classification.artifact_id,
-    )
+    assert result.resolved_classification_artifact_ids == (classification.artifact_id,)
     assert all(
         claim.verdict.value == "direct_support"
         for claim in result.revised_answer.verification.claims
@@ -238,9 +242,7 @@ def test_irrelevant_nonmaterial_evidence_preserves_answer_with_lineage() -> None
     assert result.outcome is ResearchRevisionOutcome.PRESERVED
     assert result.after_answer == prior.answer_text
     assert result.actions[0].kind is ClaimRevisionActionKind.PRESERVE
-    assert result.resolved_classification_artifact_ids == (
-        classification.artifact_id,
-    )
+    assert result.resolved_classification_artifact_ids == (classification.artifact_id,)
 
 
 def test_split_and_merge_actions_enforce_typed_lineage_shapes() -> None:

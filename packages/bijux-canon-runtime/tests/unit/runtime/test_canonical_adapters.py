@@ -8,10 +8,10 @@ import pytest
 
 from bijux_canon_ingest.core.types import Chunk
 from bijux_canon_ingest.retrieval.indexes import build_bm25_index
-from bijux_canon_runtime.model.artifact.artifact import Artifact
 from bijux_canon_runtime.application.runtime_configuration import (
     resolve_runtime_configuration,
 )
+from bijux_canon_runtime.model.artifact.artifact import Artifact
 from bijux_canon_runtime.model.artifact.retrieved_evidence import RetrievedEvidence
 from bijux_canon_runtime.ontology import (
     ArtifactScope,

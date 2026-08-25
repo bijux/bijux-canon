@@ -16,7 +16,6 @@ from bijux_canon_dev.release.release_candidate_identity import (
     validate_release_tag,
 )
 
-
 VERSION = "0.4.0"
 
 

@@ -8,8 +8,8 @@ import hashlib
 import pytest
 
 from bijux_canon_index.application import (
-    FusedCandidate,
     EvidencePassageContext,
+    FusedCandidate,
     LexicalCandidateBatch,
     LexicalCandidateDecision,
     LexicalCandidateDisposition,

@@ -9,9 +9,9 @@ import pytest
 
 from bijux_canon_runtime.application.request_planner import RuntimeRequestPlanner
 from bijux_canon_runtime.model.execution.request_plan import (
+    MAX_RUNTIME_TIMEOUT_SECONDS,
     DagOperation,
     ExecutionProfile,
-    MAX_RUNTIME_TIMEOUT_SECONDS,
     RuntimeOperationRequest,
     RuntimeOutputPolicy,
     RuntimeRequestBudget,

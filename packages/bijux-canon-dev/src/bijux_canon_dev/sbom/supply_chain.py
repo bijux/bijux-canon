@@ -3,9 +3,13 @@
 from __future__ import annotations
 
 import argparse
+from collections.abc import Callable, Mapping, Sequence
+from dataclasses import dataclass
+from email.parser import Parser
 import hashlib
 import json
 import os
+from pathlib import Path, PurePosixPath
 import platform
 import re
 import shutil
@@ -13,13 +17,9 @@ import stat
 import subprocess
 import tarfile
 import tempfile
-import zipfile
-from collections.abc import Callable, Mapping, Sequence
-from dataclasses import dataclass
-from email.parser import Parser
-from pathlib import Path, PurePosixPath
 from typing import Literal, cast
 from urllib.parse import quote
+import zipfile
 
 ArtifactKind = Literal["wheel", "sdist", "oci-image"]
 SbomGenerator = Callable[["ArtifactInput", Path], Mapping[str, object]]

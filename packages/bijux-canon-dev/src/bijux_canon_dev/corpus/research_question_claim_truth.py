@@ -91,7 +91,9 @@ def validate_question_claim_truth(
             "schema_version": SCHEMA_VERSION,
             "system_output_consulted": False,
         }
-        drift = [key for key, expected in required.items() if record.get(key) != expected]
+        drift = [
+            key for key, expected in required.items() if record.get(key) != expected
+        ]
         if drift:
             raise RuntimeError(
                 f"question-claim review metadata drift: {question_id}: {drift}"
@@ -115,9 +117,7 @@ def validate_question_claim_truth(
             if bool(question["abstention_expected"])
             else "expected-answer"
         )
-        question_qrels = {
-            str(item["qrel_id"]) for item in question.get("evidence", [])
-        }
+        question_qrels = {str(item["qrel_id"]) for item in question.get("evidence", [])}
         for index, claim in enumerate(claims):
             statement = claim.get("statement")
             role = claim.get("claim_role")

@@ -13,7 +13,6 @@ from bijux_canon_dev.release.family_compatibility import (
     analyze_family,
 )
 
-
 VERSION = "1.2.3"
 PREVIOUS_VERSION = "1.2.2"
 

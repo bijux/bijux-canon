@@ -22,7 +22,6 @@ from bijux_canon_index.infra.embeddings.model_cache import (
     verify_materialized_model,
 )
 from bijux_canon_ingest.domain.source_admission import SourceFormat
-
 from bijux_canon_runtime.application.operations import ApplicationOperation
 from bijux_canon_runtime.application.readiness import (
     ReadinessCapability,

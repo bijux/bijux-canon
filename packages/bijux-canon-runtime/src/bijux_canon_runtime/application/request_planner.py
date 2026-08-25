@@ -253,9 +253,7 @@ class RuntimeRequestPlanner:
             return replace(
                 common,
                 source_directory=request.source_directory,
-                source_selection_artifact_id=(
-                    request.source_selection_artifact_id
-                ),
+                source_selection_artifact_id=(request.source_selection_artifact_id),
             )
         if operation is DagOperation.SNAPSHOT:
             return replace(

@@ -16,6 +16,16 @@ from bijux_canon_agent.application.research_workflow.observed_state import (
     ObservedResearchState,
     ObservedResearchStateMachine,
 )
+from bijux_canon_agent.application.research_workflow.state_machine import (
+    ResearchCheckpoint,
+    ResearchCheckpointPort,
+    ResearchExecutionResult,
+    ResearchOperation,
+    ResearchOperationRecord,
+    ResearchRole,
+    ResearchRoleMachine,
+    ResearchTransition,
+)
 from bijux_canon_agent.application.research_workflow.targeted_search import (
     TargetedSearchAttempt,
     TargetedSearchDecision,
@@ -33,16 +43,6 @@ from bijux_canon_agent.application.research_workflow.terminal_outcome import (
     InstalledResearchTerminalKind,
     InstalledResearchTerminalOutcome,
     RemainingResearchWork,
-)
-from bijux_canon_agent.application.research_workflow.state_machine import (
-    ResearchCheckpoint,
-    ResearchCheckpointPort,
-    ResearchExecutionResult,
-    ResearchOperation,
-    ResearchOperationRecord,
-    ResearchRole,
-    ResearchRoleMachine,
-    ResearchTransition,
 )
 
 __all__ = [

@@ -15,6 +15,11 @@ from bijux_canon_agent.contracts.research_ports import (
     ServicePortDescriptor,
 )
 from bijux_canon_agent.contracts.retrieval import RetrievalRequest
+from bijux_canon_agent.contracts.tool_execution import (
+    ResearchToolDescriptor,
+    ToolExecutionRecord,
+    ToolReplayPolicy,
+)
 from bijux_canon_agent.contracts.tool_policy import (
     ResearchTool,
     ResearchToolOperation,
@@ -23,11 +28,6 @@ from bijux_canon_agent.contracts.tool_policy import (
     ToolPolicyAction,
     ToolPolicyDecision,
     plan_sha256,
-)
-from bijux_canon_agent.contracts.tool_execution import (
-    ResearchToolDescriptor,
-    ToolExecutionRecord,
-    ToolReplayPolicy,
 )
 from bijux_canon_agent.tooling.registry import (
     ResearchToolBinding,
@@ -272,9 +272,9 @@ class PolicyEnforcedResearchServices:
                 request_identity=lambda value: cast(
                     RetrievalRequest, value
                 ).request_hash(),
-                result_identity=lambda value: cast(
-                    RetrievalPortResult, value
-                ).artifact_id,
+                result_identity=lambda value: (
+                    cast(RetrievalPortResult, value).artifact_id
+                ),
                 safe_summary=lambda value: {
                     "artifact_id": cast(RetrievalPortResult, value).artifact_id,
                     "generation_id": cast(RetrievalPortResult, value).generation_id,
@@ -291,9 +291,9 @@ class PolicyEnforcedResearchServices:
                 request_identity=lambda value: cast(
                     ReasoningPortRequest, value
                 ).request_hash(),
-                result_identity=lambda value: cast(
-                    ReasoningPortResult, value
-                ).artifact_id,
+                result_identity=lambda value: (
+                    cast(ReasoningPortResult, value).artifact_id
+                ),
                 safe_summary=lambda value: {
                     "artifact_id": cast(ReasoningPortResult, value).artifact_id,
                     "claim_count": len(

@@ -500,8 +500,10 @@ def _qdrant_available() -> tuple[bool, str | None, str | None]:
         return (
             False,
             None,
-            "experimental excluded: no live service admission is recorded; "
-            "qdrant-client is not installed",
+            (
+                "experimental excluded: no live service admission is recorded; "
+                "qdrant-client is not installed"
+            ),
         )
 
 

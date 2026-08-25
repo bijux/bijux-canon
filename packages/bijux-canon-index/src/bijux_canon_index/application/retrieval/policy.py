@@ -10,11 +10,10 @@ import hashlib
 import json
 import math
 
-from .fusion import RrfFusionPolicy
-from .evidence_planning import EVIDENCE_PLANNING_POLICY_ID
-from .planned_reranking import PlannedRerankPolicy
 from ..vex import VexExecutionBudget
-
+from .evidence_planning import EVIDENCE_PLANNING_POLICY_ID
+from .fusion import RrfFusionPolicy
+from .planned_reranking import PlannedRerankPolicy
 
 CONTENT_EVIDENCE_RETRIEVAL_POLICY_ID = (
     "bijux.canon.index.hybrid-retrieval.content-evidence-v2"

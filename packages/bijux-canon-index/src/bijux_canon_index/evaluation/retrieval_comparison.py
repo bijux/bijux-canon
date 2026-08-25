@@ -89,11 +89,14 @@ class RetrievalComparisonReport:
         return all(check.passed for check in self.checks)
 
 
+_DEFAULT_RETRIEVAL_QUALITY_POLICY = RetrievalQualityPolicy()
+
+
 class RetrievalQualityComparator:
     """Compare identical channel inputs and enforce production thresholds."""
 
     def __init__(
-        self, policy: RetrievalQualityPolicy = RetrievalQualityPolicy()
+        self, policy: RetrievalQualityPolicy = _DEFAULT_RETRIEVAL_QUALITY_POLICY
     ) -> None:
         self._policy = policy
         self._evaluator = RetrievalMetricEvaluator()

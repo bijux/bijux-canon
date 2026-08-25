@@ -28,9 +28,7 @@ def test_explicit_content_facets_create_bounded_independent_evidence_needs() -> 
         "young resin evidence result limitation",
         "museum snakes evidence result limitation",
     ]
-    assert all(
-        item.origin is SubqueryOrigin.generated_evidence_need for item in facets
-    )
+    assert all(item.origin is SubqueryOrigin.generated_evidence_need for item in facets)
     assert len(plan.multi_query.subqueries) <= 8
 
 

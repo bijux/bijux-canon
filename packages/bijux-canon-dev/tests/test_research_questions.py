@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 from pathlib import Path
+from typing import cast
 
 import pytest
 
@@ -31,14 +32,16 @@ def test_questions_cover_diverse_semantic_needs_and_all_sources() -> None:
     result = _validate(_records())
     assert result["question_count"] == 18
     assert result["source_count"] == 8
-    assert result["category_counts"] == {category: 2 for category in CATEGORIES}
-    assert set(result["answerability_counts"]) == {
+    assert result["category_counts"] == dict.fromkeys(CATEGORIES, 2)
+    answerability_counts = cast(dict[str, int], result["answerability_counts"])
+    evidence_relation_counts = cast(dict[str, int], result["evidence_relation_counts"])
+    assert set(answerability_counts) == {
         "ambiguous",
         "answerable",
         "out-of-scope",
         "qualified",
     }
-    assert set(result["evidence_relation_counts"]) == {
+    assert set(evidence_relation_counts) == {
         "contextualizes",
         "limits",
         "opposes",

@@ -15,6 +15,10 @@ from bijux_canon_index.evaluation import (
     PublicRetrievalEvaluationRequest,
 )
 from bijux_canon_reason.evaluation import SystemOutput
+from bijux_canon_runtime.application.inspection_views import (
+    MAX_INSPECTION_PAGE_SIZE,
+    bounded_inspection_record,
+)
 from bijux_canon_runtime.application.operations.answer_evaluation import (
     PersistedAnswerEvaluationAdapter,
 )
@@ -36,10 +40,6 @@ from bijux_canon_runtime.application.operations.retrieval_evaluation import (
     RuntimeRetrievalEvaluationReport,
     evaluate_reviewed_retrieval,
     search_reviewed_retrieval_configurations,
-)
-from bijux_canon_runtime.application.inspection_views import (
-    MAX_INSPECTION_PAGE_SIZE,
-    bounded_inspection_record,
 )
 from bijux_canon_runtime.model.execution.request_plan import (
     RuntimeOperationRequest,
@@ -264,7 +264,6 @@ class RuntimeApplicationServicesV2:
         self, request: PublicRetrievalEvaluationRequest
     ) -> PublicRetrievalEvaluationReport:
         """Execute reviewed queries through the installed persistent retriever."""
-
         if self._retrieval_evaluator is None:
             raise ApplicationCapabilityError(
                 "retrieval evaluation capability is not configured"
@@ -276,7 +275,6 @@ class RuntimeApplicationServicesV2:
         parameters: RuntimeRetrievalEvaluationInput,
     ) -> RuntimeRetrievalEvaluationReport:
         """Load reviewed truth and execute it through the configured Index owner."""
-
         if self._retrieval_evaluator is None:
             raise ApplicationCapabilityError(
                 "retrieval evaluation capability is not configured"
@@ -291,7 +289,6 @@ class RuntimeApplicationServicesV2:
         parameters: RuntimeRetrievalEvaluationInput,
     ) -> RuntimeRetrievalConfigurationSearchReport:
         """Search development configurations over installed retrieval observations."""
-
         if self._retrieval_evaluator is None:
             raise ApplicationCapabilityError(
                 "retrieval evaluation capability is not configured"

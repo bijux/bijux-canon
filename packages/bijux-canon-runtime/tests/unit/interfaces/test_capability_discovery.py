@@ -12,9 +12,9 @@ from types import SimpleNamespace
 from fastapi.testclient import TestClient
 import pytest
 
-from bijux_canon_index.domain.embedding import LOCAL_MINILM_PROFILE
 from bijux_canon_index.application import model_lifecycle
 from bijux_canon_index.application.model_lifecycle import validate_model
+from bijux_canon_index.domain.embedding import LOCAL_MINILM_PROFILE
 from bijux_canon_index.infra.embeddings.model_cache import materialize_model
 from bijux_canon_runtime import discover_runtime_capabilities
 from bijux_canon_runtime.api.v2 import create_app

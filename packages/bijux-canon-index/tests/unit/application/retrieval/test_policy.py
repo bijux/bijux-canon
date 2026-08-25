@@ -37,9 +37,7 @@ def test_content_evidence_policy_admits_symmetric_deep_candidates() -> None:
 
 
 def test_previous_content_policy_remains_resolvable_without_behavior_drift() -> None:
-    policy = resolve_hybrid_retrieval_policy(
-        CONTENT_EVIDENCE_RETRIEVAL_POLICY_V1_ID
-    )
+    policy = resolve_hybrid_retrieval_policy(CONTENT_EVIDENCE_RETRIEVAL_POLICY_V1_ID)
 
     assert policy.uses_evidence_planning is False
     assert "evidence_planning" not in policy.record(top_k=10)

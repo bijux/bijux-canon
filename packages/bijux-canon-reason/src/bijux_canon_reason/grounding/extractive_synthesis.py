@@ -119,14 +119,14 @@ _RECOMMENDATION_CUE = re.compile(
     flags=re.IGNORECASE,
 )
 _COMPARISON_CUE = re.compile(
-    r"\b(?:agree(?:d|ment)?|compar(?:e|ed|ing)|differ(?:ed|ence)?|identical|"
+    r"\b(?:agree|agreed|agreement|compar(?:e|ed|ing)|differ(?:ed|ence)?|identical|"
     r"same|versus|relative to|higher|lower|exceed(?:ed|s)?)\b",
     flags=re.IGNORECASE,
 )
 _METHOD_CUE = re.compile(
     r"\b(?:analys(?:e|ed|is)|assay(?:ed)?|clon(?:e|ed|ing)|"
     r"extract(?:ed|ion)?|libraries|library|protocol|replicat(?:e|ed|ion)|"
-    r"sequenc(?:e|ed|ing)|test(?:ed)?)\b",
+    r"sequence|sequenced|sequencing|test(?:ed)?)\b",
     flags=re.IGNORECASE,
 )
 _NUMBER = re.compile(
@@ -188,11 +188,31 @@ _QUESTION_CONCEPTS: tuple[tuple[frozenset[str], frozenset[str]], ...] = (
     ),
     (
         frozenset({"signal", "signals"}),
-        frozenset({"evidence", "hallmark", "hallmarks", "junction", "junctions", "specificity"}),
+        frozenset(
+            {
+                "evidence",
+                "hallmark",
+                "hallmarks",
+                "junction",
+                "junctions",
+                "specificity",
+            }
+        ),
     ),
     (
         frozenset({"specimen", "specimens", "material", "materials"}),
-        frozenset({"material", "materials", "sample", "samples", "source", "sources", "specimen", "specimens"}),
+        frozenset(
+            {
+                "material",
+                "materials",
+                "sample",
+                "samples",
+                "source",
+                "sources",
+                "specimen",
+                "specimens",
+            }
+        ),
     ),
     (
         frozenset({"history", "preservation", "preserved"}),
@@ -200,7 +220,17 @@ _QUESTION_CONCEPTS: tuple[tuple[frozenset[str], frozenset[str]], ...] = (
     ),
     (
         frozenset({"analysis", "analyses", "possible"}),
-        frozenset({"analysis", "analyses", "feasible", "genomic", "metagenomic", "profile", "profiles"}),
+        frozenset(
+            {
+                "analysis",
+                "analyses",
+                "feasible",
+                "genomic",
+                "metagenomic",
+                "profile",
+                "profiles",
+            }
+        ),
     ),
 )
 _GENERIC_QUESTION_TERMS = frozenset(
@@ -501,11 +531,9 @@ class ExtractiveSynthesisPoint(StableModel):
         if self.semantic_similarity is None:
             if self.semantic_need_similarities or self.semantic_need_term_overlaps:
                 raise ValueError("lexical synthesis points cannot carry semantic needs")
-        elif (
-            not self.semantic_need_similarities
-            or len(self.semantic_need_similarities)
-            != len(self.semantic_need_term_overlaps)
-        ):
+        elif not self.semantic_need_similarities or len(
+            self.semantic_need_similarities
+        ) != len(self.semantic_need_term_overlaps):
             raise ValueError("semantic synthesis point need scores must align")
         if hashlib.sha256(self.statement.encode()).hexdigest() != self.statement_sha256:
             raise ValueError("statement does not match statement_sha256")
@@ -756,8 +784,7 @@ class CredentialFreeSynthesizer:
             or _need_term_overlap(question, item.statement) >= minimum_overlap
             or (
                 item.semantic_similarity is not None
-                and item.semantic_similarity
-                >= self._policy.minimum_semantic_similarity
+                and item.semantic_similarity >= self._policy.minimum_semantic_similarity
             )
             or any(item.semantic_need_term_overlaps)
         )
@@ -801,13 +828,10 @@ class CredentialFreeSynthesizer:
                     ),
                 )
                 if (
-                    (
-                        best.semantic_need_term_overlaps[need_index] > 0
-                        or best.semantic_need_similarities[need_index]
-                        >= self._policy.minimum_semantic_similarity
-                    )
-                    and best not in semantic_frontier
-                ):
+                    best.semantic_need_term_overlaps[need_index] > 0
+                    or best.semantic_need_similarities[need_index]
+                    >= self._policy.minimum_semantic_similarity
+                ) and best not in semantic_frontier:
                     semantic_frontier.append(best)
         ordered = [
             *semantic_frontier,
@@ -864,10 +888,7 @@ class CredentialFreeSynthesizer:
             _with_semantic_similarity(
                 candidate,
                 tuple(_cosine_similarity(need, vector) for need in need_vectors),
-                tuple(
-                    _need_term_overlap(need, candidate.statement)
-                    for need in needs
-                ),
+                tuple(_need_term_overlap(need, candidate.statement) for need in needs),
             )
             for candidate, vector in zip(candidates, candidate_vectors, strict=True)
         )
@@ -1440,9 +1461,7 @@ def _answer_value_score(question: str, statement: str, role: EvidenceRole) -> in
         score += 18
     if question_terms & {"imply", "implication", "conclusion"} and (
         _RESULT_CUE.search(statement)
-        or re.search(
-            r"\b(?:conclusion|conclude|therefore)\b", statement, re.IGNORECASE
-        )
+        or re.search(r"\b(?:conclusion|conclude|therefore)\b", statement, re.IGNORECASE)
     ):
         score += 18
     if question_terms & {"limit", "limits", "limitation", "limitations"} and (

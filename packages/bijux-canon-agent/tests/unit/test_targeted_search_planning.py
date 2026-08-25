@@ -127,7 +127,9 @@ def test_no_results_trigger_a_distinct_context_query_within_bound() -> None:
         ),
     )
     assert exhausted.attempt is None
-    assert exhausted.decisions[0].disposition is TargetedSearchDisposition.ATTEMPT_BUDGET
+    assert (
+        exhausted.decisions[0].disposition is TargetedSearchDisposition.ATTEMPT_BUDGET
+    )
 
 
 def test_ambiguity_and_opposition_select_different_adaptive_queries() -> None:
@@ -201,13 +203,9 @@ def test_equivalent_queries_are_not_repeated() -> None:
         observations=(observed,),
     )
 
-    assert query_equivalence_key("Ancient DNA!") == query_equivalence_key(
-        "ancient dna"
-    )
+    assert query_equivalence_key("Ancient DNA!") == query_equivalence_key("ancient dna")
     assert second.attempt is None
-    by_requirement = {
-        item.requirement_artifact_id: item for item in second.decisions
-    }
+    by_requirement = {item.requirement_artifact_id: item for item in second.decisions}
     assert (
         by_requirement[equivalent_requirement.artifact_id].disposition
         is TargetedSearchDisposition.EQUIVALENT_QUERY
@@ -246,8 +244,14 @@ def test_dependencies_and_materiality_prevent_unjustified_calls() -> None:
     dispositions = {
         item.requirement_artifact_id: item.disposition for item in plan.decisions
     }
-    assert dispositions[finding.artifact_id] is TargetedSearchDisposition.DEPENDENCY_UNRESOLVED
-    assert dispositions[optional_method.artifact_id] is TargetedSearchDisposition.NON_MATERIAL
+    assert (
+        dispositions[finding.artifact_id]
+        is TargetedSearchDisposition.DEPENDENCY_UNRESOLVED
+    )
+    assert (
+        dispositions[optional_method.artifact_id]
+        is TargetedSearchDisposition.NON_MATERIAL
+    )
 
 
 def test_material_candidate_and_refusal_pause_adaptive_search() -> None:
@@ -278,4 +282,7 @@ def test_material_candidate_and_refusal_pause_adaptive_search() -> None:
             ),
         )
         assert plan.attempt is None
-        assert plan.decisions[0].disposition is TargetedSearchDisposition.CLOSED_BY_OBSERVATION
+        assert (
+            plan.decisions[0].disposition
+            is TargetedSearchDisposition.CLOSED_BY_OBSERVATION
+        )

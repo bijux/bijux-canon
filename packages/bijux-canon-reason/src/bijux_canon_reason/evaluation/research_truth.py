@@ -5,9 +5,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from datetime import date
 import hashlib
-from typing import Mapping
 
 from bijux_canon_reason.evaluation.truth import (
     AbstentionExpectation,
@@ -46,7 +46,9 @@ class ResearchQuestionTruthAdapter:
         cases_by_id = {_string(item, "case_id"): item for item in cases}
         qrels_by_id = {_string(item, "qrel_id"): item for item in qrels}
         if len(cases_by_id) != len(cases) or len(qrels_by_id) != len(qrels):
-            raise ResearchTruthAdaptationError("research truth identities must be unique")
+            raise ResearchTruthAdaptationError(
+                "research truth identities must be unique"
+            )
         results = tuple(
             self._case(
                 raw_claims,
@@ -123,9 +125,7 @@ class ResearchQuestionTruthAdapter:
                 qrels_by_id[qrel_id],
                 question_id=question_id,
                 rationale=_string(question_evidence[qrel_id], "rationale"),
-                relevance_grade=_integer(
-                    question_evidence[qrel_id], "relevance_grade"
-                ),
+                relevance_grade=_integer(question_evidence[qrel_id], "relevance_grade"),
                 source_uris=source_uris,
             )
             for qrel_id in sorted(cited_qrel_ids)
@@ -148,9 +148,7 @@ class ResearchQuestionTruthAdapter:
             reviewer_id=_string(raw_truth, "reviewer_id"),
             reviewed_on=_string(raw_truth, "reviewed_on"),
             review_method=_string(raw_truth, "review_method"),
-            source_hashes=tuple(
-                item.locator.source_sha256 for item in qrel_models
-            ),
+            source_hashes=tuple(item.locator.source_sha256 for item in qrel_models),
             data=_string(raw_case, "truth_sha256"),
         )
         abstention_required = bool(raw_truth.get("abstention_expected"))
@@ -159,7 +157,9 @@ class ResearchQuestionTruthAdapter:
             split=EvaluationSplit.development,
             archetype=_string(raw_case, "category"),
             difficulty=(
-                "multi-source" if len({item.locator.source_id for item in qrel_models}) > 1 else "single-source"
+                "multi-source"
+                if len({item.locator.source_id for item in qrel_models}) > 1
+                else "single-source"
             ),
             evidence_condition="reviewed-exact-content",
             query=EvaluationQuery(
@@ -265,7 +265,9 @@ class ResearchQuestionTruthAdapter:
             claim_truth_id=f"{case_id}::point::{index:02d}",
             query_id=question_id,
             statement=_string(raw, "statement"),
-            claim_class=(ClaimTruthClass.expected if expected else ClaimTruthClass.forbidden),
+            claim_class=(
+                ClaimTruthClass.expected if expected else ClaimTruthClass.forbidden
+            ),
             expected_in_answer=expected,
             abstention_expectation=(
                 AbstentionExpectation.prohibited
@@ -313,7 +315,9 @@ def _provenance(
 def _mapping(value: Mapping[str, object], key: str) -> Mapping[str, object]:
     item = value.get(key)
     if not isinstance(item, Mapping):
-        raise ResearchTruthAdaptationError(f"research truth field is not an object: {key}")
+        raise ResearchTruthAdaptationError(
+            f"research truth field is not an object: {key}"
+        )
     return item
 
 
@@ -345,7 +349,9 @@ def _string(value: Mapping[str, object], key: str) -> str:
 def _integer(value: Mapping[str, object], key: str) -> int:
     item = value.get(key)
     if not isinstance(item, int) or isinstance(item, bool):
-        raise ResearchTruthAdaptationError(f"research truth field is not an integer: {key}")
+        raise ResearchTruthAdaptationError(
+            f"research truth field is not an integer: {key}"
+        )
     return item
 
 

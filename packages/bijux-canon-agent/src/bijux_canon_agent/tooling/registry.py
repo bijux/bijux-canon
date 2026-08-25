@@ -100,9 +100,7 @@ class ResearchToolRegistry:
     @property
     def descriptors(self) -> tuple[ResearchToolDescriptor, ...]:
         """Return the registry inventory in stable name/version order."""
-        return tuple(
-            self._bindings[key].descriptor for key in sorted(self._bindings)
-        )
+        return tuple(self._bindings[key].descriptor for key in sorted(self._bindings))
 
     @property
     def records(self) -> tuple[ToolExecutionRecord, ...]:

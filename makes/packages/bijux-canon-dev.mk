@@ -2,6 +2,7 @@ PACKAGE_KIND := python
 PACKAGE_IMPORT_NAME := bijux_canon_dev
 SECURITY_IGNORE_IDS :=
 ENABLE_CODESPELL  := 1
+CODESPELL         = $(VENV_PYTHON) -m codespell_lib --ignore-words-list=ND,nd,intoto
 ENABLE_MYPY       := 1
 ENABLE_RADON      := 0
 ENABLE_PYDOCSTYLE := 0

@@ -333,9 +333,9 @@ def test_semantic_frontier_prefers_slot_specific_result_shapes() -> None:
     assert any(
         "densest region" in item and "best output" in item for item in statements
     ), statements
-    assert any(
-        "65-fold" in item and "177-fold" in item for item in statements
-    ), statements
+    assert any("65-fold" in item and "177-fold" in item for item in statements), (
+        statements
+    )
     assert any(
         "lower than 1%" in item and "hot regions" in item for item in statements
     ), statements
@@ -412,7 +412,9 @@ def test_authentication_question_selects_current_signals_and_replication() -> No
 
     statements = tuple(point.statement for point in result.points)
     assert any("exon-exon junction" in item for item in statements)
-    assert any("Independent technical library replicates" in item for item in statements)
+    assert any(
+        "Independent technical library replicates" in item for item in statements
+    )
     assert all("recent qPCR" not in item for item in statements)
 
 

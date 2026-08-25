@@ -21,7 +21,6 @@ from bijux_canon_dev.release.wheel_inventory import (
     run_wheel_inventory,
 )
 
-
 SOURCE_COMMIT = "2" * 40
 REPO_ROOT = Path(__file__).resolve().parents[3]
 
@@ -119,7 +118,9 @@ def test_workspace_policy_rejects_conflicting_console_script_ownership(
         example_pyproject.read_text(encoding="utf-8")
         .replace('name = "example"', 'name = "second"', 1)
         .replace('packages = ["src/example"]', 'packages = ["src/second"]')
-        .replace('include = ["src/example/py.typed"]', 'include = ["src/second/py.typed"]')
+        .replace(
+            'include = ["src/example/py.typed"]', 'include = ["src/second/py.typed"]'
+        )
         .replace(
             'example = ["py.typed", "api/schema.hash"]',
             'second = ["py.typed", "api/schema.hash"]',
@@ -296,7 +297,8 @@ def test_inventory_validates_complete_family_and_retains_bindings(
     records = cast(list[dict[str, object]], evidence["records"])
     record = next(item for item in records if item["package_id"] == "example")
     assert record["schema_assets"] == ["example/api/schema.hash"]
-    assert evidence["sdist_records"][0]["status"] == "passed"
+    sdist_records = cast(list[dict[str, object]], evidence["sdist_records"])
+    assert sdist_records[0]["status"] == "passed"
     assert output.is_file()
 
 

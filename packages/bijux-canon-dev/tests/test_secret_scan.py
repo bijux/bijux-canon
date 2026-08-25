@@ -30,7 +30,9 @@ def _repository(tmp_path: Path, files: dict[str, bytes]) -> Path:
     return repository
 
 
-def test_scan_reports_locations_without_serializing_secret_values(tmp_path: Path) -> None:
+def test_scan_reports_locations_without_serializing_secret_values(
+    tmp_path: Path,
+) -> None:
     token = "gh" + "p_" + "a" * 36
     repository = _repository(
         tmp_path,

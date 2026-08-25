@@ -74,6 +74,7 @@ def _parser() -> argparse.ArgumentParser:
 def _run_server(settings: ServerSettings) -> None:
     try:
         import uvicorn
+
         from bijux_canon_runtime.api.v2.app import app
     except ModuleNotFoundError as exc:
         missing_dependency = (
@@ -81,8 +82,7 @@ def _run_server(settings: ServerSettings) -> None:
         )
         if missing_dependency in _API_DEPENDENCIES:
             raise RuntimeError(
-                "HTTP dependencies are unavailable; install "
-                "bijux-canon-runtime[api]"
+                "HTTP dependencies are unavailable; install bijux-canon-runtime[api]"
             ) from exc
         raise
     uvicorn.run(

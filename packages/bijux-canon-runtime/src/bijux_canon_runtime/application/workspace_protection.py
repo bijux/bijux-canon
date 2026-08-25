@@ -6,10 +6,10 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import asdict
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Mapping
 
 from bijux_canon_runtime.application.runtime_configuration import RuntimeConfiguration
 from bijux_canon_runtime.runtime.persistence import (
@@ -35,7 +35,6 @@ class RuntimeWorkspaceProtection:
         created_at: str | None = None,
     ) -> Mapping[str, object]:
         """Create or authenticate one configured backup generation."""
-
         timestamp = _timestamp(created_at)
         try:
             generation, manifest = self._manager.create_workspace_backup(
@@ -63,7 +62,6 @@ class RuntimeWorkspaceProtection:
         restore_root: Path,
     ) -> Mapping[str, object]:
         """Restore an authenticated generation into one absent destination."""
-
         try:
             result = RuntimeBackupManager.restore(
                 backup_generation=backup_generation,

@@ -37,9 +37,7 @@ class SystemCitation(StableModel):
     schema_version: Literal[
         "bijux.canon.evaluation.system-citation.v1",
         "bijux.canon.evaluation.system-citation.v2",
-    ] = (
-        "bijux.canon.evaluation.system-citation.v1"
-    )
+    ] = "bijux.canon.evaluation.system-citation.v1"
     citation_id: Identifier
     source_id: Identifier
     source_uri: NonEmptyText

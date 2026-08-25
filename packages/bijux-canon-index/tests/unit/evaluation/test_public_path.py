@@ -209,9 +209,9 @@ def test_public_metrics_preserve_installed_final_rank_after_reranking() -> None:
         )
         for candidate in (
             stages.lexical_candidates[0],
-                stages.dense_candidates[0],
-                stages.fusion_candidates[0],
-                stages.rerank_candidates[0],
+            stages.dense_candidates[0],
+            stages.fusion_candidates[0],
+            stages.rerank_candidates[0],
         )
     )
     observation = replace(
@@ -229,9 +229,9 @@ def test_public_metrics_preserve_installed_final_rank_after_reranking() -> None:
         ),
     )
 
-    report = PublicRetrievalEvaluator(
-        lambda _request, _query: observation
-    ).evaluate(request)
+    report = PublicRetrievalEvaluator(lambda _request, _query: observation).evaluate(
+        request
+    )
 
     query_metrics = report.macro.queries[0]
     assert query_metrics.ordered_evidence_ids[:2] == (

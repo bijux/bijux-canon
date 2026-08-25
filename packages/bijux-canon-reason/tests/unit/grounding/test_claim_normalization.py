@@ -431,7 +431,9 @@ def test_historical_plain_qualifier_claim_replays_without_identity_change() -> N
         "source_candidate_ordinal": 1,
         "atomicity_basis": "single_assertion",
     }
-    claim = AtomicClaim(artifact_id=content_artifact_id(claim_payload), **claim_payload)
+    claim = AtomicClaim.model_validate(
+        {"artifact_id": content_artifact_id(claim_payload), **claim_payload}
+    )
     claim_set_payload = {
         "schema_version": "bijux.canon.reason.normalized_claim_set.v1",
         "source_synthesis_artifact_id": _artifact("historical-synthesis"),
@@ -440,8 +442,8 @@ def test_historical_plain_qualifier_claim_replays_without_identity_change() -> N
         "claims": (claim.model_dump(mode="json"),),
     }
 
-    replayed = NormalizedClaimSet(
-        artifact_id=content_artifact_id(claim_set_payload), **claim_set_payload
+    replayed = NormalizedClaimSet.model_validate(
+        {"artifact_id": content_artifact_id(claim_set_payload), **claim_set_payload}
     )
 
     assert replayed.claims[0].qualifier == "within the historical source"

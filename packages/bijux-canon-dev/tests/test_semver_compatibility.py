@@ -17,7 +17,11 @@ def test_prior_release_public_surfaces_are_retained() -> None:
     assert len(report["imports"]) == 12
     assert len(report["commands"]) == 12
     assert len(report["schemas"]) == 5
-    assert all(not item.get("removed") for family in ("imports", "commands", "schemas") for item in report[family])
+    assert all(
+        not item.get("removed")
+        for family in ("imports", "commands", "schemas")
+        for item in report[family]
+    )
 
 
 def test_deprecations_have_open_windows_and_explicit_alternatives() -> None:
@@ -38,4 +42,7 @@ def test_workspace_migration_proof_names_rollback_and_acceptance() -> None:
 
 def test_policy_is_canonical_json() -> None:
     payload = json.loads(POLICY.read_text(encoding="utf-8"))
-    assert POLICY.read_text(encoding="utf-8") == json.dumps(payload, indent=2, sort_keys=True) + "\n"
+    assert (
+        POLICY.read_text(encoding="utf-8")
+        == json.dumps(payload, indent=2, sort_keys=True) + "\n"
+    )

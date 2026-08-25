@@ -176,9 +176,7 @@ def inspect_index_generation(
                     build_identity.lexical_tokenizer_configuration_sha256
                 ),
                 dense_exact_algorithm=build_identity.dense_exact_algorithm,
-                dense_exact_schema_version=(
-                    build_identity.dense_exact_schema_version
-                ),
+                dense_exact_schema_version=(build_identity.dense_exact_schema_version),
                 dense_exact_index_type=build_identity.dense_exact_index_type,
                 dense_approximate_algorithm=(
                     build_identity.dense_approximate_algorithm
@@ -227,9 +225,7 @@ def inspect_index_generation(
                     None if compatibility is None else compatibility.dimension
                 ),
                 requested_configuration_id=(
-                    None
-                    if compatibility is None
-                    else compatibility.configuration_id
+                    None if compatibility is None else compatibility.configuration_id
                 ),
             ),
         )

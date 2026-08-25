@@ -2,11 +2,12 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from copy import deepcopy
 import hashlib
 import json
 from pathlib import Path
-from typing import Mapping, TypedDict
+from typing import TypedDict
 
 import pytest
 
@@ -172,9 +173,7 @@ def test_development_report_binds_runs_and_retains_pending_semantics(
     assert isinstance(cases, list)
     assert cases[0]["answer"]["run_id"].startswith("run_v1_")
     assert cases[0]["retrieval"]["attempt_id"].startswith("attempt_v1_")
-    assert cases[0]["research_utility"]["status"] == (
-        "pending-independent-review"
-    )
+    assert cases[0]["research_utility"]["status"] == ("pending-independent-review")
     assert cases[1]["research_utility"]["status"] == "not-applicable"
     assert (tmp_path / "development-evaluation.json").is_file()
     assert (tmp_path / "evidence-book" / "evidence-book.json").is_file()
@@ -207,7 +206,9 @@ def test_perfect_metrics_without_persisted_runs_are_rejected(tmp_path: Path) -> 
         build_development_evaluation(**inputs)
 
 
-@pytest.mark.parametrize("field", ["system_output_consulted", "system_output_may_define_truth"])
+@pytest.mark.parametrize(
+    "field", ["system_output_consulted", "system_output_may_define_truth"]
+)
 def test_truth_leakage_is_rejected(tmp_path: Path, field: str) -> None:
     inputs = _inputs(tmp_path)
     cases = deepcopy(inputs["cases"])

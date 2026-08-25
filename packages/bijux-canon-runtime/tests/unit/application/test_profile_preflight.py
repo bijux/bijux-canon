@@ -9,11 +9,11 @@ from types import SimpleNamespace
 
 import pytest
 
-from bijux_canon_runtime.application.profile_preflight import (
-    InstalledProfilePreflight,
-)
 from bijux_canon_runtime.application.operations.service import (
     ApplicationCapabilityError,
+)
+from bijux_canon_runtime.application.profile_preflight import (
+    InstalledProfilePreflight,
 )
 from bijux_canon_runtime.model.execution.request_plan import ExecutionProfile
 

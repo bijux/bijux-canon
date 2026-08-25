@@ -6,13 +6,14 @@
 from __future__ import annotations
 
 import argparse
+from collections.abc import Sequence
 from dataclasses import dataclass
 import fnmatch
 from importlib.resources import files
 import json
 from pathlib import Path, PurePosixPath
 import subprocess
-from typing import Sequence, cast
+from typing import cast
 
 
 @dataclass(frozen=True, slots=True)

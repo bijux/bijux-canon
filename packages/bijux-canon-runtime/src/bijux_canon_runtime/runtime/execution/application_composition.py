@@ -11,8 +11,8 @@ import gc
 import hashlib
 import json
 from pathlib import Path
-import threading
 import tempfile
+import threading
 from time import perf_counter
 
 from bijux_canon_index.application import (
@@ -21,20 +21,20 @@ from bijux_canon_index.application import (
     resolve_hybrid_retrieval_policy,
 )
 from bijux_canon_index.evaluation import PublicRetrievalEvaluator
+from bijux_canon_index.infra.adapters.sqlite.lexical import SQLiteLexicalIndex
 from bijux_canon_index.infra.embeddings.local_model import (
     EmbeddedBatch,
     LocalEmbeddingModel,
 )
 from bijux_canon_index.infra.embeddings.model_cache import load_model_lock
-from bijux_canon_index.infra.adapters.sqlite.lexical import SQLiteLexicalIndex
 from bijux_canon_runtime.application.operations import (
     ApplicationCapabilityError,
     ReplayOperationRequest,
     RuntimeApplicationServicesV2,
     build_runtime_job_handlers,
 )
-from bijux_canon_runtime.application.runtime_configuration import RuntimeConfiguration
 from bijux_canon_runtime.application.profile_preflight import InstalledProfilePreflight
+from bijux_canon_runtime.application.runtime_configuration import RuntimeConfiguration
 from bijux_canon_runtime.application.workspace_initialization import (
     validate_runtime_workspace,
 )
@@ -109,7 +109,6 @@ class _LazyLocalEmbeddingModel:
 
     def validate(self) -> str:
         """Prove actual locked dimension and numeric behavior before queueing."""
-
         with self._lock:
             result = self._load().embed(("bijux-canon offline model validation",))
             return result.model_lock_id
@@ -145,7 +144,6 @@ class _LazyLocalEmbeddingModel:
 
     def cache_observation(self) -> dict[str, object]:
         """Return content-safe model reuse evidence without forcing a load."""
-
         with self._lock:
             return {
                 "cache_identity": (
@@ -161,7 +159,6 @@ class _LazyLocalEmbeddingModel:
 
     def close(self) -> None:
         """Release the model reference when the application lifecycle ends."""
-
         with self._lock:
             self._model = None
             self._lock_content_sha256 = None

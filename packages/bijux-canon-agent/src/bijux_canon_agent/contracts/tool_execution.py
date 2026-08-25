@@ -203,10 +203,14 @@ class ToolExecutionRecord:
             or re.fullmatch(r"[A-Za-z][A-Za-z0-9_.]*", self.failure_class) is None
         ):
             raise ValueError("tool execution failure_class must be a safe type name")
-        if self.status in {
-            ToolExecutionStatus.SUCCEEDED,
-            ToolExecutionStatus.REPLAYED,
-        } and self.result_artifact_id is None:
+        if (
+            self.status
+            in {
+                ToolExecutionStatus.SUCCEEDED,
+                ToolExecutionStatus.REPLAYED,
+            }
+            and self.result_artifact_id is None
+        ):
             raise ValueError("successful tool execution requires a result identity")
         if self.status is ToolExecutionStatus.REPLAYED and (
             self.replay_source_artifact_id is None

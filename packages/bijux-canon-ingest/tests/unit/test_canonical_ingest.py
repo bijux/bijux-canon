@@ -213,8 +213,10 @@ def test_canonical_runtime_automatically_uses_research_corpus_lock() -> None:
         for document in preparation.documents
     } == {
         (
-            "Ancient RNA from Late Pleistocene permafrost and historical canids "
-            "shows tissue-specific transcriptome survival",
+            (
+                "Ancient RNA from Late Pleistocene permafrost and historical canids "
+                "shows tissue-specific transcriptome survival"
+            ),
             "10.1371/journal.pbio.3000166",
         ),
         (
@@ -222,23 +224,31 @@ def test_canonical_runtime_automatically_uses_research_corpus_lock() -> None:
             "10.1371/journal.pone.0002316",
         ),
         (
-            "To Clone or Not To Clone: Method Analysis for Retrieving Consensus "
-            "Sequences In Ancient DNA Samples",
+            (
+                "To Clone or Not To Clone: Method Analysis for Retrieving Consensus "
+                "Sequences In Ancient DNA Samples"
+            ),
             "10.1371/journal.pone.0021247",
         ),
         (
-            "Fragmentation of Contaminant and Endogenous DNA in Ancient Samples "
-            "Determined by Shotgun Sequencing; Prospects for Human Palaeogenomics",
+            (
+                "Fragmentation of Contaminant and Endogenous DNA in Ancient Samples "
+                "Determined by Shotgun Sequencing; Prospects for Human Palaeogenomics"
+            ),
             "10.1371/journal.pone.0024161",
         ),
         (
-            "Absence of Ancient DNA in Sub-Fossil Insect Inclusions Preserved in "
-            "‘Anthropocene’ Colombian Copal",
+            (
+                "Absence of Ancient DNA in Sub-Fossil Insect Inclusions Preserved in "
+                "‘Anthropocene’ Colombian Copal"
+            ),
             "10.1371/journal.pone.0073150",
         ),
         (
-            "Optimal Ancient DNA Yields from the Inner Ear Part of the Human "
-            "Petrous Bone",
+            (
+                "Optimal Ancient DNA Yields from the Inner Ear Part of the Human "
+                "Petrous Bone"
+            ),
             "10.1371/journal.pone.0129102",
         ),
         (
@@ -246,8 +256,10 @@ def test_canonical_runtime_automatically_uses_research_corpus_lock() -> None:
             "10.1371/journal.pone.0239521",
         ),
         (
-            "Uncovering the genomic and metagenomic research potential in old "
-            "ethanol-preserved snakes",
+            (
+                "Uncovering the genomic and metagenomic research potential in old "
+                "ethanol-preserved snakes"
+            ),
             "10.1371/journal.pone.0256353",
         ),
     }

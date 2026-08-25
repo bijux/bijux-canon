@@ -8,10 +8,6 @@ from __future__ import annotations
 import hashlib
 
 from bijux_canon_runtime.ontology.ids import ArtifactID
-from bijux_canon_runtime.runtime.persistence.source_archive import (
-    SourceArchiveError,
-    read_source_archive,
-)
 from bijux_canon_runtime.runtime.inspection.models import (
     InspectedArtifact,
     InspectedAttempt,
@@ -27,11 +23,15 @@ from bijux_canon_runtime.runtime.inspection.parsing import (
     required_object,
     required_string,
 )
+from bijux_canon_runtime.runtime.persistence.filesystem_payload_store import (
+    PayloadCorruptionError,
+)
 from bijux_canon_runtime.runtime.persistence.payload_store import (
     DurableArtifactPayloadStore,
 )
-from bijux_canon_runtime.runtime.persistence.filesystem_payload_store import (
-    PayloadCorruptionError,
+from bijux_canon_runtime.runtime.persistence.source_archive import (
+    SourceArchiveError,
+    read_source_archive,
 )
 
 
@@ -155,17 +155,13 @@ def _validate_claim_execution_context(
         provenance.get("run_id") != run_id
         or provenance.get("execution_configuration_sha256") != configuration_id
     ):
-        raise RuntimeInspectionError(
-            "claim graph execution provenance is inconsistent"
-        )
+        raise RuntimeInspectionError("claim graph execution provenance is inconsistent")
     claim_manifest_id = provenance.get("execution_manifest_artifact_id")
     claim_parent_job_id = provenance.get("parent_job_id")
     if not isinstance(claim_manifest_id, str) or (
         claim_parent_job_id is not None and not isinstance(claim_parent_job_id, str)
     ):
-        raise RuntimeInspectionError(
-            "claim graph execution provenance is inconsistent"
-        )
+        raise RuntimeInspectionError("claim graph execution provenance is inconsistent")
     if selected_attempt.relation != "replay":
         if (
             claim_manifest_id != str(selected_attempt.manifest_artifact_id)
@@ -200,8 +196,8 @@ def _validate_claim_execution_context(
         if ancestor is None:
             break
         if ancestor_id == claim_source_attempt_id:
-            source_is_ancestor = (
-                ancestor.manifest_artifact_id == ArtifactID(claim_manifest_id)
+            source_is_ancestor = ancestor.manifest_artifact_id == ArtifactID(
+                claim_manifest_id
             )
             break
         ancestor_id = (
@@ -214,9 +210,7 @@ def _validate_claim_execution_context(
         or _execution_configuration_identity(source_plan, permit_missing=False)
         != configuration_id
     ):
-        raise RuntimeInspectionError(
-            "replay claim source provenance is inconsistent"
-        )
+        raise RuntimeInspectionError("replay claim source provenance is inconsistent")
     return claim_parent_job_id
 
 
@@ -243,10 +237,9 @@ def _validate_step_dependencies(
                 and artifact.dependency_artifact_ids
             ):
                 continue
-            else:
-                raise RuntimeInspectionError(
-                    f"step {step.step_id} output causal dependencies are invalid"
-                )
+            raise RuntimeInspectionError(
+                f"step {step.step_id} output causal dependencies are invalid"
+            )
 
 
 def _execution_configuration_identity(
@@ -306,7 +299,9 @@ def _resolve_citation(
     _require_dependency(claim_artifact, retrieval_id, "claim graph")
     _require_dependency(retrieval_artifact, index_id, "retrieval evidence")
     if not _dependency_reaches(index_id, snapshot_id, by_id):
-        raise RuntimeInspectionError("citation index does not reach its corpus snapshot")
+        raise RuntimeInspectionError(
+            "citation index does not reach its corpus snapshot"
+        )
     snapshot_artifact = by_id.get(snapshot_id)
     if snapshot_artifact is None or snapshot_artifact.schema_id != (
         "ingest.corpus-snapshot.v1"
@@ -324,7 +319,9 @@ def _resolve_citation(
     try:
         archive_entries = read_source_archive(store.load(archive_id).canonical_bytes)
     except (KeyError, SourceArchiveError, ValueError) as error:
-        raise RuntimeInspectionError("citation source archive integrity failed") from error
+        raise RuntimeInspectionError(
+            "citation source archive integrity failed"
+        ) from error
     document_id = required_string(citation, "document_id")
     chunk_id = required_string(citation, "chunk_artifact_id")
     source_sha256 = required_string(citation, "source_content_sha256")
@@ -336,8 +333,7 @@ def _resolve_citation(
     entries = tuple(
         item
         for item in archive_entries
-        if item.relative_path == relative_path
-        and item.content_sha256 == source_sha256
+        if item.relative_path == relative_path and item.content_sha256 == source_sha256
     )
     if len(entries) != 1:
         raise RuntimeInspectionError("citation source bytes are unresolved")
@@ -373,8 +369,7 @@ def _snapshot_document(
         document = required_dict(raw_document, "snapshot document")
         chunks = required_list(document, "chunks")
         if document.get("document_id") == document_id and any(
-            isinstance(raw, dict) and raw.get("chunk_id") == chunk_id
-            for raw in chunks
+            isinstance(raw, dict) and raw.get("chunk_id") == chunk_id for raw in chunks
         ):
             candidates.append(document)
     if len(candidates) != 1:

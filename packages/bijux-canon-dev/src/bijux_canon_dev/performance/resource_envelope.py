@@ -46,7 +46,9 @@ def _paths_bytes(paths: Iterable[Path]) -> int:
 def _load_workflow_summary(profile_root: Path) -> dict[str, Any]:
     path = profile_root / "evidence" / "summary.json"
     _require(path.is_file(), f"workflow summary is missing: {path}")
-    return _mapping(json.loads(path.read_text()), f"workflow summary is invalid: {path}")
+    return _mapping(
+        json.loads(path.read_text()), f"workflow summary is invalid: {path}"
+    )
 
 
 def _index_bytes(
@@ -54,7 +56,9 @@ def _index_bytes(
     workspace_roots: Sequence[Path],
     workflow_summary: Mapping[str, Any],
 ) -> int:
-    index = _mapping(workflow_summary.get("index"), "workflow index identity is missing")
+    index = _mapping(
+        workflow_summary.get("index"), "workflow index identity is missing"
+    )
     segments = index.get("segments")
     if isinstance(segments, list) and segments:
         segment_sizes: list[int] = []
@@ -82,9 +86,7 @@ def _index_bytes(
     )
     payload_sizes = {path.stat().st_size for path in payloads if path.is_file()}
     _require(payload_sizes, f"index payload is missing for {artifact_id}")
-    _require(
-        len(payload_sizes) == 1, f"index payload sizes disagree for {artifact_id}"
-    )
+    _require(len(payload_sizes) == 1, f"index payload sizes disagree for {artifact_id}")
     return payload_sizes.pop()
 
 
@@ -159,7 +161,9 @@ def _profile_metrics(
 def _workflow_evidence(profile_root: Path, output_root: Path) -> dict[str, Any]:
     summary_path = profile_root / "evidence" / "summary.json"
     payload = summary_path.read_bytes()
-    summary = _mapping(json.loads(payload), f"workflow summary is invalid: {summary_path}")
+    summary = _mapping(
+        json.loads(payload), f"workflow summary is invalid: {summary_path}"
+    )
     return {
         "installed_environment": _mapping(
             summary.get("installed_environment"),

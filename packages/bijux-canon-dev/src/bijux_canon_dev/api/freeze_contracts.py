@@ -81,9 +81,7 @@ def run(repo_root: Path) -> int:
         ).hexdigest()
         schema_digest = _extract_hash_value(hash_path)
         if schema_digest != digest:
-            failures.append(
-                f"{contract_name}: schema.hash does not match schema.yaml"
-            )
+            failures.append(f"{contract_name}: schema.hash does not match schema.yaml")
 
     if failures:
         print("API freeze contract violations detected:", file=sys.stderr)

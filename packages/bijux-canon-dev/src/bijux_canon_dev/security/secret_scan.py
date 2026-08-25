@@ -11,7 +11,6 @@ import stat
 import subprocess
 from typing import Any
 
-
 _PATTERNS = (
     ("aws-access-key", re.compile(rb"\b(?:AKIA|ASIA)[0-9A-Z]{16}\b")),
     ("github-token", re.compile(rb"\bgh[pousr]_[A-Za-z0-9]{36,255}\b")),
@@ -38,7 +37,9 @@ def _git(root: Path, *arguments: str) -> bytes:
 
 def _tracked_paths(root: Path) -> list[str]:
     raw = _git(root, "ls-files", "-z")
-    return sorted(part.decode("utf-8", errors="strict") for part in raw.split(b"\0") if part)
+    return sorted(
+        part.decode("utf-8", errors="strict") for part in raw.split(b"\0") if part
+    )
 
 
 def _line_number(content: bytes, offset: int) -> int:

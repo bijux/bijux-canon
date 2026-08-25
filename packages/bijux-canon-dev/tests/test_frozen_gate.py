@@ -83,7 +83,9 @@ def test_frozen_gate_runs_selected_tracked_revision_in_background(
     metadata = json.loads(Path(launch.metadata_file).read_text(encoding="utf-8"))
     assert metadata["commit"] == first_commit
     assert metadata["commit_count"] == 1
-    assert metadata["commands"] == [list(command) for command in GATE_COMMANDS["candidate"]]
+    assert metadata["commands"] == [
+        list(command) for command in GATE_COMMANDS["candidate"]
+    ]
     assert metadata["responsibility_graph"] == [
         {
             "command": list(item.command),

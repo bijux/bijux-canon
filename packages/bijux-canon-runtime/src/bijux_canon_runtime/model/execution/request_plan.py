@@ -14,7 +14,6 @@ import re
 from bijux_canon_runtime.ontology.ids import ArtifactID, RequestID
 from bijux_canon_runtime.ontology.public import ReplayMode
 
-
 SUPPORTED_LOCAL_REASON_PROVIDERS = ("credential-free", "local-recorded")
 MAX_RUNTIME_TIMEOUT_SECONDS = 604_800.0
 
@@ -146,9 +145,11 @@ class RuntimeOperationRequest:
             raise ValueError("retrieval top_k must be between 1 and 1000")
         if self.provider is not None and not self.provider.strip():
             raise ValueError("provider identity must not be empty")
-        if self.execution_configuration_sha256 is not None and re.fullmatch(
-            r"[0-9a-f]{64}", self.execution_configuration_sha256
-        ) is None:
+        if (
+            self.execution_configuration_sha256 is not None
+            and re.fullmatch(r"[0-9a-f]{64}", self.execution_configuration_sha256)
+            is None
+        ):
             raise ValueError("execution configuration identity must be a sha256")
         if self.parent_job_id is not None and not self.parent_job_id.strip():
             raise ValueError("parent job identity must not be empty")

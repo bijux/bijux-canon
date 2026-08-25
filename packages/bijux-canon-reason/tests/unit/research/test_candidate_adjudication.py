@@ -112,7 +112,9 @@ def test_negation_and_scope_traps_do_not_become_support() -> None:
     )
 
     assert report.classifications[0].relation is ResearchCandidateRelation.OPPOSING
-    assert report.classifications[1].relation is not ResearchCandidateRelation.SUPPORTING
+    assert (
+        report.classifications[1].relation is not ResearchCandidateRelation.SUPPORTING
+    )
 
 
 def test_limitation_requires_related_limitation_content() -> None:
@@ -182,6 +184,8 @@ def test_adjudicator_disagreement_remains_material_and_unclassified() -> None:
 
     classification = report.classifications[0]
     assert classification.relation is ResearchCandidateRelation.UNCLASSIFIED
-    assert classification.method is CandidateClassificationMethod.ADJUDICATOR_DISAGREEMENT
+    assert (
+        classification.method is CandidateClassificationMethod.ADJUDICATOR_DISAGREEMENT
+    )
     assert classification.material
     assert report.material_unclassified_evidence_artifact_ids == (evidence.artifact_id,)

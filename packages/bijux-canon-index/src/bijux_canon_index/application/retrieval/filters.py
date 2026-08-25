@@ -33,8 +33,10 @@ _CAPABILITIES = {
         user_operators=tuple(operator.value for operator in MetadataOperator),
         result_limit_applied_after_filter=True,
         limitations=(
-            "typed range, collection, and caller-owned predicates are evaluated "
-            "from canonical metadata rows after the FTS match",
+            (
+                "typed range, collection, and caller-owned predicates are evaluated "
+                "from canonical metadata rows after the FTS match"
+            ),
         ),
     ),
     "faiss-flat-ip": RetrievalFilterCapability(
@@ -54,8 +56,10 @@ _CAPABILITIES = {
         user_operators=tuple(operator.value for operator in MetadataOperator),
         result_limit_applied_after_filter=True,
         limitations=(
-            "filtered HNSW queries expand result inspection to the admitted "
-            "generation size before applying the result limit",
+            (
+                "filtered HNSW queries expand result inspection to the admitted "
+                "generation size before applying the result limit"
+            ),
         ),
     ),
 }

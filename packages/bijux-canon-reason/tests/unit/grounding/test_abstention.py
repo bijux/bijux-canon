@@ -51,8 +51,10 @@ def test_verified_conservative_projection_has_full_admission_confidence() -> Non
         (
             (
                 "Part C denotes the dense part within the otic capsule.",
-                "Three regions were sampled: trabecular bone (part A), cortical "
-                "bone (part B), and the dense part within the otic capsule (part C).",
+                (
+                    "Three regions were sampled: trabecular bone (part A), cortical "
+                    "bone (part B), and the dense part within the otic capsule (part C)."
+                ),
             ),
         )
     )

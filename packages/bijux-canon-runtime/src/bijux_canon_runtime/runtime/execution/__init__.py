@@ -23,8 +23,8 @@ from bijux_canon_runtime.runtime.execution.dag_scheduler import (
     StepSchedulingConstraint,
 )
 from bijux_canon_runtime.runtime.execution.durable_jobs import (
-    DurableJobCapacityError,
     DurableJobCancelled,
+    DurableJobCapacityError,
     DurableJobError,
     DurableJobHandler,
     DurableJobManager,

@@ -7,7 +7,6 @@ from bijux_canon_runtime.application.operations.answer_evaluation import (
     PersistedAnswerEvaluationAdapter,
     PersistedAnswerEvaluationError,
 )
-
 from bijux_canon_runtime.application.operations.codec import (
     replay_request_from_payload,
     replay_request_payload,

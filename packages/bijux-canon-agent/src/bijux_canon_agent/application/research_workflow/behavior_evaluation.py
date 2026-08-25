@@ -132,11 +132,11 @@ class AgentBehaviorEvaluator:
                 for item in result.tool_decisions
             )
             and all(
-                record.descriptor_artifact_id
-                in result.tool_descriptor_artifact_ids
+                record.descriptor_artifact_id in result.tool_descriptor_artifact_ids
                 and record.policy_decision_artifact_id in decisions
-                and decisions[record.policy_decision_artifact_id]
-                .invocation.request_sha256
+                and decisions[
+                    record.policy_decision_artifact_id
+                ].invocation.request_sha256
                 == record.request_sha256
                 for record in result.tool_execution_records
             )

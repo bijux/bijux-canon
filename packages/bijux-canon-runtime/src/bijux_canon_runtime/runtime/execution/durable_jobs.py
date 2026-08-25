@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable, Mapping
+from collections.abc import Callable, Iterator, Mapping
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager
 from dataclasses import dataclass, field
@@ -17,7 +17,7 @@ import math
 from pathlib import Path
 import sqlite3
 import threading
-from typing import Iterator, Protocol
+from typing import Protocol
 
 import duckdb
 
@@ -814,10 +814,12 @@ class DurableJobManager:
                 "durable job request artifact cannot be decoded"
             ) from exc
         if (
-            payload.get("schema_version")
-            != "bijux.runtime.durable-job-request.v1"
+            payload.get("schema_version") != "bijux.runtime.durable-job-request.v1"
             or payload.get("request_sha256") != request.request_sha256
-            or (expected_sha256 is not None and request.request_sha256 != expected_sha256)
+            or (
+                expected_sha256 is not None
+                and request.request_sha256 != expected_sha256
+            )
             or self._request_artifact(request) != artifact
         ):
             raise DurableJobError("durable job request artifact identity is invalid")
@@ -846,7 +848,9 @@ class DurableJobManager:
         try:
             result = json.loads(artifact.canonical_bytes)
         except json.JSONDecodeError as exc:
-            raise DurableJobError("durable job result artifact is invalid JSON") from exc
+            raise DurableJobError(
+                "durable job result artifact is invalid JSON"
+            ) from exc
         if not isinstance(result, dict):
             raise DurableJobError("durable job result artifact must be an object")
         return result
@@ -873,7 +877,11 @@ class DurableJobManager:
 
     def _import_legacy_jobs(self) -> None:
         legacy_path = self._legacy_database_path
-        if legacy_path is None or legacy_path == self._path or not legacy_path.is_file():
+        if (
+            legacy_path is None
+            or legacy_path == self._path
+            or not legacy_path.is_file()
+        ):
             return
         try:
             with sqlite3.connect(
@@ -886,9 +894,7 @@ class DurableJobManager:
                         "PRAGMA table_info(runtime_jobs)"
                     ).fetchall()
                 }
-                deadline_column = (
-                    "deadline_at" if "deadline_at" in columns else "NULL"
-                )
+                deadline_column = "deadline_at" if "deadline_at" in columns else "NULL"
                 timeout_column = (
                     "timeout_seconds" if "timeout_seconds" in columns else "NULL"
                 )

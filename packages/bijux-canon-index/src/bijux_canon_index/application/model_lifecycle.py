@@ -18,10 +18,10 @@ from typing import Any
 import uuid
 
 from bijux_canon_index.domain.embedding import (
+    LOCAL_MINILM_PROFILE,
     ArtifactDigest,
     EmbeddingModelLock,
     EmbeddingProfile,
-    LOCAL_MINILM_PROFILE,
 )
 from bijux_canon_index.infra.embeddings.local_model import LocalEmbeddingModel
 from bijux_canon_index.infra.embeddings.model_cache import (

@@ -4,6 +4,23 @@
 
 from __future__ import annotations
 
+from bijux_canon_reason.research.answer_requirements import (
+    AnswerRequirementKind,
+    AnswerRequirementPlan,
+    AnswerRequirementPlanningService,
+    AnswerRequirementPlanOutcome,
+    AnswerRequirementStatus,
+    PlannedAnswerRequirement,
+    SkepticalSearchCompletion,
+    create_skeptical_search_completion,
+)
+from bijux_canon_reason.research.answer_revision import (
+    ClaimRevisionAction,
+    ClaimRevisionActionKind,
+    ResearchAnswerRevision,
+    ResearchAnswerRevisionService,
+    ResearchRevisionOutcome,
+)
 from bijux_canon_reason.research.assumptions_insufficiency import (
     AssumptionCandidate,
     AssumptionImpact,
@@ -19,22 +36,15 @@ from bijux_canon_reason.research.assumptions_insufficiency import (
     ResearchDeficiencyStatus,
     create_assumption_candidate,
 )
-from bijux_canon_reason.research.answer_requirements import (
-    AnswerRequirementKind,
-    AnswerRequirementPlan,
-    AnswerRequirementPlanOutcome,
-    AnswerRequirementPlanningService,
-    AnswerRequirementStatus,
-    PlannedAnswerRequirement,
-    SkepticalSearchCompletion,
-    create_skeptical_search_completion,
-)
-from bijux_canon_reason.research.answer_revision import (
-    ClaimRevisionAction,
-    ClaimRevisionActionKind,
-    ResearchAnswerRevision,
-    ResearchAnswerRevisionService,
-    ResearchRevisionOutcome,
+from bijux_canon_reason.research.candidate_adjudication import (
+    CandidateAdjudicationPolicy,
+    CandidateAdjudicationReport,
+    CandidateClassificationMethod,
+    DuplicateResearchCandidate,
+    ResearchCandidateAdjudicationService,
+    ResearchCandidateClassification,
+    ResearchCandidateRelation,
+    StructuredCandidateJudgment,
 )
 from bijux_canon_reason.research.claim_merging import (
     CanonicalClaimVariant,
@@ -49,16 +59,6 @@ from bijux_canon_reason.research.claim_merging import (
     MergeableClaim,
     SharedEvidenceUse,
     create_mergeable_claim,
-)
-from bijux_canon_reason.research.candidate_adjudication import (
-    CandidateAdjudicationPolicy,
-    CandidateAdjudicationReport,
-    CandidateClassificationMethod,
-    DuplicateResearchCandidate,
-    ResearchCandidateAdjudicationService,
-    ResearchCandidateClassification,
-    ResearchCandidateRelation,
-    StructuredCandidateJudgment,
 )
 from bijux_canon_reason.research.convergence import (
     AnswerVerificationStatus,

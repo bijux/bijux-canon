@@ -592,11 +592,11 @@ def render_contextualized_answer(
         known_nodes[claim_id].verdict is not EntailmentVerdict.direct_support
         for claim_id in admitted_claim_artifact_ids
     ):
-        raise ValueError("only directly supported contextualized claims may be rendered")
+        raise ValueError(
+            "only directly supported contextualized claims may be rendered"
+        )
     admitted_nodes = tuple(
-        node
-        for node in nodes
-        if node.claim_artifact_id in admitted_claim_artifact_ids
+        node for node in nodes if node.claim_artifact_id in admitted_claim_artifact_ids
     )
     context_by_claim = {item.claim_artifact_id: item for item in contexts}
     node_by_claim = {item.claim_artifact_id: item for item in admitted_nodes}
@@ -688,9 +688,7 @@ def render_contextualized_answer(
         AnswerAnnotationKind.interpretation: "Product interpretation",
     }
     for kind in AnswerAnnotationKind:
-        matching_annotations = tuple(
-            item for item in annotations if item.kind is kind
-        )
+        matching_annotations = tuple(item for item in annotations if item.kind is kind)
         if not matching_annotations:
             continue
         lines.append(label_by_kind[kind] + " (not source-supported facts):")

@@ -305,9 +305,7 @@ def inspect_workspace_policy(repo_root: Path) -> tuple[PackagePolicy, ...]:
             targets = script_owners.setdefault(script, {})
             targets.setdefault(entrypoint, []).append(policy.distribution_name)
     conflicting_scripts = {
-        script: targets
-        for script, targets in script_owners.items()
-        if len(targets) > 1
+        script: targets for script, targets in script_owners.items() if len(targets) > 1
     }
     if conflicting_scripts:
         detail_rows: list[str] = []
@@ -474,9 +472,10 @@ def _source_leaks(
         info = archive.getinfo(name)
         if info.file_size > 2 * 1024 * 1024:
             continue
-        if name.endswith((".py", ".md", ".txt", "/METADATA", "/WHEEL")):
-            if source_path in archive.read(name):
-                leaks.append(f"embedded-source-path:{name}")
+        if name.endswith((".py", ".md", ".txt", "/METADATA", "/WHEEL")) and (
+            source_path in archive.read(name)
+        ):
+            leaks.append(f"embedded-source-path:{name}")
     return sorted(leaks)
 
 

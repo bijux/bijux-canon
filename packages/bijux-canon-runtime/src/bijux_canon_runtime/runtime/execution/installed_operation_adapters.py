@@ -41,13 +41,13 @@ from bijux_canon_runtime.runtime.execution.operation_dispatcher import (
     StepDispatchError,
     StepOutputArtifact,
 )
+from bijux_canon_runtime.runtime.persistence.payload_store import ArtifactPayloadStore
 from bijux_canon_runtime.runtime.persistence.source_archive import (
     SourceArchiveEntry,
     SourceArchiveError,
     build_source_archive,
     read_source_archive,
 )
-from bijux_canon_runtime.runtime.persistence.payload_store import ArtifactPayloadStore
 
 
 class CanonicalEmbeddingService(Protocol):

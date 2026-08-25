@@ -4,7 +4,8 @@ from __future__ import annotations
 
 from dataclasses import replace
 import json
-from typing import cast
+from pathlib import Path
+from typing import TypedDict
 
 import pytest
 
@@ -16,7 +17,17 @@ from bijux_canon_dev.quality import (
 )
 
 
-def _inputs() -> dict[str, object]:
+class _EvidenceBookInputs(TypedDict):
+    source_commit: str
+    current_commit: str
+    identities: EvidenceBookIdentities
+    cases: tuple[EvidenceBookCaseResult, ...]
+    aggregates: tuple[EvidenceBookAggregate, ...]
+    limitations: tuple[str, ...]
+    commands: tuple[str, ...]
+
+
+def _inputs() -> _EvidenceBookInputs:
     return {
         "source_commit": "current-head",
         "current_commit": "current-head",
@@ -89,7 +100,7 @@ def _inputs() -> dict[str, object]:
     }
 
 
-def test_evidence_book_regenerates_index_cases_and_summary(tmp_path) -> None:
+def test_evidence_book_regenerates_index_cases_and_summary(tmp_path: Path) -> None:
     generator = EvaluationEvidenceBookGenerator()
     book = generator.build(**_inputs())
 
@@ -144,7 +155,7 @@ def test_evidence_book_requires_exact_arithmetic_and_limitations() -> None:
 
 def test_evidence_book_forbids_conditional_failure_denominators() -> None:
     inputs = _inputs()
-    aggregates = cast(tuple[EvidenceBookAggregate, ...], inputs["aggregates"])
+    aggregates = inputs["aggregates"]
     aggregate = aggregates[0]
     inputs["aggregates"] = (
         replace(

@@ -15,6 +15,7 @@ import pytest
 pytest.importorskip("faiss")
 pytest.importorskip("numpy")
 
+from bijux_canon_index.application import index_generation as index_generation_module
 from bijux_canon_index.application.index_generation import (
     AdmittedIndexChunk,
     IndexBuildLimits,
@@ -24,7 +25,6 @@ from bijux_canon_index.application.index_generation import (
     LexicalIndexLimits,
     build_lexical_index_segment,
 )
-from bijux_canon_index.application import index_generation as index_generation_module
 from bijux_canon_index.infra.adapters.faiss.exact import FaissExactIndex
 from bijux_canon_index.infra.adapters.faiss.hnsw import HnswParameters
 
@@ -181,9 +181,7 @@ def test_generation_identity_changes_with_every_reproducibility_input(
     snapshot_artifact_id = "sha256:snapshot"
     model_lock_artifact_id = "sha256:model-lock"
     limits = _limits()
-    hnsw_parameters = HnswParameters(
-        m=2, ef_construction=8, ef_search=8, seed=7
-    )
+    hnsw_parameters = HnswParameters(m=2, ef_construction=8, ef_search=8, seed=7)
     if change == "snapshot":
         snapshot_artifact_id = "sha256:changed-snapshot"
     elif change == "model":
@@ -191,9 +189,7 @@ def test_generation_identity_changes_with_every_reproducibility_input(
     elif change == "limits":
         limits = replace(_limits(), max_chunks=11)
     elif change == "algorithm_parameters":
-        hnsw_parameters = HnswParameters(
-            m=2, ef_construction=8, ef_search=7, seed=7
-        )
+        hnsw_parameters = HnswParameters(m=2, ef_construction=8, ef_search=7, seed=7)
     else:
         monkeypatch.setattr(
             index_generation_module,

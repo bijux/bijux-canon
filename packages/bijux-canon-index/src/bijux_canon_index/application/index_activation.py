@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterator
-from contextlib import contextmanager
+from contextlib import contextmanager, suppress
 import fcntl
 import hashlib
 import json
@@ -77,10 +77,8 @@ class IndexGenerationRegistry:
         self.generations = self.root / GENERATIONS_NAME
         self.root.mkdir(parents=True, exist_ok=True)
         self.generations.mkdir(exist_ok=True)
-        try:
+        with suppress(FileExistsError):
             (self.root / LOCK_NAME).touch(exist_ok=False)
-        except FileExistsError:
-            pass
         self._compatibility = compatibility
         self._resource_cache = resource_cache
 

@@ -113,9 +113,7 @@ def test_registry_refuses_incompatible_build_configuration_before_admission(
                 configuration_id="sha256:" + "f" * 64,
             ),
         )
-        with pytest.raises(
-            IndexGenerationIncompatibleError, match="configuration"
-        ):
+        with pytest.raises(IndexGenerationIncompatibleError, match="configuration"):
             registry.admit(generation.path)
 
     assert list(registry.generations.iterdir()) == []

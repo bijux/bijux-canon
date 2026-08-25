@@ -21,14 +21,6 @@ from bijux_canon_reason.evaluation import (
     AbstentionSafetyInput,
     AbstentionSafetyReport,
     AtomicClaimTruth,
-    ClaimFaithfulnessEvaluationError,
-    ClaimFaithfulnessEvaluator,
-    ClaimFaithfulnessReport,
-    ClaimFaithfulnessStatus,
-    ClaimMatchEvaluator,
-    ClaimMatchRelation,
-    ClaimMatchReport,
-    ClaimQualifierAlignment,
     CitationIntegrityEvaluator,
     CitationIntegrityFailureCode,
     CitationIntegrityOwner,
@@ -38,6 +30,14 @@ from bijux_canon_reason.evaluation import (
     CitationQualityReport,
     CitationTruthLabel,
     CitationTruthRelation,
+    ClaimFaithfulnessEvaluationError,
+    ClaimFaithfulnessEvaluator,
+    ClaimFaithfulnessReport,
+    ClaimFaithfulnessStatus,
+    ClaimMatchEvaluator,
+    ClaimMatchRelation,
+    ClaimMatchReport,
+    ClaimQualifierAlignment,
     ClaimTruthClass,
     ConflictExpectation,
     EvaluationCaseTruth,
@@ -102,9 +102,7 @@ def _convergence_evidence(
         remaining_requirement_artifact_ids=remaining_requirement_artifact_ids,
         material_candidate_count=material_candidate_count,
         classified_candidate_count=classified_candidate_count,
-        unresolved_classification_artifact_ids=(
-            unresolved_classification_artifact_ids
-        ),
+        unresolved_classification_artifact_ids=(unresolved_classification_artifact_ids),
         blocking_gap_artifact_ids=blocking_gap_artifact_ids,
         unsearched_important_claim_artifact_ids=(
             unsearched_important_claim_artifact_ids
@@ -326,7 +324,9 @@ def test_real_source_citation_resolves_locator_span_text_and_hash() -> None:
     assert report.failures == ()
 
 
-def test_real_chunk_citation_verifies_emitted_quote_without_truth_locator_equality() -> None:
+def test_real_chunk_citation_verifies_emitted_quote_without_truth_locator_equality() -> (
+    None
+):
     case = _case()
     citation = _chunk_citation(case)
     output = _output(case, citation)

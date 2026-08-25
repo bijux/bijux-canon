@@ -339,9 +339,7 @@ def test_material_counterevidence_cannot_be_omitted_or_majority_voted_away() -> 
     assert "Cited counterevidence:" in result.user_answer
     assert conflict.summary in result.user_answer
     assert "[1, 2]" in result.user_answer
-    assert all(
-        link.artifact_id not in result.user_answer for link in citations.links
-    )
+    assert all(link.artifact_id not in result.user_answer for link in citations.links)
     omitted = result.model_dump(mode="json")
     omitted["conflicts"] = []
     with pytest.raises(ValidationError, match="material counterevidence conflict"):
@@ -375,7 +373,9 @@ def test_assumptions_and_interpretation_remain_explicitly_non_factual() -> None:
     assert "Product interpretation (not source-supported facts):" in result.user_answer
     for annotation in annotations:
         line = next(
-            item for item in result.user_answer.splitlines() if annotation.statement in item
+            item
+            for item in result.user_answer.splitlines()
+            if annotation.statement in item
         )
         assert "[" not in line
 

@@ -107,12 +107,8 @@ class ProductMetricDefinition(StableModel):
         bounded = (
             self.empty_case_value,
             self.threshold,
-            *(
-                ()
-                if self.refused_case_value is None
-                else (self.refused_case_value,)
-            ),
-            *( () if self.failed_case_value is None else (self.failed_case_value,) ),
+            *(() if self.refused_case_value is None else (self.refused_case_value,)),
+            *(() if self.failed_case_value is None else (self.failed_case_value,)),
         )
         if any(
             value < self.minimum_value or value > self.maximum_value
@@ -122,7 +118,9 @@ class ProductMetricDefinition(StableModel):
         if self.aggregation is ProductMetricAggregation.percentile_95 and (
             self.refused_case_value is not None or self.failed_case_value is not None
         ):
-            raise ValueError("latency percentiles must retain observed terminal latency")
+            raise ValueError(
+                "latency percentiles must retain observed terminal latency"
+            )
         return self
 
 
@@ -145,9 +143,15 @@ class ProductEvaluationCase(StableModel):
             raise ValueError(
                 "non-completed cases require exactly one typed failure code"
             )
-        if incomplete and self.answer_disposition is not ProductAnswerDisposition.not_produced:
+        if (
+            incomplete
+            and self.answer_disposition is not ProductAnswerDisposition.not_produced
+        ):
             raise ValueError("non-completed cases cannot claim an answer disposition")
-        if not incomplete and self.answer_disposition is ProductAnswerDisposition.not_produced:
+        if (
+            not incomplete
+            and self.answer_disposition is ProductAnswerDisposition.not_produced
+        ):
             raise ValueError("completed cases require a semantic answer disposition")
         return self
 
@@ -235,11 +239,15 @@ class ProductMetricResult(StableModel):
                 self.definition, item.execution_status
             )
             if terminal_value is not None:
-                if item.denominator <= 0 or not math.isclose(
-                    item.numerator,
-                    terminal_value * item.denominator,
-                    abs_tol=1e-12,
-                ) or not math.isclose(item.value, terminal_value, abs_tol=1e-12):
+                if (
+                    item.denominator <= 0
+                    or not math.isclose(
+                        item.numerator,
+                        terminal_value * item.denominator,
+                        abs_tol=1e-12,
+                    )
+                    or not math.isclose(item.value, terminal_value, abs_tol=1e-12)
+                ):
                     raise ValueError(
                         "terminal metric case does not follow the definition policy"
                     )
@@ -365,7 +373,9 @@ def _aggregate(
     if definition.aggregation is ProductMetricAggregation.micro_ratio:
         numerator = sum(item.numerator for item in outcomes)
         denominator = sum(item.denominator for item in outcomes)
-        value = definition.empty_case_value if denominator == 0 else numerator / denominator
+        value = (
+            definition.empty_case_value if denominator == 0 else numerator / denominator
+        )
         return numerator, denominator, value
     values = tuple(item.value for item in outcomes)
     if definition.aggregation is ProductMetricAggregation.percentile_95:
@@ -393,11 +403,11 @@ def _worst_case_ids(
     outcomes: tuple[ProductMetricCaseOutcome, ...],
 ) -> tuple[Identifier, ...]:
     reverse = definition.direction is MetricDirection.lower_is_better
-    ordered = sorted(outcomes, key=lambda item: (item.value, item.case_id), reverse=reverse)
-    worst_value = ordered[0].value
-    return tuple(
-        sorted(item.case_id for item in ordered if item.value == worst_value)
+    ordered = sorted(
+        outcomes, key=lambda item: (item.value, item.case_id), reverse=reverse
     )
+    worst_value = ordered[0].value
+    return tuple(sorted(item.case_id for item in ordered if item.value == worst_value))
 
 
 __all__ = [

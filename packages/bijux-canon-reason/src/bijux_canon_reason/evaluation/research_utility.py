@@ -80,9 +80,7 @@ class PairedResearchCase(StableModel):
     rar_execution_status: ProductExecutionStatus = ProductExecutionStatus.completed
     rag_failure_code: str | None = None
     rar_failure_code: str | None = None
-    rar_answer_disposition: ProductAnswerDisposition = (
-        ProductAnswerDisposition.answered
-    )
+    rar_answer_disposition: ProductAnswerDisposition = ProductAnswerDisposition.answered
     label_completeness: float = Field(default=1.0, ge=0.0, le=1.0)
 
     @model_validator(mode="after")
@@ -104,10 +102,14 @@ class PairedResearchCase(StableModel):
             self.rar_counterevidence_qrel_ids
         ):
             raise ValueError("retrieved counterevidence qrel IDs must be unique")
-        if not self.rar_convergence_reasons or tuple(
-            sorted(set(self.rar_convergence_reasons))
-        ) != self.rar_convergence_reasons:
-            raise ValueError("RAR convergence reasons must be nonempty, unique, and sorted")
+        if (
+            not self.rar_convergence_reasons
+            or tuple(sorted(set(self.rar_convergence_reasons)))
+            != self.rar_convergence_reasons
+        ):
+            raise ValueError(
+                "RAR convergence reasons must be nonempty, unique, and sorted"
+            )
         if (
             self.rar_answer_changed
             and self.rar_convergence_evidence.answer_revision_artifact_id is None
@@ -122,9 +124,9 @@ class PairedResearchCase(StableModel):
                 raise ValueError(
                     f"{owner} non-completion requires exactly one typed failure code"
                 )
-        if (
-            self.rar_execution_status is ProductExecutionStatus.completed
-        ) != (self.rar_answer_disposition is not ProductAnswerDisposition.not_produced):
+        if (self.rar_execution_status is ProductExecutionStatus.completed) != (
+            self.rar_answer_disposition is not ProductAnswerDisposition.not_produced
+        ):
             raise ValueError("RAR answer disposition conflicts with execution status")
         return self
 
@@ -385,9 +387,7 @@ def _outcome(item: PairedResearchCase) -> ResearchUtilityCaseOutcome:
     completed = item.rar_execution_status is ProductExecutionStatus.completed
     rag_completed = item.rag_execution_status is ProductExecutionStatus.completed
     found = (
-        expected.intersection(item.rar_counterevidence_qrel_ids)
-        if completed
-        else set()
+        expected.intersection(item.rar_counterevidence_qrel_ids) if completed else set()
     )
     return ResearchUtilityCaseOutcome(
         case_id=item.case_id,
@@ -401,17 +401,13 @@ def _outcome(item: PairedResearchCase) -> ResearchUtilityCaseOutcome:
             evidence.unresolved_classification_artifact_ids
         ),
         blocking_gap_count=len(evidence.blocking_gap_artifact_ids),
-        unsearched_material_count=len(
-            evidence.unsearched_important_claim_artifact_ids
-        ),
+        unsearched_material_count=len(evidence.unsearched_important_claim_artifact_ids),
         material_conflict_count=evidence.material_conflict_count,
         answer_verification_status=evidence.answer_verification_status,
         revision_artifact_id=evidence.answer_revision_artifact_id,
         answer_changed=item.rar_answer_changed,
         rag_expected_claim_recall=(
-            item.rag_faithfulness.expected_claim_recall.value
-            if rag_completed
-            else 0.0
+            item.rag_faithfulness.expected_claim_recall.value if rag_completed else 0.0
         ),
         rar_expected_claim_recall=(
             item.rar_faithfulness.expected_claim_recall.value if completed else 0.0
@@ -445,9 +441,7 @@ def _expected_recall(cases: tuple[PairedResearchCase, ...], *, rar: bool) -> flo
         item.rar_faithfulness if rar else item.rag_faithfulness for item in cases
     )
     numerator = sum(
-        0
-        if not _completed(case, rar=rar)
-        else report.expected_claim_recall.numerator
+        0 if not _completed(case, rar=rar) else report.expected_claim_recall.numerator
         for case, report in zip(cases, reports, strict=True)
     )
     denominator = sum(item.expected_claim_recall.denominator for item in reports)
@@ -519,8 +513,7 @@ def _unconditional_report(
             ),
             (
                 "revision.expected-claim-recall-gain",
-                outcome.rar_expected_claim_recall
-                - outcome.rag_expected_claim_recall,
+                outcome.rar_expected_claim_recall - outcome.rag_expected_claim_recall,
                 1.0,
             ),
             (
@@ -546,9 +539,7 @@ def _unconditional_report(
     return UnconditionalProductMetricEvaluator().evaluate(
         cases=product_cases,
         measurements=tuple(measurements),
-        source_identity_sha256=_population_identity(
-            cases, "source_identity_sha256"
-        ),
+        source_identity_sha256=_population_identity(cases, "source_identity_sha256"),
         data_identity_sha256=input_identity,
         model_identity_sha256=_population_identity(cases, "model_identity_sha256"),
         config_identity_sha256=_population_identity(cases, "config_identity_sha256"),

@@ -16,7 +16,6 @@ import re
 from typing import cast
 
 from bijux_canon_index.application import CONTENT_EVIDENCE_RETRIEVAL_POLICY_ID
-
 from bijux_canon_runtime.core.errors import ConfigurationError
 from bijux_canon_runtime.runtime.budget import ExecutionBudget
 

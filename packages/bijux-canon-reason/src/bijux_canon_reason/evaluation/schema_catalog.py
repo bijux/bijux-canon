@@ -10,15 +10,15 @@ from pathlib import Path
 
 from pydantic import BaseModel
 
-from bijux_canon_reason.evaluation.metrics import (
-    EvaluationCaseOutcome,
-    EvaluationReport,
-    MetricObservation,
-)
 from bijux_canon_reason.evaluation.claim_matching import (
     ClaimMatchAdjudication,
     ClaimMatchReport,
     ClaimMatchReview,
+)
+from bijux_canon_reason.evaluation.metrics import (
+    EvaluationCaseOutcome,
+    EvaluationReport,
+    MetricObservation,
 )
 from bijux_canon_reason.evaluation.outcomes import SystemOutput
 from bijux_canon_reason.evaluation.product_metrics import (

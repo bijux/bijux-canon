@@ -96,14 +96,24 @@ class GroundingEvidenceState(StableModel):
             self.retrieved_evidence_count and self.selected_evidence_count
         ):
             raise ValueError("successful retrieval requires selected evidence")
-        if self.retrieval_status in {
-            RetrievalEvidenceStatus.refused,
-            RetrievalEvidenceStatus.failed,
-        } and self.selected_evidence_count:
+        if (
+            self.retrieval_status
+            in {
+                RetrievalEvidenceStatus.refused,
+                RetrievalEvidenceStatus.failed,
+            }
+            and self.selected_evidence_count
+        ):
             raise ValueError("unusable retrieval cannot expose selected evidence")
-        if self.vex_status in {VexEvidenceStatus.below_policy, VexEvidenceStatus.failed}:
-            if self.retrieval_status is RetrievalEvidenceStatus.success:
-                raise ValueError("unresolved VEX failure cannot be called successful")
+        if (
+            self.vex_status
+            in {
+                VexEvidenceStatus.below_policy,
+                VexEvidenceStatus.failed,
+            }
+            and self.retrieval_status is RetrievalEvidenceStatus.success
+        ):
+            raise ValueError("unresolved VEX failure cannot be called successful")
         if (self.policy_detail is None) != (self.remediation is None):
             raise ValueError("evidence policy detail and remediation must be paired")
         payload = self.model_dump(mode="json", exclude={"artifact_id"})

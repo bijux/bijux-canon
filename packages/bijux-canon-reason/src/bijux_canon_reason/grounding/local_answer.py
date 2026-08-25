@@ -374,9 +374,7 @@ def _request_status(question: str) -> GroundingRequestStatus:
             "treatment",
         }
         asks_for_proof = bool(re.search(r"\bprove(?:s|d)?\b", normalized))
-        if len(terms) <= 12 and (
-            asks_for_proof or not contextual.intersection(terms)
-        ):
+        if len(terms) <= 12 and (asks_for_proof or not contextual.intersection(terms)):
             return GroundingRequestStatus.clarification_required
     return GroundingRequestStatus.in_scope
 

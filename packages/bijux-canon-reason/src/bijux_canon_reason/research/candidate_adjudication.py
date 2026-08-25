@@ -23,7 +23,7 @@ from bijux_canon_reason.grounding.semantic_alignment import (
 )
 
 _LIMITATION = re.compile(
-    r"\b(?:boundary|caveat|constraint|fail(?:ed|ure)?|limit(?:ed|ation|ations)?|"
+    r"\b(?:boundary|caveat|constraint|fail|failed|failure|limit(?:ed|ation|ations)?|"
     r"less than|below|uncertain(?:ty)?|cannot|could not|did not|"
     r"small sample|scope)\b",
     re.IGNORECASE,
@@ -170,20 +170,21 @@ class ResearchCandidateClassification(StableModel):
 
     @model_validator(mode="after")
     def _validate_classification(self) -> Self:
-        if (
-            not self.rationale
-            or any(
-                not math.isfinite(value) or not 0 <= value <= 1
-                for value in (self.confidence, self.semantic_coverage)
-            )
+        if not self.rationale or any(
+            not math.isfinite(value) or not 0 <= value <= 1
+            for value in (self.confidence, self.semantic_coverage)
         ):
             raise ValueError("candidate classification confidence is invalid")
         if self.relation is ResearchCandidateRelation.IRRELEVANT and self.material:
             raise ValueError("irrelevant evidence cannot be material")
-        if self.relation in {
-            ResearchCandidateRelation.AMBIGUOUS,
-            ResearchCandidateRelation.UNCLASSIFIED,
-        } and not self.material:
+        if (
+            self.relation
+            in {
+                ResearchCandidateRelation.AMBIGUOUS,
+                ResearchCandidateRelation.UNCLASSIFIED,
+            }
+            and not self.material
+        ):
             raise ValueError("unresolved candidate relations must remain material")
         if self.artifact_id != content_artifact_id(
             self.model_dump(mode="json", exclude={"artifact_id"})
@@ -241,8 +242,7 @@ class CandidateAdjudicationReport(StableModel):
         unresolved = tuple(
             item.evidence_artifact_id
             for item in self.classifications
-            if item.material
-            and item.relation is ResearchCandidateRelation.UNCLASSIFIED
+            if item.material and item.relation is ResearchCandidateRelation.UNCLASSIFIED
         )
         if self.material_unclassified_evidence_artifact_ids != unresolved:
             raise ValueError("material unclassified candidate set is incomplete")
@@ -312,14 +312,15 @@ class ResearchCandidateAdjudicationService:
                     target_statement=normalized_target,
                     claim_artifact_id=claim_artifact_id,
                     candidate=candidate,
-                    judgments=tuple(judgment_by_evidence.get(candidate.artifact_id, ())),
+                    judgments=tuple(
+                        judgment_by_evidence.get(candidate.artifact_id, ())
+                    ),
                 )
             )
         unresolved = tuple(
             item.evidence_artifact_id
             for item in classifications
-            if item.material
-            and item.relation is ResearchCandidateRelation.UNCLASSIFIED
+            if item.material and item.relation is ResearchCandidateRelation.UNCLASSIFIED
         )
         payload = {
             "schema_version": "bijux.canon.reason.candidate_adjudication.v1",
@@ -327,7 +328,9 @@ class ResearchCandidateAdjudicationService:
             "claim_artifact_id": claim_artifact_id,
             "policy_artifact_id": self.policy.artifact_id,
             "input_evidence_artifact_ids": input_ids,
-            "classifications": tuple(item.model_dump(mode="json") for item in classifications),
+            "classifications": tuple(
+                item.model_dump(mode="json") for item in classifications
+            ),
             "duplicates": tuple(item.model_dump(mode="json") for item in duplicates),
             "material_unclassified_evidence_artifact_ids": unresolved,
         }
@@ -386,15 +389,17 @@ class ResearchCandidateAdjudicationService:
                 }
             ):
                 relation = ResearchCandidateRelation.UNCLASSIFIED
-                rationale = "structured_adjudicators_disagree_with_each_other_or_semantics"
+                rationale = (
+                    "structured_adjudicators_disagree_with_each_other_or_semantics"
+                )
                 method = CandidateClassificationMethod.ADJUDICATOR_DISAGREEMENT
                 confidence = min(item.confidence for item in admissible_judgments)
             else:
                 relation = next(iter(judged_relations))
                 rationale = "structured_adjudicators_reached_bound_consensus"
-                confidence = sum(item.confidence for item in admissible_judgments) / len(
-                    admissible_judgments
-                )
+                confidence = sum(
+                    item.confidence for item in admissible_judgments
+                ) / len(admissible_judgments)
                 method = (
                     CandidateClassificationMethod.DETERMINISTIC_STRUCTURED_CONSENSUS
                     if semantic.relation

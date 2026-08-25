@@ -405,6 +405,23 @@ def _build_indexed_runtime(tmp_path: Path) -> _IndexedRuntime:
     )
 
 
+def _assert_locator_segments(value: object) -> dict[str, str]:
+    assert isinstance(value, list)
+    hashes: dict[str, str] = {}
+    for segment in value:
+        assert isinstance(segment, dict)
+        locator = segment["locator"]
+        text = segment["verbatim_text"]
+        digest = segment["content_sha256"]
+        assert isinstance(locator, dict)
+        assert locator["scheme"] == "markdown-line-span"
+        assert isinstance(text, str)
+        assert isinstance(digest, str)
+        assert digest == hashlib.sha256(text.encode()).hexdigest()
+        hashes[text] = digest
+    return hashes
+
+
 def _retrieve_and_reason(indexed: _IndexedRuntime) -> _GroundedRuntime:
     tmp_path = indexed.tmp_path
     planner = indexed.planner
@@ -461,15 +478,7 @@ def _retrieve_and_reason(indexed: _IndexedRuntime) -> _GroundedRuntime:
     assert hit["channels"]
     assert hit["locator_segments"]
     assert hit["locator_scope"] == "first-segment-only"
-    assert all(
-        segment["locator"]["scheme"] == "markdown-line-span"
-        for segment in hit["locator_segments"]
-    )
-    assert all(
-        segment["content_sha256"]
-        == hashlib.sha256(segment["verbatim_text"].encode()).hexdigest()
-        for segment in hit["locator_segments"]
-    )
+    segment_hashes = _assert_locator_segments(hit["locator_segments"])
     citation_candidates, _ = citation_inputs_from_evidence_set(
         evidence,
         retrieval_artifact_id=str(evidence_artifact.descriptor.artifact_id),
@@ -528,10 +537,6 @@ def _retrieve_and_reason(indexed: _IndexedRuntime) -> _GroundedRuntime:
     assert "Citations:\n[1]" in claim_graph["answer"]
     assert "[citation:" not in claim_graph["answer"]
     assert "reports: “" not in claim_graph["answer"]
-    segment_hashes = {
-        segment["verbatim_text"]: segment["content_sha256"]
-        for segment in hit["locator_segments"]
-    }
     selected_text = claim_graph["evidence_packet"]["selected"][0]["exact_text"]
     assert selected_text in segment_hashes
     for link in claim_graph["citations"]["links"]:
@@ -847,6 +852,151 @@ def test_policy_without_exact_fallback_refuses_after_one_witnessed_attempt(
     assert "ef_search_budget_exceeded" in attempt["violations"]
 
 
+def _assert_research_evidence_trace(payload: bytes) -> None:
+    trace = json.loads(payload)
+    assert trace["status"] == "abstained"
+    assert trace["convergence_status"] == "insufficient"
+    assert trace["research_outcome"]["kind"] == "abstained"
+    assert trace["research_outcome"]["remaining_work"][
+        "unsatisfied_requirement_artifact_ids"
+    ]
+    assert trace["termination"]["stop"] is True
+    assert trace["termination"]["reasons"] == ["explicit_insufficiency"]
+    assert trace["termination"]["schema_version"] == (
+        "bijux.canon.reason.convergence_decision.v2"
+    )
+    assert trace["counterevidence_plan"]["requests"]
+    targeted_search = trace["targeted_search_plan"]
+    assert targeted_search["attempt"]["intent"] == "opposition"
+    assert targeted_search["attempt"]["trigger"] == "initial_gap"
+    requirement_ids = trace["answer_requirement_plan"][
+        "search_requirement_artifact_ids"
+    ]
+    assert (
+        targeted_search["attempt"]["requirement_artifact_id"] in requirement_ids
+        or targeted_search["attempt"]["source_requirement_artifact_id"]
+        in requirement_ids
+    )
+    query_text = trace["counterevidence_plan"]["requests"][0]["query_text"]
+    assert query_text.startswith(targeted_search["attempt"]["query_text"])
+    assert "contradictory evidence" in query_text
+    assert trace["counterevidence_run"]["records"][0]["outcome"] == (
+        "candidate_evidence_found"
+    )
+    assert trace["opposition_candidates"]
+    assert trace["research_candidates"] == trace["opposition_candidates"]
+    adjudications = trace["candidate_adjudications"]
+    classifications = trace["candidate_classifications"]
+    assert adjudications
+    assert classifications
+    assert {
+        artifact_id
+        for report in adjudications
+        for artifact_id in report["input_evidence_artifact_ids"]
+    } == set(trace["research_candidates"])
+    assert {
+        item["artifact_id"]
+        for report in adjudications
+        for item in report["classifications"]
+    } == {item["artifact_id"] for item in classifications}
+    assert all(item["locator_artifact_id"] for item in classifications)
+    assert all(len(item["exact_text_sha256"]) == 64 for item in classifications)
+    counterevidence_ids = trace["counterevidence_retrieval_artifact_ids"]
+    assert counterevidence_ids
+    assert len(counterevidence_ids) == len(set(counterevidence_ids))
+    assert "require relation classification" in trace["insufficiencies"][0]
+    revision = trace["answer_revision"]
+    assert revision["outcome"] == "abstained"
+    assert revision["before_answer"] != revision["after_answer"]
+    assert trace["answer"] == revision["after_answer"]
+    assert revision["unresolved_classification_artifact_ids"]
+    assert revision["actions"][0]["kind"] == "abstain"
+    convergence = trace["termination"]["evidence"]
+    material_requirements = [
+        item for item in trace["research_state"]["requirements"] if item["material"]
+    ]
+    assert convergence["material_requirement_count"] == len(material_requirements)
+    assert len(convergence["satisfied_requirement_artifact_ids"]) + len(
+        convergence["remaining_requirement_artifact_ids"]
+    ) == len(material_requirements)
+    assert convergence["material_candidate_count"] == len(
+        set(trace["research_candidates"])
+    )
+    assert convergence["answer_verification_status"] == "abstained"
+    assert convergence["answer_revision_artifact_id"] == revision["artifact_id"]
+    assert convergence["marginal_evidence_values"] == [1.0]
+
+
+def _assert_research_policy_trace(payload: bytes) -> None:
+    trace = json.loads(payload)
+    assert [event["role"] for event in trace["causal_events"]] == [
+        "plan",
+        "researcher",
+        "skeptic",
+        "adjudicator",
+        "synthesizer",
+        "verifier",
+    ]
+    assert trace["research_state"]["question"] == (
+        "What evidence do ancient genomes preserve?"
+    )
+    assert trace["research_state"]["terminal_status"] == "insufficient"
+    assert trace["research_state"]["search_budget"] == {"limit": 2, "used": 1}
+    assert trace["budget_policy_artifact_id"] == trace["budget_policy"]["artifact_id"]
+    assert trace["budget_usage"]["retrievals"] == 1
+    assert trace["budget_usage"]["documents"] == len(
+        trace["counterevidence_document_artifact_ids"]
+    )
+    assert trace["tool_policy"]["default_action"] == "deny"
+    assert trace["tool_policy_artifact_id"] == trace["tool_policy"]["artifact_id"]
+    assert len(trace["tool_decisions"]) == 1
+    assert trace["tool_decisions"][0]["action"] == "allow"
+    assert trace["tool_decisions"][0]["invocation"]["tool"] == (
+        "bijux-canon-index.retrieve"
+    )
+    assert len(trace["tool_execution_records"]) == 1
+    assert trace["tool_execution_records"][0]["status"] == "succeeded"
+    search_event = next(
+        event
+        for event in trace["causal_events"]
+        if event["operation"] == "search_counterevidence"
+    )
+    assert search_event["tool_decision_artifact_ids"] == [
+        trace["tool_decisions"][0]["artifact_id"]
+    ]
+    assert (
+        trace["tool_execution_records"][0]["artifact_id"]
+        in (search_event["observation_artifact_ids"])
+    )
+    assert any(
+        decision["action"] == "reserved" for decision in trace["budget_decisions"]
+    )
+    assert len(trace["targeted_search_plans"]) == 1
+    assert len(trace["targeted_search_observations"]) == 1
+    assert trace["targeted_search_observations"][0]["outcome"] == ("material_candidate")
+    assert len(trace["counterevidence_plans"]) == 1
+    assert len(trace["counterevidence_runs"]) == 1
+    assert trace["research_state"]["gaps"]
+    requirement_plan = trace["answer_requirement_plan"]
+    assert requirement_plan["question"] == (
+        "What evidence do ancient genomes preserve?"
+    )
+    assert requirement_plan["outcome"] == "search_required"
+    requirement_kinds = {item["kind"] for item in requirement_plan["requirements"]}
+    assert requirement_kinds >= {
+        "answerability",
+        "finding",
+        "method_context",
+        "opposition",
+        "limitation",
+    }
+    assert requirement_plan["search_requirement_artifact_ids"]
+    assert (
+        trace["causal_trace"]["head_artifact_id"]
+        == trace["causal_events"][-1]["artifact_id"]
+    )
+
+
 def _verify_reason_and_agent(grounded: _GroundedRuntime) -> None:
     indexed = grounded.indexed
     tmp_path = indexed.tmp_path
@@ -923,170 +1073,8 @@ def _verify_reason_and_agent(grounded: _GroundedRuntime) -> None:
             ),
         )
     ).dispatch(agent_step, (agent_upstream,))
-    research_trace = json.loads(research.artifacts[0].payload)
-    assert research_trace["status"] == "abstained"
-    assert research_trace["convergence_status"] == "insufficient"
-    assert research_trace["research_outcome"]["kind"] == "abstained"
-    assert research_trace["research_outcome"]["remaining_work"][
-        "unsatisfied_requirement_artifact_ids"
-    ]
-    assert research_trace["termination"]["stop"] is True
-    assert research_trace["termination"]["reasons"] == ["explicit_insufficiency"]
-    assert research_trace["termination"]["schema_version"] == (
-        "bijux.canon.reason.convergence_decision.v2"
-    )
-    assert research_trace["counterevidence_plan"]["requests"]
-    targeted_search = research_trace["targeted_search_plan"]
-    assert targeted_search["attempt"]["intent"] == "opposition"
-    assert targeted_search["attempt"]["trigger"] == "initial_gap"
-    assert (
-        targeted_search["attempt"]["requirement_artifact_id"]
-        in (
-            research_trace["answer_requirement_plan"]["search_requirement_artifact_ids"]
-        )
-        or targeted_search["attempt"]["source_requirement_artifact_id"]
-        in (
-            research_trace["answer_requirement_plan"]["search_requirement_artifact_ids"]
-        )
-    )
-    assert research_trace["counterevidence_plan"]["requests"][0][
-        "query_text"
-    ].startswith(targeted_search["attempt"]["query_text"])
-    assert (
-        "contradictory evidence"
-        in research_trace["counterevidence_plan"]["requests"][0]["query_text"]
-    )
-    assert research_trace["counterevidence_run"]["records"][0]["outcome"] == (
-        "candidate_evidence_found"
-    )
-    assert research_trace["opposition_candidates"]
-    assert (
-        research_trace["research_candidates"] == research_trace["opposition_candidates"]
-    )
-    adjudications = research_trace["candidate_adjudications"]
-    classifications = research_trace["candidate_classifications"]
-    assert adjudications
-    assert classifications
-    assert {
-        artifact_id
-        for report in adjudications
-        for artifact_id in report["input_evidence_artifact_ids"]
-    } == set(research_trace["research_candidates"])
-    assert {
-        item["artifact_id"]
-        for report in adjudications
-        for item in report["classifications"]
-    } == {item["artifact_id"] for item in classifications}
-    assert all(item["locator_artifact_id"] for item in classifications)
-    assert all(len(item["exact_text_sha256"]) == 64 for item in classifications)
-    counterevidence_ids = research_trace["counterevidence_retrieval_artifact_ids"]
-    assert counterevidence_ids
-    assert len(counterevidence_ids) == len(set(counterevidence_ids))
-    assert "require relation classification" in research_trace["insufficiencies"][0]
-    revision = research_trace["answer_revision"]
-    assert revision["outcome"] == "abstained"
-    assert revision["before_answer"] != revision["after_answer"]
-    assert research_trace["answer"] == revision["after_answer"]
-    assert revision["unresolved_classification_artifact_ids"]
-    assert revision["actions"][0]["kind"] == "abstain"
-    convergence_evidence = research_trace["termination"]["evidence"]
-    material_requirements = [
-        item
-        for item in research_trace["research_state"]["requirements"]
-        if item["material"]
-    ]
-    assert convergence_evidence["material_requirement_count"] == len(
-        material_requirements
-    )
-    assert len(convergence_evidence["satisfied_requirement_artifact_ids"]) + len(
-        convergence_evidence["remaining_requirement_artifact_ids"]
-    ) == len(material_requirements)
-    assert convergence_evidence["material_candidate_count"] == len(
-        set(research_trace["research_candidates"])
-    )
-    assert convergence_evidence["answer_verification_status"] == "abstained"
-    assert (
-        convergence_evidence["answer_revision_artifact_id"] == (revision["artifact_id"])
-    )
-    assert convergence_evidence["marginal_evidence_values"] == [1.0]
-    assert [event["role"] for event in research_trace["causal_events"]] == [
-        "plan",
-        "researcher",
-        "skeptic",
-        "adjudicator",
-        "synthesizer",
-        "verifier",
-    ]
-    assert research_trace["research_state"]["question"] == (
-        "What evidence do ancient genomes preserve?"
-    )
-    assert research_trace["research_state"]["terminal_status"] == "insufficient"
-    assert research_trace["research_state"]["search_budget"] == {
-        "limit": 2,
-        "used": 1,
-    }
-    assert (
-        research_trace["budget_policy_artifact_id"]
-        == (research_trace["budget_policy"]["artifact_id"])
-    )
-    assert research_trace["budget_usage"]["retrievals"] == 1
-    assert research_trace["budget_usage"]["documents"] == len(
-        research_trace["counterevidence_document_artifact_ids"]
-    )
-    assert research_trace["tool_policy"]["default_action"] == "deny"
-    assert (
-        research_trace["tool_policy_artifact_id"]
-        == (research_trace["tool_policy"]["artifact_id"])
-    )
-    assert len(research_trace["tool_decisions"]) == 1
-    assert research_trace["tool_decisions"][0]["action"] == "allow"
-    assert research_trace["tool_decisions"][0]["invocation"]["tool"] == (
-        "bijux-canon-index.retrieve"
-    )
-    assert len(research_trace["tool_execution_records"]) == 1
-    assert research_trace["tool_execution_records"][0]["status"] == "succeeded"
-    search_event = next(
-        event
-        for event in research_trace["causal_events"]
-        if event["operation"] == "search_counterevidence"
-    )
-    assert search_event["tool_decision_artifact_ids"] == [
-        research_trace["tool_decisions"][0]["artifact_id"]
-    ]
-    assert (
-        research_trace["tool_execution_records"][0]["artifact_id"]
-        in (search_event["observation_artifact_ids"])
-    )
-    assert any(
-        decision["action"] == "reserved"
-        for decision in research_trace["budget_decisions"]
-    )
-    assert len(research_trace["targeted_search_plans"]) == 1
-    assert len(research_trace["targeted_search_observations"]) == 1
-    assert research_trace["targeted_search_observations"][0]["outcome"] == (
-        "material_candidate"
-    )
-    assert len(research_trace["counterevidence_plans"]) == 1
-    assert len(research_trace["counterevidence_runs"]) == 1
-    assert research_trace["research_state"]["gaps"]
-    requirement_plan = research_trace["answer_requirement_plan"]
-    assert requirement_plan["question"] == (
-        "What evidence do ancient genomes preserve?"
-    )
-    assert requirement_plan["outcome"] == "search_required"
-    requirement_kinds = {item["kind"] for item in requirement_plan["requirements"]}
-    assert requirement_kinds >= {
-        "answerability",
-        "finding",
-        "method_context",
-        "opposition",
-        "limitation",
-    }
-    assert requirement_plan["search_requirement_artifact_ids"]
-    assert (
-        research_trace["causal_trace"]["head_artifact_id"]
-        == (research_trace["causal_events"][-1]["artifact_id"])
-    )
+    _assert_research_evidence_trace(research.artifacts[0].payload)
+    _assert_research_policy_trace(research.artifacts[0].payload)
     tampered_trace = json.loads(research.artifacts[0].payload)
     tampered_trace["research_outcome"]["remaining_work"][
         "unsatisfied_requirement_artifact_ids"

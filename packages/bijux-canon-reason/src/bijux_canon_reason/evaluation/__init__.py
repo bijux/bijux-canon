@@ -74,13 +74,6 @@ from bijux_canon_reason.evaluation.contradiction_retention import (
     RetentionOutcome,
     RetentionTruthItem,
 )
-from bijux_canon_reason.evaluation.metrics import (
-    ConfidenceInterval,
-    EvaluationCaseOutcome,
-    EvaluationReport,
-    MetricDirection,
-    MetricObservation,
-)
 from bijux_canon_reason.evaluation.heldout_isolation import (
     EvaluationAccessPurpose,
     EvaluationAccessRecord,
@@ -89,6 +82,13 @@ from bijux_canon_reason.evaluation.heldout_isolation import (
     HeldoutIsolationError,
     HeldoutIsolationLedger,
     HeldoutIsolationReport,
+)
+from bijux_canon_reason.evaluation.metrics import (
+    ConfidenceInterval,
+    EvaluationCaseOutcome,
+    EvaluationReport,
+    MetricDirection,
+    MetricObservation,
 )
 from bijux_canon_reason.evaluation.outcomes import (
     SystemAnswerDisposition,
@@ -112,11 +112,9 @@ from bijux_canon_reason.evaluation.product_metrics import (
     UnconditionalProductMetricEvaluator,
     product_metric_catalog,
 )
-from bijux_canon_reason.evaluation.reviews import (
-    AdjudicationDecision,
-    ReviewerDecision,
-    ReviewSubjectKind,
-    ReviewVerdict,
+from bijux_canon_reason.evaluation.research_truth import (
+    ResearchQuestionTruthAdapter,
+    ResearchTruthAdaptationError,
 )
 from bijux_canon_reason.evaluation.research_utility import (
     PairedResearchBinding,
@@ -127,9 +125,11 @@ from bijux_canon_reason.evaluation.research_utility import (
     ResearchUtilityMetric,
     ResearchUtilityReport,
 )
-from bijux_canon_reason.evaluation.research_truth import (
-    ResearchQuestionTruthAdapter,
-    ResearchTruthAdaptationError,
+from bijux_canon_reason.evaluation.reviews import (
+    AdjudicationDecision,
+    ReviewerDecision,
+    ReviewSubjectKind,
+    ReviewVerdict,
 )
 from bijux_canon_reason.evaluation.schema_catalog import (
     EVALUATION_SCHEMA_CATALOG_VERSION,

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
 from pathlib import Path
+from typing import cast
 
 from bijux_canon_dev.release.python_support_matrix import CommandResult
 from bijux_canon_dev.release.registry_preflight import run_registry_preflight
@@ -32,6 +33,14 @@ def _unused_pypi(name: str, version: str) -> dict[str, object]:
     }
 
 
+def _mapping(evidence: dict[str, object], field: str) -> dict[str, object]:
+    return cast(dict[str, object], evidence[field])
+
+
+def _records(evidence: dict[str, object], field: str) -> list[dict[str, object]]:
+    return cast(list[dict[str, object]], evidence[field])
+
+
 def test_preflight_proves_all_live_names_unused(tmp_path: Path) -> None:
     evidence = run_registry_preflight(
         repo_root=tmp_path,
@@ -49,12 +58,12 @@ def test_preflight_proves_all_live_names_unused(tmp_path: Path) -> None:
 
     assert evidence["result"] == "passed"
     assert evidence["retained_failures"] == []
-    assert evidence["github_releases"]["draft_visibility"] is True
-    assert [row["distribution_name"] for row in evidence["pypi"]] == [
+    assert _mapping(evidence, "github_releases")["draft_visibility"] is True
+    assert [row["distribution_name"] for row in _records(evidence, "pypi")] == [
         "example",
         "internal-support",
     ]
-    assert evidence["ghcr"][0]["status"] == "unused"
+    assert _records(evidence, "ghcr")[0]["status"] == "unused"
 
 
 def test_preflight_retains_every_collision(tmp_path: Path) -> None:
@@ -96,7 +105,7 @@ def test_preflight_retains_every_collision(tmp_path: Path) -> None:
     )
 
     assert evidence["result"] == "failed"
-    assert evidence["remote_tag"]["status"] == "collision"
-    assert evidence["github_releases"]["status"] == "collision"
-    assert evidence["ghcr"][0]["status"] == "collision"
-    assert len(evidence["retained_failures"]) == 4
+    assert _mapping(evidence, "remote_tag")["status"] == "collision"
+    assert _mapping(evidence, "github_releases")["status"] == "collision"
+    assert _records(evidence, "ghcr")[0]["status"] == "collision"
+    assert len(cast(list[str], evidence["retained_failures"])) == 4

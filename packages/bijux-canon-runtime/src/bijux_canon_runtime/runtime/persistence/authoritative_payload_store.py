@@ -130,72 +130,74 @@ class AuthoritativeArtifactPayloadStore(ArtifactPayloadStore):
         """Admit a prior CAS inventory and fail closed on split authority."""
         if max_artifacts < 1:
             raise ValueError("payload reconciliation bound must be positive")
-        with self._lock:
-            with DuckDBMetadataAuthority(
+        with (
+            self._lock,
+            DuckDBMetadataAuthority(
                 self._database_path,
                 lock_timeout_seconds=self._lock_timeout_seconds,
-            ) as authority:
-                # Hold the metadata writer lease while taking the CAS snapshot.
-                # Otherwise another process can register a just-published object
-                # after this snapshot and create a false split-authority failure.
-                artifact_ids = tuple(self._payload_store.iter_artifact_ids())
-                if len(artifact_ids) > max_artifacts:
+            ) as authority,
+        ):
+            # Hold the metadata writer lease while taking the CAS snapshot.
+            # Otherwise another process can register a just-published object
+            # after this snapshot and create a false split-authority failure.
+            artifact_ids = tuple(self._payload_store.iter_artifact_ids())
+            if len(artifact_ids) > max_artifacts:
+                raise MetadataIntegrityError(
+                    "CAS inventory exceeds the reconciliation bound"
+                )
+            inventory = set(artifact_ids)
+            descriptors = {
+                artifact_id: self._payload_store.load_descriptor(artifact_id)
+                for artifact_id in artifact_ids
+            }
+            missing_dependencies = {
+                dependency
+                for descriptor in descriptors.values()
+                for dependency in descriptor.dependencies
+                if dependency not in inventory
+            }
+            if missing_dependencies:
+                raise MetadataIntegrityError(
+                    "CAS inventory contains artifacts with missing dependencies"
+                )
+            registered = set(authority.payload_ids())
+            if registered - inventory:
+                raise MetadataIntegrityError(
+                    "DuckDB payload metadata points to absent CAS content"
+                )
+            pending = inventory - registered
+            admitted = 0
+            while pending:
+                ready = sorted(
+                    artifact_id
+                    for artifact_id in pending
+                    if set(descriptors[artifact_id].dependencies) <= registered
+                )
+                if not ready:
                     raise MetadataIntegrityError(
-                        "CAS inventory exceeds the reconciliation bound"
+                        "CAS dependency graph cannot be reconciled"
                     )
-                inventory = set(artifact_ids)
-                descriptors = {
-                    artifact_id: self._payload_store.load_descriptor(artifact_id)
-                    for artifact_id in artifact_ids
-                }
-                missing_dependencies = {
-                    dependency
-                    for descriptor in descriptors.values()
-                    for dependency in descriptor.dependencies
-                    if dependency not in inventory
-                }
-                if missing_dependencies:
-                    raise MetadataIntegrityError(
-                        "CAS inventory contains artifacts with missing dependencies"
+                for artifact_id in ready:
+                    descriptor_path = (
+                        self._payload_store.root
+                        / "objects"
+                        / "sha256"
+                        / str(artifact_id).removeprefix("sha256:")[:2]
+                        / str(artifact_id).removeprefix("sha256:")
+                        / "descriptor.json"
                     )
-                registered = set(authority.payload_ids())
-                if registered - inventory:
-                    raise MetadataIntegrityError(
-                        "DuckDB payload metadata points to absent CAS content"
+                    created_at = datetime.fromtimestamp(
+                        descriptor_path.stat().st_mtime,
+                        tz=UTC,
+                    ).isoformat()
+                    authority.register_payload(
+                        descriptors[artifact_id],
+                        created_at=created_at,
                     )
-                pending = inventory - registered
-                admitted = 0
-                while pending:
-                    ready = sorted(
-                        artifact_id
-                        for artifact_id in pending
-                        if set(descriptors[artifact_id].dependencies) <= registered
-                    )
-                    if not ready:
-                        raise MetadataIntegrityError(
-                            "CAS dependency graph cannot be reconciled"
-                        )
-                    for artifact_id in ready:
-                        descriptor_path = (
-                            self._payload_store.root
-                            / "objects"
-                            / "sha256"
-                            / str(artifact_id).removeprefix("sha256:")[:2]
-                            / str(artifact_id).removeprefix("sha256:")
-                            / "descriptor.json"
-                        )
-                        created_at = datetime.fromtimestamp(
-                            descriptor_path.stat().st_mtime,
-                            tz=UTC,
-                        ).isoformat()
-                        authority.register_payload(
-                            descriptors[artifact_id],
-                            created_at=created_at,
-                        )
-                        registered.add(artifact_id)
-                        pending.remove(artifact_id)
-                        admitted += 1
-                return admitted
+                    registered.add(artifact_id)
+                    pending.remove(artifact_id)
+                    admitted += 1
+            return admitted
 
 
 __all__ = ["AuthoritativeArtifactPayloadStore"]

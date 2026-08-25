@@ -107,13 +107,15 @@ def test_cache_invalidates_changed_identity_and_evicts_to_its_bound() -> None:
 
     cache.close()
     assert second.close_count == 1
-    with pytest.raises(RuntimeError, match="cache is closed"):
-        with cache.lease(
+    with (
+        pytest.raises(RuntimeError, match="cache is closed"),
+        cache.lease(
             generation_id="sha256:generation-c",
             version=(("generation.json", 3, 10, 20),),
             loader=lambda: _generation(_GenerationHandle("unexpected")),
-        ):
-            pass
+        ),
+    ):
+        pass
 
 
 def test_changed_generation_waits_for_active_lease_before_replacement() -> None:

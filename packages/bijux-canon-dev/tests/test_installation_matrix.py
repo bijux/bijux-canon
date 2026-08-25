@@ -16,7 +16,6 @@ from bijux_canon_dev.release.installation_matrix import (
 )
 from bijux_canon_dev.release.python_support_matrix import CommandResult
 
-
 SOURCE_COMMIT = "3" * 40
 PYTHON_VERSIONS = ("3.11", "3.12", "3.13", "3.14")
 

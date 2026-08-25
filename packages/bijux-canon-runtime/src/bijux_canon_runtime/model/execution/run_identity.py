@@ -59,9 +59,11 @@ class SemanticRunInputs:
             raise ValueError(
                 "semantic run requires a resolved corpus or index artifact"
             )
-        if self.execution_configuration_sha256 is not None and re.fullmatch(
-            r"[0-9a-f]{64}", self.execution_configuration_sha256
-        ) is None:
+        if (
+            self.execution_configuration_sha256 is not None
+            and re.fullmatch(r"[0-9a-f]{64}", self.execution_configuration_sha256)
+            is None
+        ):
             raise ValueError("execution configuration identity must be a sha256")
 
     def identity_payload(self) -> dict[str, object]:

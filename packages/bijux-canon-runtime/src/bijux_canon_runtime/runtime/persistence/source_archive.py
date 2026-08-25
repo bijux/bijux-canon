@@ -75,9 +75,7 @@ def read_source_archive(payload: bytes) -> tuple[SourceArchiveEntry, ...]:
     prefix_length = len(_MAGIC) + _HEADER_LENGTH.size
     if len(payload) < prefix_length or not payload.startswith(_MAGIC):
         raise SourceArchiveError("source archive header is invalid")
-    header_length = _HEADER_LENGTH.unpack(
-        payload[len(_MAGIC) : prefix_length]
-    )[0]
+    header_length = _HEADER_LENGTH.unpack(payload[len(_MAGIC) : prefix_length])[0]
     header_end = prefix_length + header_length
     if header_end > len(payload):
         raise SourceArchiveError("source archive header length is invalid")
@@ -88,8 +86,7 @@ def read_source_archive(payload: bytes) -> tuple[SourceArchiveEntry, ...]:
         raise SourceArchiveError("source archive index is unreadable") from error
     if (
         not isinstance(header, dict)
-        or header.get("schema_version")
-        != "bijux.canon.ingest.source_archive.v1"
+        or header.get("schema_version") != "bijux.canon.ingest.source_archive.v1"
         or not isinstance(header.get("entries"), list)
     ):
         raise SourceArchiveError("source archive index contract is invalid")

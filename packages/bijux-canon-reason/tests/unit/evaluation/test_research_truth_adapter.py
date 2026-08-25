@@ -51,10 +51,13 @@ def test_all_reviewed_development_points_become_executable_truth() -> None:
     assert sum(claim.claim_class is ClaimTruthClass.expected for claim in claims) == 25
     assert sum(claim.claim_class is ClaimTruthClass.forbidden for claim in claims) == 6
     assert {case.split for case in cases} == {EvaluationSplit.development}
-    assert sum(
-        case.abstention_expectation is AbstentionExpectation.required
-        for case in cases
-    ) == 2
+    assert (
+        sum(
+            case.abstention_expectation is AbstentionExpectation.required
+            for case in cases
+        )
+        == 2
+    )
     assert all(
         hashlib.sha256((REPO_ROOT / qrel.locator.source_uri).read_bytes()).hexdigest()
         == qrel.locator.source_sha256

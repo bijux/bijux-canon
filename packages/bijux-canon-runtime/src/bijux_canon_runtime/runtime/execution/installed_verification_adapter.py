@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
+from dataclasses import dataclass
 
 from pydantic import ValidationError
 
@@ -536,7 +537,28 @@ def _verify_claim_graph(
     )
 
 
-def _verify_research_trace(subject: Mapping[str, object]) -> tuple[str, ...]:
+@dataclass(frozen=True, slots=True)
+class _ResearchTraceRecords:
+    requirements: AnswerRequirementPlan
+    plan: CounterevidencePlan
+    run: CounterevidenceSearchRun | None
+    convergence: ConvergenceDecision | InstalledResearchConvergence
+    research_outcome: InstalledResearchTerminalOutcome
+    remaining_work: RemainingResearchWork
+    cancellation_signal: CancellationSignal | None
+    events: tuple[CausalDecisionEvent, ...]
+    raw_trace: dict[str, object]
+    raw_state: dict[str, object]
+    budget_policy: ResearchBudgetPolicy
+    budget_decisions: tuple[BudgetDecision, ...]
+    budget: ResearchBudgetLedger
+    tool_policy: ToolPolicy
+    tool_descriptors: tuple[ResearchToolDescriptor, ...]
+    tool_decisions: tuple[ToolPolicyDecision, ...]
+    tool_records: tuple[ToolExecutionRecord, ...]
+
+
+def _research_trace_records(subject: Mapping[str, object]) -> _ResearchTraceRecords:
     try:
         requirements = AnswerRequirementPlan.model_validate(
             subject["answer_requirement_plan"]
@@ -643,10 +665,37 @@ def _verify_research_trace(subject: Mapping[str, object]) -> tuple[str, ...]:
         )
         tool_decisions = tuple(_tool_decision(item) for item in raw_tool_decisions)
         tool_records = tuple(_tool_execution_record(item) for item in raw_tool_records)
+        return _ResearchTraceRecords(
+            requirements=requirements,
+            plan=plan,
+            run=run,
+            convergence=convergence,
+            research_outcome=research_outcome,
+            remaining_work=remaining_work,
+            cancellation_signal=cancellation_signal,
+            events=events,
+            raw_trace=raw_trace,
+            raw_state=raw_state,
+            budget_policy=budget_policy,
+            budget_decisions=budget_decisions,
+            budget=budget,
+            tool_policy=tool_policy,
+            tool_descriptors=tool_descriptors,
+            tool_decisions=tool_decisions,
+            tool_records=tool_records,
+        )
     except (KeyError, TypeError, ValueError, ValidationError) as error:
         raise StepDispatchError("research trace records are invalid") from error
-    if run is not None and run.plan_artifact_id != plan.artifact_id:
+
+
+def _verify_research_terminal(
+    subject: Mapping[str, object], records: _ResearchTraceRecords
+) -> None:
+    if records.run is not None and (
+        records.run.plan_artifact_id != records.plan.artifact_id
+    ):
         raise StepDispatchError("counterevidence run refers to another plan")
+    convergence = records.convergence
     if isinstance(convergence, InstalledResearchConvergence):
         raw_convergence = dict(convergence.record)
         schema_version = raw_convergence.get("schema_version")
@@ -658,18 +707,14 @@ def _verify_research_trace(subject: Mapping[str, object]) -> tuple[str, ...]:
             if isinstance(schema_version, str)
             else None
         )
+        identity_payload = {
+            key: value for key, value in raw_convergence.items() if key != "artifact_id"
+        }
         if (
             expected_outcome is None
             or convergence.outcome != expected_outcome
             or not convergence.stop
-            or convergence.artifact_id
-            != content_artifact_id(
-                {
-                    key: value
-                    for key, value in raw_convergence.items()
-                    if key != "artifact_id"
-                }
-            )
+            or convergence.artifact_id != content_artifact_id(identity_payload)
         ):
             raise StepDispatchError("Agent terminal convergence record is invalid")
     convergence_outcome = (
@@ -677,52 +722,69 @@ def _verify_research_trace(subject: Mapping[str, object]) -> tuple[str, ...]:
         if isinstance(convergence, InstalledResearchConvergence)
         else convergence.outcome.value
     )
+    outcome = records.research_outcome
     if (
-        research_outcome.convergence_artifact_id != convergence.artifact_id
-        or research_outcome.convergence_outcome != convergence_outcome
-        or subject.get("status") != research_outcome.kind.value
+        outcome.convergence_artifact_id != convergence.artifact_id
+        or outcome.convergence_outcome != convergence_outcome
+        or subject.get("status") != outcome.kind.value
         or subject.get("convergence_status") != convergence_outcome
     ):
         raise StepDispatchError("research terminal outcome differs from convergence")
-    if cancellation_signal is not None:
-        if research_outcome.cancellation_artifact_id != cancellation_signal.artifact_id:
+    cancellation = records.cancellation_signal
+    if cancellation is not None:
+        if outcome.cancellation_artifact_id != cancellation.artifact_id:
             raise StepDispatchError("research cancellation identity is invalid")
-    elif research_outcome.cancellation_artifact_id is not None:
+    elif outcome.cancellation_artifact_id is not None:
         raise StepDispatchError("research cancellation signal is missing")
+
+
+def _verify_targeted_search(
+    subject: Mapping[str, object], plan: CounterevidencePlan
+) -> None:
     raw_targeted = subject.get("targeted_search_plan")
     if not isinstance(raw_targeted, dict):
         raise StepDispatchError("targeted search plan is missing or invalid")
-    targeted_id = raw_targeted.get("artifact_id")
-    if targeted_id != content_artifact_id(raw_targeted | {"artifact_id": None}):
+    if raw_targeted.get("artifact_id") != content_artifact_id(
+        raw_targeted | {"artifact_id": None}
+    ):
         raise StepDispatchError("targeted search plan identity is invalid")
     raw_attempt = raw_targeted.get("attempt")
     if (raw_attempt is None) != (not plan.requests):
         raise StepDispatchError("targeted search selection differs from retrieval plan")
-    if isinstance(raw_attempt, dict):
-        attempt_id = raw_attempt.get("artifact_id")
-        if attempt_id != content_artifact_id(raw_attempt | {"artifact_id": None}):
-            raise StepDispatchError("targeted search attempt identity is invalid")
-        if len(plan.requests) != 1 or (
-            plan.requests[0].target_artifact_id
-            != raw_attempt.get("requirement_artifact_id")
-        ):
-            raise StepDispatchError("retrieval plan targets another answer requirement")
-        query_text = raw_attempt.get("query_text")
-        if not isinstance(query_text, str) or not plan.requests[
-            0
-        ].query_text.startswith(query_text):
-            raise StepDispatchError("retrieval query differs from targeted search")
+    if not isinstance(raw_attempt, dict):
+        return
+    if raw_attempt.get("artifact_id") != content_artifact_id(
+        raw_attempt | {"artifact_id": None}
+    ):
+        raise StepDispatchError("targeted search attempt identity is invalid")
+    if len(plan.requests) != 1 or (
+        plan.requests[0].target_artifact_id
+        != raw_attempt.get("requirement_artifact_id")
+    ):
+        raise StepDispatchError("retrieval plan targets another answer requirement")
+    query_text = raw_attempt.get("query_text")
+    if not isinstance(query_text, str) or not plan.requests[0].query_text.startswith(
+        query_text
+    ):
+        raise StepDispatchError("retrieval query differs from targeted search")
+
+
+def _counterevidence_history(
+    subject: Mapping[str, object],
+    plan: CounterevidencePlan,
+    run: CounterevidenceSearchRun | None,
+) -> tuple[tuple[CounterevidencePlan, ...], tuple[CounterevidenceSearchRun, ...]]:
     raw_targeted_plans = subject.get("targeted_search_plans")
     raw_counter_plans = subject.get("counterevidence_plans")
     raw_counter_runs = subject.get("counterevidence_runs")
-    raw_search_observations = subject.get("targeted_search_observations")
+    raw_observations = subject.get("targeted_search_observations")
     if (
         not isinstance(raw_targeted_plans, list)
         or not isinstance(raw_counter_plans, list)
         or not isinstance(raw_counter_runs, list)
-        or not isinstance(raw_search_observations, list)
+        or not isinstance(raw_observations, list)
         or len(raw_targeted_plans) != len(raw_counter_plans)
-        or len(raw_counter_runs) != len(raw_search_observations)
+        or len(raw_counter_runs) != len(raw_observations)
     ):
         raise StepDispatchError("targeted search history is invalid")
     try:
@@ -758,7 +820,7 @@ def _verify_research_trace(subject: Mapping[str, object]) -> tuple[str, ...]:
     ):
         raise StepDispatchError("targeted search history repeats an equivalent attempt")
     observed_attempt_ids: list[object] = []
-    for observation in raw_search_observations:
+    for observation in raw_observations:
         if not isinstance(observation, dict) or observation.get(
             "artifact_id"
         ) != content_artifact_id(observation | {"artifact_id": None}):
@@ -766,106 +828,136 @@ def _verify_research_trace(subject: Mapping[str, object]) -> tuple[str, ...]:
         observed_attempt_ids.append(observation.get("attempt_artifact_id"))
     if observed_attempt_ids != attempt_ids[: len(observed_attempt_ids)]:
         raise StepDispatchError("targeted search observations refer to other attempts")
-    if requirements.graph_artifact_id != subject.get("claim_graph_artifact_id"):
+    return counter_plans, counter_runs
+
+
+def _research_requirements(
+    subject: Mapping[str, object], records: _ResearchTraceRecords
+) -> tuple[dict[str, object], ...]:
+    if records.requirements.graph_artifact_id != subject.get("claim_graph_artifact_id"):
         raise StepDispatchError("answer requirement plan refers to another graph")
-    raw_requirements = raw_state.get("requirements")
+    raw_requirements = records.raw_state.get("requirements")
     if not isinstance(raw_requirements, list) or any(
         not isinstance(item, dict) for item in raw_requirements
     ):
         raise StepDispatchError("research state requirements are invalid")
     source_requirement_ids = tuple(
-        item.get("source_requirement_artifact_id")
-        for item in raw_requirements
-        if isinstance(item, dict)
+        item.get("source_requirement_artifact_id") for item in raw_requirements
     )
-    if raw_state.get("question") != requirements.question or (
-        source_requirement_ids
-        != tuple(item.artifact_id for item in requirements.requirements)
+    expected_ids = tuple(item.artifact_id for item in records.requirements.requirements)
+    if (
+        records.raw_state.get("question") != records.requirements.question
+        or source_requirement_ids != expected_ids
     ):
         raise StepDispatchError("research state differs from its answer requirements")
-    trace = ResearchCausalTrace.create(events)
-    if raw_trace != {
-        "artifact_id": trace.artifact_id,
-        "event_artifact_ids": list(trace.event_artifact_ids),
-        "head_artifact_id": trace.head_artifact_id,
-    }:
-        raise StepDispatchError("research causal trace identity is invalid")
-    if subject.get("budget_policy_artifact_id") != budget_policy.artifact_id:
-        raise StepDispatchError("research budget policy binding is invalid")
-    if subject.get("tool_policy_artifact_id") != tool_policy.artifact_id:
-        raise StepDispatchError("research tool policy identity is invalid")
-    descriptor_by_id = {item.artifact_id: item for item in tool_descriptors}
-    if len(descriptor_by_id) != len(tool_descriptors) or not tool_descriptors:
-        raise StepDispatchError("research tool descriptor inventory is invalid")
+    return tuple(raw_requirements)
+
+
+def _tool_decision_index(
+    records: _ResearchTraceRecords,
+) -> dict[str, ToolPolicyDecision]:
     allowed_calls: dict[str, int] = {}
-    decision_by_id: dict[str, ToolPolicyDecision] = {}
-    for sequence, decision in enumerate(tool_decisions):
-        expected = tool_policy.decide(
+    decisions: dict[str, ToolPolicyDecision] = {}
+    for sequence, decision in enumerate(records.tool_decisions):
+        expected = records.tool_policy.decide(
             decision.invocation,
             sequence=sequence,
             prior_allowed_calls=allowed_calls.get(decision.invocation.tool, 0),
         )
         if decision != expected:
             raise StepDispatchError("research tool policy decision is invalid")
-        decision_by_id[decision.artifact_id] = decision
+        decisions[decision.artifact_id] = decision
         if decision.action is ToolPolicyAction.ALLOW:
             allowed_calls[decision.invocation.tool] = (
                 allowed_calls.get(decision.invocation.tool, 0) + 1
             )
-    if len(decision_by_id) != len(tool_decisions):
+    if len(decisions) != len(records.tool_decisions):
         raise StepDispatchError("research tool decisions repeat identities")
-    record_by_id: dict[str, ToolExecutionRecord] = {}
-    for sequence, record in enumerate(tool_records):
-        record_decision = decision_by_id.get(record.policy_decision_artifact_id)
-        descriptor = descriptor_by_id.get(record.descriptor_artifact_id)
+    return decisions
+
+
+def _tool_record_index(
+    records: _ResearchTraceRecords,
+    descriptors: Mapping[str, ResearchToolDescriptor],
+    decisions: Mapping[str, ToolPolicyDecision],
+) -> dict[str, ToolExecutionRecord]:
+    executions: dict[str, ToolExecutionRecord] = {}
+    for sequence, record in enumerate(records.tool_records):
+        decision = decisions.get(record.policy_decision_artifact_id)
+        descriptor = descriptors.get(record.descriptor_artifact_id)
         if (
             record.sequence != sequence
-            or record_decision is None
-            or record_decision.action is not ToolPolicyAction.ALLOW
+            or decision is None
+            or decision.action is not ToolPolicyAction.ALLOW
             or descriptor is None
-            or record.request_sha256 != record_decision.invocation.request_sha256
-            or descriptor.tool.value != record_decision.invocation.tool
+            or record.request_sha256 != decision.invocation.request_sha256
+            or descriptor.tool.value != decision.invocation.tool
         ):
             raise StepDispatchError("research tool execution lineage is invalid")
-        record_by_id[record.artifact_id] = record
-    if len(record_by_id) != len(tool_records):
+        executions[record.artifact_id] = record
+    if len(executions) != len(records.tool_records):
         raise StepDispatchError("research tool executions repeat identities")
+    return executions
+
+
+def _verify_causal_tool_budget_lineage(
+    subject: Mapping[str, object], records: _ResearchTraceRecords
+) -> None:
+    trace = ResearchCausalTrace.create(records.events)
+    if records.raw_trace != {
+        "artifact_id": trace.artifact_id,
+        "event_artifact_ids": list(trace.event_artifact_ids),
+        "head_artifact_id": trace.head_artifact_id,
+    }:
+        raise StepDispatchError("research causal trace identity is invalid")
+    if subject.get("budget_policy_artifact_id") != records.budget_policy.artifact_id:
+        raise StepDispatchError("research budget policy binding is invalid")
+    if subject.get("tool_policy_artifact_id") != records.tool_policy.artifact_id:
+        raise StepDispatchError("research tool policy identity is invalid")
+    descriptors = {item.artifact_id: item for item in records.tool_descriptors}
+    if len(descriptors) != len(records.tool_descriptors) or not descriptors:
+        raise StepDispatchError("research tool descriptor inventory is invalid")
+    decisions = _tool_decision_index(records)
+    executions = _tool_record_index(records, descriptors, decisions)
     if _budget_dimensions(subject.get("budget_usage"), "budget_usage") != (
-        budget.global_usage
+        records.budget.global_usage
     ):
         raise StepDispatchError("research budget usage is not reproducible")
     document_ids = _strings(
         subject.get("counterevidence_document_artifact_ids"),
         "counterevidence_document_artifact_ids",
     )
-    if budget.global_usage.documents != len(document_ids):
+    if records.budget.global_usage.documents != len(document_ids):
         raise StepDispatchError("research document budget differs from search history")
-    decision_ids = {item.artifact_id for item in budget_decisions}
     referenced_budget_ids = {
         artifact_id
-        for event in events
+        for event in records.events
         for artifact_id in event.budget_decision_artifact_ids
     }
-    if decision_ids != referenced_budget_ids:
+    if {item.artifact_id for item in records.budget_decisions} != referenced_budget_ids:
         raise StepDispatchError("research causal trace omits budget decisions")
-    referenced_tool_decision_ids = {
+    referenced_decisions = {
         artifact_id
-        for event in events
+        for event in records.events
         for artifact_id in event.tool_decision_artifact_ids
     }
-    referenced_tool_record_ids = {
+    referenced_executions = {
         artifact_id
-        for event in events
+        for event in records.events
         for artifact_id in event.observation_artifact_ids
-        if artifact_id in record_by_id
+        if artifact_id in executions
     }
-    if set(decision_by_id) != referenced_tool_decision_ids:
+    if set(decisions) != referenced_decisions:
         raise StepDispatchError("research causal trace omits tool decisions")
-    if set(record_by_id) != referenced_tool_record_ids:
+    if set(executions) != referenced_executions:
         raise StepDispatchError("research causal trace omits tool executions")
-    if budget.global_usage.tool_calls != len(tool_decisions):
+    if records.budget.global_usage.tool_calls != len(records.tool_decisions):
         raise StepDispatchError("research tool-call budget differs from decisions")
-    convergence_budget_dimensions = (
+
+
+def _verify_budget_termination(records: _ResearchTraceRecords) -> None:
+    convergence = records.convergence
+    convergence_dimensions = (
         tuple(
             {
                 "iteration_limit": "iterations",
@@ -881,11 +973,14 @@ def _verify_research_trace(subject: Mapping[str, object]) -> tuple[str, ...]:
         and convergence.outcome.value == "budget_exhausted"
         else ()
     )
+    outcome = records.research_outcome
+    budget = records.budget
     if budget.exhausted_dimensions:
-        if research_outcome.exhausted_budget_dimensions != budget.exhausted_dimensions:
+        if outcome.exhausted_budget_dimensions != budget.exhausted_dimensions:
             raise StepDispatchError("research budget exhaustion differs from ledger")
-    elif research_outcome.kind is InstalledResearchTerminalKind.INCOMPLETE_BUDGET:
-        raw_search_budget = _object(raw_state["search_budget"], "search_budget")
+    elif outcome.kind is InstalledResearchTerminalKind.INCOMPLETE_BUDGET:
+        raw_search_budget = _object(records.raw_state["search_budget"], "search_budget")
+        remaining_work = records.remaining_work
         search_budget_exhausted = (
             remaining_work.pending
             and _integer(raw_search_budget["used"], "search_budget.used")
@@ -897,17 +992,28 @@ def _verify_research_trace(subject: Mapping[str, object]) -> tuple[str, ...]:
         )
         expected_dimensions = tuple(
             dict.fromkeys(
-                convergence_budget_dimensions
+                convergence_dimensions
                 + (("retrievals",) if search_budget_exhausted else ())
             )
         )
         if (
             not expected_dimensions
-            or research_outcome.exhausted_budget_dimensions != expected_dimensions
+            or outcome.exhausted_budget_dimensions != expected_dimensions
         ):
             raise StepDispatchError("research search-budget exhaustion is invalid")
     if not convergence.stop:
         raise StepDispatchError("research trace did not reach a terminal decision")
+
+
+def _candidate_lineage(
+    subject: Mapping[str, object],
+    raw_state: Mapping[str, object],
+    counter_runs: tuple[CounterevidenceSearchRun, ...],
+) -> tuple[
+    tuple[str, ...],
+    tuple[ResearchCandidateClassification, ...],
+    ResearchAnswerRevision | None,
+]:
     candidate_ids = tuple(
         artifact_id
         for history_run in counter_runs
@@ -953,39 +1059,7 @@ def _verify_research_trace(subject: Mapping[str, object]) -> tuple[str, ...]:
     }
     if reported_candidate_ids != set(candidate_ids):
         raise StepDispatchError("candidate adjudication coverage is incomplete")
-    raw_revision = subject.get("answer_revision")
-    revision = None
-    if raw_revision is not None:
-        try:
-            revision = ResearchAnswerRevision.model_validate(raw_revision)
-        except ValidationError as error:
-            raise StepDispatchError("research answer revision is invalid") from error
-        if (
-            subject.get("answer_revision_artifact_id") != revision.artifact_id
-            or subject.get("answer") != revision.after_answer
-            or revision.prior_claim_graph_artifact_id
-            != subject.get("claim_graph_artifact_id")
-            or revision.classification_artifact_ids
-            != tuple(item.artifact_id for item in classifications)
-            or set(revision.candidate_evidence_artifact_ids) != set(candidate_ids)
-        ):
-            raise StepDispatchError("research answer revision lineage is invalid")
-        material_opposition_ids = {
-            item.artifact_id
-            for item in classifications
-            if item.material and item.relation.value in {"opposing", "limiting"}
-        }
-        if (
-            material_opposition_ids
-            <= set(revision.resolved_classification_artifact_ids)
-            and material_opposition_ids
-            and revision.before_answer == revision.after_answer
-        ):
-            raise StepDispatchError(
-                "material counterevidence did not revise the answer"
-            )
-    elif subject.get("answer_revision_artifact_id") is not None:
-        raise StepDispatchError("research answer revision record is missing")
+    revision = _answer_revision(subject, classifications, candidate_ids)
     material_unresolved = {
         classification.evidence_artifact_id
         for classification in classifications
@@ -994,25 +1068,73 @@ def _verify_research_trace(subject: Mapping[str, object]) -> tuple[str, ...]:
     }
     if raw_state.get("terminal_status") == "completed" and material_unresolved:
         raise StepDispatchError("completed research retains unresolved evidence")
-    expected_unsatisfied_requirements = tuple(
+    return candidate_ids, classifications, revision
+
+
+def _answer_revision(
+    subject: Mapping[str, object],
+    classifications: tuple[ResearchCandidateClassification, ...],
+    candidate_ids: tuple[str, ...],
+) -> ResearchAnswerRevision | None:
+    raw_revision = subject.get("answer_revision")
+    if raw_revision is None:
+        if subject.get("answer_revision_artifact_id") is not None:
+            raise StepDispatchError("research answer revision record is missing")
+        return None
+    try:
+        revision = ResearchAnswerRevision.model_validate(raw_revision)
+    except ValidationError as error:
+        raise StepDispatchError("research answer revision is invalid") from error
+    if (
+        subject.get("answer_revision_artifact_id") != revision.artifact_id
+        or subject.get("answer") != revision.after_answer
+        or revision.prior_claim_graph_artifact_id
+        != subject.get("claim_graph_artifact_id")
+        or revision.classification_artifact_ids
+        != tuple(item.artifact_id for item in classifications)
+        or set(revision.candidate_evidence_artifact_ids) != set(candidate_ids)
+    ):
+        raise StepDispatchError("research answer revision lineage is invalid")
+    material_opposition_ids = {
+        item.artifact_id
+        for item in classifications
+        if item.material and item.relation.value in {"opposing", "limiting"}
+    }
+    if (
+        material_opposition_ids <= set(revision.resolved_classification_artifact_ids)
+        and material_opposition_ids
+        and revision.before_answer == revision.after_answer
+    ):
+        raise StepDispatchError("material counterevidence did not revise the answer")
+    return revision
+
+
+def _verify_remaining_work(
+    records: _ResearchTraceRecords,
+    raw_requirements: tuple[dict[str, object], ...],
+    classifications: tuple[ResearchCandidateClassification, ...],
+    candidate_ids: tuple[str, ...],
+    counter_runs: tuple[CounterevidenceSearchRun, ...],
+) -> tuple[set[str], tuple[str, ...]]:
+    expected_unsatisfied = tuple(
         str(item["artifact_id"])
         for item in raw_requirements
         if item.get("material") is True and item.get("status") != "satisfied"
     )
-    raw_gaps = raw_state.get("gaps")
+    raw_gaps = records.raw_state.get("gaps")
     if not isinstance(raw_gaps, list) or any(
         not isinstance(item, dict) for item in raw_gaps
     ):
         raise StepDispatchError("research state gaps are invalid")
-    expected_unresolved_gaps = tuple(
+    expected_gaps = tuple(
         str(item["artifact_id"]) for item in raw_gaps if item.get("blocking") is True
     )
-    if budget.exhausted_dimensions and not expected_unresolved_gaps:
-        expected_unresolved_gaps = (budget_decisions[-1].artifact_id,)
+    if records.budget.exhausted_dimensions and not expected_gaps:
+        expected_gaps = (records.budget_decisions[-1].artifact_id,)
     classified_candidate_ids = {
         classification.evidence_artifact_id for classification in classifications
     }
-    expected_unresolved_evidence = tuple(
+    expected_evidence = tuple(
         dict.fromkeys(
             tuple(
                 classification.evidence_artifact_id
@@ -1034,112 +1156,166 @@ def _verify_research_trace(subject: Mapping[str, object]) -> tuple[str, ...]:
             for artifact_id in history_run.unsearched_important_claim_artifact_ids
         )
     )
+    remaining = records.remaining_work
     if (
-        remaining_work.unsatisfied_requirement_artifact_ids
-        != expected_unsatisfied_requirements
-        or remaining_work.unresolved_evidence_artifact_ids
-        != expected_unresolved_evidence
-        or remaining_work.unresolved_gap_artifact_ids != expected_unresolved_gaps
-        or remaining_work.unsearched_important_claim_artifact_ids != expected_unsearched
+        remaining.unsatisfied_requirement_artifact_ids != expected_unsatisfied
+        or remaining.unresolved_evidence_artifact_ids != expected_evidence
+        or remaining.unresolved_gap_artifact_ids != expected_gaps
+        or remaining.unsearched_important_claim_artifact_ids != expected_unsearched
     ):
         raise StepDispatchError("research terminal remaining work is incomplete")
-    if isinstance(convergence, ConvergenceDecision):
-        evidence = convergence.evidence
-        if evidence is None:
-            raise StepDispatchError("semantic convergence evidence is missing")
-        material_requirements = tuple(
-            item for item in raw_requirements if item.get("material") is True
-        )
-        satisfied_requirement_ids = tuple(
-            str(item.get("source_requirement_artifact_id") or item["artifact_id"])
-            for item in material_requirements
-            if item.get("status") == "satisfied"
-        )
-        remaining_requirement_ids = tuple(
-            str(item.get("source_requirement_artifact_id") or item["artifact_id"])
-            for item in material_requirements
-            if item.get("status") != "satisfied"
-        )
-        unresolved_classification_ids = tuple(
+    return classified_candidate_ids, expected_unsearched
+
+
+def _marginal_evidence_values(
+    counter_runs: tuple[CounterevidenceSearchRun, ...],
+) -> tuple[float, ...]:
+    seen_candidates: set[str] = set()
+    values: list[float] = []
+    for history_run in counter_runs:
+        run_candidate_ids = tuple(
             dict.fromkeys(
-                tuple(
-                    item.artifact_id
-                    for item in classifications
-                    if item.material
-                    and item.relation.value in {"ambiguous", "unclassified"}
-                )
-                + tuple(
-                    artifact_id
-                    for artifact_id in candidate_ids
-                    if artifact_id not in classified_candidate_ids
-                )
+                artifact_id
+                for record in history_run.records
+                for artifact_id in record.candidate_evidence_artifact_ids
             )
         )
-        blocking_ids = tuple(
-            dict.fromkeys(
-                remaining_requirement_ids
-                + unresolved_classification_ids
-                + expected_unsearched
+        new_candidate_ids = tuple(
+            item for item in run_candidate_ids if item not in seen_candidates
+        )
+        values.append(
+            0.0
+            if not run_candidate_ids
+            else len(new_candidate_ids) / len(run_candidate_ids)
+        )
+        seen_candidates.update(run_candidate_ids)
+    return tuple(values)
+
+
+def _verify_semantic_convergence(
+    subject: Mapping[str, object],
+    records: _ResearchTraceRecords,
+    raw_requirements: tuple[dict[str, object], ...],
+    classifications: tuple[ResearchCandidateClassification, ...],
+    candidate_ids: tuple[str, ...],
+    classified_candidate_ids: set[str],
+    expected_unsearched: tuple[str, ...],
+    counter_runs: tuple[CounterevidenceSearchRun, ...],
+    revision: ResearchAnswerRevision | None,
+) -> None:
+    convergence = records.convergence
+    if not isinstance(convergence, ConvergenceDecision):
+        return
+    evidence = convergence.evidence
+    if evidence is None:
+        raise StepDispatchError("semantic convergence evidence is missing")
+    material_requirements = tuple(
+        item for item in raw_requirements if item.get("material") is True
+    )
+    satisfied_requirement_ids = tuple(
+        str(item.get("source_requirement_artifact_id") or item["artifact_id"])
+        for item in material_requirements
+        if item.get("status") == "satisfied"
+    )
+    remaining_requirement_ids = tuple(
+        str(item.get("source_requirement_artifact_id") or item["artifact_id"])
+        for item in material_requirements
+        if item.get("status") != "satisfied"
+    )
+    unresolved_classification_ids = tuple(
+        dict.fromkeys(
+            tuple(
+                item.artifact_id
+                for item in classifications
+                if item.material
+                and item.relation.value in {"ambiguous", "unclassified"}
+            )
+            + tuple(
+                artifact_id
+                for artifact_id in candidate_ids
+                if artifact_id not in classified_candidate_ids
             )
         )
-        seen_candidates: set[str] = set()
-        marginal_values: list[float] = []
-        for history_run in counter_runs:
-            run_candidate_ids = tuple(
-                dict.fromkeys(
-                    artifact_id
-                    for record in history_run.records
-                    for artifact_id in record.candidate_evidence_artifact_ids
-                )
-            )
-            new_candidate_ids = tuple(
-                item for item in run_candidate_ids if item not in seen_candidates
-            )
-            marginal_values.append(
-                0.0
-                if not run_candidate_ids
-                else len(new_candidate_ids) / len(run_candidate_ids)
-            )
-            seen_candidates.update(run_candidate_ids)
-        expected_answer_status = (
-            revision.revised_answer.outcome.value
-            if revision is not None
-            else subject.get("grounding_admission_outcome")
+    )
+    blocking_ids = tuple(
+        dict.fromkeys(
+            remaining_requirement_ids
+            + unresolved_classification_ids
+            + expected_unsearched
         )
-        expected_current_graph_id = (
-            str(subject["claim_graph_artifact_id"])
-            if revision is None
-            else revision.revised_answer.artifact_id
-        )
-        if (
-            evidence.current_graph_artifact_id != expected_current_graph_id
-            or evidence.material_requirement_count != len(material_requirements)
-            or evidence.satisfied_requirement_artifact_ids != satisfied_requirement_ids
-            or evidence.remaining_requirement_artifact_ids != remaining_requirement_ids
-            or evidence.material_candidate_count != len(set(candidate_ids))
-            or evidence.classified_candidate_count
-            != len(set(candidate_ids) & classified_candidate_ids)
-            or evidence.unresolved_classification_artifact_ids
-            != unresolved_classification_ids
-            or evidence.blocking_gap_artifact_ids != blocking_ids
-            or evidence.unsearched_important_claim_artifact_ids != expected_unsearched
-            or evidence.answer_verification_status.value != expected_answer_status
-            or evidence.answer_revision_artifact_id
-            != (None if revision is None else revision.artifact_id)
-            or evidence.marginal_evidence_values != tuple(marginal_values)
-        ):
-            raise StepDispatchError("semantic convergence evidence differs from trace")
-        if revision is not None and evidence.material_conflict_count != len(
-            revision.revised_answer.contextualized.conflicts
-        ):
-            raise StepDispatchError("semantic convergence conflict count differs")
-        if (
-            research_outcome.kind is InstalledResearchTerminalKind.CONVERGED
-            and not evidence.answerable
-        ):
-            raise StepDispatchError(
-                "research completion differs from convergence evidence"
-            )
+    )
+    expected_answer_status = (
+        revision.revised_answer.outcome.value
+        if revision is not None
+        else subject.get("grounding_admission_outcome")
+    )
+    expected_graph_id = (
+        str(subject["claim_graph_artifact_id"])
+        if revision is None
+        else revision.revised_answer.artifact_id
+    )
+    if (
+        evidence.current_graph_artifact_id != expected_graph_id
+        or evidence.material_requirement_count != len(material_requirements)
+        or evidence.satisfied_requirement_artifact_ids != satisfied_requirement_ids
+        or evidence.remaining_requirement_artifact_ids != remaining_requirement_ids
+        or evidence.material_candidate_count != len(set(candidate_ids))
+        or evidence.classified_candidate_count
+        != len(set(candidate_ids) & classified_candidate_ids)
+        or evidence.unresolved_classification_artifact_ids
+        != unresolved_classification_ids
+        or evidence.blocking_gap_artifact_ids != blocking_ids
+        or evidence.unsearched_important_claim_artifact_ids != expected_unsearched
+        or evidence.answer_verification_status.value != expected_answer_status
+        or evidence.answer_revision_artifact_id
+        != (None if revision is None else revision.artifact_id)
+        or evidence.marginal_evidence_values != _marginal_evidence_values(counter_runs)
+    ):
+        raise StepDispatchError("semantic convergence evidence differs from trace")
+    if revision is not None and evidence.material_conflict_count != len(
+        revision.revised_answer.contextualized.conflicts
+    ):
+        raise StepDispatchError("semantic convergence conflict count differs")
+    if (
+        records.research_outcome.kind is InstalledResearchTerminalKind.CONVERGED
+        and not evidence.answerable
+    ):
+        raise StepDispatchError("research completion differs from convergence evidence")
+
+
+def _verify_research_trace(subject: Mapping[str, object]) -> tuple[str, ...]:
+    records = _research_trace_records(subject)
+    plan = records.plan
+    run = records.run
+    convergence = records.convergence
+    raw_state = records.raw_state
+    _verify_research_terminal(subject, records)
+    _verify_targeted_search(subject, plan)
+    _, counter_runs = _counterevidence_history(subject, plan, run)
+    raw_requirements = _research_requirements(subject, records)
+    _verify_causal_tool_budget_lineage(subject, records)
+    _verify_budget_termination(records)
+    candidate_ids, classifications, revision = _candidate_lineage(
+        subject, raw_state, counter_runs
+    )
+    classified_candidate_ids, expected_unsearched = _verify_remaining_work(
+        records,
+        raw_requirements,
+        classifications,
+        candidate_ids,
+        counter_runs,
+    )
+    _verify_semantic_convergence(
+        subject,
+        records,
+        raw_requirements,
+        classifications,
+        candidate_ids,
+        classified_candidate_ids,
+        expected_unsearched,
+        counter_runs,
+        revision,
+    )
     checks = (
         "answer-requirement-plan-identity",
         "targeted-search-plan-identity",

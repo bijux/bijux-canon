@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-import re
-import subprocess
 from configparser import ConfigParser
 from pathlib import Path
+import re
+import subprocess
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 

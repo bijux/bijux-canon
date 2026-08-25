@@ -3,7 +3,9 @@
 
 from __future__ import annotations
 
+import importlib.metadata
 from pathlib import Path
+import platform
 
 import pytest
 
@@ -56,11 +58,11 @@ def _versions() -> tuple[tuple[str, str], ...]:
 def _compatible_versions(monkeypatch: pytest.MonkeyPatch) -> None:
     versions = dict(_versions())
     monkeypatch.setattr(
-        model_lifecycle.importlib.metadata,
+        importlib.metadata,
         "version",
         lambda name: versions[name],
     )
-    monkeypatch.setattr(model_lifecycle.platform, "python_version", lambda: "3.11.9")
+    monkeypatch.setattr(platform, "python_version", lambda: "3.11.9")
 
 
 def test_registration_records_pinned_source_files_license_and_cpu_validation(
@@ -89,7 +91,9 @@ def test_registration_records_pinned_source_files_license_and_cpu_validation(
     assert record.validation_result == "passed"
     assert record.offline_reuse
     assert len(record.local_files) == len(LOCAL_MINILM_PROFILE.required_artifacts)
-    assert record.record()["record_id"].startswith("sha256:")
+    record_id = record.record()["record_id"]
+    assert isinstance(record_id, str)
+    assert record_id.startswith("sha256:")
     assert record.artifact_set_digest.startswith("sha256:")
 
 
@@ -151,9 +155,9 @@ def test_validation_refuses_unavailable_embedding_runtime(
     monkeypatch.setattr(model_lifecycle, "_PINNED_ARTIFACTS", lock.artifacts)
 
     def missing(name: str) -> str:
-        raise model_lifecycle.importlib.metadata.PackageNotFoundError(name)
+        raise importlib.metadata.PackageNotFoundError(name)
 
-    monkeypatch.setattr(model_lifecycle.importlib.metadata, "version", missing)
+    monkeypatch.setattr(importlib.metadata, "version", missing)
     with pytest.raises(ModelLifecycleError, match="unavailable"):
         validate_model(tmp_path, loader=lambda *_: _Model())
 

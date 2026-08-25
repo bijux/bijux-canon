@@ -20,13 +20,6 @@ from bijux_canon_runtime.model.execution.request_plan import (
     MAX_RUNTIME_TIMEOUT_SECONDS,
 )
 from bijux_canon_runtime.ontology.ids import ArtifactID
-from bijux_canon_runtime.runtime.persistence.authoritative_payload_store import (
-    AuthoritativeArtifactPayloadStore,
-)
-from bijux_canon_runtime.runtime.persistence.filesystem_payload_store import (
-    AtomicFilesystemArtifactPayloadStore,
-)
-
 from bijux_canon_runtime.runtime.execution.durable_jobs import (
     DurableJobCapacityError,
     DurableJobError,
@@ -34,6 +27,12 @@ from bijux_canon_runtime.runtime.execution.durable_jobs import (
     DurableJobRequest,
     JobKind,
     JobStatus,
+)
+from bijux_canon_runtime.runtime.persistence.authoritative_payload_store import (
+    AuthoritativeArtifactPayloadStore,
+)
+from bijux_canon_runtime.runtime.persistence.filesystem_payload_store import (
+    AtomicFilesystemArtifactPayloadStore,
 )
 
 
@@ -69,9 +68,7 @@ def test_job_request_rejects_unrepresentable_timeouts(
 
 
 def test_job_request_accepts_the_documented_timeout_limit() -> None:
-    request = _request(
-        "maximum-timeout", timeout_seconds=MAX_RUNTIME_TIMEOUT_SECONDS
-    )
+    request = _request("maximum-timeout", timeout_seconds=MAX_RUNTIME_TIMEOUT_SECONDS)
 
     assert request.timeout_seconds == 604_800
 
@@ -81,11 +78,13 @@ def test_job_wait_rejects_unrepresentable_timeouts(
     tmp_path: Path,
     timeout_seconds: float,
 ) -> None:
-    with DurableJobManager(
-        tmp_path / "jobs.sqlite3", handlers=_handlers(lambda _request, _cancel: {})
-    ) as manager:
-        with pytest.raises(ValueError, match="job wait timeout must be finite"):
-            manager.wait("job_v1_missing", timeout_seconds=timeout_seconds)
+    with (
+        DurableJobManager(
+            tmp_path / "jobs.sqlite3", handlers=_handlers(lambda _request, _cancel: {})
+        ) as manager,
+        pytest.raises(ValueError, match="job wait timeout must be finite"),
+    ):
+        manager.wait("job_v1_missing", timeout_seconds=timeout_seconds)
 
 
 def test_job_submission_is_idempotent_and_survives_restart(
@@ -224,9 +223,12 @@ def test_legacy_sqlite_jobs_migrate_to_duckdb_and_cas(tmp_path: Path) -> None:
         snapshot = manager.status(request.job_id)
         assert snapshot.status is JobStatus.SUCCEEDED
         assert snapshot.result == result
-        assert filesystem.load(
-            ArtifactID(snapshot.request_artifact_id)
-        ).descriptor.schema_id == "bijux.runtime.durable-job-request.v1"
+        assert (
+            filesystem.load(
+                ArtifactID(snapshot.request_artifact_id)
+            ).descriptor.schema_id
+            == "bijux.runtime.durable-job-request.v1"
+        )
         assert snapshot.result_artifact_id is not None
 
     legacy_path.unlink()

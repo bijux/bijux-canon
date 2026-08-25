@@ -24,20 +24,40 @@ from bijux_canon_index.infra.adapters.faiss import exact as exact_backend
 from bijux_canon_index.infra.adapters.faiss import hnsw as hnsw_backend
 from bijux_canon_index.infra.adapters.faiss.exact import (
     BACKEND_ID as EXACT_BACKEND_ID,
+)
+from bijux_canon_index.infra.adapters.faiss.exact import (
     INDEX_TYPE as EXACT_INDEX_TYPE,
+)
+from bijux_canon_index.infra.adapters.faiss.exact import (
     METRIC as EXACT_METRIC,
+)
+from bijux_canon_index.infra.adapters.faiss.exact import (
     NORMALIZATION as EXACT_NORMALIZATION,
+)
+from bijux_canon_index.infra.adapters.faiss.exact import (
     SCHEMA_VERSION as EXACT_SCHEMA_VERSION,
+)
+from bijux_canon_index.infra.adapters.faiss.exact import (
     DenseVectorRecord,
     FaissExactIndex,
     FaissExactIndexManifest,
 )
 from bijux_canon_index.infra.adapters.faiss.hnsw import (
     BACKEND_ID as HNSW_BACKEND_ID,
+)
+from bijux_canon_index.infra.adapters.faiss.hnsw import (
     INDEX_TYPE as HNSW_INDEX_TYPE,
+)
+from bijux_canon_index.infra.adapters.faiss.hnsw import (
     METRIC as HNSW_METRIC,
+)
+from bijux_canon_index.infra.adapters.faiss.hnsw import (
     NORMALIZATION as HNSW_NORMALIZATION,
+)
+from bijux_canon_index.infra.adapters.faiss.hnsw import (
     SCHEMA_VERSION as HNSW_SCHEMA_VERSION,
+)
+from bijux_canon_index.infra.adapters.faiss.hnsw import (
     FaissHnswIndex,
     FaissHnswIndexManifest,
     HnswParameters,
@@ -45,7 +65,11 @@ from bijux_canon_index.infra.adapters.faiss.hnsw import (
 from bijux_canon_index.infra.adapters.sqlite import lexical as lexical_backend
 from bijux_canon_index.infra.adapters.sqlite.lexical import (
     BACKEND_ID as LEXICAL_BACKEND_ID,
+)
+from bijux_canon_index.infra.adapters.sqlite.lexical import (
     SCHEMA_VERSION as LEXICAL_SCHEMA_VERSION,
+)
+from bijux_canon_index.infra.adapters.sqlite.lexical import (
     LexicalChunk,
     LexicalIndexManifest,
     SQLiteLexicalIndex,
@@ -107,8 +131,7 @@ def _current_build_code_id() -> str:
             raise RuntimeError("index build implementation source is unavailable")
         files.append((module.__name__, Path(source_path)))
     payload = [
-        {"module": name, "sha256": _sha256_file(path)}
-        for name, path in sorted(files)
+        {"module": name, "sha256": _sha256_file(path)} for name, path in sorted(files)
     ]
     return f"sha256:{_sha256_bytes(_canonical_json(payload).encode('utf-8'))}"
 
@@ -283,11 +306,14 @@ class IndexBuildIdentity:
             )
         ):
             raise ValueError("index build identity fields must not be empty")
-        if min(
-            self.lexical_schema_version,
-            self.dense_exact_schema_version,
-            self.dense_approximate_schema_version,
-        ) <= 0:
+        if (
+            min(
+                self.lexical_schema_version,
+                self.dense_exact_schema_version,
+                self.dense_approximate_schema_version,
+            )
+            <= 0
+        ):
             raise ValueError("index build schema versions must be positive")
 
 
@@ -393,9 +419,7 @@ def _build_identity_from_manifests(
         lexical_algorithm=LEXICAL_BACKEND_ID,
         lexical_schema_version=LEXICAL_SCHEMA_VERSION,
         lexical_tokenizer=lexical.tokenizer,
-        lexical_tokenizer_configuration_sha256=(
-            lexical.tokenizer_configuration_sha256
-        ),
+        lexical_tokenizer_configuration_sha256=(lexical.tokenizer_configuration_sha256),
         dense_exact_algorithm=EXACT_BACKEND_ID,
         dense_exact_schema_version=EXACT_SCHEMA_VERSION,
         dense_exact_index_type=exact.index_type,

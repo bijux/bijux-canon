@@ -128,7 +128,9 @@ def _result(
     measurements: dict[tuple[str, str], ProductMetricMeasurement],
 ) -> ProductMetricResult:
     outcomes = tuple(
-        _outcome(definition, case, measurements.get((definition.metric_id, case.case_id)))
+        _outcome(
+            definition, case, measurements.get((definition.metric_id, case.case_id))
+        )
         for case in cases
     )
     numerator, denominator, value = _aggregate(definition, outcomes)
@@ -166,9 +168,7 @@ def _result(
         refused_cases=status_counts[ProductExecutionStatus.refused],
         failed_cases=status_counts[ProductExecutionStatus.failed],
         cancelled_cases=status_counts[ProductExecutionStatus.cancelled],
-        budget_exhausted_cases=status_counts[
-            ProductExecutionStatus.budget_exhausted
-        ],
+        budget_exhausted_cases=status_counts[ProductExecutionStatus.budget_exhausted],
         fully_labeled_cases=sum(item.label_completeness == 1.0 for item in outcomes),
         partial_label_cases=sum(item.label_completeness < 1.0 for item in outcomes),
         passed=passed,
@@ -223,10 +223,14 @@ def _validated_arithmetic(
         raise ProductMetricEvaluationError(
             f"fraction arithmetic is invalid: {definition.metric_id}/{measurement.case_id}"
         )
-    if definition.aggregation in {
-        ProductMetricAggregation.paired_mean_delta,
-        ProductMetricAggregation.percentile_95,
-    } and denominator != 1.0:
+    if (
+        definition.aggregation
+        in {
+            ProductMetricAggregation.paired_mean_delta,
+            ProductMetricAggregation.percentile_95,
+        }
+        and denominator != 1.0
+    ):
         raise ProductMetricEvaluationError(
             f"scalar metric denominator must be one: {definition.metric_id}/{measurement.case_id}"
         )
@@ -265,8 +269,7 @@ def _confidence_interval(
             margin = (
                 z
                 * math.sqrt(
-                    value * (1 - value) / denominator
-                    + z_squared / (4 * denominator**2)
+                    value * (1 - value) / denominator + z_squared / (4 * denominator**2)
                 )
                 / (1 + z_squared / denominator)
             )

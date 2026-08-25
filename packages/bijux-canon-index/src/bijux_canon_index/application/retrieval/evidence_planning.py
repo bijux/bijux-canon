@@ -10,7 +10,6 @@ import re
 
 from .multi_query import MultiQueryPlan, MultiQueryPolicy, plan_subqueries
 
-
 EVIDENCE_PLANNING_POLICY_ID = "bijux.canon.index.evidence-planning.content-v1"
 
 _QUESTION_WORD = r"(?:what|which|how|where|why)"
@@ -53,11 +52,7 @@ def _list_items(value: str, *, conjunction: str) -> tuple[str, ...]:
         value,
         flags=re.IGNORECASE,
     )
-    return tuple(
-        item.strip(" ,")
-        for item in normalized.split(",")
-        if item.strip(" ,")
-    )
+    return tuple(item.strip(" ,") for item in normalized.split(",") if item.strip(" ,"))
 
 
 def _explicit_facets(query_text: str) -> tuple[str, ...]:
@@ -68,7 +63,8 @@ def _explicit_facets(query_text: str) -> tuple[str, ...]:
     )
     if across is not None:
         return tuple(
-            item for item in _list_items(across.group(1), conjunction="and")
+            item
+            for item in _list_items(across.group(1), conjunction="and")
             if len(item.split()) >= 2
         )[:4]
     paired_studies = re.search(
@@ -78,9 +74,7 @@ def _explicit_facets(query_text: str) -> tuple[str, ...]:
     )
     if paired_studies is not None:
         return tuple(
-            item.strip(" ,")
-            for item in paired_studies.groups()
-            if item.strip(" ,")
+            item.strip(" ,") for item in paired_studies.groups() if item.strip(" ,")
         )
     based_on = re.search(
         r"\bbased\s+on\s+(.+?)(?:\?|$)",
@@ -128,8 +122,7 @@ def plan_evidence_query(
     ):
         generated.append(
             (
-                normalized
-                + " experiment methods results recommendation conclusion",
+                normalized + " experiment methods results recommendation conclusion",
                 "method, result, and recommendation need",
             )
         )
@@ -153,9 +146,7 @@ def plan_evidence_query(
     generated_subqueries = tuple(
         item for item in multi_query.subqueries if item.ordinal > 1
     )
-    facet_ids = tuple(
-        item.subquery_id for item in generated_subqueries[: len(facets)]
-    )
+    facet_ids = tuple(item.subquery_id for item in generated_subqueries[: len(facets)])
     if facets:
         document_breadth = len(facets)
     elif _COMPARATIVE_TERMS.search(normalized):

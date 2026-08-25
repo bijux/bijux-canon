@@ -33,6 +33,6 @@ def test_application_services_keep_runtime_neutral_ports() -> None:
             ):
                 violations.append(f"{path}:{node.lineno} from {node.module} import")
 
-    assert not violations, "Agent application imported a product sibling:\n" + "\n".join(
-        violations
+    assert not violations, (
+        "Agent application imported a product sibling:\n" + "\n".join(violations)
     )

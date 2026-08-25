@@ -8,8 +8,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, cast
 
-from bijux_canon_runtime.core.errors import ConfigurationError
 from bijux_canon_runtime.core.authority import AuthorityToken
+from bijux_canon_runtime.core.errors import ConfigurationError
 from bijux_canon_runtime.model.artifact.artifact import Artifact
 from bijux_canon_runtime.model.artifact.entropy_usage import EntropyUsage
 from bijux_canon_runtime.model.artifact.non_determinism_source import (

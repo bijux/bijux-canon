@@ -65,9 +65,10 @@ def test_server_resolves_workspace_and_process_options(
             access_log=False,
         )
     ]
-    assert Path(os.environ["BIJUX_CANON_RUNTIME_WORKING_ROOT"]) == (
-        tmp_path / "workspace"
-    ).resolve()
+    assert (
+        Path(os.environ["BIJUX_CANON_RUNTIME_WORKING_ROOT"])
+        == (tmp_path / "workspace").resolve()
+    )
 
 
 @pytest.mark.parametrize("value", ("0", "65536"))
@@ -96,9 +97,10 @@ def test_runtime_distribution_declares_installed_server_entrypoint() -> None:
     assert project["project"]["scripts"]["bijux-canon-runtime-server"] == (
         "bijux_canon_runtime.interfaces.http.server:main"
     )
-    assert importlib.util.find_spec(
-        "bijux_canon_runtime.interfaces.http.server"
-    ) is not None
+    assert (
+        importlib.util.find_spec("bijux_canon_runtime.interfaces.http.server")
+        is not None
+    )
 
 
 def test_v2_openapi_declares_unauthenticated_transport_posture() -> None:
@@ -107,7 +109,5 @@ def test_v2_openapi_declares_unauthenticated_transport_posture() -> None:
     assert schema["security"] == []
     assert schema["servers"] == [{"url": "/"}]
     assert "securitySchemes" not in schema.get("components", {})
-    missing_capability = schema["paths"]["/api/v2/runs"]["post"]["responses"][
-        "503"
-    ]
+    missing_capability = schema["paths"]["/api/v2/runs"]["post"]["responses"]["503"]
     assert "application/problem+json" in missing_capability["content"]

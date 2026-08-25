@@ -3,13 +3,14 @@
 from __future__ import annotations
 
 import argparse
+from collections.abc import Mapping, Sequence
 from datetime import date
 import hashlib
 import json
 from pathlib import Path
 import re
 import shutil
-from typing import Mapping, Sequence, cast
+from typing import cast
 
 from bijux_canon_dev.corpus.acquisition import canonical
 

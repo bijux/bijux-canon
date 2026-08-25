@@ -40,8 +40,8 @@ from bijux_canon_runtime.observability.storage.execution_store import (
 )
 from bijux_canon_runtime.runtime.execution.durable_jobs import (
     DurableJobHandler,
-    DurableJobRequest,
     DurableJobManager,
+    DurableJobRequest,
     JobKind,
 )
 from bijux_canon_runtime.runtime.persistence.authoritative_payload_store import (
@@ -1257,7 +1257,7 @@ def _initialize_staging(
             """
         )
     handler: DurableJobHandler = _NoopDurableJobHandler()
-    handlers = {kind: handler for kind in JobKind}
+    handlers = dict.fromkeys(JobKind, handler)
     payload_store = AuthoritativeArtifactPayloadStore(
         payload_store=filesystem_store,
         database_path=database_path,
@@ -1882,8 +1882,8 @@ def _migrate_workspace_v2_to_v3(
                 source_manifest,
                 ledger_path=source_ledger_path,
             )
-        except (OSError, ValueError, WorkspaceInitializationError):
-            raise source_error
+        except (OSError, ValueError, WorkspaceInitializationError) as error:
+            raise source_error from error
     source_content = canonical_json_bytes(source_manifest)
     source_ledger_content = canonical_json_bytes(source_ledger)
     source_manifest_sha256 = _content_sha256(source_content)
@@ -2063,8 +2063,8 @@ def _migrate_workspace_v3_to_v4(
                 source_manifest,
                 ledger_path=source_ledger_path,
             )
-        except (OSError, ValueError, WorkspaceInitializationError):
-            raise source_error
+        except (OSError, ValueError, WorkspaceInitializationError) as error:
+            raise source_error from error
     source_content = canonical_json_bytes(source_manifest)
     source_ledger_content = canonical_json_bytes(source_ledger)
     source_manifest_sha256 = _content_sha256(source_content)
@@ -2181,8 +2181,8 @@ def _migrate_workspace_v4_to_v5(
                 source_manifest,
                 ledger_path=source_ledger_path,
             )
-        except (OSError, ValueError, WorkspaceInitializationError):
-            raise source_error
+        except (OSError, ValueError, WorkspaceInitializationError) as error:
+            raise source_error from error
     source_content = canonical_json_bytes(source_manifest)
     source_ledger_content = canonical_json_bytes(source_ledger)
     source_manifest_sha256 = _content_sha256(source_content)

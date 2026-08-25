@@ -445,9 +445,7 @@ class CanonicalReasonOperationAdapter:
                     ),
                     "run_id": context.run_id,
                     "schema_version": "bijux.runtime.answer-provenance.v1",
-                    "snapshot_artifact_id": evidence_set.get(
-                        "snapshot_artifact_id"
-                    ),
+                    "snapshot_artifact_id": evidence_set.get("snapshot_artifact_id"),
                     "source_archive_artifact_id": evidence_set.get(
                         "source_archive_artifact_id"
                     ),

@@ -90,10 +90,14 @@ class ClaimMatchReview(StableModel):
             raise ValueError("a semantic match requires a reviewed truth claim")
         if self.truth_claim_id is None and self.reviewed_qrel_ids:
             raise ValueError("an unmatched claim cannot inherit reviewed qrels")
-        if self.relation in {
-            ClaimMatchRelation.equivalent,
-            ClaimMatchRelation.qualified_equivalent,
-        } and not self.qualifier_alignment.complete:
+        if (
+            self.relation
+            in {
+                ClaimMatchRelation.equivalent,
+                ClaimMatchRelation.qualified_equivalent,
+            }
+            and not self.qualifier_alignment.complete
+        ):
             raise ValueError("equivalent claims must retain every material qualifier")
         if (
             self.relation is ClaimMatchRelation.overgeneralized
@@ -149,10 +153,14 @@ class ClaimMatchAdjudication(StableModel):
             raise ValueError("an adjudicated semantic match requires truth")
         if self.truth_claim_id is None and self.reviewed_qrel_ids:
             raise ValueError("an unmatched adjudication cannot inherit qrels")
-        if self.relation in {
-            ClaimMatchRelation.equivalent,
-            ClaimMatchRelation.qualified_equivalent,
-        } and not self.qualifier_alignment.complete:
+        if (
+            self.relation
+            in {
+                ClaimMatchRelation.equivalent,
+                ClaimMatchRelation.qualified_equivalent,
+            }
+            and not self.qualifier_alignment.complete
+        ):
             raise ValueError("adjudicated equivalence must retain every qualifier")
         if (
             self.relation is ClaimMatchRelation.overgeneralized
@@ -299,9 +307,7 @@ class ClaimMatchEvaluator:
             )
             for claim in output.claims
         }
-        adjudication_by_claim = {
-            item.system_claim_id: item for item in adjudications
-        }
+        adjudication_by_claim = {item.system_claim_id: item for item in adjudications}
         outcomes = tuple(
             self._resolve(
                 claim_id,
@@ -364,11 +370,11 @@ class ClaimMatchEvaluator:
                 else truth_by_id.get(review.truth_claim_id)
             )
             if review.truth_claim_id is not None and truth is None:
-                raise ClaimMatchEvaluationError("claim-match review names unknown truth")
+                raise ClaimMatchEvaluationError(
+                    "claim-match review names unknown truth"
+                )
             allowed_qrels = (
-                set()
-                if truth is None
-                else {item.qrel_id for item in truth.citations}
+                set() if truth is None else {item.qrel_id for item in truth.citations}
             )
             if not set(review.reviewed_qrel_ids).issubset(allowed_qrels):
                 raise ClaimMatchEvaluationError(
@@ -386,7 +392,9 @@ class ClaimMatchEvaluator:
         if len(set(adjudication_claim_ids)) != len(adjudication_claim_ids):
             raise ClaimMatchEvaluationError("claim-match adjudications must be unique")
         if not set(adjudication_claim_ids).issubset(claim_ids):
-            raise ClaimMatchEvaluationError("claim-match adjudication names unknown claim")
+            raise ClaimMatchEvaluationError(
+                "claim-match adjudication names unknown claim"
+            )
         for adjudication in adjudications:
             if (
                 adjudication.case_id != case.case_id
@@ -405,9 +413,7 @@ class ClaimMatchEvaluator:
                     "claim-match adjudication names unknown truth"
                 )
             allowed_qrels = (
-                set()
-                if truth is None
-                else {item.qrel_id for item in truth.citations}
+                set() if truth is None else {item.qrel_id for item in truth.citations}
             )
             if not set(adjudication.reviewed_qrel_ids).issubset(allowed_qrels):
                 raise ClaimMatchEvaluationError(

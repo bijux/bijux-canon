@@ -23,16 +23,16 @@ from packaging.markers import Marker, default_environment
 from packaging.requirements import Requirement
 from packaging.utils import canonicalize_name
 
+from bijux_canon_dev.release.installation_matrix import (
+    InstallationMatrixError,
+    _dependency_wheels,
+)
 from bijux_canon_dev.release.python_support_matrix import (
     CommandResult,
     CommandRunner,
     WheelRecord,
     inspect_wheels,
     inspect_workspace,
-)
-from bijux_canon_dev.release.installation_matrix import (
-    InstallationMatrixError,
-    _dependency_wheels,
 )
 from bijux_canon_dev.release.wheel_inventory import (
     PackagePolicy,
@@ -706,12 +706,14 @@ def run_extras_matrix(
         ),
         None,
     )
-    if reason_policy is not None:
-        if "llm" in dict(reason_policy.optional_dependencies) or any(
+    if reason_policy is not None and (
+        "llm" in dict(reason_policy.optional_dependencies)
+        or any(
             canonicalize_name(Requirement(value).name) == "openai"
             for value in reason_policy.dependencies
-        ):
-            failures.append("reason-provider-dependency-policy")
+        )
+    ):
+        failures.append("reason-provider-dependency-policy")
 
     evidence: dict[str, object] = {
         "schema_version": "bijux.canon.extras_matrix.v1",

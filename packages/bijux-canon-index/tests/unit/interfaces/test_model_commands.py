@@ -9,6 +9,7 @@ from pathlib import Path
 import pytest
 from typer.testing import CliRunner
 
+from bijux_canon_index.application.model_lifecycle import ModelLifecycleError
 from bijux_canon_index.interfaces.cli import app as cli_app
 from bijux_canon_index.interfaces.cli import model_commands
 
@@ -28,26 +29,25 @@ def test_installed_model_commands_emit_validation_records(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     calls: list[tuple[str, Path, str]] = []
+
+    def record_call(operation: str, root: Path, profile_id: str) -> _Record:
+        calls.append((operation, root, profile_id))
+        return _Record()
+
     monkeypatch.setattr(
         model_commands,
         "acquire_model",
-        lambda root, *, profile_id: (
-            calls.append(("acquire", root, profile_id)) or _Record()
-        ),
+        lambda root, *, profile_id: record_call("acquire", root, profile_id),
     )
     monkeypatch.setattr(
         model_commands,
         "register_existing_model",
-        lambda root, *, profile_id: (
-            calls.append(("register", root, profile_id)) or _Record()
-        ),
+        lambda root, *, profile_id: record_call("register", root, profile_id),
     )
     monkeypatch.setattr(
         model_commands,
         "validate_model",
-        lambda root, *, profile_id: (
-            calls.append(("validate", root, profile_id)) or _Record()
-        ),
+        lambda root, *, profile_id: record_call("validate", root, profile_id),
     )
     runner = CliRunner()
 
@@ -75,7 +75,7 @@ def test_model_command_returns_stable_error_exit(
         model_commands,
         "validate_model",
         lambda *_args, **_kwargs: (_ for _ in ()).throw(
-            model_commands.ModelLifecycleError("model validation failed: corrupt")
+            ModelLifecycleError("model validation failed: corrupt")
         ),
     )
 

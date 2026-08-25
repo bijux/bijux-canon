@@ -58,7 +58,6 @@ class InstalledRetrievalEvaluationExecutor:
         query: ReviewedRetrievalQuery,
     ) -> RetrievalExecutionObservation:
         """Execute one query and retain success, refusal, or failure evidence."""
-
         index_artifact = self._store.load(ArtifactID(request.index_artifact_id))
         prepared = self._index.prepare_archive(index_artifact.canonical_bytes)
         inspection = prepared.inspection

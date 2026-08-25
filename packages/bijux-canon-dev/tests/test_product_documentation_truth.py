@@ -85,10 +85,10 @@ def test_new_user_pages_use_installed_v2_commands() -> None:
         if legacy_command.search(text):
             failures.append(f"{path.relative_to(REPO_ROOT)}: legacy manifest command")
         if "/api/v1/" in text or "api.v1.app:app" in text:
-            failures.append(f"{path.relative_to(REPO_ROOT)}: v1 route or server command")
-    assert not failures, "primary workflow bypasses Runtime v2:\n" + "\n".join(
-        failures
-    )
+            failures.append(
+                f"{path.relative_to(REPO_ROOT)}: v1 route or server command"
+            )
+    assert not failures, "primary workflow bypasses Runtime v2:\n" + "\n".join(failures)
 
 
 def test_primary_workflows_cover_operational_lifecycle() -> None:
@@ -118,7 +118,7 @@ def test_documented_v2_commands_are_declared_by_the_parser() -> None:
     )
     declared = set(re.findall(r'commands\.add_parser\(\s*"([a-z-]+)"', parser_source))
     for names in re.findall(
-        r'for name(?:, help_text)? in \((.*?)\):', parser_source, re.DOTALL
+        r"for name(?:, help_text)? in \((.*?)\):", parser_source, re.DOTALL
     ):
         declared.update(re.findall(r'"([a-z-]+)"', names))
 

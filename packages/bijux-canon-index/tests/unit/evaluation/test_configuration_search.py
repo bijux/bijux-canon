@@ -6,8 +6,8 @@ from __future__ import annotations
 import pytest
 
 from bijux_canon_index.evaluation import (
-    ObservedLocatorSegment,
     ObservedFinalizationConfiguration,
+    ObservedLocatorSegment,
     ObservedRetrievalHit,
     ObservedStageCandidate,
     PublicRetrievalEvaluationRequest,
@@ -52,8 +52,13 @@ def _candidate(
     return ObservedStageCandidate(stage, chunk_id, rank, rank, 1.0 / rank, "included")
 
 
-def _observation(*, status: RetrievalExecutionStatus = RetrievalExecutionStatus.success) -> RetrievalExecutionObservation:
-    failed = status in {RetrievalExecutionStatus.failed, RetrievalExecutionStatus.refused}
+def _observation(
+    *, status: RetrievalExecutionStatus = RetrievalExecutionStatus.success
+) -> RetrievalExecutionObservation:
+    failed = status in {
+        RetrievalExecutionStatus.failed,
+        RetrievalExecutionStatus.refused,
+    }
     return RetrievalExecutionObservation(
         query_id="question",
         query_text_sha256="a" * 64,
@@ -62,7 +67,9 @@ def _observation(*, status: RetrievalExecutionStatus = RetrievalExecutionStatus.
         model_lock_artifact_id=f"sha256:{'5' * 64}",
         configuration_id=f"sha256:{'6' * 64}",
         retrieval_mode="local-hybrid-exact",
-        hits=() if failed else (
+        hits=()
+        if failed
+        else (
             ObservedRetrievalHit(
                 1,
                 1,
@@ -71,7 +78,11 @@ def _observation(*, status: RetrievalExecutionStatus = RetrievalExecutionStatus.
                 "document",
                 "7" * 64,
                 "8" * 64,
-                (ObservedLocatorSegment(0, "mapping", "page", (("page", 1),), "8" * 64),),
+                (
+                    ObservedLocatorSegment(
+                        0, "mapping", "page", (("page", 1),), "8" * 64
+                    ),
+                ),
             ),
         ),
         run_id=None if failed else "run",
@@ -79,7 +90,9 @@ def _observation(*, status: RetrievalExecutionStatus = RetrievalExecutionStatus.
         vex_artifact_id=None,
         policy_action="fail" if failed else "admit",
         fallback_action="none",
-        stages=None if failed else RetrievalStageEvidence(
+        stages=None
+        if failed
+        else RetrievalStageEvidence(
             lexical_outcome="success",
             dense_outcome="success",
             fusion_policy_sha256="9" * 64,

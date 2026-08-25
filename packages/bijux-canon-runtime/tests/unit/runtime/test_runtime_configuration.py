@@ -5,14 +5,13 @@ from pathlib import Path
 
 import pytest
 
+from bijux_canon_index.application import CONTENT_EVIDENCE_RETRIEVAL_POLICY_ID
 from bijux_canon_runtime.application.runtime_configuration import (
     ConfigurationSource,
     RuntimeWorkspaceLayout,
     resolve_runtime_configuration,
 )
 from bijux_canon_runtime.core.errors import ConfigurationError
-
-from bijux_canon_index.application import CONTENT_EVIDENCE_RETRIEVAL_POLICY_ID
 
 
 def test_configuration_precedence_and_origins_are_explicit() -> None:

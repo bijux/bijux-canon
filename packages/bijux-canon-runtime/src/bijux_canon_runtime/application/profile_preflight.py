@@ -6,15 +6,17 @@
 
 from __future__ import annotations
 
-import importlib
 from collections.abc import Callable
+import importlib
 from pathlib import Path
 import tempfile
 
 from bijux_canon_index.application import IndexGenerationArchive
 from bijux_canon_index.domain.embedding import EmbeddingModelLock
-from bijux_canon_index.infra.adapters.sqlite.lexical import SQLiteLexicalIndex
-from bijux_canon_index.infra.adapters.sqlite.lexical import LexicalIndexError
+from bijux_canon_index.infra.adapters.sqlite.lexical import (
+    LexicalIndexError,
+    SQLiteLexicalIndex,
+)
 from bijux_canon_index.infra.embeddings.model_cache import (
     ModelMaterializationError,
     load_model_lock,
@@ -73,25 +75,27 @@ class InstalledProfilePreflight:
             try:
                 archive = IndexGenerationArchive.from_bytes(artifact.canonical_bytes)
                 self._layout.operations_root.mkdir(parents=True, exist_ok=True)
-                with tempfile.TemporaryDirectory(
-                    prefix=".profile-preflight-",
-                    dir=self._layout.operations_root,
-                ) as work:
-                    with archive.materialize(Path(work) / "generation") as generation:
-                        if generation.manifest.model_lock_artifact_id != lock.lock_id:
-                            raise ApplicationCapabilityError(
-                                "dense index model lock differs from the configured "
-                                "model; restore that locked model or rebuild the index"
-                            )
-                        if (
-                            generation.manifest.statistics.dimension
-                            != lock.profile.dimension
-                        ):
-                            raise ApplicationCapabilityError(
-                                "dense index dimension differs from the configured "
-                                "model; rebuild the index with this model or restore "
-                                "the matching model lock"
-                            )
+                with (
+                    tempfile.TemporaryDirectory(
+                        prefix=".profile-preflight-",
+                        dir=self._layout.operations_root,
+                    ) as work,
+                    archive.materialize(Path(work) / "generation") as generation,
+                ):
+                    if generation.manifest.model_lock_artifact_id != lock.lock_id:
+                        raise ApplicationCapabilityError(
+                            "dense index model lock differs from the configured "
+                            "model; restore that locked model or rebuild the index"
+                        )
+                    if (
+                        generation.manifest.statistics.dimension
+                        != lock.profile.dimension
+                    ):
+                        raise ApplicationCapabilityError(
+                            "dense index dimension differs from the configured "
+                            "model; rebuild the index with this model or restore "
+                            "the matching model lock"
+                        )
             except ApplicationCapabilityError:
                 raise
             except (OSError, ValueError) as error:
@@ -181,7 +185,7 @@ class InstalledProfilePreflight:
             # macOS CPU wheels; reversing this order can abort the process.
             importlib.import_module("torch")
             faiss = importlib.import_module("faiss")
-            required = (getattr(faiss, "IndexFlatIP"), getattr(faiss, "IndexHNSWFlat"))
+            required = (faiss.IndexFlatIP, faiss.IndexHNSWFlat)
         except (AttributeError, ImportError) as error:
             raise ApplicationCapabilityError(
                 "selected dense or hybrid profile requires the CPU FAISS exact and "

@@ -120,9 +120,7 @@ class ClaimRevisionAction(StableModel):
             ClaimRevisionActionKind.QUALIFY: prior_count > 0 and revised_count > 0,
             ClaimRevisionActionKind.SPLIT: prior_count == 1 and revised_count > 1,
             ClaimRevisionActionKind.MERGE: prior_count > 1 and revised_count == 1,
-            ClaimRevisionActionKind.STRENGTHEN: (
-                prior_count > 0 and revised_count > 0
-            ),
+            ClaimRevisionActionKind.STRENGTHEN: (prior_count > 0 and revised_count > 0),
             ClaimRevisionActionKind.ABSTAIN: revised_count == 0,
             ClaimRevisionActionKind.PRESERVE: prior_count == revised_count,
         }[self.kind]
@@ -130,10 +128,14 @@ class ClaimRevisionAction(StableModel):
             raise ValueError("revision action claim shape is invalid")
         if not self.rationale or self.rationale != " ".join(self.rationale.split()):
             raise ValueError("revision action rationale must be normalized")
-        if self.kind not in {
-            ClaimRevisionActionKind.PRESERVE,
-            ClaimRevisionActionKind.REMOVE,
-        } and not self.classification_artifact_ids:
+        if (
+            self.kind
+            not in {
+                ClaimRevisionActionKind.PRESERVE,
+                ClaimRevisionActionKind.REMOVE,
+            }
+            and not self.classification_artifact_ids
+        ):
             raise ValueError("evidence-caused revision requires a classification")
         payload = self.model_dump(mode="json", exclude={"artifact_id"})
         if self.artifact_id != content_artifact_id(payload):
@@ -316,16 +318,13 @@ class ResearchAnswerRevisionService:
             synthesis_style=style,
             retain_cross_source_corroboration=True,
         )
-        if (
-            revised.answer_text == prior_answer.answer_text
-            and any(
-                item.relation
-                in {
-                    ResearchCandidateRelation.OPPOSING,
-                    ResearchCandidateRelation.LIMITING,
-                }
-                for item in material
-            )
+        if revised.answer_text == prior_answer.answer_text and any(
+            item.relation
+            in {
+                ResearchCandidateRelation.OPPOSING,
+                ResearchCandidateRelation.LIMITING,
+            }
+            for item in material
         ):
             evidence_state = GroundingEvidenceState.create(
                 retrieval_status=RetrievalEvidenceStatus.success,
@@ -451,8 +450,12 @@ def _revision_actions(
                 kind=ClaimRevisionActionKind.ABSTAIN,
                 prior_claim_artifact_ids=prior_ids,
                 revised_claim_artifact_ids=(),
-                evidence_artifact_ids=tuple(item.evidence_artifact_id for item in material),
-                classification_artifact_ids=tuple(item.artifact_id for item in material),
+                evidence_artifact_ids=tuple(
+                    item.evidence_artifact_id for item in material
+                ),
+                classification_artifact_ids=tuple(
+                    item.artifact_id for item in material
+                ),
                 rationale="material unresolved evidence prevents a verified answer",
             ),
         )
@@ -499,8 +502,12 @@ def _revision_actions(
                 kind=kind,
                 prior_claim_artifact_ids=targeted_prior,
                 revised_claim_artifact_ids=candidate_revised,
-                evidence_artifact_ids=tuple(item.evidence_artifact_id for item in material),
-                classification_artifact_ids=tuple(item.artifact_id for item in material),
+                evidence_artifact_ids=tuple(
+                    item.evidence_artifact_id for item in material
+                ),
+                classification_artifact_ids=tuple(
+                    item.artifact_id for item in material
+                ),
                 rationale=(
                     "material support, opposition, or limitation changed the verified claim presentation"
                 ),
@@ -514,7 +521,9 @@ def _revision_actions(
                 prior_claim_artifact_ids=(),
                 revised_claim_artifact_ids=added,
                 evidence_artifact_ids=tuple(candidate_ids),
-                classification_artifact_ids=tuple(item.artifact_id for item in material),
+                classification_artifact_ids=tuple(
+                    item.artifact_id for item in material
+                ),
                 rationale="new classified evidence added verified claims",
             )
         )

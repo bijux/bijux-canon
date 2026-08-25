@@ -14,6 +14,7 @@ from bijux_canon_reason.grounding import (
     EvidenceEntailmentAssessment,
     EvidencePacketBuilder,
     EvidencePacketPolicy,
+    GroundingAdmissionDecision,
     GroundingAdmissionService,
     GroundingRequestStatus,
     ImmutableEvidenceLocator,
@@ -25,8 +26,8 @@ from bijux_canon_reason.grounding.provider_contracts import content_artifact_id
 from bijux_canon_reason.research.answer_requirements import (
     AnswerRequirementKind,
     AnswerRequirementPlan,
-    AnswerRequirementPlanOutcome,
     AnswerRequirementPlanningService,
+    AnswerRequirementPlanOutcome,
     AnswerRequirementStatus,
     SkepticalSearchCompletion,
     create_skeptical_search_completion,
@@ -101,8 +102,8 @@ def _answer(question: str, *evidence: CitationEvidence) -> LocalGroundedAnswer:
 def _plan(
     answer: LocalGroundedAnswer,
     *,
-    admission=None,
-    verification=None,
+    admission: GroundingAdmissionDecision | None = None,
+    verification: CitationVerificationReport | None = None,
     completed: tuple[str, ...] = (),
     completions: tuple[SkepticalSearchCompletion, ...] = (),
 ) -> AnswerRequirementPlan:
@@ -147,8 +148,7 @@ def test_sufficient_answer_can_plan_zero_additional_searches() -> None:
         AnswerRequirementKind.LIMITATION,
     }
     assert all(
-        item.status is AnswerRequirementStatus.SATISFIED
-        for item in plan.requirements
+        item.status is AnswerRequirementStatus.SATISFIED for item in plan.requirements
     )
 
 
@@ -177,9 +177,7 @@ def test_petrous_bone_content_drives_finding_limitation_and_opposition_needs() -
     )
     plan = _plan(answer)
     findings = tuple(
-        item
-        for item in plan.requirements
-        if item.kind is AnswerRequirementKind.FINDING
+        item for item in plan.requirements if item.kind is AnswerRequirementKind.FINDING
     )
     opposition = tuple(
         item
@@ -191,7 +189,9 @@ def test_petrous_bone_content_drives_finding_limitation_and_opposition_needs() -
     assert any("lower than 1%" in item.description for item in findings)
     assert len(opposition) == len(findings)
     assert all(item.target_claim_artifact_ids for item in opposition)
-    assert all(item.artifact_id in plan.search_requirement_artifact_ids for item in opposition)
+    assert all(
+        item.artifact_id in plan.search_requirement_artifact_ids for item in opposition
+    )
     assert any(
         item.kind is AnswerRequirementKind.LIMITATION
         and item.status is AnswerRequirementStatus.SATISFIED
@@ -331,7 +331,10 @@ def test_out_of_scope_and_unsearchable_questions_do_not_issue_queries() -> None:
     )
     for request_status, expected in (
         (GroundingRequestStatus.out_of_scope, AnswerRequirementStatus.OUT_OF_SCOPE),
-        (GroundingRequestStatus.fabricated_entity, AnswerRequirementStatus.UNSEARCHABLE),
+        (
+            GroundingRequestStatus.fabricated_entity,
+            AnswerRequirementStatus.UNSEARCHABLE,
+        ),
     ):
         admission = GroundingAdmissionService().decide(
             claim_set=answer.claims,
@@ -344,4 +347,6 @@ def test_out_of_scope_and_unsearchable_questions_do_not_issue_queries() -> None:
         assert plan.outcome is AnswerRequirementPlanOutcome.BLOCKED
         assert plan.search_requirement_artifact_ids == ()
         assert all(item.query_text is None for item in plan.requirements)
-        assert all(item.status is expected for item in plan.requirements if item.material)
+        assert all(
+            item.status is expected for item in plan.requirements if item.material
+        )

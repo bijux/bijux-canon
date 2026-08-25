@@ -3,14 +3,15 @@ from __future__ import annotations
 import copy
 import io
 import json
+from pathlib import Path
 import stat
 import subprocess
 import tarfile
-import zipfile
-from pathlib import Path
 from typing import cast
+import zipfile
 
 import pytest
+
 from bijux_canon_dev.sbom.supply_chain import (
     ArtifactInput,
     SupplyChainVerificationError,

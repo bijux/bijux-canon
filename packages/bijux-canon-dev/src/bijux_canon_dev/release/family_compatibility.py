@@ -23,16 +23,16 @@ from packaging.requirements import Requirement
 from packaging.specifiers import SpecifierSet
 from packaging.utils import canonicalize_name
 
+from bijux_canon_dev.release.installation_matrix import (
+    InstallationMatrixError,
+    _dependency_wheels,
+)
 from bijux_canon_dev.release.python_support_matrix import (
     CommandResult,
     CommandRunner,
     WheelRecord,
     inspect_wheels,
     inspect_workspace,
-)
-from bijux_canon_dev.release.installation_matrix import (
-    InstallationMatrixError,
-    _dependency_wheels,
 )
 from bijux_canon_dev.release.wheel_inventory import inspect_workspace_policy
 

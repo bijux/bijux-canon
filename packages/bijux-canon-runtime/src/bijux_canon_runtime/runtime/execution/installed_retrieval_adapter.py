@@ -13,11 +13,12 @@ from pathlib import Path
 import tempfile
 
 from bijux_canon_index.application import (
+    LEGACY_RETRIEVAL_POLICY_ID,
+    CitationCandidate,
     CitationLocatorCatalog,
     CitationLocatorRecord,
     CitationLocatorSegment,
     CitationLocatorService,
-    CitationCandidate,
     CitationRetrievalMode,
     CitationSourceMetadata,
     DenseCandidateBatch,
@@ -29,16 +30,15 @@ from bijux_canon_index.application import (
     FusionChannelRanking,
     HybridRetrievalPolicy,
     IndexService,
-    LEGACY_RETRIEVAL_POLICY_ID,
     LexicalCandidateService,
     RerankFailurePolicy,
     RerankPolicy,
     VexArtifactStore,
     citation_candidates_from_lexical,
     citation_candidates_from_rerank,
+    plan_evidence_query,
     reciprocal_rank_fusion,
     rerank_candidates,
-    plan_evidence_query,
     rerank_planned_evidence,
     resolve_hybrid_retrieval_policy,
 )
@@ -105,7 +105,6 @@ def _retrieval_authorization_scope(
     catalog: CitationLocatorCatalog,
 ) -> RetrievalAuthorizationScope:
     """Bind retrieval authority to the selected generation and admitted sources."""
-
     allowed = {record.source.source_id for record in catalog.records}
     if not allowed:
         raise StepDispatchError("retrieval authorization scope selects no sources")
@@ -148,7 +147,6 @@ def _dense_attempt_evidence(
     record: Mapping[str, object],
 ) -> dict[str, object]:
     """Retain the measured exact comparison behind one dense policy decision."""
-
     metrics = record.get("metrics")
     witness = record.get("witness")
     if not isinstance(metrics, dict) or not isinstance(witness, dict):
@@ -328,6 +326,172 @@ def _first_section_path(value: object, fallback: str) -> tuple[str, ...]:
     return (fallback,)
 
 
+def _citation_source(
+    document_id: str,
+    metadata: Mapping[str, object],
+) -> tuple[CitationSourceMetadata, str, str]:
+    relative_path = metadata["relative_path"]
+    source_sha256 = metadata["source_content_sha256"]
+    format_id = metadata["format_id"]
+    if (
+        not isinstance(relative_path, str)
+        or not relative_path
+        or not isinstance(source_sha256, str)
+        or not source_sha256
+        or not isinstance(format_id, str)
+        or not format_id
+    ):
+        raise TypeError
+    source_uri = metadata.get("canonical_uri")
+    if not isinstance(source_uri, str) or not source_uri:
+        source_uri = f"urn:bijux:source:{source_sha256}"
+    raw_authors = metadata.get("authors", [])
+    if not isinstance(raw_authors, list) or not all(
+        isinstance(item, str) and item for item in raw_authors
+    ):
+        raise TypeError
+    title = metadata.get("title")
+    if not isinstance(title, str) or not title:
+        title = relative_path
+    return (
+        CitationSourceMetadata(
+            source_id=document_id,
+            source_uri=source_uri,
+            source_content_sha256=source_sha256,
+            format_id=format_id,
+            title=title,
+            authors=tuple(raw_authors),
+            doi=_optional_string(metadata.get("doi")),
+            language=_optional_string(metadata.get("language")),
+            license_id=_optional_string(metadata.get("license_expression")),
+            journal=_optional_string(metadata.get("journal")),
+            publication_date=_optional_string(metadata.get("publication_date")),
+            license_url=_optional_string(metadata.get("license_url")),
+            provenance_artifact_id=(
+                _optional_string(metadata.get("manifest_sha256"))
+                or _content_id(metadata)
+            ),
+        ),
+        relative_path,
+        source_sha256,
+    )
+
+
+def _citation_lineage(
+    lineage: Mapping[str, object],
+    *,
+    document_id: str,
+    source_sha256: str,
+) -> tuple[str, dict[str, dict[str, object]]]:
+    raw_records = lineage.get("records")
+    parser_manifest = lineage.get("parser_manifest_sha256")
+    if (
+        lineage.get("schema_version")
+        != "bijux.canon.ingest.document_citation_lineage.v1"
+        or lineage.get("document_id") != document_id
+        or lineage.get("source_content_sha256") != source_sha256
+        or not isinstance(raw_records, list)
+        or not _is_artifact_id(parser_manifest)
+    ):
+        raise TypeError
+    lineage_payload = dict(lineage)
+    lineage_id = lineage_payload.pop("lineage_sha256", None)
+    if lineage_id != _content_id(lineage_payload):
+        raise ValueError
+    records: dict[str, dict[str, object]] = {}
+    for raw_record in raw_records:
+        record = _required_object(raw_record)
+        chunk_id = record.get("chunk_id")
+        if not isinstance(chunk_id, str) or chunk_id in records:
+            raise ValueError
+        record_payload = dict(record)
+        record_id = record_payload.pop("record_sha256", None)
+        if record_id != _content_id(record_payload):
+            raise ValueError
+        records[chunk_id] = record
+    return str(parser_manifest), records
+
+
+def _citation_record(
+    raw_chunk: object,
+    *,
+    document_id: str,
+    source: CitationSourceMetadata,
+    source_sha256: str,
+    relative_path: str,
+    parser_manifest_sha256: str,
+    lineage_by_chunk: Mapping[str, dict[str, object]],
+) -> CitationLocatorRecord:
+    if not isinstance(raw_chunk, dict):
+        raise TypeError
+    section_path = _first_section_path(raw_chunk.get("section_paths"), relative_path)
+    mapping_ids = raw_chunk["mapping_sha256"]
+    if not isinstance(mapping_ids, list) or not all(
+        isinstance(item, str) and item for item in mapping_ids
+    ):
+        raise TypeError
+    chunk_id = raw_chunk["chunk_id"]
+    chunk_index = raw_chunk["chunk_index"]
+    chunk_text = raw_chunk["normalized_text"]
+    chunk_text_sha256 = raw_chunk["normalized_text_sha256"]
+    if (
+        not _is_artifact_id(chunk_id)
+        or isinstance(chunk_index, bool)
+        or not isinstance(chunk_index, int)
+        or chunk_index < 0
+        or not isinstance(chunk_text, str)
+        or not chunk_text
+        or not isinstance(chunk_text_sha256, str)
+        or hashlib.sha256(chunk_text.encode()).hexdigest() != chunk_text_sha256
+        or any(not _is_artifact_id(item) for item in mapping_ids)
+    ):
+        raise ValueError
+    raw_lineage_record = lineage_by_chunk.get(chunk_id)
+    if (
+        raw_lineage_record is None
+        or raw_lineage_record.get("schema_version")
+        != "bijux.canon.ingest.citation_lineage_record.v1"
+        or raw_lineage_record.get("document_id") != document_id
+        or raw_lineage_record.get("chunk_index") != chunk_index
+        or raw_lineage_record.get("normalized_text_sha256") != chunk_text_sha256
+    ):
+        raise ValueError
+    raw_section_paths = raw_lineage_record.get("section_paths")
+    if not isinstance(raw_section_paths, list) or len(raw_section_paths) != len(
+        mapping_ids
+    ):
+        raise TypeError
+    segment_section_paths: list[tuple[str, ...]] = []
+    for raw_path in raw_section_paths:
+        if not isinstance(raw_path, list) or any(
+            not isinstance(item, str) or not item for item in raw_path
+        ):
+            raise TypeError
+        segment_section_paths.append(tuple(raw_path) if raw_path else section_path)
+    locator_segments = _lineage_segments(
+        raw_record=raw_lineage_record,
+        chunk_id=chunk_id,
+        document_id=document_id,
+        source_sha256=source_sha256,
+        parser_manifest_sha256=parser_manifest_sha256,
+        chunk_text=chunk_text,
+        mapping_ids=tuple(mapping_ids),
+        section_paths=tuple(segment_section_paths),
+    )
+    return CitationLocatorRecord(
+        chunk_id=chunk_id,
+        document_id=document_id,
+        ordinal=chunk_index,
+        source=source,
+        section_path=section_path,
+        locator=locator_segments[0].locator,
+        verbatim_text=chunk_text,
+        content_sha256=chunk_text_sha256,
+        mapping_ids=tuple(mapping_ids),
+        locator_segments=locator_segments,
+    )
+
+
 def _citation_catalog(
     snapshot_artifact: AddressedArtifact,
     snapshot: Mapping[str, object],
@@ -351,159 +515,30 @@ def _citation_catalog(
                 or not isinstance(lineage, dict)
             ):
                 raise TypeError
-            relative_path = metadata["relative_path"]
-            source_sha256 = metadata["source_content_sha256"]
-            format_id = metadata["format_id"]
-            if not all(
-                isinstance(value, str) and value
-                for value in (relative_path, source_sha256, format_id)
-            ):
-                raise TypeError
-            raw_lineage_records = lineage.get("records")
-            if (
-                lineage.get("schema_version")
-                != "bijux.canon.ingest.document_citation_lineage.v1"
-                or lineage.get("document_id") != document_id
-                or lineage.get("source_content_sha256") != source_sha256
-                or not isinstance(raw_lineage_records, list)
-                or not _is_artifact_id(lineage.get("parser_manifest_sha256"))
-            ):
-                raise TypeError
-            parser_manifest_sha256 = str(lineage["parser_manifest_sha256"])
-            lineage_payload = dict(lineage)
-            lineage_id = lineage_payload.pop("lineage_sha256", None)
-            if lineage_id != _content_id(lineage_payload):
-                raise ValueError
-            lineage_by_chunk: dict[str, dict[str, object]] = {}
-            for raw_lineage_record in raw_lineage_records:
-                record = _required_object(raw_lineage_record)
-                lineage_chunk_id = record.get("chunk_id")
-                if (
-                    not isinstance(lineage_chunk_id, str)
-                    or lineage_chunk_id in lineage_by_chunk
-                ):
-                    raise ValueError
-                record_payload = dict(record)
-                record_id = record_payload.pop("record_sha256", None)
-                if record_id != _content_id(record_payload):
-                    raise ValueError
-                lineage_by_chunk[lineage_chunk_id] = record
-            source_uri = metadata.get("canonical_uri")
-            if not isinstance(source_uri, str) or not source_uri:
-                source_uri = f"urn:bijux:source:{source_sha256}"
-            raw_authors = metadata.get("authors", [])
-            if not isinstance(raw_authors, list) or not all(
-                isinstance(item, str) and item for item in raw_authors
-            ):
-                raise TypeError
-            title = metadata.get("title")
-            if not isinstance(title, str) or not title:
-                title = relative_path
-            source = CitationSourceMetadata(
-                source_id=document_id,
-                source_uri=source_uri,
-                source_content_sha256=source_sha256,
-                format_id=format_id,
-                title=title,
-                authors=tuple(raw_authors),
-                doi=_optional_string(metadata.get("doi")),
-                language=_optional_string(metadata.get("language")),
-                license_id=_optional_string(metadata.get("license_expression")),
-                journal=_optional_string(metadata.get("journal")),
-                publication_date=_optional_string(metadata.get("publication_date")),
-                license_url=_optional_string(metadata.get("license_url")),
-                provenance_artifact_id=(
-                    _optional_string(metadata.get("manifest_sha256"))
-                    or _content_id(metadata)
-                ),
+            source, relative_path, source_sha256 = _citation_source(
+                document_id, metadata
             )
-            for raw_chunk in chunks:
-                if not isinstance(raw_chunk, dict):
-                    raise TypeError
-                section_path = _first_section_path(
-                    raw_chunk.get("section_paths"), relative_path
-                )
-                mapping_ids = raw_chunk["mapping_sha256"]
-                if not isinstance(mapping_ids, list) or not all(
-                    isinstance(item, str) and item for item in mapping_ids
-                ):
-                    raise TypeError
-                raw_chunk_id = raw_chunk["chunk_id"]
-                raw_chunk_index = raw_chunk["chunk_index"]
-                raw_chunk_text = raw_chunk["normalized_text"]
-                raw_chunk_text_sha256 = raw_chunk["normalized_text_sha256"]
-                if (
-                    not _is_artifact_id(raw_chunk_id)
-                    or isinstance(raw_chunk_index, bool)
-                    or not isinstance(raw_chunk_index, int)
-                    or raw_chunk_index < 0
-                    or not isinstance(raw_chunk_text, str)
-                    or not raw_chunk_text
-                    or not isinstance(raw_chunk_text_sha256, str)
-                    or hashlib.sha256(raw_chunk_text.encode()).hexdigest()
-                    != raw_chunk_text_sha256
-                    or any(not _is_artifact_id(item) for item in mapping_ids)
-                ):
-                    raise ValueError
-                chunk_id = raw_chunk_id
-                chunk_index = raw_chunk_index
-                chunk_text = raw_chunk_text
-                chunk_text_sha256 = raw_chunk_text_sha256
-                raw_lineage_record = lineage_by_chunk.get(chunk_id)
-                if (
-                    raw_lineage_record is None
-                    or raw_lineage_record.get("schema_version")
-                    != "bijux.canon.ingest.citation_lineage_record.v1"
-                    or raw_lineage_record.get("document_id") != document_id
-                    or raw_lineage_record.get("chunk_index") != chunk_index
-                    or raw_lineage_record.get("normalized_text_sha256")
-                    != chunk_text_sha256
-                ):
-                    raise ValueError
-                raw_section_paths = raw_lineage_record.get("section_paths")
-                if not isinstance(raw_section_paths, list) or len(
-                    raw_section_paths
-                ) != len(mapping_ids):
-                    raise TypeError
-                segment_section_paths: list[tuple[str, ...]] = []
-                for raw_path in raw_section_paths:
-                    if not isinstance(raw_path, list) or any(
-                        not isinstance(item, str) or not item for item in raw_path
-                    ):
-                        raise TypeError
-                    segment_section_paths.append(
-                        tuple(raw_path) if raw_path else section_path
-                    )
-                locator_segments = _lineage_segments(
-                    raw_record=raw_lineage_record,
-                    chunk_id=chunk_id,
+            parser_manifest_sha256, lineage_by_chunk = _citation_lineage(
+                lineage,
+                document_id=document_id,
+                source_sha256=source_sha256,
+            )
+            document_records = tuple(
+                _citation_record(
+                    raw_chunk,
                     document_id=document_id,
+                    source=source,
                     source_sha256=source_sha256,
+                    relative_path=relative_path,
                     parser_manifest_sha256=parser_manifest_sha256,
-                    chunk_text=chunk_text,
-                    mapping_ids=tuple(mapping_ids),
-                    section_paths=tuple(segment_section_paths),
+                    lineage_by_chunk=lineage_by_chunk,
                 )
-                records.append(
-                    CitationLocatorRecord(
-                        chunk_id=chunk_id,
-                        document_id=document_id,
-                        ordinal=chunk_index,
-                        source=source,
-                        section_path=section_path,
-                        locator=locator_segments[0].locator,
-                        verbatim_text=chunk_text,
-                        content_sha256=chunk_text_sha256,
-                        mapping_ids=tuple(mapping_ids),
-                        locator_segments=locator_segments,
-                    )
-                )
-            if set(lineage_by_chunk) != {
-                str(raw_chunk["chunk_id"])
                 for raw_chunk in chunks
-                if isinstance(raw_chunk, dict) and "chunk_id" in raw_chunk
-            }:
+            )
+            chunk_ids = {record.chunk_id for record in document_records}
+            if set(lineage_by_chunk) != chunk_ids:
                 raise ValueError
+            records.extend(document_records)
     except (KeyError, TypeError, ValueError) as error:
         raise StepDispatchError(
             "corpus snapshot citation records are invalid"
@@ -929,7 +964,6 @@ class CanonicalRetrievalOperationAdapter:
         context: StepDispatchContext,
     ) -> tuple[StepOutputArtifact, ...]:
         """Retrieve from a standalone lexical artifact without model resolution."""
-
         index_artifact = _artifact_input(
             store=self._store,
             upstream=upstream_artifacts,

@@ -56,11 +56,7 @@ def _tracked_paths(repository: Path) -> tuple[str, ...]:
         check=False,
     )
     _require(completed.returncode == 0, "cannot enumerate tracked repository files")
-    return tuple(
-        item.decode("utf-8")
-        for item in completed.stdout.split(b"\0")
-        if item
-    )
+    return tuple(item.decode("utf-8") for item in completed.stdout.split(b"\0") if item)
 
 
 def _marker_kind(text: str) -> str:
@@ -167,7 +163,9 @@ def audit_repository(repository: Path, policy_path: Path) -> dict[str, Any]:
         if rule.get("public_surface") is True:
             _require(tests, f"public marker lacks acceptance proof: {rule.get('path')}")
         for test in tests:
-            _require((repository / test).is_file(), f"acceptance test is missing: {test}")
+            _require(
+                (repository / test).is_file(), f"acceptance test is missing: {test}"
+            )
         reviewed.append(
             {
                 **occurrence,
@@ -181,7 +179,9 @@ def audit_repository(repository: Path, policy_path: Path) -> dict[str, Any]:
     for position, rule in enumerate(rules):
         expected = rule.get("expected_occurrences")
         _require(
-            isinstance(expected, int) and not isinstance(expected, bool) and expected > 0,
+            isinstance(expected, int)
+            and not isinstance(expected, bool)
+            and expected > 0,
             f"rule expected occurrence count is invalid: {rule.get('path')}",
         )
         _require(
@@ -190,7 +190,9 @@ def audit_repository(repository: Path, policy_path: Path) -> dict[str, Any]:
         )
 
     return {
-        "classifications": dict(sorted(Counter(item["classification"] for item in reviewed).items())),
+        "classifications": dict(
+            sorted(Counter(item["classification"] for item in reviewed).items())
+        ),
         "occurrence_count": len(reviewed),
         "result": "passed",
         "reviewed_occurrences": reviewed,

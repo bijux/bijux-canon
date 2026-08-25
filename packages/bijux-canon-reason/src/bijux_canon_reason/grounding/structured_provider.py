@@ -591,9 +591,11 @@ class OpenAICompatibleStructuredSynthesizer:
         }
         if not referenced.issubset(allowed_citations):
             return None, ("citation_outside_packet",)
-        if candidate.outcome in {CandidateOutcome.answered, CandidateOutcome.partial}:
-            if not _answer_is_closed(candidate):
-                return None, ("answer_contains_unlinked_text",)
+        if candidate.outcome in {
+            CandidateOutcome.answered,
+            CandidateOutcome.partial,
+        } and not _answer_is_closed(candidate):
+            return None, ("answer_contains_unlinked_text",)
         return candidate, ()
 
     @staticmethod

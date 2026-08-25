@@ -16,10 +16,13 @@ from bijux_canon_reason.grounding.citation_linking import (
     ClaimCitationLink,
     ClaimCitationSet,
 )
-from bijux_canon_reason.grounding.evidence_packets import CitationEvidence, EvidencePacket
 from bijux_canon_reason.grounding.claim_normalization import (
     AtomicClaim,
     NormalizedClaimSet,
+)
+from bijux_canon_reason.grounding.evidence_packets import (
+    CitationEvidence,
+    EvidencePacket,
 )
 from bijux_canon_reason.grounding.provider_contracts import (
     content_artifact_id,
@@ -605,9 +608,7 @@ def _encode_structured_decision(decision: StructuredEntailmentDecision) -> str:
     return _STRUCTURED_DECISION_PREFIX + decision.model_dump_json()
 
 
-def _link_matches_evidence(
-    link: ClaimCitationLink, evidence: CitationEvidence
-) -> bool:
+def _link_matches_evidence(link: ClaimCitationLink, evidence: CitationEvidence) -> bool:
     """Compare every citation-bearing evidence coordinate to its closed authority."""
 
     return (

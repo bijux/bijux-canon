@@ -327,9 +327,6 @@ def test_disk_exhaustion_never_advances_publication_metadata(
         "SELECT transaction_id, status FROM publication_transactions"
     ).fetchall() == [("publish-good", "committed")]
     assert connection.execute(
-        "SELECT revision, target_artifact_id, reference_state "
-        "FROM artifact_references"
-    ).fetchall() == [
-        (0, str(retained.artifact.descriptor.artifact_id), "active")
-    ]
+        "SELECT revision, target_artifact_id, reference_state FROM artifact_references"
+    ).fetchall() == [(0, str(retained.artifact.descriptor.artifact_id), "active")]
     connection.close()

@@ -103,7 +103,9 @@ def test_catalog_defines_every_release_quality_domain() -> None:
     assert {item.domain for item in catalog} == set(ProductMetricDomain)
     assert len({item.metric_id for item in catalog}) == len(catalog)
     assert all(item.definition_version == 1 for item in catalog)
-    assert all(item.semantic_numerator and item.semantic_denominator for item in catalog)
+    assert all(
+        item.semantic_numerator and item.semantic_denominator for item in catalog
+    )
 
 
 def test_refusal_failure_empty_tie_and_partial_labels_remain_visible() -> None:
@@ -158,19 +160,26 @@ def test_report_aggregates_can_be_independently_recomputed() -> None:
 def test_duplicate_missing_and_unexpected_rows_are_rejected() -> None:
     evaluator = UnconditionalProductMetricEvaluator()
     measurements = _measurements()
-    arguments = {
-        "cases": _cases(),
-        "source_identity_sha256": "1" * 64,
-        "data_identity_sha256": "2" * 64,
-        "model_identity_sha256": "3" * 64,
-        "config_identity_sha256": "4" * 64,
-        "metric_ids": _SELECTED,
-    }
-
     with pytest.raises(ProductMetricEvaluationError, match="unique per metric"):
-        evaluator.evaluate(measurements=(*measurements, measurements[0]), **arguments)
+        evaluator.evaluate(
+            cases=_cases(),
+            measurements=(*measurements, measurements[0]),
+            source_identity_sha256="1" * 64,
+            data_identity_sha256="2" * 64,
+            model_identity_sha256="3" * 64,
+            config_identity_sha256="4" * 64,
+            metric_ids=_SELECTED,
+        )
     with pytest.raises(ProductMetricEvaluationError, match="population is incomplete"):
-        evaluator.evaluate(measurements=measurements[:-1], **arguments)
+        evaluator.evaluate(
+            cases=_cases(),
+            measurements=measurements[:-1],
+            source_identity_sha256="1" * 64,
+            data_identity_sha256="2" * 64,
+            model_identity_sha256="3" * 64,
+            config_identity_sha256="4" * 64,
+            metric_ids=_SELECTED,
+        )
     duplicate_cases = (*_cases(), _cases()[0])
     with pytest.raises(ProductMetricEvaluationError, match="case IDs must be unique"):
         evaluator.evaluate(

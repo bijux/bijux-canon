@@ -292,9 +292,7 @@ class ClaimFaithfulnessEvaluator:
         integrity_by_citation: dict[str, bool],
     ) -> ClaimFaithfulnessJudgment:
         truth = (
-            None
-            if match.truth_claim_id is None
-            else truth_by_id[match.truth_claim_id]
+            None if match.truth_claim_id is None else truth_by_id[match.truth_claim_id]
         )
         typed_citations = tuple(citations[item] for item in claim.citation_ids)
         verified_ids = tuple(

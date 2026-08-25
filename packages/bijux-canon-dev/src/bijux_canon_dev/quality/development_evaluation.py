@@ -3,13 +3,14 @@
 from __future__ import annotations
 
 import argparse
+from collections.abc import Mapping, Sequence
 import hashlib
 import json
 import math
 from pathlib import Path
 import re
 import statistics
-from typing import Mapping, Sequence, cast
+from typing import cast
 
 from bijux_canon_dev.quality.evaluation_evidence_book import (
     EvaluationEvidenceBookGenerator,
@@ -321,7 +322,9 @@ def _validate_retrieval_identity(retrieval: Mapping[str, object]) -> None:
             "development evaluation requires the installed public retrieval report"
         )
     evidence = retrieval.get("evidence_sha256")
-    payload = {key: value for key, value in retrieval.items() if key != "evidence_sha256"}
+    payload = {
+        key: value for key, value in retrieval.items() if key != "evidence_sha256"
+    }
     if not isinstance(evidence, str) or evidence != _sha256(payload):
         raise DevelopmentEvaluationError("retrieval evidence identity mismatch")
 
@@ -333,7 +336,9 @@ def _retrieval_cases(
     rows = _mapping_sequence(macro.get("queries"), "retrieval macro queries")
     result = {str(item.get("query_id")): item for item in rows}
     if len(result) != len(rows) or "None" in result:
-        raise DevelopmentEvaluationError("retrieval metric query identities are invalid")
+        raise DevelopmentEvaluationError(
+            "retrieval metric query identities are invalid"
+        )
     return result
 
 
@@ -462,7 +467,9 @@ def _aggregates(
             method = "complete observed development population"
         else:
             public = _mapping(raw_metrics.get(public_id), f"{public_id} macro")
-            interval = _mapping(public.get("confidence_interval"), "confidence interval")
+            interval = _mapping(
+                public.get("confidence_interval"), "confidence interval"
+            )
             lower = _number(interval.get("lower"), "confidence lower")
             upper = _number(interval.get("upper"), "confidence upper")
             method = str(interval.get("method"))
