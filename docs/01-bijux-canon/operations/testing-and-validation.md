@@ -129,13 +129,13 @@ do not make an unowned claim more credible.
 ## Frozen-gate checkpoints
 
 Broad repository gates run only against an immutable tracked revision. Launch
-one non-overlapping gate with `make test-all-frozen`, `make tox-frozen`, or
-`make ci-github-frozen`, record the reported PID and status paths, and continue
+the non-overlapping graph with `make candidate-frozen`, record the reported PID
+and status paths, and continue
 independent product work. At a natural checkpoint at least five minutes later,
 inspect the status without scanning the log:
 
 ```bash
-make frozen-status FROZEN_REF=<commit> GATE=<gate>
+make frozen-status FROZEN_REF=<commit> GATE=candidate
 ```
 
 If the gate failed, `make frozen-summary` adds only a bounded failure tail.

@@ -9,6 +9,8 @@ import pytest
 
 from bijux_canon_dev.release.frozen_gate import (
     GATE_COMMANDS,
+    GATE_RESPONSIBILITIES,
+    REQUIRED_RESPONSIBILITIES,
     FrozenGateError,
     FrozenGateState,
     inspect_frozen_gate,
@@ -37,8 +39,8 @@ def _repository(tmp_path: Path) -> tuple[Path, str]:
     _git(repository, "config", "user.name", "Frozen Gate Test")
     (repository / ".gitignore").write_text("artifacts/\nignored.txt\n")
     (repository / "Makefile").write_text(
-        ".PHONY: test-all\n"
-        "test-all:\n"
+        ".PHONY: test-all quality security docs api build sbom\n"
+        "test-all quality security docs api build sbom:\n"
         "\t@mkdir -p artifacts\n"
         "\t@printf 'frozen gate passed\\n' > artifacts/outcome.txt\n"
     )
@@ -67,7 +69,7 @@ def test_frozen_gate_runs_selected_tracked_revision_in_background(
 ) -> None:
     repository, first_commit = _repository(tmp_path)
 
-    launch = launch_frozen_gate(repository, first_commit, "test-all")
+    launch = launch_frozen_gate(repository, first_commit, "candidate")
 
     status_file = Path(launch.status_file)
     assert _wait_for_status(status_file) == 0
@@ -81,32 +83,26 @@ def test_frozen_gate_runs_selected_tracked_revision_in_background(
     metadata = json.loads(Path(launch.metadata_file).read_text(encoding="utf-8"))
     assert metadata["commit"] == first_commit
     assert metadata["commit_count"] == 1
-    assert metadata["commands"] == [["make", "--no-print-directory", "test-all"]]
+    assert metadata["commands"] == [list(command) for command in GATE_COMMANDS["candidate"]]
+    assert metadata["responsibility_graph"] == [
+        {
+            "command": list(item.command),
+            "covers": list(item.covers),
+            "responsibility_id": item.responsibility_id,
+        }
+        for item in GATE_RESPONSIBILITIES["candidate"]
+    ]
     assert metadata["pid"] == launch.pid
 
 
 def test_frozen_gate_defines_independent_complete_gate_commands() -> None:
-    assert set(GATE_COMMANDS) == {"ci-github", "test-all", "tox"}
-    assert GATE_COMMANDS["test-all"][-1][-1] == "test-all"
-    assert GATE_COMMANDS["tox"] == (
-        (
-            "uv",
-            "tool",
-            "run",
-            "--from",
-            "tox>=4.11,<5",
-            "--with",
-            "tox-gh-actions>=3.1,<4",
-            "tox",
-        ),
-    )
-    assert GATE_COMMANDS["ci-github"][0][-4:] == (
-        "check-shared-bijux-py",
-        "check-config-layout",
-        "check-make-layout",
-        "help",
-    )
-    assert set(GATE_COMMANDS["ci-github"]).isdisjoint(GATE_COMMANDS["tox"])
+    assert set(GATE_COMMANDS) == {"candidate"}
+    graph = GATE_RESPONSIBILITIES["candidate"]
+    covered = [responsibility for item in graph for responsibility in item.covers]
+    assert set(covered) == REQUIRED_RESPONSIBILITIES
+    assert len(covered) == len(set(covered))
+    assert len(GATE_COMMANDS["candidate"]) == len(set(GATE_COMMANDS["candidate"]))
+    assert tuple(item.command for item in graph) == GATE_COMMANDS["candidate"]
 
 
 def test_frozen_gate_reports_not_started_without_scanning_artifacts(
@@ -114,7 +110,7 @@ def test_frozen_gate_reports_not_started_without_scanning_artifacts(
 ) -> None:
     repository, first_commit = _repository(tmp_path)
 
-    status = inspect_frozen_gate(repository, first_commit, "test-all")
+    status = inspect_frozen_gate(repository, first_commit, "candidate")
 
     assert status.state is FrozenGateState.NOT_STARTED
     assert status.exit_code is None
@@ -127,17 +123,17 @@ def test_frozen_gate_reports_completion_and_rejects_duplicate_launch(
     tmp_path: Path,
 ) -> None:
     repository, first_commit = _repository(tmp_path)
-    launch = launch_frozen_gate(repository, first_commit, "test-all")
+    launch = launch_frozen_gate(repository, first_commit, "candidate")
     assert _wait_for_status(Path(launch.status_file)) == 0
 
-    status = inspect_frozen_gate(repository, first_commit, "test-all")
+    status = inspect_frozen_gate(repository, first_commit, "candidate")
 
     assert status.state is FrozenGateState.PASSED
     assert status.exit_code == 0
     assert status.started_at is not None
     assert status.finished_at is not None
     with pytest.raises(FrozenGateError, match="already has a passed launch"):
-        launch_frozen_gate(repository, first_commit, "test-all")
+        launch_frozen_gate(repository, first_commit, "candidate")
 
 
 def test_frozen_gate_rejects_duplicate_active_launch(
@@ -147,13 +143,13 @@ def test_frozen_gate_rejects_duplicate_active_launch(
     repository, first_commit = _repository(tmp_path)
     monkeypatch.setitem(
         GATE_COMMANDS,
-        "test-all",
+        "candidate",
         (("/bin/bash", "-c", "sleep 0.5"),),
     )
-    launch = launch_frozen_gate(repository, first_commit, "test-all")
+    launch = launch_frozen_gate(repository, first_commit, "candidate")
 
     with pytest.raises(FrozenGateError, match="already has a running launch"):
-        launch_frozen_gate(repository, first_commit, "test-all")
+        launch_frozen_gate(repository, first_commit, "candidate")
 
     assert _wait_for_status(Path(launch.status_file)) == 0
 
@@ -165,16 +161,16 @@ def test_frozen_gate_failure_summary_is_bounded(
     repository, first_commit = _repository(tmp_path)
     monkeypatch.setitem(
         GATE_COMMANDS,
-        "test-all",
+        "candidate",
         (("/bin/bash", "-c", "printf 'useful failure\\n'; exit 7"),),
     )
-    launch = launch_frozen_gate(repository, first_commit, "test-all")
+    launch = launch_frozen_gate(repository, first_commit, "candidate")
     assert _wait_for_status(Path(launch.status_file)) == 7
 
     status = inspect_frozen_gate(
         repository,
         first_commit,
-        "test-all",
+        "candidate",
         include_failure_tail=True,
         tail_lines=1,
     )
@@ -195,7 +191,7 @@ def test_frozen_gate_cli_has_stable_monitor_exit_semantics(
         "--ref",
         first_commit,
         "--gate",
-        "test-all",
+        "candidate",
     ]
 
     assert main([*arguments, "--action", "status"]) == 0
@@ -207,7 +203,10 @@ def test_frozen_gate_cli_has_stable_monitor_exit_semantics(
 def test_frozen_make_targets_expose_deduplicated_monitoring_contract() -> None:
     root_make = (REPO_ROOT / "makes" / "root.mk").read_text(encoding="utf-8")
 
-    assert "all-frozen: test-all-frozen tox-frozen ci-github-frozen" in root_make
+    assert "all-frozen: candidate-frozen" in root_make
+    assert "test-all-frozen" not in root_make
+    assert "tox-frozen" not in root_make
+    assert "ci-github-frozen" not in root_make
     assert "frozen-status:" in root_make
     assert '"$(GATE)" --action status' in root_make
     assert "frozen-summary:" in root_make

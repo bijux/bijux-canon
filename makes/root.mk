@@ -43,11 +43,11 @@ ROOT_CHECK_ENV_COMMAND = @test -x "$(ROOT_CHECK_PYTHON)" || { \
 
 include $(ROOT_MAKEFILE_DIR)/bijux-py/repository/root.mk
 
-.PHONY: all-frozen ci-github-frozen freeze frozen-status frozen-summary impact-tests quality-dead-code \
-	test-all-frozen test-focused-agent test-focused-index test-focused-ingest \
+.PHONY: all-frozen candidate-frozen freeze frozen-status frozen-summary impact-tests quality-dead-code \
+	test-focused-agent test-focused-index test-focused-ingest \
 	test-focused-reason test-focused-runtime test-vertical-document-formats \
 	test-vertical-release-install test-vertical-research-content \
-	test-vertical-runtime-local tox-frozen
+	test-vertical-runtime-local
 
 quality: quality-dead-code
 
@@ -165,22 +165,16 @@ check-make-layout: ## Validate the repository make tree shape and required entry
 freeze: ## Archive a tracked repository revision and its reachable Git history
 	@$(CANON_DEV_PYTHON_ENV) "$(FREEZE_PYTHON)" -m bijux_canon_dev.release.repository_freeze \
 		--repo "$(MONOREPO_ROOT)" --ref "$(FREEZE_REF)"
-test-all-frozen: ## Launch all tests from an isolated tracked revision
+candidate-frozen: ## Launch the deduplicated release graph from an isolated tracked revision
 	@$(CANON_DEV_PYTHON_ENV) "$(FROZEN_GATE_PYTHON)" -m bijux_canon_dev.release.frozen_gate \
-		--repo "$(MONOREPO_ROOT)" --ref "$(FROZEN_REF)" --gate test-all
-tox-frozen: ## Launch the complete Tox matrix from an isolated tracked revision
-	@$(CANON_DEV_PYTHON_ENV) "$(FROZEN_GATE_PYTHON)" -m bijux_canon_dev.release.frozen_gate \
-		--repo "$(MONOREPO_ROOT)" --ref "$(FROZEN_REF)" --gate tox
-ci-github-frozen: ## Launch GitHub-equivalent gates from an isolated tracked revision
-	@$(CANON_DEV_PYTHON_ENV) "$(FROZEN_GATE_PYTHON)" -m bijux_canon_dev.release.frozen_gate \
-		--repo "$(MONOREPO_ROOT)" --ref "$(FROZEN_REF)" --gate ci-github
-frozen-status: ## Report one frozen gate without scanning logs (GATE=test-all|tox|ci-github)
+		--repo "$(MONOREPO_ROOT)" --ref "$(FROZEN_REF)" --gate candidate
+frozen-status: ## Report the candidate gate without scanning logs (GATE=candidate)
 	@$(CANON_DEV_PYTHON_ENV) "$(FROZEN_GATE_PYTHON)" -m bijux_canon_dev.release.frozen_gate \
 		--repo "$(MONOREPO_ROOT)" --ref "$(FROZEN_REF)" --gate "$(GATE)" --action status
 frozen-summary: ## Summarize one frozen gate and include a bounded failure tail
 	@$(CANON_DEV_PYTHON_ENV) "$(FROZEN_GATE_PYTHON)" -m bijux_canon_dev.release.frozen_gate \
 		--repo "$(MONOREPO_ROOT)" --ref "$(FROZEN_REF)" --gate "$(GATE)" --action summary
-all-frozen: test-all-frozen tox-frozen ci-github-frozen ## Launch each non-overlapping frozen gate once
+all-frozen: candidate-frozen ## Launch the complete deduplicated candidate graph once
 sync-badges: root-check-env ## Render shared badge blocks from docs/badges.md into README surfaces
 	@"$(ROOT_CHECK_PYTHON)" -m bijux_canon_dev.docs.badge_sync sync
 check-badges: root-check-env ## Verify README badge blocks match docs/badges.md

@@ -20,30 +20,64 @@ class FrozenGateError(RuntimeError):
     """A frozen gate could not be prepared or launched safely."""
 
 
-TOX_COMMAND = (
-    "uv",
-    "tool",
-    "run",
-    "--from",
-    "tox>=4.11,<5",
-    "--with",
-    "tox-gh-actions>=3.1,<4",
-    "tox",
+@dataclass(frozen=True)
+class GateResponsibility:
+    """One non-overlapping release responsibility and its exact command."""
+
+    command: tuple[str, ...]
+    covers: tuple[str, ...]
+    responsibility_id: str
+
+
+REQUIRED_RESPONSIBILITIES = frozenset(
+    {
+        "api",
+        "builds",
+        "docs",
+        "product-acceptance",
+        "quality",
+        "real-wheels",
+        "sbom",
+        "security",
+        "tests",
+        "typing",
+    }
 )
 
-GATE_COMMANDS: dict[str, tuple[tuple[str, ...], ...]] = {
-    "test-all": (("make", "--no-print-directory", "test-all"),),
-    "tox": (TOX_COMMAND,),
-    "ci-github": (
-        (
-            "make",
-            "--no-print-directory",
-            "check-shared-bijux-py",
-            "check-config-layout",
-            "check-make-layout",
-            "help",
-        ),
+CANDIDATE_RESPONSIBILITIES = (
+    GateResponsibility(
+        command=("make", "--no-print-directory", "test-all"),
+        covers=("tests", "product-acceptance"),
+        responsibility_id="tests-and-product-acceptance",
     ),
+    GateResponsibility(
+        command=("make", "--no-print-directory", "quality"),
+        covers=("quality", "typing"),
+        responsibility_id="quality-and-typing",
+    ),
+    GateResponsibility(
+        command=("make", "--no-print-directory", "security"),
+        covers=("security",),
+        responsibility_id="security",
+    ),
+    GateResponsibility(
+        command=("make", "--no-print-directory", "docs", "api"),
+        covers=("docs", "api"),
+        responsibility_id="docs-and-api",
+    ),
+    GateResponsibility(
+        command=("make", "--no-print-directory", "build", "sbom"),
+        covers=("builds", "real-wheels", "sbom"),
+        responsibility_id="builds-real-wheels-and-sbom",
+    ),
+)
+
+GATE_RESPONSIBILITIES: dict[str, tuple[GateResponsibility, ...]] = {
+    "candidate": CANDIDATE_RESPONSIBILITIES,
+}
+GATE_COMMANDS: dict[str, tuple[tuple[str, ...], ...]] = {
+    gate: tuple(item.command for item in responsibilities)
+    for gate, responsibilities in GATE_RESPONSIBILITIES.items()
 }
 
 
@@ -454,6 +488,9 @@ def launch_frozen_gate(
         metadata = {
             **asdict(launch),
             "commands": [list(command) for command in commands],
+            "responsibility_graph": [
+                asdict(item) for item in GATE_RESPONSIBILITIES[gate]
+            ],
             "requested_revision": revision,
             "schema_version": "bijux.canon.frozen_gate_launch.v1",
             "started_at": datetime.now(UTC).isoformat().replace("+00:00", "Z"),

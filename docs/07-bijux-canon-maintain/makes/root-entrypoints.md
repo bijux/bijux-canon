@@ -47,10 +47,10 @@ with `make -prRn`; maintainers normally begin with `make help`.
 | `docs`, `docs-check`, `docs-serve`, `docs-deploy` | build, validate, serve, or publish the handbook through isolated docs paths |
 | `check` | require lock consistency, then run the full ordinary repository verification graph |
 | `test-all` | invoke every configured test surface, including slow, evaluation, and real-local selections |
-| `test-all-frozen`, `tox-frozen`, `ci-github-frozen` | launch distinct test, Tox, and structural CI-equivalent lanes against one immutable commit |
+| `candidate-frozen` | launch the deduplicated tests, product acceptance, quality/typing, security, docs/API, build/real-wheel, and SBOM graph against one immutable commit |
 | `frozen-status` | emit compact JSON lifecycle state for one commit and gate without reading its log |
 | `frozen-summary` | emit the same state plus a bounded failure tail; exit `0` passed, `1` failed, `3` running, `4` not started, or `5` stale |
-| `all-frozen` | launch each of the three non-overlapping frozen lanes once |
+| `all-frozen` | compatibility alias that launches the one candidate graph once |
 | `setup`, `clean`, `clean-root-artifacts` | materialize aliases or remove explicitly scoped generated state |
 
 Use the target that names the contract being reviewed. `test-all` is not a
@@ -62,8 +62,8 @@ the same identity is refused whether the first is active or complete. Inspect a
 record directly instead:
 
 ```bash
-make frozen-status FROZEN_REF="$H" GATE=test-all
-make frozen-summary FROZEN_REF="$H" GATE=test-all
+make frozen-status FROZEN_REF="$H" GATE=candidate
+make frozen-summary FROZEN_REF="$H" GATE=candidate
 ```
 
 `frozen-status` exits successfully whenever the record can be inspected and
