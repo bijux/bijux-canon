@@ -26,12 +26,25 @@ DEPENDABOT_PR_SKIP_CONDITION = (
     "github.event_name != 'pull_request' || "
     "github.event.pull_request.user.login != 'dependabot[bot]'"
 )
-REQUIRED_STATUS_RULESET = (
-    SCRIPT_REPO_ROOT / "shared/bijux-gh/rulesets/main-branch-protection.json"
-)
-REQUIRED_STATUS_REFERENCE = (
-    SCRIPT_REPO_ROOT / "shared/bijux-gh/required-status-checks.md"
-)
+
+
+def shared_github_source_root(repository_root: Path) -> Path:
+    """Resolve managed GitHub sources in the standard or a synchronized consumer."""
+    candidates = (
+        repository_root / "shared/bijux-gh",
+        repository_root / ".bijux/shared/bijux-gh",
+    )
+    for candidate in candidates:
+        if candidate.is_dir():
+            return candidate
+    raise FileNotFoundError(
+        "managed bijux-gh sources are missing from shared/ and .bijux/shared/"
+    )
+
+
+SHARED_GITHUB_ROOT = shared_github_source_root(SCRIPT_REPO_ROOT)
+REQUIRED_STATUS_RULESET = SHARED_GITHUB_ROOT / "rulesets/main-branch-protection.json"
+REQUIRED_STATUS_REFERENCE = SHARED_GITHUB_ROOT / "required-status-checks.md"
 
 
 def repository_checkout_variable(repo_name: str) -> str:
