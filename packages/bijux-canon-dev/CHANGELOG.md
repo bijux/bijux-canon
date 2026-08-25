@@ -17,7 +17,7 @@ governance.
   compatibility, and release-candidate identity.
 - Bound verification reports to source, lock, environment, commands, wheel
   hashes, and retained failure details under the ignored artifact boundary.
-- Added governed placeholder, semantic-compatibility, resource-envelope,
+- Added governed unfinished-marker, semantic-compatibility, resource-envelope,
   tracked-source secret, and artifact supply-chain audits, plus one
   responsibility-deduplicated frozen candidate graph.
 
