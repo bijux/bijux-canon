@@ -15,6 +15,7 @@ from bijux_canon_dev.sbom.supply_chain import (
     ArtifactInput,
     SupplyChainVerificationError,
     build_supply_chain_manifest,
+    discover_container_definitions,
     discover_redistribution_evidence,
     external_sbom_generator,
     sha256_file,
@@ -164,6 +165,25 @@ def test_container_definition_requires_a_scanned_oci_image(tmp_path: Path) -> No
             builder_id="https://bijux.invalid/test-builder",
             container_definitions=[dockerfile],
         )
+
+
+def test_container_discovery_prunes_repository_metadata_and_artifacts(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    observed: dict[str, list[str]] = {}
+
+    def fake_walk(_root: Path) -> object:
+        directories = ["artifacts", ".git", "src"]
+        yield str(tmp_path), directories, []
+        observed["root_directories"] = list(directories)
+        yield str(tmp_path / "src"), [], ["Dockerfile.runtime", "module.py"]
+
+    monkeypatch.setattr("bijux_canon_dev.sbom.supply_chain.os.walk", fake_walk)
+
+    definitions = discover_container_definitions(tmp_path)
+
+    assert observed == {"root_directories": ["src"]}
+    assert definitions == (tmp_path / "src" / "Dockerfile.runtime",)
 
 
 def test_manifest_covers_wheels_and_oci_images(tmp_path: Path) -> None:

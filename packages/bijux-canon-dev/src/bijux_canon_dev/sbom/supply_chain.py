@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import platform
 import re
 import shutil
@@ -426,12 +427,15 @@ def verify_supply_chain_manifest(
 def discover_container_definitions(repo_root: Path) -> tuple[Path, ...]:
     """Return tracked-style container build definitions outside disposable outputs."""
     definitions: set[Path] = set()
-    for pattern in ("Dockerfile*", "Containerfile*"):
+    for current_root, directories, files in os.walk(repo_root):
+        directories[:] = [
+            name for name in directories if name not in {".git", "artifacts"}
+        ]
+        current = Path(current_root)
         definitions.update(
-            path
-            for path in repo_root.rglob(pattern)
-            if "artifacts" not in path.relative_to(repo_root).parts
-            and ".git" not in path.relative_to(repo_root).parts
+            current / name
+            for name in files
+            if name.startswith(("Dockerfile", "Containerfile"))
         )
     return tuple(sorted(definitions))
 
