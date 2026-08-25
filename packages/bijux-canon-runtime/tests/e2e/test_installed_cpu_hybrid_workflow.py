@@ -18,6 +18,7 @@ _REPOSITORY_ROOT = Path(__file__).parents[4]
 _EXAMPLE = _REPOSITORY_ROOT / "examples" / "ancient-dna-research"
 
 
+@pytest.mark.timeout(360)
 def test_installed_wheels_complete_cpu_hybrid_workflow(tmp_path: Path) -> None:
     runtime_value = os.environ.get("BIJUX_CANON_RUNTIME_INSTALLED_COMMAND")
     index_value = os.environ.get("BIJUX_CANON_INDEX_INSTALLED_COMMAND")
