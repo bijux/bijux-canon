@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<article article-type="case-study" xml:lang="en">
+  <front>
+    <journal-meta>
+      <journal-title-group><journal-title>Bijux Synthetic Acceptance Fixtures</journal-title></journal-title-group>
+    </journal-meta>
+    <article-meta>
+      <article-id pub-id-type="doi">10.0000/bijux.fixture.transit-access</article-id>
+      <title-group><article-title>Access limits for cooling services</article-title></title-group>
+      <contrib-group>
+        <contrib contrib-type="author"><collab>Bijux repository authors</collab></contrib>
+      </contrib-group>
+      <pub-date pub-type="epub"><year>2026</year></pub-date>
+      <permissions>
+        <license license-type="open-access" xlink:href="https://www.apache.org/licenses/LICENSE-2.0" xmlns:xlink="http://www.w3.org/1999/xlink">
+          <license-p>Licensed under the Apache License, Version 2.0.</license-p>
+        </license>
+      </permissions>
+      <abstract><p>Operational access determines whether emergency cooling services reach residents.</p></abstract>
+    </article-meta>
+  </front>
+  <body>
+    <sec>
+      <title>Access constraints</title>
+      <p>Cooling centers cannot protect residents who cannot reach them. Transit access, accessible hours, and multilingual outreach must be part of the operating plan.</p>
+    </sec>
+    <sec>
+      <title>Scope</title>
+      <p>A site opening is not evidence that every resident received protection. Operators must inspect access barriers rather than infer universal coverage.</p>
+    </sec>
+  </body>
+</article>
