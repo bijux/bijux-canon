@@ -5,8 +5,8 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 import hashlib
-from typing import Mapping
 
 from bijux_canon_reason.evaluation import (
     SystemAnswerDisposition,
@@ -19,11 +19,11 @@ from bijux_canon_reason.grounding import (
     AtomicClaim,
     CitationSourceDescriptor,
     ClaimModality,
+    EntailmentVerdict,
     GroundingAdmissionOutcome,
     LocalGroundedAnswer,
 )
 from bijux_canon_reason.grounding.provider_contracts import content_artifact_id
-
 from bijux_canon_runtime.model.artifact import canonical_json_bytes
 from bijux_canon_runtime.runtime.inspection import (
     InspectedArtifact,
@@ -210,9 +210,7 @@ def _trace_identity(
         "reason_step_id": graph_step.step_id,
         "claim_graph_artifact_id": str(graph_artifact.artifact_id),
         "claim_graph_payload_sha256": graph_artifact.payload_sha256,
-        "event_artifact_ids": [
-            str(item.artifact_id) for item in inspection.events
-        ],
+        "event_artifact_ids": [str(item.artifact_id) for item in inspection.events],
     }
     return hashlib.sha256(canonical_json_bytes(payload)).hexdigest()
 
@@ -221,6 +219,18 @@ def _admitted_output(
     grounded: LocalGroundedAnswer,
 ) -> tuple[tuple[SystemClaim, ...], tuple[SystemCitation, ...]]:
     admitted = set(grounded.admission.admitted_claim_artifact_ids)
+    verification_by_claim = {
+        item.claim_artifact_id: item for item in grounded.verification.claims
+    }
+    if any(
+        claim_id not in verification_by_claim
+        or verification_by_claim[claim_id].verdict
+        is not EntailmentVerdict.direct_support
+        for claim_id in admitted
+    ):
+        raise PersistedAnswerEvaluationError(
+            "grounding admission exposes a claim without verified direct support"
+        )
     admitted_claims = tuple(
         item for item in grounded.claims.claims if item.artifact_id in admitted
     )

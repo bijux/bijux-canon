@@ -41,9 +41,14 @@ from bijux_canon_index.evaluation import (
     ReviewedRetrievalQuery,
 )
 from bijux_canon_index.infra.embeddings.local_model import EmbeddedBatch
+from bijux_canon_reason.grounding import EntailmentVerdict
 from bijux_canon_runtime.application.operations import (
     PersistedAnswerEvaluationAdapter,
     PersistedAnswerEvaluationError,
+)
+from bijux_canon_runtime.application.operations.answer_evaluation import (
+    _admitted_output,
+    _grounded_answer,
 )
 from bijux_canon_runtime.application.request_planner import RuntimeRequestPlanner
 from bijux_canon_runtime.model.artifact import AddressedArtifact
@@ -98,13 +103,13 @@ from bijux_canon_runtime.runtime.execution.operation_dispatcher import (
 from bijux_canon_runtime.runtime.execution.retrieval_evaluation import (
     InstalledRetrievalEvaluationExecutor,
 )
-from bijux_canon_runtime.runtime.persistence.source_archive import read_source_archive
 from bijux_canon_runtime.runtime.inspection import RuntimeRunInspector
 from bijux_canon_runtime.runtime.inspection.models import RuntimeInspectionError
 from bijux_canon_runtime.runtime.inspection.provenance import resolve_run_provenance
 from bijux_canon_runtime.runtime.persistence import (
     AtomicFilesystemArtifactPayloadStore,
 )
+from bijux_canon_runtime.runtime.persistence.source_archive import read_source_archive
 from bijux_canon_runtime.runtime.replay import (
     ReplayNetworkPolicy,
     ReplayTolerance,
@@ -1313,6 +1318,12 @@ def _verify_linked_runs(grounded: _GroundedRuntime) -> None:
         item["schema_id"] == "reason.claim-graph.v1"
         for item in ask_manifest["artifacts"]
     )
+    claim_graph_artifact = next(
+        item
+        for item in linked_ask_inspection.artifacts
+        if item.schema_id == "reason.claim-graph.v1"
+    )
+    assert isinstance(claim_graph_artifact.json_value, dict)
     evaluated = PersistedAnswerEvaluationAdapter().adapt(
         case_id="content-question",
         question="What evidence do ancient genomes preserve?",
@@ -1326,10 +1337,26 @@ def _verify_linked_runs(grounded: _GroundedRuntime) -> None:
     assert all(citation.exact_text for citation in evaluated.citations)
     assert all(citation.chunk_id for citation in evaluated.citations)
     assert all(claim.citation_ids for claim in evaluated.claims)
-    assert linked_ask_inspection.provenance.status == "verified"
-    assert linked_ask_inspection.provenance.citation_count == len(
-        evaluated.citations
+    grounded_answer = _grounded_answer(claim_graph_artifact.json_value)
+    admitted_claim_id = grounded_answer.admission.admitted_claim_artifact_ids[0]
+    tampered_claims = tuple(
+        item.model_copy(update={"verdict": EntailmentVerdict.irrelevance})
+        if item.claim_artifact_id == admitted_claim_id
+        else item
+        for item in grounded_answer.verification.claims
     )
+    tampered_verification = grounded_answer.verification.model_copy(
+        update={"claims": tampered_claims}
+    )
+    with pytest.raises(
+        PersistedAnswerEvaluationError,
+        match="claim without verified direct support",
+    ):
+        _admitted_output(
+            grounded_answer.model_copy(update={"verification": tampered_verification})
+        )
+    assert linked_ask_inspection.provenance.status == "verified"
+    assert linked_ask_inspection.provenance.citation_count == len(evaluated.citations)
     resolved_citation = linked_ask_inspection.provenance.citations[0]
     assert resolved_citation.run_id == linked_ask_inspection.run_id
     assert resolved_citation.index_artifact_id == indexed.composite.artifact_id
@@ -1348,12 +1375,6 @@ def _verify_linked_runs(grounded: _GroundedRuntime) -> None:
             inspection=linked_ask_inspection,
         )
 
-    claim_graph_artifact = next(
-        item
-        for item in linked_ask_inspection.artifacts
-        if item.schema_id == "reason.claim-graph.v1"
-    )
-    assert isinstance(claim_graph_artifact.json_value, dict)
     tampered_graph = dict(claim_graph_artifact.json_value)
     tampered_graph["answer"] = "A replacement answer without matching lineage."
     tampered_inspection = replace(
