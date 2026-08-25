@@ -561,11 +561,33 @@ def _bind_distribution_component(
             f"SBOM components field is invalid: {artifact.path}"
         )
     purl = component["purl"]
-    if not any(
-        isinstance(existing, dict) and existing.get("purl") == purl
+    matching = [
+        existing
         for existing in components
-    ):
+        if isinstance(existing, dict) and existing.get("purl") == purl
+    ]
+    if len(matching) > 1:
+        raise SupplyChainVerificationError(
+            f"SBOM contains duplicate distribution components: {artifact.path}"
+        )
+    if not matching:
         components.append(component)
+        return
+
+    existing = matching[0]
+    hashes = existing.get("hashes")
+    if hashes is None:
+        hashes = []
+        existing["hashes"] = hashes
+    if not isinstance(hashes, list) or not all(
+        isinstance(item, dict) for item in hashes
+    ):
+        raise SupplyChainVerificationError(
+            f"SBOM distribution component hashes are invalid: {artifact.path}"
+        )
+    artifact_hash = {"alg": "SHA-256", "content": sha256_file(artifact.path)}
+    if artifact_hash not in hashes:
+        hashes.append(artifact_hash)
 
 
 def external_sbom_generator(

@@ -260,6 +260,63 @@ def test_external_generator_streams_validated_wheel_members(
     assert generator(ArtifactInput("wheel", wheel), output)["bomFormat"] == "CycloneDX"
 
 
+def test_external_generator_binds_wheel_hash_to_existing_distribution_component(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    wheel = tmp_path / "package-1.0-py3-none-any.whl"
+    with zipfile.ZipFile(wheel, "w") as archive:
+        archive.writestr(
+            "package-1.0.dist-info/METADATA",
+            "Metadata-Version: 2.4\nName: package\nVersion: 1.0\n",
+        )
+
+    def fake_run(
+        command: list[str], **_kwargs: object
+    ) -> subprocess.CompletedProcess[str]:
+        if command[0] == "syft":
+            output_path = Path(command[-1].split("=", maxsplit=1)[1])
+            output_path.write_text(
+                json.dumps(
+                    {
+                        "bomFormat": "CycloneDX",
+                        "specVersion": "1.6",
+                        "version": 1,
+                        "components": [
+                            {
+                                "bom-ref": "syft-package-id",
+                                "name": "package",
+                                "purl": "pkg:pypi/package@1.0",
+                                "type": "library",
+                                "version": "1.0",
+                            }
+                        ],
+                    }
+                ),
+                encoding="utf-8",
+            )
+        return subprocess.CompletedProcess(command, 0, "", "")
+
+    monkeypatch.setattr("bijux_canon_dev.sbom.supply_chain.subprocess.run", fake_run)
+    output = tmp_path / "output.json"
+    generator = external_sbom_generator(
+        extract_root=tmp_path / "extract", syft="syft", cyclonedx="cyclonedx"
+    )
+
+    document = generator(ArtifactInput("wheel", wheel), output)
+
+    components = cast(list[dict[str, object]], document["components"])
+    assert components == [
+        {
+            "bom-ref": "syft-package-id",
+            "hashes": [{"alg": "SHA-256", "content": sha256_file(wheel)}],
+            "name": "package",
+            "purl": "pkg:pypi/package@1.0",
+            "type": "library",
+            "version": "1.0",
+        }
+    ]
+
+
 def test_external_generator_adds_sdist_identity_when_syft_finds_no_components(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
