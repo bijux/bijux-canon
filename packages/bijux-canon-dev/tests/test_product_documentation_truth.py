@@ -23,6 +23,14 @@ PRIMARY_PRODUCT_PAGES = (
     RUNTIME_DOCS / "quality/known-limitations.md",
     REPO_ROOT / "examples/ancient-dna-research/README.md",
 )
+ROOT_API_PAGES = (
+    REPO_ROOT / "README.md",
+    REPO_ROOT / "docs/01-bijux-canon/index.md",
+    REPO_ROOT / "docs/01-bijux-canon/foundation/repository-scope.md",
+    REPO_ROOT / "docs/01-bijux-canon/operations/api-and-schema-governance.md",
+    REPO_ROOT / "docs/07-bijux-canon-maintain/bijux-canon-dev/module-map.md",
+    REPO_ROOT / "docs/07-bijux-canon-maintain/bijux-canon-dev/schema-governance.md",
+)
 NEW_USER_PAGES = (
     REPO_ROOT / "README.md",
     REPO_ROOT / "packages/bijux-canon-runtime/README.md",
@@ -46,6 +54,7 @@ def test_primary_pages_do_not_restore_obsolete_composition_claims() -> None:
         "runtime has no agent adapter",
         "the strongest immediately reproducible whole-repository demonstration",
         "the live step executors currently resolve four package-root callables",
+        "the current ingest, index, reason, and agent roots do not expose",
     )
     failures: list[str] = []
     for path in PRIMARY_PRODUCT_PAGES:
@@ -54,6 +63,16 @@ def test_primary_pages_do_not_restore_obsolete_composition_claims() -> None:
             if claim in text:
                 failures.append(f"{path.relative_to(REPO_ROOT)}: {claim}")
     assert not failures, "obsolete product claims remain:\n" + "\n".join(failures)
+
+
+def test_root_api_pages_identify_runtime_v2_as_the_primary_contract() -> None:
+    combined = "\n".join(_read(path) for path in ROOT_API_PAGES)
+
+    assert all("Runtime v2" in _read(path) for path in ROOT_API_PAGES)
+    assert "apis/<package>/v1" not in combined
+    assert "apis/<distribution>/v1" not in combined
+    assert "five versioned HTTP contracts" not in combined
+    assert "six versioned HTTP contracts" in combined
 
 
 def test_new_user_pages_use_installed_v2_commands() -> None:

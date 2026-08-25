@@ -11,9 +11,10 @@ last_reviewed: 2026-07-21
 
 The repository root coordinates one tagged release line across five canonical
 product packages, six compatibility distributions, one internal maintainer
-package, five versioned HTTP contracts, shared documentation, and common CI and
-publication workflows. Product behavior remains inside the package that owns
-it; the root owns the machinery that proves the pieces still agree.
+package, six versioned HTTP contracts across five packages, shared
+documentation, and common CI and publication workflows. Product behavior
+remains inside the package that owns it; the root owns the machinery that
+proves the pieces still agree.
 
 <div class="bijux-callout"><strong>The root is a coordination layer, not a shadow owner.</strong>
 Product behavior belongs in the publishable packages under `packages/`. The
@@ -36,7 +37,7 @@ flowchart LR
     source["tagged source"]
     canonical["5 canonical packages"]
     compat["6 compatibility packages"]
-    schemas["5 API contracts"]
+    schemas["6 versioned API contracts"]
     checks["local + CI verification"]
     releases["PyPI + GHCR + GitHub release"]
 
@@ -114,33 +115,22 @@ another.
 
 ## Audit The Runtime Integration Seam
 
-Release membership proves that runtime installs the four lower canonical
-packages; it does not prove that runtime can call them. The executable seam is
-owned by
-`packages/bijux-canon-runtime/src/bijux_canon_runtime/runtime/execution/integration_loaders.py`.
-It requests package-root callables named `retrieve`, `enforce_contract`,
-`reason`, and `run`.
+Release membership proves only that runtime installs the four lower canonical
+packages. The executable seam remains separately governed by typed application
+adapters and Runtime v2 transport parity. Review these together:
 
-The current ingest, index, reason, and agent roots do not expose that complete
-set, and the runtime suite does not execute those loaders against all four real
-canonical roots. The legacy fallbacks resolve to compatibility aliases of the
-same roots rather than independent adapters. Repository and release checks can
-therefore pass while installed live composition remains unproven.
+1. `test_canonical_adapters.py` resolves and executes the canonical ingest,
+   index, reason, and agent boundaries;
+2. `test_v2_transport_parity.py` submits matching library, CLI, and HTTP
+   operations and compares their durable outcomes;
+3. the installed offline workflows build wheels, install the complete family,
+   and exercise ingest, index, ask, research, result, and inspection; and
+4. negative contract tests refuse missing, malformed, and incompatible adapter
+   output.
 
-For an integration claim, require all of the following evidence:
-
-1. an explicit typed adapter owned by the relevant boundary;
-2. an installed environment containing the exact canonical package versions;
-3. a test that resolves every runtime loader without monkeypatching package
-   roots;
-4. one governed live flow that records retrieval, reasoning, agent, and runtime
-   identities; and
-5. a negative case for missing, malformed, and semantically incompatible
-   adapter output.
-
-Until that evidence exists, use the left-to-right system diagram as an
-ownership map and treat package-local execution and runtime plan mode as the
-demonstrated surfaces.
+The primary whole-product interface is Runtime v2. Package v1 contracts remain
+package-owned compatibility or lower-level surfaces and must not be substituted
+for Runtime v2 when documenting the integrated product.
 
 ## Resolve Cross-Surface Disagreement
 
@@ -165,7 +155,7 @@ but it cannot redefine product semantics to make the mismatch disappear.
 | Question | Authoritative root surface | Continue in |
 | --- | --- | --- |
 | Which packages participate in the workspace and release? | `pyproject.toml`, workspace metadata, release package guards | [package map](foundation/package-map.md) |
-| Which HTTP representation is governed? | `apis/<package>/v1/schema.yaml`, pin, and hash | owning package interface handbook |
+| Which HTTP representation is governed? | `apis/<package>/<version>/schema.yaml`, pin, and hash; Runtime v2 is primary | owning package interface handbook |
 | Which local command composes validation? | `Makefile` and `makes/` | [maintainer Make handbook](../07-bijux-canon-maintain/makes/index.md) |
 | Which event triggers CI or publication? | `.github/workflows/` | [workflow handbook](../07-bijux-canon-maintain/gh-workflows/index.md) |
 | Which record supports a cross-package claim? | owned models, schemas, tests, and retained artifacts | [evidence map](foundation/evidence-map.md) |

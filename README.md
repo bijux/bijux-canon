@@ -398,8 +398,9 @@ The repository keeps four proof surfaces separate:
 
 - `packages/<package>/src` implements package behavior;
 - `packages/<package>/tests` exercises local and cross-boundary invariants;
-- `apis/<package>/v1` records the versioned HTTP schema, pinned representation,
-  and hash; and
+- `apis/<package>/<version>` records each versioned HTTP schema, pinned
+  representation, and hash; Runtime v2 is the primary whole-product contract;
+  and
 - run artifacts record what happened in one execution.
 
 None substitutes for the others. A checked-in schema does not prove its server

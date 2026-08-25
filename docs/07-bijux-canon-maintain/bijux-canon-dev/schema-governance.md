@@ -28,24 +28,25 @@ flowchart TD
 
 ## Governed Schema Set
 
-Every canonical HTTP package has the same directory shape:
+Every governed HTTP version has the same directory shape:
 
 ```text
-apis/<package>/v1/
+apis/<package>/<version>/
 ├── schema.yaml
 ├── pinned_openapi.json
 └── schema.hash
 ```
 
 Repository contract tests also require OpenAPI 3.1.0, package-specific titles,
-`v1` information versions, common license/contact metadata, a root-relative
+matching information versions, common license/contact metadata, a root-relative
 server, and at least one path. The directories may contain only those three
-governed files.
+governed files. Runtime v2 is the primary whole-product contract; the other v1
+trees remain governed package or compatibility surfaces.
 
 ## Freeze Validation
 
 `bijux_canon_dev.api.freeze_contracts` performs two checks for every
-`apis/*/v1/schema.yaml`:
+`apis/*/*/schema.yaml`:
 
 1. load YAML and pinned JSON, recursively sort mapping keys, normalize dates,
    enums, paths, tuples, and lists, then compare the structures;

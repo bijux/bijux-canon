@@ -41,7 +41,8 @@ flowchart LR
 
 - `pyproject.toml` and `uv.lock` define the Python workspace and resolved
   dependency graph.
-- `apis/` retains the five versioned HTTP contract trees.
+- `apis/` retains six versioned HTTP contract trees across five packages;
+  Runtime v2 is the primary whole-product contract.
 - `Makefile` and `makes/` compose supported local operations.
 - `.github/workflows/` coordinates verification, policy, documentation, and
   releases.
@@ -66,7 +67,7 @@ that package even when several root commands call it.
 | Question | Inspect first | Then confirm with |
 | --- | --- | --- |
 | Is a package part of a public release? | `[tool.bijux_canon].public_release_packages` | publication guard and release workflow |
-| Is an HTTP shape governed? | `apis/<package>/v1/` | owning implementation and live contract test |
+| Is an HTTP shape governed? | `apis/<package>/<version>/` | owning implementation and live contract test; Runtime v2 additionally requires transport parity |
 | What does a root command execute? | `Makefile` and included file under `makes/` | invoked package command and generated artifact |
 | Why did a workflow run? | workflow trigger and job dependency graph | event payload and job logs |
 | Where does a product decision belong? | owning package public facade | package handbook and focused tests |

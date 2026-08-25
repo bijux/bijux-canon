@@ -68,6 +68,17 @@ def test_repository_api_contracts_share_a_common_baseline() -> None:
         assert payload["paths"], f"{package_name} must expose at least one path"
 
 
+def test_runtime_v2_is_a_governed_primary_contract() -> None:
+    package_dir = REPO_ROOT / "apis" / "bijux-canon-runtime" / "v2"
+    payload = _load_artifact(package_dir / "schema.yaml")
+
+    assert payload["openapi"] == "3.1.0"
+    assert payload["info"]["title"] == "bijux-canon-runtime API"
+    assert payload["info"]["version"] == "v2"
+    assert "/api/v2/research" in payload["paths"]
+    assert "/api/v2/jobs/{job_id}/result" in payload["paths"]
+
+
 def test_repository_api_contract_pairs_stay_in_sync() -> None:
     for package_dir in _contract_directories():
         left = _load_artifact(package_dir / "schema.yaml")

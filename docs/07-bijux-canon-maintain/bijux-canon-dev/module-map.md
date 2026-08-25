@@ -32,7 +32,7 @@ bijux_canon_dev/
 
 | Module | Inputs | Decision or output |
 | --- | --- | --- |
-| `api.freeze_contracts` | `apis/*/v1/schema.yaml`, pin, digest | canonical pin equality and YAML SHA-256 validity |
+| `api.freeze_contracts` | `apis/*/*/schema.yaml`, pin, digest | canonical pin equality and YAML SHA-256 validity |
 | `api.openapi_drift` | application import and checked-in schema | generated canonical JSON plus drift verdict; optional intentional pinning |
 | `docs.badge_sync` | badge catalog and workspace/package metadata | generated README badge blocks or drift refusal |
 | `docs.mkdocs_config` | source MkDocs configuration and build paths | rewritten build configuration and prepared source paths |
@@ -47,10 +47,11 @@ bijux_canon_dev/
 
 ## API Modules
 
-`freeze_contracts` walks all `apis/*/v1/schema.yaml` roots. It canonicalizes
+`freeze_contracts` walks all `apis/*/*/schema.yaml` roots. It canonicalizes
 YAML and pinned JSON before comparison, then hashes the exact YAML text and
 compares it with the `sha256:` entry. It fails if no schemas exist or if any
-pin, digest, or match is missing.
+pin, digest, or match is missing. Runtime v2 is the primary whole-product
+contract within that governed set.
 
 `openapi_drift` imports an ASGI application or zero-argument factory, writes
 its generated OpenAPI as canonical JSON, and compares it with the checked-in
