@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import copy
+import io
 import json
 from pathlib import Path
+import tarfile
 from typing import cast
 import zipfile
 
@@ -12,6 +14,7 @@ from bijux_canon_dev.sbom.supply_chain import (
     ArtifactInput,
     SupplyChainVerificationError,
     build_supply_chain_manifest,
+    discover_redistribution_evidence,
     external_sbom_generator,
     sha256_file,
     verify_supply_chain_manifest,
@@ -63,6 +66,7 @@ def test_manifest_binds_wheel_sbom_attestation_source_and_lock(tmp_path: Path) -
 
     assert manifest["source_commit"] == SOURCE_COMMIT
     assert manifest["container_definition_identities"] == {}
+    assert manifest["build_environment"]
     records = cast(list[dict[str, object]], manifest["artifact_records"])
     assert records[0]["kind"] == "wheel"
     assert records[0]["sbom_component_count"] == 1
@@ -73,6 +77,37 @@ def test_manifest_binds_wheel_sbom_attestation_source_and_lock(tmp_path: Path) -
         {"name": wheel.name, "digest": {"sha256": records[0]["sha256"]}}
     ]
     verify_supply_chain_manifest(manifest, repo_root=root)
+
+
+def test_manifest_binds_redistribution_and_security_evidence(tmp_path: Path) -> None:
+    root, lock, wheel = _repository(tmp_path)
+    redistribution = root / "LICENSE"
+    security = root / "artifacts" / "secret-scan.json"
+    redistribution.write_text("Apache-2.0\n", encoding="utf-8")
+    security.write_text('{"result":"passed"}\n', encoding="utf-8")
+
+    manifest = build_supply_chain_manifest(
+        repo_root=root,
+        source_commit=SOURCE_COMMIT,
+        artifacts=[ArtifactInput("wheel", wheel)],
+        lock_paths=[lock],
+        sbom_dir=root / "artifacts" / "release" / "sboms",
+        attestation_dir=root / "artifacts" / "release" / "attestations",
+        sbom_generator=_sbom,
+        builder_id="https://bijux.invalid/test-builder",
+        redistribution_evidence=[redistribution],
+        security_evidence=[security],
+    )
+
+    assert manifest["redistribution_evidence_identities"] == {
+        "LICENSE": sha256_file(redistribution)
+    }
+    assert manifest["security_evidence_identities"] == {
+        "artifacts/secret-scan.json": sha256_file(security)
+    }
+    security.write_text('{"result":"changed"}\n', encoding="utf-8")
+    with pytest.raises(SupplyChainVerificationError, match="security evidence digest"):
+        verify_supply_chain_manifest(manifest, repo_root=root)
 
 
 @pytest.mark.parametrize("target", ["artifact", "sbom", "attestation", "lock"])
@@ -155,6 +190,17 @@ def test_manifest_covers_wheels_and_oci_images(tmp_path: Path) -> None:
     assert set(identities) == {"Dockerfile"}
 
 
+def test_manifest_covers_source_distributions(tmp_path: Path) -> None:
+    root, lock, _wheel = _repository(tmp_path)
+    sdist = root / "artifacts" / "release" / "dist" / "bijux-canon-1.0.tar.gz"
+    sdist.write_bytes(b"source distribution")
+
+    manifest = _manifest(root, lock, [ArtifactInput("sdist", sdist)])
+
+    record = cast(list[dict[str, object]], manifest["artifact_records"])[0]
+    assert record["kind"] == "sdist"
+
+
 def test_external_generator_rejects_wheel_path_traversal(tmp_path: Path) -> None:
     wheel = tmp_path / "malicious.whl"
     with zipfile.ZipFile(wheel, "w") as archive:
@@ -165,3 +211,37 @@ def test_external_generator_rejects_wheel_path_traversal(tmp_path: Path) -> None
 
     with pytest.raises(SupplyChainVerificationError, match="unsafe wheel member"):
         generator(ArtifactInput("wheel", wheel), tmp_path / "output.json")
+
+
+def test_external_generator_rejects_sdist_links(tmp_path: Path) -> None:
+    sdist = tmp_path / "malicious.tar.gz"
+    with tarfile.open(sdist, mode="w:gz") as archive:
+        member = tarfile.TarInfo("package/link")
+        member.type = tarfile.SYMTYPE
+        member.linkname = "../../outside"
+        archive.addfile(member, io.BytesIO())
+    generator = external_sbom_generator(
+        extract_root=tmp_path / "extract", syft="syft", cyclonedx="cyclonedx"
+    )
+
+    with pytest.raises(SupplyChainVerificationError, match="unsafe sdist member"):
+        generator(ArtifactInput("sdist", sdist), tmp_path / "output.json")
+
+
+def test_repository_redistribution_discovery_covers_all_corpus_evidence() -> None:
+    repository = Path(__file__).resolve().parents[3]
+    discovered = {
+        path.relative_to(repository).as_posix()
+        for path in discover_redistribution_evidence(repository)
+    }
+
+    assert {"LICENSE", "NOTICE"}.issubset(discovered)
+    assert {
+        "examples/ancient-dna-research/corpus.lock.json",
+        "examples/ancient-dna-research/corpus/corpus-manifest.json",
+        "examples/document-formats/corpus.lock.json",
+        "examples/urban-heat-research/corpus-manifest.json",
+    }.issubset(discovered)
+    assert len(
+        [path for path in discovered if "/acquisition-receipts/" in path]
+    ) == 7

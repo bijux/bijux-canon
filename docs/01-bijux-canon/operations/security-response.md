@@ -98,15 +98,21 @@ bijux-canon-supply-chain \
   --output-dir artifacts/release/supply-chain \
   --manifest artifacts/release/supply-chain.json \
   --lock uv.lock \
-  --lock pyproject.toml
+  --lock pyproject.toml \
+  --security-evidence artifacts/root/security/secret-scan.json \
+  --security-evidence artifacts/bijux-canon-runtime/security/pip-audit.json
 ```
 
-The command refuses a dirty source tree, missing locks, unsafe wheel members,
-invalid or empty CycloneDX documents, duplicate artifact identities, digest
-drift, and incomplete OCI coverage when a container build definition exists.
-The generated in-toto/SLSA statements are unsigned local attestations. A
-publication system may add a trusted signature, but must verify the same
-subject and predicate bytes before attaching it.
+Repeat `--security-evidence` for every strict vulnerability report, the tracked
+source secret-scan report, and any reviewed disposition record used for the
+candidate. The command binds those records with repository legal notices,
+corpus locks, corpus manifests, and acquisition receipts. It refuses a dirty
+source tree, missing locks, unsafe wheel or source-distribution members, invalid
+or empty CycloneDX documents, duplicate artifact identities, digest drift, and
+incomplete OCI coverage when a container build definition exists. The generated
+in-toto/SLSA statements are unsigned local attestations. A publication system
+may add a trusted signature, but must verify the same subject and predicate
+bytes before attaching it.
 
 ## Known Limitations
 

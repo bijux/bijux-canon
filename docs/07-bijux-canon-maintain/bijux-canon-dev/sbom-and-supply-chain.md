@@ -11,10 +11,12 @@ last_reviewed: 2026-08-22
 
 Bijux Canon has two related CycloneDX surfaces. Package Make targets generate
 production and development dependency inventories. The installed
-`bijux-canon-supply-chain` command scans every release wheel or OCI archive and
-binds its SBOM to the artifact, source commit, governing locks, builder identity,
-and an in-toto/SLSA provenance statement. Generated files remain beneath
-`artifacts/`; the generator and verifier live in `bijux-canon-dev`.
+`bijux-canon-supply-chain` command scans every release wheel, source
+distribution, or OCI archive and binds its SBOM to the artifact, source commit,
+governing locks, build environment, builder identity, redistribution evidence,
+security evidence, and an in-toto/SLSA provenance statement. Generated files
+remain beneath `artifacts/`; the generator and verifier live in
+`bijux-canon-dev`.
 
 ```mermaid
 flowchart LR
@@ -117,7 +119,7 @@ rung actually claimed:
 | vulnerability policy accepted the resolution | audit report, strict gate policy, and gate verdict | artifact provenance or build reproducibility |
 | SBOM was staged with a release candidate | stable staged name, workflow run, source SHA, and package version | publication at a registry or release page |
 | published SBOM describes a released artifact | destination identity, SBOM digest, wheel/sdist or image digest, and common tagged source | trusted signature or runtime safety |
-| local provenance binds the release candidate | successful `bijux-canon-supply-chain` verification of artifact, SBOM, source, locks, builder, and in-toto subject | trusted remote builder or key custody |
+| local provenance binds the release candidate | successful `bijux-canon-supply-chain` verification of artifact, SBOM, source, locks, build environment, legal/corpus evidence, reviewed security evidence, builder, and in-toto subject | trusted remote builder or key custody |
 
 The repository provides generation, validation, audit policy, artifact binding,
 and unsigned local build-provenance attestations as separate surfaces. It does
@@ -137,20 +139,28 @@ bijux-canon-supply-chain \
   --output-dir artifacts/release/supply-chain \
   --manifest artifacts/release/supply-chain.json \
   --lock uv.lock \
-  --lock pyproject.toml
+  --lock pyproject.toml \
+  --security-evidence artifacts/root/security/secret-scan.json \
+  --security-evidence artifacts/bijux-canon-runtime/security/pip-audit.json
 ```
 
-Every wheel in `--wheel-dir` is scanned. Each generated CycloneDX document must
-be structurally valid and contain identified components. The manifest records
-SHA-256 and byte length for the artifact, SHA-256 for the SBOM and attestation,
-the full source commit, lock identities, builder identity, and a relative path
-for each retained output. Verification recomputes all digests and checks the
-in-toto subject plus SLSA source, SBOM, lock, and builder fields.
+Every wheel and `.tar.gz` source distribution in `--wheel-dir` is scanned. Each
+generated CycloneDX document must be structurally valid and contain identified
+components. The command automatically binds repository `LICENSE` and `NOTICE`
+files plus corpus locks, manifests, and acquisition receipts. Repeat
+`--security-evidence` for the exact strict vulnerability reports, secret-scan
+report, and any reviewed disposition record used for the candidate decision.
+The manifest records SHA-256 and byte length for each artifact, SHA-256 for the
+SBOM and attestation, the full source commit, build environment, lock and
+evidence identities, builder identity, and a relative path for every retained
+output. Verification recomputes all digests and checks the in-toto subject plus
+SLSA source, SBOM, resolved dependencies, environment, and builder fields.
 
 Use one `--oci-image` argument per OCI archive. If a tracked Dockerfile or
 Containerfile exists but no OCI archive is supplied, the command fails instead
-of reporting empty OCI coverage. Unsafe wheel members, dirty source, missing
-locks, duplicate names, and any binding mismatch also fail closed.
+of reporting empty OCI coverage. Unsafe wheel or source-distribution members,
+dirty source, missing locks, duplicate names, and any binding mismatch also fail
+closed.
 
 ## Vulnerability Policy
 

@@ -8,13 +8,15 @@ from dataclasses import dataclass
 import hashlib
 import json
 from pathlib import Path, PurePosixPath
+import platform
 import subprocess
+import tarfile
 import tempfile
 from typing import Literal, cast
 import zipfile
 
 
-ArtifactKind = Literal["wheel", "oci-image"]
+ArtifactKind = Literal["wheel", "sdist", "oci-image"]
 SbomGenerator = Callable[["ArtifactInput", Path], Mapping[str, object]]
 
 
@@ -113,6 +115,7 @@ def _provenance_statement(
     source_commit: str,
     resolved_identities: Mapping[str, str],
     builder_id: str,
+    build_environment: Mapping[str, str],
 ) -> dict[str, object]:
     return {
         "_type": "https://in-toto.io/Statement/v1",
@@ -136,7 +139,8 @@ def _provenance_statement(
             "runDetails": {
                 "builder": {"id": builder_id},
                 "metadata": {
-                    "invocationId": f"local:{source_commit}:{artifact_sha256}"
+                    "build_environment": dict(sorted(build_environment.items())),
+                    "invocationId": f"local:{source_commit}:{artifact_sha256}",
                 },
             },
         },
@@ -154,6 +158,8 @@ def build_supply_chain_manifest(
     sbom_generator: SbomGenerator,
     builder_id: str,
     container_definitions: Sequence[Path] = (),
+    redistribution_evidence: Sequence[Path] = (),
+    security_evidence: Sequence[Path] = (),
 ) -> dict[str, object]:
     """Generate, bind, and verify SBOM/provenance records for release inputs."""
     if len(source_commit) != 40 or any(
@@ -183,7 +189,25 @@ def build_supply_chain_manifest(
     container_definition_identities = {
         _repo_path(path, repo_root): sha256_file(path) for path in container_definitions
     }
-    resolved_identities = lock_identities | container_definition_identities
+    redistribution_evidence_identities = {
+        _repo_path(path, repo_root): sha256_file(path)
+        for path in redistribution_evidence
+    }
+    security_evidence_identities = {
+        _repo_path(path, repo_root): sha256_file(path) for path in security_evidence
+    }
+    build_environment = {
+        "machine": platform.machine(),
+        "operating_system": platform.platform(),
+        "python_implementation": platform.python_implementation(),
+        "python_version": platform.python_version(),
+    }
+    resolved_identities = (
+        lock_identities
+        | container_definition_identities
+        | redistribution_evidence_identities
+        | security_evidence_identities
+    )
     records: list[dict[str, object]] = []
     for artifact in sorted(artifacts, key=lambda item: (item.kind, item.path.name)):
         artifact_sha256 = sha256_file(artifact.path)
@@ -199,6 +223,7 @@ def build_supply_chain_manifest(
             source_commit=source_commit,
             resolved_identities=resolved_identities,
             builder_id=builder_id,
+            build_environment=build_environment,
         )
         attestation_path = attestation_dir / f"{artifact.path.name}.intoto.json"
         _write_json(attestation_path, statement)
@@ -221,8 +246,11 @@ def build_supply_chain_manifest(
         "schema_version": "bijux.canon.supply_chain_manifest.v1",
         "source_commit": source_commit,
         "builder_id": builder_id,
+        "build_environment": build_environment,
         "lock_identities": lock_identities,
         "container_definition_identities": container_definition_identities,
+        "redistribution_evidence_identities": redistribution_evidence_identities,
+        "security_evidence_identities": security_evidence_identities,
         "artifact_records": records,
     }
     verify_supply_chain_manifest(
@@ -273,6 +301,23 @@ def verify_supply_chain_manifest(
             raise SupplyChainVerificationError(
                 f"container definition digest mismatch: {relative}"
             )
+    redistribution_evidence_identities = _string_map(
+        manifest.get("redistribution_evidence_identities"),
+        field="redistribution_evidence_identities",
+    )
+    security_evidence_identities = _string_map(
+        manifest.get("security_evidence_identities"),
+        field="security_evidence_identities",
+    )
+    for label, identities in (
+        ("redistribution evidence", redistribution_evidence_identities),
+        ("security evidence", security_evidence_identities),
+    ):
+        for relative, expected in identities.items():
+            if sha256_file(repo_root / relative) != expected:
+                raise SupplyChainVerificationError(
+                    f"{label} digest mismatch: {relative}"
+                )
 
     records = manifest.get("artifact_records")
     if not isinstance(records, list) or not records:
@@ -288,7 +333,7 @@ def verify_supply_chain_manifest(
         if name in seen_names:
             raise SupplyChainVerificationError(f"duplicate artifact record: {name}")
         seen_names.add(name)
-        if record.get("kind") not in {"wheel", "oci-image"}:
+        if record.get("kind") not in {"wheel", "sdist", "oci-image"}:
             raise SupplyChainVerificationError(f"invalid artifact kind: {name}")
         paths: dict[str, Path] = {}
         for field in ("path", "sbom_path", "attestation_path"):
@@ -341,6 +386,9 @@ def verify_supply_chain_manifest(
             raise SupplyChainVerificationError(f"provenance source mismatch: {name}")
         if internal.get("sbom_sha256") != record.get("sbom_sha256"):
             raise SupplyChainVerificationError(f"provenance SBOM mismatch: {name}")
+        build_environment = _string_map(
+            manifest.get("build_environment"), field="build_environment"
+        )
         expected_dependencies = [
             {"uri": path, "digest": {"sha256": digest}}
             for path, digest in sorted(
@@ -349,6 +397,8 @@ def verify_supply_chain_manifest(
                         manifest.get("lock_identities"), field="lock_identities"
                     )
                     | container_definition_identities
+                    | redistribution_evidence_identities
+                    | security_evidence_identities
                 ).items()
             )
         ]
@@ -360,6 +410,13 @@ def verify_supply_chain_manifest(
         )
         if builder.get("id") != manifest.get("builder_id"):
             raise SupplyChainVerificationError(f"provenance builder mismatch: {name}")
+        metadata = _object(
+            run_details.get("metadata"), field="predicate.runDetails.metadata"
+        )
+        if metadata.get("build_environment") != build_environment:
+            raise SupplyChainVerificationError(
+                f"provenance build environment mismatch: {name}"
+            )
 
 
 def discover_container_definitions(repo_root: Path) -> tuple[Path, ...]:
@@ -375,6 +432,19 @@ def discover_container_definitions(repo_root: Path) -> tuple[Path, ...]:
     return tuple(sorted(definitions))
 
 
+def discover_redistribution_evidence(repo_root: Path) -> tuple[Path, ...]:
+    """Return legal records governing bundled code and redistributed corpora."""
+    evidence = {repo_root / "LICENSE", repo_root / "NOTICE"}
+    for pattern in (
+        "examples/*/corpus.lock.json",
+        "examples/*/corpus-manifest.json",
+        "examples/*/corpus/corpus-manifest.json",
+        "examples/*/acquisition-receipts/*.json",
+    ):
+        evidence.update(repo_root.glob(pattern))
+    return tuple(sorted(path for path in evidence if path.is_file()))
+
+
 def _safe_wheel_members(path: Path) -> None:
     try:
         with zipfile.ZipFile(path) as archive:
@@ -386,6 +456,27 @@ def _safe_wheel_members(path: Path) -> None:
                     )
     except zipfile.BadZipFile as exc:
         raise SupplyChainVerificationError(f"invalid wheel archive: {path}") from exc
+
+
+def _safe_sdist_members(path: Path) -> None:
+    try:
+        with tarfile.open(path, mode="r:gz") as archive:
+            for member in archive.getmembers():
+                name = member.name
+                pure = PurePosixPath(name)
+                if (
+                    pure.is_absolute()
+                    or ".." in pure.parts
+                    or "\\" in name
+                    or member.issym()
+                    or member.islnk()
+                    or member.isdev()
+                ):
+                    raise SupplyChainVerificationError(
+                        f"unsafe sdist member in {path.name}: {name}"
+                    )
+    except tarfile.TarError as exc:
+        raise SupplyChainVerificationError(f"invalid sdist archive: {path}") from exc
 
 
 def external_sbom_generator(
@@ -413,15 +504,20 @@ def external_sbom_generator(
                     scan.stderr or scan.stdout or "Syft failed"
                 )
 
-        if artifact.kind == "wheel":
-            _safe_wheel_members(artifact.path)
+        if artifact.kind in {"wheel", "sdist"}:
             extract_root.mkdir(parents=True, exist_ok=True)
             with tempfile.TemporaryDirectory(
                 prefix=f"{artifact.path.stem}-", dir=extract_root
             ) as extracted_name:
                 extracted = Path(extracted_name)
-                with zipfile.ZipFile(artifact.path) as archive:
-                    archive.extractall(extracted)
+                if artifact.kind == "wheel":
+                    _safe_wheel_members(artifact.path)
+                    with zipfile.ZipFile(artifact.path) as wheel_archive:
+                        wheel_archive.extractall(extracted)
+                else:
+                    _safe_sdist_members(artifact.path)
+                    with tarfile.open(artifact.path, mode="r:gz") as sdist_archive:
+                        sdist_archive.extractall(extracted, filter="data")
                 run_scan(f"dir:{extracted}")
         else:
             run_scan(f"oci-archive:{artifact.path}")
@@ -480,6 +576,7 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--manifest", type=Path, required=True)
     parser.add_argument("--lock", type=Path, action="append", default=[])
+    parser.add_argument("--security-evidence", type=Path, action="append", default=[])
     parser.add_argument("--syft", default="syft")
     parser.add_argument("--cyclonedx", default="cyclonedx")
     return parser.parse_args(argv)
@@ -491,8 +588,14 @@ def main(argv: Sequence[str] | None = None) -> int:
     repo_root = cast(Path, args.repo_root).resolve()
     wheel_dir = cast(Path, args.wheel_dir)
     wheels = tuple(sorted(wheel_dir.glob("*.whl")))
-    artifacts = tuple(ArtifactInput("wheel", path) for path in wheels) + tuple(
-        ArtifactInput("oci-image", path) for path in cast(list[Path], args.oci_image)
+    sdists = tuple(sorted(wheel_dir.glob("*.tar.gz")))
+    artifacts = (
+        tuple(ArtifactInput("wheel", path) for path in wheels)
+        + tuple(ArtifactInput("sdist", path) for path in sdists)
+        + tuple(
+            ArtifactInput("oci-image", path)
+            for path in cast(list[Path], args.oci_image)
+        )
     )
     output_dir = cast(Path, args.output_dir)
     locks = tuple(cast(list[Path], args.lock)) or (
@@ -513,6 +616,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         ),
         builder_id="https://github.com/bijux/bijux-canon/supply-chain",
         container_definitions=discover_container_definitions(repo_root),
+        redistribution_evidence=discover_redistribution_evidence(repo_root),
+        security_evidence=tuple(cast(list[Path], args.security_evidence)),
     )
     _write_json(cast(Path, args.manifest), manifest)
     return 0
