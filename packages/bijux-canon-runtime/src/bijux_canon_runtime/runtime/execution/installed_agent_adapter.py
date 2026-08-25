@@ -730,6 +730,8 @@ def _research_request(
     claim_graph: dict[str, object],
     *,
     graph_artifact_id: str,
+    corpus_generation: str,
+    index_generation: str,
     counterevidence_policy_artifact_id: str,
     convergence_policy_artifact_id: str,
     max_searches: int,
@@ -888,6 +890,8 @@ def _research_request(
         requirement_plan_outcome=requirement_plan.outcome.value,
         budget_limits=budget_limits,
         maximum_search_candidates=maximum_search_candidates,
+        corpus_generation=corpus_generation,
+        index_generation=index_generation,
         grounding_admission_outcome=_required_string(
             raw_admission.get("outcome"),
             "grounding admission outcome",
@@ -961,6 +965,9 @@ class CanonicalAgentOperationAdapter:
         generation_id = _required_string(
             claim_graph.get("generation_id"), "generation_id"
         )
+        provenance = claim_graph.get("provenance")
+        if not isinstance(provenance, dict):
+            raise StepDispatchError("claim graph provenance is invalid")
         filters = _retrieval_filters(claim_graph.get("retrieval_filters"))
         raw_claim_set = claim_graph.get("claims")
         raw_claims = (
@@ -988,6 +995,10 @@ class CanonicalAgentOperationAdapter:
         request = _research_request(
             claim_graph,
             graph_artifact_id=graph_id,
+            corpus_generation=_required_string(
+                provenance.get("snapshot_artifact_id"), "snapshot_artifact_id"
+            ),
+            index_generation=generation_id,
             counterevidence_policy_artifact_id=counter_policy_id,
             convergence_policy_artifact_id=convergence_policy_id,
             max_searches=convergence_policy.max_tool_calls,
@@ -1150,6 +1161,43 @@ class CanonicalAgentOperationAdapter:
                 "status": research.terminal_outcome.kind.value,
                 "convergence_status": research.convergence.outcome,
                 "termination": dict(research.convergence.record),
+                "tool_policy": {
+                    "artifact_id": research.tool_policy.artifact_id,
+                    "default_action": "deny",
+                    "denied_tools": list(research.tool_policy.denied_tools),
+                    "grants": [
+                        grant.payload() for grant in research.tool_policy.grants
+                    ],
+                    "plan_sha256": research.tool_policy.plan_sha256,
+                    "policy_sha256": research.tool_policy.policy_sha256,
+                },
+                "tool_policy_artifact_id": research.tool_policy_artifact_id,
+                "tool_descriptors": [
+                    {"artifact_id": item.artifact_id, **item.payload()}
+                    for item in research.tool_descriptors
+                ],
+                "tool_decisions": [
+                    _json_value(asdict(item)) for item in research.tool_decisions
+                ],
+                "tool_execution_records": [
+                    {
+                        "artifact_id": item.artifact_id,
+                        "sequence": item.sequence,
+                        "descriptor_artifact_id": item.descriptor_artifact_id,
+                        "policy_decision_artifact_id": (
+                            item.policy_decision_artifact_id
+                        ),
+                        "request_sha256": item.request_sha256,
+                        "result_artifact_id": item.result_artifact_id,
+                        "status": item.status.value,
+                        "safe_summary": dict(item.safe_summary),
+                        "idempotency_key": item.idempotency_key,
+                        "replay_source_artifact_id": (item.replay_source_artifact_id),
+                        "cancellation_artifact_id": (item.cancellation_artifact_id),
+                        "failure_class": item.failure_class,
+                    }
+                    for item in research.tool_execution_records
+                ],
                 "tool_failure_artifact_ids": list(research.tool_failure_artifact_ids),
             }
         )

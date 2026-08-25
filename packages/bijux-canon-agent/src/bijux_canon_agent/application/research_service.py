@@ -46,6 +46,21 @@ from bijux_canon_agent.contracts.execution_control import (
     CancellationPort,
     CancellationSignal,
 )
+from bijux_canon_agent.contracts.tool_execution import (
+    ResearchToolDescriptor,
+    ToolExecutionRecord,
+    ToolExecutionStatus,
+    ToolReplayPolicy,
+)
+from bijux_canon_agent.contracts.tool_policy import (
+    ResearchTool,
+    ResearchToolOperation,
+    ToolGrant,
+    ToolInvocation,
+    ToolPolicy,
+    ToolPolicyAction,
+    ToolPolicyDecision,
+)
 
 
 def _canonical(value: object) -> bytes:
@@ -103,6 +118,8 @@ class InstalledResearchRequest:
     requirement_plan_outcome: str
     budget_limits: BudgetDimensions
     maximum_search_candidates: int
+    corpus_generation: str
+    index_generation: str
     grounding_admission_outcome: str = "admitted"
 
     def __post_init__(self) -> None:
@@ -124,6 +141,12 @@ class InstalledResearchRequest:
             raise TypeError("installed research budget limits are invalid")
         if self.maximum_search_candidates < 1:
             raise ValueError("maximum search candidates must be positive")
+        for value, field in (
+            (self.corpus_generation, "corpus generation"),
+            (self.index_generation, "index generation"),
+        ):
+            if not value.strip():
+                raise ValueError(f"{field} must not be empty")
         claim_ids = {claim.artifact_id for claim in self.claims}
         finding_claim_ids = tuple(
             item.claim_artifact_id
@@ -431,6 +454,11 @@ class InstalledResearchResult:
     budget_policy_artifact_id: str
     budget_decisions: tuple[BudgetDecision, ...]
     budget_usage: BudgetDimensions
+    tool_policy: ToolPolicy
+    tool_policy_artifact_id: str
+    tool_descriptors: tuple[ResearchToolDescriptor, ...]
+    tool_decisions: tuple[ToolPolicyDecision, ...]
+    tool_execution_records: tuple[ToolExecutionRecord, ...]
     cancellation_signal: CancellationSignal | None
     terminal_outcome: InstalledResearchTerminalOutcome
     revision: InstalledResearchRevision | None
@@ -468,6 +496,85 @@ class InstalledResearchService:
                 "evaluate": role_limits,
                 "revise": role_limits,
             },
+        )
+
+    @staticmethod
+    def _tool_policy(
+        request: InstalledResearchRequest,
+        *,
+        plan_sha256: str,
+    ) -> ToolPolicy:
+        return ToolPolicy(
+            plan_sha256=plan_sha256,
+            grants=(
+                ToolGrant(
+                    tool=ResearchTool.RETRIEVE,
+                    operation=ResearchToolOperation.RETRIEVE,
+                    corpus_generation=request.corpus_generation,
+                    index_generation=request.index_generation,
+                    scope=(request.scope_artifact_id,),
+                    filesystem_roots=(),
+                    max_calls=request.max_searches,
+                    timeout_ms=max(1, request.budget_limits.elapsed_ms),
+                ),
+            ),
+        )
+
+    @staticmethod
+    def _retrieval_descriptor() -> ResearchToolDescriptor:
+        return ResearchToolDescriptor(
+            tool=ResearchTool.RETRIEVE,
+            operation=ResearchToolOperation.RETRIEVE,
+            version="1.0",
+            input_schema_id="bijux.canon.agent.installed-research-search.v1",
+            output_schema_id="bijux.canon.agent.installed-research-result.v1",
+            capability="counterevidence-retrieval",
+            owner_distribution="bijux-canon-agent",
+            implementation=(
+                "bijux_canon_agent.application.research_service."
+                "InstalledResearchPort.search"
+            ),
+            replay_policy=ToolReplayPolicy.IDEMPOTENT_READ,
+            cost_units=1,
+            safe_summary_fields=(
+                "artifact_id",
+                "candidate_count",
+                "document_count",
+                "status",
+            ),
+        )
+
+    @staticmethod
+    def _search_invocation(
+        request: InstalledResearchRequest,
+        plan: InstalledResearchPlan,
+        *,
+        plan_sha256: str,
+    ) -> ToolInvocation:
+        request_sha256 = hashlib.sha256(
+            _canonical(
+                {
+                    "plan_artifact_id": plan.artifact_id,
+                    "request_artifact_ids": plan.request_artifact_ids,
+                    "scope_artifact_id": request.scope_artifact_id,
+                }
+            )
+        ).hexdigest()
+        return ToolInvocation(
+            tool=ResearchTool.RETRIEVE.value,
+            operation=ResearchToolOperation.RETRIEVE.value,
+            plan_sha256=plan_sha256,
+            request_sha256=request_sha256,
+            corpus_generation=request.corpus_generation,
+            index_generation=request.index_generation,
+            scope=(request.scope_artifact_id,),
+            filesystem_paths=(),
+            timeout_ms=max(1, request.budget_limits.elapsed_ms),
+            tool_version="1.0",
+            input_schema_id="bijux.canon.agent.installed-research-search.v1",
+            output_schema_id="bijux.canon.agent.installed-research-result.v1",
+            capability="counterevidence-retrieval",
+            idempotency_key=request_sha256,
         )
 
     @staticmethod
@@ -616,6 +723,7 @@ class InstalledResearchService:
         request: InstalledResearchRequest,
         port: InstalledResearchPort,
         cancellation_port: CancellationPort | None = None,
+        tool_policy: ToolPolicy | None = None,
     ) -> InstalledResearchResult:
         """Run only operations justified by the current plan and observations."""
         if not isinstance(request, InstalledResearchRequest):
@@ -625,9 +733,21 @@ class InstalledResearchService:
         if cancellation_port is not None and not isinstance(
             cancellation_port, CancellationPort
         ):
-            raise TypeError("installed cancellation port does not implement its contract")
+            raise TypeError(
+                "installed cancellation port does not implement its contract"
+            )
         events: list[CausalDecisionEvent] = []
         budget = ResearchBudgetLedger(self._budget_policy(request))
+        active_tool_policy = tool_policy or self._tool_policy(
+            request,
+            plan_sha256=budget.policy.plan_sha256,
+        )
+        if active_tool_policy.plan_sha256 != budget.policy.plan_sha256:
+            raise ValueError("installed tool policy is not bound to the research plan")
+        retrieval_descriptor = self._retrieval_descriptor()
+        tool_decisions: list[ToolPolicyDecision] = []
+        tool_execution_records: list[ToolExecutionRecord] = []
+        allowed_tool_calls = 0
         state_machine = ObservedResearchStateMachine()
         state = state_machine.initial(
             question=request.question,
@@ -641,6 +761,7 @@ class InstalledResearchService:
             request.counterevidence_policy_artifact_id,
             request.convergence_policy_artifact_id,
             budget.policy.artifact_id,
+            active_tool_policy.artifact_id,
         )
         targeted_planner = (
             None
@@ -661,6 +782,8 @@ class InstalledResearchService:
         candidates: tuple[str, ...] = ()
         cancellation_signal: CancellationSignal | None = None
         cancellation_budget_decision_ids: tuple[str, ...] = ()
+        cancellation_tool_decision_ids: tuple[str, ...] = ()
+        cancellation_tool_execution_ids: tuple[str, ...] = ()
         cancellation_consumed_search = False
         revision: InstalledResearchRevision | None = None
         while True:
@@ -744,8 +867,7 @@ class InstalledResearchService:
                     raise
                 cancellation_signal = signal
                 cancellation_budget_decision_ids = tuple(
-                    item.artifact_id
-                    for item in budget.decisions[plan_budget_start:]
+                    item.artifact_id for item in budget.decisions[plan_budget_start:]
                 )
                 plans.append(self._cancellation_plan(request, signal))
                 break
@@ -796,8 +918,7 @@ class InstalledResearchService:
                 evidence_ids=(),
                 policy_ids=policy_ids,
                 budget_decision_ids=tuple(
-                    item.artifact_id
-                    for item in budget.decisions[plan_budget_start:]
+                    item.artifact_id for item in budget.decisions[plan_budget_start:]
                 ),
             )
             signal = self._cancellation(cancellation_port)
@@ -873,6 +994,47 @@ class InstalledResearchService:
                 label="search_counterevidence:start",
                 usage=search_start_usage,
             )
+            invocation = self._search_invocation(
+                request,
+                plan,
+                plan_sha256=budget.policy.plan_sha256,
+            )
+            tool_decision = active_tool_policy.decide(
+                invocation,
+                sequence=len(tool_decisions),
+                prior_allowed_calls=allowed_tool_calls,
+            )
+            tool_decisions.append(tool_decision)
+            if tool_decision.action is ToolPolicyAction.DENY:
+                tool_failures.append(tool_decision.artifact_id)
+                failure_gap = ObservedResearchGap.create(
+                    kind=ObservedResearchGapKind.TOOL_FAILURE,
+                    subject_artifact_id=tool_decision.artifact_id,
+                )
+                state = self._record_decision(
+                    events,
+                    state_machine=state_machine,
+                    state=state,
+                    state_history=state_history,
+                    role="researcher",
+                    operation="deny_search_tool_call",
+                    rationale=(
+                        "retain the fail-closed tool-policy decision without "
+                        "calling the retrieval port"
+                    ),
+                    observation_ids=(tool_decision.artifact_id,),
+                    evidence_ids=(),
+                    policy_ids=policy_ids,
+                    budget_decision_ids=tuple(
+                        item.artifact_id
+                        for item in budget.decisions[search_budget_start:]
+                    ),
+                    tool_decision_ids=(tool_decision.artifact_id,),
+                    gaps=state.gaps + (failure_gap,),
+                    consume_search=True,
+                )
+                break
+            allowed_tool_calls += 1
             try:
                 search = port.search(request, plan)
                 if not isinstance(search, InstalledResearchSearch):
@@ -883,6 +1045,19 @@ class InstalledResearchService:
                 signal = self._cancellation(cancellation_port)
                 if signal.requested:
                     cancellation_signal = signal
+                    cancellation_record = ToolExecutionRecord.create(
+                        sequence=len(tool_execution_records),
+                        descriptor=retrieval_descriptor,
+                        policy_decision=tool_decision,
+                        invocation=invocation,
+                        result_artifact_id=None,
+                        status=ToolExecutionStatus.CANCELLED,
+                        safe_summary={"status": "cancelled"},
+                        cancellation_artifact_id=signal.artifact_id,
+                    )
+                    tool_execution_records.append(cancellation_record)
+                    cancellation_tool_decision_ids = (tool_decision.artifact_id,)
+                    cancellation_tool_execution_ids = (cancellation_record.artifact_id,)
                     cancellation_budget_decision_ids = tuple(
                         item.artifact_id
                         for item in budget.decisions[search_budget_start:]
@@ -896,6 +1071,17 @@ class InstalledResearchService:
                         "plan_artifact_id": plan.artifact_id,
                     }
                 )
+                failure_record = ToolExecutionRecord.create(
+                    sequence=len(tool_execution_records),
+                    descriptor=retrieval_descriptor,
+                    policy_decision=tool_decision,
+                    invocation=invocation,
+                    result_artifact_id=None,
+                    status=ToolExecutionStatus.FAILED,
+                    safe_summary={"status": "failed"},
+                    failure_class=type(error).__name__,
+                )
+                tool_execution_records.append(failure_record)
                 tool_failures.append(failure_id)
                 failure_gap = ObservedResearchGap.create(
                     kind=ObservedResearchGapKind.TOOL_FAILURE,
@@ -919,10 +1105,30 @@ class InstalledResearchService:
                         item.artifact_id
                         for item in budget.decisions[search_budget_start:]
                     ),
+                    tool_decision_ids=(tool_decision.artifact_id,),
+                    additional_observation_ids=(failure_record.artifact_id,),
                     gaps=state.gaps + (failure_gap,),
                     consume_search=True,
                 )
                 break
+            execution_record = ToolExecutionRecord.create(
+                sequence=len(tool_execution_records),
+                descriptor=retrieval_descriptor,
+                policy_decision=tool_decision,
+                invocation=invocation,
+                result_artifact_id=search.artifact_id,
+                status=ToolExecutionStatus.SUCCEEDED,
+                safe_summary={
+                    "artifact_id": search.artifact_id,
+                    "candidate_count": sum(
+                        len(item.candidate_evidence_artifact_ids)
+                        for item in search.records
+                    ),
+                    "document_count": len(search.document_artifact_ids),
+                    "status": "succeeded",
+                },
+            )
+            tool_execution_records.append(execution_record)
             search_candidates = tuple(
                 artifact_id
                 for record in search.records
@@ -955,6 +1161,8 @@ class InstalledResearchService:
                         item.artifact_id
                         for item in budget.decisions[search_budget_start:]
                     ),
+                    tool_decision_ids=(tool_decision.artifact_id,),
+                    additional_observation_ids=(execution_record.artifact_id,),
                     consume_search=True,
                 )
                 break
@@ -974,9 +1182,10 @@ class InstalledResearchService:
                 evidence_ids=(),
                 policy_ids=policy_ids,
                 budget_decision_ids=tuple(
-                    item.artifact_id
-                    for item in budget.decisions[search_budget_start:]
+                    item.artifact_id for item in budget.decisions[search_budget_start:]
                 ),
+                tool_decision_ids=(tool_decision.artifact_id,),
+                additional_observation_ids=(execution_record.artifact_id,),
                 consume_search=True,
             )
             candidates += search_candidates
@@ -1198,13 +1407,9 @@ class InstalledResearchService:
                             cancellation_signal = signal
                             cancellation_budget_decision_ids = tuple(
                                 item.artifact_id
-                                for item in budget.decisions[
-                                    evaluation_budget_start:
-                                ]
+                                for item in budget.decisions[evaluation_budget_start:]
                             )
-                            cancellation_observation_ids = (
-                                convergence.artifact_id,
-                            )
+                            cancellation_observation_ids = (convergence.artifact_id,)
                             convergence = self._cancellation_convergence(
                                 request,
                                 signal,
@@ -1220,10 +1425,12 @@ class InstalledResearchService:
                 operation="cancel_research",
                 rationale="stop before any later call while retaining completed in-flight evidence",
                 observation_ids=(cancellation_signal.artifact_id, plan.artifact_id)
-                + cancellation_observation_ids,
+                + cancellation_observation_ids
+                + cancellation_tool_execution_ids,
                 evidence_ids=(),
                 policy_ids=policy_ids,
                 budget_decision_ids=cancellation_budget_decision_ids,
+                tool_decision_ids=cancellation_tool_decision_ids,
                 consume_search=cancellation_consumed_search,
                 terminal_status=terminal_status,
             )
@@ -1303,9 +1510,7 @@ class InstalledResearchService:
             remaining_work=remaining_work,
             exhausted_budget_dimensions=exhausted_dimensions,
             cancellation_artifact_id=(
-                None
-                if cancellation_signal is None
-                else cancellation_signal.artifact_id
+                None if cancellation_signal is None else cancellation_signal.artifact_id
             ),
             failure_artifact_ids=tool_failure_ids,
         )
@@ -1329,6 +1534,11 @@ class InstalledResearchService:
             budget_policy_artifact_id=budget.policy.artifact_id,
             budget_decisions=budget.decisions,
             budget_usage=budget.global_usage,
+            tool_policy=active_tool_policy,
+            tool_policy_artifact_id=active_tool_policy.artifact_id,
+            tool_descriptors=(retrieval_descriptor,),
+            tool_decisions=tuple(tool_decisions),
+            tool_execution_records=tuple(tool_execution_records),
             cancellation_signal=cancellation_signal,
             terminal_outcome=terminal_outcome,
             revision=revision,
@@ -1487,6 +1697,8 @@ class InstalledResearchService:
         evidence_ids: tuple[str, ...],
         policy_ids: tuple[str, ...],
         budget_decision_ids: tuple[str, ...] = (),
+        tool_decision_ids: tuple[str, ...] = (),
+        additional_observation_ids: tuple[str, ...] = (),
         evidence_relations: tuple[InstalledEvidenceRelation, ...] | None = None,
         requirements: tuple[InstalledResearchRequirement, ...] | None = None,
         gaps: tuple[ObservedResearchGap, ...] | None = None,
@@ -1498,7 +1710,13 @@ class InstalledResearchService:
             role=role,
             operation=operation,
             rationale=rationale,
-            cause_artifact_ids=(state.artifact_id,) + observation_ids + evidence_ids,
+            cause_artifact_ids=(
+                (state.artifact_id,)
+                + observation_ids
+                + additional_observation_ids
+                + evidence_ids
+                + tool_decision_ids
+            ),
         )
         state_after = state_machine.transition(
             state,
@@ -1526,9 +1744,9 @@ class InstalledResearchService:
                 role=role,
                 operation=operation,
                 rationale=rationale,
-                observation_artifact_ids=observation_ids,
+                observation_artifact_ids=(observation_ids + additional_observation_ids),
                 evidence_artifact_ids=evidence_ids,
-                tool_decision_artifact_ids=(),
+                tool_decision_artifact_ids=tool_decision_ids,
                 budget_decision_artifact_ids=budget_decision_ids,
                 policy_artifact_ids=policy_ids,
                 output_artifact_ids=(state_after.artifact_id,),

@@ -1033,6 +1033,30 @@ def _verify_reason_and_agent(grounded: _GroundedRuntime) -> None:
     assert research_trace["budget_usage"]["documents"] == len(
         research_trace["counterevidence_document_artifact_ids"]
     )
+    assert research_trace["tool_policy"]["default_action"] == "deny"
+    assert (
+        research_trace["tool_policy_artifact_id"]
+        == (research_trace["tool_policy"]["artifact_id"])
+    )
+    assert len(research_trace["tool_decisions"]) == 1
+    assert research_trace["tool_decisions"][0]["action"] == "allow"
+    assert research_trace["tool_decisions"][0]["invocation"]["tool"] == (
+        "bijux-canon-index.retrieve"
+    )
+    assert len(research_trace["tool_execution_records"]) == 1
+    assert research_trace["tool_execution_records"][0]["status"] == "succeeded"
+    search_event = next(
+        event
+        for event in research_trace["causal_events"]
+        if event["operation"] == "search_counterevidence"
+    )
+    assert search_event["tool_decision_artifact_ids"] == [
+        research_trace["tool_decisions"][0]["artifact_id"]
+    ]
+    assert (
+        research_trace["tool_execution_records"][0]["artifact_id"]
+        in (search_event["observation_artifact_ids"])
+    )
     assert any(
         decision["action"] == "reserved"
         for decision in research_trace["budget_decisions"]
@@ -1093,6 +1117,14 @@ def _verify_reason_and_agent(grounded: _GroundedRuntime) -> None:
         "semantic-convergence-evidence"
         in json.loads(verified_research.artifacts[0].payload)["checks"]
     )
+    assert (
+        "default-deny-tool-policy"
+        in json.loads(verified_research.artifacts[0].payload)["checks"]
+    )
+    assert (
+        "tool-decision-execution-lineage"
+        in json.loads(verified_research.artifacts[0].payload)["checks"]
+    )
 
     time_limited_agent_step = replace(
         agent_step,
@@ -1150,6 +1182,25 @@ def _verify_reason_and_agent(grounded: _GroundedRuntime) -> None:
         OperationDispatcher((CanonicalVerificationOperationAdapter(),)).dispatch(
             research_verification_step,
             (tampered_budget,),
+        )
+
+    tampered_tool_trace = json.loads(research.artifacts[0].payload)
+    tampered_tool_trace["tool_decisions"][0]["action"] = "deny"
+    tampered_tool = StepOutputArtifact(
+        contract_id="agent.research-trace.v1",
+        producer_step_id="agent",
+        producer_operation=DagOperation.AGENT,
+        artifact=AddressedArtifact.from_json(
+            tampered_tool_trace,
+            schema_id="agent.research-trace.v1",
+            producer="bijux-canon-runtime:agent",
+            dependencies=research.artifacts[0].artifact.descriptor.dependencies,
+        ),
+    )
+    with pytest.raises(StepDispatchError, match="tool decision identity is invalid"):
+        OperationDispatcher((CanonicalVerificationOperationAdapter(),)).dispatch(
+            research_verification_step,
+            (tampered_tool,),
         )
 
     tampered_revision_trace = json.loads(research.artifacts[0].payload)
@@ -1225,6 +1276,8 @@ def _verify_reason_and_agent(grounded: _GroundedRuntime) -> None:
     assert cancelled_trace["counterevidence_runs"] == []
     assert cancelled_trace["tool_failure_artifact_ids"] == []
     assert cancelled_trace["budget_usage"]["retrievals"] == 1
+    assert cancelled_trace["tool_decisions"][0]["action"] == "allow"
+    assert cancelled_trace["tool_execution_records"][0]["status"] == "cancelled"
     verified_cancelled = OperationDispatcher(
         (CanonicalVerificationOperationAdapter(),)
     ).dispatch(

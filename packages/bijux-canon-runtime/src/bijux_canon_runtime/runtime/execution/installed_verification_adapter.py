@@ -24,6 +24,18 @@ from bijux_canon_agent.contracts import (
     ResearchBudgetLedger,
     ResearchBudgetPolicy,
     ResearchCausalTrace,
+    ResearchTool,
+    ResearchToolDescriptor,
+    ResearchToolOperation,
+    ToolExecutionRecord,
+    ToolExecutionStatus,
+    ToolGrant,
+    ToolInvocation,
+    ToolPolicy,
+    ToolPolicyAction,
+    ToolPolicyDecision,
+    ToolPolicyReason,
+    ToolReplayPolicy,
 )
 from bijux_canon_reason.grounding import (
     AtomicClaimNormalizer,
@@ -218,9 +230,7 @@ def _budget_decision(value: object) -> BudgetDecision:
             label=str(raw["label"]),
             action=BudgetAction(str(raw["action"])),
             charge=_budget_dimensions(raw["charge"], "budget charge"),
-            global_usage=_budget_dimensions(
-                raw["global_usage"], "budget global_usage"
-            ),
+            global_usage=_budget_dimensions(raw["global_usage"], "budget global_usage"),
             role_usage=_budget_dimensions(raw["role_usage"], "budget role_usage"),
             exhausted_dimensions=_strings(
                 raw["exhausted_dimensions"], "budget exhausted_dimensions"
@@ -241,6 +251,164 @@ def _budget_decision(value: object) -> BudgetDecision:
     ):
         raise StepDispatchError("research budget decision identity is invalid")
     return decision
+
+
+def _tool_policy(value: object, *, plan_sha256: str) -> ToolPolicy:
+    raw = _object(value, "tool_policy")
+    raw_grants = raw.get("grants")
+    if not isinstance(raw_grants, list):
+        raise StepDispatchError("research tool policy grants are invalid")
+    try:
+        grants = tuple(
+            ToolGrant(
+                tool=ResearchTool(str(grant["tool"])),
+                operation=ResearchToolOperation(str(grant["operation"])),
+                corpus_generation=str(grant["corpus_generation"]),
+                index_generation=str(grant["index_generation"]),
+                scope=_strings(grant["scope"], "tool grant scope"),
+                filesystem_roots=_strings(
+                    grant["filesystem_roots"], "tool grant filesystem_roots"
+                ),
+                max_calls=_integer(grant["max_calls"], "tool grant max_calls"),
+                timeout_ms=_integer(grant["timeout_ms"], "tool grant timeout_ms"),
+            )
+            for grant in (_object(item, "tool grant") for item in raw_grants)
+        )
+        policy = ToolPolicy(
+            plan_sha256=str(raw["plan_sha256"]),
+            grants=grants,
+            denied_tools=_strings(raw["denied_tools"], "denied_tools"),
+        )
+    except (KeyError, TypeError, ValueError) as error:
+        raise StepDispatchError("research tool policy is invalid") from error
+    if (
+        policy.plan_sha256 != plan_sha256
+        or raw.get("artifact_id") != policy.artifact_id
+        or raw.get("policy_sha256") != policy.policy_sha256
+        or raw.get("default_action") != "deny"
+    ):
+        raise StepDispatchError("research tool policy binding is invalid")
+    return policy
+
+
+def _tool_descriptor(value: object) -> ResearchToolDescriptor:
+    raw = _object(value, "tool_descriptor")
+    try:
+        descriptor = ResearchToolDescriptor(
+            tool=ResearchTool(str(raw["tool"])),
+            operation=ResearchToolOperation(str(raw["operation"])),
+            version=str(raw["version"]),
+            input_schema_id=str(raw["input_schema_id"]),
+            output_schema_id=str(raw["output_schema_id"]),
+            capability=str(raw["capability"]),
+            owner_distribution=str(raw["owner_distribution"]),
+            implementation=str(raw["implementation"]),
+            replay_policy=ToolReplayPolicy(str(raw["replay_policy"])),
+            cost_units=_integer(raw["cost_units"], "tool descriptor cost_units"),
+            safe_summary_fields=_strings(
+                raw["safe_summary_fields"], "tool descriptor safe_summary_fields"
+            ),
+            supports_cancellation=_boolean(
+                raw["supports_cancellation"], "tool descriptor supports_cancellation"
+            ),
+            read_only=_boolean(raw["read_only"], "tool descriptor read_only"),
+        )
+    except (KeyError, TypeError, ValueError) as error:
+        raise StepDispatchError("research tool descriptor is invalid") from error
+    if raw.get("artifact_id") != descriptor.artifact_id:
+        raise StepDispatchError("research tool descriptor identity is invalid")
+    return descriptor
+
+
+def _tool_invocation(value: object) -> ToolInvocation:
+    raw = _object(value, "tool invocation")
+    try:
+        return ToolInvocation(
+            tool=str(raw["tool"]),
+            operation=str(raw["operation"]),
+            plan_sha256=str(raw["plan_sha256"]),
+            request_sha256=str(raw["request_sha256"]),
+            corpus_generation=str(raw["corpus_generation"]),
+            index_generation=str(raw["index_generation"]),
+            scope=_strings(raw["scope"], "tool invocation scope"),
+            filesystem_paths=_strings(
+                raw["filesystem_paths"], "tool invocation filesystem_paths"
+            ),
+            timeout_ms=_integer(raw["timeout_ms"], "tool invocation timeout_ms"),
+            tool_version=str(raw["tool_version"]),
+            input_schema_id=str(raw["input_schema_id"]),
+            output_schema_id=str(raw["output_schema_id"]),
+            capability=str(raw["capability"]),
+            cost_units=_integer(raw["cost_units"], "tool invocation cost_units"),
+            idempotency_key=(
+                None if raw["idempotency_key"] is None else str(raw["idempotency_key"])
+            ),
+            replay_requested=_boolean(
+                raw["replay_requested"], "tool invocation replay_requested"
+            ),
+        )
+    except (KeyError, TypeError, ValueError) as error:
+        raise StepDispatchError("research tool invocation is invalid") from error
+
+
+def _tool_decision(value: object) -> ToolPolicyDecision:
+    raw = _object(value, "tool decision")
+    try:
+        decision = ToolPolicyDecision(
+            artifact_id=str(raw["artifact_id"]),
+            sequence=_integer(raw["sequence"], "tool decision sequence"),
+            action=ToolPolicyAction(str(raw["action"])),
+            reason=ToolPolicyReason(str(raw["reason"])),
+            policy_sha256=str(raw["policy_sha256"]),
+            invocation=_tool_invocation(raw["invocation"]),
+        )
+    except (KeyError, TypeError, ValueError) as error:
+        raise StepDispatchError("research tool decision is invalid") from error
+    expected = ToolPolicyDecision.create(
+        sequence=decision.sequence,
+        action=decision.action,
+        reason=decision.reason,
+        policy_sha256=decision.policy_sha256,
+        invocation=decision.invocation,
+    )
+    if decision != expected:
+        raise StepDispatchError("research tool decision identity is invalid")
+    return decision
+
+
+def _tool_execution_record(value: object) -> ToolExecutionRecord:
+    raw = _object(value, "tool execution record")
+    try:
+        return ToolExecutionRecord(
+            artifact_id=str(raw["artifact_id"]),
+            sequence=_integer(raw["sequence"], "tool execution sequence"),
+            descriptor_artifact_id=str(raw["descriptor_artifact_id"]),
+            policy_decision_artifact_id=str(raw["policy_decision_artifact_id"]),
+            request_sha256=str(raw["request_sha256"]),
+            result_artifact_id=(
+                None
+                if raw["result_artifact_id"] is None
+                else str(raw["result_artifact_id"])
+            ),
+            status=ToolExecutionStatus(str(raw["status"])),
+            safe_summary=_object(raw["safe_summary"], "tool execution safe_summary"),
+            idempotency_key=str(raw["idempotency_key"]),
+            replay_source_artifact_id=(
+                None
+                if raw["replay_source_artifact_id"] is None
+                else str(raw["replay_source_artifact_id"])
+            ),
+            cancellation_artifact_id=(
+                None
+                if raw["cancellation_artifact_id"] is None
+                else str(raw["cancellation_artifact_id"])
+            ),
+            failure_class=(
+                None if raw["failure_class"] is None else str(raw["failure_class"])
+            ),
+        )
+    except (KeyError, TypeError, ValueError) as error:
+        raise StepDispatchError("research tool execution record is invalid") from error
 
 
 def _verify_claim_graph(
@@ -457,6 +625,24 @@ def _verify_research_trace(subject: Mapping[str, object]) -> tuple[str, ...]:
         )
         budget = ResearchBudgetLedger(budget_policy)
         budget.restore(budget_decisions)
+        tool_policy = _tool_policy(
+            subject["tool_policy"],
+            plan_sha256=budget_policy.plan_sha256,
+        )
+        raw_tool_descriptors = subject["tool_descriptors"]
+        raw_tool_decisions = subject["tool_decisions"]
+        raw_tool_records = subject["tool_execution_records"]
+        if (
+            not isinstance(raw_tool_descriptors, list)
+            or not isinstance(raw_tool_decisions, list)
+            or not isinstance(raw_tool_records, list)
+        ):
+            raise TypeError
+        tool_descriptors = tuple(
+            _tool_descriptor(item) for item in raw_tool_descriptors
+        )
+        tool_decisions = tuple(_tool_decision(item) for item in raw_tool_decisions)
+        tool_records = tuple(_tool_execution_record(item) for item in raw_tool_records)
     except (KeyError, TypeError, ValueError, ValidationError) as error:
         raise StepDispatchError("research trace records are invalid") from error
     if run is not None and run.plan_artifact_id != plan.artifact_id:
@@ -499,10 +685,7 @@ def _verify_research_trace(subject: Mapping[str, object]) -> tuple[str, ...]:
     ):
         raise StepDispatchError("research terminal outcome differs from convergence")
     if cancellation_signal is not None:
-        if (
-            research_outcome.cancellation_artifact_id
-            != cancellation_signal.artifact_id
-        ):
+        if research_outcome.cancellation_artifact_id != cancellation_signal.artifact_id:
             raise StepDispatchError("research cancellation identity is invalid")
     elif research_outcome.cancellation_artifact_id is not None:
         raise StepDispatchError("research cancellation signal is missing")
@@ -609,6 +792,44 @@ def _verify_research_trace(subject: Mapping[str, object]) -> tuple[str, ...]:
         raise StepDispatchError("research causal trace identity is invalid")
     if subject.get("budget_policy_artifact_id") != budget_policy.artifact_id:
         raise StepDispatchError("research budget policy binding is invalid")
+    if subject.get("tool_policy_artifact_id") != tool_policy.artifact_id:
+        raise StepDispatchError("research tool policy identity is invalid")
+    descriptor_by_id = {item.artifact_id: item for item in tool_descriptors}
+    if len(descriptor_by_id) != len(tool_descriptors) or not tool_descriptors:
+        raise StepDispatchError("research tool descriptor inventory is invalid")
+    allowed_calls: dict[str, int] = {}
+    decision_by_id: dict[str, ToolPolicyDecision] = {}
+    for sequence, decision in enumerate(tool_decisions):
+        expected = tool_policy.decide(
+            decision.invocation,
+            sequence=sequence,
+            prior_allowed_calls=allowed_calls.get(decision.invocation.tool, 0),
+        )
+        if decision != expected:
+            raise StepDispatchError("research tool policy decision is invalid")
+        decision_by_id[decision.artifact_id] = decision
+        if decision.action is ToolPolicyAction.ALLOW:
+            allowed_calls[decision.invocation.tool] = (
+                allowed_calls.get(decision.invocation.tool, 0) + 1
+            )
+    if len(decision_by_id) != len(tool_decisions):
+        raise StepDispatchError("research tool decisions repeat identities")
+    record_by_id: dict[str, ToolExecutionRecord] = {}
+    for sequence, record in enumerate(tool_records):
+        record_decision = decision_by_id.get(record.policy_decision_artifact_id)
+        descriptor = descriptor_by_id.get(record.descriptor_artifact_id)
+        if (
+            record.sequence != sequence
+            or record_decision is None
+            or record_decision.action is not ToolPolicyAction.ALLOW
+            or descriptor is None
+            or record.request_sha256 != record_decision.invocation.request_sha256
+            or descriptor.tool.value != record_decision.invocation.tool
+        ):
+            raise StepDispatchError("research tool execution lineage is invalid")
+        record_by_id[record.artifact_id] = record
+    if len(record_by_id) != len(tool_records):
+        raise StepDispatchError("research tool executions repeat identities")
     if _budget_dimensions(subject.get("budget_usage"), "budget_usage") != (
         budget.global_usage
     ):
@@ -627,6 +848,23 @@ def _verify_research_trace(subject: Mapping[str, object]) -> tuple[str, ...]:
     }
     if decision_ids != referenced_budget_ids:
         raise StepDispatchError("research causal trace omits budget decisions")
+    referenced_tool_decision_ids = {
+        artifact_id
+        for event in events
+        for artifact_id in event.tool_decision_artifact_ids
+    }
+    referenced_tool_record_ids = {
+        artifact_id
+        for event in events
+        for artifact_id in event.observation_artifact_ids
+        if artifact_id in record_by_id
+    }
+    if set(decision_by_id) != referenced_tool_decision_ids:
+        raise StepDispatchError("research causal trace omits tool decisions")
+    if set(record_by_id) != referenced_tool_record_ids:
+        raise StepDispatchError("research causal trace omits tool executions")
+    if budget.global_usage.tool_calls != len(tool_decisions):
+        raise StepDispatchError("research tool-call budget differs from decisions")
     convergence_budget_dimensions = (
         tuple(
             {
@@ -644,10 +882,7 @@ def _verify_research_trace(subject: Mapping[str, object]) -> tuple[str, ...]:
         else ()
     )
     if budget.exhausted_dimensions:
-        if (
-            research_outcome.exhausted_budget_dimensions
-            != budget.exhausted_dimensions
-        ):
+        if research_outcome.exhausted_budget_dimensions != budget.exhausted_dimensions:
             raise StepDispatchError("research budget exhaustion differs from ledger")
     elif research_outcome.kind is InstalledResearchTerminalKind.INCOMPLETE_BUDGET:
         raw_search_budget = _object(raw_state["search_budget"], "search_budget")
@@ -740,9 +975,12 @@ def _verify_research_trace(subject: Mapping[str, object]) -> tuple[str, ...]:
             for item in classifications
             if item.material and item.relation.value in {"opposing", "limiting"}
         }
-        if material_opposition_ids <= set(
-            revision.resolved_classification_artifact_ids
-        ) and material_opposition_ids and revision.before_answer == revision.after_answer:
+        if (
+            material_opposition_ids
+            <= set(revision.resolved_classification_artifact_ids)
+            and material_opposition_ids
+            and revision.before_answer == revision.after_answer
+        ):
             raise StepDispatchError(
                 "material counterevidence did not revise the answer"
             )
@@ -912,6 +1150,8 @@ def _verify_research_trace(subject: Mapping[str, object]) -> tuple[str, ...]:
         "verified-answer-revision",
         "bounded-convergence-decision",
         "transactional-budget-ledger",
+        "default-deny-tool-policy",
+        "tool-decision-execution-lineage",
         "typed-terminal-outcome",
         "causal-event-chain",
     )

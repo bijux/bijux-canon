@@ -25,6 +25,14 @@ from bijux_canon_agent.application import (
     ObservedResearchGapKind,
     TargetedSearchPlan,
 )
+from bijux_canon_agent.contracts import (
+    ResearchTool,
+    ResearchToolOperation,
+    ToolExecutionStatus,
+    ToolGrant,
+    ToolPolicy,
+    ToolPolicyAction,
+)
 
 _GRAPH = "sha256:" + "1" * 64
 _SCOPE = "sha256:" + "2" * 64
@@ -132,6 +140,8 @@ def _request(
             artifact_bytes=1_000_000,
         ),
         maximum_search_candidates=1,
+        corpus_generation="corpus-generation",
+        index_generation="index-generation",
         grounding_admission_outcome=grounding_admission_outcome,
     )
 
@@ -297,7 +307,9 @@ class _Port:
         )
         changed = bool(classifications)
         outcome = "abstained" if unresolved else "revised" if changed else "preserved"
-        revised_claims = () if unresolved else (_REVISED_CLAIM,) if changed else (_CLAIM,)
+        revised_claims = (
+            () if unresolved else (_REVISED_CLAIM,) if changed else (_CLAIM,)
+        )
         return InstalledResearchRevision(
             artifact_id=_REVISION,
             outcome=outcome,
@@ -336,14 +348,31 @@ def test_service_owns_search_decision_and_causal_trace() -> None:
         "verifier",
     ]
     assert result.causal_events[2].evidence_artifact_ids == (_CANDIDATE,)
+    assert result.tool_policy_artifact_id == result.tool_policy.artifact_id
+    assert len(result.tool_decisions) == 1
+    assert result.tool_decisions[0].action is ToolPolicyAction.ALLOW
+    assert len(result.tool_execution_records) == 1
+    assert result.tool_execution_records[0].status is ToolExecutionStatus.SUCCEEDED
+    assert (
+        result.tool_execution_records[0].result_artifact_id == result.search.artifact_id
+    )
+    search_event = next(
+        event
+        for event in result.causal_events
+        if event.operation == "search_counterevidence"
+    )
+    assert search_event.tool_decision_artifact_ids == (
+        result.tool_decisions[0].artifact_id,
+    )
+    assert result.tool_execution_records[0].artifact_id in (
+        search_event.observation_artifact_ids
+    )
     assert result.causal_events[-1].budget_decision_artifact_ids == tuple(
         item.artifact_id for item in result.budget_decisions[-3:]
     )
     assert result.budget_usage.retrievals == 1
     assert result.budget_usage.documents == 1
-    assert any(
-        item.action is BudgetAction.RESERVED for item in result.budget_decisions
-    )
+    assert any(item.action is BudgetAction.RESERVED for item in result.budget_decisions)
     assert result.causal_trace.head_artifact_id == result.causal_events[-1].artifact_id
     assert len(result.state_history) == len(result.causal_events) + 1
     for index, event in enumerate(result.causal_events):
@@ -630,6 +659,45 @@ def test_search_tool_failure_is_an_incomplete_data_dependent_branch() -> None:
     assert "secret-bearing" not in str(result.final_state.to_record())
     assert result.terminal_outcome.kind == "failed"
     assert result.terminal_outcome.failure_artifact_ids
+    assert result.tool_decisions[0].action is ToolPolicyAction.ALLOW
+    assert result.tool_execution_records[0].status is ToolExecutionStatus.FAILED
+    assert "secret-bearing" not in str(result.tool_execution_records[0])
+
+
+def test_installed_tool_policy_denial_is_terminal_without_retrieval() -> None:
+    request = _request()
+    service = InstalledResearchService()
+    plan_sha256 = service._budget_policy(request).plan_sha256
+    policy = ToolPolicy(
+        plan_sha256=plan_sha256,
+        grants=(
+            ToolGrant(
+                tool=ResearchTool.RETRIEVE,
+                operation=ResearchToolOperation.RETRIEVE,
+                corpus_generation=request.corpus_generation,
+                index_generation=request.index_generation,
+                scope=(request.scope_artifact_id,),
+                filesystem_roots=(),
+                max_calls=0,
+                timeout_ms=request.budget_limits.elapsed_ms,
+            ),
+        ),
+    )
+    port = _Port()
+
+    result = service.research(request, port, tool_policy=policy)
+
+    assert port.calls == ["plan", "evaluate"]
+    assert result.search is None
+    assert result.tool_decisions[0].action is ToolPolicyAction.DENY
+    assert result.tool_execution_records == ()
+    assert result.terminal_outcome.kind == "failed"
+    denied = next(
+        event
+        for event in result.causal_events
+        if event.operation == "deny_search_tool_call"
+    )
+    assert denied.tool_decision_artifact_ids == (result.tool_decisions[0].artifact_id,)
 
 
 def test_installed_search_reservation_denial_executes_no_tool_call() -> None:
@@ -658,8 +726,7 @@ def test_installed_search_reservation_denial_executes_no_tool_call() -> None:
         "bijux.canon.agent.budget_convergence.v1"
     )
     assert any(
-        event.operation == "refuse_unbudgeted_search"
-        for event in result.causal_events
+        event.operation == "refuse_unbudgeted_search" for event in result.causal_events
     )
 
 
@@ -699,9 +766,7 @@ def test_installed_provider_usage_overrun_is_not_admitted() -> None:
     assert result.plan.record["outcome"] == "budget_exhausted"
     assert result.budget_usage.provider_calls == 0
     assert result.terminal_outcome.kind == "incomplete_budget"
-    assert result.terminal_outcome.exhausted_budget_dimensions == (
-        "provider_calls",
-    )
+    assert result.terminal_outcome.exhausted_budget_dimensions == ("provider_calls",)
 
 
 def test_installed_oversized_revision_is_not_admitted() -> None:
@@ -778,6 +843,13 @@ def test_installed_cancellation_during_search_records_attempt_without_failure() 
     assert result.final_state.search_budget_used == 1
     assert result.terminal_outcome.kind == "cancelled"
     assert result.causal_events[-1].budget_decision_artifact_ids
+    assert result.tool_execution_records[0].status is ToolExecutionStatus.CANCELLED
+    assert result.tool_execution_records[0].artifact_id in (
+        result.causal_events[-1].observation_artifact_ids
+    )
+    assert result.causal_events[-1].tool_decision_artifact_ids == (
+        result.tool_decisions[0].artifact_id,
+    )
 
 
 def test_installed_cancellation_after_search_preserves_completed_evidence() -> None:
