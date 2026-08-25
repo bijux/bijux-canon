@@ -57,8 +57,9 @@ class InstalledProfilePreflight:
         if request.execution_profile is ExecutionProfile.OFFLINE_LEXICAL:
             self._preflight_lexical(request)
             return
-        self._verify_local_dense_backend()
+        # Reject an absent model before importing the heavyweight dense backend.
         lock = self._verified_model()
+        self._verify_local_dense_backend()
         if request.operation in {
             RuntimeRequestOperation.RETRIEVE,
             RuntimeRequestOperation.ASK,
