@@ -41,7 +41,7 @@ def _repository(tmp_path: Path) -> tuple[Path, str]:
     constraint_exporter = repository / "makes/tooling/uv-lock-constraints.sh"
     constraint_exporter.parent.mkdir(parents=True)
     constraint_exporter.write_text(
-        "#!/bin/sh\nset -eu\nmkdir -p \"$(dirname \"$2\")\"\n"
+        '#!/bin/sh\nset -eu\nmkdir -p "$(dirname "$2")"\n'
         "printf 'packaging==26.0\\n' > \"$2\"\n"
     )
     constraint_exporter.chmod(0o755)

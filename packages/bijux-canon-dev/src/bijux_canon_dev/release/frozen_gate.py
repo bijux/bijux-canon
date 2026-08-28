@@ -393,8 +393,10 @@ def _launcher_script(
         "#!/bin/bash",
         "set -u -o pipefail",
         f"cd {shlex.quote(str(source))}",
-        "unset MAKEFLAGS MFLAGS PIP_CONSTRAINT PYTHONPATH UV_CONSTRAINT "
-        "UV_PROJECT_ENVIRONMENT VIRTUAL_ENV",
+        (
+            "unset MAKEFLAGS MFLAGS PIP_CONSTRAINT PYTHONPATH UV_CONSTRAINT "
+            "UV_PROJECT_ENVIRONMENT VIRTUAL_ENV"
+        ),
     ]
     lines.extend(
         f"export {name}={shlex.quote(str(value))}" for name, value in exports.items()
@@ -404,9 +406,7 @@ def _launcher_script(
             f"mkdir -p {shlex.quote(str(artifact_root / 'root/process'))}",
             "status=0",
             "set +e",
-            shlex.join(
-                (str(constraint_exporter), str(source), str(constraint_file))
-            ),
+            shlex.join((str(constraint_exporter), str(source), str(constraint_file))),
             "status=$?",
         )
     )

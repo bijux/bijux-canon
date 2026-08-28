@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import json
-import tomllib
 from pathlib import Path
+import tomllib
 from typing import Any, cast
 
 REPOSITORY = Path(__file__).resolve().parents[3]
