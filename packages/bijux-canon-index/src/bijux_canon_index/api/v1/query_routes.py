@@ -79,11 +79,12 @@ def register_query_routes(app: FastAPI) -> None:
                 },
             },
             422: {
+                "description": "Unprocessable Entity",
                 "content": {
                     "application/json": {
                         "examples": {"refusal": {"value": REFUSAL_EXAMPLE}}
-                    }
-                }
+                    },
+                },
             },
         },
     )

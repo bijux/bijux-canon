@@ -18,3 +18,11 @@ def test_openapi_schema_is_frozen() -> None:
     schema = jsonable_encoder(app.openapi())
     fp = fingerprint(canon(schema))
     assert fp == EXPECTED_OPENAPI_FINGERPRINT
+
+
+def test_validation_response_description_is_application_owned() -> None:
+    schema = jsonable_encoder(build_app().openapi())
+
+    validation_response = schema["paths"]["/execute"]["post"]["responses"]["422"]
+
+    assert validation_response["description"] == "Unprocessable Entity"
