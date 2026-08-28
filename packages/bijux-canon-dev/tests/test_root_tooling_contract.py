@@ -109,9 +109,7 @@ def test_root_checks_preserve_the_locked_shared_environment() -> None:
 
 
 def test_standard_commands_consume_the_recorded_upstream_pin() -> None:
-    standard_make = (REPO_ROOT / "makes" / "bijux-std.mk").read_text(
-        encoding="utf-8"
-    )
+    standard_make = (REPO_ROOT / "makes" / "bijux-std.mk").read_text(encoding="utf-8")
 
     assert (
         "BIJUX_STD_PIN_FILE ?= $(PROJECT_DIR)/.github/standards/bijux-std.sha"
