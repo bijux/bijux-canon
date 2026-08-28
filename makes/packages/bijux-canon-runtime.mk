@@ -15,8 +15,7 @@ SECURITY_EXTRA_CHECKS = $(MONOREPO_ROOT)/packages/bijux-canon-dev/src/bijux_cano
 # The checked-in schema includes the complete /api/v2 path for every operation.
 # Leave the Schemathesis base URL at the API root and supply the required
 # version-negotiation header to every generated request.
-RUNTIME_API_ROOT := $(API_DIR)
-override API_DIR := $(RUNTIME_API_ROOT)/v2
+override API_DIR = $(MONOREPO_ROOT)/apis/$(PROJECT_SLUG)/v2
 API_MODE := contract
 API_BASE_PATH :=
 API_MODULE := bijux_canon_runtime.api.v2.app

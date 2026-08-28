@@ -46,6 +46,15 @@ def test_runtime_api_workspace_is_initialized_before_application_imports() -> No
     assert "\nexport BIJUX_CANON_RUNTIME_WORKING_ROOT =" not in profile
 
 
+def test_runtime_api_schema_path_is_rooted_after_shared_environment_loads() -> None:
+    profile = (REPO_ROOT / "makes" / "packages" / "bijux-canon-runtime.mk").read_text(
+        encoding="utf-8"
+    )
+
+    assert "override API_DIR = $(MONOREPO_ROOT)/apis/$(PROJECT_SLUG)/v2" in profile
+    assert "RUNTIME_API_ROOT" not in profile
+
+
 def test_compat_packages_install_security_tooling_without_stamp_shortcuts() -> None:
     profile = (REPO_ROOT / "makes" / "packages" / "compat-package.mk").read_text(
         encoding="utf-8"
