@@ -79,14 +79,15 @@ def register_query_routes(app: FastAPI) -> None:
                 },
             },
             422: {
+                "description": "Unprocessable Entity",
                 "content": {
                     "application/json": {
                         "examples": {"refusal": {"value": REFUSAL_EXAMPLE}}
-                    }
-                }
+                    },
+                },
             },
         },
-    )  # type: ignore[untyped-decorator]
+    )
     def execute(
         req: ExecutionRequestPayload,
         response: Response,
@@ -161,7 +162,7 @@ def register_query_routes(app: FastAPI) -> None:
                 }
             },
         },
-    )  # type: ignore[untyped-decorator]
+    )
     def explain(
         req: ExplainRequest,
         response: Response,
@@ -235,7 +236,7 @@ def register_query_routes(app: FastAPI) -> None:
                 }
             },
         },
-    )  # type: ignore[untyped-decorator]
+    )
     def replay(
         req: ExecutionRequestPayload,
         response: Response,

@@ -8,6 +8,19 @@ distribution name while the canonical package lives at `bijux-canon-reason`.
 Historical release entries below preserve the wording that shipped with tagged
 releases when a tagged changelog existed.
 
+## [0.4.0] - Unreleased
+
+### Changed
+
+- Bound the installed `bijux-rar` bridge to the exact
+  `bijux-canon-reason` release and exposed its delegated command through the
+  installed compatibility interface.
+
+### Deprecated
+
+- The distribution, `bijux_rar` import, and `bijux-rar` command are deprecated
+  in favor of `bijux-canon-reason`; removal will not occur before 1.0.0.
+
 ## 0.3.9 - 2026-07-04
 
 ### Changed

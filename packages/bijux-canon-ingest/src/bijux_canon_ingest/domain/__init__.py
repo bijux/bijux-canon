@@ -15,8 +15,81 @@ from __future__ import annotations
 
 from .capabilities import Cache, Clock, Logger, Storage, StorageRead, StorageWrite
 from .composition import chain_io, logged_read
+from .corpus_delta import (
+    CorpusDelta,
+    SourceModification,
+    SourceRename,
+    SourceTombstone,
+    TombstoneReason,
+)
+from .corpus_publication import (
+    PublishedCorpusSnapshot,
+    RecoveryStatus,
+    SnapshotRecovery,
+)
+from .corpus_snapshot import (
+    CorpusSnapshot,
+    CorpusSnapshotConfiguration,
+    CorpusSnapshotDocument,
+    SnapshotParsedDocument,
+)
+from .document_extraction import (
+    BlockRole,
+    DocumentMetadata,
+    DocumentParseError,
+    DocumentParseIssueCode,
+    DocxBlockRole,
+    DocxDocumentMetadata,
+    HtmlBlockRole,
+    HtmlDocumentMetadata,
+    HtmlLink,
+    NewlineStyle,
+    OcrRequiredOutcome,
+    ParsedBlock,
+    ParsedDocument,
+    ParsedDocxBlock,
+    ParsedDocxDocument,
+    ParsedHtmlBlock,
+    ParsedHtmlDocument,
+    ParsedPdfDocument,
+    ParsedTextBlock,
+    ParsedTextDocument,
+    PdfDocumentMetadata,
+    PdfPage,
+    PdfPageExtraction,
+    SourceLocator,
+    TextBlockRole,
+    TextEncoding,
+)
 from .idempotent import AtomicWriteCap, content_key, idempotent_write
 from .logging import LogEntry, LogMonoid, Logs, log_tell, trace_stage, trace_value
+from .semantic_chunking import SemanticChunk, SemanticChunkingPolicy
+from .source_discovery import (
+    DiscoveredSource,
+    DiscoveryIssue,
+    DiscoveryIssueCode,
+    DiscoveryLimits,
+    DiscoveryPolicy,
+    DiscoveryResult,
+    DiscoveryRoot,
+    SymlinkPolicy,
+)
+from .source_mapping import (
+    NormalizedSpanMapping,
+    SourceByteSpan,
+    TextTransformation,
+    TransformationOperation,
+)
+from .source_metadata import (
+    METADATA_SOURCE_PRECEDENCE,
+    CanonicalSourceMetadata,
+    MetadataConflict,
+    MetadataField,
+    MetadataProvenanceRecord,
+    MetadataSource,
+    MetadataValue,
+    RawMetadataValue,
+)
 
 __all__ = [
     # Logging (pure data)
@@ -40,4 +113,72 @@ __all__ = [
     "AtomicWriteCap",
     "content_key",
     "idempotent_write",
+    # Source discovery
+    "DiscoveredSource",
+    "DiscoveryIssue",
+    "DiscoveryIssueCode",
+    "DiscoveryLimits",
+    "DiscoveryPolicy",
+    "DiscoveryResult",
+    "DiscoveryRoot",
+    "SymlinkPolicy",
+    # Source metadata
+    "METADATA_SOURCE_PRECEDENCE",
+    "CanonicalSourceMetadata",
+    "MetadataConflict",
+    "MetadataField",
+    "MetadataProvenanceRecord",
+    "MetadataSource",
+    "MetadataValue",
+    "RawMetadataValue",
+    # Corpus snapshots
+    "CorpusSnapshot",
+    "CorpusSnapshotConfiguration",
+    "CorpusSnapshotDocument",
+    "SnapshotParsedDocument",
+    # Corpus deltas
+    "CorpusDelta",
+    "SourceModification",
+    "SourceRename",
+    "SourceTombstone",
+    "TombstoneReason",
+    # Corpus publication
+    "PublishedCorpusSnapshot",
+    "RecoveryStatus",
+    "SnapshotRecovery",
+    # Semantic chunks
+    "SemanticChunk",
+    "SemanticChunkingPolicy",
+    # Source mappings
+    "NormalizedSpanMapping",
+    "SourceByteSpan",
+    "TextTransformation",
+    "TransformationOperation",
+    # Document extraction
+    "BlockRole",
+    "DocumentMetadata",
+    "DocumentParseError",
+    "DocumentParseIssueCode",
+    "DocxBlockRole",
+    "DocxDocumentMetadata",
+    "HtmlBlockRole",
+    "HtmlDocumentMetadata",
+    "HtmlLink",
+    "NewlineStyle",
+    "OcrRequiredOutcome",
+    "ParsedBlock",
+    "ParsedDocument",
+    "ParsedDocxBlock",
+    "ParsedDocxDocument",
+    "ParsedHtmlBlock",
+    "ParsedHtmlDocument",
+    "ParsedPdfDocument",
+    "ParsedTextBlock",
+    "ParsedTextDocument",
+    "PdfDocumentMetadata",
+    "PdfPage",
+    "PdfPageExtraction",
+    "SourceLocator",
+    "TextBlockRole",
+    "TextEncoding",
 ]

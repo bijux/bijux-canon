@@ -6,6 +6,37 @@ All notable changes to **bijux-canon-runtime** are documented here.
 Historical release entries below preserve the wording that shipped with the
 tagged release, including legacy distribution naming where applicable.
 
+## [0.4.0] - Unreleased
+
+### Changed
+
+- The base Runtime wheel now defines the model-free `offline-lexical` install,
+  while `local-cpu` supplies FAISS and local embedding dependencies for exact,
+  ANN, and hybrid profiles; Linux CPU installation guidance avoids implicit
+  CUDA runtime packages.
+- The `offline-lexical` profile now initializes without a model, builds and
+  inspects standalone lexical indexes, and carries those artifacts through
+  retrieval, grounded answers, research, restart-safe runs, and citations.
+- Request planning and readiness are profile-aware. Local dense and hybrid
+  submissions validate the installed model through bounded CPU inference, the
+  backend archive, model lock, and vector dimension before a durable job is
+  queued. Capability discovery reports the durable model validation identity,
+  digest, license pointer, compatibility, and offline-reuse status.
+- Workspace format 5 separates logical configuration identity from resolved
+  machine paths, migrates format-4 state with a verified rollback backup, and
+  reports direct relocation as an explicit field-level incompatibility.
+- Bound agent, ingest, reason, and index peers to the exact runtime version and
+  defined dependency-ordered family publication.
+- Added immutable run publication, interrupted-attempt recovery, explicit
+  cancellation/deadline outcomes, and enforced resource/concurrency budgets.
+- Strengthened replay comparison, secret handling, and persisted-artifact
+  tamper detection.
+
+### Deprecated
+
+- Runtime v1 run and replay remain compatible in 0.4.0, but Runtime v2 is the
+  primary executable contract. Removal will not occur before 1.0.0.
+
 ## [0.3.9] - 2026-07-04
 
 ### Changed

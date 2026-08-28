@@ -5,6 +5,8 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any, cast
 
+import pytest
+
 from bijux_canon_reason.application.run_artifacts import RunBuilder, RunInputs
 from bijux_canon_reason.core.fingerprints import fingerprint_obj
 from bijux_canon_reason.core.types import ProblemSpec
@@ -48,4 +50,18 @@ def test_run_artifacts_are_versioned_and_fingerprinted(tmp_path: Path) -> None:
         cast(Any, artifacts.runtime_descriptor).model_dump(mode="json")
     )
     assert meta["runtime_fingerprint"] == runtime_fp
-    assert artifacts.runtime_descriptor.kind == "FakeRuntime"
+    assert artifacts.runtime_descriptor.kind == "CredentialFreeRuntime"
+
+
+def test_retrieval_requires_an_explicit_corpus(tmp_path: Path) -> None:
+    spec = ProblemSpec(
+        description="no implicit fixture corpus",
+        constraints={"needs_retrieval": True},
+        expected={},
+    )
+
+    with pytest.raises(ValueError, match="explicit corpus_path"):
+        RunBuilder().build(
+            inputs=RunInputs(spec=spec, preset="default", seed=9),
+            artifacts_root=tmp_path / "artifacts",
+        )

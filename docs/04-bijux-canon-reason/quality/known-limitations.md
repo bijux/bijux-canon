@@ -86,24 +86,21 @@ preserve claim identity, exact support, verification status, steps, producer,
 trace, and manifest custody. `bijux-rar` mirrors the canonical root and does not
 make the handoff executable.
 
-## Evaluation Metrics Are Bounded Proxies
+## Evaluation Diagnostics Are Bounded
 
 Current evaluation summaries measure properties of produced traces:
 
-- alignment rate is the share of emitted claims with at least one evidence
-  support link;
-- the reported faithfulness value is the mean support-link count among
-  supported claims, not a semantic entailment score;
-- `recall_at_k` and `mrr` currently indicate whether any evidence was
-  registered, not relevance-judged information-retrieval recall or reciprocal
-  rank;
+- `exact_support_rate` is the share of emitted claims whose retained evidence
+  supports all pass exact span, digest, and quoted-text checks;
+- `support_links_per_supported_claim` is the mean exact support-link count among
+  supported claims;
 - verification failure counts summarize implemented checks, not the complete
   error space.
 
-Do not publish these values under conventional retrieval or faithfulness names
-without their definitions. A domain evaluation must add relevance judgments,
-expected claims or refusals, counterevidence cases, and consequences appropriate
-to the intended use.
+The evaluator does not emit retrieval recall, reciprocal rank, or semantic
+faithfulness values without reviewed truth. A domain evaluation must add
+relevance judgments, expected claims or refusals, counterevidence cases, and
+consequences appropriate to the intended use before publishing those metrics.
 
 ## Operational Guards
 

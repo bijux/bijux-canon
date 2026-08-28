@@ -1,0 +1,1282 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article
+  PUBLIC "-//NLM//DTD Journal Publishing DTD v3.0 20080202//EN" "http://dtd.nlm.nih.gov/publishing/3.0/journalpublishing3.dtd">
+<article xmlns:mml="http://www.w3.org/1998/Math/MathML" xmlns:xlink="http://www.w3.org/1999/xlink" article-type="research-article" dtd-version="3.0" xml:lang="EN">
+  <front>
+    <journal-meta><journal-id journal-id-type="nlm-ta">PLoS ONE</journal-id><journal-id journal-id-type="publisher-id">plos</journal-id><journal-id journal-id-type="pmc">plosone</journal-id><!--===== Grouping journal title elements =====--><journal-title-group><journal-title>PLoS ONE</journal-title></journal-title-group><issn pub-type="epub">1932-6203</issn><publisher>
+        <publisher-name>Public Library of Science</publisher-name>
+        <publisher-loc>San Francisco, USA</publisher-loc>
+      </publisher></journal-meta>
+    <article-meta><article-id pub-id-type="publisher-id">PONE-D-11-04580</article-id><article-id pub-id-type="doi">10.1371/journal.pone.0021247</article-id><article-categories>
+        <subj-group subj-group-type="heading">
+          <subject>Research Article</subject>
+        </subj-group>
+        <subj-group subj-group-type="Discipline-v2">
+          <subject>Biology</subject>
+          <subj-group>
+            <subject>Biochemistry</subject>
+            <subj-group>
+              <subject>Nucleic acids</subject>
+              <subj-group>
+                <subject>DNA</subject>
+              </subj-group>
+            </subj-group>
+          </subj-group>
+          <subj-group>
+            <subject>Biophysics</subject>
+            <subj-group>
+              <subject>Nucleic acids</subject>
+              <subj-group>
+                <subject>DNA</subject>
+              </subj-group>
+            </subj-group>
+          </subj-group>
+          <subj-group>
+            <subject>Evolutionary biology</subject>
+            <subj-group>
+              <subject>Evolutionary genetics</subject>
+            </subj-group>
+          </subj-group>
+          <subj-group>
+            <subject>Genetics</subject>
+            <subj-group>
+              <subject>Cloning</subject>
+              <subj-group>
+                <subject>Organismal cloning</subject>
+              </subj-group>
+            </subj-group>
+            <subj-group>
+              <subject>Animal genetics</subject>
+              <subject>Population genetics</subject>
+            </subj-group>
+          </subj-group>
+          <subj-group>
+            <subject>Molecular cell biology</subject>
+            <subj-group>
+              <subject>Nucleic acids</subject>
+              <subj-group>
+                <subject>DNA</subject>
+              </subj-group>
+            </subj-group>
+          </subj-group>
+          <subj-group>
+            <subject>Zoology</subject>
+            <subj-group>
+              <subject>Animal phylogenetics</subject>
+            </subj-group>
+          </subj-group>
+        </subj-group>
+        <subj-group subj-group-type="Discipline-v2">
+          <subject>Physics</subject>
+          <subj-group>
+            <subject>Biophysics</subject>
+            <subj-group>
+              <subject>Nucleic acids</subject>
+              <subj-group>
+                <subject>DNA</subject>
+              </subj-group>
+            </subj-group>
+          </subj-group>
+        </subj-group>
+        <subj-group subj-group-type="Discipline-v2">
+          <subject>Social and behavioral sciences</subject>
+          <subj-group>
+            <subject>Anthropology</subject>
+            <subj-group>
+              <subject>Biological anthropology</subject>
+            </subj-group>
+          </subj-group>
+          <subj-group>
+            <subject>Archaeology</subject>
+          </subj-group>
+        </subj-group>
+        <subj-group subj-group-type="Discipline">
+          <subject>Genetics and Genomics</subject>
+          <subject>Molecular Biology</subject>
+          <subject>Biophysics</subject>
+          <subject>Evolutionary Biology</subject>
+          <subject>Physics</subject>
+          <subject>Biochemistry</subject>
+        </subj-group>
+      </article-categories><title-group><article-title>To Clone or Not To Clone: Method Analysis for Retrieving Consensus Sequences In Ancient DNA Samples</article-title><alt-title alt-title-type="running-head">Evaluation of Cloning in Ancient DNA Studies</alt-title></title-group><contrib-group>
+        <contrib contrib-type="author" xlink:type="simple">
+          <name name-style="western">
+            <surname>Winters</surname>
+            <given-names>Misa</given-names>
+          </name>
+          <xref ref-type="aff" rid="aff1">
+            <sup>1</sup>
+          </xref>
+        </contrib>
+        <contrib contrib-type="author" xlink:type="simple">
+          <name name-style="western">
+            <surname>Barta</surname>
+            <given-names>Jodi Lynn</given-names>
+          </name>
+          <xref ref-type="aff" rid="aff1">
+            <sup>1</sup>
+          </xref>
+          <xref ref-type="aff" rid="aff2">
+            <sup>2</sup>
+          </xref>
+        </contrib>
+        <contrib contrib-type="author" xlink:type="simple">
+          <name name-style="western">
+            <surname>Monroe</surname>
+            <given-names>Cara</given-names>
+          </name>
+          <xref ref-type="aff" rid="aff1">
+            <sup>1</sup>
+          </xref>
+          <xref ref-type="aff" rid="aff2">
+            <sup>2</sup>
+          </xref>
+          <xref ref-type="aff" rid="aff3">
+            <sup>3</sup>
+          </xref>
+        </contrib>
+        <contrib contrib-type="author" xlink:type="simple">
+          <name name-style="western">
+            <surname>Kemp</surname>
+            <given-names>Brian M.</given-names>
+          </name>
+          <xref ref-type="aff" rid="aff1">
+            <sup>1</sup>
+          </xref>
+          <xref ref-type="aff" rid="aff2">
+            <sup>2</sup>
+          </xref>
+          <xref ref-type="corresp" rid="cor1">
+            <sup>*</sup>
+          </xref>
+        </contrib>
+      </contrib-group><aff id="aff1"><label>1</label><addr-line>School of Biological Sciences, Washington State University, Pullman, Washington, United States of America</addr-line>       </aff><aff id="aff2"><label>2</label><addr-line>Department of Anthropology, Washington State University, Pullman, Washington, United States of America</addr-line>       </aff><aff id="aff3"><label>3</label><addr-line>Department of Anthropology, University of California-Santa Barbara, Santa Barbara, California, United States of America</addr-line>       </aff><contrib-group>
+        <contrib contrib-type="editor" xlink:type="simple">
+          <name name-style="western">
+            <surname>Gilbert</surname>
+            <given-names>M. Thomas P.</given-names>
+          </name>
+          <role>Editor</role>
+          <xref ref-type="aff" rid="edit1"/>
+        </contrib>
+      </contrib-group><aff id="edit1">Natural History Museum of Denmark, Denmark</aff><author-notes>
+        <corresp id="cor1">* E-mail: <email xlink:type="simple">bmkemp@wsu.edu</email></corresp>
+        <fn fn-type="con">
+          <p>Conceived and designed the experiments: MW JLB CM BMK. Performed the experiments: MW JLB. Analyzed the data: MW JLB CM BMK. Wrote the paper: MW JLB CM BMK.</p>
+        </fn>
+      <fn fn-type="conflict">
+        <p>The authors have declared that no competing interests exist.</p>
+      </fn></author-notes><pub-date pub-type="collection">
+        <year>2011</year>
+      </pub-date><pub-date pub-type="epub">
+        <day>27</day>
+        <month>6</month>
+        <year>2011</year>
+      </pub-date><volume>6</volume><issue>6</issue><elocation-id>e21247</elocation-id><history>
+        <date date-type="received">
+          <day>8</day>
+          <month>3</month>
+          <year>2011</year>
+        </date>
+        <date date-type="accepted">
+          <day>24</day>
+          <month>5</month>
+          <year>2011</year>
+        </date>
+      </history><!--===== Grouping copyright info into permissions =====--><permissions><copyright-year>2011</copyright-year><copyright-holder>Winters et al</copyright-holder><license><license-p>This is an open-access article distributed under the terms of the Creative Commons Attribution License, which permits unrestricted use, distribution, and reproduction in any medium, provided the original author and source are credited.</license-p></license></permissions><abstract>
+        <p>The challenges associated with the retrieval and authentication of ancient DNA (aDNA) evidence are principally due to post-mortem damage which makes ancient samples particularly prone to contamination from “modern” DNA sources. The necessity for authentication of results has led many aDNA researchers to adopt methods considered to be “gold standards” in the field, including cloning aDNA amplicons as opposed to directly sequencing them. However, no standardized protocol has emerged regarding the necessary number of clones to sequence, how a consensus sequence is most appropriately derived, or how results should be reported in the literature. In addition, there has been no systematic demonstration of the degree to which direct sequences are affected by damage or whether direct sequencing would provide disparate results from a consensus of clones.</p>
+        <p>To address this issue, a comparative study was designed to examine both cloned and direct sequences amplified from ∼3,500 year-old ancient northern fur seal DNA extracts. Majority rules and the Consensus Confidence Program were used to generate consensus sequences for each individual from the cloned sequences, which exhibited damage at 31 of 139 base pairs across all clones. In no instance did the consensus of clones differ from the direct sequence. This study demonstrates that, when appropriate, cloning need not be the default method, but instead, should be used as a measure of authentication on a case-by-case basis, especially when this practice adds time and cost to studies where it may be superfluous.</p>
+      </abstract><funding-group><funding-statement>This project was supported by Award No. 2008-DN-BX-K008 awarded by the National Institute of Justice, Office of Justice Programs, U.S. Department of Justice. The opinions, findings, and conclusions or recommendations expressed in this publication/program/exhibition are those of the author(s) and do not necessarily reflect those of the Department of Justice. Support for Misa Winters was provided by the Interdisciplinary Training for Undergraduates in Biological and Mathematical Sciences (UBM) grant EF-0531870. The funders had no role in study design, data collection and analysis, decision to publish, or preparation of the manuscript.</funding-statement></funding-group><counts>
+        <page-count count="8"/>
+      </counts></article-meta>
+  </front>
+  <body>
+    <sec id="s1">
+      <title>Introduction</title>
+      <p>The ability to study DNA from organisms that have been long dead [i.e. ancient DNA (aDNA)], has led to numerous insights into the evolutionary history of humans, animals, plants, and even microorganisms <xref ref-type="bibr" rid="pone.0021247-Willerslev1">[1]</xref>, <xref ref-type="bibr" rid="pone.0021247-Pbo1">[2]</xref>, <xref ref-type="bibr" rid="pone.0021247-Green1">[3]</xref>, <xref ref-type="bibr" rid="pone.0021247-Krings1">[4]</xref>, <xref ref-type="bibr" rid="pone.0021247-Speller1">[5]</xref>, <xref ref-type="bibr" rid="pone.0021247-Zeder1">[6]</xref>, <xref ref-type="bibr" rid="pone.0021247-Lindqvist1">[7]</xref>, <xref ref-type="bibr" rid="pone.0021247-Willerslev2">[8]</xref>, <xref ref-type="bibr" rid="pone.0021247-Willerslev3">[9]</xref>, <xref ref-type="bibr" rid="pone.0021247-Hebsgaard1">[10]</xref>, <xref ref-type="bibr" rid="pone.0021247-Poinar1">[11]</xref>, <xref ref-type="bibr" rid="pone.0021247-Lambert1">[12]</xref>, <xref ref-type="bibr" rid="pone.0021247-Kemp1">[13]</xref>, <xref ref-type="bibr" rid="pone.0021247-Shapiro1">[14]</xref>. The strength of aDNA evidence is affected, however, by its challenging retrieval and authentication, principally as a result of postmortem damage. Degradation by nucleases, oxidation, deamination, depurination, and background radiation lead to destabilization and breaks in DNA strands <xref ref-type="bibr" rid="pone.0021247-Hofreiter1">[15]</xref> leaving aDNA template molecules typically short in length with chemically modified (i.e. “damaged”) nucleotide positions <xref ref-type="bibr" rid="pone.0021247-Gilbert1">[16]</xref>, <xref ref-type="bibr" rid="pone.0021247-Pbo2">[17]</xref>. Consequently, aDNA studies are prone to contamination from “modern” DNA sources that can completely out-compete endogenous DNA in polymerase chain reaction (PCR) amplification <xref ref-type="bibr" rid="pone.0021247-Kemp2">[18]</xref>. These problems are not unique to the aDNA field, but are also encountered in forensic research where degraded remains and sample mixtures are common <xref ref-type="bibr" rid="pone.0021247-Alonso1">[19]</xref>, <xref ref-type="bibr" rid="pone.0021247-Capelli1">[20]</xref>.</p>
+      <p>Troubled by the overwhelming lack of standards followed by aDNA practitioners that presented at the 5<sup>th</sup> International Ancient DNA Conference in 2000, Cooper and Poinar <xref ref-type="bibr" rid="pone.0021247-Cooper1">[21]</xref>, published a very timely opinion piece in <italic>Science</italic> that outlined a list of criteria that should be followed in order to authenticate aDNA evidence for publication <xref ref-type="bibr" rid="pone.0021247-Cooper1">[21]</xref>. The recommendations of Cooper and Poinar <xref ref-type="bibr" rid="pone.0021247-Cooper1">[21]</xref> have had a profound impact on the field both positive and, and in some cases, negative. For example, reviewers have rejected manuscripts written by authors that did not follow each and every recommendation of Cooper and Poinar <xref ref-type="bibr" rid="pone.0021247-Cooper1">[21]</xref>, referring to them as “classical stringent standards” <xref ref-type="bibr" rid="pone.0021247-Kemp3">[22]</xref>, despite the fact that subsequent research clearly showed that the recommendations of Cooper and Poinar <xref ref-type="bibr" rid="pone.0021247-Cooper1">[21]</xref> alone can not authenticate aDNA evidence <xref ref-type="bibr" rid="pone.0021247-Kemp3">[22]</xref>, <xref ref-type="bibr" rid="pone.0021247-Gilbert2">[23]</xref>. Additionally, some of their criteria such as amino acid racemization (AAR) have been discounted as a predictor of DNA preservation <xref ref-type="bibr" rid="pone.0021247-Collins1">[24]</xref>, <xref ref-type="bibr" rid="pone.0021247-Fernandez1">[25]</xref>, while in contrast, critical decontamination methodologies <xref ref-type="bibr" rid="pone.0021247-Kemp2">[e.g. 18]</xref> were never “required”. Unfortunately, one of the most critically important points made by Cooper and Poinar <xref ref-type="bibr" rid="pone.0021247-Cooper1">[21]</xref>, that data produced need to make sense, rarely generates much attention.</p>
+      <p>This study focuses on the fifth recommendation of Cooper and Poinar <xref ref-type="bibr" rid="pone.0021247-Cooper1">[21]</xref>, which states “Direct PCR sequences must be verified by cloning amplified products to determine the ratio of endogenous to exogenous sequences, damage-induced errors, and to detect the presence of numts. Overlapping fragments are desirable to confirm that sequence variation is authentic and not the product of errors introduced when PCR amplification starts from a small number of damaged templates”. Since publication of Cooper and Poinar's <xref ref-type="bibr" rid="pone.0021247-Cooper1">[21]</xref> critique, cloning has become a common practice, yet no standardization has emerged regarding the number of clones required to produce an appropriate consensus, or how to evaluate the validity of the clones that are generated. In addition, there has been no systematic demonstration of the degree to which direct sequences are affected by damage or whether direct sequencing would provide disparate results from a consensus of clones. To address these issues, aDNA was extracted from the remains of five ∼3,500 year old northern fur seals (<italic>Callorhinus ursinus</italic>). Results from direct sequencing and cloning of a portion of the mitochondrial cytochrome B gene were compared following a simple majority rules approach. Furthermore, we evaluated the usefulness of the Consensus Confidence Program (CCP) <xref ref-type="bibr" rid="pone.0021247-Bower1">[26]</xref> in deriving consensus sequences.</p>
+      <sec id="s1a">
+        <title>Background: Variability and Inconsistency in the Cloning of aDNA</title>
+        <p>To illustrate the variability of cloning methodologies, <xref ref-type="table" rid="pone-0021247-t001">Table 1</xref> summarizes the cloning practices of twenty-nine aDNA studies published in various journals over a sixteen-year period (1994–2010). The data indicate tremendous inter-study variability, with researchers reporting as few as two clones to over 100 per amplification. Some researchers chose to clone only a subset of samples from a given archaeological site to evaluate sequencing fidelity <xref ref-type="bibr" rid="pone.0021247-Kuhn1">[e.g. 27]</xref>, which suggests that they believe that taphonomic processes are uniform across a site. This is in stark contrast to the notion that sample specific qualities, such as the copy number of target DNA, should dictate the need to practice cloning, namely the preserved copy number of target DNA <xref ref-type="bibr" rid="pone.0021247-Pbo1">[2]</xref>, <xref ref-type="bibr" rid="pone.0021247-Handt1">[28]</xref>.</p>
+        <table-wrap id="pone-0021247-t001" position="float"><object-id pub-id-type="doi">10.1371/journal.pone.0021247.t001</object-id><label>Table 1</label><caption>
+            <title>Example of studies that utilized cloning in the study of aDNA sorted by year of publication.</title>
+          </caption><!--===== Grouping alternate versions of objects =====--><alternatives><graphic id="pone-0021247-t001-1" mimetype="image" position="float" xlink:href="info:doi/10.1371/journal.pone.0021247.t001" xlink:type="simple"/><table>
+            <colgroup span="1">
+              <col align="left" span="1"/>
+              <col align="center" span="1"/>
+              <col align="center" span="1"/>
+              <col align="center" span="1"/>
+              <col align="center" span="1"/>
+              <col align="center" span="1"/>
+              <col align="center" span="1"/>
+              <col align="center" span="1"/>
+              <col align="center" span="1"/>
+              <col align="center" span="1"/>
+              <col align="center" span="1"/>
+              <col align="center" span="1"/>
+              <col align="center" span="1"/>
+              <col align="center" span="1"/>
+            </colgroup>
+            <thead>
+              <tr>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="11" rowspan="1">Number of Clones Sequenced</td>
+                <td align="left" colspan="1" rowspan="1"/>
+              </tr>
+              <tr>
+                <td align="left" colspan="1" rowspan="1">Study</td>
+                <td align="left" colspan="1" rowspan="1">Comparison to Direct Sequence?</td>
+                <td align="left" colspan="1" rowspan="1">2</td>
+                <td align="left" colspan="1" rowspan="1">3</td>
+                <td align="left" colspan="1" rowspan="1">4–5</td>
+                <td align="left" colspan="1" rowspan="1">6–8</td>
+                <td align="left" colspan="1" rowspan="1">9–11</td>
+                <td align="left" colspan="1" rowspan="1">12–20</td>
+                <td align="left" colspan="1" rowspan="1">21–40</td>
+                <td align="left" colspan="1" rowspan="1">41–60</td>
+                <td align="left" colspan="1" rowspan="1">61–80</td>
+                <td align="left" colspan="1" rowspan="1">81–100</td>
+                <td align="left" colspan="1" rowspan="1">101+</td>
+                <td align="left" colspan="1" rowspan="1">Species/Samples</td>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td align="left" colspan="1" rowspan="1">Handt et al <xref ref-type="bibr" rid="pone.0021247-Handt2">[40]</xref></td>
+                <td align="left" colspan="1" rowspan="1">N</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">Human (Tyrolean Iceman)</td>
+              </tr>
+              <tr>
+                <td align="left" colspan="1" rowspan="1">Handt et al <xref ref-type="bibr" rid="pone.0021247-Handt1">[28]</xref></td>
+                <td align="left" colspan="1" rowspan="1">N</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">Human</td>
+              </tr>
+              <tr>
+                <td align="left" colspan="1" rowspan="1">Krings et al <xref ref-type="bibr" rid="pone.0021247-Krings1">[4]</xref></td>
+                <td align="left" colspan="1" rowspan="1">N</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">Neanderthal</td>
+              </tr>
+              <tr>
+                <td align="left" colspan="1" rowspan="1">Poinar et al <xref ref-type="bibr" rid="pone.0021247-Poinar2">[35]</xref></td>
+                <td align="left" colspan="1" rowspan="1">N</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">Ground Sloth</td>
+              </tr>
+              <tr>
+                <td align="left" colspan="1" rowspan="1">Krings et al <xref ref-type="bibr" rid="pone.0021247-Krings2">[44]</xref></td>
+                <td align="left" colspan="1" rowspan="1">N</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">Neanderthal</td>
+              </tr>
+              <tr>
+                <td align="left" colspan="1" rowspan="1">Ovchinnikov et al <xref ref-type="bibr" rid="pone.0021247-Ovchinnikov1">[45]</xref></td>
+                <td align="left" colspan="1" rowspan="1">Y</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">Neanderthal</td>
+              </tr>
+              <tr>
+                <td align="left" colspan="1" rowspan="1">Hofreiter et al <xref ref-type="bibr" rid="pone.0021247-Hofreiter1">[15]</xref></td>
+                <td align="left" colspan="1" rowspan="1">N</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">Cave Bear</td>
+              </tr>
+              <tr>
+                <td align="left" colspan="1" rowspan="1">Loreille et al <xref ref-type="bibr" rid="pone.0021247-Loreille1">[46]</xref></td>
+                <td align="left" colspan="1" rowspan="1">Y</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">Cave Bear and Brown Bear</td>
+              </tr>
+              <tr>
+                <td align="left" colspan="1" rowspan="1">Hofreiter et al <xref ref-type="bibr" rid="pone.0021247-Hofreiter2">[47]</xref></td>
+                <td align="left" colspan="1" rowspan="1">N</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">Cave bear</td>
+              </tr>
+              <tr>
+                <td align="left" colspan="1" rowspan="1">Monsalve et al <xref ref-type="bibr" rid="pone.0021247-Monsalve1">[48]</xref></td>
+                <td align="left" colspan="1" rowspan="1">Y</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">Human</td>
+              </tr>
+              <tr>
+                <td align="left" colspan="1" rowspan="1">Caramelli et al <xref ref-type="bibr" rid="pone.0021247-Caramelli1">[49]</xref></td>
+                <td align="left" colspan="1" rowspan="1">N</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">Human</td>
+              </tr>
+              <tr>
+                <td align="left" colspan="1" rowspan="1">Orlando et al <xref ref-type="bibr" rid="pone.0021247-Orlando1">[50]</xref></td>
+                <td align="left" colspan="1" rowspan="1">N</td>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">Woolly rhinoceros</td>
+              </tr>
+              <tr>
+                <td align="left" colspan="1" rowspan="1">Poinar et al <xref ref-type="bibr" rid="pone.0021247-Poinar3">[51]</xref></td>
+                <td align="left" colspan="1" rowspan="1">N</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">Sloth</td>
+              </tr>
+              <tr>
+                <td align="left" colspan="1" rowspan="1">Gilbert et al <xref ref-type="bibr" rid="pone.0021247-Gilbert5">[52]</xref></td>
+                <td align="left" colspan="1" rowspan="1">N</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">Human</td>
+              </tr>
+              <tr>
+                <td align="left" colspan="1" rowspan="1">Bouwman and Brown <xref ref-type="bibr" rid="pone.0021247-Bouwman1">[53]</xref></td>
+                <td align="left" colspan="1" rowspan="1">N</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">Humans, Syphilis</td>
+              </tr>
+              <tr>
+                <td align="left" colspan="1" rowspan="1">Haak et al <xref ref-type="bibr" rid="pone.0021247-Haak1">[54]</xref></td>
+                <td align="left" colspan="1" rowspan="1">N</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">Human</td>
+              </tr>
+              <tr>
+                <td align="left" colspan="1" rowspan="1">Jae-Hwan et al <xref ref-type="bibr" rid="pone.0021247-Kim1">[55]</xref></td>
+                <td align="left" colspan="1" rowspan="1">N</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">Cows</td>
+              </tr>
+              <tr>
+                <td align="left" colspan="1" rowspan="1">Karanth et al <xref ref-type="bibr" rid="pone.0021247-Karanth1">[56]</xref></td>
+                <td align="left" colspan="1" rowspan="1">N</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">Lemurs</td>
+              </tr>
+              <tr>
+                <td align="left" colspan="1" rowspan="1">Malmstrom et al <xref ref-type="bibr" rid="pone.0021247-Malmstrom2">[57]</xref></td>
+                <td align="left" colspan="1" rowspan="1">N</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">Human, Dog</td>
+              </tr>
+              <tr>
+                <td align="left" colspan="1" rowspan="1">Salamon et al <xref ref-type="bibr" rid="pone.0021247-Salamon1">[37]</xref></td>
+                <td align="left" colspan="1" rowspan="1">N</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">Cat, Penguin, Human</td>
+              </tr>
+              <tr>
+                <td align="left" colspan="1" rowspan="1">Binladen et al <xref ref-type="bibr" rid="pone.0021247-Binladen1">[58]</xref></td>
+                <td align="left" colspan="1" rowspan="1">Y</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">Woolly Rhinoceros, Lion, Pig, Moa</td>
+              </tr>
+              <tr>
+                <td align="left" colspan="1" rowspan="1">Gilbert et al <xref ref-type="bibr" rid="pone.0021247-Gilbert6">[59]</xref></td>
+                <td align="left" colspan="1" rowspan="1">N</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">Human</td>
+              </tr>
+              <tr>
+                <td align="left" colspan="1" rowspan="1">Orlando et al <xref ref-type="bibr" rid="pone.0021247-Orlando2">[60]</xref></td>
+                <td align="left" colspan="1" rowspan="1">N</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">Neanderthal</td>
+              </tr>
+              <tr>
+                <td align="left" colspan="1" rowspan="1">Krause et al <xref ref-type="bibr" rid="pone.0021247-Krause1">[33]</xref></td>
+                <td align="left" colspan="1" rowspan="1">N</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1">Neanderthal</td>
+              </tr>
+              <tr>
+                <td align="left" colspan="1" rowspan="1">Kuch et al <xref ref-type="bibr" rid="pone.0021247-Kuch1">[32]</xref><xref ref-type="table-fn" rid="nt102">*</xref></td>
+                <td align="left" colspan="1" rowspan="1">N</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">Human</td>
+              </tr>
+              <tr>
+                <td align="left" colspan="1" rowspan="1">Green et al <xref ref-type="bibr" rid="pone.0021247-Green2">[61]</xref></td>
+                <td align="left" colspan="1" rowspan="1">N</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1">Neanderthal</td>
+              </tr>
+              <tr>
+                <td align="left" colspan="1" rowspan="1">Helgason et al <xref ref-type="bibr" rid="pone.0021247-Helgason1">[62]</xref></td>
+                <td align="left" colspan="1" rowspan="1">N</td>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">Human</td>
+              </tr>
+              <tr>
+                <td align="left" colspan="1" rowspan="1">Kuhn et al <xref ref-type="bibr" rid="pone.0021247-Kuhn1">[27]</xref></td>
+                <td align="left" colspan="1" rowspan="1">Y</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">Caribou</td>
+              </tr>
+              <tr>
+                <td align="left" colspan="1" rowspan="1">Lari et al <xref ref-type="bibr" rid="pone.0021247-Lari1">[63]</xref></td>
+                <td align="left" colspan="1" rowspan="1">N</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1">X</td>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1"/>
+                <td align="left" colspan="1" rowspan="1">Neanderthal</td>
+              </tr>
+            </tbody>
+          </table></alternatives><table-wrap-foot>
+            <fn id="nt101">
+              <label/>
+              <p>Categories for number of clone sequences were arbitrarily chosen.</p>
+            </fn>
+            <fn id="nt102">
+              <label/>
+              <p>*estimated number of clones from Figure 3 <xref ref-type="bibr" rid="pone.0021247-Kuch1">[32]</xref>.</p>
+            </fn>
+          </table-wrap-foot></table-wrap>
+        <p>Also troubling, are studies that report the number of clones sequenced yet do not publish the results <xref ref-type="bibr" rid="pone.0021247-Endicott1">[see for example 29]</xref>, <xref ref-type="bibr" rid="pone.0021247-Larson1">[30]</xref>, <xref ref-type="bibr" rid="pone.0021247-Thomsen1">[31]</xref> or provide readable sequence data <xref ref-type="bibr" rid="pone.0021247-Kuch1">[32]</xref>. As a result, it is impossible to evaluate the strength of the data generated, despite the fact that these studies followed the cloning recommendation. This suggests that some reviewers are not evaluating the cloning data itself, but are satisfied merely with the fact that the technique was used during the experimental process. It also means that authors need to be more responsible in clearly reporting their data.</p>
+        <p>Another major problem with current cloning practices relates to how consensus sequences emerge from the cloned sequence data. Methods for determining consensus sequences are highly variable and lacking standardization. Most studies listed in <xref ref-type="table" rid="pone-0021247-t001">Table 1</xref> took a majority rules approach to building consensus sequences. This supposition suggests that minority sequences, based solely on their minority status within a pool of clones, represent contaminating and/or chemically modified (i.e. damaged) template molecules. Alternately, in an investigation studying DNA extracted from hominid specimens from Southern Siberia, Krause and colleagues <xref ref-type="bibr" rid="pone.0021247-Krause1">[33]</xref> used the minority status (2 of 104 clones) of Neanderthal-like mitochondrial DNA (mtDNA) sequences to initially support identification as non-human. While Krause and colleagues <xref ref-type="bibr" rid="pone.0021247-Krause1">[33]</xref> rightly used additional means to authenticate their species identification, this serves as a reminder that the use and interpretation of cloning, and its results, is variable and that the most important criterion is that the data make sense.</p>
+        <p>Dealing with highly damaged DNA also raises the question of whether a cloning consensus can and should be combined from two separate extracts. When reactions start from a separate pool of template molecules extracted on different occasions, it is preferable to generate a consensus from the extracts separately and use each as independent confirmation of the other. When low copy number and damage render this strategy impossible, another extract attempt should be made to confirm the piecemeal consensus sequence. Reporting the ambiguities is an option if, after several attempts at confirmation, a consensus cannot be generated <xref ref-type="bibr" rid="pone.0021247-Handt1">[28]</xref>. Ultimately, the act of cloning itself does not make the data generated any more authentic and the necessity of the technique and the validity of consensus sequences should be closely monitored on a case-by-case basis.</p>
+        <p>Despite methodological inconsistencies in the field, a glimmer of clarity was provided by Bower and colleagues <xref ref-type="bibr" rid="pone.0021247-Bower1">[26]</xref>. These researchers created a freeware program called the “Consensus Confidence Program” which produces a consensus by calculating the percent probability that statistically each nucleotide occurs most frequently, at an individual position, with a confidence level between 70% and 95%. The program requires a minimum input of 12 clones to generate a consensus sequence. While this program is a tool that offers the means to standardize and produce statistically significant consensus results, it is important to highlight that it cannot “verify whether the consensus sequence is authentic” (pg. 2550).</p>
+        <p>Regardless of very strong encouragement for the use of cloning by aDNA researchers, there has been no systematic demonstration that directly sequenced PCR products would represent anything but the majority rules consensus of a number of clones <xref ref-type="bibr" rid="pone.0021247-Kemp3">[22]</xref>. The cloning recommendation of Cooper and Poinar <xref ref-type="bibr" rid="pone.0021247-Cooper1">[21]</xref> was adopted as a mandatory default technique by those in the aDNA field without critical evaluation. From the studies described in <xref ref-type="table" rid="pone-0021247-t001">Table 1</xref>, one finds that in only five of the 29 studies did the researchers even compare cloned sequences to direct sequences. In none of these studies did the majority rules consensus sequence differ from the direct sequence.</p>
+        <p>An original goal of this study was to use published data to compare direct sequences with the consensus of a minimum of 12 clones as determined by the CCP <xref ref-type="bibr" rid="pone.0021247-Bower1">[26]</xref>. This goal was unachievable as none of the five studies sequenced more than ten clones. Nevertheless, the data in the reviewed literature (<xref ref-type="table" rid="pone-0021247-t001">Table 1</xref>) suggest that cloning aDNA amplicons is not necessary in all cases, especially when this practice adds time and cost to studies where it may be superfluous.</p>
+        <p>Recommendations for maintaining authenticity in aDNA studies are always appreciated, but it may not necessarily be true that cloning is the only way to generate accurate sequence results. Rather, directly sequencing amplicons from independent amplifications and extractions may be sufficient. The goal of this study is to begin the systematic determination of whether a difference, if any, exists between cloning and direct sequencing in order to generate an aDNA consensus sequence. Working specifically with non-human, non-domesticate animal samples decreases the probability that contamination has contributed to these results <xref ref-type="bibr" rid="pone.0021247-Kemp2">[18]</xref>, <xref ref-type="bibr" rid="pone.0021247-Leonard1">[34]</xref>.</p>
+      </sec>
+    </sec>
+    <sec id="s2">
+      <title>Results</title>
+      <p>Deviations among the clones from the consensus were observed at a total of 31 sites within 150 cloned fragments across the five samples (<xref ref-type="table" rid="pone-0021247-t002">Table 2</xref>, <xref ref-type="supplementary-material" rid="pone.0021247.s001">Figure S1</xref>). Single base polymorphisms that appear as “transitions” in the clones, when compared to the direct sequence, were recorded as damage. The majority of the damaged sites were C&gt;T, which is indicative of deamination <xref ref-type="bibr" rid="pone.0021247-Hofreiter1">[15]</xref>. Sites with double peaked base pairs in the cloned sequences (designated as N) must represent errors that arose during colony growth or subsequent PCR (see <xref ref-type="fig" rid="pone-0021247-g001">Figure 1</xref> for an example).</p>
+      <fig id="pone-0021247-g001" position="float">
+        <object-id pub-id-type="doi">10.1371/journal.pone.0021247.g001</object-id>
+        <label>Figure 1</label>
+        <caption>
+          <title>Chromatogram for site 14281 on sample 809023.</title>
+        </caption>
+        <graphic mimetype="image" position="float" xlink:href="info:doi/10.1371/journal.pone.0021247.g001" xlink:type="simple"/>
+      </fig>
+      <table-wrap id="pone-0021247-t002" position="float"><object-id pub-id-type="doi">10.1371/journal.pone.0021247.t002</object-id><label>Table 2</label><caption>
+          <title>Results from the sequencing and quantification of samples.</title>
+        </caption><!--===== Grouping alternate versions of objects =====--><alternatives><graphic id="pone-0021247-t002-2" mimetype="image" position="float" xlink:href="info:doi/10.1371/journal.pone.0021247.t002" xlink:type="simple"/><table>
+          <colgroup span="1">
+            <col align="left" span="1"/>
+            <col align="center" span="1"/>
+            <col align="center" span="1"/>
+            <col align="center" span="1"/>
+            <col align="center" span="1"/>
+            <col align="center" span="1"/>
+            <col align="center" span="1"/>
+            <col align="center" span="1"/>
+          </colgroup>
+          <thead>
+            <tr>
+              <td align="left" colspan="1" rowspan="1">Sample</td>
+              <td align="left" colspan="1" rowspan="1">Copy #/µL</td>
+              <td align="left" colspan="1" rowspan="1">S.D.</td>
+              <td align="left" colspan="1" rowspan="1">Amplication #</td>
+              <td align="left" colspan="1" rowspan="1">Direct Sequence</td>
+              <td align="left" colspan="1" rowspan="1">Majority Rules</td>
+              <td align="left" colspan="1" rowspan="1">CCP</td>
+              <td align="left" colspan="1" rowspan="1">Clones</td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td align="left" colspan="1" rowspan="1"/>
+              <td align="left" colspan="1" rowspan="1"/>
+              <td align="left" colspan="1" rowspan="1"/>
+              <td align="left" colspan="1" rowspan="1">
+                <bold>1</bold>
+              </td>
+              <td align="left" colspan="1" rowspan="1">14285 A</td>
+              <td align="left" colspan="1" rowspan="1">14285 A</td>
+              <td align="left" colspan="1" rowspan="1">14285 A</td>
+              <td align="left" colspan="1" rowspan="1">13:14285A; <bold>1:14285N</bold></td>
+            </tr>
+            <tr>
+              <td align="left" colspan="1" rowspan="1">
+                <bold>809005</bold>
+              </td>
+              <td align="left" colspan="1" rowspan="1">
+                <bold>644</bold>
+              </td>
+              <td align="left" colspan="1" rowspan="1">
+                <bold>9.784</bold>
+              </td>
+              <td align="left" colspan="1" rowspan="1">
+                <bold>2</bold>
+              </td>
+              <td align="left" colspan="1" rowspan="1">14285 A</td>
+              <td align="left" colspan="1" rowspan="1">14285 A</td>
+              <td align="left" colspan="1" rowspan="1">14285 A</td>
+              <td align="left" colspan="1" rowspan="1">10:14285A; 1:14285A, <bold>14293T</bold>; 1:14285A, <bold>14322A</bold></td>
+            </tr>
+            <tr>
+              <td align="left" colspan="1" rowspan="1"/>
+              <td align="left" colspan="1" rowspan="1"/>
+              <td align="left" colspan="1" rowspan="1"/>
+              <td align="left" colspan="1" rowspan="1">
+                <bold>3</bold>
+              </td>
+              <td align="left" colspan="1" rowspan="1">14285 A</td>
+              <td align="left" colspan="1" rowspan="1">NA</td>
+              <td align="left" colspan="1" rowspan="1">NA</td>
+              <td align="left" colspan="1" rowspan="1">Not cloned</td>
+            </tr>
+            <tr>
+              <td align="left" colspan="1" rowspan="1"/>
+              <td align="left" colspan="1" rowspan="1"/>
+              <td align="left" colspan="1" rowspan="1"/>
+              <td align="left" colspan="1" rowspan="1">
+                <bold>1</bold>
+              </td>
+              <td align="left" colspan="1" rowspan="1">Reference</td>
+              <td align="left" colspan="1" rowspan="1">Reference</td>
+              <td align="left" colspan="1" rowspan="1">Reference</td>
+              <td align="left" colspan="1" rowspan="1">14:Reference; <bold>1:14285N, 14289N</bold>; <bold>1:14300N</bold></td>
+            </tr>
+            <tr>
+              <td align="left" colspan="1" rowspan="1">
+                <bold>809007</bold>
+              </td>
+              <td align="left" colspan="1" rowspan="1">
+                <bold>1737</bold>
+              </td>
+              <td align="left" colspan="1" rowspan="1">
+                <bold>332.96</bold>
+              </td>
+              <td align="left" colspan="1" rowspan="1">
+                <bold>2</bold>
+              </td>
+              <td align="left" colspan="1" rowspan="1">Reference</td>
+              <td align="left" colspan="1" rowspan="1">Reference</td>
+              <td align="left" colspan="1" rowspan="1">Reference</td>
+              <td align="left" colspan="1" rowspan="1">14:Reference; <bold>1:14210A, 14227A, 14231A, 14247A, 14316T</bold>; <bold>1:14241T, 14244T, 14245T, 14246T, 14284T</bold></td>
+            </tr>
+            <tr>
+              <td align="left" colspan="1" rowspan="1"/>
+              <td align="left" colspan="1" rowspan="1"/>
+              <td align="left" colspan="1" rowspan="1"/>
+              <td align="left" colspan="1" rowspan="1">
+                <bold>3</bold>
+              </td>
+              <td align="left" colspan="1" rowspan="1">Reference</td>
+              <td align="left" colspan="1" rowspan="1">NA</td>
+              <td align="left" colspan="1" rowspan="1">NA</td>
+              <td align="left" colspan="1" rowspan="1">Not cloned</td>
+            </tr>
+            <tr>
+              <td align="left" colspan="1" rowspan="1"/>
+              <td align="left" colspan="1" rowspan="1"/>
+              <td align="left" colspan="1" rowspan="1"/>
+              <td align="left" colspan="1" rowspan="1">
+                <bold>1</bold>
+              </td>
+              <td align="left" colspan="1" rowspan="1">Reference</td>
+              <td align="left" colspan="1" rowspan="1">Reference</td>
+              <td align="left" colspan="1" rowspan="1">Reference</td>
+              <td align="left" colspan="1" rowspan="1">15:Reference; <bold>1:14223G</bold></td>
+            </tr>
+            <tr>
+              <td align="left" colspan="1" rowspan="1">
+                <bold>809016</bold>
+              </td>
+              <td align="left" colspan="1" rowspan="1">
+                <bold>91</bold>
+              </td>
+              <td align="left" colspan="1" rowspan="1">
+                <bold>29.132</bold>
+              </td>
+              <td align="left" colspan="1" rowspan="1">
+                <bold>2</bold>
+              </td>
+              <td align="left" colspan="1" rowspan="1">Reference</td>
+              <td align="left" colspan="1" rowspan="1">Reference</td>
+              <td align="left" colspan="1" rowspan="1">Reference</td>
+              <td align="left" colspan="1" rowspan="1">15:Reference; <bold>1:14334A</bold></td>
+            </tr>
+            <tr>
+              <td align="left" colspan="1" rowspan="1"/>
+              <td align="left" colspan="1" rowspan="1"/>
+              <td align="left" colspan="1" rowspan="1"/>
+              <td align="left" colspan="1" rowspan="1">
+                <bold>3</bold>
+              </td>
+              <td align="left" colspan="1" rowspan="1">Reference</td>
+              <td align="left" colspan="1" rowspan="1">NA</td>
+              <td align="left" colspan="1" rowspan="1">NA</td>
+              <td align="left" colspan="1" rowspan="1">Not cloned</td>
+            </tr>
+            <tr>
+              <td align="left" colspan="1" rowspan="1"/>
+              <td align="left" colspan="1" rowspan="1"/>
+              <td align="left" colspan="1" rowspan="1"/>
+              <td align="left" colspan="1" rowspan="1">
+                <bold>1</bold>
+              </td>
+              <td align="left" colspan="1" rowspan="1">Reference</td>
+              <td align="left" colspan="1" rowspan="1">Reference</td>
+              <td align="left" colspan="1" rowspan="1">Reference</td>
+              <td align="left" colspan="1" rowspan="1">10:Reference; <bold>1:14210A, 14281A,14339N</bold>; <bold>1:14227A, 14265A, 14280A, 14304A</bold>: <bold>1:14281N</bold></td>
+            </tr>
+            <tr>
+              <td align="left" colspan="1" rowspan="1">
+                <bold>809023</bold>
+              </td>
+              <td align="left" colspan="1" rowspan="1">
+                <bold>35</bold>
+              </td>
+              <td align="left" colspan="1" rowspan="1">
+                <bold>3.868</bold>
+              </td>
+              <td align="left" colspan="1" rowspan="1">
+                <bold>2</bold>
+              </td>
+              <td align="left" colspan="1" rowspan="1">
+                <bold>14227N, 14231N, 14265N, 14269N, 14281N</bold>
+              </td>
+              <td align="left" colspan="1" rowspan="1">None</td>
+              <td align="left" colspan="1" rowspan="1">None: Did not meet 95% confidence</td>
+              <td align="left" colspan="1" rowspan="1">
+                <bold>5:14227A, 14231A, 14265A, 14269A, 14281A, 14304A, 14334A; 3:14227A, 14231A; 2:14210A, 14211A, 14265A, 14281A, 14299A, 14232A,14233A; 1:14227A, 14231A,14265A, 14269A, 14281A, 14304A; 1:14210A, 14211A, 14334A; 1:14265A, 14269A,14334A; 1:14280A, 14281A, 14299A, 14304A, 14334A; 1:14265A, 14269A, 14281A, 14304A, 14334A</bold>
+              </td>
+            </tr>
+            <tr>
+              <td align="left" colspan="1" rowspan="1"/>
+              <td align="left" colspan="1" rowspan="1"/>
+              <td align="left" colspan="1" rowspan="1"/>
+              <td align="left" colspan="1" rowspan="1">
+                <bold>3</bold>
+              </td>
+              <td align="left" colspan="1" rowspan="1">Reference</td>
+              <td align="left" colspan="1" rowspan="1">NA</td>
+              <td align="left" colspan="1" rowspan="1">NA</td>
+              <td align="left" colspan="1" rowspan="1">Not cloned</td>
+            </tr>
+            <tr>
+              <td align="left" colspan="1" rowspan="1"/>
+              <td align="left" colspan="1" rowspan="1"/>
+              <td align="left" colspan="1" rowspan="1"/>
+              <td align="left" colspan="1" rowspan="1">
+                <bold>1</bold>
+              </td>
+              <td align="left" colspan="1" rowspan="1">14285A</td>
+              <td align="left" colspan="1" rowspan="1">14285A</td>
+              <td align="left" colspan="1" rowspan="1">14285A</td>
+              <td align="left" colspan="1" rowspan="1">11: 14285A; <bold>2:14227A</bold>, 14285A; <bold>1:14250N</bold>, 14285A; <bold>1:142545T</bold>, 14285A; 1:14285A, <bold>14334A</bold></td>
+            </tr>
+            <tr>
+              <td align="left" colspan="1" rowspan="1">
+                <bold>809032</bold>
+              </td>
+              <td align="left" colspan="1" rowspan="1">
+                <bold>115</bold>
+              </td>
+              <td align="left" colspan="1" rowspan="1">
+                <bold>42.496</bold>
+              </td>
+              <td align="left" colspan="1" rowspan="1">
+                <bold>2</bold>
+              </td>
+              <td align="left" colspan="1" rowspan="1">14285A</td>
+              <td align="left" colspan="1" rowspan="1">14285A</td>
+              <td align="left" colspan="1" rowspan="1">14285A</td>
+              <td align="left" colspan="1" rowspan="1">14:14285A; <bold>1:14227A</bold>, 14285A; <bold>1:Reference</bold></td>
+            </tr>
+            <tr>
+              <td align="left" colspan="1" rowspan="1"/>
+              <td align="left" colspan="1" rowspan="1"/>
+              <td align="left" colspan="1" rowspan="1"/>
+              <td align="left" colspan="1" rowspan="1">
+                <bold>3</bold>
+              </td>
+              <td align="left" colspan="1" rowspan="1">14285 A</td>
+              <td align="left" colspan="1" rowspan="1">NA</td>
+              <td align="left" colspan="1" rowspan="1">NA</td>
+              <td align="left" colspan="1" rowspan="1">Not cloned</td>
+            </tr>
+          </tbody>
+        </table></alternatives><table-wrap-foot>
+          <fn id="nt103">
+            <label/>
+            <p>Samples were sequenced from nps 14207–14345, relative to a complete mtDNA genome, NC_008415 <xref ref-type="bibr" rid="pone.0021247-Arnason1">[42]</xref>, and polymorphisms listed (not in bold) are relative to that reference sequence. Consensus sequences have been submitted to Genbank and assigned accession numbers HQ95713-HQ95717. For the clone category, results should be read as follows: the first number refers to the number of clones that have the damage/error, the second number provides the position in the sequence followed by the letter of the base pair that is now seen (e.g. 13:14285A reads as 13 clones with an adenine present at site 14285). Quantification results represent the average copy number over duplicate qPCR reactions and the standard deviation is reported. Note that qPCR results are indicative of the relative DNA level, but should not be taken as exact quantification.</p>
+          </fn>
+        </table-wrap-foot></table-wrap>
+      <p>None of the five samples showed any difference between the direct sequence, the majority rules consensus, and the consensus as determined by the CCP (<xref ref-type="table" rid="pone-0021247-t002">Table 2</xref>). The sole exception to this finding is the second transformation of sample 809023, where a majority rules consensus could not be determined because the most common haplotype was present in only 5 of 12 clones (41.7%). Similiarly, a 95% confidence consensus from the CCP could not be determined due to the high number of unique sequences among the clones. The direct sequence for this transformation does however, accurately reflect the mix of cloned sequences. That is, the competition of peak intensities at the N sites in the direct sequence correlate with positions in the clones that reveal a substantial mix of adenines and guanines. For example, at site 14281, 10 out of 15 clones show an A instead of a G (<xref ref-type="table" rid="pone-0021247-t002">Table 2</xref>, <xref ref-type="supplementary-material" rid="pone.0021247.s001">Figure S1</xref>) and the chromatogram shows competing A and G peaks (see <xref ref-type="fig" rid="pone-0021247-g001">Figure 1</xref>). In this case, the third independent PCR amplification was consistent with the first PCR amplification and first transformation (<xref ref-type="table" rid="pone-0021247-t002">Table 2</xref>, <xref ref-type="supplementary-material" rid="pone.0021247.s001">Figure S1</xref>).</p>
+      <p>The quantification of samples shows a diverse range of average copies of mtDNA per microliter from 35 (SD 4) to 1737 (SD 333) (<xref ref-type="table" rid="pone-0021247-t002">Table 2</xref>).</p>
+    </sec>
+    <sec id="s3">
+      <title>Discussion</title>
+      <p>While we have chosen here to work with non-human, non domestic animal samples, this is the first study to demonstrate that directly sequencing aDNA can provide the same data as taking a consensus of clones (as assessed by a majority rules approach, the CCP, or both), but it is prudent to mention that our results cannot be extrapolated across all studies. For instance there are cases in aDNA research where cloning is an absolute necessity. Without relying on the capacity of next generation sequencing, cloning would be, for example, the only means of reconstructing ancient diets from DNA preserved in coprolites <xref ref-type="bibr" rid="pone.0021247-Poinar1">[11]</xref>, <xref ref-type="bibr" rid="pone.0021247-Poinar2">[35]</xref>, or studying a mixture of DNA extracted from soil <xref ref-type="bibr" rid="pone.0021247-Willerslev3">[9]</xref>, <xref ref-type="bibr" rid="pone.0021247-Hebsgaard1">[10]</xref> or ice samples <xref ref-type="bibr" rid="pone.0021247-Willerslev2">[8]</xref>. The reason that cloning is essential in these cases is that their goal is to observe as many unique molecules as permitted, not to reach a consensus sequence from a pool of clones. In contrast, the focus of this initial study was deriving a consensus sequence from endogenous molecules from single individuals.</p>
+      <p>Cloning would also be necessary if the goal of a study is to derive an aDNA sequence from a heavily contaminated sample that cannot be decontaminated prior to DNA extraction. For example, there has been no demonstration that human coprolites can be efficiently decontaminated, which is why cloning was necessary to conclude that the coprolites excavated from Paisley Caves were produced by the occupants of the caves <xref ref-type="bibr" rid="pone.0021247-Gilbert3">[36]</xref>. However, this conclusion was not drawn from taking a consensus of a pool of clones, rather it relied on knowledge about the mtDNA mutations exhibited by the first Americans, relative to those exhibited by non-Native Americans. In contrast, if a sample can be sufficiently decontaminated [e.g. bone or tooth samples <xref ref-type="bibr" rid="pone.0021247-Kemp2">[18]</xref>, <xref ref-type="bibr" rid="pone.0021247-Salamon1">[37]</xref>, <xref ref-type="bibr" rid="pone.0021247-Malmstrom1">[but see 38]</xref>] cloning may be less necessary in deriving an individual sequence. While the experiment was not conducted, it would have been very interesting if Krause and colleagues <xref ref-type="bibr" rid="pone.0021247-Krause1">[33]</xref> had decontaminated a piece of Neanderthal bone, and extracted and analyzed this in parallel with the samples that they did not decontaminate. Then the results from the decontaminated bone could be compared against the 98% contamination they observed in the clones (102 of 104) of their experiment. Again, the experiments in this study were not conducted to address this issue; therefore, the results are not directly applicable to either of these scenarios. Future studies that explore the relationship between decontamination and cloning are necessary.</p>
+      <p>Cloning remains an appropriate and reliable method for obtaining aDNA sequences, given that this practice has the potential for showing the composition of a mixed PCR reaction (whether the heterogeneity of molecules arose from damage or contamination). However, as shown here in the second amplification of sample 809023, direct sequencing also permits one to see that the authenticity of a sequence is compromised by having started from a highly heterogeneous pool of molecules (i.e. when double peaks are present in the chromatograms). This amplification of the sample shows that even with competing damage, both approaches will yield the same result, and would require an additional amplification to reach a consensus for the sequence. Given the results presented, we argue that cloning should not serve as the default first step method for obtaining consensus sequences from aDNA samples, as has become commonplace in the field. This is especially true considering that direct sequencing is more time and cost efficient and, thus, could hasten discovery and publication.</p>
+      <p>While there is a general “rule” in the aDNA field that one should be suspicious of sequences initiated from a pool of less than 1000 template molecules <xref ref-type="bibr" rid="pone.0021247-Pbo1">[2]</xref>, our study has shown that even very low copy number samples [35 copies/µL (SD 4)] can provide reliable direct sequences. This “1000 molecule rule” originated from a study conducted by Handt and colleagues <xref ref-type="bibr" rid="pone.0021247-Handt1">[28]</xref>, who actually stated “A minimum of 100–1,000 molecules per amplification” (pg. 375) may be needed to get around the problems of sporadic contamination and/or damaged template molecules. As this cut off was determined with much cruder methods than are available today, we suggest that the relationship between the number of starting template molecules in a PCR and the reliability of the resulting sequence (whether produced directly or from a consensus of clones) needs re-evaluation. We anticipate that the repeatability of data will be more crucial to determining authenticity than starting template molecule copy numbers <xref ref-type="bibr" rid="pone.0021247-Gilbert4">[39]</xref>, an expectation which is supported by the reliability of the sequence derived from our lowest copy number sample (809023).</p>
+      <p>Ancient DNA research is positioned to continue to provide answers to questions of the past but, as most practitioners in the field recognize, collection and authentication of results will always be a challenge. With all the problems and circumstances associated with aDNA, researchers must be proactive in minimizing inaccurate results that can lead to dubious claims. While the recommendations of Cooper and Poinar <xref ref-type="bibr" rid="pone.0021247-Cooper1">[21]</xref>, or any other list of recommendations, were created as well intentioned advice for ensuring accurate results, they should not act as a simple checklist for researchers to follow and reviewers to note <xref ref-type="bibr" rid="pone.0021247-Gilbert2">[23]</xref>. We do not outright reject these recommendations because in practice they are aimed at reducing contamination and strengthening evidence that the molecules are, in fact, ancient. However, following the rationale outlined by Gilbert and colleagues <xref ref-type="bibr" rid="pone.0021247-Gilbert2">[23]</xref> and Kemp and Smith <xref ref-type="bibr" rid="pone.0021247-Kemp3">[22]</xref>, and supported by the data presented here, we disagree that protocols in the aDNA field should be dictated by a methods checklist. We recommend that researchers be as explicit as possible in describing their methods as well as their rationale for using them. It is appropriate for researchers to state their reason for cloning, other than just to satisfy the requirements suggested by Cooper and Poinar <xref ref-type="bibr" rid="pone.0021247-Cooper1">[21]</xref> <xref ref-type="bibr" rid="pone.0021247-Handt1">[for example was done by 28]</xref>, <xref ref-type="bibr" rid="pone.0021247-Handt2">[40]</xref>. This allows the reader to better understand the characteristics of the sample and the critical analysis that contributed to making methodological choices. For example, if the research question relies on the knowledge that a PCR reaction began from a heterogenous pool of molecules, cloning would be an appropriate method to confirm this. However, as demonstrated here, generating a sequence from an ancient sample does not require cloning and, as such, the method need not serve as the default approach.</p>
+      <p>Ancient DNA data should be evaluated according to the specific methods used to generate them, paying particular attention to the degree to which the data make sense. A cognitive approach to aDNA is necessary for assessing the reliability of results. Each study has specific problems and criteria that need to be considered in order to advocate reliable data. The “Key questions to ask about ancient DNA” (pg 543) as suggested by Gilbert and colleagues <xref ref-type="bibr" rid="pone.0021247-Gilbert2">[23]</xref> throws out the idea of a requirements checklist and instead proposes that readers, reviewers, and authors alike analyze whether or not the results make sense within the context of the study. Similarly, the results presented here underscore the point that rather than employing a methods checklist, reviewers need to more critically appraise the data that are presented in a study in order to judge the quality of research.</p>
+    </sec>
+    <sec id="s4" sec-type="materials|methods">
+      <title>Materials and Methods</title>
+      <p>Between 0.40 and 0.77 g of bone was removed from the distal end of five northern fur seal (<italic>Callorhinus ursinus</italic>) rib bones (samples are designated 809005, 809007, 809016, 809023 and 809032) using a new dremmel blade for each sample. These samples were excavated from the Amaknak Bridge Site in Unalaska, AK and date to approximately 3,500 years before present (YBP) <xref ref-type="bibr" rid="pone.0021247-Crockford1">[41]</xref>. All DNA extractions and PCR set-up were conducted in the Kemp Ancient DNA Lab at Washington State University. The samples were submerged in 6% w/v sodium hypochlorite for 15 min and rinsed twice with DNA free H<sub>2</sub>O to remove surface contamination <xref ref-type="bibr" rid="pone.0021247-Kemp2">[18]</xref>. DNA was extracted following Kemp and colleagues <xref ref-type="bibr" rid="pone.0021247-Kemp1">[13]</xref> except that the original volume of sample 809023 in EDTA was split in half before the phenol/chloroform step. A 181 base pair (bp) portion of the cytochrome B gene spanning nucleotide positions (nps) 14185–14365 [relative to a complete mtDNA genome, NC_008415 <xref ref-type="bibr" rid="pone.0021247-Arnason1">[42]</xref>] was PCR amplified with primers: CytB-F <named-content content-type="gene" xlink:type="simple">CCAACATTCGAAAAGTTCATCC</named-content> and CytB-R <named-content content-type="gene" xlink:type="simple">GCTGTGGTGGTGTCTGAGGT</named-content> <xref ref-type="bibr" rid="pone.0021247-Moss1">[43]</xref> for quantification by Real Time PCR and for use in direct sequencing and cloning.</p>
+      <p>Quantification PCRs were performed on sample extracts in an Applied Biosystems 7300 Real Time PCR System using a MAR-labeled probe: <named-content content-type="gene" xlink:type="simple">5′-CATTAACAGCTCGCTC-3′</named-content> (Allelogic). Each 25 µL reaction contained 0.24 mM dNTPs, 1× PCR Buffer, 1.5 mM MgCl<sub>2</sub>, 0.4 µM of each primer, 0.24 µM probe, 0.5 µM ROX reference dye, 0.75 U of Platinum <italic>Taq</italic> polymerase (Invitrogen™), and 5.0 µL of extract at full concentration, 20%, and 10% to determine levels of inhibition and ensure accuracy of copy numbers. Cycling was performed with an initial 10 minute hold at 95°C followed by 50 cycles of 15 seconds at 95°C and 60 seconds at 55°C. A minimum of 4 negative template controls were included on each 96-well plate to monitor contamination in reagents and ROX-labeled passive reference dye was included to correct for variation in well-to-well background fluorescence. Amplification curves were analyzed with the automatic baseline feature of the 7300 System SDS software (Applied Biosystems) with an empirically determined threshold of 0.05. Calibration curves were generated from a freshly prepared serial dilution series of standard DNA amplified from modern northern fur seal whole genomic DNA extract. Slopes of the calibration curves were used to calculate assay efficiencies (%PCR efficiency = (10<sup>(−1/slope)</sup>−1)×100) and all were required to meet an efficiency &gt;87% with R<sup>2</sup>&gt;0.996 for data inclusion. Analyzed data were exported from the 7300 SDS software into a CSV file (comma delimited) for secondary analysis and formatting in Microsoft® Excel 2007.</p>
+      <p>Amplifications for direct sequencing and cloning contained 0.32 mM dNTPs, 1× PCR Buffer, 1.5 mM MgCl<sub>2</sub>, 0.24 µM of each primer, 0.3 U of Platinum <italic>Taq</italic> polymerase (Invitrogen™), and 3.0 µL of DNA template in 30 µL reactions. These reactions were subjected to 60 cycles of PCR as follows: 3 min denaturing at 94°C, followed by 15 second holds at 94°C, 55°C, and 72°C, with a final 3 min extension period at 72°C. Negative control amplifications were carried out to detect potential contamination. Two independent PCR amplifications from each of the five extracts were submitted for direct sequencing. One microliter from each amplification was then cloned using a TOPO® TA cloning kit and TOP10 competent cells (Invitrogen™) following manufacturer's instructions with the exception that reactions were scaled to one quarter. A minimum of 16 white colonies were selected from each sample transformation and underwent colony PCR using the CytB primers for the first transformation and M13 primers for the second transformation. Colony PCRs were the same as above except they were prepared for a 15 µL reaction with 1.5 µL of DNA template, and the M13 primers were cycled with an annealing temperature of 58°C. Control plates and transformation of PCR negatives were used to ensure cell competency and PCR amplifications free of contamination. Clones containing the transformed vector were then sequenced at a minimum of 13 clones per sample. All amplicons were prepared for sequencing and purified using a Multiscreen PCR<sub>μ96</sub> filter plate (Millipore). Amplicons were brought to a volume of 100 µL, using dH<sub>2</sub>0, before transfer to the filter plate. After vacuuming, 25 µL of dH<sub>2</sub>0 was added to each well, followed by 30 minutes of shaking at 350 rpms. Direct sequencing was performed in both directions at the DNA Analysis Facility at Yale University. Sequences were aligned to a complete northern fur seal mtDNA reference sequence <xref ref-type="bibr" rid="pone.0021247-Arnason1">[Genbank accession number NC_008415 from 42]</xref> using Sequencher® 4.8.</p>
+      <p>As mtDNA does not undergo recombination, the majority rules consensus sequence was determined to be the haplotype present in greater than 50% of the clones. Cloned sequences from the five samples were analyzed by the CCP <xref ref-type="bibr" rid="pone.0021247-Bower1">[26]</xref> to determine percent confidence and any variation(s) from the majority rule consensus sequence. The direct sequence was then compared to each consensus sequence.</p>
+      <p>As an additional control, a third PCR amplification was directly sequenced as described above, but not cloned, for comparison to the first two direct sequences and to that of the consensus sequences determined from the sequenced clones from these PCRs.</p>
+    </sec>
+    <sec id="s5">
+      <title>Supporting Information</title>
+      <supplementary-material id="pone.0021247.s001" mimetype="application/x-excel" position="float" xlink:href="info:doi/10.1371/journal.pone.0021247.s001" xlink:type="simple">
+        <label>Figure S1</label>
+        <caption>
+          <p>
+            <bold>Cloned sequencing results.</bold>
+          </p>
+          <p>(XLS)</p>
+        </caption>
+      </supplementary-material>
+    </sec>
+  </body>
+  <back>
+    <ack>
+      <p>Thank you to Dr. Susan J. Crockford for turning our attention to the usefulness of ancient northern fur seals in these experiments. Thanks to Dr. Melissa Goodman-Elgar for allowing us to use her lab space to cut the ribs. Special thanks to the Seattle Aquarium for providing modern northern fur seal samples to use for standards and positive controls. Thank you to Dr. Tom Gilbert for his critical evaluation of our manuscript as well as the very helpful comments and critiques from two anonymous reviewers.</p>
+    </ack>
+    <ref-list>
+      <title>References</title>
+      <ref id="pone.0021247-Willerslev1">
+        <label>1</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Willerslev</surname><given-names>E</given-names></name><name name-style="western"><surname>Cooper</surname><given-names>A</given-names></name></person-group>             <year>2005</year>             <article-title>Ancient DNA.</article-title>             <source>Proc Biol Sci</source>             <volume>272</volume>             <fpage>3</fpage>             <lpage>16</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Pbo1">
+        <label>2</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Pääbo</surname><given-names>S</given-names></name><name name-style="western"><surname>Poinar</surname><given-names>H</given-names></name><name name-style="western"><surname>Serre</surname><given-names>D</given-names></name><name name-style="western"><surname>Jaenicke-Després</surname><given-names>V</given-names></name><name name-style="western"><surname>Hebler</surname><given-names>J</given-names></name><etal/></person-group>             <year>2004</year>             <article-title>Genetic analyses from ancient DNA.</article-title>             <source>Annual Review of Genetics</source>             <volume>38</volume>             <fpage>645</fpage>             <lpage>679</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Green1">
+        <label>3</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Green</surname><given-names>RE</given-names></name><name name-style="western"><surname>Krause</surname><given-names>J</given-names></name><name name-style="western"><surname>Briggs</surname><given-names>AW</given-names></name><name name-style="western"><surname>Maricic</surname><given-names>T</given-names></name><name name-style="western"><surname>Stenzel</surname><given-names>U</given-names></name><etal/></person-group>             <year>2010</year>             <article-title>A draft sequence of the Neandertal genome.</article-title>             <source>Science</source>             <volume>328</volume>             <fpage>710</fpage>             <lpage>722</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Krings1">
+        <label>4</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Krings</surname><given-names>M</given-names></name><name name-style="western"><surname>Stone</surname><given-names>A</given-names></name><name name-style="western"><surname>Schmitz</surname><given-names>RW</given-names></name><name name-style="western"><surname>Krainitzki</surname><given-names>H</given-names></name><name name-style="western"><surname>Stoneking</surname><given-names>M</given-names></name><etal/></person-group>             <year>1997</year>             <article-title>Neandertal DNA sequences and the origin of modern humans.</article-title>             <source>Cell</source>             <volume>90</volume>             <fpage>19</fpage>             <lpage>30</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Speller1">
+        <label>5</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Speller</surname><given-names>CF</given-names></name><name name-style="western"><surname>Kemp</surname><given-names>BM</given-names></name><name name-style="western"><surname>Wyatt</surname><given-names>SD</given-names></name><name name-style="western"><surname>Monroe</surname><given-names>C</given-names></name><name name-style="western"><surname>Lipe</surname><given-names>WD</given-names></name><etal/></person-group>             <year>2010</year>             <article-title>Ancient Mitochondrial DNA Analysis Reveals Complexity of Indigenous North American Turkey Domestication.</article-title>             <source>Proceedings of the National Academy of Science USA</source>             <volume>107</volume>             <fpage>2807</fpage>             <lpage>2812</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Zeder1">
+        <label>6</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Zeder</surname><given-names>MA</given-names></name><name name-style="western"><surname>Emshwiller</surname><given-names>E</given-names></name><name name-style="western"><surname>Smith</surname><given-names>BD</given-names></name><name name-style="western"><surname>Bradley</surname><given-names>DG</given-names></name></person-group>             <year>2006</year>             <article-title>Documenting domestication: the intersection of genetics and archaeology.</article-title>             <source>Trends Genet</source>             <volume>22</volume>             <fpage>139</fpage>             <lpage>155</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Lindqvist1">
+        <label>7</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Lindqvist</surname><given-names>C</given-names></name><name name-style="western"><surname>Schuster</surname><given-names>SC</given-names></name><name name-style="western"><surname>Sun</surname><given-names>Y</given-names></name><name name-style="western"><surname>Talbot</surname><given-names>SL</given-names></name><name name-style="western"><surname>Qi</surname><given-names>J</given-names></name><etal/></person-group>             <year>2010</year>             <article-title>Complete mitochondrial genome of a Pleistocene jawbone unveils the origin of polar bear.</article-title>             <source>Proc Natl Acad Sci U S A</source>             <volume>107</volume>             <fpage>5053</fpage>             <lpage>5057</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Willerslev2">
+        <label>8</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Willerslev</surname><given-names>E</given-names></name><name name-style="western"><surname>Cappellini</surname><given-names>E</given-names></name><name name-style="western"><surname>Boomsma</surname><given-names>W</given-names></name><name name-style="western"><surname>Nielsen</surname><given-names>R</given-names></name><name name-style="western"><surname>Hebsgaard</surname><given-names>MB</given-names></name><etal/></person-group>             <year>2007</year>             <article-title>Ancient biomolecules from deep ice cores reveal a forested southern Greenland.</article-title>             <source>Science</source>             <volume>317</volume>             <fpage>111</fpage>             <lpage>114</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Willerslev3">
+        <label>9</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Willerslev</surname><given-names>E</given-names></name><name name-style="western"><surname>Hansen</surname><given-names>AJ</given-names></name><name name-style="western"><surname>Binladen</surname><given-names>J</given-names></name><name name-style="western"><surname>Brand</surname><given-names>TB</given-names></name><name name-style="western"><surname>Gilbert</surname><given-names>MT</given-names></name><etal/></person-group>             <year>2003</year>             <article-title>Diverse plant and animal genetic records from Holocene and Pleistocene sediments.</article-title>             <source>Science</source>             <volume>300</volume>             <fpage>791</fpage>             <lpage>795</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Hebsgaard1">
+        <label>10</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Hebsgaard</surname><given-names>MB</given-names></name><name name-style="western"><surname>Gilbert</surname><given-names>MTP</given-names></name><name name-style="western"><surname>Arneborg</surname><given-names>J</given-names></name><name name-style="western"><surname>Heyn</surname><given-names>P</given-names></name><name name-style="western"><surname>Allentoft</surname><given-names>ME</given-names></name><etal/></person-group>             <year>2009</year>             <article-title>“The Farm Beneath the Sand”- and archaeological case study on ancient “dirt” DNA.</article-title>             <source>Antiquity</source>             <volume>83</volume>             <fpage>430</fpage>             <lpage>444</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Poinar1">
+        <label>11</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Poinar</surname><given-names>HN</given-names></name><name name-style="western"><surname>Kuch</surname><given-names>M</given-names></name><name name-style="western"><surname>Sobolik</surname><given-names>KD</given-names></name><name name-style="western"><surname>Barnes</surname><given-names>I</given-names></name><name name-style="western"><surname>Stankiewicz</surname><given-names>AB</given-names></name><etal/></person-group>             <year>2001</year>             <article-title>A molecular analysis of dietary diversity for three archaic Native Americans.</article-title>             <source>Proceedings of the National Academy of Sciences of the United States of America</source>             <volume>98</volume>             <fpage>4317</fpage>             <lpage>4322</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Lambert1">
+        <label>12</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Lambert</surname><given-names>DM</given-names></name><name name-style="western"><surname>Ritchie</surname><given-names>PA</given-names></name><name name-style="western"><surname>Millar</surname><given-names>CD</given-names></name><name name-style="western"><surname>Holland</surname><given-names>B</given-names></name><name name-style="western"><surname>Drummond</surname><given-names>AJ</given-names></name><etal/></person-group>             <year>2002</year>             <article-title>Rates of evolution in ancient DNA from Adelie penguins.</article-title>             <source>Science (Washington D C)</source>             <volume>295</volume>             <fpage>2270</fpage>             <lpage>2273</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Kemp1">
+        <label>13</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Kemp</surname><given-names>B</given-names></name><name name-style="western"><surname>Malhi</surname><given-names>R</given-names></name><name name-style="western"><surname>McDonough</surname><given-names>J</given-names></name><name name-style="western"><surname>Bolnick</surname><given-names>D</given-names></name><name name-style="western"><surname>Eshleman</surname><given-names>J</given-names></name><etal/></person-group>             <year>2007</year>             <article-title>Genetic analysis of early Holocene skeletal remains from Alaska and its implications for the settlement of the Americas.</article-title>             <source>American Journal of Physical Anthropology</source>             <volume>132</volume>             <fpage>605</fpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Shapiro1">
+        <label>14</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Shapiro</surname><given-names>B</given-names></name><name name-style="western"><surname>Drummond</surname><given-names>AJ</given-names></name><name name-style="western"><surname>Rambaut</surname><given-names>A</given-names></name><name name-style="western"><surname>Wilson</surname><given-names>MC</given-names></name><name name-style="western"><surname>Matheus</surname><given-names>PE</given-names></name><etal/></person-group>             <year>2004</year>             <article-title>Rise and fall of the Beringian steppe bison.</article-title>             <source>Science</source>             <volume>306</volume>             <fpage>1561</fpage>             <lpage>1565</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Hofreiter1">
+        <label>15</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Hofreiter</surname><given-names>M</given-names></name><name name-style="western"><surname>Jaenicke</surname><given-names>V</given-names></name><name name-style="western"><surname>Serre</surname><given-names>D</given-names></name><name name-style="western"><surname>von Haeseler</surname><given-names>A</given-names></name><name name-style="western"><surname>Pääbo</surname><given-names>S</given-names></name></person-group>             <year>2001</year>             <article-title>DNA sequence from mulitple amplifications reveal artifacts induced by cytosine deamination in ancient DNA.</article-title>             <source>Nucleic Acids Research</source>             <volume>29</volume>             <fpage>4793</fpage>             <lpage>4799</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Gilbert1">
+        <label>16</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Gilbert</surname><given-names>MT</given-names></name><name name-style="western"><surname>Binladen</surname><given-names>J</given-names></name><name name-style="western"><surname>Miller</surname><given-names>W</given-names></name><name name-style="western"><surname>Wiuf</surname><given-names>C</given-names></name><name name-style="western"><surname>Willerslev</surname><given-names>E</given-names></name><etal/></person-group>             <year>2006</year>             <article-title>Recharacterization of ancient DNA miscoding lesions: insights in the era of sequencing-by-synthesis.</article-title>             <source>Nucleic Acids Res</source>             <volume>35</volume>             <fpage>1</fpage>             <lpage>10</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Pbo2">
+        <label>17</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Pääbo</surname><given-names>S</given-names></name><name name-style="western"><surname>Gifford</surname><given-names>JA</given-names></name><name name-style="western"><surname>Wilson</surname><given-names>AC</given-names></name></person-group>             <year>1988</year>             <article-title>Mitochondrial DNA sequences from a 7000-year old brain.</article-title>             <source>Nucleic Acids Research</source>             <volume>16</volume>             <fpage>9775</fpage>             <lpage>9788</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Kemp2">
+        <label>18</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Kemp</surname><given-names>BM</given-names></name><name name-style="western"><surname>Smith</surname><given-names>DG</given-names></name></person-group>             <year>2005</year>             <article-title>Use of Bleach to Eliminate Contaminating DNA from the Surfaces of Bones and Teeth.</article-title>             <source>Forensic Science International</source>             <volume>154</volume>             <fpage>53</fpage>             <lpage>61</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Alonso1">
+        <label>19</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Alonso</surname><given-names>A</given-names></name><name name-style="western"><surname>Martin</surname><given-names>P</given-names></name><name name-style="western"><surname>Albarran</surname><given-names>C</given-names></name><name name-style="western"><surname>Garcia</surname><given-names>P</given-names></name><name name-style="western"><surname>Garcia</surname><given-names>O</given-names></name><etal/></person-group>             <year>2004</year>             <article-title>Real-time PCR designs to estimate nuclear and mitochondrial DNA copy number in forensic and ancient DNA studies.</article-title>             <source>Forensic Science International</source>             <volume>139</volume>             <fpage>141</fpage>             <lpage>149</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Capelli1">
+        <label>20</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Capelli</surname><given-names>C</given-names></name><name name-style="western"><surname>Tschentscher</surname><given-names>F</given-names></name><name name-style="western"><surname>Pascali</surname><given-names>VL</given-names></name></person-group>             <year>2003</year>             <article-title>“Ancient” protocols for the crime scene? Similarities and differences between forensic genetics and ancient DNA analysis.</article-title>             <source>Forensic Science International</source>             <volume>131</volume>             <fpage>59</fpage>             <lpage>64</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Cooper1">
+        <label>21</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Cooper</surname><given-names>A</given-names></name><name name-style="western"><surname>Poinar</surname><given-names>HN</given-names></name></person-group>             <year>2000</year>             <article-title>Ancient DNA: do it right or not at all.</article-title>             <source>Science</source>             <volume>289</volume>             <fpage>1139</fpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Kemp3">
+        <label>22</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Kemp</surname><given-names>BM</given-names></name><name name-style="western"><surname>Smith</surname><given-names>DG</given-names></name></person-group>             <year>2010</year>             <article-title>Ancient DNA Methodology: “Thoughts from Brian M. Kemp and David Glenn Smith on “Mitochondrial DNA of Protohistoric Remains of an Arikara Population from South Dakota”.</article-title>             <source>Human Biology</source>             <volume>82</volume>             <fpage>227</fpage>             <lpage>238</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Gilbert2">
+        <label>23</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Gilbert</surname><given-names>M</given-names></name><name name-style="western"><surname>Bandelt</surname><given-names>H</given-names></name><name name-style="western"><surname>Hofreiter</surname><given-names>M</given-names></name><name name-style="western"><surname>Barnes</surname><given-names>I</given-names></name></person-group>             <year>2005</year>             <article-title>Assessing ancient DNA studies.</article-title>             <source>Trends in Ecology &amp; Evolution</source>             <volume>20</volume>             <fpage>541</fpage>             <lpage>544</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Collins1">
+        <label>24</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Collins</surname><given-names>MJ</given-names></name><name name-style="western"><surname>Penkman</surname><given-names>KE</given-names></name><name name-style="western"><surname>Rohland</surname><given-names>N</given-names></name><name name-style="western"><surname>Shapiro</surname><given-names>B</given-names></name><name name-style="western"><surname>Dobberstein</surname><given-names>RC</given-names></name><etal/></person-group>             <year>2009</year>             <article-title>Is amino acid racemization a useful tool for screening for ancient DNA in bone?</article-title>             <source>Proc Biol Sci</source>             <volume>276</volume>             <fpage>2971</fpage>             <lpage>2977</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Fernandez1">
+        <label>25</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Fernandez</surname><given-names>E</given-names></name><name name-style="western"><surname>Ortiz</surname><given-names>JE</given-names></name><name name-style="western"><surname>Perez-Perez</surname><given-names>A</given-names></name><name name-style="western"><surname>Prats</surname><given-names>E</given-names></name><name name-style="western"><surname>Turbon</surname><given-names>D</given-names></name><etal/></person-group>             <year>2009</year>             <article-title>Aspartic acid racemization variability in ancient human remains: implications in the prediction of ancient DNA recovery.</article-title>             <source>Journal of Archaeological Science</source>             <volume>36</volume>             <fpage>965</fpage>             <lpage>972</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Bower1">
+        <label>26</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Bower</surname><given-names>MA</given-names></name><name name-style="western"><surname>Spencer</surname><given-names>M</given-names></name><name name-style="western"><surname>Matsumura</surname><given-names>S</given-names></name><name name-style="western"><surname>Nisbet</surname><given-names>RER</given-names></name><name name-style="western"><surname>Howe</surname><given-names>CJ</given-names></name></person-group>             <year>2005</year>             <article-title>How many clones need to be sequenced from a single forensic or ancient DNA sample in order to determine a reliable consensus sequence?</article-title>             <source>Nucleic Acids Research</source>             <volume>33</volume>             <fpage>2549</fpage>             <lpage>2556</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Kuhn1">
+        <label>27</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Kuhn</surname><given-names>TS</given-names></name><name name-style="western"><surname>McFarlane</surname><given-names>KA</given-names></name><name name-style="western"><surname>Groves</surname><given-names>P</given-names></name><name name-style="western"><surname>Mooers</surname><given-names>AO</given-names></name><name name-style="western"><surname>Shapiro</surname><given-names>B</given-names></name></person-group>             <year>2010</year>             <article-title>Modern and ancient DNA reveal recent partial replacement of caribou in the southwest Yukon.</article-title>             <source>Mol Ecol</source>             <volume>19</volume>             <fpage>1312</fpage>             <lpage>1323</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Handt1">
+        <label>28</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Handt</surname><given-names>O</given-names></name><name name-style="western"><surname>Krings</surname><given-names>M</given-names></name><name name-style="western"><surname>Ward</surname><given-names>RH</given-names></name><name name-style="western"><surname>Pääbo</surname><given-names>S</given-names></name></person-group>             <year>1996</year>             <article-title>The retrieval of ancient human DNA sequences.</article-title>             <source>American Journal of Human Genetics</source>             <volume>59</volume>             <fpage>368</fpage>             <lpage>376</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Endicott1">
+        <label>29</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Endicott</surname><given-names>P</given-names></name><name name-style="western"><surname>Metspalu</surname><given-names>M</given-names></name><name name-style="western"><surname>Stringer</surname><given-names>C</given-names></name><name name-style="western"><surname>Macaulay</surname><given-names>V</given-names></name><name name-style="western"><surname>Cooper</surname><given-names>A</given-names></name><etal/></person-group>             <year>2006</year>             <article-title>Multiplexed SNP typing of ancient DNA clarifies the origin of Andaman mtDNA haplogroups amongst South Asian tribal populations.</article-title>             <source>PLoS One</source>             <volume>1</volume>             <fpage>e81</fpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Larson1">
+        <label>30</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Larson</surname><given-names>G</given-names></name><name name-style="western"><surname>Albarella</surname><given-names>U</given-names></name><name name-style="western"><surname>Dobney</surname><given-names>K</given-names></name><name name-style="western"><surname>Rowley-Conwy</surname><given-names>P</given-names></name><name name-style="western"><surname>Schibler</surname><given-names>J</given-names></name><etal/></person-group>             <year>2007</year>             <article-title>Ancient DNA, pig domestication, and the spread of the Neolithic into Europe.</article-title>             <source>Proc Natl Acad Sci U S A</source>             <volume>104</volume>             <fpage>15276</fpage>             <lpage>15281</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Thomsen1">
+        <label>31</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Thomsen</surname><given-names>PF</given-names></name><name name-style="western"><surname>Elias</surname><given-names>S</given-names></name><name name-style="western"><surname>Gilbert</surname><given-names>MT</given-names></name><name name-style="western"><surname>Haile</surname><given-names>J</given-names></name><name name-style="western"><surname>Munch</surname><given-names>K</given-names></name><etal/></person-group>             <year>2009</year>             <article-title>Non-destructive sampling of ancient insect DNA.</article-title>             <source>PLoS One</source>             <volume>4</volume>             <fpage>e5048</fpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Kuch1">
+        <label>32</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Kuch</surname><given-names>M</given-names></name><name name-style="western"><surname>Grocke</surname><given-names>DR</given-names></name><name name-style="western"><surname>Knyf</surname><given-names>MC</given-names></name><name name-style="western"><surname>Gilbert</surname><given-names>MT</given-names></name><name name-style="western"><surname>Younghusband</surname><given-names>B</given-names></name><etal/></person-group>             <year>2007</year>             <article-title>A preliminary analysis of the DNA and diet of the extinct Beothuk: A systematic approach to ancient human DNA.</article-title>             <source>Am J Phys Anthropol</source>             <volume>132</volume>             <fpage>594</fpage>             <lpage>604</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Krause1">
+        <label>33</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Krause</surname><given-names>J</given-names></name><name name-style="western"><surname>Orlando</surname><given-names>L</given-names></name><name name-style="western"><surname>Serre</surname><given-names>D</given-names></name><name name-style="western"><surname>Viola</surname><given-names>B</given-names></name><name name-style="western"><surname>Prufer</surname><given-names>K</given-names></name><etal/></person-group>             <year>2007</year>             <article-title>Neanderthals in central Asia and Siberia.</article-title>             <source>Nature</source>             <volume>449</volume>             <fpage>902</fpage>             <lpage>904</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Leonard1">
+        <label>34</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Leonard</surname><given-names>JA</given-names></name><name name-style="western"><surname>Shanks</surname><given-names>O</given-names></name><name name-style="western"><surname>Hofreiter</surname><given-names>M</given-names></name><name name-style="western"><surname>Kreuz</surname><given-names>E</given-names></name><name name-style="western"><surname>Hodges</surname><given-names>L</given-names></name><etal/></person-group>             <year>2007</year>             <article-title>Animal DNA in PCR reagents plagues ancient DNA research.</article-title>             <source>Journal of Archaeological Science</source>             <volume>34</volume>             <fpage>1361</fpage>             <lpage>1366</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Poinar2">
+        <label>35</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Poinar</surname><given-names>HN</given-names></name><name name-style="western"><surname>Hofreiter</surname><given-names>M</given-names></name><name name-style="western"><surname>Spaulding</surname><given-names>WG</given-names></name><name name-style="western"><surname>Martin</surname><given-names>PS</given-names></name><name name-style="western"><surname>Stankiewicz</surname><given-names>BA</given-names></name><etal/></person-group>             <year>1998</year>             <article-title>Molecular coproscopy: Dung and diet of the extinct ground sloth Nothrotheriops shastensis.</article-title>             <source>Science (Washington D C)</source>             <volume>281</volume>             <fpage>402</fpage>             <lpage>406</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Gilbert3">
+        <label>36</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Gilbert</surname><given-names>MTP</given-names></name><name name-style="western"><surname>Jenkins</surname><given-names>DL</given-names></name><name name-style="western"><surname>Gotherstrom</surname><given-names>A</given-names></name><name name-style="western"><surname>Naveran</surname><given-names>N</given-names></name><name name-style="western"><surname>Sanchez</surname><given-names>JJ</given-names></name><etal/></person-group>             <year>2008</year>             <article-title>DNA from pre-Clovis human coprolites in Oregon, North America.</article-title>             <source>Science</source>             <volume>320</volume>             <fpage>786</fpage>             <lpage>789</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Salamon1">
+        <label>37</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Salamon</surname><given-names>M</given-names></name><name name-style="western"><surname>Tuross</surname><given-names>N</given-names></name><name name-style="western"><surname>Arensburg</surname><given-names>B</given-names></name><name name-style="western"><surname>Weiner</surname><given-names>S</given-names></name></person-group>             <year>2005</year>             <article-title>Relatively well preserved DNA is present in the crystal aggregates of fossil bones.</article-title>             <source>Proc Natl Acad Sci U S A</source>             <volume>102</volume>             <fpage>13783</fpage>             <lpage>13788</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Malmstrom1">
+        <label>38</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Malmstrom</surname><given-names>H</given-names></name><name name-style="western"><surname>Svensson</surname><given-names>EM</given-names></name><name name-style="western"><surname>Gilbert</surname><given-names>MT</given-names></name><name name-style="western"><surname>Willerslev</surname><given-names>E</given-names></name><name name-style="western"><surname>Gotherstrom</surname><given-names>A</given-names></name><etal/></person-group>             <year>2007</year>             <article-title>More on contamination: the use of asymmetric molecular behavior to identify authentic ancient human DNA.</article-title>             <source>Mol Biol Evol</source>             <volume>24</volume>             <fpage>998</fpage>             <lpage>1004</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Gilbert4">
+        <label>39</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Gilbert</surname><given-names>MTP</given-names></name><name name-style="western"><surname>Jenkins</surname><given-names>DL</given-names></name><name name-style="western"><surname>Higham</surname><given-names>TFG</given-names></name><name name-style="western"><surname>Rasmussen</surname><given-names>M</given-names></name><name name-style="western"><surname>Malmstrom</surname><given-names>H</given-names></name><etal/></person-group>             <year>2009</year>             <article-title>Response to Comment by Poinar et al. on “DNA from Pre-Clovis Human Coprolites in Oregon, North America”.</article-title>             <source>Science</source>             <volume>325</volume>             <fpage>148-b</fpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Handt2">
+        <label>40</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Handt</surname><given-names>O</given-names></name><name name-style="western"><surname>Richards</surname><given-names>M</given-names></name><name name-style="western"><surname>Trommsdorff</surname><given-names>M</given-names></name><name name-style="western"><surname>Kilger</surname><given-names>C</given-names></name><name name-style="western"><surname>Simanainen</surname><given-names>J</given-names></name><etal/></person-group>             <year>1994</year>             <article-title>Molecular genetic analyses of the Tyrolean Ice Man.</article-title>             <source>Science</source>             <volume>264</volume>             <fpage>1775</fpage>             <lpage>1778</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Crockford1">
+        <label>41</label>
+        <element-citation publication-type="other" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Crockford</surname><given-names>SJ</given-names></name><name name-style="western"><surname>Fredrick</surname><given-names>G</given-names></name><name name-style="western"><surname>Wigen</surname><given-names>R</given-names></name><name name-style="western"><surname>McKechnie</surname><given-names>I</given-names></name></person-group>             <year>2004</year>             <article-title>Final Report on the analysis of the vertebrate fauna from Amaknak Bridge, Unalaska, AK, UNL050.</article-title>             <comment>Project # MGS-STP-BR-0310(S)/52930 to R. Knecht and R. Davis. Report on file, Alaska Department of Transportation, Anchorage</comment>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Arnason1">
+        <label>42</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Arnason</surname><given-names>U</given-names></name><name name-style="western"><surname>Gullberg</surname><given-names>A</given-names></name><name name-style="western"><surname>Janke</surname><given-names>A</given-names></name><name name-style="western"><surname>Kullberg</surname><given-names>M</given-names></name><name name-style="western"><surname>Lehman</surname><given-names>N</given-names></name><etal/></person-group>             <year>2006</year>             <article-title>Pinniped phylogeny and a new hypothesis for their origin and dispersal.</article-title>             <source>Molecular phylogenetics and evolution</source>             <volume>41</volume>             <fpage>345</fpage>             <lpage>354</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Moss1">
+        <label>43</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Moss</surname><given-names>M</given-names></name><name name-style="western"><surname>Yang</surname><given-names>D</given-names></name><name name-style="western"><surname>Newsome</surname><given-names>S</given-names></name><name name-style="western"><surname>Speller</surname><given-names>C</given-names></name><name name-style="western"><surname>McKechnie</surname><given-names>I</given-names></name><etal/></person-group>             <year>2006</year>             <article-title>Historical ecology and biogeography of North Pacific pinnipeds: Isotopes and ancient DNA from three archaeological assemblages.</article-title>             <source>The Journal of Island and Coastal Archaeology</source>             <volume>1</volume>             <fpage>165</fpage>             <lpage>190</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Krings2">
+        <label>44</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Krings</surname><given-names>M</given-names></name><name name-style="western"><surname>Geisert</surname><given-names>H</given-names></name><name name-style="western"><surname>Schmitz</surname><given-names>RW</given-names></name><name name-style="western"><surname>Krainitzki</surname><given-names>H</given-names></name><name name-style="western"><surname>Pääbo</surname><given-names>S</given-names></name></person-group>             <year>1999</year>             <article-title>DNA sequence of the mitochondrial hypervariable region II from the neandertal type specimen.</article-title>             <source>Proc Natl Acad Sci U S A</source>             <volume>96</volume>             <fpage>5581</fpage>             <lpage>5585</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Ovchinnikov1">
+        <label>45</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Ovchinnikov</surname><given-names>IV</given-names></name><name name-style="western"><surname>Gotherstrom</surname><given-names>A</given-names></name><name name-style="western"><surname>Romanova</surname><given-names>GP</given-names></name><name name-style="western"><surname>Kharitonov</surname><given-names>VM</given-names></name><name name-style="western"><surname>Liden</surname><given-names>K</given-names></name><etal/></person-group>             <year>2000</year>             <article-title>Molecular analysis of Neanderthal DNA from the northern Caucasus.</article-title>             <source>Nature</source>             <volume>404</volume>             <fpage>490</fpage>             <lpage>493</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Loreille1">
+        <label>46</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Loreille</surname><given-names>O</given-names></name><name name-style="western"><surname>Orlando</surname><given-names>L</given-names></name><name name-style="western"><surname>Patou-Mathis</surname><given-names>M</given-names></name><name name-style="western"><surname>Philippe</surname><given-names>M</given-names></name><name name-style="western"><surname>Taberlet</surname><given-names>P</given-names></name><etal/></person-group>             <year>2001</year>             <article-title>Ancient DNA analysis reveals divergence of the cave bear, Ursus spelaeus, and brown bear, Ursus arctos, lineages.</article-title>             <source>Curr Biol</source>             <volume>11</volume>             <fpage>200</fpage>             <lpage>203</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Hofreiter2">
+        <label>47</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Hofreiter</surname><given-names>M</given-names></name><name name-style="western"><surname>Capelli</surname><given-names>C</given-names></name><name name-style="western"><surname>Krings</surname><given-names>M</given-names></name><name name-style="western"><surname>Waits</surname><given-names>L</given-names></name><name name-style="western"><surname>Conard</surname><given-names>N</given-names></name><etal/></person-group>             <year>2002</year>             <article-title>Ancient DNA analyses reveal high mitochondrial DNA sequence diversity and parallel morphological evolution of late pleistocene cave bears.</article-title>             <source>Mol Biol Evol</source>             <volume>19</volume>             <fpage>1244</fpage>             <lpage>1250</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Monsalve1">
+        <label>48</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Monsalve</surname><given-names>MV</given-names></name><name name-style="western"><surname>Stone</surname><given-names>AC</given-names></name><name name-style="western"><surname>Lewis</surname><given-names>CM</given-names></name><name name-style="western"><surname>Rempel</surname><given-names>A</given-names></name><name name-style="western"><surname>Richards</surname><given-names>M</given-names></name><etal/></person-group>             <year>2002</year>             <article-title>Brief communication: molecular analysis of the Kwaday Dan Ts'finchi ancient remains found in a glacier in Canada.</article-title>             <source>Am J Phys Anthropol</source>             <volume>119</volume>             <fpage>288</fpage>             <lpage>291</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Caramelli1">
+        <label>49</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Caramelli</surname><given-names>D</given-names></name><name name-style="western"><surname>Lalueza-Fox</surname><given-names>C</given-names></name><name name-style="western"><surname>Vernesi</surname><given-names>C</given-names></name><name name-style="western"><surname>Lari</surname><given-names>M</given-names></name><name name-style="western"><surname>Casoli</surname><given-names>A</given-names></name><etal/></person-group>             <year>2003</year>             <article-title>Evidence for a genetic discontinuity between Neandertals and 24,000-year-old anatomically modern Europeans.</article-title>             <source>Proc Natl Acad Sci U S A</source>             <volume>100</volume>             <fpage>6593</fpage>             <lpage>6597</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Orlando1">
+        <label>50</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Orlando</surname><given-names>L</given-names></name><name name-style="western"><surname>Leonard</surname><given-names>JA</given-names></name><name name-style="western"><surname>Thenot</surname><given-names>A</given-names></name><name name-style="western"><surname>Laudet</surname><given-names>V</given-names></name><name name-style="western"><surname>Guerin</surname><given-names>C</given-names></name><etal/></person-group>             <year>2003</year>             <article-title>Ancient DNA analysis reveals woolly rhino evolutionary relationships.</article-title>             <source>Mol Phylogenet Evol</source>             <volume>28</volume>             <fpage>485</fpage>             <lpage>499</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Poinar3">
+        <label>51</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Poinar</surname><given-names>H</given-names></name><name name-style="western"><surname>Kuch</surname><given-names>M</given-names></name><name name-style="western"><surname>McDonald</surname><given-names>G</given-names></name><name name-style="western"><surname>Martin</surname><given-names>P</given-names></name><name name-style="western"><surname>Pääbo</surname><given-names>S</given-names></name></person-group>             <year>2003</year>             <article-title>Nuclear gene sequences from a late Pleistocene sloth coprolite.</article-title>             <source>Current Biology</source>             <volume>12</volume>             <fpage>1150</fpage>             <lpage>1152</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Gilbert5">
+        <label>52</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Gilbert</surname><given-names>MT</given-names></name><name name-style="western"><surname>Wilson</surname><given-names>AS</given-names></name><name name-style="western"><surname>Bunce</surname><given-names>M</given-names></name><name name-style="western"><surname>Hansen</surname><given-names>AJ</given-names></name><name name-style="western"><surname>Willerslev</surname><given-names>E</given-names></name><etal/></person-group>             <year>2004</year>             <article-title>Ancient mitochondrial DNA from hair.</article-title>             <source>Curr Biol</source>             <volume>14</volume>             <fpage>R463</fpage>             <lpage>464</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Bouwman1">
+        <label>53</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Bouwman</surname><given-names>AS</given-names></name><name name-style="western"><surname>Brown</surname><given-names>TA</given-names></name></person-group>             <year>2005</year>             <article-title>The limits of biomolecular palaeopathology: ancient DNA cannot be used to study venereal syphilis.</article-title>             <source>Journal of Archaeological Science</source>             <volume>32</volume>             <fpage>703</fpage>             <lpage>713</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Haak1">
+        <label>54</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Haak</surname><given-names>W</given-names></name><name name-style="western"><surname>Forster</surname><given-names>P</given-names></name><name name-style="western"><surname>Bramanti</surname><given-names>B</given-names></name><name name-style="western"><surname>Matsumura</surname><given-names>S</given-names></name><name name-style="western"><surname>Brandt</surname><given-names>G</given-names></name><etal/></person-group>             <year>2005</year>             <article-title>Ancient DNA from the first European farmers in 7500-year-old Neolithic sites.</article-title>             <source>Science</source>             <volume>310</volume>             <fpage>1016</fpage>             <lpage>1018</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Kim1">
+        <label>55</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Kim</surname><given-names>JH</given-names></name><name name-style="western"><surname>Oh</surname><given-names>JH</given-names></name><name name-style="western"><surname>Song</surname><given-names>JH</given-names></name><name name-style="western"><surname>Jeon</surname><given-names>JT</given-names></name><name name-style="western"><surname>Han</surname><given-names>SH</given-names></name><etal/></person-group>             <year>2005</year>             <article-title>Molecular genetic analysis of ancient cattle bones excavated from archaeological sites in Jeju, Korea.</article-title>             <source>Mol Cells</source>             <volume>20</volume>             <fpage>325</fpage>             <lpage>330</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Karanth1">
+        <label>56</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Karanth</surname><given-names>KP</given-names></name><name name-style="western"><surname>Delefosse</surname><given-names>T</given-names></name><name name-style="western"><surname>Rakotosamimanana</surname><given-names>B</given-names></name><name name-style="western"><surname>Parsons</surname><given-names>TJ</given-names></name><name name-style="western"><surname>Yoder</surname><given-names>AD</given-names></name></person-group>             <year>2005</year>             <article-title>Ancient DNA from giant extinct lemurs confirms single origin of Malagasy primates.</article-title>             <source>Proc Natl Acad Sci U S A</source>             <volume>102</volume>             <fpage>5090</fpage>             <lpage>5095</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Malmstrom2">
+        <label>57</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Malmstrom</surname><given-names>H</given-names></name><name name-style="western"><surname>Stora</surname><given-names>J</given-names></name><name name-style="western"><surname>Dalen</surname><given-names>L</given-names></name><name name-style="western"><surname>Holmlund</surname><given-names>G</given-names></name><name name-style="western"><surname>Gotherstrom</surname><given-names>A</given-names></name></person-group>             <year>2005</year>             <article-title>Extensive human DNA contamination in extracts from ancient dog bones and teeth.</article-title>             <source>Mol Biol Evol</source>             <volume>22</volume>             <fpage>2040</fpage>             <lpage>2047</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Binladen1">
+        <label>58</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Binladen</surname><given-names>J</given-names></name><name name-style="western"><surname>Wiuf</surname><given-names>C</given-names></name><name name-style="western"><surname>Gilbert</surname><given-names>MT</given-names></name><name name-style="western"><surname>Bunce</surname><given-names>M</given-names></name><name name-style="western"><surname>Barnett</surname><given-names>R</given-names></name><etal/></person-group>             <year>2006</year>             <article-title>Assessing the fidelity of ancient DNA sequences amplified from nuclear genes.</article-title>             <source>Genetics</source>             <volume>172</volume>             <fpage>733</fpage>             <lpage>741</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Gilbert6">
+        <label>59</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Gilbert</surname><given-names>MT</given-names></name><name name-style="western"><surname>Menez</surname><given-names>L</given-names></name><name name-style="western"><surname>Janaway</surname><given-names>RC</given-names></name><name name-style="western"><surname>Tobin</surname><given-names>DJ</given-names></name><name name-style="western"><surname>Cooper</surname><given-names>A</given-names></name><etal/></person-group>             <year>2006</year>             <article-title>Resistance of degraded hair shafts to contaminant DNA.</article-title>             <source>Forensic Sci Int</source>             <volume>156</volume>             <fpage>208</fpage>             <lpage>212</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Orlando2">
+        <label>60</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Orlando</surname><given-names>L</given-names></name><name name-style="western"><surname>Darlu</surname><given-names>P</given-names></name><name name-style="western"><surname>Toussaint</surname><given-names>M</given-names></name><name name-style="western"><surname>Bonjean</surname><given-names>D</given-names></name><name name-style="western"><surname>Otte</surname><given-names>M</given-names></name><etal/></person-group>             <year>2006</year>             <article-title>Revisiting Neandertal diversity with a 100,000 year old mtDNA sequence.</article-title>             <source>Curr Biol</source>             <volume>16</volume>             <fpage>R400</fpage>             <lpage>402</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Green2">
+        <label>61</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Green</surname><given-names>RE</given-names></name><name name-style="western"><surname>Malaspinas</surname><given-names>AS</given-names></name><name name-style="western"><surname>Krause</surname><given-names>J</given-names></name><name name-style="western"><surname>Briggs</surname><given-names>AW</given-names></name><name name-style="western"><surname>Johnson</surname><given-names>PL</given-names></name><etal/></person-group>             <year>2008</year>             <article-title>A complete Neandertal mitochondrial genome sequence determined by high-throughput sequencing.</article-title>             <source>Cell</source>             <volume>134</volume>             <fpage>416</fpage>             <lpage>426</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Helgason1">
+        <label>62</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Helgason</surname><given-names>A</given-names></name><name name-style="western"><surname>Lalueza-Fox</surname><given-names>C</given-names></name><name name-style="western"><surname>Ghosh</surname><given-names>S</given-names></name><name name-style="western"><surname>Sigurethardottir</surname><given-names>S</given-names></name><name name-style="western"><surname>Sampietro</surname><given-names>ML</given-names></name><etal/></person-group>             <year>2009</year>             <article-title>Sequences from first settlers reveal rapid evolution in Icelandic mtDNA pool.</article-title>             <source>PLoS Genet</source>             <volume>5</volume>             <fpage>e1000343</fpage>          </element-citation>
+      </ref>
+      <ref id="pone.0021247-Lari1">
+        <label>63</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Lari</surname><given-names>M</given-names></name><name name-style="western"><surname>Rizzi</surname><given-names>E</given-names></name><name name-style="western"><surname>Milani</surname><given-names>L</given-names></name><name name-style="western"><surname>Corti</surname><given-names>G</given-names></name><name name-style="western"><surname>Balsamo</surname><given-names>C</given-names></name><etal/></person-group>             <year>2010</year>             <article-title>The microcephalin ancestral allele in a Neanderthal individual.</article-title>             <source>PLoS One</source>             <volume>5</volume>             <fpage>e10648</fpage>          </element-citation>
+      </ref>
+    </ref-list>
+    
+  </back>
+</article>

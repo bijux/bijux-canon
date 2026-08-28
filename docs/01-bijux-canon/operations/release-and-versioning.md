@@ -4,7 +4,7 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-08-25
 ---
 
 # Release and Versioning
@@ -49,6 +49,20 @@ The repository classifies distributions in `pyproject.toml`:
 Compatibility distributions share the release line but retain their own wheel
 metadata and import or command contract. Their purpose is continuity, not a
 second implementation.
+
+The runtime wheel also requires agent, ingest, reason, and index at exactly the
+runtime version. Publication follows the dependency tiers declared by the root
+package catalog: canonical leaf packages first; runtime and leaf aliases next;
+and the two runtime aliases last. Exact pins deliberately turn a partial or
+mixed family into a resolver conflict instead of an untested installation.
+
+Before creating a release tag, build the complete family with the proposed
+stable version and run the installed release-candidate identity check. The
+check requires an absent, valid tag name targeting the clean evaluated commit;
+matching source fallbacks and changelog entries; a current lock; and one
+hash-bound wheel at that version for every repository distribution. It records
+that no tag was created. Tag creation and publication remain separate,
+explicitly authorized actions.
 
 ## Release Evidence
 
@@ -101,6 +115,17 @@ section of the [compatibility handbook](../../08-compat-packages/index.md).
 Version equality alone does not prove behavioral compatibility.
 
 ## Release Boundaries
+
+Version 0.4.0 ships Python distributions only. It does not ship an executable
+container image or a containerized service image. The GHCR destination stores
+the same staged distribution family as non-executable OCI release bundles; a
+registry bundle is a custody and download surface, not a runnable-image claim.
+
+A future service image remains out of scope until it is built from verified
+candidate wheels, runs as a non-root user, persists its workspace on an explicit
+volume, exposes readiness, and passes the installed Runtime v2 workflow. Badges,
+release notes, and automation must not advertise that image before those checks
+exist and pass.
 
 Root configuration owns version discovery, the package catalog, and common
 publication policy. Package metadata owns dependencies, entry points, build

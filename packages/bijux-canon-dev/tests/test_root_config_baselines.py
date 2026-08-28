@@ -57,7 +57,8 @@ def test_root_pytest_configuration_matches_shared_python_baseline() -> None:
     assert pytest_config["python_classes"] == "Test*"
     assert pytest_config["python_functions"] == "test_*"
     assert pytest_config["asyncio_mode"] == "auto"
-    assert pytest_config["cache_dir"] == "artifacts/root/pytest-cache"
+    cache_dir = (REPO_ROOT / "configs" / pytest_config["cache_dir"]).resolve()
+    assert cache_dir == REPO_ROOT / "artifacts" / "root" / "pytest-cache"
     assert pytest_config["timeout"] == "120"
     assert pytest_config["timeout_method"] == "thread"
     assert pytest_config["timeout_func_only"] == "true"
@@ -130,7 +131,8 @@ def test_root_ruff_configuration_matches_shared_python_baseline() -> None:
     assert ruff_config["target-version"] == "py311"
     assert ruff_config["line-length"] == 88
     assert ruff_config["respect-gitignore"] is True
-    assert ruff_config["cache-dir"] == "artifacts/root/ruff-cache"
+    ruff_cache_dir = (REPO_ROOT / "configs" / str(ruff_config["cache-dir"])).resolve()
+    assert ruff_cache_dir == REPO_ROOT / "artifacts" / "root" / "ruff-cache"
     assert set(_as_str_list(ruff_config["src"])) == _package_roots(
         "src"
     ) | _package_roots("tests")
@@ -152,6 +154,10 @@ def test_root_ruff_configuration_matches_shared_python_baseline() -> None:
         "node_modules",
         "*.egg-info",
         "site",
+    ]
+    assert _as_str_list(ruff_config["extend-exclude"]) == [
+        "src/**/_version.py",
+        "src/**/_build_version.py",
     ]
 
     lint = _as_dict(ruff_config["lint"])
@@ -190,6 +196,7 @@ def test_root_mypy_configuration_matches_shared_python_baseline() -> None:
     assert root_mypy["warn_unused_ignores"] == "true"
     assert root_mypy["namespace_packages"] == "true"
     assert root_mypy["plugins"] == "pydantic.mypy"
+    assert root_mypy["cache_dir"] == "artifacts/root/mypy-cache"
     assert root_mypy["exclude"] == (
         "^(\\.venv|build|dist|docs|htmlcov|\\.mypy_cache|\\.pytest_cache|"
         "\\.ruff_cache|\\.tox|__pycache__|migrations|\\.egg-info|node_modules|"
@@ -199,7 +206,7 @@ def test_root_mypy_configuration_matches_shared_python_baseline() -> None:
     configured_files = {
         entry.strip() for entry in root_mypy["files"].split(",") if entry.strip()
     }
-    assert configured_files == _package_roots("src") | _package_roots("tests")
+    assert configured_files == _package_roots("src")
 
     configured_paths = {
         entry.strip() for entry in root_mypy["mypy_path"].split(":") if entry.strip()

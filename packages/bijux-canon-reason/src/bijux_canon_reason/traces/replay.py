@@ -21,7 +21,7 @@ from bijux_canon_reason.core.types import (
     TraceEventKind,
 )
 from bijux_canon_reason.execution.replay_runtime import RecordedCall
-from bijux_canon_reason.execution.runtime import Runtime
+from bijux_canon_reason.execution.runtime import Runtime, RuntimeMode
 from bijux_canon_reason.interfaces.serialization.json_file import read_json_file
 from bijux_canon_reason.interfaces.serialization.trace_jsonl import (
     fingerprint_trace_file,
@@ -59,7 +59,7 @@ class ReplayInputs:
     plan: Plan
     trace: Trace
     runtime_kind: str
-    runtime_mode: str
+    runtime_mode: RuntimeMode
     runtime_descriptor: RuntimeDescriptor | None
 
 
@@ -210,7 +210,7 @@ def _validate_retrieval_provenance(*, paths: ReplayPaths, trace: Trace) -> None:
 
 def _read_runtime_metadata(
     meta: dict[str, object],
-) -> tuple[str, str, RuntimeDescriptor | None]:
+) -> tuple[str, RuntimeMode, RuntimeDescriptor | None]:
     """Read runtime metadata."""
     runtime_info = meta.get("runtime", {})
     runtime = runtime_info if isinstance(runtime_info, dict) else {}
@@ -220,9 +220,12 @@ def _read_runtime_metadata(
         if descriptor_raw is None
         else RuntimeDescriptor.model_validate(descriptor_raw)
     )
+    raw_mode = runtime.get("mode", "live")
+    if raw_mode not in {"live", "frozen"}:
+        raise ValueError("runtime replay mode must be live or frozen")
     return (
-        str(runtime.get("kind", "FakeRuntime")),
-        str(runtime.get("mode", "live")),
+        str(runtime.get("kind", "CredentialFreeRuntime")),
+        cast(RuntimeMode, raw_mode),
         descriptor,
     )
 

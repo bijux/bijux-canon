@@ -28,6 +28,7 @@ import pytest
 )
 def test_cli_replay_fingerprint_matches_original(
     tmp_path: Path,
+    corpus_fixture: Path,
     write_spec: Any,
     run_cli: Any,
     seed: int,
@@ -36,9 +37,15 @@ def test_cli_replay_fingerprint_matches_original(
     artifacts = tmp_path / "artifacts"
     artifacts.mkdir(parents=True, exist_ok=True)
 
+    constraints: dict[str, object] = {
+        "needs_retrieval": preset == "rar",
+        "top_k": 2,
+    }
+    if preset == "rar":
+        constraints["corpus_path"] = str(corpus_fixture)
     spec_path = write_spec(
         description=f"replay {preset} {seed}",
-        constraints={"needs_retrieval": preset == "rar", "top_k": 2},
+        constraints=constraints,
     )
 
     p = run_cli(

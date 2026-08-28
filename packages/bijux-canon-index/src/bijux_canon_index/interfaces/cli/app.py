@@ -11,7 +11,8 @@ from typing import no_type_check
 
 import typer
 
-from bijux_canon_index.infra.logging import enable_trace
+from bijux_canon_index import __version__
+from bijux_canon_index.application.surface_services import enable_execution_trace
 from bijux_canon_index.interfaces.cli.artifact_commands import (
     register_artifact_commands,
 )
@@ -21,6 +22,10 @@ from bijux_canon_index.interfaces.cli.diagnostic_commands import (
 from bijux_canon_index.interfaces.cli.execution_commands import (
     register_execution_commands,
 )
+from bijux_canon_index.interfaces.cli.index_generation_commands import (
+    register_index_generation_commands,
+)
+from bijux_canon_index.interfaces.cli.model_commands import register_model_commands
 from bijux_canon_index.interfaces.cli.performance_commands import (
     register_performance_commands,
 )
@@ -38,6 +43,16 @@ config_app = typer.Typer(add_completion=False, help="Configuration utilities")
 app.add_typer(config_app, name="config")
 artifact_app = typer.Typer(add_completion=False, help="Artifact bundle utilities")
 app.add_typer(artifact_app, name="artifact")
+index_app = typer.Typer(add_completion=False, help="Immutable index generations")
+app.add_typer(index_app, name="index")
+model_app = typer.Typer(add_completion=False, help="Pinned local embedding models")
+app.add_typer(model_app, name="model")
+
+
+def _version_callback(value: bool) -> None:
+    if value:
+        typer.echo(f"bijux-canon-index {__version__}")
+        raise typer.Exit()
 
 
 @app.callback()
@@ -62,10 +77,18 @@ def _main_callback(
     trace: bool = typer.Option(False, "--trace", help="Emit trace metadata"),
     quiet: bool = typer.Option(False, "--quiet", help="Suppress non-error output"),
     no_color: bool = typer.Option(False, "--no-color", help="Disable colored output"),
+    version: bool = typer.Option(
+        False,
+        "--version",
+        callback=_version_callback,
+        is_eager=True,
+        help="Show the installed canonical index version and exit.",
+    ),
 ) -> None:
     """Handle main callback."""
+    del version
     if trace:
-        enable_trace()
+        enable_execution_trace()
     if no_color:
         os.environ["RICH_NO_COLOR"] = "1"
         os.environ["TYPER_COLOR"] = "0"
@@ -84,6 +107,8 @@ register_vector_store_commands(vdb_app)
 register_artifact_commands(artifact_app)
 register_performance_commands(app, nd_app)
 register_diagnostic_commands(app, config_app)
+register_index_generation_commands(index_app)
+register_model_commands(model_app)
 
 
 if __name__ == "__main__":

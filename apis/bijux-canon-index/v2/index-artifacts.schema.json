@@ -1,0 +1,189 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.bijux.org/canon/index/v2/index-artifacts.schema.json",
+  "title": "Bijux Canon index artifact records",
+  "oneOf": [
+    {"$ref": "#/$defs/model_lock"},
+    {"$ref": "#/$defs/vector"},
+    {"$ref": "#/$defs/lexical_segment"},
+    {"$ref": "#/$defs/dense_segment"},
+    {"$ref": "#/$defs/filter"},
+    {"$ref": "#/$defs/index_generation"},
+    {"$ref": "#/$defs/activation_receipt"},
+    {"$ref": "#/$defs/integrity"}
+  ],
+  "$defs": {
+    "artifact_id": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "cas_uri": {"type": "string", "pattern": "^cas\\+sha256://[0-9a-f]{64}$"},
+    "timestamp": {"type": "string", "format": "date-time", "pattern": "Z$"},
+    "string_list": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "artifact_id_list": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/artifact_id"},
+      "uniqueItems": true,
+      "x-bijux-ordering": "ascending"
+    },
+    "model_lock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "artifact_type", "artifact_id", "provider", "model_id", "immutable_revision", "dimension", "dtype", "normalization", "pooling", "tokenizer", "license_id", "files", "offline_policy"],
+      "properties": {
+        "schema_version": {"const": "2.0.0"},
+        "artifact_type": {"const": "bijux.canon.index.model_lock"},
+        "artifact_id": {"$ref": "#/$defs/artifact_id"},
+        "provider": {"type": "string", "minLength": 1},
+        "model_id": {"type": "string", "minLength": 1},
+        "immutable_revision": {"type": "string", "minLength": 1},
+        "dimension": {"type": "integer", "minimum": 1},
+        "dtype": {"enum": ["float16", "float32", "float64", "int8", "uint8"]},
+        "normalization": {"enum": ["none", "l2"]},
+        "pooling": {"enum": ["none", "mean", "cls", "max"]},
+        "tokenizer": {
+          "type": "object", "additionalProperties": false,
+          "required": ["implementation", "revision"],
+          "properties": {"implementation": {"type": "string", "minLength": 1}, "revision": {"type": "string", "minLength": 1}}
+        },
+        "license_id": {"type": "string", "minLength": 1},
+        "files": {
+          "type": "array", "minItems": 1,
+          "items": {
+            "type": "object", "additionalProperties": false,
+            "required": ["path", "sha256", "byte_length"],
+            "properties": {"path": {"type": "string", "minLength": 1}, "sha256": {"$ref": "#/$defs/sha256"}, "byte_length": {"type": "integer", "minimum": 0}}
+          },
+          "x-bijux-ordering": "path ascending"
+        },
+        "offline_policy": {"enum": ["required", "preferred", "forbidden"]}
+      }
+    },
+    "vector": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "artifact_type", "artifact_id", "chunk_artifact_id", "model_lock_artifact_id", "dimension", "dtype", "metric", "normalized", "values_sha256", "values_byte_length", "values_ref"],
+      "properties": {
+        "schema_version": {"const": "2.0.0"}, "artifact_type": {"const": "bijux.canon.index.vector"}, "artifact_id": {"$ref": "#/$defs/artifact_id"},
+        "chunk_artifact_id": {"$ref": "#/$defs/artifact_id"}, "model_lock_artifact_id": {"$ref": "#/$defs/artifact_id"},
+        "dimension": {"type": "integer", "minimum": 1}, "dtype": {"enum": ["float16", "float32", "float64", "int8", "uint8"]},
+        "metric": {"enum": ["cosine", "dot", "l2"]}, "normalized": {"type": "boolean"},
+        "values_sha256": {"$ref": "#/$defs/sha256"}, "values_byte_length": {"type": "integer", "minimum": 1}, "values_ref": {"$ref": "#/$defs/cas_uri"}
+      }
+    },
+    "lexical_segment": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "artifact_type", "artifact_id", "corpus_snapshot_artifact_id", "chunk_artifact_ids", "analyzer", "document_count", "term_count", "postings_sha256", "postings_byte_length", "postings_ref", "format"],
+      "properties": {
+        "schema_version": {"const": "2.0.0"}, "artifact_type": {"const": "bijux.canon.index.lexical_segment"}, "artifact_id": {"$ref": "#/$defs/artifact_id"},
+        "corpus_snapshot_artifact_id": {"$ref": "#/$defs/artifact_id"}, "chunk_artifact_ids": {"allOf": [{"$ref": "#/$defs/artifact_id_list"}, {"minItems": 1}]},
+        "analyzer": {
+          "type": "object", "additionalProperties": false, "required": ["implementation", "implementation_version", "configuration_sha256"],
+          "properties": {"implementation": {"type": "string", "minLength": 1}, "implementation_version": {"type": "string", "minLength": 1}, "configuration_sha256": {"$ref": "#/$defs/sha256"}}
+        },
+        "document_count": {"type": "integer", "minimum": 1}, "term_count": {"type": "integer", "minimum": 1},
+        "postings_sha256": {"$ref": "#/$defs/sha256"}, "postings_byte_length": {"type": "integer", "minimum": 1}, "postings_ref": {"$ref": "#/$defs/cas_uri"}, "format": {"type": "string", "minLength": 1}
+      }
+    },
+    "dense_segment": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "artifact_type", "artifact_id", "model_lock_artifact_id", "vector_artifact_ids", "backend", "backend_version", "metric", "dimension", "vector_count", "segment_sha256", "segment_byte_length", "segment_ref"],
+      "properties": {
+        "schema_version": {"const": "2.0.0"}, "artifact_type": {"const": "bijux.canon.index.dense_segment"}, "artifact_id": {"$ref": "#/$defs/artifact_id"},
+        "model_lock_artifact_id": {"$ref": "#/$defs/artifact_id"}, "vector_artifact_ids": {"allOf": [{"$ref": "#/$defs/artifact_id_list"}, {"minItems": 1}]},
+        "backend": {"type": "string", "minLength": 1}, "backend_version": {"type": "string", "minLength": 1}, "metric": {"enum": ["cosine", "dot", "l2"]},
+        "dimension": {"type": "integer", "minimum": 1}, "vector_count": {"type": "integer", "minimum": 1},
+        "segment_sha256": {"$ref": "#/$defs/sha256"}, "segment_byte_length": {"type": "integer", "minimum": 1}, "segment_ref": {"$ref": "#/$defs/cas_uri"}
+      }
+    },
+    "filter_expression": {
+      "oneOf": [
+        {"type": "object", "additionalProperties": false, "required": ["operator", "field", "value"], "properties": {"operator": {"const": "eq"}, "field": {"type": "string", "pattern": "^[a-z][a-z0-9_.-]*$"}, "value": {"type": ["string", "integer", "boolean"]}}},
+        {"type": "object", "additionalProperties": false, "required": ["operator", "field", "values"], "properties": {"operator": {"const": "in"}, "field": {"type": "string", "pattern": "^[a-z][a-z0-9_.-]*$"}, "values": {"$ref": "#/$defs/string_list"}}},
+        {"type": "object", "additionalProperties": false, "required": ["operator", "operands"], "properties": {"operator": {"enum": ["all", "any"]}, "operands": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/filter_expression"}}}},
+        {"type": "object", "additionalProperties": false, "required": ["operator", "operand"], "properties": {"operator": {"const": "not"}, "operand": {"$ref": "#/$defs/filter_expression"}}}
+      ]
+    },
+    "filter": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "artifact_type", "artifact_id", "expression"],
+      "properties": {"schema_version": {"const": "2.0.0"}, "artifact_type": {"const": "bijux.canon.index.filter"}, "artifact_id": {"$ref": "#/$defs/artifact_id"}, "expression": {"$ref": "#/$defs/filter_expression"}}
+    },
+    "index_generation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "artifact_type", "artifact_id", "corpus_snapshot_artifact_id", "chunk_artifact_ids", "chunk_set_sha256", "model_lock_artifact_ids", "lexical_tokenizer", "lexical_segment_artifact_ids", "dense_segment_artifact_ids", "backend_bindings", "filter_artifact_ids", "build_configuration_sha256", "build_attempt", "lineage", "integrity_artifact_id", "created_at"],
+      "properties": {
+        "schema_version": {"const": "2.0.0"}, "artifact_type": {"const": "bijux.canon.index.generation"}, "artifact_id": {"$ref": "#/$defs/artifact_id"},
+        "corpus_snapshot_artifact_id": {"$ref": "#/$defs/artifact_id"},
+        "chunk_artifact_ids": {"allOf": [{"$ref": "#/$defs/artifact_id_list"}, {"minItems": 1}]}, "chunk_set_sha256": {"$ref": "#/$defs/sha256"},
+        "model_lock_artifact_ids": {"allOf": [{"$ref": "#/$defs/artifact_id_list"}, {"minItems": 1}]},
+        "lexical_tokenizer": {
+          "type": "object", "additionalProperties": false,
+          "required": ["implementation", "implementation_version", "configuration_sha256"],
+          "properties": {
+            "implementation": {"type": "string", "minLength": 1}, "implementation_version": {"type": "string", "minLength": 1}, "configuration_sha256": {"$ref": "#/$defs/sha256"}
+          }
+        },
+        "lexical_segment_artifact_ids": {"$ref": "#/$defs/artifact_id_list"}, "dense_segment_artifact_ids": {"$ref": "#/$defs/artifact_id_list"},
+        "backend_bindings": {
+          "type": "array", "minItems": 1, "uniqueItems": true,
+          "items": {
+            "type": "object", "additionalProperties": false,
+            "required": ["backend", "backend_version", "parameters_sha256", "segment_artifact_ids"],
+            "properties": {
+              "backend": {"type": "string", "minLength": 1}, "backend_version": {"type": "string", "minLength": 1}, "parameters_sha256": {"$ref": "#/$defs/sha256"}, "segment_artifact_ids": {"allOf": [{"$ref": "#/$defs/artifact_id_list"}, {"minItems": 1}]}
+            }
+          },
+          "x-bijux-ordering": "backend ascending"
+        },
+        "filter_artifact_ids": {"$ref": "#/$defs/artifact_id_list"},
+        "build_configuration_sha256": {"$ref": "#/$defs/sha256"},
+        "build_attempt": {
+          "type": "object", "additionalProperties": false,
+          "required": ["attempt_id", "source_commit", "actor", "started_at", "completed_at", "status"],
+          "properties": {
+            "attempt_id": {"$ref": "#/$defs/artifact_id"}, "source_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"}, "actor": {"type": "string", "minLength": 1}, "started_at": {"$ref": "#/$defs/timestamp"}, "completed_at": {"$ref": "#/$defs/timestamp"}, "status": {"const": "succeeded"}
+          }
+        },
+        "lineage": {
+          "type": "object", "additionalProperties": false,
+          "required": ["parent_generation_artifact_id", "parent_activation_artifact_id"],
+          "properties": {
+            "parent_generation_artifact_id": {"oneOf": [{"$ref": "#/$defs/artifact_id"}, {"type": "null"}]}, "parent_activation_artifact_id": {"oneOf": [{"$ref": "#/$defs/artifact_id"}, {"type": "null"}]}
+          }
+        },
+        "integrity_artifact_id": {"$ref": "#/$defs/artifact_id"}, "created_at": {"$ref": "#/$defs/timestamp"}
+      },
+      "anyOf": [{"properties": {"lexical_segment_artifact_ids": {"minItems": 1}}}, {"properties": {"dense_segment_artifact_ids": {"minItems": 1}}}]
+    },
+    "activation_receipt": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "artifact_type", "artifact_id", "generation_artifact_id", "previous_generation_artifact_id", "atomic_write_sha256", "activated_at", "actor", "state"],
+      "properties": {
+        "schema_version": {"const": "2.0.0"}, "artifact_type": {"const": "bijux.canon.index.activation_receipt"}, "artifact_id": {"$ref": "#/$defs/artifact_id"},
+        "generation_artifact_id": {"$ref": "#/$defs/artifact_id"}, "previous_generation_artifact_id": {"oneOf": [{"$ref": "#/$defs/artifact_id"}, {"type": "null"}]},
+        "atomic_write_sha256": {"$ref": "#/$defs/sha256"}, "activated_at": {"$ref": "#/$defs/timestamp"}, "actor": {"type": "string", "minLength": 1}, "state": {"const": "active"}
+      }
+    },
+    "integrity_member": {
+      "type": "object", "additionalProperties": false,
+      "required": ["artifact_id", "content_sha256", "byte_length"],
+      "properties": {"artifact_id": {"$ref": "#/$defs/artifact_id"}, "content_sha256": {"$ref": "#/$defs/sha256"}, "byte_length": {"type": "integer", "minimum": 0}}
+    },
+    "integrity": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "artifact_type", "artifact_id", "algorithm", "members", "root_sha256"],
+      "properties": {
+        "schema_version": {"const": "2.0.0"}, "artifact_type": {"const": "bijux.canon.index.integrity"}, "artifact_id": {"$ref": "#/$defs/artifact_id"}, "algorithm": {"const": "sha256-merkle-v1"},
+        "members": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/integrity_member"}, "x-bijux-ordering": "artifact_id ascending"}, "root_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    }
+  },
+  "x-bijux-identity": {"algorithm": "sha-256", "canonicalization": "RFC 8785", "excluded_json_pointers": ["/artifact_id"]},
+  "x-bijux-invariants": [
+    "all artifact ID arrays and integrity members are sorted and unique",
+    "vector shape, dtype, metric, and model lock agree",
+    "generation references at least one lexical or dense segment",
+    "generation chunk-set hash covers the complete sorted admitted chunk ID array",
+    "generation backend bindings cover every referenced lexical and dense segment",
+    "integrity root covers every generation member",
+    "activation is admitted only after every integrity member is durable and verified"
+  ]
+}

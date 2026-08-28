@@ -258,15 +258,7 @@ def register_algorithms() -> None:
 
 def _ensure_tuple(vector: Vector) -> Vector:
     """Ensure tuple."""
-    if isinstance(vector.values, tuple):
-        return vector
-    return Vector(
-        vector_id=vector.vector_id,
-        chunk_id=vector.chunk_id,
-        values=tuple(vector.values),
-        dimension=vector.dimension,
-        model=vector.model,
-    )
+    return vector
 
 
 def _maybe_normalize(vec: tuple[float, ...], enabled: bool) -> tuple[float, ...]:

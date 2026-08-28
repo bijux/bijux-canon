@@ -6,6 +6,9 @@ from __future__ import annotations
 
 from fastapi import FastAPI
 
+from bijux_canon_index.api.v1.index_generation_routes import (
+    register_index_generation_routes,
+)
 from bijux_canon_index.api.v1.mutation_routes import register_mutation_routes
 from bijux_canon_index.api.v1.query_routes import register_query_routes
 from bijux_canon_index.api.v1.read_routes import register_read_routes
@@ -50,6 +53,7 @@ def build_app() -> FastAPI:
     register_read_routes(app)
     register_mutation_routes(app)
     register_query_routes(app)
+    register_index_generation_routes(app)
     return app
 
 

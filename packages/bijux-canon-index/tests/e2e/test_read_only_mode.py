@@ -2,6 +2,8 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 
 from bijux_canon_index.application.engine import VectorExecutionEngine
@@ -17,7 +19,7 @@ from bijux_canon_index.interfaces.schemas.models import (
 )
 
 
-def test_read_only_blocks_mutations(monkeypatch):
+def test_read_only_blocks_mutations(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("BIJUX_CANON_INDEX_READ_ONLY", "1")
     orch = VectorExecutionEngine()
     with pytest.raises(AuthzDeniedError):
@@ -28,7 +30,9 @@ def test_read_only_blocks_mutations(monkeypatch):
         )
 
 
-def test_read_only_allows_reads(tmp_path, monkeypatch):
+def test_read_only_allows_reads(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     db_path = str(tmp_path / "read-only.sqlite")
     monkeypatch.setenv("BIJUX_CANON_INDEX_STATE_PATH", db_path)
     setup = VectorExecutionEngine()

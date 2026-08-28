@@ -33,18 +33,19 @@ flowchart LR
 
 ## Choose the actual entry surface
 
-The canonical distribution does not install a `bijux-canon-index` console
-script. Select an implemented surface deliberately:
+The canonical distribution installs `bijux-canon-index`. Select an implemented
+surface deliberately:
 
 | Operating context | Entry surface | State and evidence responsibility |
 | --- | --- | --- |
-| shell or automation | `python -m bijux_canon_index.interfaces.cli.app` with JSON output | retain command, exit status, payload, state path and run directory |
+| shell or automation | `bijux-canon-index` with JSON output | retain command, exit status, payload, state path and run directory |
 | service client | versioned HTTP application and schema | retain request/response identity; deploy authentication, isolation and durable state externally |
 | in-process integration | named application, domain, contract and infrastructure modules | caller owns composition and persistence boundaries explicitly |
-| preserved automation | `bijux-vex` compatibility command | verify alias delegation, then plan migration to canonical Python or HTTP ownership |
+| preserved automation | `bijux-vex` compatibility command | verify delegation, then migrate directly to `bijux-canon-index` |
 
-Do not invent a renamed command from package naming symmetry. Likewise, an
-HTTP schema is not proof that a configured backend, plugin, or vector store is
+The equivalent module form is
+`python -m bijux_canon_index.interfaces.cli.app`. An HTTP schema is not proof
+that a configured backend, plugin, or vector store is
 available; run capability discovery in the environment that will execute the
 request.
 

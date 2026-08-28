@@ -1,0 +1,1228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE article PUBLIC "-//NLM//DTD JATS (Z39.96) Journal Publishing DTD v1.1d3 20150301//EN" "http://jats.nlm.nih.gov/publishing/1.1d3/JATS-journalpublishing1.dtd">
+<article article-type="research-article" dtd-version="1.1d3" xml:lang="en" xmlns:mml="http://www.w3.org/1998/Math/MathML" xmlns:xlink="http://www.w3.org/1999/xlink">
+<front>
+<journal-meta>
+<journal-id journal-id-type="nlm-ta">PLoS Biol</journal-id>
+<journal-id journal-id-type="publisher-id">plos</journal-id>
+<journal-id journal-id-type="pmc">plosbiol</journal-id>
+<journal-title-group>
+<journal-title>PLOS Biology</journal-title>
+</journal-title-group>
+<issn pub-type="ppub">1544-9173</issn>
+<issn pub-type="epub">1545-7885</issn>
+<publisher>
+<publisher-name>Public Library of Science</publisher-name>
+<publisher-loc>San Francisco, CA USA</publisher-loc>
+</publisher>
+</journal-meta>
+<article-meta>
+<article-id pub-id-type="doi">10.1371/journal.pbio.3000166</article-id>
+<article-id pub-id-type="publisher-id">PBIOLOGY-D-19-00243</article-id>
+<article-categories>
+<subj-group subj-group-type="heading">
+<subject>Short Reports</subject>
+</subj-group>
+<subj-group subj-group-type="Discipline-v3"><subject>Biology and life sciences</subject><subj-group><subject>Molecular biology</subject><subj-group><subject>Molecular biology techniques</subject><subj-group><subject>Sequencing techniques</subject><subj-group><subject>RNA sequencing</subject></subj-group></subj-group></subj-group></subj-group></subj-group><subj-group subj-group-type="Discipline-v3"><subject>Research and analysis methods</subject><subj-group><subject>Molecular biology techniques</subject><subj-group><subject>Sequencing techniques</subject><subj-group><subject>RNA sequencing</subject></subj-group></subj-group></subj-group></subj-group><subj-group subj-group-type="Discipline-v3"><subject>Biology and life sciences</subject><subj-group><subject>Anatomy</subject><subj-group><subject>Biological tissue</subject><subj-group><subject>Connective tissue</subject><subj-group><subject>Cartilage</subject></subj-group></subj-group></subj-group></subj-group></subj-group><subj-group subj-group-type="Discipline-v3"><subject>Medicine and health sciences</subject><subj-group><subject>Anatomy</subject><subj-group><subject>Biological tissue</subject><subj-group><subject>Connective tissue</subject><subj-group><subject>Cartilage</subject></subj-group></subj-group></subj-group></subj-group></subj-group><subj-group subj-group-type="Discipline-v3"><subject>Biology and life sciences</subject><subj-group><subject>Computational biology</subject><subj-group><subject>Genome analysis</subject><subj-group><subject>Transcriptome analysis</subject></subj-group></subj-group></subj-group></subj-group><subj-group subj-group-type="Discipline-v3"><subject>Biology and life sciences</subject><subj-group><subject>Genetics</subject><subj-group><subject>Genomics</subject><subj-group><subject>Genome analysis</subject><subj-group><subject>Transcriptome analysis</subject></subj-group></subj-group></subj-group></subj-group></subj-group><subj-group subj-group-type="Discipline-v3"><subject>Biology and life sciences</subject><subj-group><subject>Biochemistry</subject><subj-group><subject>Nucleic acids</subject><subj-group><subject>RNA</subject><subj-group><subject>Non-coding RNA</subject><subj-group><subject>Ribosomal RNA</subject></subj-group></subj-group></subj-group></subj-group></subj-group></subj-group><subj-group subj-group-type="Discipline-v3"><subject>Biology and life sciences</subject><subj-group><subject>Biochemistry</subject><subj-group><subject>Ribosomes</subject><subj-group><subject>Ribosomal RNA</subject></subj-group></subj-group></subj-group></subj-group><subj-group subj-group-type="Discipline-v3"><subject>Biology and life sciences</subject><subj-group><subject>Cell biology</subject><subj-group><subject>Cellular structures and organelles</subject><subj-group><subject>Ribosomes</subject><subj-group><subject>Ribosomal RNA</subject></subj-group></subj-group></subj-group></subj-group></subj-group><subj-group subj-group-type="Discipline-v3"><subject>Biology and life sciences</subject><subj-group><subject>Genetics</subject><subj-group><subject>Gene expression</subject></subj-group></subj-group></subj-group><subj-group subj-group-type="Discipline-v3"><subject>Research and analysis methods</subject><subj-group><subject>Database and informatics methods</subject><subj-group><subject>Bioinformatics</subject><subj-group><subject>Sequence analysis</subject><subj-group><subject>RNA sequence analysis</subject></subj-group></subj-group></subj-group></subj-group></subj-group><subj-group subj-group-type="Discipline-v3"><subject>Biology and life sciences</subject><subj-group><subject>Paleontology</subject><subj-group><subject>Paleogenetics</subject></subj-group></subj-group></subj-group><subj-group subj-group-type="Discipline-v3"><subject>Earth sciences</subject><subj-group><subject>Paleontology</subject><subj-group><subject>Paleogenetics</subject></subj-group></subj-group></subj-group><subj-group subj-group-type="Discipline-v3"><subject>Biology and life sciences</subject><subj-group><subject>Genetics</subject><subj-group><subject>Genomics</subject><subj-group><subject>Metagenomics</subject></subj-group></subj-group></subj-group></subj-group></article-categories>
+<title-group>
+<article-title>Ancient RNA from Late Pleistocene permafrost and historical canids shows tissue-specific transcriptome survival</article-title>
+<alt-title alt-title-type="running-head">Short title: Long-term survival of ancient RNA in animal tissues</alt-title>
+</title-group>
+<contrib-group>
+<contrib contrib-type="author" corresp="yes" xlink:type="simple">
+<contrib-id authenticated="true" contrib-id-type="orcid">http://orcid.org/0000-0002-0146-9244</contrib-id>
+<name name-style="western">
+<surname>Smith</surname>
+<given-names>Oliver</given-names>
+</name>
+<role content-type="http://credit.casrai.org/">Conceptualization</role>
+<role content-type="http://credit.casrai.org/">Data curation</role>
+<role content-type="http://credit.casrai.org/">Formal analysis</role>
+<role content-type="http://credit.casrai.org/">Funding acquisition</role>
+<role content-type="http://credit.casrai.org/">Investigation</role>
+<role content-type="http://credit.casrai.org/">Methodology</role>
+<role content-type="http://credit.casrai.org/">Project administration</role>
+<role content-type="http://credit.casrai.org/">Software</role>
+<role content-type="http://credit.casrai.org/">Visualization</role>
+<role content-type="http://credit.casrai.org/">Writing – original draft</role>
+<role content-type="http://credit.casrai.org/">Writing – review &amp; editing</role>
+<xref ref-type="aff" rid="aff001"><sup>1</sup></xref>
+<xref ref-type="corresp" rid="cor001">*</xref>
+</contrib>
+<contrib contrib-type="author" xlink:type="simple">
+<contrib-id authenticated="true" contrib-id-type="orcid">http://orcid.org/0000-0002-8683-0181</contrib-id>
+<name name-style="western">
+<surname>Dunshea</surname>
+<given-names>Glenn</given-names>
+</name>
+<role content-type="http://credit.casrai.org/">Formal analysis</role>
+<role content-type="http://credit.casrai.org/">Methodology</role>
+<role content-type="http://credit.casrai.org/">Visualization</role>
+<role content-type="http://credit.casrai.org/">Writing – original draft</role>
+<role content-type="http://credit.casrai.org/">Writing – review &amp; editing</role>
+<xref ref-type="aff" rid="aff001"><sup>1</sup></xref>
+</contrib>
+<contrib contrib-type="author" xlink:type="simple">
+<contrib-id authenticated="true" contrib-id-type="orcid">http://orcid.org/0000-0003-1371-219X</contrib-id>
+<name name-style="western">
+<surname>Sinding</surname>
+<given-names>Mikkel-Holger S.</given-names>
+</name>
+<role content-type="http://credit.casrai.org/">Conceptualization</role>
+<role content-type="http://credit.casrai.org/">Project administration</role>
+<role content-type="http://credit.casrai.org/">Writing – review &amp; editing</role>
+<xref ref-type="aff" rid="aff001"><sup>1</sup></xref>
+<xref ref-type="aff" rid="aff002"><sup>2</sup></xref>
+</contrib>
+<contrib contrib-type="author" xlink:type="simple">
+<name name-style="western">
+<surname>Fedorov</surname>
+<given-names>Sergey</given-names>
+</name>
+<role content-type="http://credit.casrai.org/">Investigation</role>
+<role content-type="http://credit.casrai.org/">Writing – review &amp; editing</role>
+<xref ref-type="aff" rid="aff003"><sup>3</sup></xref>
+</contrib>
+<contrib contrib-type="author" xlink:type="simple">
+<contrib-id authenticated="true" contrib-id-type="orcid">http://orcid.org/0000-0001-8865-0937</contrib-id>
+<name name-style="western">
+<surname>Germonpre</surname>
+<given-names>Mietje</given-names>
+</name>
+<role content-type="http://credit.casrai.org/">Formal analysis</role>
+<role content-type="http://credit.casrai.org/">Investigation</role>
+<role content-type="http://credit.casrai.org/">Writing – review &amp; editing</role>
+<xref ref-type="aff" rid="aff004"><sup>4</sup></xref>
+</contrib>
+<contrib contrib-type="author" xlink:type="simple">
+<contrib-id authenticated="true" contrib-id-type="orcid">http://orcid.org/0000-0002-0494-0126</contrib-id>
+<name name-style="western">
+<surname>Bocherens</surname>
+<given-names>Hervé</given-names>
+</name>
+<role content-type="http://credit.casrai.org/">Data curation</role>
+<role content-type="http://credit.casrai.org/">Methodology</role>
+<role content-type="http://credit.casrai.org/">Writing – review &amp; editing</role>
+<xref ref-type="aff" rid="aff005"><sup>5</sup></xref>
+<xref ref-type="aff" rid="aff006"><sup>6</sup></xref>
+</contrib>
+<contrib contrib-type="author" xlink:type="simple">
+<contrib-id authenticated="true" contrib-id-type="orcid">http://orcid.org/0000-0002-5805-7195</contrib-id>
+<name name-style="western">
+<surname>Gilbert</surname>
+<given-names>M. T. P.</given-names>
+</name>
+<role content-type="http://credit.casrai.org/">Conceptualization</role>
+<role content-type="http://credit.casrai.org/">Funding acquisition</role>
+<role content-type="http://credit.casrai.org/">Resources</role>
+<role content-type="http://credit.casrai.org/">Writing – review &amp; editing</role>
+<xref ref-type="aff" rid="aff001"><sup>1</sup></xref>
+<xref ref-type="aff" rid="aff007"><sup>7</sup></xref>
+</contrib>
+</contrib-group>
+<aff id="aff001"><label>1</label> <addr-line>Section for Evogenomics, The Globe Institute, Faculty of Health and Medical Sciences, University of Copenhagen, Copenhagen, Denmark</addr-line></aff>
+<aff id="aff002"><label>2</label> <addr-line>Greenland Institute of Natural Resources, Nuuk, Greenland</addr-line></aff>
+<aff id="aff003"><label>3</label> <addr-line>Mammoth Museum, Institute of Applied Ecology of the North of the North-Eastern Federal University, Yakutsk, Russia</addr-line></aff>
+<aff id="aff004"><label>4</label> <addr-line>Directorate Earth and History of Life, Royal Belgian Institute of Natural Science, Brussels, Belgium</addr-line></aff>
+<aff id="aff005"><label>5</label> <addr-line>Department of Geosciences, Palaeobiology, University of Tübingen, Tübingen, Germany</addr-line></aff>
+<aff id="aff006"><label>6</label> <addr-line>Senckenberg Centre for Human Evolution and Palaeoenvironment, University of Tübingen, Tübingen, Germany</addr-line></aff>
+<aff id="aff007"><label>7</label> <addr-line>Norwegian University of Science and Technology, University Museum, Trondheim, Norway</addr-line></aff>
+<contrib-group>
+<contrib contrib-type="editor" xlink:type="simple">
+<name name-style="western">
+<surname>Tyler-Smith</surname>
+<given-names>Chris</given-names>
+</name>
+<role>Academic Editor</role>
+<xref ref-type="aff" rid="edit1"/>
+</contrib>
+</contrib-group>
+<aff id="edit1"><addr-line>Wellcome Sanger Institute, UNITED KINGDOM</addr-line></aff>
+<author-notes>
+<fn fn-type="conflict" id="coi001">
+<p>The authors have declared that no competing interests exist.</p>
+</fn>
+<corresp id="cor001">* E-mail: <email xlink:type="simple">oliver.smith@palaeome.org</email></corresp>
+</author-notes>
+<pub-date pub-type="epub">
+<day>30</day>
+<month>7</month>
+<year>2019</year>
+</pub-date>
+<pub-date pub-type="collection">
+<month>7</month>
+<year>2019</year>
+</pub-date>
+<volume>17</volume>
+<issue>7</issue>
+<elocation-id>e3000166</elocation-id>
+<history>
+<date date-type="received">
+<day>28</day>
+<month>1</month>
+<year>2019</year>
+</date>
+<date date-type="accepted">
+<day>25</day>
+<month>6</month>
+<year>2019</year>
+</date>
+</history>
+<permissions>
+<copyright-year>2019</copyright-year>
+<copyright-holder>Smith et al</copyright-holder>
+<license xlink:href="http://creativecommons.org/licenses/by/4.0/" xlink:type="simple">
+<license-p>This is an open access article distributed under the terms of the <ext-link ext-link-type="uri" xlink:href="http://creativecommons.org/licenses/by/4.0/" xlink:type="simple">Creative Commons Attribution License</ext-link>, which permits unrestricted use, distribution, and reproduction in any medium, provided the original author and source are credited.</license-p>
+</license>
+</permissions>
+<self-uri content-type="pdf" xlink:href="info:doi/10.1371/journal.pbio.3000166"/>
+<abstract>
+<p>While sequencing ancient DNA (aDNA) from archaeological material is now commonplace, very few attempts to sequence ancient transcriptomes have been made, even from typically stable deposition environments such as permafrost. This is presumably due to assumptions that RNA completely degrades relatively quickly, particularly when dealing with autolytic, nuclease-rich mammalian tissues. However, given the recent successes in sequencing ancient RNA (aRNA) from various sources including plants and animals, we suspect that these assumptions may be incorrect or exaggerated. To challenge the underlying dogma, we generated shotgun RNA data from sources that might normally be dismissed for such study. Here, we present aRNA data generated from two historical wolf skins, and permafrost-preserved liver tissue of a 14,300-year-old Pleistocene canid. Not only is the latter the oldest RNA ever to be sequenced, but it also shows evidence of biologically relevant tissue specificity and close similarity to equivalent data derived from modern-day control tissue. Other hallmarks of RNA sequencing (RNA-seq) data such as exon-exon junction presence and high endogenous ribosomal RNA (rRNA) content confirms our data’s authenticity. By performing independent technical library replicates using two high-throughput sequencing platforms, we show not only that aRNA can survive for extended periods in mammalian tissues but also that it has potential for tissue identification. aRNA also has possible further potential, such as identifying in vivo genome activity and adaptation, when sequenced using this technology.</p>
+</abstract>
+<abstract abstract-type="toc">
+<p>Ancient DNA is known to survive in cold environments for tens of millennia, but it is assumed that ancient RNA could not persist in such a way due to its relative instability. However, this study shows that under permafrost conditions, ancient RNA can survive well enough to show tissue specificity even in mammalian soft tissues.</p>
+</abstract>
+<funding-group>
+<award-group id="award001">
+<funding-source>
+<institution-wrap>
+<institution-id institution-id-type="funder-id">http://dx.doi.org/10.13039/100010665</institution-id>
+<institution>H2020 Marie Skłodowska-Curie Actions</institution>
+</institution-wrap>
+</funding-source>
+<award-id>704254</award-id>
+<principal-award-recipient>
+<contrib-id authenticated="true" contrib-id-type="orcid">http://orcid.org/0000-0002-0146-9244</contrib-id>
+<name name-style="western">
+<surname>Smith</surname>
+<given-names>Oliver</given-names>
+</name>
+</principal-award-recipient>
+</award-group>
+<award-group id="award002">
+<funding-source>
+<institution-wrap>
+<institution-id institution-id-type="funder-id">http://dx.doi.org/10.13039/100010665</institution-id>
+<institution>H2020 Marie Skłodowska-Curie Actions</institution>
+</institution-wrap>
+</funding-source>
+<award-id>749851</award-id>
+<principal-award-recipient>
+<contrib-id authenticated="true" contrib-id-type="orcid">http://orcid.org/0000-0002-8683-0181</contrib-id>
+<name name-style="western">
+<surname>Dunshea</surname>
+<given-names>Glenn</given-names>
+</name>
+</principal-award-recipient>
+</award-group>
+<award-group id="award003">
+<funding-source>
+<institution-wrap>
+<institution-id institution-id-type="funder-id">http://dx.doi.org/10.13039/100010663</institution-id>
+<institution>H2020 European Research Council</institution>
+</institution-wrap>
+</funding-source>
+<award-id>681396</award-id>
+<principal-award-recipient>
+<contrib-id authenticated="true" contrib-id-type="orcid">http://orcid.org/0000-0002-5805-7195</contrib-id>
+<name name-style="western">
+<surname>Gilbert</surname>
+<given-names>M. T. P.</given-names>
+</name>
+</principal-award-recipient>
+</award-group>
+<funding-statement>This project has received funding from the European Union’s Horizon 2020 research and innovation programme (<ext-link ext-link-type="uri" xlink:href="https://ec.europa.eu/programmes/horizon2020/en/h2020-section/marie-sklodowska-curie-actions" xlink:type="simple">https://ec.europa.eu/programmes/horizon2020/en/h2020-section/marie-sklodowska-curie-actions</ext-link>) under the Marie Skłodowska-Curie Actions H2020-MSCA-IF-2015, project "EpiCDomestic," grant number 704254 to OS; Marie-Skłodowska Curie Actions H2020-MSCA-IF-2016, project "ICEDNA," grant number 749851 to GD; and ERC Consolidator Grant 681396 "Extinction Genomics" to MTPG (<ext-link ext-link-type="uri" xlink:href="https://erc.europa.eu/funding/consolidator-grants" xlink:type="simple">https://erc.europa.eu/funding/consolidator-grants</ext-link>). The funders had no role in study design, data collection and analysis, decision to publish, or preparation of the manuscript.</funding-statement>
+</funding-group>
+<counts>
+<fig-count count="3"/>
+<table-count count="2"/>
+<page-count count="28"/>
+</counts>
+<custom-meta-group>
+<custom-meta id="data-availability">
+<meta-name>Data Availability</meta-name>
+<meta-value>Control SRA data for modern transcriptomes were downloaded from the EBI SRA archive, under bioproject PRJNA396033. All our ancient raw read data were uploaded to the NCBI SRA archive under accession number PRJNA497993.</meta-value>
+</custom-meta>
+</custom-meta-group>
+</article-meta>
+</front>
+<body>
+<sec id="sec001" sec-type="intro">
+<title>Introduction</title>
+<p>The recent revolution in the sequencing of ancient biomolecules has allowed multiple layers of -omic information—including genomic [<xref ref-type="bibr" rid="pbio.3000166.ref001">1</xref>], epigenomic [<xref ref-type="bibr" rid="pbio.3000166.ref002">2</xref>,<xref ref-type="bibr" rid="pbio.3000166.ref003">3</xref>], metagenomic [<xref ref-type="bibr" rid="pbio.3000166.ref004">4</xref>,<xref ref-type="bibr" rid="pbio.3000166.ref005">5</xref>], and proteomic [<xref ref-type="bibr" rid="pbio.3000166.ref006">6</xref>,<xref ref-type="bibr" rid="pbio.3000166.ref007">7</xref>]—to be gleaned from ancient and archaeological material. This wealth of evolutionary information almost all derives from either DNA or protein, biomolecules both traditionally thought to be considerably more stable than RNA. This is unfortunate, because transcriptome data have the potential to access deeper layers of information than genome sequencing alone. Most notably, these include assessments of the in vivo activity of the genome and assessing other aspects of ancient bio-assemblages, such as biotic colonisation/microbiomes [<xref ref-type="bibr" rid="pbio.3000166.ref008">8</xref>], host–pathogen interactions [<xref ref-type="bibr" rid="pbio.3000166.ref009">9</xref>], and the level of postmortem molecular movement within remains and surrounding media [<xref ref-type="bibr" rid="pbio.3000166.ref010">10</xref>].</p>
+<p>Despite the dominance of DNA, in recent years several studies have begun to explore whether or not RNA survives in archaeological substrates, particularly in the context of plant materials. Next-generation sequencing (NGS) approaches have uncovered viral RNA genomes in barley grains and faecal matter [<xref ref-type="bibr" rid="pbio.3000166.ref011">11</xref>,<xref ref-type="bibr" rid="pbio.3000166.ref012">12</xref>], environmentally induced differential regulation patterns of microRNA and RNA-induced genome modifications in barley grain [<xref ref-type="bibr" rid="pbio.3000166.ref013">13</xref>,<xref ref-type="bibr" rid="pbio.3000166.ref014">14</xref>], and general transcriptomics in maize kernels [<xref ref-type="bibr" rid="pbio.3000166.ref015">15</xref>]. All but one of these datasets, however, have been derived from plant seed endosperm, which often facilitates exceptional preservation [<xref ref-type="bibr" rid="pbio.3000166.ref016">16</xref>,<xref ref-type="bibr" rid="pbio.3000166.ref017">17</xref>] and is known to be predisposed to nucleic acid compartmentalisation [<xref ref-type="bibr" rid="pbio.3000166.ref018">18</xref>], thus allowing for reasonable expectations of such preservation. The conjecture that ribonucleases released during soft tissue autolysis would virtually annihilate RNA had, until recently, discouraged researchers from attempting such sequencing in animal tissues in favour of more stable molecules. This is exemplified by the fact that to date, ancient RNA (aRNA) data have been generated directly from ancient animal (human) soft tissues in only one example [<xref ref-type="bibr" rid="pbio.3000166.ref019">19</xref>], and this was without utilising NGS technology. Instead, a targeted quantitative PCR (qPCR) approach was used, presumably intended to bypass extraneous noise that might be expected in ancient NGS datasets. The recent qPCR-based approach to microRNA identification demonstrated persisting specificity in permafrost-preserved human tissues [<xref ref-type="bibr" rid="pbio.3000166.ref019">19</xref>] and thus opened the possibility of a more complete reconstruction of ancient transcripts in soft tissues when preserved under favourable conditions. While complexities surrounding the survival of purified RNA within a long-term laboratory storage setting are well documented [<xref ref-type="bibr" rid="pbio.3000166.ref020">20</xref>,<xref ref-type="bibr" rid="pbio.3000166.ref021">21</xref>], the complex thermodynamics of RNA lability and enzymatic interactions are themselves not well understood, especially within long-term postmortem diagenesis scenarios [<xref ref-type="bibr" rid="pbio.3000166.ref022">22</xref>]. There is evidence suggesting that the survival of purified (modern) RNA is influenced by the specific tissue from where it originated [<xref ref-type="bibr" rid="pbio.3000166.ref023">23</xref>], suggesting co-extraction of tissue-specific RNases is a significant problem. Others have suggested that the chemical structure of RNA is such that its theoretical propensity for spontaneous depurination is less than that of DNA [<xref ref-type="bibr" rid="pbio.3000166.ref024">24</xref>]. Although strand breakage should occur more often, the observable depletion of purified RNA within a laboratory setting could be attributable to contamination from RNases that, speculatively, may be active in purified samples even when frozen. Because chemical and enzymatic interactions in archaeological or paleontological assemblages are generally unpredictable at the molecular level, it is possible that the activity of RNAses, and the susceptibility of RNA to those enzymes within a complex matrix of biomatter, could be slowed or arrested through uncharacterised chemical interactions. As such, it is possible that under environmental conditions such as desiccation or permafrost, aRNA may indeed persist over millennia.</p>
+<p>Exceptionally well-preserved remains provide an opportunity to test this hypothesis. Given this, we decided to take advantage of some recently recovered samples exhibiting a range of ages and DNA preservation [<xref ref-type="bibr" rid="pbio.3000166.ref025">25</xref>]. These 5 samples represent tissues from 3 individuals: skin from two historical wolves from Greenland (19th and 20th centuries CE), and liver, cartilage, and muscle tissue from a Pleistocene (approximately 14,000 years old) ‘wolf’ puppy from Tumat, Siberia (<xref ref-type="table" rid="pbio.3000166.t001">Table 1</xref>). We use the term ‘wolf’ in inverted commas as the domestication status of this individual is yet to be fully ascertained. Because the DNA of these samples was sequenced on both Illumina and BGISEQ, we felt these were ideal animal candidates to test for the persistence of aRNA in such contexts. The results presented here describe the oldest directly sequenced RNA, by a significant margin of at least 13,000 years, alongside younger tissues that still may be seen as novel substrates, given the prevailing RNA dogma. For context, the oldest RNA so far to have been recovered and verified without direct sequencing is approximately 5,000 years old [<xref ref-type="bibr" rid="pbio.3000166.ref019">19</xref>], and the oldest RNA to be sequenced and verified is just over 700 years old [<xref ref-type="bibr" rid="pbio.3000166.ref015">15</xref>].</p>
+<table-wrap id="pbio.3000166.t001" position="float">
+<object-id pub-id-type="doi">10.1371/journal.pbio.3000166.t001</object-id>
+<label>Table 1</label> <caption><title>Basic sample details including age, tissue, and RNA extraction statistics.</title></caption>
+<alternatives>
+<graphic id="pbio.3000166.t001g" mimetype="image" position="float" xlink:href="info:doi/10.1371/journal.pbio.3000166.t001" xlink:type="simple"/>
+<table>
+<colgroup>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+</colgroup>
+<thead>
+<tr>
+<th align="left">Sample</th>
+<th align="left">Museum accession</th>
+<th align="left">Species</th>
+<th align="left">Tissue</th>
+<th align="left">Age</th>
+<th align="left">Location</th>
+<th align="left">Mass tissue (mg)</th>
+<th align="left">RNA (ng/uL)</th>
+<th align="left">Total (100 uL)</th>
+<th align="left">RNA from tissue (ug/g)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">Skin 1</td>
+<td align="left">CN 1921</td>
+<td align="left">Wolf</td>
+<td align="left">Skin</td>
+<td align="left">Before 1869 CE</td>
+<td align="left">Uummannaq, Greenland</td>
+<td align="left">47.9</td>
+<td align="left">3.1</td>
+<td align="left">310</td>
+<td align="left">6.47</td>
+</tr>
+<tr>
+<td align="left">Skin 2</td>
+<td align="left">CN 214</td>
+<td align="left">Wolf</td>
+<td align="left">Skin</td>
+<td align="left">1925 CE</td>
+<td align="left">Rosenvinge Bugt, Greenland</td>
+<td align="left">134.7</td>
+<td align="left">4.61</td>
+<td align="left">461</td>
+<td align="left">3.42</td>
+</tr>
+<tr>
+<td align="left">Tumat cartilage</td>
+<td align="left">FRC</td>
+<td align="left">Canid</td>
+<td align="left">Cartilage</td>
+<td align="left">ca. 14122 YBP</td>
+<td align="left">Tumat, Siberia</td>
+<td align="left">665.3</td>
+<td align="left">3.19</td>
+<td align="left">319</td>
+<td align="left">0.48</td>
+</tr>
+<tr>
+<td align="left">Tumat liver</td>
+<td align="left">L</td>
+<td align="left">Canid</td>
+<td align="left">Liver</td>
+<td align="left">ca. 14122 YBP</td>
+<td align="left">Tumat, Siberia</td>
+<td align="left">612.9</td>
+<td align="left">3.54</td>
+<td align="left">354</td>
+<td align="left">0.58</td>
+</tr>
+<tr>
+<td align="left">Tumat muscle</td>
+<td align="left">M1</td>
+<td align="left">Canid</td>
+<td align="left">Muscle</td>
+<td align="left">ca. 14122 YBP</td>
+<td align="left">Tumat, Siberia</td>
+<td align="left">351.9</td>
+<td align="left">1</td>
+<td align="left">100</td>
+<td align="left">0.28</td>
+</tr>
+<tr>
+<td align="left">Blank</td>
+<td align="left">B</td>
+<td align="left">BLANK</td>
+<td align="left">n/a</td>
+<td align="left">n/a</td>
+<td align="left">n/a</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0.00</td>
+</tr>
+</tbody>
+</table>
+</alternatives>
+<table-wrap-foot>
+<fn id="t001fn001"><p>Abbreviations: CE, common era; ca., circa; n/a, not applicable; YBP, years before present.</p></fn>
+</table-wrap-foot>
+</table-wrap>
+<p>To verify with authenticity of the RNA described in this study, we performed several analyses including exon/exon boundary mapping, metagenomic profiling, damage pattern analysis, and a method to assign most likely tissue of origin when compared with a control dataset. To confirm the absence of platform-specific biases between sequencing platforms such as optical duplication, size biases, and preference for sequencing GC-rich reads, we sequenced each sample using the Illumina HiSeq-2500 platform and performed a technical replicate (library and sequencing) on the BGISEQ-500 platform. For clarity, the biological results and interpretations shown in the main text refer to HiSeq-2500 data because Illumina sequencing platforms are the most often used for sequencing ancient DNA (aDNA), with BGISEQ-500 comparisons referenced directly where necessary. A more detailed evaluation of the two sequencing platforms can be found in <xref ref-type="supplementary-material" rid="pbio.3000166.s043">S1 Text</xref>.</p>
+<p>Our analysis pipeline was a multifaceted approach, paying particular attention to read duplication (where multiple identical reads are sequenced, often a result of using more PCR cycles than would normally be required for library amplification of modern, fresh DNA/RNA). The need to de-duplicate datasets, in which identical reads are collapsed to a single read, is much debated amongst RNA researchers because of uncertainty about whether duplicates represent biological expression or an artefact of the PCR process [<xref ref-type="bibr" rid="pbio.3000166.ref026">26</xref>]. Considering the short nature of our RNA reads and the generally high duplication rate, we surmised that these were more likely to be a PCR artefact than a reflection of biological expression. We performed all analyses using both the unmodified (‘duplicated’) and de-duplicated sets and found that in all cases, de-duplicated data made more biological sense. For our analyses, we compared the ancient samples against control NGS data of equivalent dog tissue, downloaded from the European Bioinformatics Institute (EBI)’s short read archive. These data represent transcriptomes for each tissue (liver, muscle, cartilage, skin) from healthy modern dogs, as part of the Broad Institute’s Canine Genomic Resources, and as such can be considered the ‘type’ tissue for canine transcriptomic work. To overcome potential biases arising from the uniquely short nature of the aRNA reads, we opted to test these data against control references using two distinct methods. One was a direct read-for-read regression using a statistical method often used for RNA comparisons (Varistran, ‘Method 1’) [<xref ref-type="bibr" rid="pbio.3000166.ref027">27</xref>]. The second was based on coverage depth calculation of individual genes, followed by a cumulative scoring system based on the most-likely tissue assignation of those genes, derived from a multi-tissue Affymetrix expression array [<xref ref-type="bibr" rid="pbio.3000166.ref028">28</xref>] (‘Method 2’). Finally, to assess the effect of ultrashort (between 15 and 30 nucleotides [nt]) fragments, we created additional control datasets from our existing primary and control sequencing data. First, we removed all fragments shorter than 30 nt from the aRNA, and second created a ‘simulated’ aRNA dataset from the modern control data. We then repeated our analyses on these new data and found that in general, retention of ultrashort molecules is appropriate for transcriptome mapping.</p>
+<p>From the results presented here, we propose that the range of aRNA sources could now extend to permafrost samples of the Pleistocene age, thus opening up the possibility of using aRNA as a valuable biomolecular resource for future research. We should, however, emphasise that the samples presented here are exceptionally well preserved and exhibit varying degrees of preservation within a single individual, and so we are not suggesting that aRNA sequencing could now become as routine as aDNA work. We suggest that aDNA preservation could provide a tenuous proxy for potential aRNA preservation, although we would advise researchers to make no assumptions of relative preservation when considering attempting aRNA work, and consider the risks and benefits of further destructive analysis at these early stages of aRNA research.</p>
+</sec>
+<sec id="sec002" sec-type="results">
+<title>Results</title>
+<sec id="sec003">
+<title>RNA recovery and sequence data from ancient tissues</title>
+<p>From between 47 mg and 665 mg of tissues, including skin, cartilage, liver, and skeletal muscle, we recovered between 100 ng and 461 ng RNA (<xref ref-type="table" rid="pbio.3000166.t001">Table 1</xref>). Unsurprisingly, there was a marked difference between the ancient Tumat and historical samples: while the historical skin samples gave between 3.4 μg and 6.7 μg RNA per gram tissue, the ancient Tumat samples only gave between 0.28 μg and 0.57 μg per gram. After sequencing and mapping, we calculated the endogenous RNA content of the tissues to be between 7.4% and 80.0% using the HiSeq-2500 platform (<xref ref-type="table" rid="pbio.3000166.t002">Table 2</xref>).</p>
+<table-wrap id="pbio.3000166.t002" position="float">
+<object-id pub-id-type="doi">10.1371/journal.pbio.3000166.t002</object-id>
+<label>Table 2</label> <caption><title>NGS data and mapping summary, with calculations of endogenous content and RNA enrichment factors.</title></caption>
+<alternatives>
+<graphic id="pbio.3000166.t002g" mimetype="image" position="float" xlink:href="info:doi/10.1371/journal.pbio.3000166.t002" xlink:type="simple"/>
+<table>
+<colgroup>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+</colgroup>
+<thead>
+<tr>
+<th align="center">Sequencing platform</th>
+<th align="left">Sample number</th>
+<th align="left">Museum accession</th>
+<th align="left">Species</th>
+<th align="left">Tissue</th>
+<th align="left">Age</th>
+<th align="left">Total reads post- adapter trimming</th>
+<th align="left">Genome</th>
+<th align="left">mRNA</th>
+<th align="left">rRNA</th>
+<th align="left">Proportion rRNA</th>
+<th align="left">tRNA</th>
+<th align="left">RNA enrichment factor</th>
+<th align="left">Endogenous percent</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center" rowspan="6">BGISEQ</td>
+<td align="left">Skin 1</td>
+<td align="left">CN 1921</td>
+<td align="left">Wolf</td>
+<td align="left">Skin</td>
+<td align="left">Before 1869 CE</td>
+<td align="left">69,053,233</td>
+<td align="left">26,043,866</td>
+<td align="left">6,858,947</td>
+<td align="left">16,714,271</td>
+<td align="left">31.03%</td>
+<td align="left">4,243,690</td>
+<td align="left">14.69</td>
+<td align="left">37.72%</td>
+</tr>
+<tr>
+<td align="left">Skin 2</td>
+<td align="left">CN 214</td>
+<td align="left">Wolf</td>
+<td align="left">Skin</td>
+<td align="left">1925 CE</td>
+<td align="left">6,675,338</td>
+<td align="left">5,581,322</td>
+<td align="left">1,288,462</td>
+<td align="left">4,696,537</td>
+<td align="left">39.40%</td>
+<td align="left">354,381</td>
+<td align="left">15.62</td>
+<td align="left">83.61%</td>
+</tr>
+<tr>
+<td align="left">Tumat C</td>
+<td align="left">FRC</td>
+<td align="left">Canid</td>
+<td align="left">Cartilage</td>
+<td align="left">ca. 14122 YBP</td>
+<td align="left">44,765,013</td>
+<td align="left">2,244,289</td>
+<td align="left">783,522</td>
+<td align="left">401,982</td>
+<td align="left">11.61%</td>
+<td align="left">32,077</td>
+<td align="left">7.46</td>
+<td align="left">5.01%</td>
+</tr>
+<tr>
+<td align="left">Tumat L</td>
+<td align="left">L</td>
+<td align="left">Canid</td>
+<td align="left">Liver</td>
+<td align="left">ca. 14122 YBP</td>
+<td align="left">27,626,403</td>
+<td align="left">16,509,691</td>
+<td align="left">5,038,336</td>
+<td align="left">3,570,007</td>
+<td align="left">10.91%</td>
+<td align="left">7,617,698</td>
+<td align="left">13.52</td>
+<td align="left">59.76%</td>
+</tr>
+<tr>
+<td align="left">Tumat M</td>
+<td align="left">M1</td>
+<td align="left">Canid</td>
+<td align="left">Muscle</td>
+<td align="left">ca. 14122 YBP</td>
+<td align="left">66,780,343</td>
+<td align="left">3,815,483</td>
+<td align="left">1,057,959</td>
+<td align="left">1,357,348</td>
+<td align="left">20.73%</td>
+<td align="left">317,792</td>
+<td align="left">9.85</td>
+<td align="left">5.71%</td>
+</tr>
+<tr>
+<td align="left">Blank</td>
+<td align="left">B</td>
+<td align="left">BLANK</td>
+<td align="left">n/a</td>
+<td align="left">n/a</td>
+<td align="left">1,701,272</td>
+<td align="left">56,822</td>
+<td align="left">20,808</td>
+<td align="left">126,467</td>
+<td align="left">55.43%</td>
+<td align="left">24,069</td>
+<td align="left">41.47</td>
+<td align="left">3.34%</td>
+</tr>
+<tr>
+<td align="center" rowspan="6">HiSeq</td>
+<td align="left">Skin 1</td>
+<td align="left">CN 1921</td>
+<td align="left">Wolf</td>
+<td align="left">Skin</td>
+<td align="left">Before 1869 CE</td>
+<td align="left">23,258,645</td>
+<td align="left">11,366,481</td>
+<td align="left">3,493,902</td>
+<td align="left">7,612,932</td>
+<td align="left">31.83%</td>
+<td align="left">1,441,633</td>
+<td align="left">15.18</td>
+<td align="left">48.87%</td>
+</tr>
+<tr>
+<td align="left">Skin 2</td>
+<td align="left">CN 214</td>
+<td align="left">Wolf</td>
+<td align="left">Skin</td>
+<td align="left">1925 CD</td>
+<td align="left">32,927,602</td>
+<td align="left">26,320,301</td>
+<td align="left">5,618,346</td>
+<td align="left">19,883,788</td>
+<td align="left">36.95%</td>
+<td align="left">1,990,974</td>
+<td align="left">14.36</td>
+<td align="left">79.93%</td>
+</tr>
+<tr>
+<td align="left">Tumat C</td>
+<td align="left">FRC</td>
+<td align="left">Canid</td>
+<td align="left">Cartilage</td>
+<td align="left">ca. 14122 YBP</td>
+<td align="left">20,915,948</td>
+<td align="left">2,354,199</td>
+<td align="left">1,064,732</td>
+<td align="left">209,067</td>
+<td align="left">5.71%</td>
+<td align="left">31,676</td>
+<td align="left">7.63</td>
+<td align="left">11.26%</td>
+</tr>
+<tr>
+<td align="left">Tumat L</td>
+<td align="left">L</td>
+<td align="left">Canid</td>
+<td align="left">Liver</td>
+<td align="left">ca. 14122 YBP</td>
+<td align="left">6,811,527</td>
+<td align="left">4,114,476</td>
+<td align="left">1,882,220</td>
+<td align="left">1,192,800</td>
+<td align="left">14.94%</td>
+<td align="left">796,571</td>
+<td align="left">12.94</td>
+<td align="left">60.40%</td>
+</tr>
+<tr>
+<td align="left">Tumat M</td>
+<td align="left">M1</td>
+<td align="left">Canid</td>
+<td align="left">Muscle</td>
+<td align="left">ca. 14122 YBP</td>
+<td align="left">39,878,232</td>
+<td align="left">2,932,798</td>
+<td align="left">1,099,000</td>
+<td align="left">818,537</td>
+<td align="left">16.44%</td>
+<td align="left">127,563</td>
+<td align="left">9.59</td>
+<td align="left">7.35%</td>
+</tr>
+<tr>
+<td align="left">Blank</td>
+<td align="left">B</td>
+<td align="left">BLANK</td>
+<td align="left">n/a</td>
+<td align="left">n/a</td>
+<td align="left">1,339,288</td>
+<td align="left">75,612</td>
+<td align="left">91,929</td>
+<td align="left">9,498</td>
+<td align="left">5.33%</td>
+<td align="left">1,029</td>
+<td align="left">18.63</td>
+<td align="left">5.65%</td>
+</tr>
+</tbody>
+</table>
+</alternatives>
+<table-wrap-foot>
+<fn id="t002fn001"><p>Abbreviations: CE, common era; ca., circa; n/a, not applicable; NGS, next-generation sequencing; rRNA, ribosomal RNA; tRNA, transfer RNA.</p></fn>
+</table-wrap-foot>
+</table-wrap>
+</sec>
+<sec id="sec004">
+<title>RNA enrichment</title>
+<p>For each sample, we took the number of reads mapping to the entire genome and, similarly, the number of reads mapping to only the transcribed regions of the genome (mRNA, rRNA, and tRNA). We then divided the RNA read frequency with the whole-genome read frequency for each sample to give an enrichment factor (<xref ref-type="table" rid="pbio.3000166.t002">Table 2</xref>). We found between 7.4-fold and 15.6-fold enrichment for transcripts from HiSeq-2500 data. We found no significant age- or tissue-related correlation to enrichment level.</p>
+<p>We subjected earlier DNA sequencing data from the same samples used in this paper [<xref ref-type="bibr" rid="pbio.3000166.ref025">25</xref>] to the same transcriptome mapping pipeline as our RNA data in order to confirm that the enrichment of transcriptomic reads we saw in the RNA data was not spurious or the result of DNA contamination. As with the RNA data, we calculated the RNA enrichment factor for each sample. Whereas we saw at least 7.4-fold transcript enrichment for the RNA data, we saw only between 0.2- and 1.2-fold enrichment for the equivalent DNA data. Furthermore, while the RNA data showed that a large proportion of the endogenous content for each sample (between 5.7% and 37%) was of ribosomal origin, the ribosomal content of the endogenous DNA was significantly lower, between 0.09% and 0.15%, and we suspect more likely a representation of rRNA genes than their transcripts. Considering this, and the known high abundance of rRNA as a proportion of cellular RNA, this strongly suggests that the RNA sequencing (RNA-seq) dataset represents authentic RNA, with minimal, if any, DNA contamination.</p>
+<p>To ensure that the mapping strategy using bowtie2 was not prone to biases, we repeated transcriptome mapping using bwa-aln v7.17 [<xref ref-type="bibr" rid="pbio.3000166.ref029">29</xref>], using standard aDNA parameters (seed size disabled, allow indels). We found proportionally equal numbers of reads mapping to each sample but only around half as many overall when using bwa-aln (<xref ref-type="supplementary-material" rid="pbio.3000166.s021">S1 Table</xref>). MapDamage analyses of the resulting BAM files gave similar results to those produced with bowtie2 (<xref ref-type="supplementary-material" rid="pbio.3000166.s001">S1 Fig</xref>), suggesting that the greater stringency seen with bwa-aln does not result in any more authentic mapping.</p>
+</sec>
+<sec id="sec005">
+<title>GC content and read duplication</title>
+<p>The GC content of full reference transcripts falling within the 95th percentile of abundance was between 51% and 57% (<xref ref-type="supplementary-material" rid="pbio.3000166.s022">S2 Table</xref>). We noted that the GC content of reads mapping to those transcript sets exhibited higher GC content than the transcripts themselves, which is not unexpected considering previous aRNA results [<xref ref-type="bibr" rid="pbio.3000166.ref013">13</xref>,<xref ref-type="bibr" rid="pbio.3000166.ref015">15</xref>,<xref ref-type="bibr" rid="pbio.3000166.ref019">19</xref>]. On average, the de-duplicated datasets had 4.6% greater GC content than the references, and the unmodified (duplicated) datasets showed on average 7.3% higher GC content. This suggests a slight bias towards high-GC fragments being preserved, which is, again, not unexpected in RNA-seq data, given that transcribed regions of the genome are generally GC rich [<xref ref-type="bibr" rid="pbio.3000166.ref030">30</xref>]. However, the uniquely short nature of read fragments, compared with a modern RNA dataset, combined with nonuniform GC content across a given transcript, suggests that the GC bias observed here does not skew the resulting transcription profiles. Due to the high number of PCR cycles (20) required to build libraries, it is unsurprising that we observed significant duplicate reads in all ancient samples, between 80.9% and 87.1%. However, at least some of this variance can be explained by ‘true’ transcript abundance, exemplified by the control data from modern material being between 20.9% and 39.4% duplicate reads. Further discussion of read duplication in RNA datasets can be found in <xref ref-type="supplementary-material" rid="pbio.3000166.s043">S1 Text</xref>.</p>
+</sec>
+<sec id="sec006">
+<title>Junction analysis</title>
+<p>To further establish that we had sequenced RNA as opposed to contaminant single-stranded DNA (ssDNA), we assessed the frequencies of reads straddling intron-exon (splice) junctions and those straddling exon-exon junctions. Only reads crossing these boundaries were included in our analysis, as opposed to those that were merely proximal to the junctions. With RNA-seq data, we would expect to observe a high proportion of exon-exon reads to demonstrate that precursor mRNA processing has taken place in active transcripts, but we would also expect to see a degree of intron/exon reads representing precursor mRNA themselves. We found that in all cases, the number of reads mapping to exon/exon junctions was greater, often by orders of magnitude, than those mapping to splice junctions (<xref ref-type="supplementary-material" rid="pbio.3000166.s023">S3 Table</xref>). In particular, the Skin 2 and Tumat liver samples respectively showed 186-fold and 68.5-fold more reads mapping to exon-exon junctions than splice junctions. We then repeated this analysis using DNA data generated from the same samples, as a negative control [<xref ref-type="bibr" rid="pbio.3000166.ref025">25</xref>]. We found the DNA data showed the opposite trend to RNA-seq data, with exon-exon junctions being significantly underrepresented compared with splice junctions in all cases. These analyses further suggest that our primary data represent authentic aRNA.</p>
+</sec>
+<sec id="sec007">
+<title>Damage profiles</title>
+<p>Damage profiles were not consistent with typical aDNA profiles, although the expectations for comparing RNA and DNA in this manner are unknown due to a general lack of aRNA NGS data. mapDamage analysis of earlier DNA sequencing of the same samples showed profiles that were typical of aDNA, although at low levels for samples as old as the Tumat canid. Unsurprisingly, the two samples with the lowest levels of damage were the historical skin tissues. Interestingly, the liver sample, which showed the greatest similarity to its modern counterpart in transcriptome analysis, had the lowest damage levels of all tissues from the Tumat canid, further suggesting its exceptional preservation.</p>
+<p>The RNA profiles themselves showed either low levels of damage throughout when de-duplicated, and some elevated C &gt; U transitions towards the centre of the molecule (<xref ref-type="supplementary-material" rid="pbio.3000166.s002">S2 Fig</xref>, <xref ref-type="supplementary-material" rid="pbio.3000166.s003">S3 Fig</xref>). Interestingly, the damage appears at lower levels than the equivalent DNA samples. The damage was generally limited to C &gt; U misincorporations as opposed to G &gt; A misincorporations, which is consistent with data deriving from a single-stranded library construct. Damage patterns were more pronounced when duplicates were retained, which is unsurprising considering the high level of sequence duplication. We also note that the damage in general is more pronounced in data from the HiSeq-2500 platform. Following removal of ultrashort fragments, we found a more ‘typical’ damage profile, with discernible C &gt; T damage at both 5′ and 3′ ends of reads (<xref ref-type="supplementary-material" rid="pbio.3000166.s004">S4 Fig</xref>, <xref ref-type="supplementary-material" rid="pbio.3000166.s005">S5 Fig</xref>) and a more typical excess purine pattern at fragment sites. As with the majority of aRNA damage analyses presented here, these observations are not necessarily unexpected; however, more data are needed from other sample types for palaeogenomics researchers to create these expectations.</p>
+</sec>
+<sec id="sec008">
+<title>Statistical inter- and intra-tissue comparisons of ancient transcriptomes (Method 1)</title>
+<p>Over the entire dataset, ordination and clustering revealed that the ancient samples were globally more similar to each other than to the control samples and vice versa. However, when considering individual ancient/historical samples against all control samples, we found that the ancient Tumat liver and historical Skin 2 samples were most similar to their modern counterparts. Clustering also revealed a set of 71 genes with relatively highly abundant transcripts across all, or most, ancient samples in comparison with the control samples (<xref ref-type="supplementary-material" rid="pbio.3000166.s006">S6 Fig</xref>, <xref ref-type="supplementary-material" rid="pbio.3000166.s022">S2 Table</xref>).</p>
+<p>Considering the most highly expressed genes (i.e., 95th percentile) in each control tissue, there were some relationships of note between control and ancient samples. There was a significant relationship between control liver and ancient liver, with control liver expression explaining 16% (adjusted <italic>R</italic><sup>2</sup> values) of the variation in ancient liver transcript abundance (<xref ref-type="supplementary-material" rid="pbio.3000166.s030">S2 Data</xref>; <xref ref-type="fig" rid="pbio.3000166.g001">Fig 1</xref>). Control liver gene expression was more similar to ancient liver transcript abundance in comparison with any of the other ancient samples or any of the other control samples (<xref ref-type="supplementary-material" rid="pbio.3000166.s029">S1 Data</xref>). Similarly, there was a significant relationship between control skin gene expression and transcript abundance in the historical Skin 2 sample, with control skin expression explaining 8% of the variation in historical Skin 2 transcript abundance (<xref ref-type="supplementary-material" rid="pbio.3000166.s029">S1 Data</xref>; <xref ref-type="supplementary-material" rid="pbio.3000166.s007">S7 Fig</xref>, <xref ref-type="supplementary-material" rid="pbio.3000166.s008">S8 Fig</xref>, <xref ref-type="supplementary-material" rid="pbio.3000166.s009">S9 Fig</xref>, <xref ref-type="supplementary-material" rid="pbio.3000166.s010">S10 Fig</xref>). There was also a marginally significant relationship between control skin and historical Skin 1 (<italic>P</italic> = 0.012, α = 0.01); however, it explained only a very small amount of the variation in Skin 1 transcript abundance (0.4%; <xref ref-type="supplementary-material" rid="pbio.3000166.s029">S1 Data</xref>). Control skin gene expression was more similar to both historical skin sample transcript abundance(s) in comparison with any of the other ancient samples; however, there were also significant relationships with all other control tissues (<xref ref-type="supplementary-material" rid="pbio.3000166.s029">S1 Data</xref>). There was no relationship between control cartilage gene expression and ancient cartilage transcript abundance, although there was a relationship with Skin 2 transcript abundance, control liver, and control skin gene expression (<xref ref-type="supplementary-material" rid="pbio.3000166.s029">S1 Data</xref>). There were no significant relationships between control muscle gene expression and any of the ancient samples or the other control samples. All pairwise regression parameters and details are provided in <xref ref-type="supplementary-material" rid="pbio.3000166.s030">S2 Data</xref> and <xref ref-type="supplementary-material" rid="pbio.3000166.s031">S3 Data</xref>.</p>
+<fig id="pbio.3000166.g001" position="float">
+<object-id pub-id-type="doi">10.1371/journal.pbio.3000166.g001</object-id>
+<label>Fig 1</label>
+<caption>
+<title>Regressions of ancient liver and historical skin samples, Method 1: Relationships between 95th percentile of expressed genes in each control tissue sample (x-axis) and each ancient sample or control samples from other tissues (y-axis).</title>
+<p>Black points in graphs comparing ancient samples are the relationships between the control tissue and the equivalent ancient tissue. Red points overlaid show the relationship between the control tissue and other ancient tissues specified in the graph subtitle. Yellow lines are least squares linear regression fit for black points. Green lines are least squares linear regression fit for red points. Filled lines indicate a significant linear regression. Dashed lines indicate a nonsignificant linear regression. (A) BGISEQ-500 data, de-duplicated; (B) HiSeq-2500 data, de-duplicated; (C) BGISEQ-500 data, duplicates retained; (D) HiSeq-2500 data, duplicates retained. The underlying data for this figure are derived from Varistran output, summaries of which can be found in <xref ref-type="supplementary-material" rid="pbio.3000166.s030">S2 Data</xref> and <xref ref-type="supplementary-material" rid="pbio.3000166.s031">S3 Data</xref>.</p>
+</caption>
+<graphic mimetype="image" position="float" xlink:href="info:doi/10.1371/journal.pbio.3000166.g001" xlink:type="simple"/>
+</fig>
+</sec>
+<sec id="sec009">
+<title>Tissue specificity when compared with the Canine Normal Tissue Database (Method 2)</title>
+<p>Like our observations from Method 1, we found that the historical Skin 2 and the ancient Tumat liver tissues showed significantly more similarity to their modern control counterparts than the other historical/ancient tissues (<xref ref-type="fig" rid="pbio.3000166.g002">Fig 2</xref>; <xref ref-type="supplementary-material" rid="pbio.3000166.s032">S4 Data</xref>; <xref ref-type="supplementary-material" rid="pbio.3000166.s033">S5 Data</xref>). Of the 14,300-year-old Tumat samples, we found virtually no correlation between ancient and control data when compared with the canine normal tissue array (Method 2) using muscle (<italic>r</italic><sup>2</sup> = 0.07) and cartilage (<italic>r</italic><sup>2</sup> = 0.01). However, we observed a high degree of similarity with liver tissue, when similarly compared with modern data (<italic>r</italic><sup>2</sup> = 0.94, <xref ref-type="fig" rid="pbio.3000166.g003">Fig 3</xref>; <xref ref-type="supplementary-material" rid="pbio.3000166.s035">S7 Data</xref>). We noted that several highly expressed genes in the ancient liver tissue are associated with liver function, including apolipoproteins, fetuins, and retinol-binding proteins.</p>
+<fig id="pbio.3000166.g002" position="float">
+<object-id pub-id-type="doi">10.1371/journal.pbio.3000166.g002</object-id>
+<label>Fig 2</label>
+<caption>
+<title>Comparison of ancient and control tissues using Method 2.</title>
+<p>Coverage scores (y-axis) were calculated based on the mean coverage of reads to each named gene in the CanFam3.1 transcriptome, followed by filtering to the 95th percentile of all genes represented. Each gene was then assigned a most-associated tissue based on data from an Affymetrix array derived from 10 canine tissues (x-axis). Each tissue was then assigned a cumulative score based on the coverage scores of each gene in the 95th percentile. Orange bars represent modern control tissues and blue bars represent ancient/historical tissues. (A) Historical Skin 2 versus control skin. (B) Ancient Tumat liver versus control liver. The underlying data for this figure can be found in <xref ref-type="supplementary-material" rid="pbio.3000166.s035">S7 Data</xref> under Tissue_summary tabs, and are derived from primary data found in <xref ref-type="supplementary-material" rid="pbio.3000166.s032">S4 Data</xref> under the Skin2_HS and Tumat_liver_HS tabs and from <xref ref-type="supplementary-material" rid="pbio.3000166.s033">S5 Data</xref> under the ctrl_skin and crtl_liver tabs.</p>
+</caption>
+<graphic mimetype="image" position="float" xlink:href="info:doi/10.1371/journal.pbio.3000166.g002" xlink:type="simple"/>
+</fig>
+<fig id="pbio.3000166.g003" position="float">
+<object-id pub-id-type="doi">10.1371/journal.pbio.3000166.g003</object-id>
+<label>Fig 3</label>
+<caption>
+<title>Regressions of all samples, Method 2: Relationships between the 95th percentile of expressed genes in ancient tissues (x-axis) versus control samples (y-axis).</title>
+<p>Values are calculated based on per-tissue scores (see <xref ref-type="sec" rid="sec017">Methods</xref>), having removed duplicate reads from mapping data. Black data points and trend line refer to BGISEQ-500 data, while orange data points and trendline refer to Illumina HiSeq-2500 data. (A) Skin 1, (B) Skin 2, (C) Tumat cartilage, (D) Tumat liver, and (E) Tumat muscle. The underlying data for this figure can be found in <xref ref-type="supplementary-material" rid="pbio.3000166.s035">S7 Data</xref>, ‘Regressions’ tab.</p>
+</caption>
+<graphic mimetype="image" position="float" xlink:href="info:doi/10.1371/journal.pbio.3000166.g003" xlink:type="simple"/>
+</fig>
+<p>A high level of similarity between historical and modern skin tissues (<italic>r</italic><sup>2</sup> = 0.70 for Skin 1 and 0.87 for Skin 2) was also observed using Method 2 (<xref ref-type="fig" rid="pbio.3000166.g003">Fig 3</xref>; <xref ref-type="supplementary-material" rid="pbio.3000166.s035">S7 Data</xref>). We noted that highly expressed genes in both ancient and controls are associated with skin and connective tissue, including collagen and several keratin-producing genes (<xref ref-type="supplementary-material" rid="pbio.3000166.s024">S4 Table</xref>).</p>
+</sec>
+<sec id="sec010">
+<title>Long-fragment aRNA and ‘simulated ancient’ datasets</title>
+<p>To test whether ultrashort fragments seriously affect the tissue assignations by way of spurious mapping, we repeated analysis of ‘Method 1’, ‘Method 2’, and damage profiles on aRNA reads that were 30 nt or greater. To do this, we simply selected mapped reads ≥30 nt in length from existing BAM files, then reran coverage calculations as described for Method 1 (<xref ref-type="supplementary-material" rid="pbio.3000166.s031">S3 Data</xref>) and Method 2 (<xref ref-type="supplementary-material" rid="pbio.3000166.s034">S6 Data</xref>), and ran mapDamage v2.0.9 on each new BAM to check for differences when ultrashort fragments were removed (<xref ref-type="supplementary-material" rid="pbio.3000166.s003">S3 Fig</xref>). For Method 1, we found that any similarity between modern and ancient data was severely reduced; for example, the proportion of expressed genes in liver tissue with duplicates removed went from 90% to 14% when ultrashort fragments were removed (<xref ref-type="supplementary-material" rid="pbio.3000166.s030">S2 Data</xref> and <xref ref-type="supplementary-material" rid="pbio.3000166.s031">S3 Data</xref>, <xref ref-type="supplementary-material" rid="pbio.3000166.s011">S11 Fig</xref>). We noted a less extreme decrease for Skin 2, from 99% to 89%, which could be explained by a generally higher proportion of the original data being of longer fragments for Skin 2, resulting in a less drastic loss of data. For Method 2, we found that samples Skin 2 and Tumat liver still showed a high level of similarity to their modern controls (<italic>r</italic><sup>2</sup> = 0.84 and 0.81, respectively) and also a high degree of similarity to their short-read-included counterparts (<xref ref-type="supplementary-material" rid="pbio.3000166.s025">S5 Table</xref>). Interestingly, we noticed that the Skin 1 sample, when filtering out ultrashort reads, showed a significant drop in similarity to both skin control and original Skin 1 aRNA, suggesting that in certain circumstances, ultrashort molecules have enough mapping complexity to be crucial to identifying tissue specificity.</p>
+<p>To further validate the use of ultrashort fragments, we took the control datasets and created a ‘simulated ancient’ dataset for each, ranging from 15 to 50 nt in length, deriving from the original control data, for all 4 control samples. We then ran these new ‘simulated ancient’ data through our Method 2 pipeline, for comparison to others. We found that the simulated dataset had almost identical tissue identifiers to the original control samples (<xref ref-type="supplementary-material" rid="pbio.3000166.s026">S6 Table</xref>, <xref ref-type="supplementary-material" rid="pbio.3000166.s012">S12 Fig</xref>), again suggesting that ultrashort molecules do not necessarily result in spurious mapping, where the complexity is great enough.</p>
+</sec>
+<sec id="sec011">
+<title>Metagenomic analysis</title>
+<p>To explore microorganism presence and further validate the authenticity of our RNA reads, we performed four metagenomic analyses; first, on the tRNA fraction, to validate the origin of the data as being canine due to the relatively high interspecies sequence divergence of tRNA. We found that in all cases, the vast majority (&gt;86.5%) of reads were assigned either directly or directly basal to canine tRNA, further suggesting the authenticity of our data. We further checked this method by checking for overlap (sharing) between tRNA-assigned and rRNA-assigned reads. In all cases, we found zero overlapping reads, again suggesting authenticity.</p>
+<p>Secondly, we performed a full metagenomic BLAST against the NCBI nt database using the blast+ 2.6.8 suite, using a random subset of 100,000 reads for each sample. We modified the parameters to include ultrashort fragments by minimising the word score to 10 and collated reads falling at the <italic>Canis lupus</italic> node, and to compensate for highly conserved sequences, all those falling at or within the Mammalia node. We found that for samples Skin 2 and Tumat liver, the levels of expectedly assigned reads were high—at least four times those of the other tissues (<xref ref-type="supplementary-material" rid="pbio.3000166.s026">S6 Table</xref>).</p>
+<p>Thirdly, we repeated the full metagenomic BLAST against the nt database as above, only subsampling reads that mapped to the CanFam3.1 transcriptome during initial mapping. We found proportionally expected assignations to canis and mammal nodes, in particular for Skin 2 and Tumat liver samples (<xref ref-type="supplementary-material" rid="pbio.3000166.s026">S6 Table</xref>). Blank assignations were negligible.</p>
+<p>Lastly, we looked for evidence of viral infection from RNA viruses (both single-stranded RNA [ssRNA] and double-stranded RNA [dsRNA]) in all the sequenced tissues, noting that previous aRNA work has revealed RNA viral genomes in ancient material [<xref ref-type="bibr" rid="pbio.3000166.ref011">11</xref>,<xref ref-type="bibr" rid="pbio.3000166.ref031">31</xref>]. We found no evidence of viral sequences in our RNA data.</p>
+</sec>
+</sec>
+<sec id="sec012" sec-type="conclusions">
+<title>Discussion</title>
+<p>Our results show the proof of principle that under permafrost conditions, tissue-specific transcriptome profiles are potentially recoverable from mammalian soft tissues preserved over thousands of years. Because the survival of RNA for such long periods of time is unexpected, verification of the data’s authenticity is important. By comparing the RNA data to equivalent DNA data and assessing key characteristic differences between aRNA and aDNA data, such as reads mapping splice junctions versus exon-exon junctions (<xref ref-type="supplementary-material" rid="pbio.3000166.s027">S7 Table</xref>), the quantity of ribosomal RNA (rRNA) in the samples, and overall transcriptome enrichment, we have shown the expected differences to be present and thus believe the data presented here are truly representative of aRNA.</p>
+<p>We suggest that in contexts conducive to biomolecular preservation, aRNA (or ‘palaeotranscriptome’) analysis could provide a number of standard additional facets to the biomolecular archaeological toolkit. With further research, we anticipate these could be expanded to include tissue identification, metagenomic palaeopathology of RNA viruses, and identifying specific in vivo processes concerned with individual genomes and their underlying causes, such as climate, diet, trauma, and disease.</p>
+<sec id="sec013">
+<title>Tissue specificity in ancient tissues</title>
+<p>Our choices of primary methods to assess similarity between ancient and modern tissues were informed by a ‘standard’ approach of statistical normalisation of raw read counts mapping to individual transcripts (Method 1), followed by a new method based on coverage depth calculation of each individual gene. We explored a second option because of the ultrashort nature of our RNA data, which is explored in more detail later in this section, in which we considered that transcripts reconstructed from heavily truncated reads would be more accurately characterised according to depth and thus take into account the transcript length. While count-based normalisation is not usually an issue for modern data, in which mapped bases are often the entire length of the read, short fragments may result in biases resulting from the length of the reference. For example, two 25-nt reads mapping to one gene would carry twice the statistical weight of one 50-nt read at the same locus, where both sizes would be present in an aDNA/aRNA dataset.</p>
+<p>Of the 2 historical skin samples and 3 ancient tissue samples, 2 samples (Skin 2 and Tumat liver) exhibited signals strongly associated with their modern counterparts. The ancient liver sample in particular, despite being the oldest of the three individuals, showed the greatest similarity to its control sample. Of particular note is that when compared with the reference Affymetrix array using Method 2, prior to comparative analysis with the control sample, 80% of the 10 most abundant transcripts and 50% of the 50 most abundant transcripts are biologically sensible, i.e., are genes primarily associated with liver tissue. Within those 50, 5 were class A and C apolipoprotein isoforms involved in lipid transport and, crucially, synthesised within the liver [<xref ref-type="bibr" rid="pbio.3000166.ref032">32</xref>]. Three different isoforms of alpha-2 glycoprotein, associated with liver function in mammals [<xref ref-type="bibr" rid="pbio.3000166.ref033">33</xref>], were present (see <xref ref-type="supplementary-material" rid="pbio.3000166.s032">S4 Data</xref>), as were several fibrinogen and fetuin-B genes, which are also liver derived [<xref ref-type="bibr" rid="pbio.3000166.ref034">34</xref>,<xref ref-type="bibr" rid="pbio.3000166.ref035">35</xref>]. While simple identifications such as these are by no means conclusive, we took them as a starting point to perform more detailed statistical analyses. However, we noted that far from being an isolated incident, other, different tissues exhibited similar superficial equivalence to their controls. The Skin 2 sample contained 19 keratin-associated isoforms within the most abundant 50 transcripts, alongside several proline-rich proteins, both of which are associated with dermal tissue. Several microRNA genes were also highly represented, although a reference set for canine microRNA tissue specificity does not include skin [<xref ref-type="bibr" rid="pbio.3000166.ref036">36</xref>], and so concrete conclusions about those transcripts cannot be made.</p>
+<p>In addition to tissue differentiation, it was encouraging to note that in all tissues, the most highly expressed gene without tissue-specific assignment in our scoring matrix was the RNA Component of Signal Recognition Particle 7SL1 (RN7SL1) cytoplasmic RNA, which forms part of the ribosomal nucleosome complex. In highly degraded tissues, the significant presence of rRNA is expected [<xref ref-type="bibr" rid="pbio.3000166.ref015">15</xref>] and therefore is further evidence of RNA enrichment. rRNA itself accounted for between 5.7% and 39.4% of the reads, again with no obvious correlation to tissue type or age, but again with similar results between sequencing platforms (<italic>r</italic><sup>2</sup> = 0.90). Similarly, all ostensibly connective tissues included a predicted collagen alpha-like gene (LOC102152155) as the second- or third-most expressed locus, although a specific named homologue could not be identified for downstream statistical analysis.</p>
+</sec>
+<sec id="sec014">
+<title>aRNA preservation in permafrost and historical tissues</title>
+<p>While the sample set is small, we noted that the ostensibly best-preserved tissue in the Tumat 2 individual is the deepest (liver), and the least well-preserved is the most superficial (cartilage). The muscle tissue, while intermediate, was closer in quality to the cartilage. Although we cannot make a confident assertion, we suspect that, at least concerning a small animal preserved in permafrost, the deepest tissues might have a higher proportion of endogenous DNA/RNA because of the fact that external microbial or other environmental activity would be initially present on the outer tissues. This is reflected in the lesser endogenous content of the outer tissues. Microbial activity on surface tissues being arrested by rapid freezing before reaching deeper tissues would also explain the higher endogenous content of the liver. It is also logical that a transcriptionally active tissue such as liver would exhibit greater specificity through time due to the absolute (as opposed to proportional) levels of nucleic acids in the tissue itself. We hypothesise that degradative enzymes in liver tissue would have no effect on the proportion of endogenous RNA, given the overall rapid freezing of the animal, as discussed above. With regards to historical samples, it is unsurprising that the older of the two skin tissues shows weaker RNA preservation, although this may have been affected by hitherto unknown and different preservation methods and individual postmortem histories.</p>
+<p>As with any extraordinary claim, the veracity of our results is hugely important. Therefore, we analysed our RNA-seq data in conjunction with equivalent DNA data to eliminate the possibility of DNA contamination, by looking at exon-exon junctions, overall mapping proportions, biologically relevant tissue-specific transcriptome activity, and rRNA content. The results of these analyses all show compelling evidence of the authenticity of the RNA data, reinforcing once more the exceptional character of these remains for palaeobiological and palaeophysiological research on extinct mammals or ancient representatives of still extant species. Our analyses of the blank sequencing data consistently showed a lack of contamination, beginning in laboratory measurements of RNA (<xref ref-type="table" rid="pbio.3000166.t001">Table 1</xref>). We consistently observed negligible blank results from the mapped sequence data (<xref ref-type="table" rid="pbio.3000166.t002">Table 2</xref>, <xref ref-type="supplementary-material" rid="pbio.3000166.s021">S1 Table</xref>) and equally negligible results from our junction analysis (<xref ref-type="supplementary-material" rid="pbio.3000166.s023">S3 Table</xref>) and metagenomic analyses (<xref ref-type="supplementary-material" rid="pbio.3000166.s026">S6 Table</xref>), often producing precisely zero hits. Certain analyses such as mapDamage were simply not possible due to a lack of blank data, and comparative analysis using Method 1 and/or Method 2 would produce essentially meaningless results due to their comparative nature. GC content analysis (<xref ref-type="supplementary-material" rid="pbio.3000166.s022">S2 Table</xref>, <xref ref-type="supplementary-material" rid="pbio.3000166.s013">S13 Fig</xref>, <xref ref-type="supplementary-material" rid="pbio.3000166.s043">S1 Text</xref>) also showed nothing of note.</p>
+</sec>
+<sec id="sec015">
+<title>The use of ultrashort fragments in palaeotranscriptomic research</title>
+<p>A major concern of the recovered RNA was the ultrashort nature of the fragments following time-dependent degradation. The general instability of RNA compared with DNA is well known, and so it is plausible that aRNA breaks down to considerably shorter-length fragments than aDNA from the same tissues. We observed this phenomenon with these samples (<xref ref-type="supplementary-material" rid="pbio.3000166.s014">S14 Fig</xref>, <xref ref-type="supplementary-material" rid="pbio.3000166.s015">S15 Fig</xref>, <xref ref-type="supplementary-material" rid="pbio.3000166.s016">S16 Fig</xref>, <xref ref-type="supplementary-material" rid="pbio.3000166.s017">S17 Fig</xref>), in which DNA fragment length is longer than equivalent RNA at around 40 nt. Thus, we noted that a high proportion of our aRNA reads were shorter (15–30 nt) than the usually accepted minimum for aDNA (around 30 nt). Issues with mapping ultrashort reads such as these to genomic positions are prone to errors and mismapping [<xref ref-type="bibr" rid="pbio.3000166.ref037">37</xref>], and so we decided to attempt to compensate for this rather than form our conclusions based on a heavily depleted dataset, which we thought likely to skew our interpretations as a result of excessive false-negative alignments.</p>
+<p>Before reanalysing our data, we postulated that aRNA would be inherently less prone to mismatched or false-positive alignments than DNA because of reference complexity. The transcriptomic reference, unlike the equivalent genome, is relatively free of low-complexity or repeat regions often found in intergenic or untranscribed regions. We have had previous success in reconstructing aRNA genomes using such ultrashort molecules to high coverage [<xref ref-type="bibr" rid="pbio.3000166.ref011">11</xref>], and so we decided to use a similar size threshold to analyse the data presented here. However, to confirm that mismapping of ultrashort reads was not introducing errors into our results, we performed several additional analyses by creating two new datasets from our original data. One analysis, for aRNA samples only, contained only aRNA reads greater than 30 nt in length (‘long-fragment aRNA’).</p>
+<p>A second analysis was based on the modern control data, which has an almost universal &gt;200-nt insert size (as would be expected from fresh RNA-seq data generated on 100 nucleotide paired-end [PE]), and so ‘native’ fragment patterns cannot be analysed for comparison. We therefore simulated an equivalent aRNA dataset by randomly sampling reads and fragmenting them in silico to equal numbers of predefined reads between 15 and 50 nt in length (‘simulated ancient’). We then repeated our analyses for tissue specificity and damage profiles and compared the altered data results with the originals.</p>
+<p>Our reanalysis revealed an extremely strong correlation between the ‘original’ control datasets and their ‘simulated ancient’ counterparts (see <xref ref-type="supplementary-material" rid="pbio.3000166.s012">S12 Fig</xref> and <xref ref-type="supplementary-material" rid="pbio.3000166.s026">S6 Table</xref>), with <italic>r</italic><sup>2</sup> values of between 0.88 and 0.99, suggesting that our method for establishing tissue specificity is unaffected by ultrashort reads in which the reference is complex enough. Conversely, our finding that the correlation between ‘long-fragment aRNA’ and the ‘original’ control was universally lower, particularly in samples in which tissue specificity could not be established (Skin 1, Tumat cartilage, and Tumat muscle), suggests that ultrashort reads in fact improve the accuracy of tissue calling. The loss of signal in Method 1 following removal of ultrashort reads further suggests that retention of ultrashort reads in some cases is justified and necessary.</p>
+<p>We also noted that of the two ancient samples that showed strong correlation between their controls, they were usually more similar to the unedited original control samples than to the ‘long-fragment aRNA’ datasets (<xref ref-type="supplementary-material" rid="pbio.3000166.s026">S6 Table</xref>). We speculate that the poor correlation between long-fragment aRNA and controls in the three poorer-quality samples could be due to a lack of data, because the majority of those were under 30 nt. Because the aRNA original showed marginally higher correlation to the original control than to the ‘simulated ancient’, we further suspect that ultrashort reads are valid, in certain circumstances. Although data are lacking, we noted that the tissues showing greater potential for this method all have reasonably high endogenous content, which could be a proxy for overall RNA integrity. The fact that the control samples showed almost identical profiles to the ‘simulated control’ samples, these samples deriving from close to 100% endogenous content, would support this. However, considerations such as postmortem damage and the effect of these lesions on mapping ultrashort fragments should be considered further (see <xref ref-type="supplementary-material" rid="pbio.3000166.s043">S1 Text</xref>).</p>
+<p>The results of the junction analysis further suggest the authenticity of our data; as previously discussed, reads only crossing junction boundaries were considered in our calculations, as opposed to concentrations of reads nearby these boundaries. Overall, we found enrichment for exon-exon boundaries to be several orders of magnitude greater than splice junctions in our RNA dataset, and in most cases, several orders of magnitude less in the DNA data. Some DNA samples showed comparable (but nonetheless smaller) numbers of splice junction to exon-exon boundaries, for reasons unknown, although we speculate that because RNases are not routinely used in aDNA preparations, these ‘phantom’ RNA reads may be the result of RNA duplexes forming sticky-end double-stranded RNA and subsequently being incorporated into DNA library preparations. We do not, however, believe that this detracts from the interpretation of our aRNA as authentic, based on the RNA junction data.</p>
+<p>Damage profiles of the ‘long-fragment’ aRNA sets (i.e., containing reads only over 30 nt) showed slightly clearer damage patterns than the original datasets, with C &gt; U misincorporations at both ends, as previously observed [<xref ref-type="bibr" rid="pbio.3000166.ref011">11</xref>] with low-level G &gt; A misincorporations at the 3′ end (<xref ref-type="supplementary-material" rid="pbio.3000166.s004">S4 Fig</xref>, <xref ref-type="supplementary-material" rid="pbio.3000166.s005">S5 Fig</xref>). The introduction of ultrashort molecules apparently masks the damage signals, possibly due to damaged reads being discarded where the seed length is too long to accommodate a positive alignment and a terminal base modification. However, our confirmation of tissue specificity in other analyses suggests that these ultrashort reads contain valuable information and so should not be discarded. Instead, we recommend isolation of longer fragments such as those above 30 nt for damage validation and authentication, and using complete ultrashort datasets for transcriptome analysis later on.</p>
+</sec>
+<sec id="sec016">
+<title>The future of aRNA</title>
+<p>Research using ancient biomolecules is moving in leaps and bounds, breaking barriers particularly in terms of throughput, sample age, starting material, and the range of biomolecules at our disposal. aRNA, although touched upon in very recent literature, is still relatively unstudied. Perceptions about what aRNA can inform us about that DNA or proteins cannot, and a more general instability, lead many to dismiss it as unlikely and unnecessary. These data represent the oldest aRNA from any source to be recovered and sequenced, by a significant margin of at least 13,000 years, and show that under some conditions, aRNA can remain intact well enough to identify specific transcriptomic profiles approximately 9,000 years earlier than the current oldest isolated (unsequenced) aRNA. Previous research in plants has identified the potential to uncover aRNA viruses and monitor in vivo activity in long-dead organisms, and this may also be true of animal tissues. However, we stress that these were exceptionally well preserved and not prone to typical enzymatic or autolytic process that occur in mammalian decomposition, and so cannot be considered to be an ‘average’ representation of nucleic acid preservation in ancient soft tissues. This research does, however, suggest that in certain circumstances, the processes of autolysis and putrefaction can be sufficiently arrested in permafrost animal remains, and as such, in vivo processes can now be identified in samples of great interest to current research themes. This potential may not be limited to permafrost samples but might extend to other low-temperature climates such as Greenland, Alaska, Canada, and Antarctica. Equally, source material need not be limited to soft tissues; as previous research has shown, a variety of organic materials are potential sources of aRNA (most notably seed endosperm), and so there is potential to explore aRNA preservation in bone, keratin, or even sediments from such environs. Of course, data for ancient metatranscriptomics are nonexistent at the time of writing, and consequently no such assumptions can be made until further research has been done. Optimistically, we anticipate that other biomolecular analysis may be used to complement and cement our understanding of in vivo processes; for example, quantitative palaeoproteomic approaches, still in their infancy, could be enhanced using relative transcriptome data. Additionally, stable isotope data could further be complemented by these data; nitrogen isotopic analysis of different tissues indicate that Tumat puppy#2 was still sucking its mother’s milk when it died, and so it may be possible, with more samples, to establish individual developmental stages through transcriptomic and isotopic complementary data.</p>
+<p>In conclusion, we suggest that as an untapped biomolecular resource, aRNA has potential to enrich the current body of palaeogenomic study. Although still a field very much in its infancy, aRNA study not only has the potential to provide verification for tissue identification but also to enhance or validate other areas of biomolecular archaeological research, such as epigenomics, palaeoproteomics, and stable isotope analysis. Continuing the palaeopathological perspective, we note that several viruses of importance historically and in modernity such as HIV, yellow fever, West Nile virus, ebola, rabies, hepatitis C, influenza, and measles have RNA genomes. The potential value in establishing their evolutionary trajectories, along with the aforementioned in vivo processes, makes clear the future utility of aRNA.</p>
+</sec>
+</sec>
+<sec id="sec017" sec-type="materials|methods">
+<title>Methods</title>
+<sec id="sec018">
+<title>Ethics statement</title>
+<p>This study utilises tissues from vertebrate animals (wolves). However, the ancient nature of these samples means that no ethical issues arise from this work.</p>
+</sec>
+<sec id="sec019">
+<title>Samples</title>
+<p>To explore the viability of aRNA survival, we chose samples considered to have varying potential for success, given endogenous DNA content from previous genome analysis [<xref ref-type="bibr" rid="pbio.3000166.ref025">25</xref>], but with at least two with a subjectively high potential. Three of the samples represent different tissues (cartilage, liver, and muscle) from the same individual: a remarkably well-preserved large canid puppy, with a calibrated radiocarbon age of 14,233 ± 34 yBP (ETH-73412; 12,297–12,047 cal BC; 95.4% probability using OxCal v4.2.4) [<xref ref-type="bibr" rid="pbio.3000166.ref038">38</xref>], from the village of Tumat in Siberia, Russia. Two puppies were found at the Tumat site, and these analyses concern only puppy #2 (see <xref ref-type="table" rid="pbio.3000166.t001">Table 1</xref>). Full descriptions of the samples can be found in Mak and colleagues, 2017 [<xref ref-type="bibr" rid="pbio.3000166.ref025">25</xref>]. The three tissue samples from the Tumat puppy were ideal, because they represent varying degrees of preservation from the same individual of advanced <sup>14</sup>C age. The other two samples, CN214 and CN1921, are both historical skins (hides) from Greenlandic wolves, shot in 1925, and prior to 1869, respectively. Both are currently housed within the Greenland collection at the Natural History Museum of Denmark.</p>
+</sec>
+<sec id="sec020">
+<title>Laboratory work</title>
+<p>All pre-PCR steps of laboratory work, including RNA extraction, oligonucleotide processing, and library construction, were performed in dedicated aDNA facilities equipped with anteroom and positive air pressure. The aDNA facility is physically isolated from PCR areas. All standard approaches to working with ancient biomolecules (PPE clothing, double-layered gloves, deep cleaning, facemasks, etc.) were followed. aDNA laboratory guidelines are, in principle, very similar to (if not more stringent than) standard RNA practices; in any case, all plasticware and reagents used were nuclease-free, and all surfaces were kept sterilised at all times. For all steps of pre-PCR work, laminar flow and fume hood cabinets were used when appropriate.</p>
+</sec>
+<sec id="sec021">
+<title>RNA extraction and purification</title>
+<p>Extraction and library construction were performed around protocols designed towards microRNA, due to the presumption that it would be necessary to isolate and sequence ultrashort fragments from ancient assemblages, given that RNA fragmentation is a time-dependent diagenetic process [<xref ref-type="bibr" rid="pbio.3000166.ref011">11</xref>,<xref ref-type="bibr" rid="pbio.3000166.ref015">15</xref>]. RNA was isolated from tissues using an Ambion miRvana kit, following the protocol for total RNA isolation, with the following modifications: prior to digestion, tissues were flash frozen in liquid nitrogen and ground to powder using a mortar and pestle. Tissue powder was then incubated in 1 mL of Lysis/Binding buffer for 65 hours at 37°C. Organic extraction with acidic pH 4.2 phenol:chloroform was done to enable phase separation of RNA and DNA [<xref ref-type="bibr" rid="pbio.3000166.ref039">39</xref>]. We opted for this method over DNase treatment because we have previously observed significant inefficiencies of DNase when using aDNA as a substrate, often resulting in partial digestion of RNA [<xref ref-type="bibr" rid="pbio.3000166.ref040">40</xref>]. We performed organic extraction twice to ensure the purity of RNA, as described [<xref ref-type="bibr" rid="pbio.3000166.ref041">41</xref>]. All other steps were performed according to the manufacturer’s instructions; briefly, salt-based precipitation was initiated using a proprietary salt mixture, and consolidated with excess ethanol. RNA was then isolated on a spin-column-attached silica membrane, which was then washed three times using included buffers. RNA was eluted in 50 μL, applied at 95°C as per the recommended protocol. The quantity of purified RNA was measured using the Qubit RNA HS assay. Due to known and suspected issues in fluorescence quantification in degraded or fragmented nucleic acid extractions [<xref ref-type="bibr" rid="pbio.3000166.ref042">42</xref>], a DNA measurement was not taken using Qubit. We instead opted to measure the level of DNA carryover by quantifying the level of mapping to untranscribed regions of the genome, defining the untranscribed regions as the inverse of any and all transcripts, coding or otherwise, as defined from the CanFam3.1 genome annotation (gff) file. We subsequently elected to build platform-specific RNA libraries and sequence on two different platforms, the Illumina HiSeq-2500 and the BGISEQ-500, to allow us to explore platform-dependent biases in data generation alongside establishing the survival of aRNA.</p>
+</sec>
+<sec id="sec022">
+<title>Illumina library construction</title>
+<p>cDNA libraries were constructed using a NEBNext Multiplex Small RNA Library Prep Set for Illumina according to the manufacturer’s instructions. We opted for this method over other RNA library preparations because of the increased specificity of RNA molecules being incorporated into the library and proven sequence recovery of ultrashort molecules [<xref ref-type="bibr" rid="pbio.3000166.ref043">43</xref>]. Briefly, a pre-adenylated 3′ adapter is first ligated to the 5′ end of the RNA molecule. This ATP-free ligation step is facilitated by an RNA ligase mutant, which is truncated to prevent RNA adenylation and thus ligation, unless pre-adenylation of the donor molecule has already occurred [<xref ref-type="bibr" rid="pbio.3000166.ref044">44</xref>]. This takes advantage of the 3′ hydroxyl group unique to RNA and thus facilitates enrichment of RNA over potential contaminant DNA. Next, a reverse transcription primer is annealed to the 3′ adapter. Then, a standard ssRNA ligation step allows ligation of the 5′ adapter to the RNA molecule to be amplified. Reverse transcription to create single-indexed cDNA libraries based on the RT primer is followed by indexing PCR. Libraries were amplified with between 16 and 20 cycles of PCR using the included polymerase mastermix and submitted directly for sequencing.</p>
+</sec>
+<sec id="sec023">
+<title>BGISEQ-500 library construction</title>
+<p>For BGISEQ-500 libraries, we utilised the same NEBNext kit with modified adapters and primer oligos appropriate to the BGISEQ-500 platform. We based oligo sequences on those published previously [<xref ref-type="bibr" rid="pbio.3000166.ref025">25</xref>] and utilised indexing primers over indexing adapters to reduce costs and improve protocol simplicity, opting for a single 5′ phosphorylated 5′ adapter and adenylated 3′ adapter. Because 5′ adenylation of the 3′ adapter is necessary to RNA-specific library construction as detailed above, the custom BGISEQ-500 3′ adapter was adenylated at the 5′ end using a NEB 5′ Adenylation kit. Libraries were similarly amplified with between 16 and 20 cycles of PCR. With the BGISEQ-500 libraries only, post-PCR products were circularised to form DNA nanoballs (DNBs) based on the standard protocol for the platform [<xref ref-type="bibr" rid="pbio.3000166.ref025">25</xref>]. DNB production was performed by BGI Europe immediately prior to sequencing.</p>
+</sec>
+<sec id="sec024">
+<title>Sequencing</title>
+<p>Illumina libraries were pooled at equimolar concentrations and sequenced at 80 nt, single-end (SE80), on the HiSeq-2500 platform at the Danish National High-Throughput Sequencing Centre. BGI libraries were equally pooled to equimolar concentrations, circularised, and sequenced as SE50 using the BGISEQ-500 platform at BGI Europe, Copenhagen. Demultiplexing was performed in-house, and resulting FastQ files were delivered electronically.</p>
+</sec>
+<sec id="sec025">
+<title>Adapter removal</title>
+<p>Illumina and BGI adapters were removed from their respective datasets using cutadapt v.1.11 [<xref ref-type="bibr" rid="pbio.3000166.ref045">45</xref>], using default parameters for single-end reads, 10% allowed mismatch, and a minimum size retention of 15 nt.</p>
+</sec>
+<sec id="sec026">
+<title>Read alignment</title>
+<p>Sequencing reads from the ancient samples were initially aligned to the CanFam3.1 genome using bowtie2 [<xref ref-type="bibr" rid="pbio.3000166.ref046">46</xref>], under default parameters for single-end data. This was done to assess the overall endogenous content, including potential DNA contaminants, and in relation to previous estimates of endogenous content of the samples [<xref ref-type="bibr" rid="pbio.3000166.ref025">25</xref>]. Resulting SAM files were converted to sorted BAM files and filtered by mapping the quality score (minimum q = 20). The analysis was then repeated using identical parameters, only instead using the CanFam3.1 transcriptome as the reference, and again using canine rRNA and tRNA reference sequences from which to calculate the RNA enrichment factors. tRNA sequences were downloaded from GtRNAdb [<xref ref-type="bibr" rid="pbio.3000166.ref047">47</xref>] and rRNA sequences were obtained from the Silva rRNA database [<xref ref-type="bibr" rid="pbio.3000166.ref048">48</xref>]. Mapping files were de-duplicated, although mapping files with duplicates retained were kept for comparative analyses. Control data were aligned to the CamFam3.1 transcriptome using default parameters for paired-end data in bowtie2. We performed identical analysis on our extraction blank library and ran any mapped reads through ncbi BLAST+, using default parameters to the nt database, followed by metagenomic analysis using MEGAN [<xref ref-type="bibr" rid="pbio.3000166.ref049">49</xref>] to ensure no contamination. From the MEGAN analysis we found that all mapped extraction blank reads returned primarily basal or highly conserved assignments, and negligible read numbers were assigned to canids for both Illumina and BGI platforms (2 reads and 39 reads), respectively.</p>
+</sec>
+<sec id="sec027">
+<title>Junction analysis</title>
+<p>We used tophat v2.1.2 [<xref ref-type="bibr" rid="pbio.3000166.ref050">50</xref>] to generate an index of exon-exon junctions from the CanFam3.1 genome annotation and also to map raw, trimmed, de-duplicated RNA-seq reads back to that index. We then collated the number of reads straddling exon-exon junctions from the tophat junctions.bed output. We generated intron and exon bedfiles from the CanFam3.1 genome annotation and used the bedtools intersect function to assess the number of reads straddling splice junctions. First, we created a BAMfile of reads overlapping exon junctions from our original mapping BAMfiles and fed that output back into the bedtools intersect to repeat the analysis, using the intron bedfile instead of the exon bedfile. We used the output from this second round of bedtools intersect to collate read numbers. We then repeated this analysis using raw, trimmed DNA reads generated previously [<xref ref-type="bibr" rid="pbio.3000166.ref025">25</xref>] to compare the two types of data.</p>
+</sec>
+<sec id="sec028">
+<title>Damage pattern analysis</title>
+<p>Cytosine deamination patterns of reads aligned to the CanFam3.1 transcriptome were assessed using mapDamage 2.06 [<xref ref-type="bibr" rid="pbio.3000166.ref051">51</xref>]. While the samples had previously showed expected damage patterns from genome sequencing [<xref ref-type="bibr" rid="pbio.3000166.ref025">25</xref>], the expectations of similar analysis for RNA are largely unknown due to factors such as single strandedness and sequence-specific secondary structure formation. We assessed damage profiles on BAM files resulting from both genomic and transcriptomic mapping.</p>
+</sec>
+<sec id="sec029">
+<title>Control and reference data</title>
+<p>For direct transcriptomic comparison, we analysed equivalent, modern NGS data deriving from the same four dog tissue types (skin, cartilage, liver, and skeletal muscle). Appropriate data for all tissues were found at the ENA Short Read Archive bioproject, accession PRJNA396033, experiment accessions SRX3055179 (cartilage), SRX3055151 (liver), SRX3055143 (skin), and SRX3055142 (muscle). For reference data on relative expression levels between dog tissues, we used Affymetrix array data collated from the Canine Normal Tissue Database, bioproject accession PRJNA124245 [<xref ref-type="bibr" rid="pbio.3000166.ref028">28</xref>].</p>
+</sec>
+<sec id="sec030">
+<title>Expression analysis</title>
+<p>Because gene-specific expression analysis has not been performed on ancient material, we attempted two forms of analysis. Method 1 is a direct comparison of control NGS data (see ‘Control and reference data’) to ancient sequencing data. Method 2 was achieved by employing an independent, non-NGS expression array reference [<xref ref-type="bibr" rid="pbio.3000166.ref028">28</xref>] with which both modern control NGS and ancient/historical NGS datasets would be compared. Both modern and ancient/historical data were subject to the same analysis.</p>
+<p>Both analyses relied on first calculating a relative measure of expression for individual genes within each sample. To generate this, we used the samtools depth function to describe the coverage depth for each position of each transcript, and divided the total coverage for all positions by the length of the transcript to generate a mean coverage value for each. The unique nature of these data creates uncertainties regarding duplicate removal considering excess PCR cycles and short fragments, so we therefore opted to perform analyses using combinations of de-duplicated and duplicates-retained mapping between ancient and control samples. We found that de-duplication, in particular applied to the ancient samples, is more appropriate for these kinds of data (see <xref ref-type="sec" rid="sec012">Discussion</xref>).</p>
+<p>The direct comparison method (Method 1) involved firstly performing a variance stabilising transformation on transcript raw count data, using the Varistran R package (incorporating the edgeR package) [<xref ref-type="bibr" rid="pbio.3000166.ref027">27</xref>,<xref ref-type="bibr" rid="pbio.3000166.ref052">52</xref>]. Varistran employs library size normalisation (by total number of reads, not fragment length) using edgeR’s TMM normalisation, then applies Anscombe's [<xref ref-type="bibr" rid="pbio.3000166.ref053">53</xref>] variance stabilising transformation for the negative binomial distribution [<xref ref-type="bibr" rid="pbio.3000166.ref027">27</xref>]. Because no replicates were available for each of the ancient samples or controls, dispersion was estimated across the entire dataset (blindly). These normalised data were used for comparison between samples across the entire dataset using Varistran package functions, producing ordination biplots and a distance-based heatmap with hierarchal clustering. Biplots were produced by centring rows (genes) by subtracting their global means, performing singular value decomposition, and these data were plotted; the expression level of a gene in a particular sample, relative to the average expression level of that gene, is approximated by the dot product of the sample position and the gene position (personal communication, P. Harrison). Heatmaps were produced by calculating cosine distance, performing hierarchical clustering with <italic>hclust()</italic>, and refining clustering using the ‘optimal leaf ordering’ algorithm from the seriation package [<xref ref-type="bibr" rid="pbio.3000166.ref054">54</xref>] in order to minimise sharp changes between neighbours without otherwise changing the tree.</p>
+<p>To directly compare expression levels between control and ancient/historic samples within and between tissue types, the transformed data for each tissue type were filtered for transcripts within and above the upper 95th percentile of expression levels (i.e., the most highly expressed genes for each tissue type in a given sample). Data below the 95th percentile were discarded, to compensate for noise associated with low-level transcripts [<xref ref-type="bibr" rid="pbio.3000166.ref055">55</xref>]. Pairwise linear regression analyses were then performed comparing control tissue expression (explanatory variable) to expression in all ancient/historic tissues (response variable[s]). We corrected for multiple testing [<xref ref-type="bibr" rid="pbio.3000166.ref055">55</xref>] using Bonferroni corrections: for each control tissue there were 5 comparisons with ancient/historic samples, so linear models were considered significant at an α of 0.01. When comparing control tissues to other control tissues, there were 3 comparisons, so linear models were considered significant at an α of 0.0166. Linear models between control samples and both ancient and other control samples were only considered relevant if their slope was positive.</p>
+<p>For Method 2, we first created a simple reference set from the Affymetrix array deriving from the Canine Normal Tissue Database [<xref ref-type="bibr" rid="pbio.3000166.ref028">28</xref>]. This was used to describe the tissue with which each annotated gene was most associated, for example, apolipoprotein 1 (APO1) is most associated with liver tissue, collagen is most associated with skin, etc. This resulted in a simple gene name to tissue pairing matrix describing one tissue per gene. We then created a second matrix from the CanFam3.1 transcriptome, describing the specific gene name in relation to the gene description (i.e., predicted homology or confirmed) and reference (Genbank ID) to which the data were mapped. For each sample, we took transcripts and associated Genbank references within and above the 95th percentile of expression levels (as calculated earlier using samtools depth) [<xref ref-type="bibr" rid="pbio.3000166.ref027">27</xref>,<xref ref-type="bibr" rid="pbio.3000166.ref054">54</xref>,<xref ref-type="bibr" rid="pbio.3000166.ref055">55</xref>] to create a final matrix of gene, coverage, and most associated tissue. Then, for each sample, we cumulatively scored each of the 10 tissues listed in the Affymetrix array, according to the gene/tissue pairing described in matrix 1. We performed this analysis for all ancient and modern sequencing data, and compared like-for-like sample tissues using a linear regression. We used these analyses to assess the similarity of the modern and ancient datasets based on their appearance when compared with the limited tissue set represented from the Affymetrix array.</p>
+</sec>
+<sec id="sec031">
+<title>GC content analysis</title>
+<p>We assessed the GC content on a per-transcript basis of the CanFam3.1 transcriptome, using a Perl script. We then isolated the transcripts from within the 95th percentile of expression levels as described earlier, for consistency. Then, the GC content of individual short reads mapping to those transcripts was calculated on a per-sample basis, from de-duplicated and duplicates-retained BAM files (<xref ref-type="supplementary-material" rid="pbio.3000166.s022">S2 Table</xref>).</p>
+</sec>
+<sec id="sec032">
+<title>Metagenomic analysis</title>
+<p>For viral infection analysis, we downloaded complete genomes for all available ssRNA and dsRNA viruses known to infect vertebrates from the NCBI Genome resource. Then, we mapped all raw reads to the virus dataset using bowtie2 and extracted the mapped reads into fasta format. We then subjected these reads to a full metagenomic BLAST to confirm their viral origin. For tRNA species authentication, we extracted all reads previously mapped to known canine tRNA sequences and performed a full metagenomic BLAST against the entire nt database. For general metagenomic analysis of mapped and raw reads, we subsampled 100,000 reads from each sample using seqtk v1.2 and ran similarly, only using a word score of 10. All BLAST analyses were performed using the NCBI blast+ v.2.6.0 suite, on a standalone high-performance cluster. Taxonomic assignations were viewed using MEGAN v5.11,3 [<xref ref-type="bibr" rid="pbio.3000166.ref049">49</xref>].</p>
+</sec>
+<sec id="sec033">
+<title>Construction of long-fragment aRNA and ‘simulated’ aRNA data</title>
+<p>To assess how much ultrashort fragments affect tissue identification, we first removed all fragments under 30 nt from existing mapping BAM files using the samtools v1.4 ‘view’ function and an awk one-liner. We then repeated downstream analyses using these new BAM files as the source data.</p>
+<p>To create a proxy for aRNA from modern data we know to map well to the reference, we selected 1 million reads at random from each of the control datasets. Using the seqtk v1.2 sample function, we piped that output through the seqtk ‘trimfq’ function with–s and–e options set to retrieve 15 bases from each randomly subsampled read. We then repeated this 34 times, each time selecting one extra base to create 35 subsets of length 15–50. These subsets were then merged and treated as a single dataset for each tissue, giving 4 simulated aRNA datasets.</p>
+</sec>
+</sec>
+<sec id="sec034">
+<title>Supporting information</title>
+<supplementary-material id="pbio.3000166.s001" mimetype="image/tiff" position="float" xlink:href="info:doi/10.1371/journal.pbio.3000166.s001" xlink:type="simple">
+<label>S1 Fig</label>
+<caption>
+<title>mapDamage profiles of ancient tissues mapped to the CanFam3.1 transcriptome showing nt misincorporations at relative positions from the centre towards the terminal ends of the sequencing read, using bwa-aln as primary mapper and de-duplicated reads only.</title>
+<p>(A) and (B) Skin 1; (C) and (D) Skin 2; (E) and (F) Tumat cartilage; (G) and (H) Tumat liver; (I) and (J) Tumat muscle. nt, nucleotide.</p>
+<p>(TIF)</p>
+</caption>
+</supplementary-material>
+<supplementary-material id="pbio.3000166.s002" mimetype="image/tiff" position="float" xlink:href="info:doi/10.1371/journal.pbio.3000166.s002" xlink:type="simple">
+<label>S2 Fig</label>
+<caption>
+<title>mapDamage profiles of ancient tissues mapped to the CanFam3.1 transcriptome showing nt misincorporations at relative positions from the centre towards the terminal ends of the sequencing read, using bowtie2 as primary mapper.</title>
+<p>Red lines indicate C &gt; U misincorporations, blue lines indicate G &gt; A misincorporations, and grey lines indicate others. (A) Skin 1, de-duplicated; (B) Skin 1, duplicates retained; (C) Skin 2, de-duplicated; (D) Skin 2, duplicates retained; (E) Tumat cartilage, de-duplicated; (F) Tumat cartilage, duplicates retained; (G) Tumat liver, de-duplicated; (H) Tumat liver, duplicated retained; (I) Tumat muscle, de-duplicated; (J) Tumat muscle, duplicates retained. Derived from BGISEG-500 data. The underlying data for this figure can be found in <xref ref-type="supplementary-material" rid="pbio.3000166.s029">S1 Data</xref>. nt, nucleotide.</p>
+<p>(TIF)</p>
+</caption>
+</supplementary-material>
+<supplementary-material id="pbio.3000166.s003" mimetype="image/tiff" position="float" xlink:href="info:doi/10.1371/journal.pbio.3000166.s003" xlink:type="simple">
+<label>S3 Fig</label>
+<caption>
+<title>mapDamage profiles of ancient tissues mapped to the CanFam3.1 transcriptome showing nt misincorporations at relative positions from the centre towards the terminal ends of the sequencing read, using bowtie2 as primary mapper.</title>
+<p>Red lines indicate C &gt; U misincorporations, blue lines indicate G &gt; A misincorporations, and grey lined indicate others. (A) Skin 1, de-duplicated; (B) Skin 1, duplicates retained; (C) Skin 2, de-duplicated; (D) Skin 2, duplicates retained; (E) Tumat cartilage, de-duplicated; (F) Tumat cartilage, duplicates retained; (G) Tumat liver, de-duplicated; (H) Tumat liver, duplicated retained; (I) Tumat muscle, de-duplicated; (J) Tumat muscle, duplicates retained. Derived from HiSeq-2500 data. The underlying data for this figure can be found in <xref ref-type="supplementary-material" rid="pbio.3000166.s029">S1 Data</xref>. nt, nucleotide.</p>
+<p>(TIF)</p>
+</caption>
+</supplementary-material>
+<supplementary-material id="pbio.3000166.s004" mimetype="image/tiff" position="float" xlink:href="info:doi/10.1371/journal.pbio.3000166.s004" xlink:type="simple">
+<label>S4 Fig</label>
+<caption>
+<title>mapDamage profiles of ancient tissues mapped to the CanFam3.1 transcriptome sequenced on BGISEQ-500 showing nt misincorporations at relative positions from the centre towards the terminal ends of the sequencing read, using bowtie2 as primary mapper, de-duplicated reads only, and only incorporating reads of 30 nt or greater.</title>
+<p>(A) Skin 1; (B) Skin 2; (C) Tumat cartilage; (D) Tumat liver; (E) Tumat muscle. The underlying data for this figure can be found in <xref ref-type="supplementary-material" rid="pbio.3000166.s029">S1 Data</xref>. nt, nucleotide.</p>
+<p>(TIF)</p>
+</caption>
+</supplementary-material>
+<supplementary-material id="pbio.3000166.s005" mimetype="image/tiff" position="float" xlink:href="info:doi/10.1371/journal.pbio.3000166.s005" xlink:type="simple">
+<label>S5 Fig</label>
+<caption>
+<title>mapDamage profiles of ancient tissues mapped to the CanFam3.1 transcriptome sequenced on HiSeq-2500 showing nt misincorporations at relative positions from the centre towards the terminal ends of the sequencing read, using bowtie2 as primary mapper, de-duplicated reads only, and only incorporating reads of 30 nt or greater.</title>
+<p>(A) Skin 1; (B) Skin 2; (C) Tumat cartilage; (D) Tumat liver; (E) Tumat muscle. The underlying data for this figure can be found in <xref ref-type="supplementary-material" rid="pbio.3000166.s029">S1 Data</xref>. nt, nucleotide.</p>
+<p>(TIF)</p>
+</caption>
+</supplementary-material>
+<supplementary-material id="pbio.3000166.s006" mimetype="image/tiff" position="float" xlink:href="info:doi/10.1371/journal.pbio.3000166.s006" xlink:type="simple">
+<label>S6 Fig</label>
+<caption>
+<title>Hierarchical clustering heatmap of similarity between samples (see <xref ref-type="sec" rid="sec017">Methods</xref> for details) for the top 500 genes with the most differences between samples.</title>
+<p>(A) BGISEQ-500 data, de-duplicated; (B) HiSeq-2500 data, de-duplicated; (C) BGISEQ-500 data, duplicates retained; (D) HiSeq-2500 data, duplicates retained.</p>
+<p>(TIF)</p>
+</caption>
+</supplementary-material>
+<supplementary-material id="pbio.3000166.s007" mimetype="image/tiff" position="float" xlink:href="info:doi/10.1371/journal.pbio.3000166.s007" xlink:type="simple">
+<label>S7 Fig</label>
+<caption>
+<title>Regressions for samples sequenced on the BGISEQ-500 platform, de-duplicated, Method 1.</title>
+<p>(A) comparison to skin; (B) comparison to cartilage; (C) comparison to liver; (D) comparison to muscle. See legend for <xref ref-type="fig" rid="pbio.3000166.g001">Fig 1</xref> for details.</p>
+<p>(TIF)</p>
+</caption>
+</supplementary-material>
+<supplementary-material id="pbio.3000166.s008" mimetype="image/tiff" position="float" xlink:href="info:doi/10.1371/journal.pbio.3000166.s008" xlink:type="simple">
+<label>S8 Fig</label>
+<caption>
+<title>Regressions for samples sequenced on the BGISEQ-500 platform duplicates retained, Method 1.</title>
+<p>(E) Comparison to skin; (F) comparison to cartilage; (G) comparison to liver; (H) comparison to muscle. See legend for <xref ref-type="fig" rid="pbio.3000166.g001">Fig 1</xref> for details.</p>
+<p>(TIF)</p>
+</caption>
+</supplementary-material>
+<supplementary-material id="pbio.3000166.s009" mimetype="image/tiff" position="float" xlink:href="info:doi/10.1371/journal.pbio.3000166.s009" xlink:type="simple">
+<label>S9 Fig</label>
+<caption>
+<title>Regressions for samples sequenced on the HiSeq-2500 platform, de-duplicated, Method 1.</title>
+<p>(I) Comparison to skin; (J) comparison to cartilage; (K) comparison to liver; (L) comparison to muscle. See legend for <xref ref-type="fig" rid="pbio.3000166.g001">Fig 1</xref> for details.</p>
+<p>(TIF)</p>
+</caption>
+</supplementary-material>
+<supplementary-material id="pbio.3000166.s010" mimetype="image/tiff" position="float" xlink:href="info:doi/10.1371/journal.pbio.3000166.s010" xlink:type="simple">
+<label>S10 Fig</label>
+<caption>
+<title>Regressions for samples sequenced on the HiSeq-2500 platform, duplicates retained, Method 1.</title>
+<p>(M) Comparison to skin; (N) comparison to cartilage; (O) comparison to liver; (P) comparison to muscle. See legend for <xref ref-type="fig" rid="pbio.3000166.g001">Fig 1</xref> for details.</p>
+<p>(TIF)</p>
+</caption>
+</supplementary-material>
+<supplementary-material id="pbio.3000166.s011" mimetype="image/tiff" position="float" xlink:href="info:doi/10.1371/journal.pbio.3000166.s011" xlink:type="simple">
+<label>S11 Fig</label>
+<caption>
+<title>Regressions for Skin 2 and liver samples, Method 1, using only reads of 30 nt or greater.</title>
+<p>(A) Skin 2; (B) Tumat liver. nt, nucleotide.</p>
+<p>(TIF)</p>
+</caption>
+</supplementary-material>
+<supplementary-material id="pbio.3000166.s012" mimetype="image/tiff" position="float" xlink:href="info:doi/10.1371/journal.pbio.3000166.s012" xlink:type="simple">
+<label>S12 Fig</label>
+<caption>
+<title>Regression of coverage: control data versus ‘simulated ancient’ control data using data points from Method 2.</title>
+<p>(A) Skin; (B) liver; (C) muscle; (D) cartilage. The underlying data for this figure can be found in <xref ref-type="supplementary-material" rid="pbio.3000166.s036">S8 Data</xref>.</p>
+<p>(TIF)</p>
+</caption>
+</supplementary-material>
+<supplementary-material id="pbio.3000166.s013" mimetype="image/tiff" position="float" xlink:href="info:doi/10.1371/journal.pbio.3000166.s013" xlink:type="simple">
+<label>S13 Fig</label>
+<caption>
+<title>GC content histograms according to sequencing platform and duplicate removal.</title>
+<p>For all panels: blue line, Skin 1; orange line, Skin 2; grey line, Tumat cartilage; yellow line, Tumat liver; black line, Tumat muscle; green line, blank. (A) BGISEQ-500, duplicated removed; (B) HiSeq-2500, duplicated removed; (C) BGISEQ-500, duplicates retained; (D) HiSeq-2500, duplicates retained.</p>
+<p>(TIF)</p>
+</caption>
+</supplementary-material>
+<supplementary-material id="pbio.3000166.s014" mimetype="image/tiff" position="float" xlink:href="info:doi/10.1371/journal.pbio.3000166.s014" xlink:type="simple">
+<label>S14 Fig</label>
+<caption>
+<title>Length distribution plots of BGISEQ-500 RNA-seq.</title>
+<p>(A) Skin 1; (B) Skin 2; (C) Tumat cartilage; (D) Tumat liver; (E) Tumat muscle. The underlying data for this figure can be found in <xref ref-type="supplementary-material" rid="pbio.3000166.s037">S9 Data</xref>. RNA-seq, RNA sequencing.</p>
+<p>(TIF)</p>
+</caption>
+</supplementary-material>
+<supplementary-material id="pbio.3000166.s015" mimetype="image/tiff" position="float" xlink:href="info:doi/10.1371/journal.pbio.3000166.s015" xlink:type="simple">
+<label>S15 Fig</label>
+<caption>
+<title>Length distribution plots of HiSeq-2500 RNA-seq.</title>
+<p>(A) Skin 1; (B) Skin 2; (C) Tumat cartilage; (D) Tumat liver; (E) Tumat muscle. The underlying data for this figure can be found in <xref ref-type="supplementary-material" rid="pbio.3000166.s038">S10 Data</xref>. RNA-seq, RNA sequencing.</p>
+<p>(TIF)</p>
+</caption>
+</supplementary-material>
+<supplementary-material id="pbio.3000166.s016" mimetype="image/tiff" position="float" xlink:href="info:doi/10.1371/journal.pbio.3000166.s016" xlink:type="simple">
+<label>S16 Fig</label>
+<caption>
+<title>Length distribution plots of BGISEQ-500 DNA-seq from Mak and colleagues.</title>
+<p>(A) Skin 1; (B) Skin 2; (C) Tumat cartilage; (D) Tumat liver; (E) Tumat muscle. The underlying data for this figure can be found in <xref ref-type="supplementary-material" rid="pbio.3000166.s039">S11 Data</xref>. DNA-seq, DNA sequencing.</p>
+<p>(TIF)</p>
+</caption>
+</supplementary-material>
+<supplementary-material id="pbio.3000166.s017" mimetype="image/tiff" position="float" xlink:href="info:doi/10.1371/journal.pbio.3000166.s017" xlink:type="simple">
+<label>S17 Fig</label>
+<caption>
+<title>Length distribution plots of HiSeq-2500 DNA-seq from Mak and colleagues.</title>
+<p>(A) Skin 1; (B) Skin 2; (C) Tumat cartilage; (D) Tumat liver; (E) Tumat muscle. The underlying data for this figure can be found in <xref ref-type="supplementary-material" rid="pbio.3000166.s040">S12 Data</xref>. DNA-seq, DNA sequencing.</p>
+<p>(TIF)</p>
+</caption>
+</supplementary-material>
+<supplementary-material id="pbio.3000166.s018" mimetype="image/tiff" position="float" xlink:href="info:doi/10.1371/journal.pbio.3000166.s018" xlink:type="simple">
+<label>S18 Fig</label>
+<caption>
+<title>mapDamage plots of DNA data from Mak and colleagues, 2018.</title>
+<p>(A–E) Sequenced on the BGISEQ-500 platform. (F–J) Sequenced on the HiSeq-2500 platform. (A) Skin 1; (B) Skin 2; (C) Tumat cartilage; (D) Tumat liver; (E) Tumat muscle. (F) Skin 1; (G) Skin 2; (H) Tumat cartilage; (I) Tumat liver; (J) Tumat muscle. Red lines, frequency of C &gt; U misincorporations; blue lines, frequency of G &gt; A misincorporations; yellow lines, soft-clipped bases from unaligned reads; grey lines, other misincorporations.</p>
+<p>(TIF)</p>
+</caption>
+</supplementary-material>
+<supplementary-material id="pbio.3000166.s019" mimetype="image/tiff" position="float" xlink:href="info:doi/10.1371/journal.pbio.3000166.s019" xlink:type="simple">
+<label>S19 Fig</label>
+<caption>
+<title>Comparison of data generated by BGISEQ-500 and HiSeq-2500 platforms.</title>
+<p>(A) Endogenous content of sequencing reads by tissue (see <xref ref-type="supplementary-material" rid="pbio.3000166.s024">S4 Table</xref>). (B) Regressions of Method 2 between platforms. Red circles, Skin 1; white circles, Tumat cartilage; blue circles, Skin 2; black circles, Tumat liver; grey circles, Tumat muscle. (C) Mean GC content of reads by tissue, depending on duplication. Red triangles, reads mapping to the 95th percentile and above of expression after mapping and de-duplication. White triangles, all mapped reads with de-duplication. Grey triangles, all mapped reads without de-duplication. (D) RNA enrichment factor by tissue type. The underlying data for this figure can be found in <xref ref-type="supplementary-material" rid="pbio.3000166.s041">S13 Data</xref>.</p>
+<p>(TIF)</p>
+</caption>
+</supplementary-material>
+<supplementary-material id="pbio.3000166.s020" mimetype="image/tiff" position="float" xlink:href="info:doi/10.1371/journal.pbio.3000166.s020" xlink:type="simple">
+<label>S20 Fig</label>
+<caption>
+<title>Biplot ordination of standardised individual gene expression (blue points) and similarity between individual samples (red points) along two dimensions (see <xref ref-type="sec" rid="sec017">Methods</xref> for details).</title>
+<p>(A) BGISEQ-500 data, de-duplicated; (B) HiSeq-2500 data, de-duplicated; (C) BGISEQ-500 data, duplicates retained; (D) HiSeq-2500 data, duplicates retained. All sample labels ending ‘cntl’ are modern controls. All sample labels ending ‘rmd’ are duplicate-removed samples. Cart, cartilage; ill, Illumina sequencing; Liv, liver; Mus, muscle.</p>
+<p>(TIF)</p>
+</caption>
+</supplementary-material>
+<supplementary-material id="pbio.3000166.s021" mimetype="image/tiff" position="float" xlink:href="info:doi/10.1371/journal.pbio.3000166.s021" xlink:type="simple">
+<label>S1 Table</label>
+<caption>
+<title>Basic mapping statistic comparison of aligners bwa-aln and bowtie2.</title>
+<p>(TIF)</p>
+</caption>
+</supplementary-material>
+<supplementary-material id="pbio.3000166.s022" mimetype="image/tiff" position="float" xlink:href="info:doi/10.1371/journal.pbio.3000166.s022" xlink:type="simple">
+<label>S2 Table</label>
+<caption>
+<title>Mean GC content of mapped reads depending on selection and (de)duplication.</title>
+<p>(TIF)</p>
+</caption>
+</supplementary-material>
+<supplementary-material id="pbio.3000166.s023" mimetype="image/tiff" position="float" xlink:href="info:doi/10.1371/journal.pbio.3000166.s023" xlink:type="simple">
+<label>S3 Table</label>
+<caption>
+<title>Junction analysis of RNA-seq and DNA data derived from the same samples.</title>
+<p>Reads mapping over splice junctions and exon-exon junctions were collated for each sample and molecule type, and enrichment factors calculated. In all cases, RNA-seq data show significantly more exon-exon junction coverage than splice junctions, highlighting their authenticity. Conversely, the opposite trend is seen for DNA data. RNA-seq, RNA sequencing.</p>
+<p>(TIF)</p>
+</caption>
+</supplementary-material>
+<supplementary-material id="pbio.3000166.s024" mimetype="image/tiff" position="float" xlink:href="info:doi/10.1371/journal.pbio.3000166.s024" xlink:type="simple">
+<label>S4 Table</label>
+<caption>
+<title>Method 2 final scores according to Affymetrix array tissue derived from modern and ancient NGS datasets.</title>
+<p>Top half, scores following de-duplication. Lower half, scores with duplicate reads retained. NGS, next-generation sequencing.</p>
+<p>(TIF)</p>
+</caption>
+</supplementary-material>
+<supplementary-material id="pbio.3000166.s025" mimetype="image/tiff" position="float" xlink:href="info:doi/10.1371/journal.pbio.3000166.s025" xlink:type="simple">
+<label>S5 Table</label>
+<caption>
+<title>Regression (<italic>r</italic><sup>2</sup>) values for comparisons resulting from Method 2.</title>
+<p>The three tissues most similar to their modern counterparts are highlighted in bold.</p>
+<p>(TIF)</p>
+</caption>
+</supplementary-material>
+<supplementary-material id="pbio.3000166.s026" mimetype="image/tiff" position="float" xlink:href="info:doi/10.1371/journal.pbio.3000166.s026" xlink:type="simple">
+<label>S6 Table</label>
+<caption>
+<title>Taxonomic assignments from metagenomic BLAST analysis, of both mapped and raw data reads.</title>
+<p>(TIF)</p>
+</caption>
+</supplementary-material>
+<supplementary-material id="pbio.3000166.s027" mimetype="image/tiff" position="float" xlink:href="info:doi/10.1371/journal.pbio.3000166.s027" xlink:type="simple">
+<label>S7 Table</label>
+<caption>
+<title>Basic NGS statistics of DNA data, subjected to the same analysis as the RNA-seq data of the same samples.</title>
+<p>Note that the rRNA proportion and overall RNA enrichment factors are significantly less than those of the RNA-seq data. NGS, next-generation sequencing; RNA-seq, RNA sequencing; rRNA, ribosomal RNA.</p>
+<p>(TIF)</p>
+</caption>
+</supplementary-material>
+<supplementary-material id="pbio.3000166.s028" mimetype="image/tiff" position="float" xlink:href="info:doi/10.1371/journal.pbio.3000166.s028" xlink:type="simple">
+<label>S8 Table</label>
+<caption>
+<title>Mean and standard deviations of coverage to the dog 18s rRNA.</title>
+<p>rRNA, ribosomal RNA.</p>
+<p>(TIF)</p>
+</caption>
+</supplementary-material>
+<supplementary-material id="pbio.3000166.s029" mimetype="application/zip" position="float" xlink:href="info:doi/10.1371/journal.pbio.3000166.s029" xlink:type="simple">
+<label>S1 Data</label>
+<caption>
+<title>mapDamage outputs corresponding to <xref ref-type="supplementary-material" rid="pbio.3000166.s002">S2 Fig</xref>, <xref ref-type="supplementary-material" rid="pbio.3000166.s003">S3 Fig</xref>, <xref ref-type="supplementary-material" rid="pbio.3000166.s004">S4 Fig</xref> and <xref ref-type="supplementary-material" rid="pbio.3000166.s005">S5 Fig</xref>.</title>
+<p>(ZIP)</p>
+</caption>
+</supplementary-material>
+<supplementary-material id="pbio.3000166.s030" mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" position="float" xlink:href="info:doi/10.1371/journal.pbio.3000166.s030" xlink:type="simple">
+<label>S2 Data</label>
+<caption>
+<title>Regression table of Method 1.</title>
+<p>Details of linear regression analysis of the 95th percentile of genes expressed in each control tissue, compared with each ancient tissue and other control tissues. Models marked in bold have the slope in the expected direction (positive) and are significant at Bonferroni alphas adjusted for multiple comparisons (ancient tissues alpha = 0.01, control tissues alpha = 0.0166).</p>
+<p>(XLSX)</p>
+</caption>
+</supplementary-material>
+<supplementary-material id="pbio.3000166.s031" mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" position="float" xlink:href="info:doi/10.1371/journal.pbio.3000166.s031" xlink:type="simple">
+<label>S3 Data</label>
+<caption>
+<title>As <xref ref-type="supplementary-material" rid="pbio.3000166.s030">S2 Data</xref>, with only reads of length 30 nt or greater.</title>
+<p>Details of linear regression analysis of the 95th percentile of genes expressed in each control tissue, compared with each ancient tissue and other control tissues. Models marked in bold have the slope in the expected direction (positive) and are significant at Bonferroni alphas adjusted for multiple comparisons. nt, nucleotide.</p>
+<p>(XLSX)</p>
+</caption>
+</supplementary-material>
+<supplementary-material id="pbio.3000166.s032" mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" position="float" xlink:href="info:doi/10.1371/journal.pbio.3000166.s032" xlink:type="simple">
+<label>S4 Data</label>
+<caption>
+<title>Scoring matrix for Method 2 arranged in tabs by tissue and sequencing platform.</title>
+<p>Briefly, columns A and B are the static tissue/gene pairs generated from the CNTD Affymetrix array. Column D is the NCBI reference for each gene found on the CanFam3.1 transcriptome, column F the full gene description, and column G the derived gene name/locus (LOC) ID. Column E is the mean coverage depth of that gene after mapping. Column H is a lookup formula to assign each gene a most-related tissue from the 10 listed on CNTD. Column I is the 95th percentile value of coverage. Columns J–S are the total cumulative scores assigned to each of the 10 tissues following associated-gene/score pairing. CNTD, Canine Normal Tissue Database.</p>
+<p>(XLSX)</p>
+</caption>
+</supplementary-material>
+<supplementary-material id="pbio.3000166.s033" mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" position="float" xlink:href="info:doi/10.1371/journal.pbio.3000166.s033" xlink:type="simple">
+<label>S5 Data</label>
+<caption>
+<title>Scoring matrix for Method 2, as <xref ref-type="supplementary-material" rid="pbio.3000166.s032">S4 Data</xref>, only for modern control data only.</title>
+<p>Briefly, columns A and B are the static tissue/gene pairs generated from the CNTD Affymetrix array. Column D is the NCBI reference for each gene found on the CanFam3.1 transcriptome, column F the full gene description, and column G the derived gene name/locus (LOC) ID. Column E is the mean coverage depth of that gene after mapping. Column H is a lookup formula to assign each gene a most-related tissue from the 10 listed on CNTD. Column I is the 95th percentile value of coverage. Columns J–S are the total cumulative scores assigned to each of the 10 tissues following associated-gene/score pairing. CNTD, Canine Normal Tissue Database.</p>
+<p>(XLSX)</p>
+</caption>
+</supplementary-material>
+<supplementary-material id="pbio.3000166.s034" mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" position="float" xlink:href="info:doi/10.1371/journal.pbio.3000166.s034" xlink:type="simple">
+<label>S6 Data</label>
+<caption>
+<title>As <xref ref-type="supplementary-material" rid="pbio.3000166.s032">S4 Data</xref>, with only reads of length 30 nt or greater.</title>
+<p>Scoring matrix for Method 2 arranged in tabs by tissue and sequencing platform. Briefly, columns A and B are the static tissue/gene pairs generated from the CNTD Affymetrix array. Column D is the NCBI reference for each gene found on the CanFam3.1 transcriptome, column F the full gene description, and column G the derived gene name/locus (LOC) ID. Column E is the mean coverage depth of that gene after mapping. Column H is a lookup formula to assign each gene a most-related tissue from the 10 listed on CNTD. Column I is the 95th percentile value of coverage. Columns J–S are the total cumulative scores assigned to each of the 10 tissues following associated-gene/score pairing. CNTD, Canine Normal Tissue Database; nt, nucleotide.</p>
+<p>(XLSX)</p>
+</caption>
+</supplementary-material>
+<supplementary-material id="pbio.3000166.s035" mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" position="float" xlink:href="info:doi/10.1371/journal.pbio.3000166.s035" xlink:type="simple">
+<label>S7 Data</label>
+<caption>
+<title>Raw data corresponding to <xref ref-type="fig" rid="pbio.3000166.g003">Fig 3</xref>.</title>
+<p>(XLSX)</p>
+</caption>
+</supplementary-material>
+<supplementary-material id="pbio.3000166.s036" mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" position="float" xlink:href="info:doi/10.1371/journal.pbio.3000166.s036" xlink:type="simple">
+<label>S8 Data</label>
+<caption>
+<title>Raw data corresponding to <xref ref-type="supplementary-material" rid="pbio.3000166.s012">S12 Fig</xref>.</title>
+<p>(XLSX)</p>
+</caption>
+</supplementary-material>
+<supplementary-material id="pbio.3000166.s037" mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" position="float" xlink:href="info:doi/10.1371/journal.pbio.3000166.s037" xlink:type="simple">
+<label>S9 Data</label>
+<caption>
+<title>Raw data corresponding to <xref ref-type="supplementary-material" rid="pbio.3000166.s014">S14 Fig</xref>.</title>
+<p>(XLSX)</p>
+</caption>
+</supplementary-material>
+<supplementary-material id="pbio.3000166.s038" mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" position="float" xlink:href="info:doi/10.1371/journal.pbio.3000166.s038" xlink:type="simple">
+<label>S10 Data</label>
+<caption>
+<title>Raw data corresponding to <xref ref-type="supplementary-material" rid="pbio.3000166.s015">S15 Fig</xref>.</title>
+<p>(XLSX)</p>
+</caption>
+</supplementary-material>
+<supplementary-material id="pbio.3000166.s039" mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" position="float" xlink:href="info:doi/10.1371/journal.pbio.3000166.s039" xlink:type="simple">
+<label>S11 Data</label>
+<caption>
+<title>Raw data corresponding to <xref ref-type="supplementary-material" rid="pbio.3000166.s016">S16 Fig</xref>.</title>
+<p>(XLSX)</p>
+</caption>
+</supplementary-material>
+<supplementary-material id="pbio.3000166.s040" mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" position="float" xlink:href="info:doi/10.1371/journal.pbio.3000166.s040" xlink:type="simple">
+<label>S12 Data</label>
+<caption>
+<title>Raw data corresponding to <xref ref-type="supplementary-material" rid="pbio.3000166.s017">S17 Fig</xref>.</title>
+<p>(XLSX)</p>
+</caption>
+</supplementary-material>
+<supplementary-material id="pbio.3000166.s041" mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" position="float" xlink:href="info:doi/10.1371/journal.pbio.3000166.s041" xlink:type="simple">
+<label>S13 Data</label>
+<caption>
+<title>Raw data corresponding to <xref ref-type="supplementary-material" rid="pbio.3000166.s019">S19 Fig</xref>.</title>
+<p>(XLSX)</p>
+</caption>
+</supplementary-material>
+<supplementary-material id="pbio.3000166.s042" mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" position="float" xlink:href="info:doi/10.1371/journal.pbio.3000166.s042" xlink:type="simple">
+<label>S14 Data</label>
+<caption>
+<title>As <xref ref-type="supplementary-material" rid="pbio.3000166.s032">S4 Data</xref>, only with duplicate reads retained in the analysis.</title>
+<p>(XLSX)</p>
+</caption>
+</supplementary-material>
+<supplementary-material id="pbio.3000166.s043" mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document" position="float" xlink:href="info:doi/10.1371/journal.pbio.3000166.s043" xlink:type="simple">
+<label>S1 Text</label>
+<caption>
+<title>Further discussion of the metagenomic analyses, RNA damage profiles, issues surrounding sequence duplication and aRNA datasets, GC content of aRNA, and a comparison of the two sequencing platforms used in this study.</title>
+<p>aRNA, ancient RNA.</p>
+<p>(DOCX)</p>
+</caption>
+</supplementary-material>
+</sec>
+</body>
+<back>
+<ack>
+<p>The authors wish to thank Professor Robin Allaby at the University of Warwick for the use of his group’s aDNA facility while those at the Centre for GeoGenetics were under renovation, Dr. Roselyn Ware for facilitating laboratory resources and arranging consumables prior to work taking place, and Matthew Poulter/BGI Copenhagen for generating the sequencing data. We also wish to thank Dr. Shyam Gopalakrishnan for his valuable insights on our data analysis, and finally, we thank Kristian Gregersen at the Natural History Museum of Denmark for access to wolf hides.</p>
+</ack>
+<glossary>
+<title>Abbreviations</title>
+<def-list>
+<def-item><term>aDNA</term>
+<def><p>ancient DNA</p></def>
+</def-item>
+<def-item><term>APO1</term>
+<def><p>apolipoprotein 1</p></def>
+</def-item>
+<def-item><term>aRNA</term>
+<def><p>ancient RNA</p></def>
+</def-item>
+<def-item><term>DNB</term>
+<def><p>DNA nanoball</p></def>
+</def-item>
+<def-item><term>dsRNA</term>
+<def><p>double-stranded RNA</p></def>
+</def-item>
+<def-item><term>EBI</term>
+<def><p>European Bioinformatics Institute</p></def>
+</def-item>
+<def-item><term>NGS</term>
+<def><p>next-generation sequencing</p></def>
+</def-item>
+<def-item><term>nt</term>
+<def><p>nucleotide</p></def>
+</def-item>
+<def-item><term>PE</term>
+<def><p>paired-end</p></def>
+</def-item>
+<def-item><term>qPCR</term>
+<def><p>quantitative PCR</p></def>
+</def-item>
+<def-item><term>RNA-seq</term>
+<def><p>RNA sequencing</p></def>
+</def-item>
+<def-item><term>RN7SL1</term>
+<def><p>RNA Component of Signal Recognition Particle 7SL1</p></def>
+</def-item>
+<def-item><term>rRNA</term>
+<def><p>ribosomal RNA</p></def>
+</def-item>
+<def-item><term>ssDNA</term>
+<def><p>single-stranded DNA</p></def>
+</def-item>
+<def-item><term>ssRNA</term>
+<def><p>single-stranded RNA</p></def>
+</def-item>
+</def-list>
+</glossary>
+<ref-list>
+<title>References</title>
+<ref id="pbio.3000166.ref001"><label>1</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Der Sarkissian</surname> <given-names>C</given-names></name>, <name name-style="western"><surname>Allentoft</surname> <given-names>ME</given-names></name>, <name name-style="western"><surname>Ávila-Arcos</surname> <given-names>MC</given-names></name>, <name name-style="western"><surname>Barnett</surname> <given-names>R</given-names></name>, <name name-style="western"><surname>Campos</surname> <given-names>PF</given-names></name>, <name name-style="western"><surname>Cappellini</surname> <given-names>E</given-names></name>, <etal>et al</etal>. <article-title>Ancient genomics</article-title>. <source>Philosophical Transactions of the Royal Society B: Biological Sciences</source>. <year>2015</year>;<volume>370</volume>(<issue>1660</issue>):<fpage>20130387</fpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1098/rstb.2013.0387" xlink:type="simple">10.1098/rstb.2013.0387</ext-link></comment> PMC4275894. <object-id pub-id-type="pmid">25487338</object-id></mixed-citation></ref>
+<ref id="pbio.3000166.ref002"><label>2</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Pedersen</surname> <given-names>JS</given-names></name>, <name name-style="western"><surname>Valen</surname> <given-names>E</given-names></name>, <name name-style="western"><surname>Velazquez</surname> <given-names>AMV</given-names></name>, <name name-style="western"><surname>Parker</surname> <given-names>BJ</given-names></name>, <name name-style="western"><surname>Rasmussen</surname> <given-names>M</given-names></name>, <name name-style="western"><surname>Lindgreen</surname> <given-names>S</given-names></name>, <etal>et al</etal>. <article-title>Genome-wide nucleosome map and cytosine methylation levels of an ancient human genome</article-title>. <source>Genome Res</source>. <year>2014</year>;<volume>24</volume>(<issue>3</issue>):<fpage>454</fpage>–<lpage>66</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1101/gr.163592.113" xlink:type="simple">10.1101/gr.163592.113</ext-link></comment> <object-id pub-id-type="pmid">24299735</object-id></mixed-citation></ref>
+<ref id="pbio.3000166.ref003"><label>3</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Gokhman</surname> <given-names>D</given-names></name>, <name name-style="western"><surname>Lavi</surname> <given-names>E</given-names></name>, <name name-style="western"><surname>Prüfer</surname> <given-names>K</given-names></name>, <name name-style="western"><surname>Fraga</surname> <given-names>MF</given-names></name>, <name name-style="western"><surname>Riancho</surname> <given-names>JA</given-names></name>, <name name-style="western"><surname>Kelso</surname> <given-names>J</given-names></name>, <etal>et al</etal>. <article-title>Reconstructing the DNA Methylation Maps of the Neandertal and the Denisovan</article-title>. <source>Science</source>. <year>2014</year>;<volume>344</volume>(<issue>6183</issue>):<fpage>523</fpage>–<lpage>7</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1126/science.1250368" xlink:type="simple">10.1126/science.1250368</ext-link></comment> <object-id pub-id-type="pmid">24786081</object-id></mixed-citation></ref>
+<ref id="pbio.3000166.ref004"><label>4</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Warinner</surname> <given-names>C</given-names></name>, <name name-style="western"><surname>Rodrigues</surname> <given-names>JFM</given-names></name>, <name name-style="western"><surname>Vyas</surname> <given-names>R</given-names></name>, <name name-style="western"><surname>Trachsel</surname> <given-names>C</given-names></name>, <name name-style="western"><surname>Shved</surname> <given-names>N</given-names></name>, <name name-style="western"><surname>Grossmann</surname> <given-names>J</given-names></name>, <etal>et al</etal>. <article-title>Pathogens and host immunity in the ancient human oral cavity</article-title>. <source>Nat Genet</source>. <year>2014</year>;<volume>46</volume>:<fpage>336</fpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1038/ng.2906" xlink:type="simple">10.1038/ng.2906</ext-link></comment> <object-id pub-id-type="pmid">24562188</object-id></mixed-citation></ref>
+<ref id="pbio.3000166.ref005"><label>5</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Anderson-Carpenter</surname> <given-names>LL</given-names></name>, <name name-style="western"><surname>McLachlan</surname> <given-names>JS</given-names></name>, <name name-style="western"><surname>Jackson</surname> <given-names>ST</given-names></name>, <name name-style="western"><surname>Kuch</surname> <given-names>M</given-names></name>, <name name-style="western"><surname>Lumibao</surname> <given-names>CY</given-names></name>, <name name-style="western"><surname>Poinar</surname> <given-names>HN</given-names></name>. <article-title>Ancient DNA from lake sediments: Bridging the gap between paleoecology and genetics</article-title>. <source>BMC Evol Biol</source>. <year>2011</year>;<volume>11</volume>(<issue>1</issue>):<fpage>30</fpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1186/1471-2148-11-30" xlink:type="simple">10.1186/1471-2148-11-30</ext-link></comment> <object-id pub-id-type="pmid">21272315</object-id></mixed-citation></ref>
+<ref id="pbio.3000166.ref006"><label>6</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Sawafuji</surname> <given-names>R</given-names></name>, <name name-style="western"><surname>Cappellini</surname> <given-names>E</given-names></name>, <name name-style="western"><surname>Nagaoka</surname> <given-names>T</given-names></name>, <name name-style="western"><surname>Fotakis</surname> <given-names>AK</given-names></name>, <name name-style="western"><surname>Jersie-Christensen</surname> <given-names>RR</given-names></name>, <name name-style="western"><surname>Olsen</surname> <given-names>JV</given-names></name>, <etal>et al</etal>. <article-title>Proteomic profiling of archaeological human bone</article-title>. <source>Royal Society open science</source>. <year>2017</year>;<volume>4</volume>(<issue>6</issue>):<fpage>161004</fpage>. Epub 2017/07/07. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1098/rsos.161004" xlink:type="simple">10.1098/rsos.161004</ext-link></comment> <object-id pub-id-type="pmid">28680659</object-id>; PubMed Central PMCID: PMCPMC5493901.</mixed-citation></ref>
+<ref id="pbio.3000166.ref007"><label>7</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Mackie</surname> <given-names>M</given-names></name>, <name name-style="western"><surname>Hendy</surname> <given-names>JR</given-names></name>, <name name-style="western"><surname>Lowe</surname> <given-names>AD</given-names></name>, <name name-style="western"><surname>Sperduti</surname> <given-names>A</given-names></name>, <name name-style="western"><surname>Holst</surname> <given-names>MR</given-names></name>, <name name-style="western"><surname>Collins</surname> <given-names>MJ</given-names></name>, <etal>et al</etal>. <article-title>Preservation of the metaproteome. STAR</article-title>: <source>Science Technology of Archaeological Research</source>. <year>2017</year>:<fpage>1</fpage>–<lpage>14</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1080/20548923.2017.1361629" xlink:type="simple">10.1080/20548923.2017.1361629</ext-link></comment> <object-id pub-id-type="pmid">29098079</object-id></mixed-citation></ref>
+<ref id="pbio.3000166.ref008"><label>8</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Bashiardes</surname> <given-names>S</given-names></name>, <name name-style="western"><surname>Zilberman-Schapira</surname> <given-names>G</given-names></name>, <name name-style="western"><surname>Elinav</surname> <given-names>E</given-names></name>. <article-title>Use of Metatranscriptomics in Microbiome Research</article-title>. <source>Bioinform Biol Insights</source>. <year>2016</year>;<volume>10</volume>:<fpage>19</fpage>–<lpage>25</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.4137/BBI.S34610" xlink:type="simple">10.4137/BBI.S34610</ext-link></comment> PMC4839964. <object-id pub-id-type="pmid">27127406</object-id></mixed-citation></ref>
+<ref id="pbio.3000166.ref009"><label>9</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Westermann</surname> <given-names>AJ</given-names></name>, <name name-style="western"><surname>Vogel</surname> <given-names>J</given-names></name>. <article-title>Host-Pathogen Transcriptomics by Dual RNA-Seq</article-title>. <source>Methods Mol Biol</source>. <year>2018</year>;<volume>1737</volume>:<fpage>59</fpage>–<lpage>75</lpage>. Epub 2018/02/28. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1007/978-1-4939-7634-8_4" xlink:type="simple">10.1007/978-1-4939-7634-8_4</ext-link></comment> <object-id pub-id-type="pmid">29484587</object-id>.</mixed-citation></ref>
+<ref id="pbio.3000166.ref010"><label>10</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Haile</surname> <given-names>J</given-names></name>, <name name-style="western"><surname>Holdaway</surname> <given-names>R</given-names></name>, <name name-style="western"><surname>Oliver</surname> <given-names>K</given-names></name>, <name name-style="western"><surname>Bunce</surname> <given-names>M</given-names></name>, <name name-style="western"><surname>Gilbert</surname> <given-names>MTP</given-names></name>, <name name-style="western"><surname>Nielsen</surname> <given-names>R</given-names></name>, <etal>et al</etal>. <article-title>Ancient DNA Chronology within Sediment Deposits: Are Paleobiological Reconstructions Possible and Is DNA Leaching a Factor?</article-title> <source>Mol Biol Evol</source>. <year>2007</year>;<volume>24</volume>(<issue>4</issue>):<fpage>982</fpage>–<lpage>9</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1093/molbev/msm016" xlink:type="simple">10.1093/molbev/msm016</ext-link></comment> <object-id pub-id-type="pmid">17255121</object-id></mixed-citation></ref>
+<ref id="pbio.3000166.ref011"><label>11</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Smith</surname> <given-names>O</given-names></name>, <name name-style="western"><surname>Clapham</surname> <given-names>A</given-names></name>, <name name-style="western"><surname>Rose</surname> <given-names>P</given-names></name>, <name name-style="western"><surname>Liu</surname> <given-names>Y</given-names></name>, <name name-style="western"><surname>Wang</surname> <given-names>J</given-names></name>, <name name-style="western"><surname>Allaby</surname> <given-names>RG</given-names></name>. <article-title>A complete ancient RNA genome: identification, reconstruction and evolutionary history of archaeological Barley Stripe Mosaic Virus</article-title>. <source>Sci Rep</source>. <year>2014</year>;<volume>4</volume>(<issue>4003</issue>). <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1038/srep04003" xlink:type="simple">10.1038/srep04003</ext-link></comment> <object-id pub-id-type="pmid">24499968</object-id></mixed-citation></ref>
+<ref id="pbio.3000166.ref012"><label>12</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Ng</surname> <given-names>TFF</given-names></name>, <name name-style="western"><surname>Chen</surname> <given-names>L-F</given-names></name>, <name name-style="western"><surname>Zhou</surname> <given-names>Y</given-names></name>, <name name-style="western"><surname>Shapiro</surname> <given-names>B</given-names></name>, <name name-style="western"><surname>Stiller</surname> <given-names>M</given-names></name>, <name name-style="western"><surname>Heintzman</surname> <given-names>PD</given-names></name>, <etal>et al</etal>. <article-title>Preservation of viral genomes in 700-y-old caribou feces from a subarctic ice patch</article-title>. <source>Proceedings of the National Academy of Sciences</source>. <year>2014</year>;<volume>111</volume>(<issue>47</issue>):<fpage>16842</fpage>–<lpage>7</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1073/pnas.1410429111" xlink:type="simple">10.1073/pnas.1410429111</ext-link></comment> <object-id pub-id-type="pmid">25349412</object-id></mixed-citation></ref>
+<ref id="pbio.3000166.ref013"><label>13</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Smith</surname> <given-names>O</given-names></name>, <name name-style="western"><surname>Palmer</surname> <given-names>SA</given-names></name>, <name name-style="western"><surname>Clapham</surname> <given-names>AJ</given-names></name>, <name name-style="western"><surname>Rose</surname> <given-names>P</given-names></name>, <name name-style="western"><surname>Liu</surname> <given-names>Y</given-names></name>, <name name-style="western"><surname>Wang</surname> <given-names>J</given-names></name>, <etal>et al</etal>. <article-title>Small RNA activity in archaeological barley shows novel germination inhibition in response to environment</article-title>. <source>Mol Biol Evol</source>. <year>2017</year>;<volume>34</volume>(<issue>10</issue>):<fpage>2555</fpage>–<lpage>62</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1093/molbev/msx175" xlink:type="simple">10.1093/molbev/msx175</ext-link></comment> <object-id pub-id-type="pmid">28655202</object-id></mixed-citation></ref>
+<ref id="pbio.3000166.ref014"><label>14</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Smith</surname> <given-names>O</given-names></name>, <name name-style="western"><surname>Clapham</surname> <given-names>AJ</given-names></name>, <name name-style="western"><surname>Rose</surname> <given-names>P</given-names></name>, <name name-style="western"><surname>Liu</surname> <given-names>Y</given-names></name>, <name name-style="western"><surname>Wang</surname> <given-names>J</given-names></name>, <name name-style="western"><surname>Allaby</surname> <given-names>RG</given-names></name>. <article-title>Genomic methylation patterns in archaeological barley show de-methylation as a time-dependent diagenetic process</article-title>. <source>Sci Rep</source>. <year>2014</year>;<volume>4</volume>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1038/srep05559" xlink:type="simple">10.1038/srep05559</ext-link></comment> <object-id pub-id-type="pmid">24993353</object-id></mixed-citation></ref>
+<ref id="pbio.3000166.ref015"><label>15</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Fordyce</surname> <given-names>SL</given-names></name>, <name name-style="western"><surname>Avila-Arcos</surname> <given-names>MC</given-names></name>, <name name-style="western"><surname>Rasmussen</surname> <given-names>M</given-names></name>, <name name-style="western"><surname>Cappellini</surname> <given-names>E</given-names></name>, <name name-style="western"><surname>Romero-Navarro</surname> <given-names>JA</given-names></name>, <name name-style="western"><surname>Wales</surname> <given-names>N</given-names></name>, <etal>et al</etal>. <article-title>Deep Sequencing of RNA from Ancient Maize Kernels</article-title>. <source>PLoS ONE</source>. <year>2013</year>;<volume>8</volume>(<issue>1</issue>):<fpage>e50961</fpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1371/journal.pone.0050961" xlink:type="simple">10.1371/journal.pone.0050961</ext-link></comment> <object-id pub-id-type="pmid">23326310</object-id></mixed-citation></ref>
+<ref id="pbio.3000166.ref016"><label>16</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Shen-Miller</surname> <given-names>J</given-names></name>, <name name-style="western"><surname>Mudgett</surname> <given-names>M</given-names></name>, <name name-style="western"><surname>Schopf</surname> <given-names>J</given-names></name>, <name name-style="western"><surname>Clarke</surname> <given-names>S</given-names></name>, <name name-style="western"><surname>Berger</surname> <given-names>R</given-names></name>. <article-title>Exceptional seed longevity and robust growth: ancient Sacred Lotus from China</article-title>. <source>Am J Bot</source>. <year>1995</year>;<volume>82</volume>(<issue>11</issue>):<fpage>1367</fpage>–<lpage>80</lpage>.</mixed-citation></ref>
+<ref id="pbio.3000166.ref017"><label>17</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Palmer</surname> <given-names>SA</given-names></name>, <name name-style="western"><surname>Moore</surname> <given-names>JD</given-names></name>, <name name-style="western"><surname>Clapham</surname> <given-names>AJ</given-names></name>, <name name-style="western"><surname>Rose</surname> <given-names>P</given-names></name>, <name name-style="western"><surname>Allaby</surname> <given-names>RG</given-names></name>. <article-title>Archaeogenetic evidence of ancient Nubian barley evolution from six to two-row indicates local adaptation</article-title>. <source>PLoS ONE</source>. <year>2009</year>;<volume>4</volume>(<issue>7</issue>):<fpage>e6301</fpage> (Electronic version). <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1371/journal.pone.0006301" xlink:type="simple">10.1371/journal.pone.0006301</ext-link></comment> WOS:000268260100005. <object-id pub-id-type="pmid">19623249</object-id></mixed-citation></ref>
+<ref id="pbio.3000166.ref018"><label>18</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Walters</surname> <given-names>C</given-names></name>, <name name-style="western"><surname>Reilley</surname> <given-names>AA</given-names></name>, <name name-style="western"><surname>Reeves</surname> <given-names>PA</given-names></name>, <name name-style="western"><surname>Baszczak</surname> <given-names>J</given-names></name>, <name name-style="western"><surname>Richards</surname> <given-names>CM</given-names></name>. <article-title>The utility of aged seeds in DNA banks</article-title>. <source>Seed Science Research</source>. <year>2007</year>;<volume>16</volume>(<issue>3</issue>):<fpage>169</fpage>–<lpage>78</lpage>. Epub 02/22. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1079/SSR2006246" xlink:type="simple">10.1079/SSR2006246</ext-link></comment></mixed-citation></ref>
+<ref id="pbio.3000166.ref019"><label>19</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Keller</surname> <given-names>A</given-names></name>, <name name-style="western"><surname>Kreis</surname> <given-names>S</given-names></name>, <name name-style="western"><surname>Leidinger</surname> <given-names>P</given-names></name>, <name name-style="western"><surname>Maixner</surname> <given-names>F</given-names></name>, <name name-style="western"><surname>Ludwig</surname> <given-names>N</given-names></name>, <name name-style="western"><surname>Backes</surname> <given-names>C</given-names></name>, <etal>et al</etal>. <article-title>miRNAs in ancient tissue specimens of the Tyrolean Iceman</article-title>. <source>Mol Biol Evol</source>. <year>2016</year>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1093/molbev/msw291" xlink:type="simple">10.1093/molbev/msw291</ext-link></comment> <object-id pub-id-type="pmid">28025275</object-id></mixed-citation></ref>
+<ref id="pbio.3000166.ref020"><label>20</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Halfon</surname> <given-names>P</given-names></name>, <name name-style="western"><surname>Khiri</surname> <given-names>H</given-names></name>, <name name-style="western"><surname>Gerolami</surname> <given-names>V</given-names></name>, <name name-style="western"><surname>Bourliere</surname> <given-names>M</given-names></name>, <name name-style="western"><surname>Feryn</surname> <given-names>JM</given-names></name>, <name name-style="western"><surname>Reynier</surname> <given-names>P</given-names></name>, <etal>et al</etal>. <article-title>Impact of various handling and storage conditions on quantitative detection of hepatitis C virus RNA</article-title>. <source>J Hepatol</source>. <year>1996</year>;<volume>25</volume>(<issue>3</issue>):<fpage>307</fpage>–<lpage>11</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1016/S0168-8278(96)80116-4" xlink:type="simple">10.1016/S0168-8278(96)80116-4</ext-link></comment> <object-id pub-id-type="pmid">8895009</object-id></mixed-citation></ref>
+<ref id="pbio.3000166.ref021"><label>21</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Forster</surname> <given-names>JL</given-names></name>, <name name-style="western"><surname>Harkin</surname> <given-names>VB</given-names></name>, <name name-style="western"><surname>Graham</surname> <given-names>DA</given-names></name>, <name name-style="western"><surname>McCullough</surname> <given-names>SJ</given-names></name>. <article-title>The effect of sample type, temperature and RNAlater™ on the stability of avian influenza virus RNA</article-title>. <source>J Virol Methods</source>. <year>2008</year>;<volume>149</volume>(<issue>1</issue>):<fpage>190</fpage>–<lpage>4</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1016/j.jviromet.2007.12.020" xlink:type="simple">10.1016/j.jviromet.2007.12.020</ext-link></comment> <object-id pub-id-type="pmid">18294703</object-id></mixed-citation></ref>
+<ref id="pbio.3000166.ref022"><label>22</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Fordyce</surname> <given-names>SL</given-names></name>, <name name-style="western"><surname>Kampmann</surname> <given-names>ML</given-names></name>, <name name-style="western"><surname>van Doorn</surname> <given-names>NL</given-names></name>, <name name-style="western"><surname>Gilbert</surname> <given-names>MT</given-names></name>. <article-title>Long-term RNA persistence in postmortem contexts</article-title>. <source>Investigative genetics</source>. <year>2013</year>;<volume>4</volume>(<issue>1</issue>):<fpage>7</fpage>. Epub 2013/04/27. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1186/2041-2223-4-7" xlink:type="simple">10.1186/2041-2223-4-7</ext-link></comment> <object-id pub-id-type="pmid">23618361</object-id>; PubMed Central PMCID: PMCPMC3662605.</mixed-citation></ref>
+<ref id="pbio.3000166.ref023"><label>23</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Olivieri</surname> <given-names>EHR</given-names></name>, <name name-style="western"><surname>de Andrade Franco</surname> <given-names>L</given-names></name>, <name name-style="western"><surname>Pereira</surname> <given-names>RG</given-names></name>, <name name-style="western"><surname>Carvalho Mota</surname> <given-names>LD</given-names></name>, <name name-style="western"><surname>Campos</surname> <given-names>AHJFM</given-names></name>, <name name-style="western"><surname>Carraro</surname> <given-names>DM</given-names></name>. <article-title>Biobanking Practice: RNA Storage at Low Concentration Affects Integrity</article-title>. <source>Biopreservation and Biobanking</source>. <year>2014</year>;<volume>12</volume>(<issue>1</issue>):<fpage>46</fpage>–<lpage>52</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1089/bio.2013.0056" xlink:type="simple">10.1089/bio.2013.0056</ext-link></comment> <object-id pub-id-type="pmid">24620769</object-id></mixed-citation></ref>
+<ref id="pbio.3000166.ref024"><label>24</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Willerslev</surname> <given-names>E</given-names></name>, <name name-style="western"><surname>Hansen</surname> <given-names>AJ</given-names></name>, <name name-style="western"><surname>Poinar</surname> <given-names>HN</given-names></name>. <article-title>Isolation of nucleic acids and cultures from fossil ice and permafrost</article-title>. <source>Trends Ecol Evol</source>. <year>2004</year>;<volume>19</volume>(<issue>3</issue>):<fpage>141</fpage>–<lpage>7</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1016/j.tree.2003.11.010" xlink:type="simple">10.1016/j.tree.2003.11.010</ext-link></comment> <object-id pub-id-type="pmid">16701245</object-id></mixed-citation></ref>
+<ref id="pbio.3000166.ref025"><label>25</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Mak</surname> <given-names>SST</given-names></name>, <name name-style="western"><surname>Gopalakrishnan</surname> <given-names>S</given-names></name>, <name name-style="western"><surname>Carøe</surname> <given-names>C</given-names></name>, <name name-style="western"><surname>Geng</surname> <given-names>C</given-names></name>, <name name-style="western"><surname>Liu</surname> <given-names>S</given-names></name>, <name name-style="western"><surname>Sinding</surname> <given-names>M-HS</given-names></name>, <etal>et al</etal>. <article-title>Comparative performance of the BGISEQ-500 vs Illumina HiSeq2500 sequencing platforms for palaeogenomic sequencing</article-title>. <source>GigaScience</source>. <year>2017</year>;<volume>6</volume>(<issue>8</issue>):<fpage>1</fpage>–<lpage>13</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1093/gigascience/gix049" xlink:type="simple">10.1093/gigascience/gix049</ext-link></comment> PMC5570000. <object-id pub-id-type="pmid">28854615</object-id></mixed-citation></ref>
+<ref id="pbio.3000166.ref026"><label>26</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Bansal</surname> <given-names>V.</given-names></name> <article-title>A computational method for estimating the PCR duplication rate in DNA and RNA-seq experiments</article-title>. <source>BMC Bioinformatics</source>. <year>2017</year>;<volume>18</volume>(<issue>Suppl 3</issue>):<fpage>43</fpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1186/s12859-017-1471-9" xlink:type="simple">10.1186/s12859-017-1471-9</ext-link></comment> PMC5374682. <object-id pub-id-type="pmid">28361665</object-id></mixed-citation></ref>
+<ref id="pbio.3000166.ref027"><label>27</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Harrison</surname> <given-names>PF</given-names></name>. <article-title>Varistran: Anscombe's variance stabilizing transformation for RNA-seq gene expression data</article-title>. <source>The Journal of Open Source Software</source>. <year>2017</year>;<volume>2</volume>(<issue>16</issue>):<fpage>257</fpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.21105/joss.00257" xlink:type="simple">10.21105/joss.00257</ext-link></comment></mixed-citation></ref>
+<ref id="pbio.3000166.ref028"><label>28</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Briggs</surname> <given-names>J</given-names></name>, <name name-style="western"><surname>Paoloni</surname> <given-names>M</given-names></name>, <name name-style="western"><surname>Chen</surname> <given-names>Q-R</given-names></name>, <name name-style="western"><surname>Wen</surname> <given-names>X</given-names></name>, <name name-style="western"><surname>Khan</surname> <given-names>J</given-names></name>, <name name-style="western"><surname>Khanna</surname> <given-names>C</given-names></name>. <article-title>A Compendium of Canine Normal Tissue Gene Expression</article-title>. <source>PLoS ONE</source>. <year>2011</year>;<volume>6</volume>(<issue>5</issue>):<fpage>e17107</fpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1371/journal.pone.0017107" xlink:type="simple">10.1371/journal.pone.0017107</ext-link></comment> <object-id pub-id-type="pmid">21655323</object-id></mixed-citation></ref>
+<ref id="pbio.3000166.ref029"><label>29</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Li</surname> <given-names>H</given-names></name>, <name name-style="western"><surname>Durbin</surname> <given-names>R</given-names></name>. <article-title>Fast and accurate short read alignment with Burrows-Wheeler transform</article-title>. <source>Bioinformatics</source>. <year>2009</year>;<volume>25</volume>(<issue>14</issue>):<fpage>1754</fpage>–<lpage>60</lpage>. Epub 2009/05/20. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1093/bioinformatics/btp324" xlink:type="simple">10.1093/bioinformatics/btp324</ext-link></comment> <object-id pub-id-type="pmid">19451168</object-id>; PubMed Central PMCID: PMCPMC2705234.</mixed-citation></ref>
+<ref id="pbio.3000166.ref030"><label>30</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Zhang</surname> <given-names>L</given-names></name>, <name name-style="western"><surname>Kasif</surname> <given-names>S</given-names></name>, <name name-style="western"><surname>Cantor</surname> <given-names>CR</given-names></name>, <name name-style="western"><surname>Broude</surname> <given-names>NE</given-names></name>. <article-title>GC/AT-content spikes as genomic punctuation marks</article-title>. <source>Proc Natl Acad Sci U S A</source>. <year>2004</year>;<volume>101</volume>(<issue>48</issue>):<fpage>16855</fpage>–<lpage>60</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1073/pnas.0407821101" xlink:type="simple">10.1073/pnas.0407821101</ext-link></comment> <object-id pub-id-type="pmid">15548610</object-id></mixed-citation></ref>
+<ref id="pbio.3000166.ref031"><label>31</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Zhang</surname> <given-names>G</given-names></name>, <name name-style="western"><surname>Shoham</surname> <given-names>D</given-names></name>, <name name-style="western"><surname>Gilichinsky</surname> <given-names>D</given-names></name>, <name name-style="western"><surname>Davydov</surname> <given-names>S</given-names></name>, <name name-style="western"><surname>Castello</surname> <given-names>JD</given-names></name>, <name name-style="western"><surname>Rogers</surname> <given-names>SO</given-names></name>. <article-title>Evidence of influenza a virus RNA in siberian lake ice</article-title>. <source>J Virol</source>. <year>2006</year>;<volume>80</volume>(<issue>24</issue>):<fpage>12229</fpage>–<lpage>35</lpage>. Epub 2006/10/13. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1128/JVI.00986-06" xlink:type="simple">10.1128/JVI.00986-06</ext-link></comment> <object-id pub-id-type="pmid">17035314</object-id>; PubMed Central PMCID: PMC1676296.</mixed-citation></ref>
+<ref id="pbio.3000166.ref032"><label>32</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Dixon</surname> <given-names>JL</given-names></name>, <name name-style="western"><surname>Ginsberg</surname> <given-names>HN</given-names></name>. <article-title>Hepatic synthesis of lipoproteins and apolipoproteins</article-title>. <source>Semin Liver Dis</source>. <year>1992</year>;<volume>12</volume>(<issue>4</issue>):<fpage>364</fpage>–<lpage>72</lpage>. Epub 1992/11/01. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1055/s-2008-1040406" xlink:type="simple">10.1055/s-2008-1040406</ext-link></comment> <object-id pub-id-type="pmid">1465621</object-id>.</mixed-citation></ref>
+<ref id="pbio.3000166.ref033"><label>33</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Mracek</surname> <given-names>T</given-names></name>, <name name-style="western"><surname>Gao</surname> <given-names>D</given-names></name>, <name name-style="western"><surname>Tzanavari</surname> <given-names>T</given-names></name>, <name name-style="western"><surname>Bao</surname> <given-names>Y</given-names></name>, <name name-style="western"><surname>Xiao</surname> <given-names>X</given-names></name>, <name name-style="western"><surname>Stocker</surname> <given-names>C</given-names></name>, <etal>et al</etal>. <article-title>Downregulation of zinc-{alpha}2-glycoprotein in adipose tissue and liver of obese ob/ob mice and by tumour necrosis factor-alpha in adipocytes</article-title>. <source>J Endocrinol</source>. <year>2010</year>;<volume>204</volume>(<issue>2</issue>):<fpage>165</fpage>–<lpage>72</lpage>. Epub 2009/11/26. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1677/JOE-09-0299" xlink:type="simple">10.1677/JOE-09-0299</ext-link></comment> <object-id pub-id-type="pmid">19934249</object-id>; PubMed Central PMCID: PMCPMC2807359.</mixed-citation></ref>
+<ref id="pbio.3000166.ref034"><label>34</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Tennent</surname> <given-names>GA</given-names></name>, <name name-style="western"><surname>Brennan</surname> <given-names>SO</given-names></name>, <name name-style="western"><surname>Stangou</surname> <given-names>AJ</given-names></name>, <name name-style="western"><surname>O'Grady</surname> <given-names>J</given-names></name>, <name name-style="western"><surname>Hawkins</surname> <given-names>PN</given-names></name>, <name name-style="western"><surname>Pepys</surname> <given-names>MB</given-names></name>. <article-title>Human plasma fibrinogen is synthesized in the liver</article-title>. <source>Blood</source>. <year>2007</year>;<volume>109</volume>(<issue>5</issue>):<fpage>1971</fpage>–<lpage>4</lpage>. Epub 2006/11/04. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1182/blood-2006-08-040956" xlink:type="simple">10.1182/blood-2006-08-040956</ext-link></comment> <object-id pub-id-type="pmid">17082318</object-id>.</mixed-citation></ref>
+<ref id="pbio.3000166.ref035"><label>35</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Denecke</surname> <given-names>B</given-names></name>, <name name-style="western"><surname>Graber</surname> <given-names>S</given-names></name>, <name name-style="western"><surname>Schafer</surname> <given-names>C</given-names></name>, <name name-style="western"><surname>Heiss</surname> <given-names>A</given-names></name>, <name name-style="western"><surname>Woltje</surname> <given-names>M</given-names></name>, <name name-style="western"><surname>Jahnen-Dechent</surname> <given-names>W</given-names></name>. <article-title>Tissue distribution and activity testing suggest a similar but not identical function of fetuin-B and fetuin-A</article-title>. <source>Biochem J</source>. <year>2003</year>;<volume>376</volume>(<issue>Pt 1</issue>):<fpage>135</fpage>–<lpage>45</lpage>. Epub 2003/08/29. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1042/BJ20030676" xlink:type="simple">10.1042/BJ20030676</ext-link></comment> <object-id pub-id-type="pmid">12943536</object-id>; PubMed Central PMCID: PMCPMC1223762.</mixed-citation></ref>
+<ref id="pbio.3000166.ref036"><label>36</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Koenig</surname> <given-names>EM</given-names></name>, <name name-style="western"><surname>Fisher</surname> <given-names>C</given-names></name>, <name name-style="western"><surname>Bernard</surname> <given-names>H</given-names></name>, <name name-style="western"><surname>Wolenski</surname> <given-names>FS</given-names></name>, <name name-style="western"><surname>Gerrein</surname> <given-names>J</given-names></name>, <name name-style="western"><surname>Carsillo</surname> <given-names>M</given-names></name>, <etal>et al</etal>. <article-title>The beagle dog MicroRNA tissue atlas: identifying translatable biomarkers of organ toxicity</article-title>. <source>BMC Genomics</source>. <year>2016</year>;<volume>17</volume>:<fpage>649</fpage>. Epub 2016/08/19. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1186/s12864-016-2958-x" xlink:type="simple">10.1186/s12864-016-2958-x</ext-link></comment> <object-id pub-id-type="pmid">27535741</object-id>; PubMed Central PMCID: PMCPMC4989286.</mixed-citation></ref>
+<ref id="pbio.3000166.ref037"><label>37</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>de Filippo</surname> <given-names>C</given-names></name>, <name name-style="western"><surname>Meyer</surname> <given-names>M</given-names></name>, <name name-style="western"><surname>Prüfer</surname> <given-names>K</given-names></name>. <article-title>Quantifying and reducing spurious alignments for the analysis of ultra-short ancient DNA sequences</article-title>. <source>BMC Biol</source>. <year>2018</year>;<volume>16</volume>(<issue>1</issue>):<fpage>121</fpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1186/s12915-018-0581-9" xlink:type="simple">10.1186/s12915-018-0581-9</ext-link></comment> <object-id pub-id-type="pmid">30359256</object-id></mixed-citation></ref>
+<ref id="pbio.3000166.ref038"><label>38</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Ramsey</surname> <given-names>CB</given-names></name>, <name name-style="western"><surname>Lee</surname> <given-names>S</given-names></name>. <article-title>Recent and Planned Developments of the Program OxCal</article-title>. <source>Radiocarbon</source>. <year>2016</year>;<volume>55</volume>(<issue>2</issue>):<fpage>720</fpage>–<lpage>30</lpage>. Epub 02/09. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1017/S0033822200057878" xlink:type="simple">10.1017/S0033822200057878</ext-link></comment></mixed-citation></ref>
+<ref id="pbio.3000166.ref039"><label>39</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Chomczynski</surname> <given-names>P</given-names></name>, <name name-style="western"><surname>Sacchi</surname> <given-names>N</given-names></name>. <article-title>The single-step method of RNA isolation by acid guanidinium thiocyanate–phenol–chloroform extraction: twenty-something years on</article-title>. <source>Nat Protoc</source>. <year>2006</year>;<volume>1</volume>:<fpage>581</fpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1038/nprot.2006.83" xlink:type="simple">10.1038/nprot.2006.83</ext-link></comment> <object-id pub-id-type="pmid">17406285</object-id></mixed-citation></ref>
+<ref id="pbio.3000166.ref040"><label>40</label><mixed-citation publication-type="book" xlink:type="simple"><name name-style="western"><surname>Smith</surname> <given-names>O.</given-names></name> <source>Small RNA-mediated regulation, adaptation and stress response in barley archaeogenome [PhD]</source>: <publisher-name>University of Warwick</publisher-name>; <year>2012</year>.</mixed-citation></ref>
+<ref id="pbio.3000166.ref041"><label>41</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Toni</surname> <given-names>LS</given-names></name>, <name name-style="western"><surname>Garcia</surname> <given-names>AM</given-names></name>, <name name-style="western"><surname>Jeffrey</surname> <given-names>DA</given-names></name>, <name name-style="western"><surname>Jiang</surname> <given-names>X</given-names></name>, <name name-style="western"><surname>Stauffer</surname> <given-names>BL</given-names></name>, <name name-style="western"><surname>Miyamoto</surname> <given-names>SD</given-names></name>, <etal>et al</etal>. <article-title>Optimization of phenol-chloroform RNA extraction</article-title>. <source>MethodsX</source>. <year>2018</year>;<volume>5</volume>:<fpage>599</fpage>–<lpage>608</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1016/j.mex.2018.05.011" xlink:type="simple">10.1016/j.mex.2018.05.011</ext-link></comment> <object-id pub-id-type="pmid">29984193</object-id></mixed-citation></ref>
+<ref id="pbio.3000166.ref042"><label>42</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Nakayama</surname> <given-names>Y</given-names></name>, <name name-style="western"><surname>Yamaguchi</surname> <given-names>H</given-names></name>, <name name-style="western"><surname>Einaga</surname> <given-names>N</given-names></name>, <name name-style="western"><surname>Esumi</surname> <given-names>M</given-names></name>. <article-title>Pitfalls of DNA Quantification Using DNA-Binding Fluorescent Dyes and Suggested Solutions</article-title>. <source>PLoS ONE</source>. <year>2016</year>;<volume>11</volume>(<issue>3</issue>):<fpage>e0150528</fpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1371/journal.pone.0150528" xlink:type="simple">10.1371/journal.pone.0150528</ext-link></comment> PMC4777359. <object-id pub-id-type="pmid">26937682</object-id></mixed-citation></ref>
+<ref id="pbio.3000166.ref043"><label>43</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Shore</surname> <given-names>S</given-names></name>, <name name-style="western"><surname>Henderson</surname> <given-names>JM</given-names></name>, <name name-style="western"><surname>Lebedev</surname> <given-names>A</given-names></name>, <name name-style="western"><surname>Salcedo</surname> <given-names>MP</given-names></name>, <name name-style="western"><surname>Zon</surname> <given-names>G</given-names></name>, <name name-style="western"><surname>McCaffrey</surname> <given-names>AP</given-names></name>, <etal>et al</etal>. <article-title>Small RNA Library Preparation Method for Next-Generation Sequencing Using Chemical Modifications to Prevent Adapter Dimer Formation</article-title>. <source>PLoS ONE</source>. <year>2016</year>;<volume>11</volume>(<issue>11</issue>):<fpage>e0167009</fpage>–<lpage>e</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1371/journal.pone.0167009" xlink:type="simple">10.1371/journal.pone.0167009</ext-link></comment> <object-id pub-id-type="pmid">27875576</object-id>.</mixed-citation></ref>
+<ref id="pbio.3000166.ref044"><label>44</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Yin</surname> <given-names>S</given-names></name>, <name name-style="western"><surname>Ho</surname> <given-names>CK</given-names></name>, <name name-style="western"><surname>Shuman</surname> <given-names>S</given-names></name>. <article-title>Structure-function analysis of T4 RNA Ligase 2</article-title>. <source>J Biol Chem</source>. <year>2003</year>;<volume>278</volume>(<issue>20</issue>):<fpage>17601</fpage>–<lpage>8</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1074/jbc.M300817200" xlink:type="simple">10.1074/jbc.M300817200</ext-link></comment> <object-id pub-id-type="pmid">12611899</object-id></mixed-citation></ref>
+<ref id="pbio.3000166.ref045"><label>45</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Martin</surname> <given-names>M.</given-names></name> <source>Cutadapt removes adapter sequences from high-throughput sequencing reads</source>. 2011. <year>2011</year>;<volume>17</volume>(<issue>1</issue>):<fpage>10</fpage>–<lpage>2</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.14806/ej.17.1.200" xlink:type="simple">10.14806/ej.17.1.200</ext-link></comment></mixed-citation></ref>
+<ref id="pbio.3000166.ref046"><label>46</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Langmead</surname> <given-names>B</given-names></name>, <name name-style="western"><surname>Salzberg</surname> <given-names>SL</given-names></name>. <article-title>Fast gapped-read alignment with Bowtie 2</article-title>. <source>Nat Methods</source>. <year>2012</year>;<volume>9</volume>:<fpage>357</fpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1038/nmeth.1923" xlink:type="simple">10.1038/nmeth.1923</ext-link></comment> <object-id pub-id-type="pmid">22388286</object-id></mixed-citation></ref>
+<ref id="pbio.3000166.ref047"><label>47</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Chan</surname> <given-names>PP</given-names></name>, <name name-style="western"><surname>Lowe</surname> <given-names>TM</given-names></name>. <article-title>GtRNAdb: a database of transfer RNA genes detected in genomic sequence</article-title>. <source>Nucleic Acids Res</source>. <year>2009</year>;<volume>37</volume>(<issue>Database issue</issue>):<fpage>D93</fpage>–<lpage>7</lpage>. Epub 2008/11/06. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1093/nar/gkn787" xlink:type="simple">10.1093/nar/gkn787</ext-link></comment> <object-id pub-id-type="pmid">18984615</object-id>; PubMed Central PMCID: PMCPMC2686519.</mixed-citation></ref>
+<ref id="pbio.3000166.ref048"><label>48</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Quast</surname> <given-names>C</given-names></name>, <name name-style="western"><surname>Pruesse</surname> <given-names>E</given-names></name>, <name name-style="western"><surname>Gerken</surname> <given-names>J</given-names></name>, <name name-style="western"><surname>Peplies</surname> <given-names>J</given-names></name>, <name name-style="western"><surname>Yarza</surname> <given-names>P</given-names></name>, <name name-style="western"><surname>Yilmaz</surname> <given-names>P</given-names></name>, <etal>et al</etal>. <article-title>The SILVA ribosomal RNA gene database project: improved data processing and web-based tools</article-title>. <source>Nucleic Acids Res</source>. <year>2012</year>;<volume>41</volume>(<issue>D1</issue>):<fpage>D590</fpage>–<lpage>D6</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1093/nar/gks1219" xlink:type="simple">10.1093/nar/gks1219</ext-link></comment> <object-id pub-id-type="pmid">23193283</object-id></mixed-citation></ref>
+<ref id="pbio.3000166.ref049"><label>49</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Huson</surname> <given-names>DH</given-names></name>, <name name-style="western"><surname>Auch</surname> <given-names>AF</given-names></name>, <name name-style="western"><surname>Qi</surname> <given-names>J</given-names></name>, <name name-style="western"><surname>Schuster</surname> <given-names>SC</given-names></name>. <article-title>MEGAN analysis of metagenomic data</article-title>. <source>Genome Res</source>. <year>2007</year>;<volume>17</volume>(<issue>3</issue>):<fpage>377</fpage>–<lpage>86</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1101/gr.5969107" xlink:type="simple">10.1101/gr.5969107</ext-link></comment> <object-id pub-id-type="pmid">17255551</object-id></mixed-citation></ref>
+<ref id="pbio.3000166.ref050"><label>50</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Kim</surname> <given-names>D</given-names></name>, <name name-style="western"><surname>Pertea</surname> <given-names>G</given-names></name>, <name name-style="western"><surname>Trapnell</surname> <given-names>C</given-names></name>, <name name-style="western"><surname>Pimentel</surname> <given-names>H</given-names></name>, <name name-style="western"><surname>Kelley</surname> <given-names>R</given-names></name>, <name name-style="western"><surname>Salzberg</surname> <given-names>SL</given-names></name>. <article-title>TopHat2: accurate alignment of transcriptomes in the presence of insertions, deletions and gene fusions</article-title>. <source>Genome Biol</source>. <year>2013</year>;<volume>14</volume>(<issue>4</issue>):<fpage>R36</fpage>. Epub 2013/04/27. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1186/gb-2013-14-4-r36" xlink:type="simple">10.1186/gb-2013-14-4-r36</ext-link></comment> <object-id pub-id-type="pmid">23618408</object-id>; PubMed Central PMCID: PMCPMC4053844.</mixed-citation></ref>
+<ref id="pbio.3000166.ref051"><label>51</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Ginolhac</surname> <given-names>A</given-names></name>, <name name-style="western"><surname>Rasmussen</surname> <given-names>M</given-names></name>, <name name-style="western"><surname>Gilbert</surname> <given-names>MTP</given-names></name>, <name name-style="western"><surname>Willerslev</surname> <given-names>E</given-names></name>, <name name-style="western"><surname>Orlando</surname> <given-names>L</given-names></name>. <article-title>mapDamage: testing for damage patterns in ancient DNA sequences</article-title>. <source>Bioinformatics</source>. <year>2011</year>;<volume>27</volume>(<issue>15</issue>):<fpage>2153</fpage>–<lpage>5</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1093/bioinformatics/btr347" xlink:type="simple">10.1093/bioinformatics/btr347</ext-link></comment> <object-id pub-id-type="pmid">21659319</object-id></mixed-citation></ref>
+<ref id="pbio.3000166.ref052"><label>52</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Robinson</surname> <given-names>MD</given-names></name>, <name name-style="western"><surname>McCarthy</surname> <given-names>DJ</given-names></name>, <name name-style="western"><surname>Smyth</surname> <given-names>GK</given-names></name>. <article-title>edgeR: a Bioconductor package for differential expression analysis of digital gene expression data</article-title>. <source>Bioinformatics</source>. <year>2010</year>;<volume>26</volume>(<issue>1</issue>):<fpage>139</fpage>–<lpage>40</lpage>. Epub 2009/11/17. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1093/bioinformatics/btp616" xlink:type="simple">10.1093/bioinformatics/btp616</ext-link></comment> <object-id pub-id-type="pmid">19910308</object-id>; PubMed Central PMCID: PMCPMC2796818.</mixed-citation></ref>
+<ref id="pbio.3000166.ref053"><label>53</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Anscombe</surname> <given-names>FJ</given-names></name>. <article-title>The Transformation of Poisson, Binomial and Negative-Binomial Data</article-title>. <source>Biometrika</source>. <year>1948</year>;<volume>35</volume>(<issue>3/4</issue>):<fpage>246</fpage>–<lpage>54</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.2307/2332343" xlink:type="simple">10.2307/2332343</ext-link></comment></mixed-citation></ref>
+<ref id="pbio.3000166.ref054"><label>54</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Hahsler</surname> <given-names>M</given-names></name>, <name name-style="western"><surname>Hornik</surname> <given-names>K</given-names></name>, <name name-style="western"><surname>Buchta</surname> <given-names>C</given-names></name>. <source>Getting Things in Order: An Introduction to the R Package seriation</source>. 2008. <year>2008</year>;<volume>25</volume>(<issue>3</issue>):<fpage>34</fpage>. Epub 2008-03-18. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.18637/jss.v025.i03" xlink:type="simple">10.18637/jss.v025.i03</ext-link></comment></mixed-citation></ref>
+<ref id="pbio.3000166.ref055"><label>55</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Lin</surname> <given-names>Y</given-names></name>, <name name-style="western"><surname>Golovnina</surname> <given-names>K</given-names></name>, <name name-style="western"><surname>Chen</surname> <given-names>Z-X</given-names></name>, <name name-style="western"><surname>Lee</surname> <given-names>HN</given-names></name>, <name name-style="western"><surname>Negron</surname> <given-names>YLS</given-names></name>, <name name-style="western"><surname>Sultana</surname> <given-names>H</given-names></name>, <etal>et al</etal>. <article-title>Comparison of normalization and differential expression analyses using RNA-Seq data from 726 individual Drosophila melanogaster</article-title>. <source>BMC Genomics</source>. <year>2016</year>;<volume>17</volume>:<fpage>28</fpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1186/s12864-015-2353-z" xlink:type="simple">10.1186/s12864-015-2353-z</ext-link></comment> PMC4702322. <object-id pub-id-type="pmid">26732976</object-id></mixed-citation></ref>
+</ref-list>
+</back>
+</article>

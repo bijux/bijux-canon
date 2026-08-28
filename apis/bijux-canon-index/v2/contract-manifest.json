@@ -1,0 +1,60 @@
+{
+  "schema_version": "1.4.0",
+  "contract_id": "bijux.canon.index.artifacts.v2",
+  "artifact_schema_version": "2.0.0",
+  "json_schema_dialect": "https://json-schema.org/draft/2020-12/schema",
+  "canonical_serialization": "RFC 8785",
+  "identity_algorithm": "sha-256",
+  "identity_excluded_json_pointers": [
+    "/artifact_id"
+  ],
+  "schema_bundle": {
+    "path": "index-artifacts.schema.json",
+    "sha256": "aae45363a269fad7548cfa925b5043d2da28b0a53858b4b0af910a3156142b22",
+    "definitions": {
+      "bijux.canon.index.activation_receipt": "#/$defs/activation_receipt",
+      "bijux.canon.index.dense_segment": "#/$defs/dense_segment",
+      "bijux.canon.index.filter": "#/$defs/filter",
+      "bijux.canon.index.generation": "#/$defs/index_generation",
+      "bijux.canon.index.integrity": "#/$defs/integrity",
+      "bijux.canon.index.lexical_segment": "#/$defs/lexical_segment",
+      "bijux.canon.index.model_lock": "#/$defs/model_lock",
+      "bijux.canon.index.vector": "#/$defs/vector"
+    }
+  },
+  "retrieval_schema_bundle": {
+    "path": "retrieval-artifacts.schema.json",
+    "sha256": "f12eae859884a339b25fd9d39435612eac238c6257a74001f4845f4d5a4148b7",
+    "definitions": {
+      "bijux.canon.index.approximation": "#/$defs/approximation",
+      "bijux.canon.index.candidate": "#/$defs/candidate",
+      "bijux.canon.index.execution": "#/$defs/execution",
+      "bijux.canon.index.fused_hit": "#/$defs/fused_hit",
+      "bijux.canon.index.provenance": "#/$defs/provenance",
+      "bijux.canon.index.query": "#/$defs/query",
+      "bijux.canon.index.replay": "#/$defs/replay",
+      "bijux.canon.index.witness": "#/$defs/witness"
+    }
+  },
+  "migration_policy": {
+    "path": "migration-policy.json",
+    "sha256": "37333ca43164c2992ea336a969b8675a5757fc02bdf16bf97aca16bce0485497",
+    "implicit_migration_allowed": false,
+    "registered_transform_count": 0
+  },
+  "conformance_example": {
+    "path": "examples/evaluation-index-records.json",
+    "sha256": "dc21d81db73b06f2e0eb36d471731dcbd020233891f76fa02493344536989bbe",
+    "record_count": 8,
+    "source_corpus_sha256": "03a79d793dc4bc525745c8c564a5b116ea727a2dfea9766397d886edfc39e4aa",
+    "source_document_count": 25
+  },
+  "retrieval_conformance_example": {
+    "path": "examples/evaluation-retrieval-records.json",
+    "sha256": "db5f0099a03c2c911ba6d987baed34951c86f8c0103e8eb91f611588b14a21f8",
+    "record_count": 9,
+    "query_text_sha256": "d72953f67842f7f9c31a083d80ab9ee54f9ddcb85989e62989d3773fded3cfbe",
+    "source_corpus_sha256": "03a79d793dc4bc525745c8c564a5b116ea727a2dfea9766397d886edfc39e4aa",
+    "source_document_count": 25
+  }
+}

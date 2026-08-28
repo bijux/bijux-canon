@@ -14,7 +14,7 @@ from bijux_canon_index.core.runtime.execution_plan import (
 )
 
 
-def test_plan_fingerprint_is_stable():
+def test_plan_fingerprint_is_stable() -> None:
     plan = ExecutionPlan(
         algorithm="algo",
         contract=ExecutionContract.DETERMINISTIC,
@@ -30,7 +30,7 @@ def test_plan_fingerprint_is_stable():
     assert plan.fingerprint
 
 
-def test_plan_requires_contract_enum():
+def test_plan_requires_contract_enum() -> None:
     with pytest.raises(InvariantError):
         ExecutionPlan(
             algorithm="algo",

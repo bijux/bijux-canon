@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 import json
 from pathlib import Path
 from typing import Any
@@ -184,8 +185,8 @@ def build_run_or_bundle_comparison(
     run_b: str | None,
     bundle_a: Path | None,
     bundle_b: Path | None,
-    load_run: callable,
-    load_bundle: callable,
+    load_run: Callable[[str], Any],
+    load_bundle: Callable[[Path], dict[str, object]],
 ) -> dict[str, object] | None:
     """Build run or bundle comparison."""
     if not (run_a or run_b or bundle_a or bundle_b):

@@ -4,10 +4,14 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import Any
 
+import pytest
 from typer.testing import CliRunner
 
+from bijux_canon_reason.application.cli_services import ResearchCommandResult
 from bijux_canon_reason.interfaces.cli import app as root_app
+import bijux_canon_reason.interfaces.cli.main as cli_main
 
 runner = CliRunner()
 
@@ -97,3 +101,59 @@ def test_eval_json_output(tmp_path: Path) -> None:
     assert res.exit_code == 0
     payload = json.loads(res.stdout)
     assert "summary" in payload
+
+
+@pytest.mark.parametrize(
+    ("command", "executor_name", "payload"),
+    [
+        (
+            ["research", "--input", "{input}", "--json"],
+            "execute_research_command",
+            {"research_id": "research_v1_" + "1" * 64},
+        ),
+        (
+            ["inspect", "--research-id", "research_v1_" + "1" * 64],
+            "execute_inspect_research_command",
+            {"research_id": "research_v1_" + "1" * 64, "record": "typed"},
+        ),
+        (
+            ["verify", "--research-id", "research_v1_" + "1" * 64],
+            "execute_verify_research_command",
+            {"research_id": "research_v1_" + "1" * 64, "passed": True},
+        ),
+        (
+            ["replay", "--research-id", "research_v1_" + "1" * 64],
+            "execute_replay_research_command",
+            {"research_id": "research_v1_" + "1" * 64, "restart_exact": True},
+        ),
+        (
+            ["compare", "--research-id", "research_v1_" + "1" * 64],
+            "execute_compare_research_command",
+            {"research_id": "research_v1_" + "1" * 64, "comparison": {}},
+        ),
+    ],
+)
+def test_research_commands_route_through_shared_application_service(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    command: list[str],
+    executor_name: str,
+    payload: dict[str, object],
+) -> None:
+    input_path = tmp_path / "research-input.json"
+    input_path.write_text("{}", encoding="utf-8")
+    research_id = "research_v1_" + "1" * 64
+
+    def execute(**kwargs: Any) -> ResearchCommandResult:
+        assert kwargs["artifacts_dir"] == tmp_path
+        return ResearchCommandResult(payload=payload, research_id=research_id)
+
+    monkeypatch.setattr(cli_main, executor_name, execute)
+    arguments = [value.format(input=str(input_path)) for value in command] + [
+        "--artifacts-dir",
+        str(tmp_path),
+    ]
+    result = runner.invoke(root_app, arguments)
+
+    assert result.exit_code == 0, result.stderr
+    assert json.loads(result.stdout) == payload

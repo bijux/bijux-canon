@@ -53,27 +53,27 @@ def _extract_hash_value(path: Path) -> str | None:
 def run(repo_root: Path) -> int:
     """Run the requested operation."""
     failures: list[str] = []
-    schema_paths = sorted((repo_root / "apis").glob("*/v1/schema.yaml"))
+    schema_paths = sorted((repo_root / "apis").glob("*/*/schema.yaml"))
     if not schema_paths:
-        print("No OpenAPI schemas found under apis/*/v1/schema.yaml", file=sys.stderr)
+        print("No OpenAPI schemas found under apis/*/*/schema.yaml", file=sys.stderr)
         return 1
 
     for schema_path in schema_paths:
-        package_dir = schema_path.parent.parent.name
+        contract_name = schema_path.parent.relative_to(repo_root / "apis").as_posix()
         pinned_path = schema_path.with_name("pinned_openapi.json")
         hash_path = schema_path.with_name("schema.hash")
         if not pinned_path.exists():
-            failures.append(f"{package_dir}: missing pinned_openapi.json")
+            failures.append(f"{contract_name}: missing pinned_openapi.json")
             continue
         if not hash_path.exists():
-            failures.append(f"{package_dir}: missing schema.hash")
+            failures.append(f"{contract_name}: missing schema.hash")
             continue
 
         expected = _canonicalize(_load_artifact(schema_path))
         actual = _canonicalize(_load_artifact(pinned_path))
         if expected != actual:
             failures.append(
-                f"{package_dir}: pinned_openapi.json does not match schema.yaml"
+                f"{contract_name}: pinned_openapi.json does not match schema.yaml"
             )
 
         digest = hashlib.sha256(
@@ -81,7 +81,7 @@ def run(repo_root: Path) -> int:
         ).hexdigest()
         schema_digest = _extract_hash_value(hash_path)
         if schema_digest != digest:
-            failures.append(f"{package_dir}: schema.hash does not match schema.yaml")
+            failures.append(f"{contract_name}: schema.hash does not match schema.yaml")
 
     if failures:
         print("API freeze contract violations detected:", file=sys.stderr)

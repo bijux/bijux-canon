@@ -17,10 +17,11 @@ from bijux_canon_reason.core.types import (
 )
 from bijux_canon_reason.execution.tool_runtime import (
     BM25Retriever,
-    FakeTool,
     FrozenToolRegistry,
     ToolRegistry,
 )
+
+RuntimeMode = Literal["live", "frozen"]
 
 
 class ToolExecutor(Protocol):
@@ -40,11 +41,20 @@ class ToolExecutor(Protocol):
 class ExecutionRuntime(Protocol):
     """Represents execution runtime."""
 
-    seed: int
-    tools: ToolExecutor
-    runtime_kind: str
-    mode: Literal["live", "frozen"]
-    artifacts_dir: Path | None
+    @property
+    def seed(self) -> int: ...
+
+    @property
+    def tools(self) -> ToolExecutor: ...
+
+    @property
+    def runtime_kind(self) -> str: ...
+
+    @property
+    def mode(self) -> RuntimeMode: ...
+
+    @property
+    def artifacts_dir(self) -> Path | None: ...
 
     @property
     def descriptor(self) -> RuntimeDescriptor:
@@ -60,7 +70,7 @@ class Runtime:
     seed: int
     tools: ToolRegistry | FrozenToolRegistry
     runtime_kind: str
-    mode: Literal["live", "frozen"]
+    mode: RuntimeMode
     artifacts_dir: Path | None
 
     @property
@@ -77,18 +87,12 @@ class Runtime:
         )
 
     @staticmethod
-    def fake(seed: int, *, artifacts_dir: Path | None = None) -> Runtime:
-        """Handle fake."""
-        tools = ToolRegistry(
-            tools={
-                "retrieve": FakeTool(name="retrieve"),
-                "compute": FakeTool(name="compute"),
-            }
-        )
+    def credential_free(seed: int, *, artifacts_dir: Path | None = None) -> Runtime:
+        """Create an honest no-tool runtime for evidence-free local operation."""
         return Runtime(
             seed=seed,
-            tools=tools,
-            runtime_kind="FakeRuntime",
+            tools=ToolRegistry(tools={}),
+            runtime_kind="CredentialFreeRuntime",
             mode="live",
             artifacts_dir=artifacts_dir,
         )
@@ -117,7 +121,6 @@ class Runtime:
                     b=b,
                     corpus_max_bytes=corpus_max_bytes,
                 ),
-                "compute": FakeTool(name="compute"),
             }
         )
         return Runtime(
@@ -135,7 +138,7 @@ class Runtime:
         recorded_results: Mapping[str, ToolResult],
         artifacts_dir: Path | None = None,
         descriptors: list[ToolDescriptor] | None = None,
-        mode: Literal["live", "frozen"] = "frozen",
+        mode: RuntimeMode = "frozen",
         runtime_kind: str = "ReplayRuntime",
     ) -> Runtime:
         """Handle frozen."""

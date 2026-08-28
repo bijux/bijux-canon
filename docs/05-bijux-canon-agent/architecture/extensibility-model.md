@@ -75,6 +75,27 @@ sufficient by itself. Provider/runtime versions, prompts, configuration,
 pipeline definition, convergence window, and input identity must also match.
 Replay reconstructs from recorded trace data; it does not call the provider.
 
+## Tool extensions
+
+A research tool is admitted through `ResearchToolRegistry` only when its
+descriptor binds a stable name and version, operation, input and output schema,
+capability, implementation owner, cost, cancellation support, replay policy,
+and an explicit allowlist of safe summary fields. The binding also supplies
+runtime input/output types plus request and result identity functions.
+
+The registry requires a plan-bound allow decision for the exact invocation
+before calling the implementation. It refuses unknown versions, mismatched
+schemas/capabilities/costs, invalid inputs and outputs, cancellation, elapsed
+timeouts, and conflicting idempotency keys. Recorded replay returns the bound
+typed result without invoking the tool again. Only read-only tools are admitted
+to this registry; a future effectful tool needs a separate effect and
+compensation contract.
+
+Execution records retain descriptor, policy-decision, request, result,
+idempotency, replay-source, cancellation, and stable failure-class identities.
+They contain only descriptor-whitelisted summaries, never request/result
+payloads, provider credentials, exception messages, or document text.
+
 ## Convergence extensions
 
 A convergence strategy returns a typed decision with reason, iteration state,

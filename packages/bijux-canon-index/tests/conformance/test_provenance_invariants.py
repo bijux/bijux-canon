@@ -26,7 +26,7 @@ def _setup_engine() -> Orchestrator:
     return engine
 
 
-def test_deterministic_execution_has_stable_ids():
+def test_deterministic_execution_has_stable_ids() -> None:
     engine = _setup_engine()
     req = ExecutionRequestPayload(
         vector=(0.0, 0.0),
@@ -40,7 +40,7 @@ def test_deterministic_execution_has_stable_ids():
     assert first["execution_id"] == second["execution_id"]
 
 
-def test_vector_store_usage_recorded_when_enabled():
+def test_vector_store_usage_recorded_when_enabled() -> None:
     engine = _setup_engine()
     req = ExecutionRequestPayload(
         vector=(0.0, 0.0),

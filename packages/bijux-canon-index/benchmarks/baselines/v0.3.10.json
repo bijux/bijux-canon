@@ -1,0 +1,117 @@
+{
+  "schema_version": "bijux.canon.index.backend_baseline.v1",
+  "product_version": "0.3.10.dev355",
+  "measured_commit": "46d7b4607d77a4fa72627ad5bfc7793987bbdbb0",
+  "claim_scope": "real-corpus local backend baseline; not the 10000-chunk scalability gate",
+  "environment": {
+    "machine": "arm64",
+    "platform": "macOS-26.5.2-arm64-arm-64bit",
+    "processor": "arm",
+    "python": "3.11.13",
+    "sqlite": "3.53.0",
+    "faiss": "1.15.0",
+    "numpy": "2.4.4"
+  },
+  "dataset": {
+    "document_count": 8,
+    "chunk_count": 345,
+    "dimension": 384,
+    "query_count": 120,
+    "k": 10,
+    "chunk_set_sha256": "5890d6e6351cffb20262023ca77ae894d67c4434a139a5166ac1395e7053053a",
+    "query_workload_sha256": "b8867737411918d04572c6ee833d7577696e6a39bc2578bb6131695e838d3ad8",
+    "model_lock_artifact_id": "sha256:c3777015daed160afe7ac5858bac5053922126f9af0d2e8384588ca18c3ee5f8",
+    "snapshot_artifact_id": "sha256:real-derived-345"
+  },
+  "build": {
+    "seconds": 0.3393052499741316,
+    "activation_ms": 131.15529203787446,
+    "chunks_per_second": 1016.7835600135942,
+    "input_bytes_per_second": 2725189.1919458844
+  },
+  "storage": {
+    "total_bytes": 2588672,
+    "bytes_per_chunk": 7503.397101449275,
+    "metadata_bytes": 52432,
+    "text_bytes": 342319,
+    "vector_bytes": 529920,
+    "segments": {
+      "sqlite-fts5": 1110016,
+      "faiss-flat-ip": 692224,
+      "faiss-hnsw": 786432
+    }
+  },
+  "backends": [
+    {
+      "backend": "sqlite-fts5",
+      "mode": "lexical",
+      "status": "measured",
+      "query_count": 8,
+      "nonempty_hits": 18,
+      "latency_ms": {
+        "mean": 0.09767175,
+        "p50": 0.053375,
+        "p95": 0.45025,
+        "p99": 0.45025,
+        "maximum": 0.45025
+      },
+      "throughput_qps": 10238.374965125535
+    },
+    {
+      "backend": "faiss-flat-ip",
+      "mode": "exact",
+      "status": "measured",
+      "query_count": 120,
+      "latency_ms": {
+        "mean": 0.21425553333333333,
+        "p50": 0.206042,
+        "p95": 0.260583,
+        "p99": 0.327,
+        "maximum": 0.380542
+      },
+      "throughput_qps": 4667.324033327183
+    },
+    {
+      "backend": "faiss-hnsw",
+      "mode": "ann",
+      "status": "measured",
+      "query_count": 120,
+      "parameters": {
+        "m": 32,
+        "ef_construction": 200,
+        "ef_search": 128,
+        "seed": 42
+      },
+      "latency_ms": {
+        "mean": 0.15948990833333332,
+        "p50": 0.15125,
+        "p95": 0.200083,
+        "p99": 0.220708,
+        "maximum": 0.252708
+      },
+      "throughput_qps": 6269.989182701163,
+      "quality": {
+        "k": 10,
+        "mean_recall": 1.0,
+        "minimum_recall": 1.0,
+        "result_reachability": 1.0,
+        "maximum_score_delta": 1.7881393432617188e-07
+      }
+    },
+    {
+      "backend": "qdrant",
+      "mode": "remote",
+      "status": "experimental_excluded",
+      "reason": "no live service admission; no latency or quality claim made"
+    }
+  ],
+  "restart": {
+    "generation_reached": true,
+    "integrity": "verified",
+    "verify_ms": 79.7744169831276
+  },
+  "corruption": {
+    "one_byte_hnsw_tamper_refused": true,
+    "detection_ms": 1.44408387131989
+  }
+}

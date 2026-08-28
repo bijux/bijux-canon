@@ -34,7 +34,7 @@ def _dummy_execution(exec_id: str) -> ExecutionResult:
     )
 
 
-def test_comparison_policy_enforced():
+def test_comparison_policy_enforced() -> None:
     diff = VectorExecutionDiff(
         execution_a=_dummy_execution("a"),
         execution_b=_dummy_execution("b"),

@@ -29,7 +29,7 @@ from bijux_canon_index.infra.adapters.memory.backend import (
 )
 
 
-def test_backend_claims_ann_support_but_runner_missing():
+def test_backend_claims_ann_support_but_runner_missing() -> None:
     # Backend advertises ANN capability but provides no runner → must raise structured ND error.
     state = MemoryState()
     vectors = MemoryVectorSource(state)

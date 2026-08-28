@@ -9,6 +9,10 @@ from typing import NoReturn
 from fastapi import HTTPException
 
 from bijux_canon_index.application.engine import VectorExecutionEngine
+from bijux_canon_index.application.index_service import IndexService
+from bijux_canon_index.application.surface_services import (
+    index_service_from_environment,
+)
 from bijux_canon_index.core.config import (
     EmbeddingCacheConfig,
     EmbeddingConfig,
@@ -33,6 +37,12 @@ REFUSAL_EXAMPLE = {
         "remediation": "Use deterministic inputs or switch to non_deterministic contract with declared randomness.",
     }
 }
+
+
+def generation_service() -> IndexService:
+    """Compose the canonical generation service for runtime and HTTP adapters."""
+
+    return index_service_from_environment()
 
 
 def raise_http_error(exc: BijuxError, correlation_id: str | None = None) -> NoReturn:
@@ -129,6 +139,7 @@ __all__ = [
     "REFUSAL_EXAMPLE",
     "config_from_payload",
     "engine_from_payload",
+    "generation_service",
     "raise_http_error",
     "replay_inputs_from_request",
 ]

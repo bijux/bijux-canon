@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass
 import hashlib
 import json
@@ -11,10 +12,12 @@ from pathlib import Path
 import re
 
 from bijux_canon_reason.core.types import (
+    ClaimEmittedEvent,
     ClaimType,
+    EvidenceRegisteredEvent,
     JsonValue,
     SupportKind,
-    TraceEventKind,
+    SupportRef,
     VerificationCheck,
     VerificationFailure,
     VerificationSeverity,
@@ -52,7 +55,7 @@ def check_derived_grounding(
     failures: list[VerificationFailure] = []
     min_supports = _resolve_min_supports(_reasoning_policy(ctx))
     for event in ctx.trace.events:
-        if event.kind != TraceEventKind.claim_emitted:
+        if not isinstance(event, ClaimEmittedEvent):
             continue
         claim = event.claim
         if getattr(claim, "claim_type", None) != ClaimType.derived:
@@ -132,7 +135,7 @@ def check_evidence_hashes(
 
     failures: list[VerificationFailure] = []
     for event in ctx.trace.events:
-        if event.kind != TraceEventKind.evidence_registered:
+        if not isinstance(event, EvidenceRegisteredEvent):
             continue
         reference = event.evidence
         abs_path = _resolve_under_root(ctx.artifacts_dir, reference.content_path)
@@ -185,7 +188,7 @@ def check_support_spans(
     )
 
     for event in ctx.trace.events:
-        if event.kind != TraceEventKind.claim_emitted:
+        if not isinstance(event, ClaimEmittedEvent):
             continue
         for support in event.claim.supports:
             if support.kind != SupportKind.evidence:
@@ -209,8 +212,8 @@ def check_reasoning_trace(
     """Ensure reasoning trace hash matches claim payloads and metadata."""
     failures: list[VerificationFailure] = []
     has_claim = any(
-        event.kind == TraceEventKind.claim_emitted
-        and getattr(event.claim, "claim_type", None) == ClaimType.derived
+        isinstance(event, ClaimEmittedEvent)
+        and event.claim.claim_type == ClaimType.derived
         for event in ctx.trace.events
     )
     if not has_claim:
@@ -317,9 +320,8 @@ def _derived_claim_hashes(
     """Handle derived claim hashes."""
     claim_hashes: set[str] = set()
     for event in ctx.trace.events:
-        if (
-            event.kind != TraceEventKind.claim_emitted
-            or getattr(event.claim, "claim_type", None) != ClaimType.derived
+        if not isinstance(event, ClaimEmittedEvent) or (
+            event.claim.claim_type != ClaimType.derived
         ):
             continue
         structured = (
@@ -347,10 +349,13 @@ def _load_evidence_artifacts(
 ) -> dict[str, _EvidenceArtifact]:
     """Load evidence artifacts."""
     artifacts: dict[str, _EvidenceArtifact] = {}
+    artifacts_dir = ctx.artifacts_dir
+    if artifacts_dir is None:
+        return artifacts
     for event in ctx.trace.events:
-        if event.kind != TraceEventKind.evidence_registered:
+        if not isinstance(event, EvidenceRegisteredEvent):
             continue
-        abs_path = _resolve_under_root(ctx.artifacts_dir, event.evidence.content_path)
+        abs_path = _resolve_under_root(artifacts_dir, event.evidence.content_path)
         if abs_path is None or not abs_path.exists():
             continue
         bytes_ = abs_path.read_bytes()
@@ -380,7 +385,7 @@ def _resolve_under_root(root: Path, rel_posix_path: str) -> Path | None:
 
 def _validate_chunk_alignment(
     *,
-    event: object,
+    event: EvidenceRegisteredEvent,
     abs_path: Path,
     chunk_manifest: _ChunkManifest,
     failures: list[VerificationFailure],
@@ -419,7 +424,7 @@ def _validate_chunk_alignment(
 def _validate_support_span(
     *,
     claim_id: str,
-    support: object,
+    support: SupportRef,
     evidence_artifacts: dict[str, _EvidenceArtifact],
     failures: list[VerificationFailure],
 ) -> None:
@@ -474,7 +479,7 @@ def _validate_support_span(
         )
 
 
-def _evidence_supports(supports: list[object]) -> list[object]:
+def _evidence_supports(supports: Sequence[SupportRef]) -> list[SupportRef]:
     """Handle evidence supports."""
     return [support for support in supports if support.kind == SupportKind.evidence]
 

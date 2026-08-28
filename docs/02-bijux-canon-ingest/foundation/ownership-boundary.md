@@ -154,6 +154,10 @@ flowchart LR
 | where did a chunk come from? | parent identity, normalized offsets, chunk text, and geometry |
 | can a citation be mapped to original bytes? | an explicit source-to-normalized mapping produced during preparation |
 
-The current chunk contract does not carry a general source-byte mapping. A
-consumer may quote the normalized span and identify its parent, but must not
-claim original-byte coordinates unless it retained an independent mapping.
+Canonical corpus snapshots carry a hashed source-to-document-to-mapping-to-
+chunk graph and the exact format locator for every contributing chunk segment.
+That graph resolves normalized quotations against the immutable source payload
+and deterministic parser representation. It does not relabel PDF or OOXML
+container offsets as raw text-byte coordinates. The older functional-core
+`Chunk` value remains a narrower in-process shape and must not be used as a
+substitute for snapshot citation lineage.

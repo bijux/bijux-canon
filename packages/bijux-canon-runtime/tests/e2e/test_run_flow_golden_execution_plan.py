@@ -44,6 +44,22 @@ def _normalize_for_json(value):
     return value
 
 
+def _normalize_installed_distribution_identity(payload: dict) -> dict:
+    """Separate stable plan structure from environment-bound distribution identity."""
+    payload["plan_hash"] = "<environment-bound-plan-hash>"
+    for step in payload["steps"]:
+        step["agent_invocation"]["agent_version"] = (
+            "<installed-bijux-canon-agent-version>"
+        )
+    payload["resolution_metadata"] = [
+        [key, "<installed-bijux-cli-version>"]
+        if key == "bijux_cli_version"
+        else [key, value]
+        for key, value in payload["resolution_metadata"]
+    ]
+    return payload
+
+
 def test_golden_execution_plan(
     deterministic_environment, entropy_budget, replay_envelope, dataset_descriptor
 ) -> None:
@@ -69,7 +85,11 @@ def test_golden_execution_plan(
             mode=RunMode.PLAN, determinism_level=manifest.determinism_level
         ),
     )
-    payload = _normalize_for_json(asdict(result.resolved_flow.plan))
+    payload = _normalize_installed_distribution_identity(
+        _normalize_for_json(asdict(result.resolved_flow.plan))
+    )
     golden_path = Path(__file__).parents[1] / "golden" / "test_execution_plan.json"
-    expected = json.loads(golden_path.read_text(encoding="utf-8"))
+    expected = _normalize_installed_distribution_identity(
+        json.loads(golden_path.read_text(encoding="utf-8"))
+    )
     assert payload == expected

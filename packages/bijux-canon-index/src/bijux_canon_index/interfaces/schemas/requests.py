@@ -34,7 +34,7 @@ class IngestRequest(StrictModel):
     vector_store_uri: str | None = None
     vector_store_options: dict[str, str] | None = None
 
-    @model_validator(mode="after")  # type: ignore[untyped-decorator]
+    @model_validator(mode="after")
     def ensure_lengths(self) -> Self:
         """Ensure lengths."""
         if self.vectors:
@@ -106,14 +106,14 @@ class ExecutionRequestPayload(StrictModel):
     vector_store_uri: str | None = None
     vector_store_options: dict[str, str] | None = None
 
-    @model_validator(mode="after")  # type: ignore[untyped-decorator]
+    @model_validator(mode="after")
     def ensure_one_of_request_or_vector(self) -> Self:
         """Ensure one of request or vector."""
         if self.request_text is None and self.vector is None:
             raise ValueError("request_text or vector is required")
         return self
 
-    @model_validator(mode="after")  # type: ignore[untyped-decorator]
+    @model_validator(mode="after")
     def ensure_randomness_for_nd(self) -> Self:
         """Ensure randomness for ND."""
         from bijux_canon_index.interfaces.schemas.validators import (
@@ -133,7 +133,7 @@ class ExecutionArtifactRequest(StrictModel):
     vector_store_uri: str | None = None
     vector_store_options: dict[str, str] | None = None
 
-    @model_validator(mode="after")  # type: ignore[untyped-decorator]
+    @model_validator(mode="after")
     def ensure_index_mode(self) -> Self:
         """Ensure index mode."""
         if self.index_mode is None:

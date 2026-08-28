@@ -32,13 +32,14 @@ bijux_canon_dev/
 
 | Module | Inputs | Decision or output |
 | --- | --- | --- |
-| `api.freeze_contracts` | `apis/*/v1/schema.yaml`, pin, digest | canonical pin equality and YAML SHA-256 validity |
+| `api.freeze_contracts` | `apis/*/*/schema.yaml`, pin, digest | canonical pin equality and YAML SHA-256 validity |
 | `api.openapi_drift` | application import and checked-in schema | generated canonical JSON plus drift verdict; optional intentional pinning |
 | `docs.badge_sync` | badge catalog and workspace/package metadata | generated README badge blocks or drift refusal |
 | `docs.mkdocs_config` | source MkDocs configuration and build paths | rewritten build configuration and prepared source paths |
 | `docs.repository_docs_catalog` | repository package catalog and documentation model | generated reference inputs used by the public site |
 | `quality.deptry_scan` | shared Deptry policy and package metadata | package-specific merged dependency scan configuration and exit status |
 | `security.pip_audit_gate` | pip-audit JSON and strict/ignore policy | normalized vulnerability table and gate status |
+| `release.python_support_matrix` | workspace metadata and one complete wheel set | isolated installed-package results for every advertised Python version |
 | `release.version_resolver` | package metadata and Git history | static, Hatch VCS, or matching-tag version |
 | `release.publication_guard` | resolved version and optional dist directory | prerelease/local-version policy and artifact-version agreement |
 | `sbom.requirements_writer` | package dependencies and optional development group | deduplicated prod or dev requirements with local workspace references |
@@ -46,10 +47,11 @@ bijux_canon_dev/
 
 ## API Modules
 
-`freeze_contracts` walks all `apis/*/v1/schema.yaml` roots. It canonicalizes
+`freeze_contracts` walks all `apis/*/*/schema.yaml` roots. It canonicalizes
 YAML and pinned JSON before comparison, then hashes the exact YAML text and
 compares it with the `sha256:` entry. It fails if no schemas exist or if any
-pin, digest, or match is missing.
+pin, digest, or match is missing. Runtime v2 is the primary whole-product
+contract within that governed set.
 
 `openapi_drift` imports an ASGI application or zero-argument factory, writes
 its generated OpenAPI as canonical JSON, and compares it with the checked-in
@@ -97,6 +99,18 @@ Version resolution proceeds from an explicit project version, to `hatch
 version`, to the latest matching Git tag, then returns `0.0.0` when no source
 resolves. The publication guard refuses unresolved, prerelease, local/dirty, or
 artifact-mismatched versions unless the relevant exception is explicit.
+
+The Python support matrix derives its interpreter rows from every package's
+classifiers, checks those rows against `requires-python`, and requires exactly
+one wheel for the repository distribution and every configured package. The
+primary and compatibility inventories must partition the package set, and each
+package must make its OS-independent platform promise explicit. Each row
+installs that immutable wheel set into an isolated environment, checks
+dependency metadata, imports every wheel-owned module from `site-packages`, and
+loads every declared console entry point. The JSON outcome binds all 48 package
+and Python combinations to the source commit, package metadata, lock file,
+wheel hashes, commands, and failures. It refuses output, wheel, and environment
+paths outside the ignored `artifacts/` tree.
 
 The SBOM requirements writer produces separate production and development
 inputs. Local workspace dependencies become absolute `file:` requirements so

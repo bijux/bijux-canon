@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling>=1.30.1,<1.32", "hatch-vcs>=0.5.0,<1.0"]
+requires = ["hatchling>=1.30.1,<1.33", "hatch-vcs>=0.5.0,<1.0"]
 build-backend = "hatchling.build"
 
 [project]
@@ -7,7 +7,7 @@ name = "bijux-canon-ingest"
 dynamic = ["version"]
 description = "Deterministic document ingestion, chunking, and retrieval preparation for the bijux-canon package family from Bijux."
 readme = "README.md"
-requires-python = ">=3.11,<4.0"
+requires-python = ">=3.11,<4"
 license = { text = "Apache-2.0" }
 authors = [{ name = "Bijan Mousavi", email = "bijan@bijux.io" }]
 maintainers = [{ name = "Bijan Mousavi", email = "bijan@bijux.io" }]
@@ -42,6 +42,7 @@ dependencies = [
   "pydantic>=2.7,<3",
   "msgpack>=1.2.1,<2",
   "numpy>=1.26,<3",
+  "pypdf==6.15.0",
   "fastapi>=0.138,<1.0",
   "uvicorn>=0.32,<1.0",
   "PyYAML>=6,<7",
@@ -54,7 +55,7 @@ docs = [
   "mkdocs-minify-plugin>=0.8,<1",
   "mkdocs-redirects>=1.2,<2",
   "mkdocs-git-revision-date-localized-plugin>=1.2,<2",
-  "pymdown-extensions>=10.8,<12",
+  "pymdown-extensions>=11.0.1,<12",
   "mkdocstrings[python]>=0.29,<2",
   "mkdocs-gen-files>=0.5,<1",
   "mkdocs-literate-nav>=0.6,<1",
@@ -77,14 +78,14 @@ dev = [
   "interrogate>=1.7.0,<2.0",
   "bandit>=1.7.10,<2.0",
   "pip-audit>=2.7.3,<3.0",
-  "twine>=6.1.0,<7.0",
+  "twine>=6.1.0,<8.0",
   "prance>=25.4.0.0",
   "openapi-spec-validator>=0.7.1,<1.0",
   "types-PyYAML>=6.0.12,<7.0",
   "build>=1.2,<2.0",
   "mkdocs>=1.6,<2",
   "mkdocs-material>=9.5,<10",
-  "pymdown-extensions>=10.8,<12",
+  "pymdown-extensions>=11.0.1,<12",
   "mkdocs-git-revision-date-localized-plugin>=1.2,<2",
   "mkdocs-minify-plugin>=0.8,<1",
   "mkdocs-redirects>=1.2,<2",
@@ -116,7 +117,7 @@ CompatibilityGuide = "https://bijux.io/bijux-canon/08-compat-packages/migration/
 source = "vcs"
 tag-pattern = "^v(?P<version>.*)$"
 raw-options = { git_describe_command = "git describe --dirty --tags --long --match 'v*'", local_scheme = "dirty-tag", version_scheme = "guess-next-dev", root = "../..", search_parent_directories = true }
-fallback-version = "0.3.9"
+fallback-version = "0.4.0"
 
 [tool.hatch.build.hooks.vcs]
 version-file = "src/bijux_canon_ingest/_build_version.py"
@@ -175,7 +176,6 @@ include = [
   "CHANGELOG.md",
   "pyproject.toml",
 ]
-force-include = { "LICENSE" = "LICENSE", "NOTICE" = "NOTICE" }
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/bijux_canon_ingest"]

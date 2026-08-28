@@ -20,7 +20,7 @@ from bijux_canon_index.core.types import (
 )
 
 
-def test_session_id_is_deterministic():
+def test_session_id_is_deterministic() -> None:
     artifact = ExecutionArtifact(
         artifact_id="art",
         corpus_fingerprint="corp",

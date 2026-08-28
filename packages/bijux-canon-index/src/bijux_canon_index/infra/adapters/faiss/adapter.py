@@ -12,11 +12,6 @@ from pathlib import Path
 import tempfile
 from typing import Any
 
-try:  # pragma: no cover - optional dependency
-    import faiss
-except Exception:  # pragma: no cover - optional dependency
-    faiss = None
-
 import numpy as np
 
 from bijux_canon_index.core.errors import (
@@ -28,6 +23,14 @@ from bijux_canon_index.core.errors import (
     ValidationError,
 )
 from bijux_canon_index.infra.adapters.vectorstore import VectorStoreAdapter
+
+faiss: Any
+try:  # pragma: no cover - optional dependency
+    import faiss as _faiss  # type: ignore[import-not-found, import-untyped, unused-ignore]
+except Exception:  # pragma: no cover - optional dependency
+    faiss = None
+else:
+    faiss = _faiss
 
 INDEX_VERSION = 1
 EXACT_INDEX_TYPE = "IndexFlatL2"
@@ -274,7 +277,10 @@ class FaissVectorStoreAdapter(VectorStoreAdapter):
         self._dimension = int(self._index.d)
         if meta.get("dimension") != self._dimension:
             raise CorruptArtifactError(message="FAISS index dimensionality mismatch")
-        if meta.get("index_type") != self._index_type_name():
+        if (
+            meta.get("index_type") != self._index_type_name()
+            or not self._loaded_index_matches_kind()
+        ):
             raise CorruptArtifactError(message="FAISS index type mismatch")
         records_payload = json.loads(self._records_path.read_text(encoding="utf-8"))
         self._records = [
@@ -402,10 +408,23 @@ class FaissVectorStoreAdapter(VectorStoreAdapter):
         return faiss.IndexFlatL2(dimension)
 
     def _index_type_name(self) -> str:
-        """Handle index type name."""
+        """Return the stable semantic index type across FAISS wrappers."""
+
+        return EXACT_INDEX_TYPE if self._index_kind == "exact" else ANN_INDEX_TYPE
+
+    def _loaded_index_matches_kind(self) -> bool:
+        """Validate the native index without depending on wrapper downcasting."""
+
         if self._index is None:
-            return EXACT_INDEX_TYPE if self._index_kind == "exact" else ANN_INDEX_TYPE
-        return type(self._index).__name__
+            return False
+        native_type = type(self._index).__name__
+        metric = int(self._index.metric_type)
+        if self._index_kind == "exact":
+            # FAISS 1.7.4 reads IndexFlatL2 through its IndexFlat base wrapper.
+            return native_type in {EXACT_INDEX_TYPE, "IndexFlat"} and metric == int(
+                faiss.METRIC_L2
+            )
+        return native_type == ANN_INDEX_TYPE and metric == int(faiss.METRIC_L2)
 
     def _resolve_index_kind(self, raw: str | None) -> str:
         """Resolve index kind."""

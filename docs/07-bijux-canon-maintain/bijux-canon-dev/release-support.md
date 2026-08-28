@@ -87,6 +87,135 @@ Package profiles may add release-specific checks before or after the common
 build. Inspect the selected package’s `release-dry` behavior rather than
 assuming all distributions have identical evidence.
 
+## Wheel Family Verification
+
+The installed `bijux-canon-wheel-inventory` command validates the exact
+workspace wheel and source-archive family against checked-in metadata. The repository
+workspace currently declares twelve distributions; the non-publishable root
+project is not a thirteenth release artifact.
+It compares names, one shared version, Python constraints, dependencies,
+optional extras, console entry points, and license declarations. It also
+verifies archive paths, wheel tags, every `RECORD` hash and byte count, exact
+copies of `LICENSE` and `NOTICE`, declared runtime assets such as `py.typed` and
+schema hashes, and the absence of source-tree, test, cache, and local path
+leaks. Each distribution must also have exactly one safe, same-version source
+archive with matching `PKG-INFO` and a packaged `pyproject.toml`. A real
+`twine check` over every wheel and source archive is part of the result.
+
+```bash
+bijux-canon-wheel-inventory \
+  --repo-root . \
+  --wheel-dir artifacts/release/wheels \
+  --output artifacts/release/wheel-inventory.json
+```
+
+The command requires a clean checkout and writes the Twine command outcome,
+wheel and source-archive hashes, source metadata hashes, lock hash, environment identity, package
+results, and retained failures to the requested JSON file. The wheel directory,
+cache, and result must remain under `artifacts/`; the validator and its tests
+remain in `bijux-canon-dev` so the same release contract survives disposal of a
+particular run's evidence.
+
+## Clean Installation Verification
+
+The installed `bijux-canon-installation-matrix` command creates a clean
+environment for every wheel and one additional environment for the complete
+exact family. Candidate constraints bind any sibling distribution selected by
+dependency resolution to the same wheel version. A separate sealed dependency
+installation directory supplies third-party wheels; it is built from the
+lock-exported acquisition cache before the matrix runs. Every install forces
+`--no-index` and rejects candidate distributions duplicated in that directory.
+Each row runs the package manager consistency check, imports modules with
+Python isolation enabled, loads all installed entry points, resolves declared
+runtime data from `site-packages`, and invokes each console command's help
+surface. Imports or data that resolve into the repository source tree fail the
+row.
+
+```bash
+bijux-canon-installation-matrix \
+  --repo-root . \
+  --wheel-dir artifacts/release/wheels \
+  --dependency-wheel-dir artifacts/release/dependency-install-wheels \
+  --environment-root artifacts/release/installations \
+  --output artifacts/release/install-matrix.json
+```
+
+The result retains every environment-creation, installation, consistency,
+inspection, and command outcome. Cross-platform and cross-Python coverage is
+composed with the supported Python matrix; one local installation run does not
+imply those remote runner results.
+
+## Advertised Extras Verification
+
+The installed `bijux-canon-extras-matrix` command installs and exercises every
+advertised extra in isolation. It uses the same sealed dependency wheelhouse as
+the clean installation matrix, disables public-index access, verifies imported
+capabilities resolve from the isolated environment, and retains dependency
+wheel hashes with every command outcome.
+
+```bash
+bijux-canon-extras-matrix \
+  --repo-root . \
+  --wheel-dir artifacts/release/wheels \
+  --dependency-wheel-dir artifacts/release/dependency-install-wheels \
+  --environment-root artifacts/release/extras \
+  --output artifacts/release/extras-matrix.json
+```
+
+## Supported Python Verification
+
+The installed `bijux-canon-python-support` command treats package metadata as
+the support authority. It refuses classifier drift between packages, a
+`requires-python` contradiction, missing or duplicate wheels, mixed package
+versions, malformed wheel metadata, unsafe archive paths, an incomplete
+canonical/compatibility partition, or a missing platform promise. It then
+installs the exact repository-and-package wheel family under every advertised
+Python minor, runs the package-manager consistency check, imports every shipped
+module from the isolated `site-packages`, and loads every console entry point.
+The result carries a distinct status for all 48 package and interpreter
+combinations.
+
+```bash
+bijux-canon-python-support \
+  --repo-root . \
+  --wheel-dir artifacts/release/wheels \
+  --environment-root artifacts/release/python-support/environments \
+  --output artifacts/release/python-support/result.json
+```
+
+The command requires a clean checkout so the recorded full source commit names
+the exact tested tree. Wheel inputs, environments, caches, command logs, and the
+JSON result must stay under `artifacts/`; they are run evidence, not product
+source. The local result records its platform explicitly. Multi-platform
+enforcement remains a remote-runner responsibility and must not be inferred
+from a single local pass.
+
+## Release Identity Preflight
+
+The installed `bijux-canon-release-candidate` command binds a proposed stable
+tag to the clean source commit, lockfile, all twelve same-version wheels,
+fallback versions, and candidate changelog headings. Its live preflight also
+requires an unused remote Git tag, no published or draft GitHub Release, an
+unused exact PyPI version for all twelve distribution names, and no matching
+tag on the eleven GHCR packages selected by the public-release inventory.
+Authenticated repository push permission is required because GitHub exposes
+draft releases only to suitably authorized callers. Registry failures are
+indeterminate failures, not evidence that a name is available.
+
+```bash
+bijux-canon-release-candidate \
+  --repo-root . \
+  --wheel-dir artifacts/release/wheels \
+  --output artifacts/release/release-candidate.json \
+  --tag v0.4.0 \
+  --github-repository bijux/bijux-canon \
+  --remote origin
+```
+
+The result records the timestamp and exact read-only queries. Refresh it
+immediately before approval because registry availability can change after a
+successful run. The command never creates a tag, release, or registry object.
+
 ## Local Publication Is Safe by Default
 
 ```bash

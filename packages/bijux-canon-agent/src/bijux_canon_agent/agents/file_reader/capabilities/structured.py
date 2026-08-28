@@ -8,7 +8,8 @@ import importlib
 import json
 from pathlib import Path
 from typing import Any, Protocol, TypeVar, cast
-import xml.etree.ElementTree as _ElementTree  # nosec B405
+
+from defusedxml import ElementTree as _ElementTree
 
 
 class PandasModule(Protocol):
@@ -232,7 +233,7 @@ class StructuredExtractor:
 
         try:
             xml_module = _require_dependency(ET, "xml.etree.ElementTree")
-            tree = xml_module.parse(file_path)  # nosec B314
+            tree = xml_module.parse(file_path)
             root = tree.getroot()
             xml_dict = self._xml_to_dict(root)
             return {

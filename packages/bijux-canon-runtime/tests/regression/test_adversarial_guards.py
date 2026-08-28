@@ -3,11 +3,9 @@
 
 from __future__ import annotations
 
+from bijux_canon_runtime_claim_support import build_claim_statement
 import pytest
 
-import bijux_canon_agent
-import bijux_canon_index
-import bijux_canon_reason
 from bijux_canon_runtime.application.execute_flow import (
     ExecutionConfig,
     execute_flow,
@@ -65,8 +63,7 @@ from bijux_canon_runtime.ontology.public import (
 from bijux_canon_runtime.runtime.artifact_store import InMemoryArtifactStore
 from bijux_canon_runtime.runtime.budget import BudgetState
 from bijux_canon_runtime.runtime.context import ExecutionContext, RunMode
-import bijux_rag
-from tests.helpers import build_claim_statement
+from bijux_canon_runtime.runtime.execution import integration_loaders as integrations
 
 pytestmark = pytest.mark.regression
 
@@ -146,7 +143,7 @@ def test_reused_artifact_id_rejected(
     dataset_descriptor,
     execution_store,
 ) -> None:
-    bijux_canon_agent.run = lambda **_kwargs: [
+    integrations.agent_runner_override = lambda **_kwargs: [
         {
             "artifact_id": "dup-artifact",
             "artifact_type": ArtifactType.AGENT_INVOCATION.value,
@@ -154,7 +151,7 @@ def test_reused_artifact_id_rejected(
             "parent_artifacts": [],
         }
     ]
-    bijux_rag.retrieve = lambda **_kwargs: [
+    integrations.retrieval_runner_override = lambda **_kwargs: [
         {
             "evidence_id": "ev-1",
             "determinism": EvidenceDeterminism.DETERMINISTIC.value,
@@ -164,7 +161,7 @@ def test_reused_artifact_id_rejected(
             "vector_contract_id": "contract-1",
         }
     ]
-    bijux_canon_index.enforce_contract = lambda *_args, **_kwargs: True
+    integrations.vector_contract_enforcer_override = lambda *_args, **_kwargs: True
 
     def _reason(agent_outputs, evidence, seed):
         statement = build_claim_statement(agent_outputs, evidence)
@@ -193,7 +190,7 @@ def test_reused_artifact_id_rejected(
             producer_agent_id=AgentID("agent-a"),
         )
 
-    bijux_canon_reason.reason = _reason
+    integrations.reasoning_runner_override = _reason
 
     request = RetrievalRequest(
         spec_version="v1",
@@ -286,7 +283,7 @@ def test_fake_evidence_id_rejected(
     dataset_descriptor,
     execution_store,
 ) -> None:
-    bijux_canon_agent.run = lambda **_kwargs: [
+    integrations.agent_runner_override = lambda **_kwargs: [
         {
             "artifact_id": "agent-output",
             "artifact_type": ArtifactType.AGENT_INVOCATION.value,
@@ -294,7 +291,7 @@ def test_fake_evidence_id_rejected(
             "parent_artifacts": [],
         }
     ]
-    bijux_rag.retrieve = lambda **_kwargs: [
+    integrations.retrieval_runner_override = lambda **_kwargs: [
         {
             "evidence_id": "ev-1",
             "determinism": EvidenceDeterminism.DETERMINISTIC.value,
@@ -304,8 +301,8 @@ def test_fake_evidence_id_rejected(
             "vector_contract_id": "contract-1",
         }
     ]
-    bijux_canon_index.enforce_contract = lambda *_args, **_kwargs: True
-    bijux_canon_reason.reason = lambda **_kwargs: ReasoningBundle(
+    integrations.vector_contract_enforcer_override = lambda *_args, **_kwargs: True
+    integrations.reasoning_runner_override = lambda **_kwargs: ReasoningBundle(
         spec_version="v1",
         bundle_id=BundleID("bundle-1"),
         claims=(

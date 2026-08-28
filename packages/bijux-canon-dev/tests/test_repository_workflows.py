@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 import re
 from typing import Any
@@ -32,6 +33,19 @@ EXPECTED_VERIFY_PACKAGES = {
     "bijux-canon-reason",
     "bijux-canon-index",
     "bijux-canon-dev",
+}
+EXPECTED_PUBLIC_DISTRIBUTIONS = {
+    "agentic-flows",
+    "bijux-agent",
+    "bijux-canon",
+    "bijux-canon-agent",
+    "bijux-canon-index",
+    "bijux-canon-ingest",
+    "bijux-canon-reason",
+    "bijux-canon-runtime",
+    "bijux-rag",
+    "bijux-rar",
+    "bijux-vex",
 }
 
 
@@ -93,8 +107,11 @@ def test_workflow_tree_is_standardized() -> None:
 def test_verify_workflow_uses_repo_contract_job_and_package_matrix() -> None:
     workflow = _workflow(WORKFLOWS_DIR / "verify.yml")
     jobs = workflow.get("jobs", {})
+    assert "policy_gate" not in jobs
     repository_job = _as_dict(jobs.get("repository"))
     package_job = _as_dict(jobs.get("package"))
+    assert "needs" not in repository_job
+    assert package_job["needs"] == "repository"
 
     checks_steps = repository_job.get("steps", [])
     verify_step = next(
@@ -124,13 +141,109 @@ def test_verify_workflow_uses_repo_contract_job_and_package_matrix() -> None:
     )
     assert runtime["api_toolchain_targets"] == '["api", "openapi-drift"]'
 
-    ingest = next(
-        entry for entry in include if entry["package_slug"] == "bijux-canon-ingest"
-    )
-    assert ingest["test_python_versions"] == '["3.11", "3.12", "3.13"]'
-
     dev = next(entry for entry in include if entry["package_slug"] == "bijux-canon-dev")
     assert dev["check_targets"] == '["quality", "security", "build", "sbom"]'
+
+    supported_python = _as_dict(jobs.get("supported_python"))
+    assert supported_python["needs"] == "repository"
+    supported_matrix = _as_dict(
+        _as_dict(supported_python.get("strategy")).get("matrix")
+    )
+    assert [str(version) for version in supported_matrix["python-version"]] == [
+        "3.11",
+        "3.12",
+        "3.13",
+        "3.14",
+    ]
+    assert supported_matrix["package_slug"] == [
+        "bijux-canon-dev",
+        "bijux-canon-runtime",
+        "bijux-canon-agent",
+        "bijux-canon-ingest",
+        "bijux-canon-reason",
+        "bijux-canon-index",
+        "compat-bijux-canon",
+        "compat-agentic-flows",
+        "compat-bijux-agent",
+        "compat-bijux-rag",
+        "compat-bijux-rar",
+        "compat-bijux-vex",
+    ]
+    assert _as_dict(supported_python["strategy"])["max-parallel"] == 12
+    assert supported_python["timeout-minutes"] == 30
+    supported_command = next(
+        step["run"]
+        for step in supported_python["steps"]
+        if step.get("name") == "Test one supported package distribution"
+    )
+    assert 'PACKAGE="${{ matrix.package_slug }}" test' in supported_command
+    assert "for package in" not in supported_command
+
+    installed_family = _as_dict(jobs.get("installed_family"))
+    assert installed_family["needs"] == "repository"
+    installed_command = next(
+        step["run"]
+        for step in installed_family["steps"]
+        if step.get("name") == "Build and install the distribution family"
+    )
+    assert (
+        'UV_CACHE_DIR="${RUNNER_TEMP}/bijux-installed-family-uv-cache"'
+        in installed_command
+    )
+    assert '" = 13' in installed_command
+    assert '"bijux-canon-repository"' in installed_command
+    assert '"bijux_canon_repository"' not in installed_command
+    assert "uv pip check" in installed_command
+
+    verification_ready = _as_dict(jobs.get("verification_ready"))
+    assert verification_ready["needs"] == [
+        "repository",
+        "package",
+        "supported_python",
+        "installed_family",
+    ]
+
+
+def test_automerge_relies_on_protected_branch_checks_without_preflight_race() -> None:
+    workflow = _workflow(WORKFLOWS_DIR / "automerge-pr.yml")
+    jobs = _as_dict(workflow.get("jobs"))
+    workflow_text = (WORKFLOWS_DIR / "automerge-pr.yml").read_text(encoding="utf-8")
+
+    assert set(jobs) == {"enable"}
+    assert "needs" not in _as_dict(jobs["enable"])
+    assert "check_workflow_prerequisites.py" not in workflow_text
+
+
+def test_release_matrices_and_branch_protection_require_product_readiness() -> None:
+    release_env = (REPO_ROOT / ".github/release.env").read_text(encoding="utf-8")
+    entries = {
+        line.split("=", maxsplit=1)[0]: line.split("=", maxsplit=1)[1]
+        for line in release_env.splitlines()
+        if "=" in line and not line.startswith("#")
+    }
+    for key in (
+        "BIJUX_RELEASE_BUILD_MATRIX_JSON",
+        "BIJUX_PYPI_PACKAGE_MATRIX_JSON",
+        "BIJUX_GHCR_RELEASE_PACKAGE_MATRIX_JSON",
+    ):
+        matrix = json.loads(entries[key].strip("'"))
+        assert {entry["package_slug"] for entry in matrix} == (
+            EXPECTED_PUBLIC_DISTRIBUTIONS
+        )
+
+    ruleset = json.loads(
+        (REPO_ROOT / ".github/rulesets/main-branch-protection.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    required_rule = next(
+        rule for rule in ruleset["rules"] if rule["type"] == "required_status_checks"
+    )
+    contexts = {
+        check["context"]
+        for check in required_rule["parameters"]["required_status_checks"]
+    }
+    assert "verification-ready" in contexts
 
 
 def test_release_workflows_replace_legacy_publish_workflow() -> None:
@@ -171,6 +284,35 @@ def test_release_workflows_replace_legacy_publish_workflow() -> None:
         "contents": "read",
         "packages": "write",
     }
+
+
+def test_v040_release_claim_excludes_an_executable_container_image() -> None:
+    badge_catalog = (REPO_ROOT / "docs" / "badges.md").read_text(encoding="utf-8")
+    release_docs = (
+        REPO_ROOT
+        / "docs"
+        / "01-bijux-canon"
+        / "operations"
+        / "release-and-versioning.md"
+    ).read_text(encoding="utf-8")
+    runtime_docs = (
+        REPO_ROOT
+        / "docs"
+        / "06-bijux-canon-runtime"
+        / "operations"
+        / "release-and-versioning.md"
+    ).read_text(encoding="utf-8")
+    ghcr_workflow = (WORKFLOWS_DIR / "release-ghcr.yml").read_text(encoding="utf-8")
+
+    assert "GHCR release bundles" in badge_catalog
+    assert "oci%20bundle" in badge_catalog
+    assert "-ghcr-181717" not in badge_catalog
+    assert "Version 0.4.0 ships Python distributions only" in release_docs
+    assert "does not ship an executable" in release_docs
+    assert "does not provide an executable container or service image" in runtime_docs
+    assert "oras push" in ghcr_workflow
+    assert "docker build" not in ghcr_workflow
+    assert "docker push" not in ghcr_workflow
 
 
 def test_reusable_workflows_use_uv_cache_contract() -> None:

@@ -1,0 +1,49 @@
+{
+  "schema_version": "1.0.0",
+  "contract_id": "bijux.canon.reason.artifacts.v2",
+  "artifact_schema_version": "2.0.0",
+  "json_schema_dialect": "https://json-schema.org/draft/2020-12/schema",
+  "canonical_serialization": "RFC 8785",
+  "identity_algorithm": "sha-256",
+  "identity_excluded_json_pointers": ["/artifact_id"],
+  "schema_bundle": {
+    "path": "reasoning-artifacts.schema.json",
+    "sha256": "5ddff84cfddf64528f54bb7f2c919a41d0ceacb3c8f34899332ce7b7a294de78",
+    "definitions": {
+      "bijux.canon.reason.assumption": "#/$defs/assumption",
+      "bijux.canon.reason.citation": "#/$defs/citation",
+      "bijux.canon.reason.claim": "#/$defs/claim",
+      "bijux.canon.reason.claim_citation_link": "#/$defs/claim_citation_link",
+      "bijux.canon.reason.claim_derivation": "#/$defs/claim_derivation",
+      "bijux.canon.reason.confidence": "#/$defs/confidence",
+      "bijux.canon.reason.conflict_assessment": "#/$defs/conflict_assessment",
+      "bijux.canon.reason.evidence_packet": "#/$defs/evidence_packet",
+      "bijux.canon.reason.evidence_relation": "#/$defs/evidence_relation",
+      "bijux.canon.reason.grounded_answer": "#/$defs/grounded_answer",
+      "bijux.canon.reason.insufficiency": "#/$defs/insufficiency",
+      "bijux.canon.reason.policy_outcome": "#/$defs/policy_outcome",
+      "bijux.canon.reason.provider_provenance": "#/$defs/provider_provenance",
+      "bijux.canon.reason.question": "#/$defs/question",
+      "bijux.canon.reason.research_claim_graph": "#/$defs/research_claim_graph",
+      "bijux.canon.reason.research_gap": "#/$defs/research_gap",
+      "bijux.canon.reason.research_graph_edge": "#/$defs/research_graph_edge",
+      "bijux.canon.reason.research_subquestion": "#/$defs/research_subquestion",
+      "bijux.canon.reason.scope": "#/$defs/scope",
+      "bijux.canon.reason.verification_receipt": "#/$defs/verification_receipt"
+    }
+  },
+  "migration_policy": {
+    "path": "migration-policy.json",
+    "sha256": "74045c98773bda787d1887de63e563a8b8be664fe0f9592deeb9b0be3c093824",
+    "implicit_migration_allowed": false,
+    "registered_transform_count": 0
+  },
+  "conformance_example": {
+    "path": "examples/evaluation-claim-records.json",
+    "sha256": "b80d760f2332e6c4e18e77a9630029c206c27503ba2fd133f60884a8e79b4fda",
+    "record_count": 20,
+    "source_corpus_sha256": "03a79d793dc4bc525745c8c564a5b116ea727a2dfea9766397d886edfc39e4aa",
+    "source_document_count": 25,
+    "source_document_id": "d01_fastq"
+  }
+}

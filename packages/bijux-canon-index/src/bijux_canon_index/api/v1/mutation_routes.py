@@ -68,7 +68,7 @@ def register_mutation_routes(app: FastAPI) -> None:
                 }
             },
         },
-    )  # type: ignore[untyped-decorator]
+    )
     def create(
         req: CreateRequest,
         response: Response,
@@ -136,7 +136,7 @@ def register_mutation_routes(app: FastAPI) -> None:
                 }
             },
         },
-    )  # type: ignore[untyped-decorator]
+    )
     def ingest(
         req: IngestRequest,
         response: Response,
@@ -216,7 +216,7 @@ def register_mutation_routes(app: FastAPI) -> None:
                 }
             },
         },
-    )  # type: ignore[untyped-decorator]
+    )
     def artifact(
         req: ExecutionArtifactRequest,
         response: Response,

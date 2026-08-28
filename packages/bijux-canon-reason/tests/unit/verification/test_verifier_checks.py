@@ -25,6 +25,7 @@ from bijux_canon_reason.core.types import (
     ToolResult,
     ToolReturnedEvent,
     Trace,
+    TraceEvent,
     TraceEventKind,
     UnderstandOutput,
     VerifyOutput,
@@ -36,7 +37,12 @@ def test_verifier_passes_on_valid_trace_with_plan() -> None:
     spec = ProblemSpec(description="x", constraints={}, expected={})
     assert spec.id is not None
     spec_id = spec.id
-    n_understand = PlanNode(kind="understand", dependencies=[], parameters={})
+    n_understand = PlanNode(
+        kind="understand",
+        dependencies=[],
+        step=StepSpec(kind="understand"),
+        parameters={},
+    )
     assert n_understand.id is not None
     n_gather = PlanNode(
         kind="gather",
@@ -80,7 +86,7 @@ def test_verifier_passes_on_valid_trace_with_plan() -> None:
         step_id=gather_id, call_idx=0, tool_name="retrieve", arguments={"q": "x"}
     )
     assert call.id is not None
-    res = ToolResult(call_id=call.id, ok=True, result={"ok": True}, error=None)
+    res = ToolResult(call_id=call.id, success=True, result={"ok": True}, error=None)
 
     ev_ref = EvidenceRef(
         id="ev1",
@@ -114,7 +120,7 @@ def test_verifier_passes_on_valid_trace_with_plan() -> None:
     assert claim.id is not None
     claim_id = claim.id
 
-    events = [
+    events: list[TraceEvent] = [
         StepStartedEvent(
             idx=0, kind=TraceEventKind.step_started, step_id=understand_id
         ),
@@ -123,7 +129,7 @@ def test_verifier_passes_on_valid_trace_with_plan() -> None:
             kind=TraceEventKind.step_finished,
             step_id=understand_id,
             output=UnderstandOutput(
-                kind="understand",
+                type="understand",
                 normalized_question="x",
                 assumptions=[],
                 task_type="generic",
@@ -131,10 +137,10 @@ def test_verifier_passes_on_valid_trace_with_plan() -> None:
         ),
         StepStartedEvent(idx=2, kind=TraceEventKind.step_started, step_id=gather_id),
         ToolCalledEvent(
-            idx=3, kind=TraceEventKind.tool_called, step_id=gather_id, tool_call=call
+            idx=3, kind=TraceEventKind.tool_called, step_id=gather_id, call=call
         ),
         ToolReturnedEvent(
-            idx=4, kind=TraceEventKind.tool_returned, step_id=gather_id, tool_result=res
+            idx=4, kind=TraceEventKind.tool_returned, step_id=gather_id, result=res
         ),
         EvidenceRegisteredEvent(
             idx=5,
@@ -146,7 +152,7 @@ def test_verifier_passes_on_valid_trace_with_plan() -> None:
             idx=6,
             kind=TraceEventKind.step_finished,
             step_id=gather_id,
-            output=GatherOutput(kind="gather", evidence_refs=[ev_ref.id]),
+            output=GatherOutput(type="gather", evidence_ids=[ev_ref.id]),
         ),
         StepStartedEvent(idx=7, kind=TraceEventKind.step_started, step_id=derive_id),
         ClaimEmittedEvent(idx=8, kind=TraceEventKind.claim_emitted, claim=claim),
@@ -154,7 +160,7 @@ def test_verifier_passes_on_valid_trace_with_plan() -> None:
             idx=9,
             kind=TraceEventKind.step_finished,
             step_id=derive_id,
-            output=DeriveOutput(kind="derive", emitted_claim_ids=[claim_id]),
+            output=DeriveOutput(type="derive", claim_ids=[claim_id]),
         ),
         StepStartedEvent(idx=10, kind=TraceEventKind.step_started, step_id=verify_id),
         StepFinishedEvent(
@@ -162,10 +168,10 @@ def test_verifier_passes_on_valid_trace_with_plan() -> None:
             kind=TraceEventKind.step_finished,
             step_id=verify_id,
             output=VerifyOutput(
-                kind="verify",
+                type="verify",
                 validated_claim_ids=[],
                 rejected_claim_ids=[],
-                insufficient_support=[],
+                missing_support_claim_ids=[],
             ),
         ),
         StepStartedEvent(idx=12, kind=TraceEventKind.step_started, step_id=finalize_id),
@@ -173,7 +179,7 @@ def test_verifier_passes_on_valid_trace_with_plan() -> None:
             idx=13,
             kind=TraceEventKind.step_finished,
             step_id=finalize_id,
-            output=FinalizeOutput(kind="finalize", final_claim_ids=[claim_id]),
+            output=FinalizeOutput(type="finalize", final_claim_ids=[claim_id]),
         ),
     ]
 
@@ -211,16 +217,16 @@ def test_verifier_fails_on_missing_tool_result() -> None:
 
     call = ToolCall(step_id=n1_id, call_idx=0, tool_name="retrieve", arguments={})
     assert call.id is not None
-    events = [
+    events: list[TraceEvent] = [
         StepStartedEvent(idx=0, kind=TraceEventKind.step_started, step_id=n1_id),
         ToolCalledEvent(
-            idx=1, kind=TraceEventKind.tool_called, step_id=n1_id, tool_call=call
+            idx=1, kind=TraceEventKind.tool_called, step_id=n1_id, call=call
         ),
         StepFinishedEvent(
             idx=2,
             kind=TraceEventKind.step_finished,
             step_id=n1_id,
-            output=GatherOutput(kind="gather", evidence_refs=[]),
+            output=GatherOutput(type="gather", evidence_ids=[]),
         ),
     ]
     trace = Trace(spec_id=spec_id, plan_id=plan_id, events=events, metadata={})
@@ -250,7 +256,7 @@ def test_verifier_fails_on_unknown_claim_ref() -> None:
         structured={"x": 1},
         status=ClaimStatus.proposed,
         confidence=1.0,
-        support_refs=[
+        supports=[
             SupportRef(
                 kind=SupportKind.tool_call,
                 ref_id="nonexistent",
@@ -261,14 +267,14 @@ def test_verifier_fails_on_unknown_claim_ref() -> None:
     )
     assert claim.id is not None
     claim_id = claim.id
-    events = [
+    events: list[TraceEvent] = [
         StepStartedEvent(idx=0, kind=TraceEventKind.step_started, step_id=n1_id),
         ClaimEmittedEvent(idx=1, kind=TraceEventKind.claim_emitted, claim=claim),
         StepFinishedEvent(
             idx=2,
             kind=TraceEventKind.step_finished,
             step_id=n1_id,
-            output=DeriveOutput(kind="derive", emitted_claim_ids=[claim_id]),
+            output=DeriveOutput(type="derive", claim_ids=[claim_id]),
         ),
     ]
     trace = Trace(spec_id=spec_id, plan_id=plan_id, events=events, metadata={})

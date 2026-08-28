@@ -1,0 +1,52 @@
+{
+  "corpus_id": "urban-heat-operations",
+  "description": "Synthetic municipal heat-response documents created solely for cross-domain software acceptance.",
+  "license": {
+    "expression": "Apache-2.0",
+    "scope": "All four source files and their text were authored for this repository and contain no third-party material.",
+    "url": "https://www.apache.org/licenses/LICENSE-2.0"
+  },
+  "provenance": {
+    "authorship": "Bijux repository authors",
+    "created_for": "Deterministic installed-product generalization acceptance",
+    "external_source": null,
+    "synthetic": true,
+    "transformations": []
+  },
+  "schema_version": "bijux.canon.generalization_corpus_manifest.v1",
+  "source_count": 4,
+  "sources": [
+    {
+      "byte_count": 478,
+      "format_id": "markdown",
+      "local_path": "corpus/sources/rapid-activation.md",
+      "media_type": "text/markdown",
+      "sha256": "73a5e58d095b8b257518479852355d0d178a255c95ab55d205e563ec4b082f08",
+      "title": "Rapid heat-alert activation"
+    },
+    {
+      "byte_count": 748,
+      "format_id": "html",
+      "local_path": "corpus/sources/reflective-roofs.html",
+      "media_type": "text/html",
+      "sha256": "dd9bb970062704c3eb09febf43b7529ee2524b376329d9516d34c4e4b9721f25",
+      "title": "Reflective roof review"
+    },
+    {
+      "byte_count": 1562,
+      "format_id": "jats",
+      "local_path": "corpus/sources/transit-access.xml",
+      "media_type": "application/xml",
+      "sha256": "fe204ebc9da97dc0bc9a1730d5c40a6c7f94045187837c3f1cf84242bf793f63",
+      "title": "Access limits for cooling services"
+    },
+    {
+      "byte_count": 324,
+      "format_id": "text",
+      "local_path": "corpus/sources/tree-canopy.txt",
+      "media_type": "text/plain",
+      "sha256": "b5f9849cea21bdaa3f7e69968d71d0797f23fe29d866af5c4180a47199eb4498",
+      "title": "Tree canopy planning"
+    }
+  ]
+}

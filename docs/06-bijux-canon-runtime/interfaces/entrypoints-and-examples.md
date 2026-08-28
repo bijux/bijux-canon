@@ -4,144 +4,130 @@ audience: mixed
 type: how-to
 status: canonical
 owner: bijux-canon-runtime-docs
-last_reviewed: 2026-07-22
+last_reviewed: 2026-08-25
 ---
 
 # Entrypoints and Examples
 
-Use Python plan mode to resolve a manifest without execution, the console
-command for persisted run operations, and the HTTP surface only with its
-experimental implementation status understood.
+Use the installed v2 CLI for local operation, the shared application service
+for in-process composition, and the installed v2 server for HTTP integration.
+All three adapters use the same workspace authority and typed operations.
 
-## Python: resolve a plan safely
+## CLI: complete offline lexical run
 
-The default `execute_flow(manifest)` call selects live, strict execution and is
-not a dependency-free preview. A safe minimal integration declares plan mode:
-
-```python
-from pathlib import Path
-
-from bijux_canon_runtime import RunMode, execute_flow
-from bijux_canon_runtime.application.execute_flow import ExecutionConfig
-from bijux_canon_runtime.interfaces.cli.manifest_loader import load_manifest
-
-manifest = load_manifest(Path("flow.json"))
-result = execute_flow(
-    manifest=manifest,
-    config=ExecutionConfig(
-        mode=RunMode.PLAN,
-        determinism_level=manifest.determinism_level,
-    ),
-)
-
-print(result.resolved_flow.manifest.flow_id)
-assert result.trace is None
-assert result.run_id is None
-```
-
-Executable modes additionally need an execution store and, where required by
-the mode, verification and non-determinism policy. Supply those dependencies
-through `ExecutionConfig`; do not rely on defaults to invent runtime authority.
-
-## CLI: plan before execution
-
-From a repository checkout, plan the maintained example directly:
+The base Runtime wheel needs no model, optional extra, provider credential, or
+network access for the lexical profile:
 
 ```bash
-uv run bijux-canon-runtime plan \
-  packages/bijux-canon-runtime/examples/boring/flow.json \
+bijux-canon-runtime init --workspace ./canon-workspace --json
+export BIJUX_CANON_RUNTIME_WORKING_ROOT=./canon-workspace
+
+bijux-canon-runtime v2 ready \
+  --operation run \
+  --profile offline-lexical
+
+bijux-canon-runtime v2 run \
+  "What evidence does this corpus support?" \
+  --source-directory ./documents \
+  --profile offline-lexical \
+  --wait \
+  --wait-timeout-seconds 30
+```
+
+The terminal response is a bounded job document. Preserve its `job_id`,
+`run_id`, and `attempt_id`; retrieve and inspect the larger records explicitly:
+
+```bash
+bijux-canon-runtime v2 result JOB_ID
+bijux-canon-runtime v2 inspect RUN_ID \
+  --attempt-id ATTEMPT_ID \
+  --limit 20
+```
+
+Inspection reports counts and bounded collection pages. Large immutable
+payloads are never dumped implicitly; use `v2 artifact-payload` with an offset
+and byte limit when the payload itself is required.
+
+## CLI: replay and compare
+
+```bash
+bijux-canon-runtime v2 replay RUN_ID \
+  --source-attempt-id ATTEMPT_ID \
+  --network-policy disabled \
+  --wait
+
+bijux-canon-runtime v2 compare RUN_ID RUN_ID \
+  --baseline-attempt-id ATTEMPT_ID \
+  --candidate-attempt-id REPLAY_ATTEMPT_ID \
+  --dimension outcome \
+  --dimension claims \
+  --dimension citations
+```
+
+Replay creates a new attempt bound to the retained request, inputs,
+configuration, artifacts and network policy. Comparison evaluates only the
+requested dimensions and reports a typed disposition; it does not silently
+promote similar prose into equivalent evidence.
+
+## CLI: backup and restore
+
+Quiesce the workspace before backup. Runtime refuses queued or running work,
+missing admitted payloads, symlinks, external model state, and files that drift
+during capture:
+
+```bash
+bijux-canon-runtime v2 backup nightly-2026-08-25
+bijux-canon-runtime v2 restore BACKUP_GENERATION ./restored-workspace
+```
+
+Restore verifies the complete inventory before activating a destination that
+must not already exist. It preserves the logical workspace identity while
+rewriting governed machine-local paths. Directly copying or moving a workspace
+is not a supported relocation operation.
+
+## CPU-local dense and hybrid profiles
+
+Install the local CPU extra, acquire the pinned model once, then validate it
+offline before initializing a model-bound workspace:
+
+```bash
+python -m pip install 'bijux-canon-runtime[local-cpu]'
+
+bijux-canon-index model acquire \
+  --profile local-minilm-384 \
+  --cache-root ./models
+
+bijux-canon-index model validate \
+  --model-root ./models/local-minilm-384/LOCKED_REVISION
+
+bijux-canon-runtime init \
+  --workspace ./hybrid-workspace \
+  --model ./models/local-minilm-384/LOCKED_REVISION \
   --json
 ```
 
-Plan mode validates and resolves the manifest without executing steps. The
-manifest must declare determinism, replay acceptability, entropy budget,
-replay envelope, dataset identity, agents, retrieval contracts, and
-verification gates.
+Acquisition is the only step that requires network access. Readiness rejects a
+missing, corrupt, wrong-dimensional, incompatible, or unvalidated model before
+durable work is queued.
 
-For an installed distribution, copy the example manifest into an
-application-owned location and invoke the same boundary:
+## HTTP: installed v2 server
 
 ```bash
-bijux-canon-runtime plan flow.json --json
+python -m pip install 'bijux-canon-runtime[api]'
+bijux-canon-runtime init --workspace ./canon-workspace --json
+bijux-canon-runtime-server --workspace ./canon-workspace
+
+curl --fail-with-body -H 'Bijux-API-Version: v2' \
+  http://127.0.0.1:8000/api/v2/live
+curl --fail-with-body -H 'Bijux-API-Version: v2' \
+  'http://127.0.0.1:8000/api/v2/ready?operation=initialized'
 ```
 
-Treat these output fields as a pre-execution review record:
+The server defaults to loopback and serves only Runtime v2. Durable submission
+requests require an `Idempotency-Key`; result and inspection payloads require
+deliberate follow-up. The host remains responsible for authentication,
+authorization, TLS, tenant isolation, sandboxing and external request limits.
 
-| Field group | Review before execution |
-| --- | --- |
-| flow and tenant | authority belongs to the intended caller and namespace |
-| dataset descriptor | ID, version, hash, lifecycle state, and URI are the intended inputs |
-| steps and dependencies | order and agent identities match the declared flow |
-| determinism and entropy | permitted variance and exhaustion behavior match operational policy |
-| replay envelope | comparison thresholds were fixed before any output was observed |
-| environment and plan fingerprints | the resolved contract can be compared with the eventual run |
-
-Plan success is intentionally weaker than executable readiness. It does not
-open the DuckDB store, load the live lower-package callables, exercise an
-external effect, arbitrate verification, or persist a replayable record.
-
-## CLI: execute and persist a governed run
-
-```bash
-bijux-canon-runtime run flow.json \
-  --policy policy.json \
-  --db-path artifacts/bijux-canon-runtime/runs.duckdb \
-  --strict-determinism
-```
-
-Plain output includes the run identifier that addresses persisted state. The
-current live `--json` rendering omits that identifier, so capture it from plain
-output before using `inspect run --json` for the complete persisted trace.
-
-## CLI: inspect, replay, and compare
-
-```bash
-bijux-canon-runtime inspect run <run-id> \
-  --tenant-id <tenant-id> \
-  --db-path artifacts/bijux-canon-runtime/runs.duckdb \
-  --json
-
-bijux-canon-runtime replay flow.json \
-  --policy policy.json \
-  --run-id <run-id> \
-  --tenant-id <tenant-id> \
-  --db-path artifacts/bijux-canon-runtime/runs.duckdb \
-  --strict-determinism \
-  --json
-
-bijux-canon-runtime diff run <first-run-id> <second-run-id> \
-  --tenant-id <tenant-id> \
-  --db-path artifacts/bijux-canon-runtime/runs.duckdb \
-  --json
-```
-
-Replay exits with contract-violation status when a semantic diff is present.
-Use `explain failure` to retrieve the last persisted failure event and
-`validate db` to confirm that an execution store is readable. `plan`,
-`dry-run`, `unsafe-run`, `diff`, `explain`, and `validate` are parsed but
-currently suppressed from top-level help output. `unsafe-run` cannot yet reach
-execution through the CLI because unsafe mode requires a verification policy
-and that subcommand exposes no `--policy` option.
-
-## HTTP: current implementation boundary
-
-The FastAPI module can expose liveness and storage readiness:
-
-```bash
-AGENTIC_FLOWS_DB_PATH=artifacts/bijux-canon-runtime/runs.duckdb \
-  uvicorn bijux_canon_runtime.api.v1.app:app \
-  --host 127.0.0.1 --port 8000
-
-curl --fail-with-body http://127.0.0.1:8000/api/v1/health
-curl --fail-with-body http://127.0.0.1:8000/api/v1/ready
-```
-
-The module is explicitly marked experimental and not production-ready.
-`POST /api/v1/flows/run` and `POST /api/v1/flows/replay` validate their request
-envelopes and required runtime headers, then currently return `501 Not
-Implemented`. Do not route production execution through those endpoints or
-describe the checked-in schema as proof of implemented HTTP execution.
-
-The authoritative boundary shape is the checked-in
-[`v1 schema`](https://github.com/bijux/bijux-canon/blob/main/apis/bijux-canon-runtime/v1/schema.yaml),
-while the console and Python paths remain the implemented execution surfaces.
+The separate v1 compatibility module remains importable but is not mounted by
+the installed server. New integrations use the checked-in
+[`v2 schema`](https://github.com/bijux/bijux-canon/blob/main/apis/bijux-canon-runtime/v2/schema.yaml).

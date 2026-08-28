@@ -112,6 +112,13 @@ An approximate low-signal refusal is not backend unavailability. A witness
 quality failure is not exact-result corruption. Keep the declared loss posture,
 ANN parameters, witness evidence, and failure reason together.
 
+The installed content policy can permit one bounded exact attempt after an ANN
+refusal. The retrieval evidence identifies both attempts, their exact
+comparison samples, measured recall and violations, and whether the exact
+result was admitted. Exhausting or disabling that fallback produces a typed
+refusal with remediation and no hits; downstream reasoning must never consume
+the refused ANN candidates.
+
 ## Replay failures
 
 Replay can fail because the original run was non-replayable, an artifact is

@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.bijux.org/canon/runtime/v2/runtime-run-artifacts.schema.json",
+  "title": "Bijux Canon runtime-run artifact records",
+  "oneOf": [
+    {"$ref": "#/$defs/dag"}, {"$ref": "#/$defs/policy"}, {"$ref": "#/$defs/job"},
+    {"$ref": "#/$defs/step_attempt"}, {"$ref": "#/$defs/artifact"}, {"$ref": "#/$defs/event"},
+    {"$ref": "#/$defs/inspection"}, {"$ref": "#/$defs/cancellation"}, {"$ref": "#/$defs/replay"},
+    {"$ref": "#/$defs/comparison"}, {"$ref": "#/$defs/publication_receipt"}
+  ],
+  "$defs": {
+    "artifact_id": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "timestamp": {"type": "string", "format": "date-time", "pattern": "Z$"},
+    "artifact_ids": {"type": "array", "items": {"$ref": "#/$defs/artifact_id"}, "uniqueItems": true, "x-bijux-ordering": "artifact_id ascending"},
+    "base": {
+      "type": "object", "required": ["schema_version", "artifact_type", "artifact_id", "run_key", "sequence"],
+      "properties": {"schema_version": {"const": "2.0.0"}, "artifact_type": {"type": "string"}, "artifact_id": {"$ref": "#/$defs/artifact_id"}, "run_key": {"$ref": "#/$defs/artifact_id"}, "sequence": {"type": "integer", "minimum": 0}}
+    },
+    "artifact_contract": {
+      "type": "object", "additionalProperties": false,
+      "required": ["contract_id", "schema_id", "media_type", "cardinality", "content_addressed"],
+      "properties": {"contract_id": {"type": "string", "pattern": "^[a-z][a-z0-9._-]*\\.v[1-9][0-9]*$"}, "schema_id": {"type": "string", "pattern": "^bijux\\.[a-z0-9._-]+\\.v[1-9][0-9]*$"}, "media_type": {"type": "string", "minLength": 1}, "cardinality": {"enum": ["one", "optional", "many"]}, "content_addressed": {"const": true}}
+    },
+    "dag_node": {
+      "type": "object", "additionalProperties": false,
+      "required": ["node_id", "owner", "operation", "input_artifact_contracts", "output_artifact_contracts"],
+      "properties": {"node_id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"}, "owner": {"enum": ["runtime", "ingest", "index", "reason", "agent"]}, "operation": {"enum": ["ingest", "snapshot", "embed", "lexical-index", "dense-index", "retrieve", "reason", "agent", "verify", "persist", "publish"]}, "input_artifact_contracts": {"type": "array", "items": {"$ref": "#/$defs/artifact_contract"}, "minItems": 1, "uniqueItems": true, "x-bijux-ordering": "contract_id ascending"}, "output_artifact_contracts": {"type": "array", "items": {"$ref": "#/$defs/artifact_contract"}, "minItems": 1, "uniqueItems": true, "x-bijux-ordering": "contract_id ascending"}}
+    },
+    "dag_edge": {
+      "type": "object", "additionalProperties": false,
+      "required": ["from_node_id", "to_node_id", "artifact_contract_id"],
+      "properties": {"from_node_id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"}, "to_node_id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"}, "artifact_contract_id": {"type": "string", "pattern": "^[a-z][a-z0-9._-]*\\.v[1-9][0-9]*$"}}
+    },
+    "check_result": {
+      "type": "object", "additionalProperties": false, "required": ["check_id", "outcome", "evidence_sha256"],
+      "properties": {"check_id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"}, "outcome": {"enum": ["passed", "failed"]}, "evidence_sha256": {"$ref": "#/$defs/sha256"}}
+    },
+    "dag": {
+      "allOf": [{"$ref": "#/$defs/base"}, {"type": "object", "additionalProperties": false,
+        "required": ["schema_version", "artifact_type", "artifact_id", "run_key", "sequence", "source_commit", "entry_node_ids", "terminal_node_ids", "nodes", "edges"],
+        "properties": {"schema_version": {}, "artifact_type": {"const": "bijux.canon.runtime.dag"}, "artifact_id": {}, "run_key": {}, "sequence": {}, "source_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"}, "entry_node_ids": {"type": "array", "minItems": 1, "items": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"}, "uniqueItems": true, "x-bijux-ordering": "node_id ascending"}, "terminal_node_ids": {"type": "array", "minItems": 1, "items": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"}, "uniqueItems": true, "x-bijux-ordering": "node_id ascending"}, "nodes": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/dag_node"}, "uniqueItems": true, "x-bijux-ordering": "node_id ascending"}, "edges": {"type": "array", "items": {"$ref": "#/$defs/dag_edge"}, "uniqueItems": true, "x-bijux-ordering": "from_node_id, to_node_id, artifact_contract_id"}}
+      }]
+    },
+    "policy": {
+      "allOf": [{"$ref": "#/$defs/base"}, {"type": "object", "additionalProperties": false,
+        "required": ["schema_version", "artifact_type", "artifact_id", "run_key", "sequence", "retry", "cancellation", "replay", "publication"],
+        "properties": {"schema_version": {}, "artifact_type": {"const": "bijux.canon.runtime.policy"}, "artifact_id": {}, "run_key": {}, "sequence": {},
+          "retry": {"type": "object", "additionalProperties": false, "required": ["max_attempts", "backoff"], "properties": {"max_attempts": {"type": "integer", "minimum": 1}, "backoff": {"enum": ["none", "fixed", "exponential"]}}},
+          "cancellation": {"type": "object", "additionalProperties": false, "required": ["mode", "checkpoint_required"], "properties": {"mode": {"enum": ["cooperative", "immediate"]}, "checkpoint_required": {"type": "boolean"}}},
+          "replay": {"type": "object", "additionalProperties": false, "required": ["mode", "environment_match_required"], "properties": {"mode": {"enum": ["strict", "compatible", "best_effort"]}, "environment_match_required": {"type": "boolean"}}},
+          "publication": {"type": "object", "additionalProperties": false, "required": ["require_exact_replay", "required_check_ids"], "properties": {"require_exact_replay": {"type": "boolean"}, "required_check_ids": {"type": "array", "items": {"type": "string"}, "minItems": 1, "uniqueItems": true, "x-bijux-ordering": "check_id ascending"}}}
+        }
+      }]
+    },
+    "job": {
+      "allOf": [{"$ref": "#/$defs/base"}, {"type": "object", "additionalProperties": false,
+        "required": ["schema_version", "artifact_type", "artifact_id", "run_key", "sequence", "dag_artifact_id", "policy_artifact_id", "input_artifact_ids", "mode", "status", "started_at", "completed_at"],
+        "properties": {"schema_version": {}, "artifact_type": {"const": "bijux.canon.runtime.job"}, "artifact_id": {}, "run_key": {}, "sequence": {}, "dag_artifact_id": {"$ref": "#/$defs/artifact_id"}, "policy_artifact_id": {"$ref": "#/$defs/artifact_id"}, "input_artifact_ids": {"allOf": [{"$ref": "#/$defs/artifact_ids"}, {"minItems": 1}]}, "mode": {"enum": ["original", "replay"]}, "status": {"enum": ["completed", "failed", "cancelled"]}, "started_at": {"$ref": "#/$defs/timestamp"}, "completed_at": {"$ref": "#/$defs/timestamp"}}
+      }]
+    },
+    "step_attempt": {
+      "allOf": [{"$ref": "#/$defs/base"}, {"type": "object", "additionalProperties": false,
+        "required": ["schema_version", "artifact_type", "artifact_id", "run_key", "sequence", "job_artifact_id", "node_id", "attempt_number", "status", "input_artifact_ids", "output_payload_sha256", "started_at", "completed_at"],
+        "properties": {"schema_version": {}, "artifact_type": {"const": "bijux.canon.runtime.step_attempt"}, "artifact_id": {}, "run_key": {}, "sequence": {}, "job_artifact_id": {"$ref": "#/$defs/artifact_id"}, "node_id": {"type": "string"}, "attempt_number": {"type": "integer", "minimum": 1}, "status": {"enum": ["succeeded", "failed", "cancelled"]}, "input_artifact_ids": {"$ref": "#/$defs/artifact_ids"}, "output_payload_sha256": {"$ref": "#/$defs/sha256"}, "started_at": {"$ref": "#/$defs/timestamp"}, "completed_at": {"$ref": "#/$defs/timestamp"}}
+      }]
+    },
+    "artifact": {
+      "allOf": [{"$ref": "#/$defs/base"}, {"type": "object", "additionalProperties": false,
+        "required": ["schema_version", "artifact_type", "artifact_id", "run_key", "sequence", "job_artifact_id", "producer_attempt_artifact_id", "kind", "media_type", "payload_sha256", "size_bytes", "storage_uri"],
+        "properties": {"schema_version": {}, "artifact_type": {"const": "bijux.canon.runtime.artifact"}, "artifact_id": {}, "run_key": {}, "sequence": {}, "job_artifact_id": {"$ref": "#/$defs/artifact_id"}, "producer_attempt_artifact_id": {"$ref": "#/$defs/artifact_id"}, "kind": {"enum": ["result", "checkpoint", "log", "manifest"]}, "media_type": {"type": "string", "minLength": 1}, "payload_sha256": {"$ref": "#/$defs/sha256"}, "size_bytes": {"type": "integer", "minimum": 0}, "storage_uri": {"type": "string", "pattern": "^cas://sha256/[0-9a-f]{64}$"}}
+      }]
+    },
+    "event": {
+      "allOf": [{"$ref": "#/$defs/base"}, {"type": "object", "additionalProperties": false,
+        "required": ["schema_version", "artifact_type", "artifact_id", "run_key", "sequence", "job_artifact_id", "event_index", "event_type", "subject_artifact_id", "predecessor_event_artifact_ids", "payload_sha256", "recorded_at"],
+        "properties": {"schema_version": {}, "artifact_type": {"const": "bijux.canon.runtime.event"}, "artifact_id": {}, "run_key": {}, "sequence": {}, "job_artifact_id": {"$ref": "#/$defs/artifact_id"}, "event_index": {"type": "integer", "minimum": 0}, "event_type": {"enum": ["job_started", "step_completed", "job_completed", "job_failed", "job_cancelled", "published"]}, "subject_artifact_id": {"$ref": "#/$defs/artifact_id"}, "predecessor_event_artifact_ids": {"$ref": "#/$defs/artifact_ids"}, "payload_sha256": {"$ref": "#/$defs/sha256"}, "recorded_at": {"$ref": "#/$defs/timestamp"}}
+      }]
+    },
+    "inspection": {
+      "allOf": [{"$ref": "#/$defs/base"}, {"type": "object", "additionalProperties": false,
+        "required": ["schema_version", "artifact_type", "artifact_id", "run_key", "sequence", "job_artifact_id", "artifact_ids", "event_artifact_ids", "reachable_count", "missing_count", "corrupt_count", "outcome", "inspected_at"],
+        "properties": {"schema_version": {}, "artifact_type": {"const": "bijux.canon.runtime.inspection"}, "artifact_id": {}, "run_key": {}, "sequence": {}, "job_artifact_id": {"$ref": "#/$defs/artifact_id"}, "artifact_ids": {"$ref": "#/$defs/artifact_ids"}, "event_artifact_ids": {"$ref": "#/$defs/artifact_ids"}, "reachable_count": {"type": "integer", "minimum": 0}, "missing_count": {"type": "integer", "minimum": 0}, "corrupt_count": {"type": "integer", "minimum": 0}, "outcome": {"enum": ["passed", "failed"]}, "inspected_at": {"$ref": "#/$defs/timestamp"}}
+      }]
+    },
+    "cancellation": {
+      "allOf": [{"$ref": "#/$defs/base"}, {"type": "object", "additionalProperties": false,
+        "required": ["schema_version", "artifact_type", "artifact_id", "run_key", "sequence", "job_artifact_id", "policy_artifact_id", "requested_at", "outcome", "reason", "checkpoint_artifact_id"],
+        "properties": {"schema_version": {}, "artifact_type": {"const": "bijux.canon.runtime.cancellation"}, "artifact_id": {}, "run_key": {}, "sequence": {}, "job_artifact_id": {"$ref": "#/$defs/artifact_id"}, "policy_artifact_id": {"$ref": "#/$defs/artifact_id"}, "requested_at": {"$ref": "#/$defs/timestamp"}, "outcome": {"enum": ["accepted", "refused_terminal", "timed_out"]}, "reason": {"type": "string", "minLength": 1}, "checkpoint_artifact_id": {"oneOf": [{"$ref": "#/$defs/artifact_id"}, {"type": "null"}]}}
+      }]
+    },
+    "replay": {
+      "allOf": [{"$ref": "#/$defs/base"}, {"type": "object", "additionalProperties": false,
+        "required": ["schema_version", "artifact_type", "artifact_id", "run_key", "sequence", "job_artifact_id", "policy_artifact_id", "mode", "environment_sha256", "expected_output_sha256", "observed_output_sha256", "exact", "replayed_at"],
+        "properties": {"schema_version": {}, "artifact_type": {"const": "bijux.canon.runtime.replay"}, "artifact_id": {}, "run_key": {}, "sequence": {}, "job_artifact_id": {"$ref": "#/$defs/artifact_id"}, "policy_artifact_id": {"$ref": "#/$defs/artifact_id"}, "mode": {"enum": ["strict", "compatible", "best_effort"]}, "environment_sha256": {"$ref": "#/$defs/sha256"}, "expected_output_sha256": {"$ref": "#/$defs/sha256"}, "observed_output_sha256": {"$ref": "#/$defs/sha256"}, "exact": {"type": "boolean"}, "replayed_at": {"$ref": "#/$defs/timestamp"}}
+      }]
+    },
+    "comparison": {
+      "allOf": [{"$ref": "#/$defs/base"}, {"type": "object", "additionalProperties": false,
+        "required": ["schema_version", "artifact_type", "artifact_id", "run_key", "sequence", "job_artifact_id", "replay_artifact_id", "dimensions", "equivalent"],
+        "properties": {"schema_version": {}, "artifact_type": {"const": "bijux.canon.runtime.comparison"}, "artifact_id": {}, "run_key": {}, "sequence": {}, "job_artifact_id": {"$ref": "#/$defs/artifact_id"}, "replay_artifact_id": {"$ref": "#/$defs/artifact_id"}, "dimensions": {"type": "object", "additionalProperties": false, "required": ["outputs_equal", "events_equal", "policy_equal", "environment_equal"], "properties": {"outputs_equal": {"type": "boolean"}, "events_equal": {"type": "boolean"}, "policy_equal": {"type": "boolean"}, "environment_equal": {"type": "boolean"}}}, "equivalent": {"type": "boolean"}}
+      }]
+    },
+    "publication_receipt": {
+      "allOf": [{"$ref": "#/$defs/base"}, {"type": "object", "additionalProperties": false,
+        "required": ["schema_version", "artifact_type", "artifact_id", "run_key", "sequence", "job_artifact_id", "dag_artifact_id", "policy_artifact_id", "selected_attempt_artifact_id", "artifact_manifest_ids", "event_artifact_ids", "inspection_artifact_id", "cancellation_artifact_id", "replay_artifact_id", "comparison_artifact_id", "source_commit", "corpus_artifact_id", "index_artifact_id", "model_artifact_id", "configuration_sha256", "checks", "limitations", "stable_citation", "published_at"],
+        "properties": {"schema_version": {}, "artifact_type": {"const": "bijux.canon.runtime.publication_receipt"}, "artifact_id": {}, "run_key": {}, "sequence": {}, "job_artifact_id": {"$ref": "#/$defs/artifact_id"}, "dag_artifact_id": {"$ref": "#/$defs/artifact_id"}, "policy_artifact_id": {"$ref": "#/$defs/artifact_id"}, "selected_attempt_artifact_id": {"$ref": "#/$defs/artifact_id"}, "artifact_manifest_ids": {"allOf": [{"$ref": "#/$defs/artifact_ids"}, {"minItems": 1}]}, "event_artifact_ids": {"allOf": [{"$ref": "#/$defs/artifact_ids"}, {"minItems": 1}]}, "inspection_artifact_id": {"$ref": "#/$defs/artifact_id"}, "cancellation_artifact_id": {"$ref": "#/$defs/artifact_id"}, "replay_artifact_id": {"$ref": "#/$defs/artifact_id"}, "comparison_artifact_id": {"$ref": "#/$defs/artifact_id"}, "source_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"}, "corpus_artifact_id": {"$ref": "#/$defs/artifact_id"}, "index_artifact_id": {"$ref": "#/$defs/artifact_id"}, "model_artifact_id": {"$ref": "#/$defs/artifact_id"}, "configuration_sha256": {"$ref": "#/$defs/sha256"}, "checks": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/check_result"}, "uniqueItems": true, "x-bijux-ordering": "check_id ascending"}, "limitations": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true, "x-bijux-ordering": "lexicographic"}, "stable_citation": {"type": "string", "pattern": "^bijux-canon://runs/sha256:[0-9a-f]{64}$"}, "published_at": {"$ref": "#/$defs/timestamp"}}
+      }]
+    }
+  },
+  "x-bijux-identity": {"algorithm": "sha-256", "canonicalization": "RFC 8785", "excluded_json_pointers": ["/artifact_id"]},
+  "x-bijux-invariants": ["sequence values are unique and strictly increasing", "DAG edges resolve and are acyclic", "every DAG edge names one producer output contract and matching consumer input contract", "every DAG node executes exactly one typed operation", "attempt numbers are never overwritten", "references resolve to earlier records or declared external artifacts", "strict replay is exact", "comparison equivalence is the conjunction of all dimensions", "publication requires successful inspection, exact replay, equivalent comparison, and all required checks"]
+}

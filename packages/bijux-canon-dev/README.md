@@ -12,6 +12,7 @@ repository healthy rather than to run the product, it should usually live here.
 ## What this package owns
 
 - shared quality and security helpers used across packages
+- risk-based verification selection for changed paths and transitive contracts
 - release, versioning, and SBOM helpers
 - OpenAPI and schema drift tooling
 - package-specific repository maintenance helpers invoked by root automation
@@ -40,10 +41,16 @@ would destroy the diagnostic boundary.
 ## Distribution posture
 
 `bijux-canon-dev` is an internal workspace support package. It is deliberately
-excluded from the repository's public release package set and registers no
-general-purpose console script. Maintainers invoke its focused modules through
-documented Make targets and workflow commands. Its VCS-derived version supports
-workspace builds; it is not a promise of an end-user product release.
+excluded from the repository's public release package set. Its installed
+maintenance commands verify supply-chain bindings, wheel metadata and contents,
+clean isolated installs, advertised extras and their installed capabilities, and
+exact-version family compatibility and publication order, and the complete
+supported Python wheel matrix. Its release-candidate command binds an
+uncreated stable tag to the clean target commit, package changelogs and
+fallbacks, lock identity, and exact candidate wheel hashes;
+generated reports and isolated environments belong under the repository
+`artifacts/` tree. Its VCS-derived version supports workspace builds; it is not
+a promise of an end-user product release.
 
 ## System Integration Evidence
 
@@ -74,7 +81,9 @@ contracts to make the lane pass.
 - [`src/bijux_canon_dev/sbom`](src/bijux_canon_dev/sbom) for bill-of-materials generation
 - [`src/bijux_canon_dev/release`](src/bijux_canon_dev/release) for release support
 - [`src/bijux_canon_dev/api`](src/bijux_canon_dev/api) for OpenAPI and schema tooling
+- [`src/bijux_canon_dev/corpus`](src/bijux_canon_dev/corpus) for real-corpus review tooling
 - [`src/bijux_canon_dev/packages`](src/bijux_canon_dev/packages) for package-specific maintenance helpers
+- [`src/bijux_canon_dev/verification`](src/bijux_canon_dev/verification) for impact-selected checks
 - [`tests`](tests) for executable protection of repo tooling behavior
 
 ## Read this next

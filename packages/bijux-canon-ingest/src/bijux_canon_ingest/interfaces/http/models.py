@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field, model_validator
 
@@ -195,6 +195,41 @@ class HealthResponse(BaseModel):
     ok: bool = Field(description="Liveness indicator for the HTTP adapter.")
 
 
+class CorpusIngestRequest(BaseModel):
+    root_path: str = Field(..., min_length=1)
+    root_name: str = Field(..., min_length=1)
+    corpus_name: str = Field(..., min_length=1)
+    include: list[str] = Field(default_factory=lambda: ["**/*"], min_length=1)
+    exclude: list[str] = Field(default_factory=list)
+    symlink_policy: Literal["reject", "files_within_root", "all_within_root"] = "reject"
+    max_depth: int = Field(default=64, gt=0)
+    max_entries: int = Field(default=100_000, gt=0)
+    max_files: int = Field(default=50_000, gt=0)
+    max_file_bytes: int = Field(default=64 * 1024 * 1024, gt=0)
+    max_total_bytes: int = Field(default=2 * 1024 * 1024 * 1024, gt=0)
+    max_seconds: float = Field(default=300.0, gt=0)
+    corpus_lock_path: str | None = None
+    publication_root: str | None = None
+
+
+class CorpusIngestResponse(BaseModel):
+    canonical_byte_length: int
+    canonical_sha256: str
+    chunk_count: int
+    configuration_sha256: str
+    corpus_lock: dict[str, Any]
+    delta: dict[str, Any] | None
+    discovery_issue_count: int
+    disposition: Literal["initial", "unchanged", "changed"]
+    document_count: int
+    formats: dict[str, int]
+    ocr_required_count: int
+    publication: dict[str, Any] | None
+    rejection_count: int
+    schema_version: Literal["bijux.canon.ingest.result.v2"]
+    snapshot_id: str
+
+
 __all__ = [
     "AskRequest",
     "AskResponse",
@@ -203,6 +238,8 @@ __all__ = [
     "ChunkRequest",
     "ChunkResponse",
     "CitationModel",
+    "CorpusIngestRequest",
+    "CorpusIngestResponse",
     "DocIn",
     "HealthResponse",
     "IndexBuildRequest",

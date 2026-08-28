@@ -24,7 +24,13 @@ imports or commands.
 | `bijux-agent` | `bijux-canon-agent` | `bijux_canon_agent` | `bijux-canon-agent` |
 | `bijux-rag` | `bijux-canon-ingest` | `bijux_canon_ingest` | `bijux-canon-ingest` |
 | `bijux-rar` | `bijux-canon-reason` | `bijux_canon_reason` | `bijux-canon-reason` |
-| `bijux-vex` | `bijux-canon-index` | `bijux_canon_index` | none; replace command integration with Python or HTTP |
+| `bijux-vex` | `bijux-canon-index` | `bijux_canon_index` | `bijux-canon-index` |
+
+Importing a preserved root or invoking its console command emits one
+process-local `FutureWarning`. The warning names the canonical distribution,
+import root, and executable from this matrix; it does not change delegated
+output or exit semantics. Treat that notice as migration inventory, not as a
+runtime failure.
 
 ## Inventory Before Editing
 
@@ -53,8 +59,8 @@ repository-wide replacement.
    normal package manager.
 2. Replace root and nested imports; run the narrow tests that exercise the
    imported types and behavior.
-3. Replace console and `python -m` invocations. For `bijux-vex`, redesign the
-   call against index's typed Python or HTTP contract.
+3. Replace console and `python -m` invocations. Replace `bijux-vex` with
+   `bijux-canon-index` and compare structured output and exit semantics.
 4. Move environment variables, configuration keys, image references, and
    artifact readers only where the canonical owner defines a replacement.
 5. Update operational examples and deployment manifests.
@@ -107,17 +113,15 @@ that the new executable resolves.
 
 ## Index Command Migration
 
-Do not perform this replacement:
+Use this direct command replacement:
 
 ```text
 bijux-vex -> bijux-canon-index
 ```
 
-There is no canonical executable with that name. Identify which `bijux-vex`
-operation the automation uses, map its request and output to the index Python or
-HTTP contract, and add an integration test at that boundary. Keep the bridge
-installed until the replacement is deployed everywhere that invokes the old
-command.
+Both executables delegate to the same canonical Typer application. Validate
+help, version, structured success output, expected failure status, and the
+operation's evidence before removing the bridge from deployed environments.
 
 ## Completion Evidence
 

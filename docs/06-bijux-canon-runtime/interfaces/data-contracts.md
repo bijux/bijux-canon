@@ -4,7 +4,7 @@ audience: mixed
 type: reference
 status: canonical
 owner: bijux-canon-runtime-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-08-24
 ---
 
 # Data Contracts
@@ -91,7 +91,7 @@ Runtime records join through typed identities and tenant scope:
 | run to flow | `tenant_id`, `run_id`, and `flow_id` |
 | artifact lineage | artifact ID plus parent artifact IDs within the tenant |
 | evidence to retrieval contract | evidence ID, content hash, and vector contract ID |
-| claim to execution | claim ID retained by the finalized trace and run store |
+| claim to execution | claim ID, citation link, evidence packet, and the persisted retrieval artifact dependency |
 | event to plan | event step index against the normalized plan action |
 | tool call to replay evidence | tool ID plus input and output fingerprints |
 | verification to artifact | checked or target artifact IDs plus policy fingerprint |
@@ -99,6 +99,13 @@ Runtime records join through typed identities and tenant scope:
 An ID without its tenant and governing contract is not sufficient authority.
 Content hashes establish payload identity but do not establish producer,
 parentage, scope, or verification outcome.
+
+For an installed grounded answer, the reason artifact must depend on the exact
+retrieval artifact named by its evidence packet and every selected citation.
+Inspection reconstructs the citation verifier and numbered presentation from
+that persisted dependency and the complete source descriptors. A plausible
+quote or bibliography cannot repair a missing dependency, stale retrieval ID,
+changed document/chunk/locator coordinate, or changed source bytes.
 
 ## Construction and Enforcement
 
@@ -115,11 +122,12 @@ treating the presence of a run ID as success.
 
 ## HTTP Boundary
 
-The v1 request models reject unknown fields and require explicit manifest,
-input, dataset, policy, mode, and replay identity. `FailureEnvelope` classifies
-contract failures separately from successful flow responses. The execution
-endpoints are currently unimplemented, however, so these schemas describe a
-versioned boundary—not a promise that HTTP execution is operational.
+The v2 request models reject unknown fields and carry explicit context,
+operation inputs, execution profile, budgets, and replay or comparison
+identity. Submissions create durable jobs; result and inspection reads remain
+separate and bounded. `ProblemDetail` preserves the shared Runtime failure
+taxonomy across Python, CLI, and HTTP. The older v1 models remain compatibility
+contracts whose flow execution routes return `501 Not Implemented`.
 
 Changes to tenant or flow identity, policy meaning, plan hashing, event order,
 entropy accounting, replay acceptability, or failure classification are

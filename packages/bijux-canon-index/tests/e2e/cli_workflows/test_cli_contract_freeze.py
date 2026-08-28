@@ -21,6 +21,7 @@ CLI_HELP = """
 │ --trace                 Emit trace metadata                                  │
 │ --quiet                 Suppress non-error output                            │
 │ --no-color              Disable colored output                               │
+│ --version               Show the installed canonical index version and exit. │
 │ --help                  Show this message and exit.                          │
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ╭─ Commands ───────────────────────────────────────────────────────────────────╮
@@ -44,6 +45,8 @@ CLI_HELP = """
 │ nd               ND utilities                                                │
 │ config           Configuration utilities                                     │
 │ artifact         Artifact bundle utilities                                   │
+│ index            Immutable index generations                                 │
+│ model            Pinned local embedding models                               │
 ╰──────────────────────────────────────────────────────────────────────────────╯
 
 """
@@ -63,10 +66,17 @@ def _normalize_cli_help(text: str) -> str:
         if stripped.startswith("│") and stripped.endswith("│"):
             stripped = stripped[1:-1].strip()
         normalized_lines.append(re.sub(r"\s+", " ", stripped))
-    return "\n".join(normalized_lines).strip() + "\n"
+    return " ".join(line for line in normalized_lines if line) + "\n"
 
 
-def test_cli_help_is_frozen():
+def test_cli_help_normalization_ignores_terminal_wrapping() -> None:
+    single_line = "│ --version  Show the installed version and exit. │"
+    wrapped = "│ --version  Show the installed version and │\n│ exit. │"
+
+    assert _normalize_cli_help(single_line) == _normalize_cli_help(wrapped)
+
+
+def test_cli_help_is_frozen() -> None:
     repo_root = Path(__file__).resolve().parents[3]
     env = {
         **os.environ,

@@ -23,7 +23,9 @@ flowchart TD
     events["ordered events and checkpoints"] --> db
     tools["tool invocations and entropy"] --> db
     artifacts["artifacts, parents, evidence, claims"] --> db
+    jobs["job lifecycle and CAS request/result links"] --> db
     verification["verification and arbitration"] --> db
+    cas[("verified immutable payloads")] --> db
     db --> inspect["inspect and explain"]
     db --> resume["resume causal history"]
     db --> replay["replay and semantic diff"]
@@ -33,6 +35,15 @@ The governed schema includes runs, datasets, normalized steps, events,
 checkpoints, artifact parentage, evidence, claim identifiers, tool invocations,
 entropy budgets and use, nondeterminism intent, replay envelopes, verification,
 arbitration, migrations, and the schema-contract hash.
+
+The installed local execution path writes immutable bytes to the filesystem CAS,
+reloads and verifies them, and only then registers their descriptor and dependency
+edges in DuckDB. A database failure can therefore leave an unreachable CAS object,
+which retention can collect, but it cannot publish metadata pointing at absent
+bytes. Startup reconciles dependency-complete CAS objects from compatible prior
+workspaces and refuses a DuckDB payload identity whose bytes are absent. Durable
+job requests and results use the same protocol and the result object depends on
+its exact request object.
 
 ## Lifecycle And Commit Signals
 
@@ -54,9 +65,11 @@ The store takes a sibling lock file and assumes one writer. A writer must close
 the store to release its connection and lock. Another process must not delete a
 live lock to force access.
 
-Store methods commit their own related records, but DuckDB cannot transact with
-an external API, filesystem, vector service, or model provider. An effect can
-succeed before the event or checkpoint becomes durable.
+Store methods commit their own related records. CAS publication uses a bounded
+prepare-then-register protocol because DuckDB cannot atomically commit a
+filesystem rename. DuckDB also cannot transact with an external API, vector
+service, or model provider. An effect can succeed before the event or checkpoint
+becomes durable.
 
 ```mermaid
 sequenceDiagram

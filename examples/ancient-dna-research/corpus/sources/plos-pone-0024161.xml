@@ -1,0 +1,451 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article
+  PUBLIC "-//NLM//DTD Journal Publishing DTD v3.0 20080202//EN" "http://dtd.nlm.nih.gov/publishing/3.0/journalpublishing3.dtd">
+<article xmlns:mml="http://www.w3.org/1998/Math/MathML" xmlns:xlink="http://www.w3.org/1999/xlink" article-type="research-article" dtd-version="3.0" xml:lang="EN">
+  <front>
+    <journal-meta><journal-id journal-id-type="nlm-ta">PLoS ONE</journal-id><journal-id journal-id-type="publisher-id">plos</journal-id><journal-id journal-id-type="pmc">plosone</journal-id><!--===== Grouping journal title elements =====--><journal-title-group><journal-title>PLoS ONE</journal-title></journal-title-group><issn pub-type="epub">1932-6203</issn><publisher>
+        <publisher-name>Public Library of Science</publisher-name>
+        <publisher-loc>San Francisco, USA</publisher-loc>
+      </publisher></journal-meta>
+    <article-meta><article-id pub-id-type="publisher-id">PONE-D-11-12298</article-id><article-id pub-id-type="doi">10.1371/journal.pone.0024161</article-id><article-categories>
+        <subj-group subj-group-type="heading">
+          <subject>Research Article</subject>
+        </subj-group>
+        <subj-group subj-group-type="Discipline-v2">
+          <subject>Biology</subject>
+          <subj-group>
+            <subject>Computational biology</subject>
+            <subj-group>
+              <subject>Genomics</subject>
+              <subj-group>
+                <subject>Genome sequencing</subject>
+              </subj-group>
+            </subj-group>
+          </subj-group>
+          <subj-group>
+            <subject>Evolutionary biology</subject>
+            <subj-group>
+              <subject>Evolutionary processes</subject>
+              <subj-group>
+                <subject>Species extinction</subject>
+              </subj-group>
+            </subj-group>
+            <subj-group>
+              <subject>Comparative genomics</subject>
+              <subject>Genomic evolution</subject>
+              <subject>Paleontology</subject>
+            </subj-group>
+          </subj-group>
+          <subj-group>
+            <subject>Genomics</subject>
+            <subj-group>
+              <subject>Genome sequencing</subject>
+            </subj-group>
+          </subj-group>
+          <subj-group>
+            <subject>Paleontology</subject>
+          </subj-group>
+        </subj-group>
+        <subj-group subj-group-type="Discipline-v2">
+          <subject>Earth sciences</subject>
+          <subj-group>
+            <subject>Paleontology</subject>
+          </subj-group>
+        </subj-group>
+        <subj-group subj-group-type="Discipline">
+          <subject>Genetics and Genomics</subject>
+          <subject>Computational Biology</subject>
+          <subject>Evolutionary Biology</subject>
+        </subj-group>
+      </article-categories><title-group><article-title>Fragmentation of Contaminant and Endogenous DNA in Ancient Samples Determined by Shotgun Sequencing; Prospects for Human Palaeogenomics</article-title><alt-title alt-title-type="running-head">Fragmentation of Contaminants in Ancient Human DNA</alt-title></title-group><contrib-group>
+        <contrib contrib-type="author" equal-contrib="yes" xlink:type="simple">
+          <name name-style="western">
+            <surname>García-Garcerà</surname>
+            <given-names>Marc</given-names>
+          </name>
+          <xref ref-type="aff" rid="aff1">
+            <sup>1</sup>
+          </xref>
+        </contrib>
+        <contrib contrib-type="author" equal-contrib="yes" xlink:type="simple">
+          <name name-style="western">
+            <surname>Gigli</surname>
+            <given-names>Elena</given-names>
+          </name>
+          <xref ref-type="aff" rid="aff1">
+            <sup>1</sup>
+          </xref>
+        </contrib>
+        <contrib contrib-type="author" xlink:type="simple">
+          <name name-style="western">
+            <surname>Sanchez-Quinto</surname>
+            <given-names>Federico</given-names>
+          </name>
+          <xref ref-type="aff" rid="aff1">
+            <sup>1</sup>
+          </xref>
+        </contrib>
+        <contrib contrib-type="author" xlink:type="simple">
+          <name name-style="western">
+            <surname>Ramirez</surname>
+            <given-names>Oscar</given-names>
+          </name>
+          <xref ref-type="aff" rid="aff1">
+            <sup>1</sup>
+          </xref>
+        </contrib>
+        <contrib contrib-type="author" xlink:type="simple">
+          <name name-style="western">
+            <surname>Calafell</surname>
+            <given-names>Francesc</given-names>
+          </name>
+          <xref ref-type="aff" rid="aff1">
+            <sup>1</sup>
+          </xref>
+        </contrib>
+        <contrib contrib-type="author" xlink:type="simple">
+          <name name-style="western">
+            <surname>Civit</surname>
+            <given-names>Sergi</given-names>
+          </name>
+          <xref ref-type="aff" rid="aff2">
+            <sup>2</sup>
+          </xref>
+        </contrib>
+        <contrib contrib-type="author" xlink:type="simple">
+          <name name-style="western">
+            <surname>Lalueza-Fox</surname>
+            <given-names>Carles</given-names>
+          </name>
+          <xref ref-type="aff" rid="aff1">
+            <sup>1</sup>
+          </xref>
+          <xref ref-type="corresp" rid="cor1">
+            <sup>*</sup>
+          </xref>
+        </contrib>
+      </contrib-group><aff id="aff1"><label>1</label><addr-line>Institut de Biologia Evolutiva, CSIC-UPF, Barcelona, Spain</addr-line>       </aff><aff id="aff2"><label>2</label><addr-line>Department de Bioestadística, Universitat de Barcelona, Barcelona, Spain</addr-line>       </aff><contrib-group>
+        <contrib contrib-type="editor" xlink:type="simple">
+          <name name-style="western">
+            <surname>Gilbert</surname>
+            <given-names>M. Thomas P.</given-names>
+          </name>
+          <role>Editor</role>
+          <xref ref-type="aff" rid="edit1"/>
+        </contrib>
+      </contrib-group><aff id="edit1">Natural History Museum of Denmark, Denmark</aff><author-notes>
+        <corresp id="cor1">* E-mail: <email xlink:type="simple">carles.lalueza@upf.edu</email></corresp>
+        <fn fn-type="con">
+          <p>Conceived and designed the experiments: CL-F. Performed the experiments: OR EG MG-G FS-Q. Analyzed the data: MG-G FS-Q EG SC. Contributed reagents/materials/analysis tools: CL-F FC. Wrote the paper: CL-F. Designed software used in the analysis: MG-G.</p>
+        </fn>
+      <fn fn-type="conflict">
+        <p>The authors have declared that no competing interests exist.</p>
+      </fn></author-notes><pub-date pub-type="collection">
+        <year>2011</year>
+      </pub-date><pub-date pub-type="epub">
+        <day>31</day>
+        <month>8</month>
+        <year>2011</year>
+      </pub-date><volume>6</volume><issue>8</issue><elocation-id>e24161</elocation-id><history>
+        <date date-type="received">
+          <day>30</day>
+          <month>6</month>
+          <year>2011</year>
+        </date>
+        <date date-type="accepted">
+          <day>1</day>
+          <month>8</month>
+          <year>2011</year>
+        </date>
+      </history><!--===== Grouping copyright info into permissions =====--><permissions><copyright-year>2011</copyright-year><copyright-holder>García-Garcerà et al</copyright-holder><license><license-p>This is an open-access article distributed under the terms of the Creative Commons Attribution License, which permits unrestricted use, distribution, and reproduction in any medium, provided the original author and source are credited.</license-p></license></permissions><abstract>
+        <sec>
+          <title>Background</title>
+          <p>Despite the successful retrieval of genomes from past remains, the prospects for human palaeogenomics remain unclear because of the difficulty of distinguishing contaminant from endogenous DNA sequences. Previous sequence data generated on high-throughput sequencing platforms indicate that fragmentation of ancient DNA sequences is a characteristic trait primarily arising due to depurination processes that create abasic sites leading to DNA breaks.</p>
+        </sec>
+        <sec>
+          <title>Methodology/Principals Findings</title>
+          <p>To investigate whether this pattern is present in ancient remains from a temperate environment, we have 454-FLX pyrosequenced different samples dated between 5,500 and 49,000 years ago: a bone from an extinct goat (Myotragus balearicus) that was treated with a depurinating agent (bleach), an Iberian lynx bone not subjected to any treatment, a human Neolithic sample from Barcelona (Spain), and a Neandertal sample from the El Sidrón site (Asturias, Spain). The efficiency of retrieval of endogenous sequences is below 1% in all cases. We have used the non-human samples to identify human sequences (0.35 and 1.4%, respectively), that we positively know are contaminants.</p>
+        </sec>
+        <sec>
+          <title>Conclusions</title>
+          <p>We observed that bleach treatment appears to create a depurination-associated fragmentation pattern in resulting contaminant sequences that is indistinguishable from previously described endogenous sequences. Furthermore, the nucleotide composition pattern observed in 5′ and 3′ ends of contaminant sequences is much more complex than the flat pattern previously described in some Neandertal contaminants. Although much research on samples with known contaminant histories is needed, our results suggest that endogenous and contaminant sequences cannot be distinguished by the fragmentation pattern alone.</p>
+        </sec>
+      </abstract><funding-group><funding-statement>CL-F, OR and SC are supported by a grant from the Ministerio de Innovación y Ciencia from Spain (BFU2009-06974). The funders had no role in study design, data collection and analysis, decision to publish, or preparation of the manuscript.</funding-statement></funding-group><counts>
+        <page-count count="7"/>
+      </counts></article-meta>
+  </front>
+  <body>
+    <sec id="s1">
+      <title>Introduction</title>
+      <p>Ancient DNA (aDNA) analysis on extinct human populations can potentially provide information on past human migrations and evolutionary processes. aDNA extracts are composed, in variable ratios, of endogenous DNA (either damaged or undamaged) and exogenous DNA. The exogenous DNA can include environmental contaminant DNA (mainly DNA from microorganisms such as bacteria) derived from sample exposure in the ground, but also sources that might enter post excavation, e.g. human DNA derived from handling/manipulation of the ancient samples. Several years ago, the adoption of several laboratory practices were advocated as a means to ensure the authenticity of aDNA results <xref ref-type="bibr" rid="pone.0024161-Cooper1">[1]</xref>. These included, for instance, physical separation of the ancient and modern DNA laboratory, frequent bleaching and UV irradiation on the working surfaces, the use of sterile laboratory wear (including gloves and face masks), cloning of PCR products, and the independent replication of the results in a second laboratory. However, all these authentication criteria have proven to be ineffective while working on ancient human specimens, because modern human contaminant DNA can be mistaken for endogenous DNA <xref ref-type="bibr" rid="pone.0024161-Hofreiter1">[2]</xref>. This is due to the near impossibility of discriminating between the two types of sequences, and the fact that not all the contamination can be controlled for within the laboratory, even under the most stringent precautions. Several studies pointed to the existence of pervasive pre-laboratory contamination, as showed by the presence of human DNA in non-human samples, such as pigs, foxes, cave bear, dogs or Neandertals <xref ref-type="bibr" rid="pone.0024161-Hofreiter2">[3]</xref>, <xref ref-type="bibr" rid="pone.0024161-Malmstrm1">[4]</xref>. Therefore, independent replication of the results in another laboratory will not eliminate the problem.</p>
+      <p>Human handling-derived contamination can to some extent be monitored during excavation, in which the sequences of the people that recently have handled the remains can be genotyped. Studies that have followed this approach have identified significant amounts of these traceable contaminating sequences, mixed with the putative -and usually prevalent- endogenous ones <xref ref-type="bibr" rid="pone.0024161-Fortea1">[5]</xref>. It has been suggested that ancient human DNA specimens destined for future palaeogenetic studies should be based on material extracted under controlled conditions (e.g., with sterile lab gear and with the immediate freezing of the samples) <xref ref-type="bibr" rid="pone.0024161-Fortea1">[5]</xref>. Unfortunately however, the majority of human archaeological material available for study today derives from excavations in the past, in which these precautions were not implemented. An additional concern is that, as contaminants age, handling-derived contaminant DNA molecules themselves can be chemically degraded to a level similar to that observed among the endogenous sequences <xref ref-type="bibr" rid="pone.0024161-Sampietro1">[6]</xref>, thus rendering it impossible to discriminate between the two types of sequence using characteristics such as postmortem DNA damage alone <xref ref-type="bibr" rid="pone.0024161-Helgason1">[7]</xref>, <xref ref-type="bibr" rid="pone.0024161-Vives1">[8]</xref>.</p>
+      <p>A further authentication criterion that has been proposed, that of “appropriate molecular behaviour”, refers to potential differences in length between the endogenous and the contaminant DNA. As time passes following the death of an organism, the surviving DNA is subjected to damage processes that break the double helix and degrade it DNA molecules into progressively smaller fragments <xref ref-type="bibr" rid="pone.0024161-Lindahl1">[9]</xref>. Since contaminant DNA molecules are in general considerably more recent than those endogenous to an ancient sample, it is assumed that the former will often be of larger average size than the original DNA. Mälmstrom et al. <xref ref-type="bibr" rid="pone.0024161-Malmstrm1">[4]</xref> analysed dog samples contaminated with human DNA and found more authentic DNA in shorter than in longer fragments retrieved. Thus, ancient samples show an increase in authentic DNA yield with decreased fragment size than the contaminating DNA. This asymmetrical behaviour could be explained if the contaminant sequences are on average longer than the endogenous ones <xref ref-type="bibr" rid="pone.0024161-Malmstrm1">[4]</xref>.</p>
+      <p>Recently, high-throughput sequencing techniques, such as 454-FLX pyrosequencing (Life Sciences-Roche) or the Illumina Genome Analyzer platforms have enabled the generation of large numbers of ancient DNA sequences, even resulting in the first complete ancient genome sequences <xref ref-type="bibr" rid="pone.0024161-Miller1">[10]</xref>–<xref ref-type="bibr" rid="pone.0024161-Reich1">[13]</xref>. The advent of these techniques has necessitated a re-examination of authenticity criteria, in light of the new methods through which data is generated. For instance, it is now possible to directly observe the distribution length of endogenous and contaminant sequences in a shotgun sequenced aDNA extract, for example as has been demonstrated with Neandertal DNA <xref ref-type="bibr" rid="pone.0024161-Green2">[14]</xref>. Under the assumption that short sequences are endogenous, and longer sequences contaminant, this in theory can be used as a means to discriminate contaminant from endogenous sequence. How straightforward it is to do this however is unclear. While endogenous DNA sequences from different DNA extracts have similar distributions (although differing by sample on their modal and average length), the modern human contaminant sequences that have been reported exhibit rather different length distributions among samples. For instance, in one Neandertal specimen (El Sidrón 1253), all modern human contaminants were between 30–60 bp in length, while in others (Feldhofer 1 and Vindija 33.16), they ranged from 30 up to &gt;200 bp <xref ref-type="bibr" rid="pone.0024161-Green3">[15]</xref>. Nevertheless, despite this apparent heterogeneity, the reanalysis of the first published Neandertal genome sequences showed that the longest sequences (accounting for up to 80% of all reads) were likely modern human contaminants <xref ref-type="bibr" rid="pone.0024161-Wall1">[16]</xref>.</p>
+      <p>An alternate characteristic of shotgun sequenced DNA that can be analysed, and that can play a role in discriminating between contaminant and endogenous DNA, is the examination of the nucleotide composition patterns near the 5′ and 3′-ends of the 454-FLX generated sequences. For example it was demonstrated that in endogenous Neandertal sequences, guanine and adenine residues are elevated relative to cytosine and thymine residues, immediately before the strand breaks <xref ref-type="bibr" rid="pone.0024161-Briggs1">[17]</xref>. Additionally, at the 5′-end of sequences, thymines are present at above average frequencies, while at the 3′-end of sequences, adenines are increased, due to a combination of the effects of enhanced rates hydrolytic deamination of cytosine into uracil or its analogues in the 5′ single strand overlaps that are believed to be common in aDNA, combined with the action of T4 DNA polymerase during sequencing library construction <xref ref-type="bibr" rid="pone.0024161-Briggs1">[c.f. 17 for full details]</xref>. Based upon these observations of DNA damage, it is believed that the primary cause of fragmentation in ancient sequences is DNA depurination <xref ref-type="bibr" rid="pone.0024161-Briggs1">[17]</xref>. Given the fact that such damage is believed characteristic of aDNA, bioinformatic tools have now been already developed to analyse these characteristic patterns so as to provide a measure of credibility to aDNA results <xref ref-type="bibr" rid="pone.0024161-Ginolhac1">[18]</xref>. However in this regard it is worth noting that the observations made so far have been made in samples that share a number of traits, such as being dated to the Pleistocene, having a low or negligible degree of human contamination, and that contain data that allows the phylogenetic discrimination of endogenous and contaminant sequences <xref ref-type="bibr" rid="pone.0024161-Reich1">[13]</xref>, <xref ref-type="bibr" rid="pone.0024161-Green3">[15]</xref>, <xref ref-type="bibr" rid="pone.0024161-Briggs2">[19]</xref>–<xref ref-type="bibr" rid="pone.0024161-Orlando1">[21]</xref>. Thus it is important to widen the range of samples that such damage analyses have been undertaken on, the aim of this study.</p>
+      <p>To further explore whether DNA depurination is the primary mechanism underlying the detected fragmentation pattern, we have analysed modern human contaminant sequences obtained from a 454-FLX sequenced non-human ancient sample that had been treated with bleach prior to DNA extraction, a known depurinating agent. Secondly, we have explored the DNA fragmentation patterns of human contaminant sequences obtained by 454-FLX sequencing a non-bleach treated non-human ancient sample. Thirdly, we have 454-FLX sequenced two ancient human samples from different ages and taphonomic conditions: a recently found Neandertal sample and a Neolithic human sample, to investigate whether the observed sequence fragmentation patterns are consistent with those previously described.</p>
+    </sec>
+    <sec id="s2" sec-type="materials|methods">
+      <title>Materials and Methods</title>
+      <p>To generate a dataset of known human contaminant sequences, DNA extracts from two different non-human samples were built into MID tagged 454-FLX libraries, then pyrosequenced at the Centre de Regulació Genòmica (CRG) in Barcelona: a <italic>Myotragus</italic> bone and an ancient Iberian lynx mandible. Myotragus balearicus was an extinct endemic caprine from the Balearic Islands <xref ref-type="bibr" rid="pone.0024161-LaluezaFox1">[22]</xref>. A Myotragus radius bone (IMEDEA 43619) excavated from Cova Estreta (Pollença, Mallorca) in 1996 and radiocarbon-dated to about 6,300-5,700 years ago was analysed <xref ref-type="bibr" rid="pone.0024161-Ramrez1">[23]</xref>. The Iberian lynx (Lynx pardinus) is a critically endangered carnivore currently restricted to two isolated populations in the south of the Iberian Peninsula. However, until historic times its distribution was larger, reaching the North East of the Iberian Peninsula. A lynx mandible from Cova del Toll (Barcelona) dated to about 11,420 years ago, was analysed <xref ref-type="bibr" rid="pone.0024161-Rodrguez1">[24]</xref>.</p>
+      <p>To explore the pattern of human sequences found in contaminated ancient (anatomically modern) human specimen, we similarly 454-FLX sequenced DNA extracted from a Neolithic tooth (inventory number CCG94-E33) belonging to the site of “Camí de Can Grau” (Granollers, Barcelona, Spain). This is a necropolis excavated in 1994, that comprised 23 tombs radiocarbon dated to between 5,500-5,000 years ago, and that was previously studied by conventional, PCR-based methods <xref ref-type="bibr" rid="pone.0024161-Sampietro2">[25]</xref>. It is known that these samples have been washed and handled without special precautions by the excavators, and had a contamination content that was quantified using conventional PCR and cloning as about 17.1% of all PCR-produced mtDNA sequences <xref ref-type="bibr" rid="pone.0024161-Sampietro1">[6]</xref>. However, the contaminating sequences in this particular sample (unpublished data) seem to be lower (∼5%) than the average of the other samples from this particular site <xref ref-type="bibr" rid="pone.0024161-Sampietro1">[6]</xref>.</p>
+      <p>In addition we 454-FLX sequenced a Neandertal bone fragment from the El Sidrón site (Asturias, Spain), dated to about 49,000 years ago and labeled SD 1504. Previously, two mitochondrial DNA fragments were determined by PCR from this sample, and no contaminant sequences were found among 115 clones generated (data not shown). Therefore, little or no contamination is suspected to be present within this sample and thus, it we hypothesised that it could be taken as a control from which the ‘true’ endogenous DNA fragmentation pattern could be discerned.</p>
+      <p>Post sequencing, the following protocol was followed so as to describe the fragmentation patterns among the data. Starting with the raw 454-FLX sequence files, the sequence reads were analysed to check for the presence or absence of both (5′ and 3′) MID adaptor tags. Only the reads containing both adaptor sequences were kept in this analysis, to avoid possible mis-assignment of the sequence ends. The remaining sequence reads were aligned using NCBI Blast with the megablast algorithm, against the non-redundant nucleotide database (nt). Only blast hits with a coverage over 98% were retained, and, in case of uncertainty in the blast assignment, the higher bit score hit was selected. The blast output was assigned to a specific taxonomic level, using the NCBI taxonomy database. TaxID assigned blast outputs were backtracked to the order level, and filtered keeping only the sequences that matched to primate taxa using a customised perl script that performs the Lowest Common Ancestor algorithm (M.G.G, unpublished). To avoid uncertainties in finding the fragmentation point in the sample sequence, the remaining 454 reads were extended 10 nt up- and downstream, using the GI reference sequence and the extreme up-/downstream 21 nucleotides to analyse the fragmentation pattern. Nucleotide frequencies for the resulting 21 positions were calculated.</p>
+      <p>To sum up the frequency patterns on the fragmentation point of the ancient DNA sequences we used entropy variation as statistical measure. Given the definition of entropy as a measure of the uncertainty associated to a random variable, we can calculate the entropy per position using the Shannon diversity as:<disp-formula><graphic mimetype="image" position="float" xlink:href="info:doi/10.1371/journal.pone.0024161.e001" xlink:type="simple"/></disp-formula>where H(S)<sub>i</sub> is the entropy of the i-th position of a given dataset of n sequences, and p<sub>i,j</sub> is the frequency of the j-th nucleotide for that given position, resulting in a single value associated with each position that sums up all diversity information.</p>
+      <p>Given the low numbers of primate sequences in all datasets, we used a bootstrap method to assess the variation in entropy along the breakpoint. As variability in the fragmentation point tends to decrease in the ancient endogenous sequences, the uncertainty level decreases, and the bootstrap resampling would give us the statistical power to compare the different samples and to check for the level of contamination.</p>
+    </sec>
+    <sec id="s3">
+      <title>Results</title>
+      <sec id="s3a">
+        <title>Human contaminant sequences in animal bones</title>
+        <p>Among the 96,357 sequences obtained from <italic>Myotragus</italic>, 337 (corresponding to 0.35% of the total) could be identified as contaminant human sequences (a greater number than the endogenous sequences, that accounted for only 260 reads [0.27%]) (<xref ref-type="table" rid="pone-0024161-t001">Table 1</xref>). These human sequences probably originated from palaeontologists who washed and cleaned the remains after their excavation in 1996, inadvertently contaminating the specimen. The average length of these sequences is 85 nucleotides, and they range from 30 bp (determined by the length cut-off in the analysis) to 300 bp (limited by the 454-FLX technology used) (<xref ref-type="fig" rid="pone-0024161-g001">Figure 1</xref>). Filtering to remove reads that did not contain the adaptor at the 3′ end (thus reads derived from a library insert longer than the maximum sequence read length capability) lead to removal of only a small fraction of reads (&lt;1%). This low level renders it unlikely that the subsequent analyses will be biased due to the size distribution of the endogenous versus contaminant reads. Moreover, frequency and entropy calculations at the 5′ end, including the sequences without 3′, did not result in any difference on the results. From the data we note that the length distribution of the human contaminant sequences is similar in shape to previously reported endogenous aDNA distributions that have also been generated by shotgun sequencing methods <xref ref-type="bibr" rid="pone.0024161-Green2">[14]</xref>, <xref ref-type="bibr" rid="pone.0024161-Briggs2">[19]</xref>, <xref ref-type="bibr" rid="pone.0024161-Krause1">[20]</xref>. Furthermore, the fragmentation pattern in both the endogenous and the human contaminant sequences is concordant with the suggested depurination pattern characteristic of endogenous aDNA <xref ref-type="bibr" rid="pone.0024161-Briggs1">[17]</xref> (<xref ref-type="fig" rid="pone-0024161-g002">Figure 2</xref>), with the entropy clearly decreasing immediately prior to the breakpoint, indicating that fragmentation is not produced at random (<xref ref-type="fig" rid="pone-0024161-g003">Figure 3</xref>). Given that the bone powder was treated with bleach prior to DNA extraction as a decontaminating procedure <xref ref-type="bibr" rid="pone.0024161-Ramrez1">[23]</xref>, the data suggests that bleach treatment may convey ‘ancient’ characteristics on the contaminant DNA.</p>
+        <fig id="pone-0024161-g001" position="float">
+          <object-id pub-id-type="doi">10.1371/journal.pone.0024161.g001</object-id>
+          <label>Figure 1</label>
+          <caption>
+            <title>Sequence length distribution of the human contaminant sequences obtained from DNA extracted from bone samples of a <italic>Myotragus balearicus</italic> and an ancient lynx, and the putatively endogenous sequences from a Neolithic human and a Neandertal specimen obtained by 454-FLX pyrosequencing.</title>
+            <p>The contaminant reads in <italic>Myotragus</italic> are possibly fragmented by the bleach treatment; nevertheless, a large overlapping in the distribution length can be observed among samples.</p>
+          </caption>
+          <graphic mimetype="image" position="float" xlink:href="info:doi/10.1371/journal.pone.0024161.g001" xlink:type="simple"/>
+        </fig>
+        <fig id="pone-0024161-g002" position="float">
+          <object-id pub-id-type="doi">10.1371/journal.pone.0024161.g002</object-id>
+          <label>Figure 2</label>
+          <caption>
+            <title>Nucleotide base frequencies at the 5′ end of the <italic>Myotragus</italic> human contaminants, treated with a depurinating agent, bleach.</title>
+            <p>The base composition is plotted as a function of distance from the 5′-end. Despite the small sample size (N = 337 reads), the pattern matches that previously described in ancient endogenous sequences, including Neandertals.</p>
+          </caption>
+          <graphic mimetype="image" position="float" xlink:href="info:doi/10.1371/journal.pone.0024161.g002" xlink:type="simple"/>
+        </fig>
+        <fig id="pone-0024161-g003" position="float">
+          <object-id pub-id-type="doi">10.1371/journal.pone.0024161.g003</object-id>
+          <label>Figure 3</label>
+          <caption>
+            <title>Entropy at the 5′ end of the <italic>Myotragus</italic>, the human contaminants in the lynx, the Neolithic and the Neandertal reads, estimated using Shannon equation and 100 bootstraps.</title>
+            <p>It can be seen that in <italic>Myotragus</italic> and Neolithic the entropy drops at the breaking point, indicating that sequences are not randomly fragmented, while in lynx and Neandertal, the entropy is stable (in the latter this is due to the small sample size of the Neandertal reads available).</p>
+          </caption>
+          <graphic mimetype="image" position="float" xlink:href="info:doi/10.1371/journal.pone.0024161.g003" xlink:type="simple"/>
+        </fig>
+        <table-wrap id="pone-0024161-t001" position="float"><object-id pub-id-type="doi">10.1371/journal.pone.0024161.t001</object-id><label>Table 1</label><caption>
+            <title>Specimens subjected to 454-FLX pyrosequencing, number of reads and ratio of endogenous and contaminant sequences obtained.</title>
+          </caption><!--===== Grouping alternate versions of objects =====--><alternatives><graphic id="pone-0024161-t001-1" mimetype="image" position="float" xlink:href="info:doi/10.1371/journal.pone.0024161.t001" xlink:type="simple"/><table>
+            <colgroup span="1">
+              <col align="left" span="1"/>
+              <col align="center" span="1"/>
+              <col align="center" span="1"/>
+              <col align="center" span="1"/>
+            </colgroup>
+            <thead>
+              <tr>
+                <td align="left" colspan="1" rowspan="1">Specimen</td>
+                <td align="left" colspan="1" rowspan="1">N reads</td>
+                <td align="left" colspan="1" rowspan="1">% endogenous seqs</td>
+                <td align="left" colspan="1" rowspan="1">% human seqs</td>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td align="left" colspan="1" rowspan="1">Neandertal</td>
+                <td align="left" colspan="1" rowspan="1">155,676</td>
+                <td align="left" colspan="1" rowspan="1">0.32% (N = 503)</td>
+                <td align="left" colspan="1" rowspan="1">
+                  <xref ref-type="table-fn" rid="nt101">*</xref>
+                </td>
+              </tr>
+              <tr>
+                <td align="left" colspan="1" rowspan="1">Neolithic</td>
+                <td align="left" colspan="1" rowspan="1">168,998</td>
+                <td align="left" colspan="1" rowspan="1">0.66% (N = 1,117)</td>
+                <td align="left" colspan="1" rowspan="1">
+                  <xref ref-type="table-fn" rid="nt101">*</xref>
+                </td>
+              </tr>
+              <tr>
+                <td align="left" colspan="1" rowspan="1">Lynx</td>
+                <td align="left" colspan="1" rowspan="1">361,151</td>
+                <td align="left" colspan="1" rowspan="1">0.11% (N = 414)</td>
+                <td align="left" colspan="1" rowspan="1">1.4% (N = 5,078)</td>
+              </tr>
+              <tr>
+                <td align="left" colspan="1" rowspan="1">Myotragus</td>
+                <td align="left" colspan="1" rowspan="1">96,357</td>
+                <td align="left" colspan="1" rowspan="1">0.27% (N = 260)</td>
+                <td align="left" colspan="1" rowspan="1">0.35% (N = 337)</td>
+              </tr>
+            </tbody>
+          </table></alternatives><table-wrap-foot>
+            <fn id="nt101">
+              <label/>
+              <p>*: in the case of human samples, it is impossible to discern <italic>a priori</italic> which sequences are endogenous and which are human contaminants. However, we have mitochondrial DNA estimates of the maximum potential contamination &lt;1% in the Neandertal sample and &lt;5% in the Neolithic sample.</p>
+            </fn>
+          </table-wrap-foot></table-wrap>
+        <p>Among the 361,151 sequences obtained from the lynx sample, 5,078 (1.4% of the total) were identified as human contaminants, again a figure higher than the endogenous lynx sequences (414, 0.12% of the total reads [<xref ref-type="table" rid="pone-0024161-t001">Table 1</xref>]). In contrast to a previous observation that human contaminant sequences within Neandertal DNA extracts showed no specific increase in the frequency of any nucleotide either side of the DNA fragment <xref ref-type="bibr" rid="pone.0024161-Krause1">[20]</xref>, the contaminant sequences in the lynx sample show a more complex, non-random fragmentation pattern that is hard to interpret (<xref ref-type="fig" rid="pone-0024161-g004">Figure 4</xref>). The pattern at the 5′ end shows an increase of G (instead of the expected T) at the breaking point, of T in subsequent 3′ positions, and an increase of T and A in positions prior to the breaking point (<xref ref-type="fig" rid="pone-0024161-g004">Figure 4</xref>). Despite the apparent complexity of the pattern, the resulting entropy is flatly distributed along the breaking point (<xref ref-type="fig" rid="pone-0024161-g003">Figure 3</xref>).</p>
+        <fig id="pone-0024161-g004" position="float">
+          <object-id pub-id-type="doi">10.1371/journal.pone.0024161.g004</object-id>
+          <label>Figure 4</label>
+          <caption>
+            <title>Nucleotide base frequencies at the 5′ end of the human contaminants present in the prehistoric Iberian lynx.</title>
+            <p>The base composition is plotted as a function of distance from the 5′-end (N = 5.078 reads).</p>
+          </caption>
+          <graphic mimetype="image" position="float" xlink:href="info:doi/10.1371/journal.pone.0024161.g004" xlink:type="simple"/>
+        </fig>
+      </sec>
+      <sec id="s3b">
+        <title>Neolithic sequences</title>
+        <p>In the Neolithic sample, 168,998 sequence reads were generated, of which 1,117 (0.66%) were human sequences (<xref ref-type="table" rid="pone-0024161-t001">Table 1</xref>). The efficiency of DNA retrieval is again low (&lt;1%), but it is consistent with that obtained from the Myotragus sample that preserved at a similar thermal environment and age <xref ref-type="bibr" rid="pone.0024161-Ramrez1">[23]</xref>. The level is also similar to those previously reported in older specimens, including some Neandertals <xref ref-type="bibr" rid="pone.0024161-Green2">[14]</xref>, <xref ref-type="bibr" rid="pone.0024161-Briggs2">[19]</xref>.</p>
+        <p>Among the human sequences, thymine residues at the 5′-ends appear in 32.8% of the DNA fragments, while guanines at the 3′-ends appear as adenines in 28.3% of the cases, Both nucleotides are significantly increased respective of their average frequency along the sequences (Fisher's exact test, P&lt;0.05). Immediately prior to the 5′ strand break, purine bases are elevated to 52.0% (P&lt;0.05), while pyrimidines are decreased to 47.9% (P&lt;0.05). The converse pattern is observed following the 3′-end of the sequence, that is, pyrimidines are increased to 51.9% (P&lt;0.05), while purines are depressed at 48.1% (P = 0.05) (<xref ref-type="fig" rid="pone-0024161-g005">Figure 5</xref>). It should be remembered that the 3′-ends correspond to the terminal 5′-position in the complementary strand, and that the whole pattern is consistent with fragmentation at purine sites <xref ref-type="bibr" rid="pone.0024161-Briggs1">[17]</xref>. As in <italic>Myotragus</italic> sequences, entropy decreases at the breaking point (<xref ref-type="fig" rid="pone-0024161-g003">Figure 3</xref>).</p>
+        <fig id="pone-0024161-g005" position="float">
+          <object-id pub-id-type="doi">10.1371/journal.pone.0024161.g005</object-id>
+          <label>Figure 5</label>
+          <caption>
+            <title>Nucleotide base frequencies at the 5′ end of the human Neolithic sequences.</title>
+            <p>The base composition is plotted as a function of distance from the 5′-end. The depurination-based pattern can be seen, despite the small sample size (N = 1,117 reads).</p>
+          </caption>
+          <graphic mimetype="image" position="float" xlink:href="info:doi/10.1371/journal.pone.0024161.g005" xlink:type="simple"/>
+        </fig>
+      </sec>
+      <sec id="s3c">
+        <title>Neandertal sample</title>
+        <p>In the El Sidrón Neandertal sample, 155,676 reads were generated, of which 503 (0.32%) were primate sequences (<xref ref-type="table" rid="pone-0024161-t001">Table 1</xref>). The efficiency of DNA retrieval is again very low (&lt;1%), but is almost identical (0.27%) to that previously reported from another sample recovered from the same site <xref ref-type="bibr" rid="pone.0024161-Briggs2">[19]</xref>. The purine fragmentation pattern previously described in ancient sequences can also be seen, although the sample size is lower than that analysed in previous Neandertal studies (N = 503 reads). To visualize the pattern more clearly, we have pooled purine and pyrimidine frequencies (<xref ref-type="fig" rid="pone-0024161-g006">Figure 6</xref>). We observe that the frequency of purine residues at the nucleotide immediately prior to the 5′-end are over-represented (56.4%), up from 49.8% at the −1 position. The −1 position is marked by a high decrease of pyrimidines, where only 16.3% of residues in that position are cytosines, followed by a marked increase of them in the position +1 with a 29.9% of all fragments. At the 3′-end the opposite effect can be seen (data not shown). In this case, the breaking point is not marked by a drop in the entropy value (<xref ref-type="fig" rid="pone-0024161-g003">Figure 3</xref>), although this may be an artefact of the small sample size. However, considering that the depurination pattern is clearly observed in previously analysed Neandertals <xref ref-type="bibr" rid="pone.0024161-Briggs1">[17]</xref>, it is obvious that the drop in entropy would be also present.</p>
+        <fig id="pone-0024161-g006" position="float">
+          <object-id pub-id-type="doi">10.1371/journal.pone.0024161.g006</object-id>
+          <label>Figure 6</label>
+          <caption>
+            <title>Purine and pyrimidine frequencies at the 5′ and 3′ end of the Neandertal sequences.</title>
+            <p>A–G and C–T have been grouped because of the low number of sequences available (N = 503). Nevertheless, the purine-associated fragmentation pattern can be seen.</p>
+          </caption>
+          <graphic mimetype="image" position="float" xlink:href="info:doi/10.1371/journal.pone.0024161.g006" xlink:type="simple"/>
+        </fig>
+      </sec>
+    </sec>
+    <sec id="s4">
+      <title>Discussion</title>
+      <p>The level of endogenous DNA within these four samples, all from temperate environments but of different ages (ranging between 49,000 and 5,500 years ago) and from heterogeneous taphonomic conditions, are similar to each other, and generally lower (&lt;1%) than the levels observed in previously samples from colder environments <xref ref-type="bibr" rid="pone.0024161-Green1">[12]</xref>, <xref ref-type="bibr" rid="pone.0024161-Noonan1">[26]</xref>–<xref ref-type="bibr" rid="pone.0024161-Blow1">[28]</xref>. We note that the non-human samples show considerable human contaminant DNA content (0.35% in <italic>Myotragus</italic> and 1.4% in the lynx), that in both cases outnumber the endogenous sequences, demonstrating in particular the difficulties of working with ancient human specimens, especially those without a detailed handling history. Given this it is clear how analysis of remains that were recently excavated under controlled conditions confers significant benefits. Nevertheless despite this limitation, the given the potential of high-throughput DNA sequencing platforms, it should still be possible to retrieve ancient human genomes from temperate environments.</p>
+      <p>The sequence size distribution analyses demonstrate that endogenous and contaminant sequences can display different distributions (<xref ref-type="fig" rid="pone-0024161-g001">Figure 1</xref>) - the length distributions are significantly different (Kruskal-Wallis test 1095.29, 3 d.f., P&lt;2.2×10<sup>−16</sup>). Obviously, the pattern of size reduction could be related to factors such as the age of the sample or contamination ratios. Thus our data confirms the previous observation that ancient DNA is in general fragmented to smaller lengths than contaminants <xref ref-type="bibr" rid="pone.0024161-Malmstrm1">[4]</xref> is confirmed. Despite this, however, we believe that the length of a particular set of sequences is not a helpful authentication criterion per se, due to the wide overlapping of the length distributions in different samples.</p>
+      <p>The human sequences from the Neolithic and Neandertal sample, as well as the caprine and carnivorous sequences from the <italic>Myotragus</italic> and the lynx, respectively, show the purine-associated fragmentation pattern previously described as a feature of endogenous Neandertal sequences (that is, an elevated level of purines directly prior to the sequence breakpoint, as well as increase of thymines at the 5′ end of sequences and of adenines at the 3′ ends of sequences). We further note that the depurination-based pattern is always stronger at the 5′ end, likely because a number of sequences without the adaptor at the 3′ end were discarded during the analysis.</p>
+      <p>The data further suggests that contaminant molecules in samples that have been bleached appear to be fragmented following depurination processes, to yield a damage profile that is identical to that exhibited by truly ancient sequences. Until this observation is confirmed or refuted in other samples, we strongly recommended not to bleach human bones that are subsequently to be shotgun-sequenced, because the resulting contaminant sequences will likely imitate the ancient ones in their fragmentation patterns.</p>
+      <p>In the unbleached samples the human contaminant sequences show nucleotide frequency distributions at the sequences break-points that are different to the depurination-based pattern observed in endogenous sequences, <xref ref-type="bibr" rid="pone.0024161-Krause1">[20]</xref>. We speculate that this complex pattern could be the result of the contaminant sequences being fragmented by bacterial enzymes. Further research in this issue is needed, especially in the comparison between recent and old (&gt;10 years) contaminants in a given sample with a known handling story. If entropy parameters are considered, the contaminants do not show a decrease in entropy at the breaking point, in contrast to the known endogenous sequences (with the exception of the Neandertal data, likely due to the small size of the data). Thus, we recommend consideration of entropy as a measure for helping determine whether a given high-throughput sequence dataset derives from contaminant or endogenous sequences.</p>
+      <p>In conclusion, our results demonstrate that samples preserved under a range of different environmental and taphonomic conditions, over different thermal ages, consistently produce the previously described <xref ref-type="bibr" rid="pone.0024161-Briggs1">[17]</xref> depurination pattern. Thus, fragmentation patterns are not exclusive of Neandertals or other Late Pleistocene samples, and can be applied as a measure of authenticity across all ancient high-throughput sequencing datasets with increased confidence. The results also confirm that contaminant molecules show neither a simple depurination-associated pattern, nor random nucleotide frequencies along the sequences' lengths, as previously suggested. Furthermore, our results suggest that both sets of sequences (endogenous and contaminants) are not easily distinguishable based on the nucleotide pattern prior to break alone. However, the combination of different statistical tools, including the measure of the entropy at the reads' ends and the distribution lengths, can help to authenticate shotgun sequencing results in the future. Further research on different types of samples (both contaminated and uncontaminated) is needed, since the understanding of the fragmentation patterns is crucial for the human palaeogenomics field.</p>
+    </sec>
+  </body>
+  <back>
+    <ack>
+      <p>We are indebted to Josep Marmi (ICP), Juan Madurell-Malapeira (ICP), Josep Antoni Alcover (IMEDEA), Marco de la Rasilla (Universidad de Oviedo), Antonio Rosas (MNCN), Roser Pou and Miquel Martí (Museu d'Arqueologia de Granollers) for providing us with the lynx, the Myotragus, the Neandertal and the Neolithic samples, respectively.</p>
+    </ack>
+    <ref-list>
+      <title>References</title>
+      <ref id="pone.0024161-Cooper1">
+        <label>1</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Cooper</surname><given-names>A</given-names></name><name name-style="western"><surname>Poinar</surname><given-names>HN</given-names></name></person-group>             <year>2000</year>             <article-title>Ancient DNA: do it right or not at all.</article-title>             <source>Science</source>             <volume>289</volume>             <fpage>1139</fpage>          </element-citation>
+      </ref>
+      <ref id="pone.0024161-Hofreiter1">
+        <label>2</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Hofreiter</surname><given-names>M</given-names></name><name name-style="western"><surname>Jaenicke</surname><given-names>V</given-names></name><name name-style="western"><surname>Serre</surname><given-names>D</given-names></name><name name-style="western"><surname>Haeseler Av</surname><given-names>A</given-names></name><name name-style="western"><surname>Pääbo</surname><given-names>S</given-names></name></person-group>             <year>2001a</year>             <article-title>DNA sequences from multiple amplifications reveal artifacts induced by cytosine deamination in ancient DNA.</article-title>             <source>Nucleic Acids Res</source>             <volume>29</volume>             <issue>23</issue>             <fpage>4793</fpage>             <lpage>4799</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0024161-Hofreiter2">
+        <label>3</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Hofreiter</surname><given-names>M</given-names></name><name name-style="western"><surname>Serre</surname><given-names>D</given-names></name><name name-style="western"><surname>Poinar</surname><given-names>HN</given-names></name><name name-style="western"><surname>Kuch</surname><given-names>M</given-names></name><name name-style="western"><surname>Pääbo</surname><given-names>S</given-names></name></person-group>             <year>2001b</year>             <article-title>Ancient DNA.</article-title>             <source>Nat Rev Genet</source>             <volume>2</volume>             <issue>5</issue>             <fpage>353</fpage>             <lpage>359</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0024161-Malmstrm1">
+        <label>4</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Malmström</surname><given-names>H</given-names></name><name name-style="western"><surname>Svensson</surname><given-names>EM</given-names></name><name name-style="western"><surname>Gilbert</surname><given-names>MTP</given-names></name><name name-style="western"><surname>Willerslev</surname><given-names>E</given-names></name><name name-style="western"><surname>Götherström</surname><given-names>A</given-names></name><etal/></person-group>             <year>2007</year>             <article-title>More on contamination: the use of asymmetric molecular behavior to identify authentic ancient human DNA.</article-title>             <source>Mol Biol Evol</source>             <volume>24</volume>             <issue>4</issue>             <fpage>998</fpage>             <lpage>1004</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0024161-Fortea1">
+        <label>5</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Fortea</surname><given-names>J</given-names></name><name name-style="western"><surname>de la Rasilla</surname><given-names>M</given-names></name><name name-style="western"><surname>García-Tabernero</surname><given-names>A</given-names></name><name name-style="western"><surname>Gigli</surname><given-names>E</given-names></name><name name-style="western"><surname>Rosas</surname><given-names>A</given-names></name><etal/></person-group>             <year>2008</year>             <article-title>Excavation protocol of bone remains for Neandertal DNA analysis in El Sidrón Cave (Asturias, Spain).</article-title>             <source>J Hum Evol</source>             <volume>55</volume>             <issue>2</issue>             <fpage>353</fpage>             <lpage>357</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0024161-Sampietro1">
+        <label>6</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Sampietro</surname><given-names>ML</given-names></name><name name-style="western"><surname>Gilbert</surname><given-names>MPT</given-names></name><name name-style="western"><surname>Lao</surname><given-names>O</given-names></name><name name-style="western"><surname>Caramelli</surname><given-names>D</given-names></name><name name-style="western"><surname>Lari</surname><given-names>M</given-names></name><etal/></person-group>             <year>2006</year>             <article-title>Tracking down Human Contamination in Ancient Human Teeth.</article-title>             <source>Mol Biol Evol</source>             <volume>23</volume>             <issue>9</issue>             <fpage>1801</fpage>             <lpage>1807</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0024161-Helgason1">
+        <label>7</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Helgason</surname><given-names>A</given-names></name><name name-style="western"><surname>Pálsson</surname><given-names>S</given-names></name><name name-style="western"><surname>Lalueza-Fox</surname><given-names>C</given-names></name><name name-style="western"><surname>Ghosh</surname><given-names>S</given-names></name><name name-style="western"><surname>Sigurðardóttir</surname><given-names>S</given-names></name><etal/></person-group>             <year>2007</year>             <article-title>A statistical approach to identify ancient template DNA.</article-title>             <source>J Mol Evol</source>             <volume>65</volume>             <fpage>92</fpage>             <lpage>102</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0024161-Vives1">
+        <label>8</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Vives</surname><given-names>S</given-names></name><name name-style="western"><surname>Gilbert</surname><given-names>MT</given-names></name><name name-style="western"><surname>Arenas</surname><given-names>C</given-names></name><name name-style="western"><surname>Gigli</surname><given-names>E</given-names></name><name name-style="western"><surname>Lao</surname><given-names>O</given-names></name><etal/></person-group>             <year>2008</year>             <article-title>Statistical analysis of post mortem DNA damage-derived miscoding lesions in Neandertal mitochondrial DNA.</article-title>             <source>BMC Res Notes</source>             <volume>1</volume>             <fpage>40</fpage>          </element-citation>
+      </ref>
+      <ref id="pone.0024161-Lindahl1">
+        <label>9</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Lindahl</surname><given-names>T</given-names></name></person-group>             <year>1993</year>             <article-title>Recovery of antediluvian DNA.</article-title>             <source>Nature</source>             <volume>365</volume>             <fpage>700</fpage>          </element-citation>
+      </ref>
+      <ref id="pone.0024161-Miller1">
+        <label>10</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Miller</surname><given-names>W</given-names></name><name name-style="western"><surname>Drautz</surname><given-names>DI</given-names></name><name name-style="western"><surname>Ratan</surname><given-names>A</given-names></name><name name-style="western"><surname>Pusey</surname><given-names>B</given-names></name><name name-style="western"><surname>Qi</surname><given-names>J</given-names></name><etal/></person-group>             <year>2008</year>             <article-title>Sequencing the nuclear genome of the extinct wolly mammoth.</article-title>             <source>Nature</source>             <volume>456</volume>             <issue>7220</issue>             <fpage>387</fpage>             <lpage>90</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0024161-Rasmussen1">
+        <label>11</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Rasmussen</surname><given-names>M</given-names></name><name name-style="western"><surname>Li</surname><given-names>Y</given-names></name><name name-style="western"><surname>Lindgreen</surname><given-names>S</given-names></name><name name-style="western"><surname>Pedersen</surname><given-names>JS</given-names></name><name name-style="western"><surname>Albrechtsen</surname><given-names>A</given-names></name><etal/></person-group>             <year>2010</year>             <article-title>Ancient human genome sequence of an extinct Palaeo-Eskimo.</article-title>             <source>Nature</source>             <volume>463</volume>             <issue>7282</issue>             <fpage>757</fpage>             <lpage>762</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0024161-Green1">
+        <label>12</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Green</surname><given-names>RE</given-names></name><name name-style="western"><surname>Krause</surname><given-names>J</given-names></name><name name-style="western"><surname>Briggs</surname><given-names>AW</given-names></name><name name-style="western"><surname>Maricic</surname><given-names>T</given-names></name><name name-style="western"><surname>Stenzel</surname><given-names>U</given-names></name><etal/></person-group>             <year>2010</year>             <article-title>A draft sequence of the Neandertal genome.</article-title>             <source>Science</source>             <volume>328</volume>             <fpage>710</fpage>             <lpage>722</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0024161-Reich1">
+        <label>13</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Reich</surname><given-names>D</given-names></name><name name-style="western"><surname>Green</surname><given-names>RE</given-names></name><name name-style="western"><surname>Kircher</surname><given-names>M</given-names></name><name name-style="western"><surname>Krause</surname><given-names>J</given-names></name><name name-style="western"><surname>Patterson</surname><given-names>N</given-names></name><etal/></person-group>             <year>2010</year>             <article-title>Genetic history of an archaic hominin group from Denisova Cave in Siberia.</article-title>             <source>Nature</source>             <volume>468</volume>             <issue>7327</issue>             <fpage>1053</fpage>             <lpage>1060</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0024161-Green2">
+        <label>14</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Green</surname><given-names>RE</given-names></name><name name-style="western"><surname>Malaspinas</surname><given-names>AS</given-names></name><name name-style="western"><surname>Krause</surname><given-names>J</given-names></name><name name-style="western"><surname>Briggs</surname><given-names>A</given-names></name><name name-style="western"><surname>Johnson</surname><given-names>PLF</given-names></name><etal/></person-group>             <year>2008</year>             <article-title>A complete Neandertal mitochondrial genome sequence determined by high-throughput sequencing.</article-title>             <source>Cell</source>             <volume>134</volume>             <issue>3</issue>             <fpage>416</fpage>             <lpage>426</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0024161-Green3">
+        <label>15</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Green</surname><given-names>RE</given-names></name><name name-style="western"><surname>Briggs</surname><given-names>AW</given-names></name><name name-style="western"><surname>Krause</surname><given-names>J</given-names></name><name name-style="western"><surname>Prüfer</surname><given-names>K</given-names></name><name name-style="western"><surname>Burbano</surname><given-names>HA</given-names></name><etal/></person-group>             <year>2009</year>             <article-title>The Neandertal genome and ancient DNA authenticity.</article-title>             <source>EMBO J</source>             <volume>28</volume>             <issue>17</issue>             <fpage>494</fpage>             <lpage>502</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0024161-Wall1">
+        <label>16</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Wall</surname><given-names>JD</given-names></name><name name-style="western"><surname>Kim</surname><given-names>SK</given-names></name></person-group>             <year>2007</year>             <article-title>Inconsistencies in the Neanderthal genomic DNA sequences.</article-title>             <source>Plos Genet</source>             <volume>3</volume>             <issue>10</issue>             <fpage>e175</fpage>          </element-citation>
+      </ref>
+      <ref id="pone.0024161-Briggs1">
+        <label>17</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Briggs</surname><given-names>AW</given-names></name><name name-style="western"><surname>Stenzel</surname><given-names>U</given-names></name><name name-style="western"><surname>Johnson</surname><given-names>PL</given-names></name><name name-style="western"><surname>Green</surname><given-names>RE</given-names></name><name name-style="western"><surname>Kelso</surname><given-names>J</given-names></name><etal/></person-group>             <year>2007</year>             <article-title>Patterns of damage in genomic DNA sequences from a Neandertal.</article-title>             <source>Proc Natl Acad Sci USA</source>             <volume>104</volume>             <issue>37</issue>             <fpage>14616</fpage>             <lpage>14621</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0024161-Ginolhac1">
+        <label>18</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Ginolhac</surname><given-names>A</given-names></name><name name-style="western"><surname>Rasmussen</surname><given-names>M</given-names></name><name name-style="western"><surname>Gilbert</surname><given-names>MTP</given-names></name><name name-style="western"><surname>Willerslev</surname><given-names>E</given-names></name><name name-style="western"><surname>Orlando</surname><given-names>L</given-names></name></person-group>             <year>2011</year>             <article-title>mapDamage: testing for damage patterns in ancient DNA sequences.</article-title>             <source>Bioinformatics</source>             <comment><italic>in press</italic>. <italic>PMID: 21659319, doi: 10.1093/bioinformatics/btr347</italic></comment>          </element-citation>
+      </ref>
+      <ref id="pone.0024161-Briggs2">
+        <label>19</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Briggs</surname><given-names>AW</given-names></name><name name-style="western"><surname>Good</surname><given-names>JM</given-names></name><name name-style="western"><surname>Green</surname><given-names>RE</given-names></name><name name-style="western"><surname>Krause</surname><given-names>J</given-names></name><name name-style="western"><surname>Maricic</surname><given-names>T</given-names></name><etal/></person-group>             <year>2009</year>             <article-title>Targeted retrieval and analysis of five Neandertal mtDNA genomes.</article-title>             <source>Science</source>             <volume>325</volume>             <issue>5938</issue>             <fpage>318</fpage>             <lpage>321</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0024161-Krause1">
+        <label>20</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Krause</surname><given-names>J</given-names></name><name name-style="western"><surname>Briggs</surname><given-names>AW</given-names></name><name name-style="western"><surname>Kircher</surname><given-names>M</given-names></name><name name-style="western"><surname>Maricic</surname><given-names>T</given-names></name><name name-style="western"><surname>Zwyns</surname><given-names>N</given-names></name><etal/></person-group>             <year>2010</year>             <article-title>A complete mtDNA genome of an early modern human from Kostenki, Russia.</article-title>             <source>Curr Biol</source>             <volume>20</volume>             <issue>3</issue>             <fpage>231</fpage>             <lpage>237</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0024161-Orlando1">
+        <label>21</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Orlando</surname><given-names>L</given-names></name><name name-style="western"><surname>Ginolhac</surname><given-names>A</given-names></name><name name-style="western"><surname>Raghavan</surname><given-names>M</given-names></name><name name-style="western"><surname>Vilstrup</surname><given-names>J</given-names></name><name name-style="western"><surname>Rasmussen</surname><given-names>M</given-names></name><etal/></person-group>             <year>in press</year>             <article-title>True Single-Molecule DNA Sequencing of a Pleistocene Horse bone.</article-title>             <source>Gen Res</source>          </element-citation>
+      </ref>
+      <ref id="pone.0024161-LaluezaFox1">
+        <label>22</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Lalueza-Fox</surname><given-names>C</given-names></name><name name-style="western"><surname>Castresana</surname><given-names>J</given-names></name><name name-style="western"><surname>Sampietro</surname><given-names>L</given-names></name><name name-style="western"><surname>Marqués-Bonet</surname><given-names>T</given-names></name><name name-style="western"><surname>Alcover</surname><given-names>JA</given-names></name><etal/></person-group>             <year>2005</year>             <article-title>Molecular dating of caprines using ancient DNA sequences of Myotragus balearicus, en extinct endemic Balearic mammal.</article-title>             <source>BMC Evol Biol</source>             <volume>5</volume>             <fpage>70</fpage>          </element-citation>
+      </ref>
+      <ref id="pone.0024161-Ramrez1">
+        <label>23</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Ramírez</surname><given-names>O</given-names></name><name name-style="western"><surname>Gigli</surname><given-names>E</given-names></name><name name-style="western"><surname>Bover</surname><given-names>P</given-names></name><name name-style="western"><surname>Alcover</surname><given-names>JA</given-names></name><name name-style="western"><surname>Bertranpetit</surname><given-names>J</given-names></name><etal/></person-group>             <year>2009</year>             <article-title>Paleogenomics in a temperate environment: shotgun sequencing from an extinct Mediterranean caprine.</article-title>             <source>PloS One</source>             <volume>22;4</volume>             <issue>5</issue>             <fpage>e5670</fpage>          </element-citation>
+      </ref>
+      <ref id="pone.0024161-Rodrguez1">
+        <label>24</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Rodríguez</surname><given-names>R</given-names></name><name name-style="western"><surname>Ramírez</surname><given-names>O</given-names></name><name name-style="western"><surname>Valdiosera</surname><given-names>CE</given-names></name><name name-style="western"><surname>García</surname><given-names>N</given-names></name><name name-style="western"><surname>Alda</surname><given-names>F</given-names></name><etal/></person-group>             <year>in press</year>             <article-title>50,000 years of genetic uniformity in the critically endangered Iberian lynx.</article-title>             <source>Mol Ecol</source>          </element-citation>
+      </ref>
+      <ref id="pone.0024161-Sampietro2">
+        <label>25</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Sampietro</surname><given-names>ML</given-names></name><name name-style="western"><surname>Lao</surname><given-names>O</given-names></name><name name-style="western"><surname>Caramelli</surname><given-names>D</given-names></name><name name-style="western"><surname>Lari</surname><given-names>M</given-names></name><name name-style="western"><surname>Pou</surname><given-names>R</given-names></name><etal/></person-group>             <year>2007</year>             <article-title>Palaeogenetic evidence supports a dual model of Neolithic spreading into Europe.</article-title>             <source>Proc R Soc B</source>             <volume>274</volume>             <issue>1622</issue>             <fpage>2161</fpage>             <lpage>2167</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0024161-Noonan1">
+        <label>26</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Noonan</surname><given-names>JP</given-names></name><name name-style="western"><surname>Hofreiter</surname><given-names>M</given-names></name><name name-style="western"><surname>Smith</surname><given-names>D</given-names></name><name name-style="western"><surname>Priest</surname><given-names>JR</given-names></name><name name-style="western"><surname>Rohland</surname><given-names>N</given-names></name><etal/></person-group>             <year>2005</year>             <article-title>Genomic sequencing of Pleistocene cave bears.</article-title>             <source>Science</source>             <volume>309</volume>             <issue>5734</issue>             <fpage>597</fpage>             <lpage>599</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0024161-Poinar1">
+        <label>27</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Poinar</surname><given-names>HN</given-names></name><name name-style="western"><surname>Schwarz</surname><given-names>C</given-names></name><name name-style="western"><surname>Qi</surname><given-names>J</given-names></name><name name-style="western"><surname>Shapiro</surname><given-names>B</given-names></name><name name-style="western"><surname>Macphee</surname><given-names>RD</given-names></name><etal/></person-group>             <year>2006</year>             <article-title>Metagenomics to paleogenomics: large-scale sequencing of mammoth DNA.</article-title>             <source>Science</source>             <volume>311</volume>             <issue>5759</issue>             <fpage>392</fpage>             <lpage>394</lpage>          </element-citation>
+      </ref>
+      <ref id="pone.0024161-Blow1">
+        <label>28</label>
+        <element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author"><name name-style="western"><surname>Blow</surname><given-names>MJ</given-names></name><name name-style="western"><surname>Zhang</surname><given-names>T</given-names></name><name name-style="western"><surname>Woyke</surname><given-names>T</given-names></name><name name-style="western"><surname>Speller</surname><given-names>CF</given-names></name><name name-style="western"><surname>Krivoshapkin</surname><given-names>A</given-names></name><etal/></person-group>             <year>2008</year>             <article-title>Identification of the source of ancient remains through genomic sequencing.</article-title>             <source>Gen Res</source>             <volume>18</volume>             <issue>8</issue>             <fpage>1347</fpage>             <lpage>1353</lpage>          </element-citation>
+      </ref>
+    </ref-list>
+    
+  </back>
+</article>

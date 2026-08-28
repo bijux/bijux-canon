@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
+from bijux_canon_agent_trace_support import build_trace_header
 import pytest
 
 from bijux_canon_agent.constants import CONTRACT_VERSION
@@ -16,7 +17,6 @@ from bijux_canon_agent.traces import (
     RunTraceHeader,
     TraceEntry,
 )
-from tests.utils.trace_helpers import build_trace_header
 
 
 def _definition() -> PipelineDefinition:

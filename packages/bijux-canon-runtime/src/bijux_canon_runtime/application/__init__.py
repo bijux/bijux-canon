@@ -10,11 +10,13 @@ from typing import Any
 
 from bijux_canon_runtime.application.flow_boundary import enforce_flow_boundary
 from bijux_canon_runtime.application.planner import ExecutionPlanner
+from bijux_canon_runtime.application.request_planner import RuntimeRequestPlanner
 
 __all__ = [
     "ExecutionPlanner",
     "FlowRunResult",
     "RunMode",
+    "RuntimeRequestPlanner",
     "enforce_flow_boundary",
     "execute_flow",
 ]
@@ -24,6 +26,8 @@ def __getattr__(name: str) -> Any:
     """Lazily resolve exported attributes."""
     if name == "ExecutionPlanner":
         return ExecutionPlanner
+    if name == "RuntimeRequestPlanner":
+        return RuntimeRequestPlanner
     if name == "enforce_flow_boundary":
         return enforce_flow_boundary
     if name in {"FlowRunResult", "RunMode", "execute_flow"}:

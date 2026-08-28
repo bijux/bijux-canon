@@ -1,0 +1,427 @@
+{
+  "limitations": [
+    "The portfolio contains exact reviewed JATS article bytes only.",
+    "Truth labels, retrieval judgments, and held-out split assignments are separate governed outputs."
+  ],
+  "portfolio_identity_sha256": "56d42a419a4b105b3a37ba1973748fbbf6ec4e2e8c4f9f679095c8a7fbc2b9a0",
+  "schema_version": "bijux.canon.full_text_jats_portfolio.v1",
+  "source_count": 8,
+  "sources": [
+    {
+      "acquisition_receipt_identity_sha256": "55ffbbdb20a51058cb6e5b93a0bb4741080ed3334fe3ba94b35b0b4e0dbd2be3",
+      "attribution": "Oliver Smith, Glenn Dunshea, Mikkel-Holger S. Sinding, Sergey Fedorov, Mietje Germonpre, Hervé Bocherens, M. T. P. Gilbert (2019). Ancient RNA from Late Pleistocene permafrost and historical canids shows tissue-specific transcriptome survival. PLOS Biology 17(7):e3000166. https://doi.org/10.1371/journal.pbio.3000166",
+      "authors": [
+        "Oliver Smith",
+        "Glenn Dunshea",
+        "Mikkel-Holger S. Sinding",
+        "Sergey Fedorov",
+        "Mietje Germonpre",
+        "Hervé Bocherens",
+        "M. T. P. Gilbert"
+      ],
+      "byte_count": 187636,
+      "doi": "10.1371/journal.pbio.3000166",
+      "inspection": {
+        "abstract_characters": 1939,
+        "article_title": "Ancient RNA from Late Pleistocene permafrost and historical canids shows tissue-specific transcriptome survival",
+        "article_type": "research-article",
+        "body_characters": 78689,
+        "body_paragraphs": 140,
+        "body_sections": 34,
+        "supplementary_links": [
+          "info:doi/10.1371/journal.pbio.3000166.s001",
+          "info:doi/10.1371/journal.pbio.3000166.s002",
+          "info:doi/10.1371/journal.pbio.3000166.s003",
+          "info:doi/10.1371/journal.pbio.3000166.s004",
+          "info:doi/10.1371/journal.pbio.3000166.s005",
+          "info:doi/10.1371/journal.pbio.3000166.s006",
+          "info:doi/10.1371/journal.pbio.3000166.s007",
+          "info:doi/10.1371/journal.pbio.3000166.s008",
+          "info:doi/10.1371/journal.pbio.3000166.s009",
+          "info:doi/10.1371/journal.pbio.3000166.s010",
+          "info:doi/10.1371/journal.pbio.3000166.s011",
+          "info:doi/10.1371/journal.pbio.3000166.s012",
+          "info:doi/10.1371/journal.pbio.3000166.s013",
+          "info:doi/10.1371/journal.pbio.3000166.s014",
+          "info:doi/10.1371/journal.pbio.3000166.s015",
+          "info:doi/10.1371/journal.pbio.3000166.s016",
+          "info:doi/10.1371/journal.pbio.3000166.s017",
+          "info:doi/10.1371/journal.pbio.3000166.s018",
+          "info:doi/10.1371/journal.pbio.3000166.s019",
+          "info:doi/10.1371/journal.pbio.3000166.s020",
+          "info:doi/10.1371/journal.pbio.3000166.s021",
+          "info:doi/10.1371/journal.pbio.3000166.s022",
+          "info:doi/10.1371/journal.pbio.3000166.s023",
+          "info:doi/10.1371/journal.pbio.3000166.s024",
+          "info:doi/10.1371/journal.pbio.3000166.s025",
+          "info:doi/10.1371/journal.pbio.3000166.s026",
+          "info:doi/10.1371/journal.pbio.3000166.s027",
+          "info:doi/10.1371/journal.pbio.3000166.s028",
+          "info:doi/10.1371/journal.pbio.3000166.s029",
+          "info:doi/10.1371/journal.pbio.3000166.s030",
+          "info:doi/10.1371/journal.pbio.3000166.s031",
+          "info:doi/10.1371/journal.pbio.3000166.s032",
+          "info:doi/10.1371/journal.pbio.3000166.s033",
+          "info:doi/10.1371/journal.pbio.3000166.s034",
+          "info:doi/10.1371/journal.pbio.3000166.s035",
+          "info:doi/10.1371/journal.pbio.3000166.s036",
+          "info:doi/10.1371/journal.pbio.3000166.s037",
+          "info:doi/10.1371/journal.pbio.3000166.s038",
+          "info:doi/10.1371/journal.pbio.3000166.s039",
+          "info:doi/10.1371/journal.pbio.3000166.s040",
+          "info:doi/10.1371/journal.pbio.3000166.s041",
+          "info:doi/10.1371/journal.pbio.3000166.s042",
+          "info:doi/10.1371/journal.pbio.3000166.s043"
+        ]
+      },
+      "journal": "PLOS Biology",
+      "license": {
+        "article_copyright_statement": "© 2019 Smith et al. This is an open access article distributed under the terms of the Creative Commons Attribution License, which permits unrestricted use, distribution, and reproduction in any medium, provided the original author and source are credited.",
+        "expression": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
+        "scope": "version-of-record article content; linked or separately credited third-party assets require their own review",
+        "url": "https://creativecommons.org/licenses/by/4.0/"
+      },
+      "limitations": [
+        "Supplementary links are inventoried but supplementary bytes are not acquired.",
+        "Materialization proves full-text structure and byte identity, not scientific truth or corpus admission."
+      ],
+      "local_path": "sources/plos-pbio-3000166.xml",
+      "media_type": "application/xml",
+      "publication_year": 2019,
+      "sha256": "b530c246887c3341eacbe5b8e3a778dddb54662edb4d1d512908d100068d1665",
+      "source_id": "plos-pbio-3000166",
+      "source_record_identity_sha256": "6f95f518e6d08ccab4daab1ea2338d05d321b988772bceb9a365b53cbb889de7",
+      "title": "Ancient RNA from Late Pleistocene permafrost and historical canids shows tissue-specific transcriptome survival",
+      "transformations": []
+    },
+    {
+      "acquisition_receipt_identity_sha256": "e6fb4a68d25c2ab165a163c655badf5e35baf09cf95e162abaee6bf5c90f77af",
+      "attribution": "Anna Linderholm, Helena Malmström, Kerstin Lidén, Gunilla Holmlund, Anders Götherström (2008). Cryptic Contamination and Phylogenetic Nonsense. PLOS ONE 3(5):e2316. https://doi.org/10.1371/journal.pone.0002316",
+      "authors": [
+        "Anna Linderholm",
+        "Helena Malmström",
+        "Kerstin Lidén",
+        "Gunilla Holmlund",
+        "Anders Götherström"
+      ],
+      "byte_count": 52612,
+      "doi": "10.1371/journal.pone.0002316",
+      "inspection": {
+        "abstract_characters": 1313,
+        "article_title": "Cryptic Contamination and Phylogenetic Nonsense",
+        "article_type": "research-article",
+        "body_characters": 17528,
+        "body_paragraphs": 19,
+        "body_sections": 3,
+        "supplementary_links": []
+      },
+      "journal": "PLOS ONE",
+      "license": {
+        "article_copyright_statement": "© 2008 Linderholm et al. This is an open-access article distributed under the terms of the Creative Commons Attribution License, which permits unrestricted use, distribution, and reproduction in any medium, provided the original author and source are credited.",
+        "expression": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
+        "scope": "version-of-record article content; linked or separately credited third-party assets require their own review",
+        "url": "https://creativecommons.org/licenses/by/4.0/"
+      },
+      "limitations": [
+        "Supplementary links are inventoried but supplementary bytes are not acquired.",
+        "Materialization proves full-text structure and byte identity, not scientific truth or corpus admission."
+      ],
+      "local_path": "sources/plos-pone-0002316.xml",
+      "media_type": "application/xml",
+      "publication_year": 2008,
+      "sha256": "b7ca78582ba0bc29add0f65dec311d4234d29b999d7df4b43b6906816ee8d3ab",
+      "source_id": "plos-pone-0002316",
+      "source_record_identity_sha256": "29177f80345a4a72b4d7bfd808cd2b0cd9a2b9f7841994e677d95a534e339ee9",
+      "title": "Cryptic Contamination and Phylogenetic Nonsense",
+      "transformations": []
+    },
+    {
+      "acquisition_receipt_identity_sha256": "b58acb9672ffe95a4098edceb27561d0cc605a2d0f8f42dec713083647595bec",
+      "attribution": "Misa Winters, Jodi Lynn Barta, Cara Monroe, Brian M. Kemp (2011). To Clone or Not To Clone: Method Analysis for Retrieving Consensus Sequences In Ancient DNA Samples. PLOS ONE 6(6):e21247. https://doi.org/10.1371/journal.pone.0021247",
+      "authors": [
+        "Misa Winters",
+        "Jodi Lynn Barta",
+        "Cara Monroe",
+        "Brian M. Kemp"
+      ],
+      "byte_count": 148085,
+      "doi": "10.1371/journal.pone.0021247",
+      "inspection": {
+        "abstract_characters": 1571,
+        "article_title": "To Clone or Not To Clone: Method Analysis for Retrieving Consensus Sequences In Ancient DNA Samples",
+        "article_type": "research-article",
+        "body_characters": 28038,
+        "body_paragraphs": 30,
+        "body_sections": 6,
+        "supplementary_links": [
+          "info:doi/10.1371/journal.pone.0021247.s001"
+        ]
+      },
+      "journal": "PLOS ONE",
+      "license": {
+        "article_copyright_statement": "© 2011 Winters et al. This is an open-access article distributed under the terms of the Creative Commons Attribution License, which permits unrestricted use, distribution, and reproduction in any medium, provided the original author and source are credited.",
+        "expression": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
+        "scope": "version-of-record article content; linked or separately credited third-party assets require their own review",
+        "url": "https://creativecommons.org/licenses/by/4.0/"
+      },
+      "limitations": [
+        "Supplementary links are inventoried but supplementary bytes are not acquired.",
+        "Materialization proves full-text structure and byte identity, not scientific truth or corpus admission."
+      ],
+      "local_path": "sources/plos-pone-0021247.xml",
+      "media_type": "application/xml",
+      "publication_year": 2011,
+      "sha256": "928b23b533112cdb111a2e25c65c279408cb94dad38ee867d6872e3a3fc0b6f6",
+      "source_id": "plos-pone-0021247",
+      "source_record_identity_sha256": "5e23d5ad5254948cd0a0cccdb3a57642e55696725a29ece154a16245bbc891e9",
+      "title": "To Clone or Not To Clone: Method Analysis for Retrieving Consensus Sequences In Ancient DNA Samples",
+      "transformations": []
+    },
+    {
+      "acquisition_receipt_identity_sha256": "29609f24585d10a6e33edfd8b181e4764ba90f77762a914d860fd7f40c71e84f",
+      "attribution": "Marc García-Garcerà, Elena Gigli, Federico Sanchez-Quinto, Oscar Ramirez, Francesc Calafell, Sergi Civit, Carles Lalueza-Fox (2011). Fragmentation of Contaminant and Endogenous DNA in Ancient Samples Determined by Shotgun Sequencing; Prospects for Human Palaeogenomics. PLOS ONE 6(8):e24161. https://doi.org/10.1371/journal.pone.0024161",
+      "authors": [
+        "Marc García-Garcerà",
+        "Elena Gigli",
+        "Federico Sanchez-Quinto",
+        "Oscar Ramirez",
+        "Francesc Calafell",
+        "Sergi Civit",
+        "Carles Lalueza-Fox"
+      ],
+      "byte_count": 73063,
+      "doi": "10.1371/journal.pone.0024161",
+      "inspection": {
+        "abstract_characters": 1785,
+        "article_title": "Fragmentation of Contaminant and Endogenous DNA in Ancient Samples Determined by Shotgun Sequencing; Prospects for Human Palaeogenomics",
+        "article_type": "research-article",
+        "body_characters": 26309,
+        "body_paragraphs": 30,
+        "body_sections": 7,
+        "supplementary_links": []
+      },
+      "journal": "PLOS ONE",
+      "license": {
+        "article_copyright_statement": "© 2011 García-Garcerà et al. This is an open-access article distributed under the terms of the Creative Commons Attribution License, which permits unrestricted use, distribution, and reproduction in any medium, provided the original author and source are credited.",
+        "expression": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
+        "scope": "version-of-record article content; linked or separately credited third-party assets require their own review",
+        "url": "https://creativecommons.org/licenses/by/4.0/"
+      },
+      "limitations": [
+        "Supplementary links are inventoried but supplementary bytes are not acquired.",
+        "Materialization proves full-text structure and byte identity, not scientific truth or corpus admission."
+      ],
+      "local_path": "sources/plos-pone-0024161.xml",
+      "media_type": "application/xml",
+      "publication_year": 2011,
+      "sha256": "507f5eb7c87a394c1d66a08e8e2c650bbea70472300e186a7eaafef61a07a307",
+      "source_id": "plos-pone-0024161",
+      "source_record_identity_sha256": "dc8b11f1e9c787ce2946cbec21c77634f0722e160452365cf264ba48b6fbd035",
+      "title": "Fragmentation of Contaminant and Endogenous DNA in Ancient Samples Determined by Shotgun Sequencing; Prospects for Human Palaeogenomics",
+      "transformations": []
+    },
+    {
+      "acquisition_receipt_identity_sha256": "cb0ee0953420f421eb65bc2549bd9fe5d8f8e710f76da9c7d4cf396801793153",
+      "attribution": "David Penney, Caroline Wadsworth, Graeme Fox, Sandra L. Kennedy, Richard F. Preziosi, Terence A. Brown (2013). Absence of Ancient DNA in Sub-Fossil Insect Inclusions Preserved in ‘Anthropocene’ Colombian Copal. PLOS ONE 8(9):e73150. https://doi.org/10.1371/journal.pone.0073150",
+      "authors": [
+        "David Penney",
+        "Caroline Wadsworth",
+        "Graeme Fox",
+        "Sandra L. Kennedy",
+        "Richard F. Preziosi",
+        "Terence A. Brown"
+      ],
+      "byte_count": 68852,
+      "doi": "10.1371/journal.pone.0073150",
+      "inspection": {
+        "abstract_characters": 1939,
+        "article_title": "Absence of Ancient DNA in Sub-Fossil Insect Inclusions Preserved in ‘Anthropocene’ Colombian Copal",
+        "article_type": "research-article",
+        "body_characters": 22691,
+        "body_paragraphs": 24,
+        "body_sections": 5,
+        "supplementary_links": [
+          "info:doi/10.1371/journal.pone.0073150.s001"
+        ]
+      },
+      "journal": "PLOS ONE",
+      "license": {
+        "article_copyright_statement": "© 2013 Penney et al. This is an open-access article distributed under the terms of the Creative Commons Attribution License, which permits unrestricted use, distribution, and reproduction in any medium, provided the original author and source are credited.",
+        "expression": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
+        "scope": "version-of-record article content; linked or separately credited third-party assets require their own review",
+        "url": "https://creativecommons.org/licenses/by/4.0/"
+      },
+      "limitations": [
+        "Supplementary links are inventoried but supplementary bytes are not acquired.",
+        "Materialization proves full-text structure and byte identity, not scientific truth or corpus admission."
+      ],
+      "local_path": "sources/plos-pone-0073150.xml",
+      "media_type": "application/xml",
+      "publication_year": 2013,
+      "sha256": "4948db319243ba8344b4b58e9161d4babf70e52cb12aec05dc64798f6234d296",
+      "source_id": "plos-pone-0073150",
+      "source_record_identity_sha256": "a4b175f48c04669a1c78b153103085a0c01e6844d9ee45fc76cbe5409b2344a7",
+      "title": "Absence of Ancient DNA in Sub-Fossil Insect Inclusions Preserved in ‘Anthropocene’ Colombian Copal",
+      "transformations": []
+    },
+    {
+      "acquisition_receipt_identity_sha256": "6bb3f3d837b519be9c0898b4116cd4ba95c696c8e192f05db6dc58c91ae88056",
+      "attribution": "Ron Pinhasi, Daniel Fernandes, Kendra Sirak, Mario Novak, Sarah Connell, Songül Alpaslan-Roodenberg, Fokke Gerritsen, Vyacheslav Moiseyev, Andrey Gromov, Pál Raczky, Alexandra Anders, Michael Pietrusewsky, Gary Rollefson, Marija Jovanovic, Hiep Trinhhoang, Guy Bar-Oz, Marc Oxenham, Hirofumi Matsumura, Michael Hofreiter (2015). Optimal Ancient DNA Yields from the Inner Ear Part of the Human Petrous Bone. PLOS ONE 10(6):e0129102. https://doi.org/10.1371/journal.pone.0129102",
+      "authors": [
+        "Ron Pinhasi",
+        "Daniel Fernandes",
+        "Kendra Sirak",
+        "Mario Novak",
+        "Sarah Connell",
+        "Songül Alpaslan-Roodenberg",
+        "Fokke Gerritsen",
+        "Vyacheslav Moiseyev",
+        "Andrey Gromov",
+        "Pál Raczky",
+        "Alexandra Anders",
+        "Michael Pietrusewsky",
+        "Gary Rollefson",
+        "Marija Jovanovic",
+        "Hiep Trinhhoang",
+        "Guy Bar-Oz",
+        "Marc Oxenham",
+        "Hirofumi Matsumura",
+        "Michael Hofreiter"
+      ],
+      "byte_count": 96748,
+      "doi": "10.1371/journal.pone.0129102",
+      "inspection": {
+        "abstract_characters": 2076,
+        "article_title": "Optimal Ancient DNA Yields from the Inner Ear Part of the Human Petrous Bone",
+        "article_type": "research-article",
+        "body_characters": 32104,
+        "body_paragraphs": 39,
+        "body_sections": 8,
+        "supplementary_links": [
+          "info:doi/10.1371/journal.pone.0129102.s001",
+          "info:doi/10.1371/journal.pone.0129102.s002",
+          "info:doi/10.1371/journal.pone.0129102.s003",
+          "info:doi/10.1371/journal.pone.0129102.s004"
+        ]
+      },
+      "journal": "PLOS ONE",
+      "license": {
+        "article_copyright_statement": "© 2015 Pinhasi et al. This is an open access article distributed under the terms of the Creative Commons Attribution License, which permits unrestricted use, distribution, and reproduction in any medium, provided the original author and source are credited",
+        "expression": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
+        "scope": "version-of-record article content; linked or separately credited third-party assets require their own review",
+        "url": "https://creativecommons.org/licenses/by/4.0/"
+      },
+      "limitations": [
+        "Supplementary links are inventoried but supplementary bytes are not acquired.",
+        "Materialization proves full-text structure and byte identity, not scientific truth or corpus admission."
+      ],
+      "local_path": "sources/plos-pone-0129102.xml",
+      "media_type": "application/xml",
+      "publication_year": 2015,
+      "sha256": "26d20e230171b24507b7d8fb097686a77c366a6282a334c460fa9b8ca9cb9af8",
+      "source_id": "plos-pone-0129102",
+      "source_record_identity_sha256": "ecd6f7d1bd8b40aafe3a93f0614718d072b91c272ac22f5f14efb800ab78b922",
+      "title": "Optimal Ancient DNA Yields from the Inner Ear Part of the Human Petrous Bone",
+      "transformations": []
+    },
+    {
+      "acquisition_receipt_identity_sha256": "bb7d75c661c6845019beacdee640fd0e215217343a7640a2c4074011337c10c1",
+      "attribution": "David Peris, Kathrin Janssen, H. Jonas Barthel, Gabriele Bierbaum, Xavier Delclòs, Enrique Peñalver, Mónica M. Solórzano-Kraemer, Bjarte H. Jordal, Jes Rust (2020). DNA from resin-embedded organisms: Past, present and future. PLOS ONE 15(9):e0239521. https://doi.org/10.1371/journal.pone.0239521",
+      "authors": [
+        "David Peris",
+        "Kathrin Janssen",
+        "H. Jonas Barthel",
+        "Gabriele Bierbaum",
+        "Xavier Delclòs",
+        "Enrique Peñalver",
+        "Mónica M. Solórzano-Kraemer",
+        "Bjarte H. Jordal",
+        "Jes Rust"
+      ],
+      "byte_count": 162081,
+      "doi": "10.1371/journal.pone.0239521",
+      "inspection": {
+        "abstract_characters": 1849,
+        "article_title": "DNA from resin-embedded organisms: Past, present and future",
+        "article_type": "research-article",
+        "body_characters": 42374,
+        "body_paragraphs": 55,
+        "body_sections": 21,
+        "supplementary_links": [
+          "info:doi/10.1371/journal.pone.0239521.s001"
+        ]
+      },
+      "journal": "PLOS ONE",
+      "license": {
+        "article_copyright_statement": "© 2020 Peris et al. This is an open access article distributed under the terms of the Creative Commons Attribution License, which permits unrestricted use, distribution, and reproduction in any medium, provided the original author and source are credited.",
+        "expression": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
+        "scope": "version-of-record article content; linked or separately credited third-party assets require their own review",
+        "url": "https://creativecommons.org/licenses/by/4.0/"
+      },
+      "limitations": [
+        "Supplementary links are inventoried but supplementary bytes are not acquired.",
+        "Materialization proves full-text structure and byte identity, not scientific truth or corpus admission."
+      ],
+      "local_path": "sources/plos-pone-0239521.xml",
+      "media_type": "application/xml",
+      "publication_year": 2020,
+      "sha256": "416d57747bc8a1a4145127e5c6c78e7dc862df7c6bc7de1348b24a8f46c3df2a",
+      "source_id": "plos-pone-0239521",
+      "source_record_identity_sha256": "cc4c94a7725aab9b9592996fec467c2a54caa39792056d5973076765a0e7b5b6",
+      "title": "DNA from resin-embedded organisms: Past, present and future",
+      "transformations": []
+    },
+    {
+      "acquisition_receipt_identity_sha256": "851f34acae19730a5d1c7cfa5bce68b315c1a29b802834be691e43bad0d3987c",
+      "attribution": "Claus M. Zacho, Martina A. Bager, Ashot Margaryan, Peter Gravlund, Anders Galatius, Arne R. Rasmussen, Morten E. Allentoft (2021). Uncovering the genomic and metagenomic research potential in old ethanol-preserved snakes. PLOS ONE 16(8):e0256353. https://doi.org/10.1371/journal.pone.0256353",
+      "authors": [
+        "Claus M. Zacho",
+        "Martina A. Bager",
+        "Ashot Margaryan",
+        "Peter Gravlund",
+        "Anders Galatius",
+        "Arne R. Rasmussen",
+        "Morten E. Allentoft"
+      ],
+      "byte_count": 267733,
+      "doi": "10.1371/journal.pone.0256353",
+      "inspection": {
+        "abstract_characters": 1593,
+        "article_title": "Uncovering the genomic and metagenomic research potential in old ethanol-preserved snakes",
+        "article_type": "research-article",
+        "body_characters": 55908,
+        "body_paragraphs": 66,
+        "body_sections": 18,
+        "supplementary_links": [
+          "info:doi/10.1371/journal.pone.0256353.s001",
+          "info:doi/10.1371/journal.pone.0256353.s002",
+          "info:doi/10.1371/journal.pone.0256353.s003",
+          "info:doi/10.1371/journal.pone.0256353.s004",
+          "info:doi/10.1371/journal.pone.0256353.s005",
+          "info:doi/10.1371/journal.pone.0256353.s006",
+          "info:doi/10.1371/journal.pone.0256353.s007"
+        ]
+      },
+      "journal": "PLOS ONE",
+      "license": {
+        "article_copyright_statement": "© 2021 Zacho et al. This is an open access article distributed under the terms of the Creative Commons Attribution License, which permits unrestricted use, distribution, and reproduction in any medium, provided the original author and source are credited.",
+        "expression": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
+        "scope": "version-of-record article content; linked or separately credited third-party assets require their own review",
+        "url": "https://creativecommons.org/licenses/by/4.0/"
+      },
+      "limitations": [
+        "Supplementary links are inventoried but supplementary bytes are not acquired.",
+        "Materialization proves full-text structure and byte identity, not scientific truth or corpus admission."
+      ],
+      "local_path": "sources/plos-pone-0256353.xml",
+      "media_type": "application/xml",
+      "publication_year": 2021,
+      "sha256": "195ac7d15935b9627912b6f53d0b6c7734fe08e6eac665e595ecf3b84f3eec2a",
+      "source_id": "plos-pone-0256353",
+      "source_record_identity_sha256": "7fc1e7d265aaff982eb21bd2b973cb8d77f86c4f54183df4d83bdce2bb0c31fb",
+      "title": "Uncovering the genomic and metagenomic research potential in old ethanol-preserved snakes",
+      "transformations": []
+    }
+  ],
+  "state": "materialized"
+}

@@ -4,5 +4,14 @@ from __future__ import annotations
 
 from bijux_canon_reason.interfaces.cli import app
 
-if __name__ == "__main__":
+from .compatibility import warn_compatibility
+
+
+def main() -> None:
+    """Warn and delegate to the canonical Reason command."""
+    warn_compatibility()
     app()
+
+
+if __name__ == "__main__":
+    main()

@@ -7,29 +7,25 @@ from __future__ import annotations
 
 import argparse
 from collections.abc import Callable
-from dataclasses import asdict, replace
+from dataclasses import asdict
 import json
 from pathlib import Path
 import sys
 
+from bijux_canon_runtime.application.command_service import (
+    prepare_execution,
+    replay_persisted_run,
+)
 from bijux_canon_runtime.application.execute_flow import (
-    ExecutionConfig,
     FlowRunResult,
     execute_flow,
 )
-from bijux_canon_runtime.application.planner import ExecutionPlanner
-from bijux_canon_runtime.application.replay_store import replay_with_store
 from bijux_canon_runtime.core.errors import ConfigurationError, classify_failure
 from bijux_canon_runtime.interfaces.cli.manifest_loader import load_manifest
 from bijux_canon_runtime.interfaces.cli.policy_loader import load_policy
 from bijux_canon_runtime.interfaces.cli.result_rendering import render_result
 from bijux_canon_runtime.interfaces.cli.store_commands import normalize_for_json
 from bijux_canon_runtime.model.execution.run_mode import RunMode
-from bijux_canon_runtime.observability.storage.execution_store import (
-    DuckDBExecutionReadStore,
-    DuckDBExecutionWriteStore,
-)
-from bijux_canon_runtime.ontology.ids import RunID, TenantID
 
 EXIT_FAILURE = 1
 EXIT_CONTRACT_VIOLATION = 2
@@ -47,20 +43,17 @@ def execute_manifest_command_with_runner(
     execute_flow_fn: Callable[..., FlowRunResult],
 ) -> None:
     """Execute a manifest-backed runtime CLI command with an injected runner."""
-    manifest = load_manifest(Path(args.manifest))
     command = args.command
-    config = ExecutionConfig.from_command(command).for_manifest(manifest)
-    if getattr(args, "db_path", None):
-        config = ExecutionConfig(
-            mode=config.mode,
-            determinism_level=manifest.determinism_level,
-            execution_store=DuckDBExecutionWriteStore(Path(args.db_path)),
-        )
-    if getattr(args, "strict_determinism", False):
-        config = replace(config, strict_determinism=True)
-    if getattr(args, "policy", None):
-        policy = load_policy(Path(args.policy))
-        config = replace(config, verification_policy=policy)
+    db_path = Path(args.db_path) if getattr(args, "db_path", None) else None
+    manifest = load_manifest(Path(args.manifest))
+    policy = load_policy(Path(args.policy)) if getattr(args, "policy", None) else None
+    manifest, config = prepare_execution(
+        manifest=manifest,
+        command=command,
+        db_path=db_path,
+        strict_determinism=bool(getattr(args, "strict_determinism", False)),
+        policy=policy,
+    )
     try:
         result = execute_flow_fn(manifest, config=config)
     except Exception as exc:
@@ -80,24 +73,13 @@ def replay_run(args: argparse.Namespace, *, json_output: bool) -> None:
     """Replay a persisted runtime run."""
     manifest = load_manifest(Path(args.manifest))
     policy = load_policy(Path(args.policy))
-    planner = ExecutionPlanner()
-    resolved_flow = planner.resolve(manifest)
-    read_store = DuckDBExecutionReadStore(Path(args.db_path))
-    write_store = DuckDBExecutionWriteStore(Path(args.db_path))
-    config = ExecutionConfig(
-        mode=config_mode_for_replay(),
-        determinism_level=manifest.determinism_level,
-        execution_store=write_store,
-        execution_read_store=read_store,
-        verification_policy=policy,
+    diff, result = replay_persisted_run(
+        manifest=manifest,
+        policy=policy,
+        db_path=Path(args.db_path),
+        run_id=args.run_id,
+        tenant_id=args.tenant_id,
         strict_determinism=bool(args.strict_determinism),
-    )
-    diff, result = replay_with_store(
-        store=read_store,
-        run_id=RunID(args.run_id),
-        tenant_id=TenantID(args.tenant_id),
-        resolved_flow=resolved_flow,
-        config=config,
     )
     if json_output:
         if result.trace is None:

@@ -25,18 +25,22 @@ flowchart LR
     consumer["agent consumer"]
     root["package root<br/>API_VERSION only"]
     contracts["contracts<br/>inputs, outputs, plans"]
+    application["application<br/>installed workflow services and ports"]
     pipeline["pipeline<br/>definitions and execution facade"]
     roles["agents<br/>built-in role implementations"]
     traces["traces<br/>records, validation, upgrade"]
+    tooling["tooling<br/>typed research-tool registry"]
     config["config<br/>provider environment"]
     api["api.v1<br/>ASGI boundary"]
     internals["execution and CLI internals"]
 
     consumer --> root
     consumer --> contracts
+    consumer --> application
     consumer --> pipeline
     consumer --> roles
     consumer --> traces
+    consumer --> tooling
     consumer --> config
     consumer --> api
     pipeline --> internals
@@ -52,9 +56,11 @@ separate responsibility and evidence burden.
 | Need | Import surface |
 | --- | --- |
 | validated agent calls and outputs | `bijux_canon_agent.contracts` |
+| installed research orchestration | `bijux_canon_agent.application` |
 | pipeline construction | `bijux_canon_agent.pipeline` |
 | built-in roles | `bijux_canon_agent.agents` |
 | trace validation and replay models | `bijux_canon_agent.traces` |
+| bounded research-tool registration | `bijux_canon_agent.tooling` |
 | ASGI application | `bijux_canon_agent.api.v1` |
 | runtime-safe configuration | `bijux_canon_agent.config` |
 
@@ -77,6 +83,19 @@ request = AgentInput(
 
 Construction validates the contract but does not execute a role or contact a
 model provider.
+
+Installed composition imports `InstalledResearchService` and its typed request
+and port records from `bijux_canon_agent.application`. The service owns search
+selection, observed-state transitions, causal ordering, and convergence
+progression. `InstalledResearchRequirement`, `InstalledEvidenceRelation`, and
+the `ObservedResearch*` contracts make the question, requirements, relations,
+gaps, budgets, and decisions inspectable. An integrating runtime implements
+the port; it does not construct Agent role events itself.
+
+Tool integrations import `ResearchToolRegistry` and `ResearchToolBinding` from
+`bijux_canon_agent.tooling`, and descriptor/execution contracts from
+`bijux_canon_agent.contracts`. Registration alone grants no authority: every
+call must carry an exact allow decision from the plan-bound tool policy.
 
 `AgentInput` belongs to the runtime contract model. HTTP schema models live at
 the API boundary. Keep those representations distinct even when their fields

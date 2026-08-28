@@ -45,6 +45,13 @@ model identity. Entries retain lifecycle phase, input and output, scores,
 prompt and model hashes, replay metadata, epistemic state, failure or decision
 artifacts, and the run fingerprint.
 
+The installed research state additionally retains typed tool descriptor and
+execution-record identities. Each execution record links the allow decision
+and request digest to a result artifact or typed non-success status. Its safe
+summary is an explicit descriptor allowlist of counts, status, and artifact
+identities; raw queries, evidence text, model output, credentials, paths, and
+exception messages are not tool-record fields.
+
 ## Absence Has Meaning
 
 A dry run or an invocation without a successful result writes an explicit veto

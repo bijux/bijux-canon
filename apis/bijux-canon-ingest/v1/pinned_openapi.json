@@ -265,6 +265,224 @@
         "title": "CitationModel",
         "type": "object"
       },
+      "CorpusIngestRequest": {
+        "properties": {
+          "corpus_lock_path": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Corpus Lock Path"
+          },
+          "corpus_name": {
+            "minLength": 1,
+            "title": "Corpus Name",
+            "type": "string"
+          },
+          "exclude": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Exclude",
+            "type": "array"
+          },
+          "include": {
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Include",
+            "type": "array"
+          },
+          "max_depth": {
+            "default": 64,
+            "exclusiveMinimum": 0.0,
+            "title": "Max Depth",
+            "type": "integer"
+          },
+          "max_entries": {
+            "default": 100000,
+            "exclusiveMinimum": 0.0,
+            "title": "Max Entries",
+            "type": "integer"
+          },
+          "max_file_bytes": {
+            "default": 67108864,
+            "exclusiveMinimum": 0.0,
+            "title": "Max File Bytes",
+            "type": "integer"
+          },
+          "max_files": {
+            "default": 50000,
+            "exclusiveMinimum": 0.0,
+            "title": "Max Files",
+            "type": "integer"
+          },
+          "max_seconds": {
+            "default": 300.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Max Seconds",
+            "type": "number"
+          },
+          "max_total_bytes": {
+            "default": 2147483648,
+            "exclusiveMinimum": 0.0,
+            "title": "Max Total Bytes",
+            "type": "integer"
+          },
+          "publication_root": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publication Root"
+          },
+          "root_name": {
+            "minLength": 1,
+            "title": "Root Name",
+            "type": "string"
+          },
+          "root_path": {
+            "minLength": 1,
+            "title": "Root Path",
+            "type": "string"
+          },
+          "symlink_policy": {
+            "default": "reject",
+            "enum": [
+              "reject",
+              "files_within_root",
+              "all_within_root"
+            ],
+            "title": "Symlink Policy",
+            "type": "string"
+          }
+        },
+        "required": [
+          "root_path",
+          "root_name",
+          "corpus_name"
+        ],
+        "title": "CorpusIngestRequest",
+        "type": "object"
+      },
+      "CorpusIngestResponse": {
+        "properties": {
+          "canonical_byte_length": {
+            "title": "Canonical Byte Length",
+            "type": "integer"
+          },
+          "canonical_sha256": {
+            "title": "Canonical Sha256",
+            "type": "string"
+          },
+          "chunk_count": {
+            "title": "Chunk Count",
+            "type": "integer"
+          },
+          "configuration_sha256": {
+            "title": "Configuration Sha256",
+            "type": "string"
+          },
+          "corpus_lock": {
+            "additionalProperties": true,
+            "title": "Corpus Lock",
+            "type": "object"
+          },
+          "delta": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Delta"
+          },
+          "discovery_issue_count": {
+            "title": "Discovery Issue Count",
+            "type": "integer"
+          },
+          "disposition": {
+            "enum": [
+              "initial",
+              "unchanged",
+              "changed"
+            ],
+            "title": "Disposition",
+            "type": "string"
+          },
+          "document_count": {
+            "title": "Document Count",
+            "type": "integer"
+          },
+          "formats": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Formats",
+            "type": "object"
+          },
+          "ocr_required_count": {
+            "title": "Ocr Required Count",
+            "type": "integer"
+          },
+          "publication": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publication"
+          },
+          "rejection_count": {
+            "title": "Rejection Count",
+            "type": "integer"
+          },
+          "schema_version": {
+            "const": "bijux.canon.ingest.result.v2",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "snapshot_id": {
+            "title": "Snapshot Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "canonical_byte_length",
+          "canonical_sha256",
+          "chunk_count",
+          "configuration_sha256",
+          "corpus_lock",
+          "delta",
+          "discovery_issue_count",
+          "disposition",
+          "document_count",
+          "formats",
+          "ocr_required_count",
+          "publication",
+          "rejection_count",
+          "schema_version",
+          "snapshot_id"
+        ],
+        "title": "CorpusIngestResponse",
+        "type": "object"
+      },
       "DocIn": {
         "properties": {
           "category": {
@@ -594,6 +812,47 @@
           }
         },
         "summary": "Chunk documents",
+        "tags": [
+          "Chunking"
+        ]
+      }
+    },
+    "/v1/corpora/ingest": {
+      "post": {
+        "operationId": "ingestCanonicalCorpus",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CorpusIngestRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CorpusIngestResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Ingest a canonical source corpus",
         "tags": [
           "Chunking"
         ]

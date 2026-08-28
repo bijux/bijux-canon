@@ -22,7 +22,7 @@ def _artifact() -> ExecutionArtifact:
     )
 
 
-def test_build_invalidate_rebuild_transitions():
+def test_build_invalidate_rebuild_transitions() -> None:
     art = _artifact()
     state = lifecycle.build(art)
     assert state.status is lifecycle.IndexState.READY
@@ -37,7 +37,7 @@ def test_build_invalidate_rebuild_transitions():
     assert rebuilt.generation == 2
 
 
-def test_rebuild_rejects_contract_change():
+def test_rebuild_rejects_contract_change() -> None:
     art = _artifact()
     state = lifecycle.build(art)
     different = ExecutionArtifact(
@@ -52,7 +52,7 @@ def test_rebuild_rejects_contract_change():
         lifecycle.rebuild(state, different)
 
 
-def test_ledger_retention_limits(monkeypatch):
+def test_ledger_retention_limits(monkeypatch: pytest.MonkeyPatch) -> None:
     art = _artifact()
     from bijux_canon_index.infra.adapters.memory.backend import (
         MemoryExecutionLedger,

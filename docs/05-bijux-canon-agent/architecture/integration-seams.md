@@ -103,5 +103,40 @@ state, and final result. It may accept, reject, and persist the wider run; it
 must not rewrite agent history, turn interruption into completion, or convert a
 verification veto into success.
 
+For the installed local research path, Runtime supplies an
+`InstalledResearchPort` that exposes Reason planning/convergence and persistent
+Index retrieval. `InstalledResearchService` combines the plan with its
+content-addressed observed state and selects actions from explicit guards. A
+satisfied no-search state, a bounded no-result search, material opposition,
+ambiguous evidence, unclassified candidates, and tool failure therefore do not
+emit the same role sequence. This keeps evidence semantics in Reason,
+retrieval semantics in Index, workflow decisions in Agent, and durable
+artifact/run custody in Runtime. Runtime may serialize the returned state and
+events into its versioned artifact, but it must not synthesize missing Agent
+events or promote a blocking gap to completion.
+
+Before Agent selects an action, Reason derives a question-specific answer
+requirement plan from the actual grounded claims, semantic citation verdicts,
+admission gaps, synthesis roles, and any exact prior skeptical-search closure.
+Runtime maps that typed plan without inventing requirements. Agent retains the
+full requirement semantics in observed state and permits search only for
+material unresolved requirements with a query and an in-scope claim target.
+
+Agent also owns requirement-targeted query selection. Each admitted call binds
+one unresolved requirement, its support, opposition, limitation,
+disambiguation, or context intent, substantive query, satisfaction criteria,
+causal trigger, and prior attempts. Case, Unicode, whitespace, and
+punctuation-equivalent attempts share an equivalence identity and cannot be
+executed repeatedly. Runtime executes the selected query but cannot replace it
+with the same generic per-claim request.
+
+After each call, Agent records a typed observation and replans from the full
+attempt history. A bounded no-result observation broadens terminology and
+context, ambiguity targets exact entity/scope/quantity qualifiers, and
+classified opposition requests reconciliation and boundary evidence. A
+material unclassified candidate or retrieval refusal pauses further querying;
+neither is treated as support. Every executed call consumes one search-budget
+unit.
+
 See [configuration](../interfaces/configuration-surface.md) for precedence and
 [artifact contracts](../interfaces/artifact-contracts.md) for evidence fields.

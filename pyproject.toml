@@ -1,12 +1,12 @@
 [build-system]
-requires = ["hatchling>=1.27.0,<1.32", "hatch-vcs>=0.4.0,<1.0"]
+requires = ["hatchling>=1.30.1,<1.33", "hatch-vcs>=0.5.0,<1.0"]
 build-backend = "hatchling.build"
 
 [project]
 name = "bijux-canon-repository"
 description = "Repository workspace for bijux-canon."
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.11,<4"
 dependencies = []
 dynamic = ["version"]
 
@@ -22,7 +22,7 @@ dev = [
   "bijux-canon",
   "bijux-canon-agent[dev]",
   "bijux-canon-dev[dev]",
-  "bijux-canon-index[dev]",
+  "bijux-canon-index[dev,embeddings,nd,vdb]",
   "bijux-canon-ingest[dev]",
   "bijux-canon-reason[dev]",
   "bijux-canon-runtime[dev]",
@@ -43,6 +43,9 @@ dev = [
   "mkdocs-redirects>=1.2.1,<2.0",
   "mkdocs-section-index>=0.3.10,<1.0",
   "mkdocstrings>=0.27.0,<2.0",
+  "gitpython>=3.1.58,<4.0",
+  "h2>=4.4.1,<5.0",
+  "pip>=26.2,<27.0",
   "types-requests>=2.32.0,<3.0",
 ]
 
@@ -55,6 +58,7 @@ tag_format = "v$version"
 update_changelog_on_bump = false
 
 [tool.bijux_canon]
+repository = "bijux-canon"
 public_release_packages = [
   "bijux-canon-runtime",
   "compat-bijux-canon",
@@ -68,6 +72,46 @@ public_release_packages = [
   "compat-bijux-rar",
   "compat-bijux-vex",
 ]
+release_publication_tiers = [
+  [
+    "bijux-canon-agent",
+    "bijux-canon-ingest",
+    "bijux-canon-reason",
+    "bijux-canon-index",
+  ],
+  [
+    "bijux-canon-runtime",
+    "compat-bijux-agent",
+    "compat-bijux-rag",
+    "compat-bijux-rar",
+    "compat-bijux-vex",
+  ],
+  [
+    "compat-bijux-canon",
+    "compat-agentic-flows",
+  ],
+]
+badge_packages = [
+  "bijux-canon-runtime",
+  "compat-bijux-canon",
+  "bijux-canon-agent",
+  "bijux-canon-ingest",
+  "bijux-canon-reason",
+  "bijux-canon-index",
+  "compat-agentic-flows",
+  "compat-bijux-agent",
+  "compat-bijux-rag",
+  "compat-bijux-rar",
+  "compat-bijux-vex",
+]
+docs_badge_packages = [
+  "bijux-canon-runtime",
+  "bijux-canon-agent",
+  "bijux-canon-ingest",
+  "bijux-canon-reason",
+  "bijux-canon-index",
+]
+badge_include_current_docs = false
 internal_support_packages = [
   "bijux-canon-dev",
 ]
@@ -142,14 +186,14 @@ fail-under = 32
 color = true
 
 [tool.bandit]
-skips = ["B404", "B311"]
 exclude_dirs = [".venv", "tests", "artifacts", ".pytest_cache", ".ruff_cache"]
 
 [tool.hatch.version]
 source = "vcs"
 tag-pattern = "^v(?P<version>.*)$"
-fallback-version = "0.1.0"
+fallback-version = "0.4.0"
 raw-options = { git_describe_command = "git describe --dirty --tags --long --match 'v*'", local_scheme = "dirty-tag", version_scheme = "guess-next-dev", root = ".", search_parent_directories = true }
 
 [tool.hatch.build.targets.wheel]
 bypass-selection = true
+skip-excluded-dirs = true

@@ -17,7 +17,7 @@ def _write_doc(name: str) -> str:
     return name
 
 
-def test_parallel_backends_do_not_leak_state():
+def test_parallel_backends_do_not_leak_state() -> None:
     with ThreadPoolExecutor(max_workers=2) as pool:
         results = list(pool.map(_write_doc, ["a", "b"]))
     assert sorted(results) == ["a", "b"]

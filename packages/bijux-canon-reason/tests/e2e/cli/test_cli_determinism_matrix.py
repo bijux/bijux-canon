@@ -27,6 +27,7 @@ import pytest
 )
 def test_cli_run_is_deterministic_across_invocations(
     tmp_path: Path,
+    corpus_fixture: Path,
     write_spec: Any,
     run_cli: Any,
     seed: int,
@@ -35,9 +36,15 @@ def test_cli_run_is_deterministic_across_invocations(
     artifacts = tmp_path / "artifacts"
     artifacts.mkdir(parents=True, exist_ok=True)
 
+    constraints: dict[str, object] = {
+        "needs_retrieval": preset == "rar",
+        "top_k": 2,
+    }
+    if preset == "rar":
+        constraints["corpus_path"] = str(corpus_fixture)
     spec_path = write_spec(
         description=f"determinism {preset} {seed}",
-        constraints={"needs_retrieval": preset == "rar", "top_k": 2},
+        constraints=constraints,
     )
 
     cmd = [

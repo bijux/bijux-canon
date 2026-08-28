@@ -11,9 +11,11 @@ import sys
 import typer
 
 from bijux_canon_index.application.engine import VectorExecutionEngine
+from bijux_canon_index.application.surface_services import (
+    load_execution_run,
+    vector_store_name,
+)
 from bijux_canon_index.core.errors import BijuxError, ValidationError
-from bijux_canon_index.infra.adapters.vectorstore_registry import VECTOR_STORES
-from bijux_canon_index.infra.run_store import RunStore
 from bijux_canon_index.interfaces.cli.configuration import (
     build_config as _build_config,
 )
@@ -231,17 +233,10 @@ def execute(
             base_config=base_config,
         )
         if dry_run:
-            vs_descriptor = None
-            if config.vector_store:
-                store_name = config.vector_store.backend
-                vs_descriptor = next(
-                    (d for d in VECTOR_STORES.descriptors() if d.name == store_name),
-                    None,
-                )
             output = {
                 "resolved_config": _config_to_dict(config),
                 "determinism": contract.value,
-                "vector_store": vs_descriptor.name if vs_descriptor else None,
+                "vector_store": vector_store_name(config),
                 "provenance_fields": [
                     "execution_id",
                     "result_id",
@@ -363,7 +358,7 @@ def compare(
     execution_contract: str = typer.Option(
         "deterministic",
         "--execution-contract",
-        help="Contract placeholder for payload validation; artifacts govern actual contract",
+        help="Execution contract recorded in the comparison request",
     ),
     artifact_a: str = typer.Option("art-1", "--artifact-a"),
     artifact_b: str = typer.Option("art-1", "--artifact-b"),
@@ -381,7 +376,7 @@ def compare(
             run_b=run_b,
             bundle_a=bundle_a,
             bundle_b=bundle_b,
-            load_run=RunStore().load,
+            load_run=load_execution_run,
             load_bundle=_load_bundle,
         )
         if comparison is not None:

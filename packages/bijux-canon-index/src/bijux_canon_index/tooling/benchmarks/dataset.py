@@ -7,7 +7,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 import json
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:  # pragma: no cover
     import numpy as np
@@ -22,8 +22,8 @@ class BenchmarkDataset:
     """Represents benchmark dataset."""
 
     documents: list[str]
-    vectors: np.ndarray
-    queries: np.ndarray
+    vectors: np.ndarray[Any, np.dtype[np.float32]]
+    queries: np.ndarray[Any, np.dtype[np.float32]]
     dimension: int
     seed: int
 

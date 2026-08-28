@@ -27,7 +27,7 @@ def test_duckdb_migrations_apply(tmp_path: Path) -> None:
     rows = connection.execute(
         "SELECT version, checksum FROM schema_migrations ORDER BY version"
     ).fetchall()
-    assert [int(row[0]) for row in rows] == [1, 2, SCHEMA_VERSION]
+    assert [int(row[0]) for row in rows] == list(range(1, SCHEMA_VERSION + 1))
     expected_init = DuckDBExecutionWriteStore._hash_payload(
         (MIGRATIONS_DIR / "001_init.sql").read_text(encoding="utf-8")
     )
@@ -39,9 +39,27 @@ def test_duckdb_migrations_apply(tmp_path: Path) -> None:
     expected_slices = DuckDBExecutionWriteStore._hash_payload(
         (MIGRATIONS_DIR / "003_entropy_budget_slices.sql").read_text(encoding="utf-8")
     )
+    expected_metadata = DuckDBExecutionWriteStore._hash_payload(
+        (MIGRATIONS_DIR / "004_metadata_authority.sql").read_text(encoding="utf-8")
+    )
+    expected_transactions = DuckDBExecutionWriteStore._hash_payload(
+        (MIGRATIONS_DIR / "005_publication_transactions.sql").read_text(
+            encoding="utf-8"
+        )
+    )
+    expected_retention = DuckDBExecutionWriteStore._hash_payload(
+        (MIGRATIONS_DIR / "006_retention_history.sql").read_text(encoding="utf-8")
+    )
+    expected_jobs = DuckDBExecutionWriteStore._hash_payload(
+        (MIGRATIONS_DIR / "007_runtime_jobs.sql").read_text(encoding="utf-8")
+    )
     assert rows[0][1] == expected_init
     assert rows[1][1] == expected_update
     assert rows[2][1] == expected_slices
+    assert rows[3][1] == expected_metadata
+    assert rows[4][1] == expected_transactions
+    assert rows[5][1] == expected_retention
+    assert rows[6][1] == expected_jobs
     contract_row = connection.execute(
         "SELECT schema_version, schema_hash FROM schema_contract"
     ).fetchone()
@@ -65,6 +83,52 @@ def test_duckdb_migrations_reject_future_version(tmp_path: Path) -> None:
     store._connection.commit()
     with pytest.raises(RuntimeError, match="ahead of code migrations"):
         DuckDBExecutionWriteStore(db_path)
+
+
+def test_duckdb_migration_updates_prior_schema_contract(tmp_path: Path) -> None:
+    db_path = tmp_path / "upgrade.duckdb"
+    store = DuckDBExecutionWriteStore(db_path)
+    connection = store._connection
+    for table in (
+        "runtime_jobs",
+        "garbage_collection_candidates",
+        "garbage_collection_plans",
+        "artifact_holds",
+        "publication_transaction_artifacts",
+        "publication_transactions",
+        "run_publications",
+        "run_checks",
+        "run_policies",
+        "artifact_references",
+        "run_attempts",
+        "run_dags",
+        "run_revisions",
+        "artifact_payload_dependencies",
+        "artifact_payloads",
+    ):
+        connection.execute(f"DROP TABLE {table}")
+    connection.execute("DELETE FROM schema_migrations WHERE version >= 4")
+    connection.execute(
+        """
+        UPDATE schema_contract
+        SET schema_version = 3, schema_hash = 'prior-schema-hash'
+        WHERE schema_version = 7
+        """
+    )
+    connection.commit()
+    store._store.close()
+
+    upgraded = DuckDBExecutionWriteStore(db_path)
+    contract_row = upgraded._connection.execute(
+        "SELECT schema_version, schema_hash FROM schema_contract"
+    ).fetchone()
+    assert contract_row == (
+        SCHEMA_VERSION,
+        SCHEMA_HASH_PATH.read_text(encoding="utf-8").strip(),
+    )
+    assert upgraded._connection.execute(
+        "SELECT count(*) FROM artifact_payloads"
+    ).fetchone() == (0,)
 
 
 def test_duckdb_migrations_rollback_on_failure(tmp_path: Path, monkeypatch) -> None:

@@ -6,13 +6,16 @@ import sys
 import tomllib
 from typing import Any, TypedDict, cast
 
+from packaging.requirements import Requirement
+from packaging.utils import canonicalize_name
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 PACKAGE_ROOT = REPO_ROOT / "packages"
 CHANGELOG_URL_PREFIX = "https://github.com/bijux/bijux-canon/blob/main/"
-PUBLIC_RELEASE_VERSION = "0.3.9"
+PUBLIC_RELEASE_VERSION = "0.4.0"
 REQUIRED_PUBLIC_URLS = {
     "Homepage",
     "Website",
@@ -233,14 +236,41 @@ def test_public_release_packages_are_aligned_to_public_release_version() -> None
     )
 
 
-def test_runtime_workspace_dependencies_accept_local_release_previews() -> None:
-    project = _project_table(_package_path("bijux-canon-runtime") / "pyproject.toml")
-    dependencies = set(cast(list[str], project.get("dependencies", [])))
+def test_runtime_build_metadata_binds_canonical_peers_to_its_version() -> None:
+    pyproject = _package_path("bijux-canon-runtime") / "pyproject.toml"
+    data = tomllib.loads(pyproject.read_text(encoding="utf-8"))
+    project = cast(dict[str, Any], data["project"])
+    custom = data["tool"]["hatch"]["metadata"]["hooks"]["custom"]
 
-    assert "bijux-canon-agent>=0.3.9.dev0,<0.4.0" in dependencies
-    assert "bijux-canon-ingest>=0.3.9.dev0,<0.4.0" in dependencies
-    assert "bijux-canon-reason>=0.3.9.dev0,<0.4.0" in dependencies
-    assert "bijux-canon-index>=0.3.9.dev0,<0.4.0" in dependencies
+    assert "dependencies" in project["dynamic"]
+    assert "dependencies" not in project
+    assert custom["same-version-dependencies"] == [
+        "bijux-canon-agent",
+        "bijux-canon-ingest",
+        "bijux-canon-reason",
+        "bijux-canon-index",
+    ]
+    assert custom["external-dependencies"] == [
+        "bijux-cli>=0.3.6,<0.5.0",
+        "duckdb>=1.1.3,<2.0.0",
+        "pydantic>=2.0.2,<3.0.0",
+    ]
+    runtime_extras = cast(dict[str, list[str]], project["optional-dependencies"])
+    local_cpu = {
+        canonicalize_name(Requirement(value).name)
+        for value in runtime_extras["local-cpu"]
+    }
+    assert local_cpu == {"faiss-cpu", "numpy", "sentence-transformers", "torch"}
+
+    index_project = _project_table(
+        _package_path("bijux-canon-index") / "pyproject.toml"
+    )
+    index_extras = cast(dict[str, list[str]], index_project["optional-dependencies"])
+    index_local_cpu = {
+        canonicalize_name(Requirement(value).name)
+        for value in index_extras["local-cpu"]
+    }
+    assert index_local_cpu == local_cpu
 
 
 def test_http_surface_packages_declare_only_owned_http_dependencies() -> None:
@@ -271,6 +301,43 @@ def test_http_surface_packages_declare_only_owned_http_dependencies() -> None:
     api_dependencies = set(optional_dependencies.get("api", []))
     assert "fastapi>=0.128,<1.0" in api_dependencies
     assert "starlette>=1.3.1,<2.0" in api_dependencies
+
+
+def test_advertised_extras_install_owned_capabilities() -> None:
+    empty_extras: list[str] = []
+    for pyproject_path in _package_pyprojects():
+        project = _project_table(pyproject_path)
+        extras = cast(dict[str, list[str]], project.get("optional-dependencies", {}))
+        empty_extras.extend(
+            f"{pyproject_path.parent.name}[{extra_name}]"
+            for extra_name, dependencies in extras.items()
+            if not dependencies
+        )
+    assert not empty_extras, "advertised empty extras: " + ", ".join(empty_extras)
+
+    agent_project = _project_table(
+        _package_path("bijux-canon-agent") / "pyproject.toml"
+    )
+    agent_extras = cast(dict[str, list[str]], agent_project["optional-dependencies"])
+    document_readers = {
+        canonicalize_name(Requirement(dependency).name)
+        for dependency in agent_extras["document_readers"]
+    }
+    compatibility_alias = {
+        canonicalize_name(Requirement(dependency).name)
+        for dependency in agent_extras["extra"]
+    }
+
+    assert compatibility_alias == document_readers
+    assert {"pillow", "pymupdf", "pytesseract"} <= document_readers
+    assert "openpyxl" not in document_readers
+    assert "lxml" not in document_readers
+
+    reason_project = _project_table(
+        _package_path("bijux-canon-reason") / "pyproject.toml"
+    )
+    reason_extras = cast(dict[str, list[str]], reason_project["optional-dependencies"])
+    assert "llm" not in reason_extras
 
 
 def test_workspace_packages_use_shared_repository_release_tags() -> None:

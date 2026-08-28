@@ -20,8 +20,8 @@ also selects retrieval and evidence behavior:
 
 | Constraint | Default | Effect |
 | --- | ---: | --- |
-| `needs_retrieval` | `false` | use the local BM25 runtime when a corpus is available |
-| `corpus_path` | packaged small corpus when retrieval is requested and the fixture is available | JSONL corpus used by local retrieval |
+| `needs_retrieval` | `false` | require and use an explicit local BM25 corpus when true |
+| `corpus_path` | no default | JSONL corpus required by local retrieval |
 | `chunk_chars` | `800` | target chunk size |
 | `overlap_chars` | `120` | character overlap between adjacent chunks |
 | `bm25_k1` | `1.2` | BM25 term-frequency saturation |

@@ -48,10 +48,13 @@ nav:
           - Local Development: 01-bijux-canon/operations/local-development.md
           - Testing and Validation: 01-bijux-canon/operations/testing-and-validation.md
           - Release and Versioning: 01-bijux-canon/operations/release-and-versioning.md
+          - Version 0.4.0 Release Candidate: 01-bijux-canon/operations/release-0.4.0.md
           - API and Schema Governance: 01-bijux-canon/operations/api-and-schema-governance.md
           - Contributor Workflows: 01-bijux-canon/operations/contributor-workflows.md
           - Automation Surfaces: 01-bijux-canon/operations/automation-surfaces.md
           - Artifact Governance: 01-bijux-canon/operations/artifact-governance.md
+          - Production Threat Model: 01-bijux-canon/operations/threat-model.md
+          - Security Evidence and Incident Response: 01-bijux-canon/operations/security-response.md
           - Review Expectations: 01-bijux-canon/operations/review-expectations.md
           - Change Management: 01-bijux-canon/operations/change-management.md
   - bijux-canon-ingest:

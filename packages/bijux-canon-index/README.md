@@ -19,17 +19,17 @@
 [![bijux-rar](https://img.shields.io/pypi/v/bijux-rar?label=bijux--rar&logo=pypi)](https://pypi.org/project/bijux-rar/)
 [![bijux-vex](https://img.shields.io/pypi/v/bijux-vex?label=bijux--vex&logo=pypi)](https://pypi.org/project/bijux-vex/)
 
-[![bijux-canon-index](https://img.shields.io/badge/index-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon-index)
-[![bijux-canon-runtime](https://img.shields.io/badge/runtime-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon-runtime)
-[![bijux-canon](https://img.shields.io/badge/bijux--canon-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon)
-[![bijux-canon-agent](https://img.shields.io/badge/agent-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon-agent)
-[![bijux-canon-ingest](https://img.shields.io/badge/ingest-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon-ingest)
-[![bijux-canon-reason](https://img.shields.io/badge/reason-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon-reason)
-[![agentic-flows](https://img.shields.io/badge/agentic--flows-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fagentic-flows)
-[![bijux-agent](https://img.shields.io/badge/bijux--agent-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-agent)
-[![bijux-rag](https://img.shields.io/badge/bijux--rag-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-rag)
-[![bijux-rar](https://img.shields.io/badge/bijux--rar-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-rar)
-[![bijux-vex](https://img.shields.io/badge/bijux--vex-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-vex)
+[![bijux-canon-index OCI release bundle](https://img.shields.io/badge/index-oci%20bundle-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon-index)
+[![bijux-canon-runtime OCI release bundle](https://img.shields.io/badge/runtime-oci%20bundle-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon-runtime)
+[![bijux-canon OCI release bundle](https://img.shields.io/badge/bijux--canon-oci%20bundle-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon)
+[![bijux-canon-agent OCI release bundle](https://img.shields.io/badge/agent-oci%20bundle-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon-agent)
+[![bijux-canon-ingest OCI release bundle](https://img.shields.io/badge/ingest-oci%20bundle-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon-ingest)
+[![bijux-canon-reason OCI release bundle](https://img.shields.io/badge/reason-oci%20bundle-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon-reason)
+[![agentic-flows OCI release bundle](https://img.shields.io/badge/agentic--flows-oci%20bundle-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fagentic-flows)
+[![bijux-agent OCI release bundle](https://img.shields.io/badge/bijux--agent-oci%20bundle-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-agent)
+[![bijux-rag OCI release bundle](https://img.shields.io/badge/bijux--rag-oci%20bundle-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-rag)
+[![bijux-rar OCI release bundle](https://img.shields.io/badge/bijux--rar-oci%20bundle-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-rar)
+[![bijux-vex OCI release bundle](https://img.shields.io/badge/bijux--vex-oci%20bundle-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-vex)
 
 [![bijux-canon-index docs](https://img.shields.io/badge/docs-index-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/03-bijux-canon-index/)
 [![bijux-canon-runtime docs](https://img.shields.io/badge/docs-runtime-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/06-bijux-canon-runtime/)
@@ -77,26 +77,53 @@ flowchart LR
 ## Primary entrypoint
 
 The repository contains a complete Typer application under
-`bijux_canon_index.interfaces.cli.app`. The current package metadata does **not**
-register a `bijux-canon-index` console script, so source and wheel users must
-not assume that executable exists. The application can be invoked explicitly:
+`bijux_canon_index.interfaces.cli.app`. The wheel registers that application as
+the canonical `bijux-canon-index` console script:
 
 ```bash
-python -m bijux_canon_index.interfaces.cli.app capabilities
-python -m bijux_canon_index.interfaces.cli.app execute \
+bijux-canon-index --version
+bijux-canon-index capabilities
+bijux-canon-index execute \
   --vector '[0.2, 0.8]' \
   --execution-contract deterministic \
   --execution-intent exact_validation \
   --execution-mode strict
 ```
 
-The missing console-script registration is a packaging limitation, not a
-documentation alias. HTTP and in-process users are unaffected.
+`python -m bijux_canon_index.interfaces.cli.app` invokes the same application
+when a module command is preferable.
+
+For local dense or hybrid retrieval, install the embedding dependencies and
+explicitly acquire the pinned CPU model:
+
+```bash
+python -m pip install 'bijux-canon-index[local-cpu]'
+bijux-canon-index model acquire \
+  --profile local-minilm-384 \
+  --cache-root artifacts/bijux-canon-index/models
+```
+
+The command downloads only the immutable declared revision, verifies every
+required file, performs a one-vector offline CPU inference, and writes
+`model.lock.json` plus `model.record.json`. The validation record binds the
+source, revision, license pointer, file digests, dimension, installed runtime
+compatibility, and offline-reuse result. Re-run `model validate --model-root
+PATH` without network access before configuring Runtime. Use `model register`
+for an existing directory containing the exact pinned files; registration does
+not accept a different model or revision.
+
+On Linux, install `torch` from the official CPU wheel index before installing
+`local-cpu`; this prevents the default resolver from introducing CUDA runtime
+packages into a CPU-only environment. On macOS, `local-cpu` is supported on
+Python 3.11 because the safe FAISS/PyTorch combination has no newer Python ABI.
+The `bijux-cli` dependency publishes a Linux x86_64 wheel; Linux ARM64 hosts
+currently need a C build toolchain so pip can build that dependency from its
+source distribution.
 
 | Integration need | Supported surface | Authority to pin |
 | --- | --- | --- |
 | typed composition | application, domain, contract, and interface modules | imported symbol and distribution version |
-| shell automation | `python -m bijux_canon_index.interfaces.cli.app` | module command and its rendered output contract |
+| shell automation | `bijux-canon-index` | installed command and its rendered output contract |
 | service integration | v1 HTTP API | checked-in OpenAPI schema and schema hash |
 | historical automation | `bijux-vex` compatibility package | bridge version plus its exact canonical dependency |
 
@@ -104,25 +131,42 @@ The root import deliberately exposes only `__version__`. Examples that import
 an imagined root-level engine or request facade do not describe a supported
 API, even if equivalent types exist deeper in the package.
 
-## Runtime Contract-Enforcement Status
+## Installed content retrieval
 
-Runtime's retrieval path attempts to call
-`bijux_canon_index.enforce_contract(vector_contract_id, evidence)` and expects a
-boolean decision. The canonical index root intentionally exposes only
-`__version__`, and no `enforce_contract` function with that contract currently
-exists in the index source tree.
+Runtime composes the canonical lexical and dense index owners through an
+installed adapter. A hybrid query retains the complete bounded lexical and
+dense candidate populations, measured VEX evidence, reciprocal-rank fusion,
+content-derived evidence needs, and the final rerank. The default content
+policy routes across relevant documents and then selects answer-bearing
+passages using source structure such as abstract, result, discussion, and
+limitation sections. It cannot introduce a chunk absent from the fused
+candidate set.
 
-Index's implemented authority is richer than that boolean seam:
-`ExecutionRequest`, capability resolution, execution mode, budget, backend
-identity, result provenance, and `ExecutionArtifact` jointly describe why an
-operation ran or was refused. A future runtime adapter must map runtime's
-contract identifier and normalized evidence into those declared types and
-retain the resulting execution evidence. A permissive boolean shim would hide
-the very policy and provenance this package exists to expose.
+Each dense attempt retains the exact comparison candidates, witness and result
+identities, measured recall, observed effort, policy violations, and selected
+action. A refused ANN attempt may execute one policy-bounded exact fallback.
+Only an admitted final attempt can contribute hits. If exact fallback is not
+permitted or also fails policy, retrieval returns a typed refusal with zero
+hits, every attempt artifact ID, and operator remediation; evaluations retain
+that refusal and its Runtime lineage in the query denominator.
 
-Use the application modules, explicit module command, or HTTP API for current
-index execution. Do not cite installation as proof that runtime is enforcing
-index contracts until an installed-package adapter test covers this seam.
+The evidence planner is deterministic and identity-free: it derives bounded
+method, result, comparison, limitation, and counterevidence needs from the
+question text. It does not contain reviewed query IDs, document IDs, source
+IDs, or qrels. Every generated need records its exact derivation and every
+rerank records the immutable policy identity and candidate conservation.
+
+Development configuration search executes the installed retriever first. It
+then evaluates the observed finalization policy and bounded weighted-RRF
+alternatives against independently reviewed development qrels. Failed and
+refused executions remain in the denominator. Held-out labels are not an input
+to this search. The stage report separately exposes candidate-depth,
+channel-admitted, fusion, rerank, and final recall, so a passing final metric
+cannot be misattributed to an earlier stage.
+
+An installed retrieval artifact proves ranking behavior and exact source
+lineage for one question. It does not prove that downstream claims are
+entailed. That semantic responsibility belongs to `bijux-canon-reason`.
 
 ## HTTP Contract
 
@@ -156,11 +200,11 @@ custody gap that replay cannot repair.
 [`bijux-vex`](https://pypi.org/project/bijux-vex/) is an exact-version
 compatibility distribution for this package. It preserves the `bijux_vex`
 import root and `bijux-vex` command while delegating execution to canonical
-index modules. `bijux-canon-index` intentionally publishes no console script,
-so there is no `bijux-canon-index` command to use as a direct replacement.
+index modules. Both commands resolve to the same public CLI application;
+`bijux-canon-index` is the direct replacement for new automation.
 
-Use `bijux_canon_index` in new Python integrations or adopt the versioned HTTP
-contract. Follow the
+Use `bijux-canon-index`, `bijux_canon_index`, or the versioned HTTP contract in
+new integrations. Follow the
 [migration guide](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
 to replace command automation deliberately and compare ranked results, typed
 failures, and execution evidence. The former
@@ -218,11 +262,9 @@ and deployment controls remain necessary.
 | Python | available | import application and domain modules from `bijux_canon_index` |
 | HTTP | available | serve the application against the pinned v1 OpenAPI contract |
 | module CLI | available | `python -m bijux_canon_index.interfaces.cli.app` |
-| console script | not registered | use the module CLI; do not assume `bijux-canon-index` exists |
+| console script | available | `bijux-canon-index` |
 
-This distinction matters for automation: package installation proves that the
-Python distribution is available, but it does not prove that a shell command
-was registered. Consumers should select one of the available surfaces
-explicitly and pin the corresponding contract.
+Consumers should select one surface explicitly and pin the corresponding
+contract. Installed-wheel checks prove command registration and behavior.
 
 Package history is recorded in [`CHANGELOG.md`](CHANGELOG.md).

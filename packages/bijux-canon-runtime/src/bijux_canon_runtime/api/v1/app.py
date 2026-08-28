@@ -13,8 +13,7 @@ from __future__ import annotations
 
 from collections.abc import Awaitable, Callable
 import os
-from pathlib import Path
-from typing import Annotated
+from typing import Annotated, Any
 
 from fastapi import Body, FastAPI, Header, Request, status
 from fastapi.exceptions import RequestValidationError
@@ -36,13 +35,23 @@ from bijux_canon_runtime.api.v1.schemas import (
     ReadyResponse,
     ReplayRequest,
 )
-from bijux_canon_runtime.observability.storage.execution_store import (
-    DuckDBExecutionStore,
+from bijux_canon_runtime.application.readiness import RuntimeReadinessService
+from bijux_canon_runtime.application.runtime_configuration import (
+    resolve_runtime_configuration,
 )
 
 HTTP_HEADER_VALUE_PATTERN = r"^[A-Za-z0-9._:-]+$"
 
-app = FastAPI(
+
+class RuntimeFastAPI(FastAPI):
+    """FastAPI application with an owned deterministic OpenAPI contract."""
+
+    def openapi(self) -> dict[str, Any]:
+        """Return the runtime schema with its explicit public security contract."""
+        return _openapi(self)
+
+
+app = RuntimeFastAPI(
     title="bijux-canon-runtime API",
     summary="Contract-enforced execution and replay for the runtime layer.",
     description=(
@@ -72,32 +81,29 @@ app = FastAPI(
 )
 
 
-def _openapi() -> dict[str, object]:
+def _openapi(application: FastAPI) -> dict[str, Any]:
     """Handle OpenAPI."""
-    if app.openapi_schema is not None:
-        return app.openapi_schema
+    if application.openapi_schema is not None:
+        return application.openapi_schema
 
     schema = get_openapi(
-        title=app.title,
-        version=app.version,
-        openapi_version=app.openapi_version,
-        summary=app.summary,
-        description=app.description,
-        routes=app.routes,
-        tags=app.openapi_tags,
-        servers=app.servers,
-        contact=app.contact,
-        license_info=app.license_info,
+        title=application.title,
+        version=application.version,
+        openapi_version=application.openapi_version,
+        summary=application.summary,
+        description=application.description,
+        routes=application.routes,
+        tags=application.openapi_tags,
+        servers=application.servers,
+        contact=application.contact,
+        license_info=application.license_info,
     )
     schema["security"] = []
-    app.openapi_schema = schema
+    application.openapi_schema = schema
     return schema
 
 
-app.openapi = _openapi
-
-
-FAILURE_RESPONSES = {
+FAILURE_RESPONSES: dict[int | str, dict[str, Any]] = {
     status.HTTP_400_BAD_REQUEST: {
         "description": "Request body could not be parsed.",
         "model": FailureEnvelope,
@@ -175,7 +181,7 @@ def handle_starlette_http_exception(
 @app.get("/api/v1/health", response_model=HealthResponse, tags=["Health"])
 def health() -> HealthResponse:
     """Provide a lightweight liveness signal for health checks."""
-    # /health = process alive; /ready = storage writable.
+    # /health = process alive; /ready = complete Runtime dependencies.
     return HealthResponse(status="ok")
 
 
@@ -202,16 +208,16 @@ def health() -> HealthResponse:
     tags=["Health"],
 )
 def ready() -> JSONResponse:
-    """Provide a readiness signal without performing deep dependency checks."""
-    db_path = os.environ.get("AGENTIC_FLOWS_DB_PATH")
-    if not db_path:
-        return JSONResponse(status_code=503, content={"ready": False})
-    try:
-        store = DuckDBExecutionStore(Path(db_path))
-        store.close()
-    except Exception:
-        return JSONResponse(status_code=503, content={"ready": False})
-    return JSONResponse(content={"ready": True})
+    """Preserve the v1 boolean shape over the canonical deep readiness check."""
+    configuration = resolve_runtime_configuration(environment=os.environ)
+    report = RuntimeReadinessService(
+        configuration,
+        environment=os.environ,
+    ).evaluate()
+    return JSONResponse(
+        status_code=200 if report.ready else 503,
+        content={"ready": report.ready},
+    )
 
 
 @app.post(

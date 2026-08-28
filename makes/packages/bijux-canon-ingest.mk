@@ -10,8 +10,8 @@ ENABLE_CODESPELL               := 0
 ENABLE_RADON                   := 0
 ENABLE_PYDOCSTYLE              := 0
 FMT_RUN_RUFF_CHECK_FIX         := 1
-SECURITY_IGNORE_IDS            := PYSEC-2022-42969
-SECURITY_BANDIT_SKIP_IDS       := B101,B311
+SECURITY_IGNORE_IDS            :=
+SECURITY_BANDIT_SKIP_IDS       :=
 BANDIT_FLAGS                   := --severity-level high --confidence-level high
 BANDIT_EXCLUDES                := artifacts,build,dist,.tox,.mypy_cache,.pytest_cache,tests
 PIP_AUDIT_CONSOLE_FLAGS        := --progress-spinner off
@@ -27,6 +27,8 @@ TEST_E2E_ARGS := -m "e2e and not slow" --maxfail=1 -q
 TEST_REGRESSION_ARGS := -m "regression and not slow" --maxfail=1 -q
 TEST_EVALUATION_ARGS := -m "evaluation and not slow" --maxfail=1 -q
 TEST_REAL_LOCAL_ARGS := -m "real_local and not slow" -s -p no:cov
+TEST_COVERAGE_TARGETS := $(abspath tests/unit)
+TEST_COVERAGE_FAIL_UNDER := 70
 PACKAGE_INSTALL_TARGETS := \
   test lint fmt quality security-bandit security-audit security-deps api build sbom \
   fmt-artifacts lint-artifacts interrogate-report

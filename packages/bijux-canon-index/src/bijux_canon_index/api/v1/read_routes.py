@@ -4,12 +4,10 @@
 
 from __future__ import annotations
 
-from typing import cast
-
 from fastapi import FastAPI, Header, Response
 
 from bijux_canon_index.application.engine import VectorExecutionEngine
-from bijux_canon_index.infra.run_store import RunStore
+from bijux_canon_index.application.surface_services import list_execution_runs
 from bijux_canon_index.interfaces.schemas.api_responses import (
     ListArtifactsResponse,
     ListRunsResponse,
@@ -64,7 +62,7 @@ def register_read_routes(app: FastAPI) -> None:
                 },
             }
         },
-    )  # type: ignore[untyped-decorator]
+    )
     def capabilities(
         response: Response,
         correlation_id: str | None = Header(None, alias="X-Correlation-Id"),
@@ -73,10 +71,7 @@ def register_read_routes(app: FastAPI) -> None:
         engine = VectorExecutionEngine()
         if correlation_id:
             response.headers["X-Correlation-Id"] = correlation_id
-        return cast(
-            BackendCapabilitiesReport,
-            BackendCapabilitiesReport.model_validate(engine.capabilities()),
-        )
+        return BackendCapabilitiesReport.model_validate(engine.capabilities())
 
     @app.get(
         "/artifacts",
@@ -98,7 +93,7 @@ def register_read_routes(app: FastAPI) -> None:
                 },
             }
         },
-    )  # type: ignore[untyped-decorator]
+    )
     def list_artifacts(
         response: Response,
         limit: int | None = None,
@@ -131,7 +126,7 @@ def register_read_routes(app: FastAPI) -> None:
                 },
             }
         },
-    )  # type: ignore[untyped-decorator]
+    )
     def list_runs(
         response: Response,
         limit: int | None = None,
@@ -141,7 +136,7 @@ def register_read_routes(app: FastAPI) -> None:
         """List runs."""
         if correlation_id:
             response.headers["X-Correlation-Id"] = correlation_id
-        runs = RunStore().list_runs(limit=limit, offset=offset)
+        runs = list_execution_runs(limit=limit, offset=offset)
         return {"runs": runs}
 
 

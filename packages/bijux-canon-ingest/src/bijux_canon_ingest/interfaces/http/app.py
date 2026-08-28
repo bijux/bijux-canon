@@ -5,8 +5,16 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 from fastapi import APIRouter, FastAPI, HTTPException
 
+from bijux_canon_ingest.application.canonical_ingest import (
+    CanonicalIngestError,
+    CanonicalIngestRequest,
+    CanonicalIngestRuntime,
+    CorpusDiscoveryLimits,
+)
 from bijux_canon_ingest.application.service import (
     IngestService,
 )
@@ -22,6 +30,8 @@ from bijux_canon_ingest.interfaces.http.models import (
     AskResponse,
     ChunkRequest,
     ChunkResponse,
+    CorpusIngestRequest,
+    CorpusIngestResponse,
     HealthResponse,
     IndexBuildRequest,
     IndexBuildResponse,
@@ -82,6 +92,7 @@ def create_app() -> FastAPI:
     router = APIRouter(prefix="/v1")
 
     rag_app = IngestService()
+    canonical_ingest = CanonicalIngestRuntime()
     index_store = InMemoryIndexStore()
 
     @router.get(
@@ -94,6 +105,47 @@ def create_app() -> FastAPI:
     )
     async def healthz() -> dict[str, bool]:
         return {"ok": True}
+
+    @router.post(
+        "/corpora/ingest",
+        response_model=CorpusIngestResponse,
+        tags=["Chunking"],
+        summary="Ingest a canonical source corpus",
+        operation_id="ingestCanonicalCorpus",
+    )
+    async def ingest_corpus(req: CorpusIngestRequest) -> CorpusIngestResponse:
+        try:
+            result = canonical_ingest.ingest(
+                CanonicalIngestRequest.for_directory(
+                    root_path=Path(req.root_path),
+                    root_name=req.root_name,
+                    corpus_name=req.corpus_name,
+                    discovery_limits=CorpusDiscoveryLimits(
+                        max_depth=req.max_depth,
+                        max_entries=req.max_entries,
+                        max_files=req.max_files,
+                        max_file_bytes=req.max_file_bytes,
+                        max_total_bytes=req.max_total_bytes,
+                        max_seconds=req.max_seconds,
+                    ),
+                    include=tuple(req.include),
+                    exclude=tuple(req.exclude),
+                    symlink_policy=req.symlink_policy,
+                    corpus_lock_path=(
+                        Path(req.corpus_lock_path)
+                        if req.corpus_lock_path is not None
+                        else None
+                    ),
+                    publication_root=(
+                        Path(req.publication_root)
+                        if req.publication_root is not None
+                        else None
+                    ),
+                )
+            )
+        except (CanonicalIngestError, OSError, ValueError) as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
+        return CorpusIngestResponse.model_validate(result.manifest())
 
     @router.post(
         "/chunks",

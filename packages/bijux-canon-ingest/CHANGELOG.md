@@ -5,6 +5,15 @@ All notable changes to `bijux-canon-ingest` are documented here.
 Historical release entries below preserve the wording that shipped with the
 tagged release, including legacy distribution naming where applicable.
 
+## [0.4.0] - Unreleased
+
+### Changed
+
+- Added provenance-bound parser admission and exercised PDF, DOCX, and OCR
+  capabilities through installed distributions.
+- Added bounded parser/archive handling and adversarial fuzz coverage for
+  malformed and oversized inputs.
+
 ## [0.3.9] - 2026-07-04
 
 ### Changed

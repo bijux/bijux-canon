@@ -22,18 +22,13 @@ observable surfaces.
 | `bijux-agent` | `bijux_agent` | `bijux-agent` | `bijux-canon-agent` | `bijux_canon_agent` | `bijux-canon-agent` | [Agent](../../05-bijux-canon-agent/index.md) |
 | `bijux-rag` | `bijux_rag` | `bijux-rag` | `bijux-canon-ingest` | `bijux_canon_ingest` | `bijux-canon-ingest` | [Ingest](../../02-bijux-canon-ingest/index.md) |
 | `bijux-rar` | `bijux_rar` | `bijux-rar` | `bijux-canon-reason` | `bijux_canon_reason` | `bijux-canon-reason` | [Reason](../../04-bijux-canon-reason/index.md) |
-| `bijux-vex` | `bijux_vex` | `bijux-vex` | `bijux-canon-index` | `bijux_canon_index` | none | [Index](../../03-bijux-canon-index/index.md) |
+| `bijux-vex` | `bijux_vex` | `bijux-vex` | `bijux-canon-index` | `bijux_canon_index` | `bijux-canon-index` | [Index](../../03-bijux-canon-index/index.md) |
 
-## Command Asymmetry
+## Index Command Delegation
 
-The first five rows have direct canonical command replacements. Index does not:
-the `bijux-canon-index` distribution intentionally has no `[project.scripts]`
-entry, while `bijux-vex` registers its preserved command against the canonical
-Typer application.
-
-Do not replace `bijux-vex` with an invented `bijux-canon-index` executable.
-Migrate the operation to index's typed Python API or versioned HTTP contract,
-then remove the compatibility command from automation.
+`bijux-canon-index` and `bijux-vex` register the same canonical Typer
+application. Replace the legacy executable directly, verify structured output
+and exit behavior, then remove the compatibility command from automation.
 
 ## Dependency Contract
 

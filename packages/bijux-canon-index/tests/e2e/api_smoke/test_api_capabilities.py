@@ -7,7 +7,7 @@ from fastapi.testclient import TestClient
 from bijux_canon_index.api.v1.app import build_app
 
 
-def test_api_capabilities_reports_backend():
+def test_api_capabilities_reports_backend() -> None:
     app = build_app()
     client = TestClient(app)
     resp = client.get("/capabilities")

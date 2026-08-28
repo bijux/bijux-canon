@@ -5,14 +5,18 @@ PACKAGE_IMPORT_NAME := bijux_canon_index
 API_MODE := freeze
 FMT_DIRS          := src tests
 CODESPELL         = $(VENV_PYTHON) -m codespell_lib --ignore-words-list=ND,nd
+MYPY_FLAGS        := --strict --explicit-package-bases
+export MYPYPATH   := $(CURDIR)/stubs:$(CURDIR)
 API_LOG                   = $(API_ARTIFACTS_DIR)/openapi_drift.log
 API_OPENAPI_DRIFT_COMMAND = $(VENV_PYTHON) -m bijux_canon_dev.api.openapi_drift --app-import bijux_canon_index.api.v1:build_app --schema "$(API_DIR)/v1/schema.yaml" --out "$(API_ARTIFACTS_DIR)/openapi.generated.json"
 SECURITY_AUDIT_PREPARE_MODE := pyproject
 PIP_AUDIT_INPUTS = -r "$(SECURITY_REQS)"
 DOCS_DEV_ADDR := 0.0.0.0:8000
 DOCS_EXTRA_CLEAN_PATHS := docs/site
-TEST_COVERAGE_TARGETS := $(abspath src/bijux_canon_index/core) $(abspath src/bijux_canon_index/contracts) $(abspath src/bijux_canon_index/domain)
-BUILD_PRE_TARGETS := clean install fmt lint test quality security sbom
+TEST_COVERAGE_TARGETS := $(abspath tests/unit)
+TEST_COVERAGE_FAIL_UNDER := 70
+PACKAGE_INSTALL_SPEC := .[dev,vdb]
+BUILD_PRE_TARGETS := clean install lint test quality security sbom
 BUILD_POST_TARGETS := build-release-metadata
 PUBLISH_DIST_DIR = $(PROJECT_ARTIFACTS_DIR)/release
 PUBLISH_UPLOAD_ENABLED := 0
@@ -49,12 +53,6 @@ include $(abspath $(dir $(firstword $(MAKEFILE_LIST))))/../bijux-py/package.mk
 .NOTPARALLEL:
 
 build-release-metadata:
-	@echo "[INFO] Generating SBOM"
-	@if ! command -v $(PIP_AUDIT) >/dev/null 2>&1; then \
-	  echo "→ Installing pip-audit into $(VENV)"; \
-	  $(UV) pip install --python "$(VENV_PYTHON)" --upgrade pip-audit >/dev/null; \
-	fi
-	@$(PIP_AUDIT) $(PIP_AUDIT_FLAGS) --output "$(PROJECT_ARTIFACTS_DIR)/release/sbom.json" || true
 	@echo "[INFO] Verifying checked-in API freeze artifacts"
 	@$(API_SELF_MAKE) api-freeze
 	@cd "$(PROJECT_ARTIFACTS_DIR)/release" && shasum -a 256 *.whl *.tar.gz > SHA256SUMS

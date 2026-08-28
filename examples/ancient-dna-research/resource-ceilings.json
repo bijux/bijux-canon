@@ -1,0 +1,35 @@
+{
+  "basis": {
+    "headroom_policy": "Ceilings exceed the recorded v0.4.0 CPU-workstation baseline by at least 50 percent and remain below pathological local resource use.",
+    "workload": "Eight-source ancient-DNA installed lexical and CPU exact/ANN hybrid workflows"
+  },
+  "profiles": {
+    "local-cpu-hybrid": {
+      "answer_seconds": 720.0,
+      "index_bytes": 1073741824,
+      "index_seconds": 600.0,
+      "ingest_seconds": 180.0,
+      "inspection_seconds": 120.0,
+      "peak_rss_bytes": 4294967296,
+      "profile_disk_bytes": 2147483648,
+      "query_seconds": 180.0,
+      "startup_seconds": 15.0,
+      "total_seconds": 1200.0,
+      "workspace_disk_bytes": 1610612736
+    },
+    "offline-lexical": {
+      "answer_seconds": 120.0,
+      "index_bytes": 536870912,
+      "index_seconds": 180.0,
+      "ingest_seconds": 180.0,
+      "inspection_seconds": 60.0,
+      "peak_rss_bytes": 1610612736,
+      "profile_disk_bytes": 1073741824,
+      "query_seconds": 120.0,
+      "startup_seconds": 15.0,
+      "total_seconds": 600.0,
+      "workspace_disk_bytes": 805306368
+    }
+  },
+  "schema_version": "bijux.canon.resource_ceilings.v1"
+}

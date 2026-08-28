@@ -10,7 +10,8 @@ last_reviewed: 2026-07-21
 # Security Gates
 
 The shared `security` target combines Python static analysis, dependency
-vulnerability auditing, and optional package-specific dependency checks.
+vulnerability auditing, optional package-specific dependency checks, and one
+repository-wide scan of tracked source for high-confidence credential material.
 `bijux-canon-dev` owns normalization of the pip-audit report; Make owns tool
 execution and artifact paths; package profiles own explicit exceptions and
 additional checks.
@@ -26,6 +27,8 @@ flowchart TD
     bandit --> verdict[Security target verdict]
     gate --> verdict
     extras --> verdict
+    tracked[Git-tracked regular files] --> secrets[Credential scan]
+    secrets --> verdict
 ```
 
 ## Gate Composition
@@ -35,11 +38,13 @@ flowchart TD
 | `security-bandit` | configured Python source paths | `bandit.json`, `bandit.txt`, isolated bytecode cache |
 | `security-audit` | active environment or prepared requirements | `pip-audit.json`, `pip-audit.txt`, optional requirements file |
 | `security-deps` | package-specific helper targets | adapter-specific reports or refusal |
-| `security` | all three surfaces | combined exit status |
+| root credential scan | Git-tracked regular files | `artifacts/root/security/secret-scan.json` |
+| `security` | all four surfaces | combined exit status |
 
 Bandit excludes generated build, artifact, tox, mypy, and pytest-cache paths by
-default. A package can add explicit Bandit skip IDs or flags. `SKIP_BANDIT=1`
-is visible in the text artifact; it means the analysis was skipped, not passed.
+default. High-severity, high-confidence findings are mandatory and fatal.
+`SKIP_BANDIT` and rule-ID skip lists are rejected instead of being treated as
+successful analysis.
 
 ## Dependency Audit Policy
 
@@ -52,50 +57,57 @@ every vulnerability.
 flowchart LR
     report[Audit JSON] --> parse{Readable and recognized?}
     parse -- no --> strict{Strict mode?}
-    parse -- yes --> ids[Collect primary IDs and aliases]
-    ids --> ignored[Apply explicit ignore set]
-    ignored --> remaining{Findings remain?}
+    parse -- yes --> remaining{Findings remain?}
     remaining -- no --> pass[Pass with counts]
     remaining -- yes --> strict
     strict -- yes --> fail[Nonzero refusal]
     strict -- no --> visible[Visible non-strict continuation]
 ```
 
-Ignore matching checks both the vulnerability’s primary ID and aliases. The
-text report states which IDs are ignored and how many vulnerability instances
-matched. An ignore entry suppresses the gate finding; it does not patch the
-dependency or establish that the advisory is irrelevant.
-
-Package profiles can carry different ignore sets because their resolved
-dependency graphs differ. Every exception remains checked-in, reviewable, and
-specific. Add an exception only with a documented applicability decision and a
-removal trigger; do not broaden it to make unrelated packages green.
+The repository does not admit vulnerability-ignore IDs. Package profiles and
+direct gate invocations reject them before interpreting a report. Resolve an
+advisory by updating or removing the dependency; a future exception mechanism
+must first provide checked-in owner, reason, exact scope, and expiry metadata.
 
 ## Strict and Non-Strict Behavior
 
-`SECURITY_STRICT=1` is the default. In strict mode:
+`SECURITY_STRICT=1` is mandatory:
 
 - a Bandit refusal fails its target;
 - a missing, malformed, or unexpected audit report exits with configuration
   failure;
-- unignored vulnerabilities fail the audit target;
+- vulnerabilities fail the audit target;
 - a pip-audit invocation failure remains nonzero.
 
-Non-strict mode keeps findings and invocation problems visible but allows the
-target to continue. It is appropriate only for an explicitly informational
-run and must never be reported as equivalent to strict verification.
+The Make target rejects non-strict mode. Direct use of the report interpreter
+may remain useful for diagnosis, but it is not an admissible security result.
 
 The combined target preserves the tool’s nonzero status. Wrappers must not
 append unconditional success, discard the report, or treat an absent JSON file
 as an empty vulnerability set.
 
+## Tracked-source credential scan
+
+After every package gate succeeds, `bijux-canon-secret-scan` enumerates files
+from Git rather than walking the worktree. It scans tracked regular text files,
+records every scanned file's SHA-256 identity, and reports only finding type,
+path, and line number. Potential secret values are never copied into evidence.
+Binary files are identified by a NUL-byte preflight and listed as skipped.
+
+The initial high-confidence signatures cover AWS access-key identifiers,
+GitHub classic and fine-grained tokens, OpenAI API keys, and private-key PEM
+headers. Any finding is fatal. Enumeration failures, unreadable files,
+non-regular tracked paths, and report-write failures are configuration errors;
+the scanner does not reinterpret them as a clean result. This repository scan
+complements deployment-system secret detection and credential rotation; it
+does not claim to discover every possible secret format.
+
 ## Investigation Order
 
 | Symptom | Inspect first | Normal response |
 | --- | --- | --- |
-| Bandit finding | rule ID, source line, JSON confidence/severity | correct code or add the narrowest reviewed suppression |
+| Bandit finding | rule ID, source line, JSON confidence/severity | correct the code; required findings cannot be suppressed |
 | audit vulnerability | package, installed version, all IDs/aliases, fix versions | update dependency and lock; assess consumers |
-| ignored finding | checked-in package ignore set and advisory status | verify applicability and removal condition |
 | unreadable report | pip-audit invocation and `pip-audit.json` | repair tool/environment; do not classify as clean |
 | audit invocation code greater than one | `pip-audit.txt`, environment, index access | treat as tooling failure rather than vulnerability verdict |
 | package dependency refusal | package adapter report | correct the package’s declared boundary |

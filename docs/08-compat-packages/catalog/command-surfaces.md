@@ -23,13 +23,11 @@ argument translation, or command-specific business logic.
 | `bijux-agent` | `bijux-canon-agent` | `bijux-canon-agent` | `bijux_canon_agent.interfaces.cli.entrypoint:cli` |
 | `bijux-rag` | `bijux-canon-ingest` | `bijux-canon-ingest` | `bijux_canon_ingest.interfaces.cli.entrypoint:main` |
 | `bijux-rar` | `bijux-canon-reason` | `bijux-canon-reason` | `bijux_canon_reason.interfaces.cli:app` |
-| `bijux-vex` | `bijux-canon-index` | Python or HTTP index contract | `bijux_canon_index.interfaces.cli.app:app` |
+| `bijux-vex` | `bijux-canon-index` | `bijux-canon-index` | `bijux_canon_index.interfaces.cli.app:app` |
 
-`bijux-vex` has no direct canonical executable replacement. The
-`bijux-canon-index` distribution intentionally publishes no console script.
-Existing `bijux-vex` automation continues to reach the index Typer application
-through the bridge, while new integrations use the index Python or HTTP
-contract.
+`bijux-vex` and `bijux-canon-index` both reach the same index Typer application.
+Existing automation can retain the bridge temporarily; new integrations use
+the canonical command, Python API, or HTTP contract.
 
 ```mermaid
 flowchart LR
@@ -77,8 +75,8 @@ names.
 2. Replace it with the preferred executable where the matrix provides one.
 3. Compare exit status and consumed outputs using the integration's actual
    arguments.
-4. For `bijux-vex`, map the requested operation to the index Python or HTTP
-   contract and add an integration test at that boundary.
+4. For `bijux-vex`, use `bijux-canon-index` and compare help, version,
+   structured output, and exit status with the preserved command.
 5. Remove the compatibility dependency only after every deployed caller has
    moved.
 

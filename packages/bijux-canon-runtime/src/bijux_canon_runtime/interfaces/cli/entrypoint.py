@@ -9,6 +9,7 @@ from pathlib import Path
 import sys
 
 from bijux_canon_runtime.application.execute_flow import execute_flow
+from bijux_canon_runtime.application.operations import RuntimeApplicationServicesV2
 from bijux_canon_runtime.interfaces.cli.execution_commands import (
     execute_manifest_command_with_runner,
     replay_run,
@@ -22,6 +23,8 @@ from bijux_canon_runtime.interfaces.cli.store_commands import (
     inspect_run,
     validate_db,
 )
+from bijux_canon_runtime.interfaces.cli.v2_commands import run_v2_command
+from bijux_canon_runtime.interfaces.cli.workspace_commands import initialize_workspace
 
 _load_manifest = load_manifest
 _load_policy = load_policy
@@ -30,6 +33,7 @@ _diff_runs = diff_runs
 _explain_failure = explain_failure
 _validate_db = validate_db
 _replay_run = replay_run
+_v2_application_services: RuntimeApplicationServicesV2 | None = None
 
 
 # Stable commands: plan, dry-run, run, unsafe-run, replay, inspect, diff, explain, validate.
@@ -38,13 +42,21 @@ EXIT_FAILURE = 1
 EXIT_CONTRACT_VIOLATION = 2
 
 
-def main() -> None:
+def main(
+    *,
+    application_services: RuntimeApplicationServicesV2 | None = None,
+) -> None:
     """Execute main and enforce its contract."""
     prog_name = (
         Path(sys.argv[0]).name if sys.argv and sys.argv[0] else "bijux-canon-runtime"
     )
     parser = build_parser(prog_name=prog_name)
     args = parser.parse_args()
+    if args.command == "init":
+        raise SystemExit(initialize_workspace(args))
+    if args.command == "v2":
+        services = application_services or _v2_application_services
+        raise SystemExit(run_v2_command(args, services=services))
     if args.command == "inspect" and args.inspect_command == "run":
         _inspect_run(args, json_output=args.json)
         return

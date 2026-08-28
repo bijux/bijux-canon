@@ -9,6 +9,19 @@ Historical release entries below preserve the wording that shipped with tagged
 releases when a tagged changelog existed. Releases that shipped without a
 changelog update are reconstructed from tag annotations and release diffs.
 
+## [0.4.0] - Unreleased
+
+### Changed
+
+- Bound the installed `bijux-vex` bridge to the exact
+  `bijux-canon-index` release and retained its documented delegation contract
+  and legal distribution files.
+
+### Deprecated
+
+- The distribution, `bijux_vex` import, and `bijux-vex` command are deprecated
+  in favor of `bijux-canon-index`; removal will not occur before 1.0.0.
+
 ## 0.3.9 - 2026-07-04
 
 ### Changed

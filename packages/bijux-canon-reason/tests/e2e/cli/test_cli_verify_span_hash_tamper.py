@@ -14,12 +14,18 @@ from typing import Any
 import pytest
 
 
-def _run_with_evidence(tmp_path: Path, write_spec: Any, run_cli: Any) -> Path:
+def _run_with_evidence(
+    tmp_path: Path, corpus_fixture: Path, write_spec: Any, run_cli: Any
+) -> Path:
     artifacts = tmp_path / "artifacts"
     artifacts.mkdir(parents=True, exist_ok=True)
     spec_path = write_spec(
         description="span-hash tamper",
-        constraints={"needs_retrieval": True, "top_k": 2},
+        constraints={
+            "needs_retrieval": True,
+            "top_k": 2,
+            "corpus_path": str(corpus_fixture),
+        },
     )
     p = run_cli(
         [
@@ -43,10 +49,11 @@ def _run_with_evidence(tmp_path: Path, write_spec: Any, run_cli: Any) -> Path:
 @pytest.mark.e2e
 def test_verify_fails_when_snippet_hash_tampered(
     tmp_path: Path,
+    corpus_fixture: Path,
     write_spec: Any,
     run_cli: Any,
 ) -> None:
-    run_dir = _run_with_evidence(tmp_path, write_spec, run_cli)
+    run_dir = _run_with_evidence(tmp_path, corpus_fixture, write_spec, run_cli)
     trace_path = run_dir / "trace.jsonl"
     lines = trace_path.read_text(encoding="utf-8").splitlines()
 

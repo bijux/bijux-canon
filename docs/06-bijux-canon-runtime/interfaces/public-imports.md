@@ -4,7 +4,7 @@ audience: developers
 type: reference
 status: canonical
 owner: bijux-canon-runtime-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-08-25
 ---
 
 # Public Imports
@@ -30,7 +30,7 @@ flowchart LR
     model["model facade<br/>manifest, plan, trace, replay envelope"]
     ontology["ontology facade<br/>IDs and semantic enums"]
     verification["verification facade<br/>arbitration orchestration"]
-    api["api.v1<br/>schemas + partial HTTP app"]
+    api["api.v2<br/>application-service ASGI app"]
     application["application internals"]
     execution["executors + persistence"]
 
@@ -55,24 +55,31 @@ extension points merely because repository tests import them.
 | Need | Import surface |
 | --- | --- |
 | execution entrypoint | `bijux_canon_runtime` or `bijux_canon_runtime.runtime` |
+| effective capability discovery | `bijux_canon_runtime.discover_runtime_capabilities` |
 | execution result facade | `bijux_canon_runtime.runtime` |
 | stable plan, trace, and replay models | `bijux_canon_runtime.model` |
 | identifiers and semantic enums | `bijux_canon_runtime.ontology` |
 | verification orchestration | `bijux_canon_runtime.verification` |
-| versioned HTTP schemas and ASGI app | `bijux_canon_runtime.api.v1` |
+| implemented application-service HTTP schemas and ASGI app | `bijux_canon_runtime.api.v2` |
+| legacy compatibility HTTP schemas and partial ASGI app | `bijux_canon_runtime.api.v1` |
 
 ```python
-from bijux_canon_runtime import RunMode, execute_flow
+from bijux_canon_runtime import (
+    RunMode,
+    discover_runtime_capabilities,
+    execute_flow,
+)
 from bijux_canon_runtime.application.execute_flow import ExecutionConfig
 from bijux_canon_runtime.model import FlowManifest
 from bijux_canon_runtime.ontology import DeterminismLevel
 ```
 
-`ExecutionConfig` currently has no package-root or public-facade export. The
-shown application import is the operational path required for explicit Python
-configuration, but the `application` package is marked as internal and is not
-a general extension surface. Consumers that need a stronger boundary can use
-the canonical CLI while a stable configuration facade is absent.
+`discover_runtime_capabilities()` is the stable read-only facade for effective
+configuration identities, sources, installed support, and readiness. It never
+returns credential values. `ExecutionConfig` still has no package-root export;
+the shown application import remains the operational path for legacy flow
+execution configuration, and the `application` package is not a general
+extension surface.
 
 `FlowManifest` construction validates its dataclass shape. Execute through the
 application boundary so contract validation, planning, determinism enforcement,
@@ -96,14 +103,10 @@ should not collapse those states into a single success flag.
 
 The stable model facade exports `FlowManifest`, `ExecutionPlan`,
 `ExecutionTrace`, and `ReplayEnvelope`. The ontology facade owns typed IDs and
-enums used across those models. The API facade exports `FlowRunRequest`,
-`FlowRunResponse`, `ReplayRequest`, `FailureEnvelope`, and the ASGI app.
-
-The v1 HTTP schemas are tracked contracts, but implementation coverage is
-partial: health and readiness are implemented, while flow run and replay return
-`501 Not Implemented` after header and payload validation. Importing
-`FlowRunRequest` or constructing the ASGI app must not be interpreted as an
-available remote execution service.
+enums used across those models. `bijux_canon_runtime.api.v2` exports the
+implemented shared-application-service ASGI app and app factory. The separate
+v1 facade retains legacy request and response schemas; its flow run and replay
+routes return `501 Not Implemented`.
 
 Avoid importing lifecycle preparation helpers, concrete executors, DuckDB
 schema internals, or modules marked as internal. They implement the public
@@ -117,7 +120,8 @@ facades and can change as long as the governed contracts remain intact.
 | model and ontology facades | construction, immutability, enum/ID snapshots, plan and replay identities |
 | verification facade | required-gate, contradiction, arbitration, and refusal cases |
 | CLI | option/exit/output contracts plus persisted store records where applicable |
-| HTTP v1 | OpenAPI pin, header validation, health/readiness, and explicit `501` behavior |
+| HTTP v2 | installed server, transport parity, bounded payload, OpenAPI pin/hash, and live workflow |
+| HTTP v1 | legacy OpenAPI pin, probe behavior, and explicit run/replay `501` behavior |
 | persisted execution | schema, causal ordering, manifest/policy/environment identity, resume and replay regression tests |
 
 `bijux_canon` and `agentic_flows` forward the canonical package for compatibility.

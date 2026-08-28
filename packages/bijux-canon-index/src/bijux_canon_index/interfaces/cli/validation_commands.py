@@ -6,17 +6,16 @@
 from __future__ import annotations
 
 import json
-import os
 from pathlib import Path
 import sys
 
 import typer
 
-from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
+from bijux_canon_index.application.surface_services import (
+    environment_report,
+    validate_vector_store,
+)
 from bijux_canon_index.core.errors import BijuxError, ValidationError
-from bijux_canon_index.infra.adapters.vectorstore_registry import VECTOR_STORES
-from bijux_canon_index.infra.embeddings.registry import EMBEDDING_PROVIDERS
-from bijux_canon_index.infra.run_store import RunStore
 from bijux_canon_index.interfaces.cli.configuration import (
     build_config as _build_config,
 )
@@ -59,34 +58,8 @@ def validate(
             vector_store_uri=vector_store_uri,
             base_config=base_config,
         )
-        if config.vector_store:
-            VECTOR_STORES.resolve(
-                config.vector_store.backend or "memory",
-                uri=config.vector_store.uri,
-                options=config.vector_store.options,
-            )
-        if execution_contract:
-            contract = _parse_contract(execution_contract)
-            if config.vector_store:
-                desc = VECTOR_STORES.resolve(
-                    config.vector_store.backend or "memory",
-                    uri=config.vector_store.uri,
-                    options=config.vector_store.options,
-                ).descriptor
-                if (
-                    contract is ExecutionContract.DETERMINISTIC
-                    and not desc.deterministic_exact
-                ):
-                    raise ValidationError(
-                        message="deterministic contract requires deterministic vector store"
-                    )
-                if (
-                    contract is ExecutionContract.NON_DETERMINISTIC
-                    and not desc.supports_ann
-                ):
-                    raise ValidationError(
-                        message="non_deterministic contract requires ANN-capable vector store"
-                    )
+        contract = _parse_contract(execution_contract) if execution_contract else None
+        validate_vector_store(config=config, contract=contract)
         _emit(ctx, {"status": "valid"})
     except BijuxError as exc:
         record_failure(exc)
@@ -104,55 +77,13 @@ def doctor(
 ) -> None:
     """Handle doctor."""
     try:
-        extras = {}
-        for module in ("faiss", "qdrant_client"):
-            try:
-                __import__(module)
-                extras[module] = True
-            except Exception:
-                extras[module] = False
         base_config = _load_config(ctx.obj.config_path) if ctx.obj else None
         config = _build_config(
             vector_store=vector_store,
             vector_store_uri=vector_store_uri,
             base_config=base_config,
         )
-        backend_status = {"configured": False}
-        if config.vector_store:
-            backend_status["configured"] = True
-            resolution = VECTOR_STORES.resolve(
-                config.vector_store.backend or "memory",
-                uri=config.vector_store.uri,
-                options=config.vector_store.options,
-            )
-            backend_status.update(
-                {
-                    "backend": resolution.descriptor.name,
-                    "available": resolution.descriptor.available,
-                    "uri_redacted": resolution.uri_redacted,
-                }
-            )
-            adapter = resolution.adapter
-            if hasattr(adapter, "status"):
-                backend_status["status"] = adapter.status()
-        run_dir = RunStore()._base
-        workspace = Path.cwd()
-        permissions = {
-            "workspace_writable": os.access(workspace, os.W_OK),
-            "run_dir_writable": os.access(run_dir, os.W_OK)
-            if run_dir.exists()
-            else True,
-        }
-        report = {
-            "extras": extras,
-            "backend": backend_status,
-            "embeddings": {
-                "providers": EMBEDDING_PROVIDERS.providers(),
-                "default": EMBEDDING_PROVIDERS.default,
-            },
-            "permissions": permissions,
-        }
-        _emit(ctx, report)
+        _emit(ctx, environment_report(config=config, workspace=Path.cwd()))
     except BijuxError as exc:
         record_failure(exc)
         if is_refusal(exc):

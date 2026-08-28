@@ -111,7 +111,7 @@ def iter_chunk_doc(doc: CleanDoc, env: RagEnv) -> Iterator[ChunkWithoutEmbedding
 
 
 def hash16_embed(text: str) -> tuple[float, ...]:
-    """Deterministic placeholder embedder (NOT semantic)."""
+    """Return a deterministic non-semantic hash embedding."""
 
     digest = hashlib.sha256(text.encode("utf-8")).digest()
     out: list[float] = []

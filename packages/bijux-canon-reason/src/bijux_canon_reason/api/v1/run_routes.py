@@ -5,9 +5,8 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-import json
 from pathlib import Path
-from typing import Annotated, TypeAlias
+from typing import Annotated, Any
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi import Path as FastPath
@@ -15,20 +14,14 @@ from fastapi.responses import PlainTextResponse
 from pydantic import BaseModel, Field, StringConstraints, field_validator
 
 from bijux_canon_reason.api.v1.openapi_models import ErrorDetail
-from bijux_canon_reason.application.run_artifacts import RunBuilder, RunInputs
-from bijux_canon_reason.core.types import Plan, ProblemSpec
-from bijux_canon_reason.interfaces.access_guards import sanitize_run_id
-from bijux_canon_reason.interfaces.serialization.json_file import (
-    read_json_file,
-    write_json_file,
+from bijux_canon_reason.application.run_service import (
+    JsonDocument,
+    RunNotFoundError,
+    RunResponseTooLargeError,
+    RunService,
 )
-from bijux_canon_reason.interfaces.serialization.trace_jsonl import read_trace_jsonl
-from bijux_canon_reason.traces.replay import replay_from_artifacts
-from bijux_canon_reason.verification.verifier import verify_trace
+from bijux_canon_reason.core.types import ProblemSpec
 
-JsonDocument: TypeAlias = (
-    dict[str, object] | list[object] | str | int | float | bool | None
-)
 RUN_ID_PATTERN = r"^[A-Za-z0-9][A-Za-z0-9_.-]{0,127}$"
 RunIdPath = Annotated[str, StringConstraints(pattern=RUN_ID_PATTERN), FastPath()]
 
@@ -75,7 +68,11 @@ def register_run_routes(
     max_request_bytes: int,
 ) -> None:
     """Register run routes."""
-    guard_responses = {
+    service = RunService(
+        artifacts_dir=artifacts_dir,
+        max_request_bytes=max_request_bytes,
+    )
+    guard_responses: dict[int | str, dict[str, Any]] = {
         401: {
             "description": "Authentication failed for the requested endpoint.",
             "model": ErrorDetail,
@@ -119,16 +116,8 @@ def register_run_routes(
     def create_run(req: RunCreateRequest, request: Request) -> RunCreateResponse:
         """Create run."""
         guard_request(request)
-        artifacts = RunBuilder().build(
-            inputs=RunInputs(spec=req.spec, preset=req.preset, seed=req.seed),
-            artifacts_root=artifacts_dir,
-        )
-        fingerprint = artifacts.fingerprint_path.read_text(encoding="utf-8").strip()
-        return RunCreateResponse(
-            run_id=artifacts.run_id,
-            run_dir=str(artifacts.run_dir),
-            trace_id=artifacts.trace.id,
-            fingerprint=fingerprint,
+        return RunCreateResponse.model_validate(
+            service.create_run(spec=req.spec, preset=req.preset, seed=req.seed)
         )
 
     @app.get(
@@ -156,12 +145,10 @@ def register_run_routes(
     ) -> JsonDocument:
         """Return run."""
         guard_request(request)
-        return _load_run_document(
-            artifacts_dir=artifacts_dir,
-            run_id=run_id,
-            filename="run_meta.json",
-            missing_detail="run not found",
-        )
+        try:
+            return service.get_document(run_id=run_id, filename="run_meta.json")
+        except RunNotFoundError as exc:
+            raise HTTPException(status_code=404, detail="run not found") from exc
 
     @app.get(
         "/v1/runs/{run_id}/manifest",
@@ -188,12 +175,10 @@ def register_run_routes(
     ) -> JsonDocument:
         """Return manifest."""
         guard_request(request)
-        return _load_run_document(
-            artifacts_dir=artifacts_dir,
-            run_id=run_id,
-            filename="manifest.json",
-            missing_detail="manifest not found",
-        )
+        try:
+            return service.get_document(run_id=run_id, filename="manifest.json")
+        except RunNotFoundError as exc:
+            raise HTTPException(status_code=404, detail="manifest not found") from exc
 
     @app.get(
         "/v1/runs/{run_id}/trace",
@@ -224,10 +209,12 @@ def register_run_routes(
     ) -> str:
         """Handle fetch trace."""
         guard_request(request)
-        path = _run_dir(artifacts_dir, run_id) / "trace.jsonl"
-        if not path.exists():
-            raise HTTPException(status_code=404, detail="trace not found")
-        return _read_trace_content(path=path, max_request_bytes=max_request_bytes)
+        try:
+            return service.get_trace(run_id=run_id)
+        except RunNotFoundError as exc:
+            raise HTTPException(status_code=404, detail="trace not found") from exc
+        except RunResponseTooLargeError as exc:
+            raise HTTPException(status_code=413, detail=str(exc)) from exc
 
     @app.post(
         "/v1/runs/{run_id}/verify",
@@ -254,20 +241,12 @@ def register_run_routes(
     ) -> dict[str, object]:
         """Handle verify run."""
         guard_request(request)
-        run_dir = _run_dir(artifacts_dir, run_id)
-        trace_path = run_dir / "trace.jsonl"
-        plan_path = run_dir / "plan.json"
-        if not trace_path.exists() or not plan_path.exists():
-            raise HTTPException(status_code=404, detail="run artifacts missing")
-
-        trace = read_trace_jsonl(trace_path)
-        plan = Plan.model_validate(read_json_file(plan_path))
-        report = verify_trace(trace=trace, plan=plan, artifacts_dir=run_dir)
-
-        output_path = run_dir / "verify.verify.json"
-        write_json_file(output_path, report.model_dump(mode="json"))
-        payload = json.loads(output_path.read_text(encoding="utf-8"))
-        return payload if isinstance(payload, dict) else {"report": payload}
+        try:
+            return service.verify_run(run_id=run_id)
+        except RunNotFoundError as exc:
+            raise HTTPException(
+                status_code=404, detail="run artifacts missing"
+            ) from exc
 
     @app.post(
         "/v1/runs/{run_id}/replay",
@@ -294,56 +273,10 @@ def register_run_routes(
     ) -> RunReplayResponse:
         """Handle replay run."""
         guard_request(request)
-        trace_path = _run_dir(artifacts_dir, run_id) / "trace.jsonl"
-        if not trace_path.exists():
-            raise HTTPException(status_code=404, detail="trace not found")
-        result, replay_trace_path = replay_from_artifacts(trace_path)
-        return RunReplayResponse(
-            original_trace_fingerprint=result.original_trace_fingerprint,
-            replayed_trace_fingerprint=result.replayed_trace_fingerprint,
-            diff_summary=result.diff_summary,
-            replay_trace_path=str(replay_trace_path),
-        )
-
-
-def _run_dir(artifacts_dir: Path, run_id: str) -> Path:
-    """Handle run dir."""
-    try:
-        sanitized_run_id = sanitize_run_id(run_id)
-    except ValueError as exc:
-        raise HTTPException(status_code=404, detail="run not found") from exc
-    return artifacts_dir / "runs" / sanitized_run_id
-
-
-def _load_run_document(
-    *,
-    artifacts_dir: Path,
-    run_id: str,
-    filename: str,
-    missing_detail: str,
-) -> JsonDocument:
-    """Load run document."""
-    path = _run_dir(artifacts_dir, run_id) / filename
-    if not path.exists():
-        raise HTTPException(status_code=404, detail=missing_detail)
-    return _unwrap_canonical_document(read_json_file(path))
-
-
-def _unwrap_canonical_document(raw: object) -> JsonDocument:
-    """Handle unwrap canonical document."""
-    if isinstance(raw, dict) and "data" in raw and "canonical_version" in raw:
-        return raw["data"]
-    if isinstance(raw, (dict, list, str, int, float, bool)) or raw is None:
-        return raw
-    return str(raw)
-
-
-def _read_trace_content(*, path: Path, max_request_bytes: int) -> str:
-    """Read trace content."""
-    content = path.read_text(encoding="utf-8")
-    if len(content.encode("utf-8")) > max_request_bytes * 10:
-        raise HTTPException(status_code=413, detail="response too large")
-    return content
+        try:
+            return RunReplayResponse.model_validate(service.replay_run(run_id=run_id))
+        except RunNotFoundError as exc:
+            raise HTTPException(status_code=404, detail="trace not found") from exc
 
 
 __all__ = [

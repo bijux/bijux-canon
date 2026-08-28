@@ -54,6 +54,8 @@ def validate_keys() -> None:
 
 def key_for_provider(provider: str) -> str:
     """Return the configured key for a specific provider, or raise."""
+    if os.getenv("BIJUX_AGENT_SKIP_DOTENV") != "1":
+        load_environment()
     spec = next(
         (spec for spec in KEY_REGISTRY if spec.provider.lower() == provider.lower()),
         None,
@@ -62,7 +64,9 @@ def key_for_provider(provider: str) -> str:
         raise KeyError(f"Unknown provider: {provider}")
     value = os.getenv(spec.env_var)
     if not value:
-        raise RuntimeError(f"API key for {provider} ({spec.env_var}) is not configured")
+        raise RuntimeError(
+            f"Credential for selected provider {provider} is not configured"
+        )
     return value
 
 

@@ -48,6 +48,22 @@ async def test_structured_extractor_parses_json(tmp_path: Path) -> None:
 
 
 @pytest.mark.asyncio
+async def test_structured_extractor_rejects_xml_entities(tmp_path: Path) -> None:
+    path = tmp_path / "payload.xml"
+    path.write_text(
+        '<!DOCTYPE root [<!ENTITY secret SYSTEM "file:///etc/passwd">]>'
+        "<root>&secret;</root>",
+        encoding="utf-8",
+    )
+    extractor = StructuredExtractor(create_file_audit=_audit_stub)
+
+    result = await extractor.extract_xml_file(path)
+
+    assert "error" in result
+    assert "parsed" not in result
+
+
+@pytest.mark.asyncio
 async def test_structured_extractor_handles_csv_dependency(tmp_path: Path) -> None:
     path = tmp_path / "data.csv"
     path.write_text("a,b\n1,2\n", encoding="utf-8")

@@ -6,6 +6,21 @@ This package owns repository maintenance helpers, so its release history should
 explain changes to shared tooling, publish support, security checks, and schema
 governance.
 
+## [0.4.0] - Unreleased
+
+### Changed
+
+- Added a deterministic changed-path selector that reports mandatory owned and
+  transitive checks, their reasons, affected contracts, and governed outputs.
+- Added maintained installed-distribution verifiers for wheel contents, clean
+  installation, extras capabilities, supported Python versions, exact family
+  compatibility, and release-candidate identity.
+- Bound verification reports to source, lock, environment, commands, wheel
+  hashes, and retained failure details under the ignored artifact boundary.
+- Added governed unfinished-marker, semantic-compatibility, resource-envelope,
+  tracked-source secret, and artifact supply-chain audits, plus one
+  responsibility-deduplicated frozen candidate graph.
+
 ## 0.3.9 - 2026-07-04
 
 ### Changed

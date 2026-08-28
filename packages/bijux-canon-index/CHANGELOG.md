@@ -5,6 +5,30 @@ All notable changes to `bijux-canon-index` are documented here.
 Historical release entries below preserve the wording that shipped with the
 tagged release, including legacy distribution naming where applicable.
 
+## [0.4.0] - Unreleased
+
+### Changed
+
+- Added installed `model acquire`, `model register`, and `model validate`
+  operations. A successful operation now retains a canonical record of the
+  pinned source, license pointer, exact file set, dimension, compatible runtime,
+  bounded CPU inference, and offline reuse.
+- Added a `local-cpu` extra that combines local embeddings with FAISS without
+  installing Qdrant client support; Linux CPU guidance pins PyTorch's CPU wheel
+  source before installing the profile.
+- Standalone verified SQLite FTS5 segments can now produce bounded lexical
+  candidates and resolve ingest-owned citation locators without a dense
+  generation or embedding model.
+- Added stable generation interfaces, typed backend contracts, and installed
+  production search dependencies.
+- Added qrel-based retrieval evaluation, retrieval-mode comparison, and
+  artifact/database tamper detection.
+
+### Fixed
+
+- Persisted exact FAISS indexes now reopen safely when FAISS 1.7.4 returns its
+  stable `IndexFlat` base wrapper instead of the constructor-specific wrapper.
+
 ## 0.3.9 - 2026-07-04
 
 ### Changed

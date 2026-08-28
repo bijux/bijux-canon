@@ -1,12 +1,10 @@
 """Runtime version resolution helpers."""
 
-# ruff: noqa: S603
-
 from __future__ import annotations
 
 from pathlib import Path
 import shutil
-import subprocess  # nosec B404 - subprocess is used with fixed git arguments
+import subprocess
 
 
 def _git_executable() -> str | None:
@@ -18,7 +16,7 @@ def _describe_tag(repo_root: Path) -> str | None:
     if not git_exec:
         return None
     try:
-        result = subprocess.run(  # nosec S603
+        result = subprocess.run(
             [git_exec, "describe", "--tags", "--exact-match"],
             check=True,
             capture_output=True,
@@ -35,7 +33,7 @@ def _rev_parse_short(repo_root: Path) -> str | None:
     if not git_exec:
         return None
     try:
-        result = subprocess.run(  # nosec S603
+        result = subprocess.run(
             [git_exec, "rev-parse", "--short", "HEAD"],
             check=True,
             capture_output=True,

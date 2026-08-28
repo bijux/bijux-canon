@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import builtins
 from collections.abc import Generator
+import hashlib
 import os
 from pathlib import Path
 import subprocess
@@ -13,7 +14,10 @@ from _pytest.monkeypatch import MonkeyPatch
 import pytest
 
 PACKAGE_ROOT = Path(__file__).resolve().parents[1]
+TESTS_ROOT = Path(__file__).resolve().parent
 MONOREPO_ROOT = PACKAGE_ROOT.parents[1]
+if str(TESTS_ROOT) not in sys.path:
+    sys.path.insert(0, str(TESTS_ROOT))
 ALLOWED_ARTIFACTS_ROOT = MONOREPO_ROOT / "artifacts" / "bijux-canon-agent" / "test"
 PYCACHE_PREFIX = ALLOWED_ARTIFACTS_ROOT / "pycache"
 PYCACHE_PREFIX.mkdir(parents=True, exist_ok=True)
@@ -53,8 +57,17 @@ def _assert_within_allowed(path: Path) -> None:
     )
 
 
-@pytest.fixture(scope="session", autouse=True)
-def enforce_artifact_boundary():
+def _is_agent_test(request: pytest.FixtureRequest) -> bool:
+    test_path = Path(str(request.node.path)).resolve()
+    return test_path == PACKAGE_ROOT or PACKAGE_ROOT in test_path.parents
+
+
+@pytest.fixture(autouse=True)
+def enforce_artifact_boundary(request: pytest.FixtureRequest):
+    if not _is_agent_test(request):
+        yield
+        return
+
     ALLOWED_ARTIFACTS_ROOT.mkdir(parents=True, exist_ok=True)
 
     mp = MonkeyPatch()
@@ -126,7 +139,7 @@ def enforce_artifact_boundary():
 
 def _git_untracked(root: Path) -> set[str]:
     completed = subprocess.run(
-        ["/usr/bin/git", "status", "--porcelain"],  # noqa: S607 - fixed system git path
+        ["/usr/bin/git", "status", "--porcelain"],
         capture_output=True,
         text=True,
         cwd=root,
@@ -168,13 +181,25 @@ def enforce_git_clean() -> Generator[None, None, None]:
 
 
 @pytest.fixture
-def test_artifacts_dir(request) -> Path:
-    safe_name = (
-        request.node.nodeid.replace("::", "__").replace("/", "_").replace("\\", "_")
+def test_artifacts_dir(
+    request: pytest.FixtureRequest,
+    tmp_path_factory: pytest.TempPathFactory,
+) -> Path:
+    if not _is_agent_test(request):
+        return tmp_path_factory.mktemp("external-package")
+
+    node_name = request.node.name.split("[", 1)[0]
+    safe_name = "".join(
+        character if character.isalnum() or character in {"-", "_"} else "_"
+        for character in node_name
+    )[:32]
+    node_digest = hashlib.sha256(request.node.nodeid.encode("utf-8")).hexdigest()[:16]
+    return Path(
+        tempfile.mkdtemp(
+            prefix=f"{safe_name}-{node_digest}-",
+            dir=ALLOWED_ARTIFACTS_ROOT,
+        )
     )
-    target = ALLOWED_ARTIFACTS_ROOT / safe_name
-    target.mkdir(parents=True, exist_ok=True)
-    return target
 
 
 @pytest.fixture

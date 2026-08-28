@@ -73,13 +73,12 @@ the focused backend proof.
 
 ## Validate interface and freeze surfaces
 
-The wheel currently exposes a module CLI, not a canonical console script. When
-command wiring changes, run the module form in the package environment and
-retain structured output:
+The wheel exposes `bijux-canon-index` and the equivalent module CLI. When
+command wiring changes, build and install the wheel, then retain structured
+output from the executable:
 
 ```bash
-packages/bijux-canon-index/.venv/bin/python \
-  -m bijux_canon_index.interfaces.cli.app capabilities
+packages/bijux-canon-index/.venv/bin/bijux-canon-index capabilities
 ```
 
 For HTTP or schema work:

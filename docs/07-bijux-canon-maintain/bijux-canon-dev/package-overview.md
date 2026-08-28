@@ -79,10 +79,10 @@ unless the repository gate misclassified valid product evidence.
 
 ## Packaging Contract
 
-`bijux-canon-dev` supports Python 3.11 through 3.14 and declares only
-`packaging` and `PyYAML` as runtime dependencies. Repository test, docs,
-security, build, and audit tools live in its `dev` optional dependency group.
-The wheel contains `bijux_canon_dev`, typing metadata, license, notice,
+`bijux-canon-dev` supports Python 3.11 through 3.14 and keeps its runtime
+dependencies limited to metadata, schema, and YAML validation. Repository test,
+docs, security, build, and audit tools live in its `dev` optional dependency
+group. The wheel contains `bijux_canon_dev`, typing metadata, license, notice,
 changelog, and README.
 
 The package version resolves from the repository’s `v<version>` tag through
@@ -100,6 +100,12 @@ python -m bijux_canon_dev.release.publication_guard \
   --pyproject packages/bijux-canon-runtime/pyproject.toml \
   --package-name bijux-canon-runtime \
   --dist-dir artifacts/bijux-canon-runtime/dist
+
+bijux-canon-python-support \
+  --repo-root . \
+  --wheel-dir artifacts/release/wheels \
+  --environment-root artifacts/release/python-support/environments \
+  --output artifacts/release/python-support/result.json
 ```
 
 Normal repository work should use the corresponding Make target because it

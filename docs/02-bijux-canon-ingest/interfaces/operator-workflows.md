@@ -13,7 +13,23 @@ This workflow produces a reviewable corpus, inspects retrieval behavior, and
 publishes only after the source, configuration, index, and evaluation evidence
 agree.
 
-## Prepare the Source Contract
+## Prepare the Canonical Source Contract
+
+For the current multi-format product, place reviewed text, Markdown, HTML,
+JATS, DOCX, and digital PDF inputs in one bounded directory and run:
+
+```bash
+bijux-canon-ingest corpus build \
+  --root documents \
+  --root-name reviewed-documents \
+  --corpus-name reviewed-documents \
+  --out artifacts/ingest/corpus-result.json
+```
+
+The summary names the exact snapshot, admitted format counts, rejections, and
+OCR-required inputs. This is the same canonical ingest service used by Runtime.
+
+## Use the Preserved CSV Workflow
 
 Use a UTF-8 CSV with stable document IDs. For the direct index path, the reader
 expects `doc_id`, `title`, `abstract`, and `categories`. Do not use row numbers
@@ -43,7 +59,7 @@ Pin the preparation policy in JSON:
 ```bash
 mkdir -p artifacts/ingest
 
-bijux-canon-ingest documents.csv \
+bijux-canon-ingest legacy-csv documents.csv \
   --config pipeline.json \
   --out artifacts/ingest/chunks.jsonl
 ```
@@ -51,7 +67,8 @@ bijux-canon-ingest documents.csv \
 Inspect the row count, empty embeddings, unexpectedly short tails, and metadata
 before indexing. The pipeline writer emits successful rows only, so reconcile
 the file with the command outcome rather than using row count as the sole
-success signal.
+success signal. The older path-first invocation is preserved as an equivalent
+0.4 compatibility alias; it is not the multi-format corpus interface.
 
 ## Build and Identify the Index
 

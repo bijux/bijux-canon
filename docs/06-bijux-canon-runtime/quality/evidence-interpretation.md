@@ -4,7 +4,7 @@ audience: mixed
 type: reference
 status: canonical
 owner: bijux-canon-runtime-docs
-last_reviewed: 2026-07-22
+last_reviewed: 2026-08-24
 ---
 
 # Interpreting Runtime Evidence
@@ -68,9 +68,25 @@ detail matters.
 
 DuckDB stores run, dataset, step, event, checkpoint, artifact, evidence,
 entropy, tool, and claim projections. Artifact and evidence rows retain hashes
-and metadata, not content payloads. Exact inspection or replay therefore also
-requires an external content store whose retention, authorization, and hash
-verification are bound to the run.
+and metadata, while the workspace CAS retains the corresponding payloads. New
+corpus preparations include a deterministic original-source archive in that CAS;
+the snapshot and every downstream artifact preserve its dependency. Exact
+inspection verifies both stores together and resolves citations through chunk
+mappings to byte ranges in that retained archive. A database without its CAS is
+not a complete Runtime authority.
+
+## Bind Answer Evaluation To The Persisted Attempt
+
+Use `PersistedAnswerEvaluationAdapter` only with a restart-validated completed
+`ask` or `run` inspection. It locates the single Reason claim graph through the
+selected attempt's completed DAG step, reconstructs the content-addressed local
+answer and source authority, and exports only admitted atomic claims and their
+exact quote, locator, source-hash, and chunk lineage. The resulting system output
+binds the run, attempt, plan, event chain, claim-graph identity, and payload hash.
+It refuses a different question, a missing or duplicate graph, incomplete runs,
+invalid source authority, and graph content whose internal identities no longer
+validate. This adapter supplies output evidence only; it never supplies truth or
+semantic match labels.
 
 Continue with [invariants](invariants.md) for authority laws,
 [known limitations](known-limitations.md) for integration, persistence, replay,

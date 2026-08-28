@@ -14,5 +14,34 @@ def test_root_package_exports_version() -> None:
 
 def test_root_package_declares_lazy_exports_in_dir() -> None:
     exported_names = dir(ingest)
+    assert "DiscoveryPolicy" in exported_names
     assert "IngestConfig" in exported_names
     assert "build_ingest_deps" in exported_names
+    assert "assess_ocr_requirement" in exported_names
+    assert "discover_sources" in exported_names
+    assert "parse_docx" in exported_names
+    assert "parse_html" in exported_names
+    assert "parse_jats" in exported_names
+    assert "parse_markdown" in exported_names
+    assert "parse_pdf" in exported_names
+    assert "parse_text" in exported_names
+    assert "normalize_source_metadata" in exported_names
+    assert "MetadataIntegrityError" in exported_names
+    assert "MetadataProvenanceRecord" in exported_names
+    assert "MetadataSource" in exported_names
+    assert "CorpusLockError" in exported_names
+    assert "VerifiedCorpusLock" in exported_names
+    assert "load_verified_corpus_lock" in exported_names
+    assert "metadata_record_from_parsed_document" in exported_names
+    assert "build_chunk_span_mapping" in exported_names
+    assert "build_document_span_mappings" in exported_names
+    assert "chunk_document_mappings" in exported_names
+    assert "build_corpus_snapshot" in exported_names
+    assert "apply_corpus_delta" in exported_names
+    assert "plan_corpus_delta" in exported_names
+    assert "publish_corpus_snapshot" in exported_names
+    assert "read_published_corpus_snapshot" in exported_names
+    assert "recover_corpus_snapshot_store" in exported_names
+    assert "ingest_corpus" in exported_names
+    assert "prepare_corpus" in exported_names
+    assert "assemble_corpus_snapshot_manifest" in exported_names

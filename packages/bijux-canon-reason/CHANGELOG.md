@@ -6,6 +6,15 @@ All notable changes to `bijux-canon-reason` are documented here.
 Historical release entries below preserve the wording that shipped with the
 tagged release.
 
+## [0.4.0] - Unreleased
+
+### Changed
+
+- Added independent evaluation for citation integrity, precision, recall,
+  faithfulness, abstention, contradiction handling, and held-out isolation.
+- Strengthened provider execution and evidence retention for installed research
+  workflows.
+
 ## 0.3.9 - 2026-07-04
 
 ### Changed

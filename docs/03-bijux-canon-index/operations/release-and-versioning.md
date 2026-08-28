@@ -69,11 +69,10 @@ not prove a remote service or native library works.
 
 ## Public interface truth
 
-The current canonical wheel does not register a `bijux-canon-index` console
-script. Release notes and examples must continue to use the module CLI until
-metadata adds a canonical entry point. The `bijux-vex` compatibility package
-preserves its historical command but must delegate to canonical index
-semantics.
+The canonical wheel registers `bijux-canon-index`. Release validation exercises
+its help, version, structured output, and failure exit status from the staged
+wheel. The `bijux-vex` compatibility package preserves its historical command
+but must delegate to the same canonical entry point.
 
 The same staged package artifacts feed PyPI, GHCR release bundles, and GitHub
 Release assets. GHCR is a custody surface for the release bundle, not another

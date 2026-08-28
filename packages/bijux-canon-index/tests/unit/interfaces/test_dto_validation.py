@@ -17,7 +17,7 @@ from bijux_canon_index.interfaces.schemas.models import (
 
 def test_unknown_fields_rejected() -> None:
     with pytest.raises(ValidationError):
-        CreateRequest(name="demo", extra="nope")
+        CreateRequest.model_validate({"name": "demo", "extra": "nope"})
 
 
 def test_ingest_length_mismatch() -> None:

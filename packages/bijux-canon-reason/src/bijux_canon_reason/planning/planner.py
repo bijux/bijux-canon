@@ -53,11 +53,13 @@ def _build_steps(spec: ProblemSpec, preset: str) -> list[StepSpec]:
     if wants_retrieval:
         raw_top_k = constraints.get("top_k", 3)
         top_k = int(raw_top_k) if isinstance(raw_top_k, (int, float, str)) else 3
+        raw_query = constraints.get("query", spec.description)
+        query = raw_query if isinstance(raw_query, str) else spec.description
         gather_tools.append(
             ToolRequest(
                 tool_name="retrieve",
                 arguments={
-                    "query": constraints.get("query", spec.description),
+                    "query": query,
                     "top_k": top_k,
                 },
             )

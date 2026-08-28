@@ -8,14 +8,12 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
+from bijux_canon_ingest.application.surface_services import chunk_documents
 from bijux_canon_ingest.interfaces.cli.document_pipeline_io import (
     read_csv_docs,
     write_chunk_jsonl,
 )
-from bijux_canon_ingest.processing.stages import (
-    ChunkAndEmbedConfig,
-    chunk_and_embed_docs,
-)
+from bijux_canon_ingest.processing.stages import ChunkAndEmbedConfig
 from bijux_canon_ingest.result.types import Err, Ok, Result
 
 
@@ -29,7 +27,7 @@ class DocumentChunkShell:
 
     def run(self) -> Result[None, str]:
         docs = read_csv_docs(self.in_path)
-        result = chunk_and_embed_docs(docs, self.cfg)
+        result = chunk_documents(docs=docs, config=self.cfg)
         if isinstance(result, Err):
             return Err(result.error)
         write_chunk_jsonl(self.out_path, result.value)

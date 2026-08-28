@@ -46,16 +46,15 @@ name prefix.
 | Distribution | Public Python package | Command | Owns | Characteristic evidence |
 | --- | --- | --- | --- | --- |
 | `bijux-canon-ingest` | `bijux_canon_ingest` | `bijux-canon-ingest` | normalization, chunking, deterministic preparation, ingest-local retrieval utilities | input identity, clean documents, chunks, processing results |
-| `bijux-canon-index` | `bijux_canon_index` | none | vector execution, backend capability checks, result provenance, execution comparison | `ExecutionRequest`, `ExecutionArtifact`, ranked result records |
+| `bijux-canon-index` | `bijux_canon_index` | `bijux-canon-index` | vector execution, backend capability checks, result provenance, execution comparison | `ExecutionRequest`, `ExecutionArtifact`, ranked result records |
 | `bijux-canon-reason` | `bijux_canon_reason` | `bijux-canon-reason` | problem specifications, evidence-addressed claims, checks, reasoning replay | manifests, traces, claim graphs, verification reports |
 | `bijux-canon-agent` | `bijux_canon_agent` | `bijux-canon-agent` | role orchestration, lifecycle transitions, convergence, trace recording | pipeline definition, ordered events, terminal `RunTrace` |
 | `bijux-canon-runtime` | `bijux_canon_runtime` | `bijux-canon-runtime` | manifest admission, execution mode, policy, persistence, resume, whole-run replay | verdicts, run records, finalized traces, replay and diff results |
 
-Index contains a Typer command application for its compatibility surface, but
-the canonical distribution intentionally does not publish a console script.
-New integrations should use its typed Python or HTTP contracts. Existing
+Index publishes its Typer application as `bijux-canon-index`. New integrations
+may use that command or its typed Python and HTTP contracts. Existing
 `bijux-vex` command automation remains available through the compatibility
-distribution.
+distribution and delegates to the same application.
 
 ## Installed Dependency Topology
 

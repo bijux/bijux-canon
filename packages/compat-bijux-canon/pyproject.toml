@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling>=1.30.1,<1.32", "hatch-vcs>=0.5.0,<1.0"]
+requires = ["hatchling>=1.30.1,<1.33", "hatch-vcs>=0.5.0,<1.0"]
 build-backend = "hatchling.build"
 
 [project]
@@ -7,7 +7,7 @@ name = "bijux-canon"
 dynamic = ["version", "dependencies"]
 description = "Compatibility alias package for bijux-canon-runtime. Preserves installs, imports, and the shorter bijux-canon PyPI package name and CLI command at the same synchronized version."
 readme = "README.md"
-requires-python = ">=3.11,<4.0"
+requires-python = ">=3.11,<4"
 license = { text = "Apache-2.0" }
 authors = [{ name = "Bijan Mousavi", email = "bijan@bijux.io" }]
 maintainers = [{ name = "Bijan Mousavi", email = "bijan@bijux.io" }]
@@ -56,13 +56,13 @@ Security = "https://github.com/bijux/bijux-canon/blob/main/SECURITY.md"
 Funding = "https://github.com/sponsors/bijux"
 
 [project.scripts]
-bijux-canon = "bijux_canon_runtime.interfaces.cli.entrypoint:main"
+bijux-canon = "bijux_canon.__main__:main"
 
 [tool.hatch.version]
 source = "vcs"
 tag-pattern = "^v(?P<version>.*)$"
 raw-options = { git_describe_command = "git describe --dirty --tags --long --match 'v*'", local_scheme = "dirty-tag", version_scheme = "guess-next-dev", root = "../..", search_parent_directories = true }
-fallback-version = "0.3.9"
+fallback-version = "0.4.0"
 
 [tool.hatch.metadata.hooks.custom]
 canonical-name = "bijux-canon-runtime"
@@ -71,7 +71,6 @@ canonical-name = "bijux-canon-runtime"
 ignore-vcs = true
 include = ["pyproject.toml", "README.md", "CHANGELOG.md", "overview.md", "hatch_build.py", "src/bijux_canon/**"]
 exclude = [".gitignore", "/.gitignore", "**/.gitignore"]
-force-include = { "LICENSE" = "LICENSE", "NOTICE" = "NOTICE" }
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/bijux_canon"]

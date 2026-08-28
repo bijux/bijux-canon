@@ -90,8 +90,6 @@ class VectorStoreVectorSource(VectorSource):
     def put_vector(self, tx: Any, vector: Vector) -> None:
         """Handle put vector."""
         self._base.put_vector(tx, vector)
-        if getattr(self._adapter, "is_noop", False):
-            return
         chunk = self._base.get_chunk(vector.chunk_id)
         document_id = chunk.document_id if chunk else ""
         metadata = build_vectorstore_metadata(
@@ -115,8 +113,6 @@ class VectorStoreVectorSource(VectorSource):
         """Query artifact ID."""
         if request.vector is None:
             raise ValidationError(message="execution vector required")
-        if getattr(self._adapter, "is_noop", False):
-            return self._base.query(artifact_id, request)
         options = getattr(self._adapter, "options", None)
         if options is None:
             options = getattr(self._adapter, "_options", None)
@@ -196,8 +192,6 @@ class VectorStoreVectorSource(VectorSource):
     def delete_vector(self, tx: Any, vector_id: str) -> None:
         """Handle delete vector."""
         self._base.delete_vector(tx, vector_id)
-        if getattr(self._adapter, "is_noop", False):
-            return
         if not self._resolved.descriptor.delete_supported:
             raise BackendCapabilityError(
                 message="Vector store backend does not support deletes"

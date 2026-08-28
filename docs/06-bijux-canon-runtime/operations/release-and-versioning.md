@@ -4,7 +4,7 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-runtime-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-08-25
 ---
 
 # Release and Versioning
@@ -87,6 +87,13 @@ verdicts begin in `bijux-canon-runtime`; aliases must delegate.
 The same staged distributions feed PyPI, GHCR release bundles, and GitHub
 Release assets. Multiple custody surfaces do not create separate runtime
 authorities.
+
+Version 0.4.0 provides the Runtime service through the installed Python
+distribution and does not provide an executable container or service image.
+GHCR objects are non-executable OCI release bundles containing candidate-bound
+distribution assets. A future image must independently prove non-root execution,
+persistent workspace mounts, readiness, and an installed v2 smoke workflow
+before it becomes a supported release surface.
 
 A release is incomplete if operators cannot tell how to migrate stored state,
 interpret historical verdicts, or distinguish implemented interfaces from

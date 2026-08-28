@@ -5,9 +5,6 @@ from __future__ import annotations
 
 import pytest
 
-import bijux_canon_agent
-import bijux_canon_index
-import bijux_canon_reason
 from bijux_canon_runtime.application.determinism_guard import validate_replay
 from bijux_canon_runtime.application.execute_flow import (
     ExecutionConfig,
@@ -42,7 +39,7 @@ from bijux_canon_runtime.ontology.ids import (
 )
 from bijux_canon_runtime.ontology.public import ReplayAcceptability
 from bijux_canon_runtime.runtime.artifact_store import InMemoryArtifactStore
-import bijux_rag
+from bijux_canon_runtime.runtime.execution import integration_loaders as integrations
 
 pytestmark = pytest.mark.regression
 
@@ -56,7 +53,7 @@ def test_replay_across_process_boundary(
     execution_read_store,
     execution_store,
 ) -> None:
-    bijux_canon_agent.run = lambda **_kwargs: [
+    integrations.agent_runner_override = lambda **_kwargs: [
         {
             "artifact_id": "agent-output",
             "artifact_type": "agent_invocation",
@@ -64,7 +61,7 @@ def test_replay_across_process_boundary(
             "parent_artifacts": [],
         }
     ]
-    bijux_rag.retrieve = lambda **_kwargs: [
+    integrations.retrieval_runner_override = lambda **_kwargs: [
         {
             "evidence_id": "ev-1",
             "determinism": EvidenceDeterminism.DETERMINISTIC.value,
@@ -74,7 +71,7 @@ def test_replay_across_process_boundary(
             "vector_contract_id": "contract-a",
         }
     ]
-    bijux_canon_index.enforce_contract = lambda *_args, **_kwargs: True
+    integrations.vector_contract_enforcer_override = lambda *_args, **_kwargs: True
 
     def _reason(agent_outputs, evidence, seed):
         evidence_item = evidence[0]
@@ -108,7 +105,7 @@ def test_replay_across_process_boundary(
             producer_agent_id=AgentID("agent-a"),
         )
 
-    bijux_canon_reason.reason = _reason
+    integrations.reasoning_runner_override = _reason
     request = RetrievalRequest(
         spec_version="v1",
         request_id=RequestID("req-1"),

@@ -11,8 +11,8 @@ import sys
 import typer
 
 from bijux_canon_index.application.engine import VectorExecutionEngine
+from bijux_canon_index.application.surface_services import list_execution_runs
 from bijux_canon_index.core.errors import ValidationError
-from bijux_canon_index.infra.run_store import RunStore
 from bijux_canon_index.interfaces.cli.configuration import (
     build_config as _build_config,
 )
@@ -38,7 +38,7 @@ def list_runs(
     offset: int = typer.Option(0, "--offset"),
 ) -> None:
     """List runs."""
-    runs = RunStore().list_runs(limit=limit, offset=offset)
+    runs = list_execution_runs(limit=limit, offset=offset)
     _emit(ctx, {"runs": runs})
 
 
@@ -76,7 +76,14 @@ def audit(
     )
     engine = VectorExecutionEngine(config=config)
     caps = engine.capabilities()
-    nd_caps = caps.get("ann", {})
+    raw_nd_caps = caps.get("ann")
+    nd_caps = raw_nd_caps if isinstance(raw_nd_caps, dict) else {}
+    raw_vector_store_caps = caps.get("vector_store")
+    vector_store_caps = (
+        raw_vector_store_caps if isinstance(raw_vector_store_caps, dict) else {}
+    )
+    raw_execution_caps = caps.get("execution")
+    execution_caps = raw_execution_caps if isinstance(raw_execution_caps, dict) else {}
     payload = {
         "determinism_guarantees": {
             "exact": "bit-identical when deterministic contract is used",
@@ -89,8 +96,8 @@ def audit(
             "replay_strict": True,
         },
         "backend_trust": {
-            "vector_store": caps.get("vector_store", {}).get("selected"),
-            "backend": caps.get("execution", {}).get("backend"),
+            "vector_store": vector_store_caps.get("selected"),
+            "backend": execution_caps.get("backend"),
         },
         "known_limitations": (
             "ND quality is bounded by ANN candidate quality",

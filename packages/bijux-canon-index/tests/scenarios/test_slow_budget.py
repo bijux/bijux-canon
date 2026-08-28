@@ -19,7 +19,7 @@ from tests.conformance.test_cross_backend_replay import _seed_backend
 
 
 @pytest.mark.slow
-def test_latency_budget_enforced_under_load():
+def test_latency_budget_enforced_under_load() -> None:
     backend = memory_backend()
     artifact, request = _seed_backend(backend, "slow-")
     artifact = replace(

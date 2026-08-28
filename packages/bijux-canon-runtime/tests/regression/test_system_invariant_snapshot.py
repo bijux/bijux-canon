@@ -21,7 +21,9 @@ pytestmark = pytest.mark.regression
 def test_system_invariant_snapshot() -> None:
     assert set(bijux_canon_runtime.__all__) == {
         "FlowManifest",
+        "RuntimeCapabilityDiscovery",
         "RunMode",
+        "discover_runtime_capabilities",
         "execute_flow",
     }
     assert [scope.value for scope in ArtifactScope] == [

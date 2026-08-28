@@ -112,6 +112,17 @@ class DryRunExecutor:
                 content_hash=state_hash,
                 scope=ArtifactScope.AUDIT,
             )
+            context.persist_payload(
+                logical_artifact_id=state_artifact.artifact_id,
+                payload={
+                    "agent_id": str(step.agent_id),
+                    "inputs_fingerprint": str(step.inputs_fingerprint),
+                    "state_hash": str(state_hash),
+                    "step_index": step.step_index,
+                },
+                schema_id="bijux.runtime.executor-state.v1",
+                producer="bijux-canon-runtime:dry-run-executor",
+            )
             artifacts.append(state_artifact)
             context.consume_budget(artifacts=1)
             context.consume_step_artifacts(1)

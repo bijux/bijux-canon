@@ -17,14 +17,13 @@ from __future__ import annotations
 
 import json
 from collections.abc import Iterable
-from dataclasses import is_dataclass
 from pathlib import Path
 from typing import Any
 
 import pytest
 
 from bijux_canon_ingest.core.types import RawDoc
-from bijux_canon_ingest.result import Err, Ok
+from bijux_canon_ingest_e2e_support import unwrap_ok
 
 
 def _load_jsonl(path: Path) -> list[dict[str, Any]]:
@@ -38,24 +37,6 @@ def _load_jsonl(path: Path) -> list[dict[str, Any]]:
             raise TypeError(f"JSONL row must be an object: {path}")
         rows.append(obj)
     return rows
-
-
-def _get(obj: Any, key: str, default: Any = None) -> Any:
-    if isinstance(obj, dict):
-        return obj.get(key, default)
-    if is_dataclass(obj):
-        return getattr(obj, key, default)
-    return getattr(obj, key, default)
-
-
-def _unwrap_ok(maybe_result: Any, *, what: str) -> Any:
-    """Accept either a bijux Result (Ok/Err) or a raw value."""
-
-    if isinstance(maybe_result, Ok):
-        return maybe_result.value
-    if isinstance(maybe_result, Err):
-        pytest.fail(f"{what} returned Err: {maybe_result.error}")
-    return maybe_result
 
 
 @pytest.fixture(scope="session")
@@ -135,7 +116,7 @@ def rag_index(
     if not callable(build) or not callable(save) or not callable(load):
         pytest.fail("IngestService must implement build_index/save_index/load_index")
 
-    index0 = _unwrap_ok(
+    index0 = unwrap_ok(
         build(
             docs,
             backend="bm25",
@@ -146,14 +127,12 @@ def rag_index(
         what="build_index",
     )
 
-    _unwrap_ok(save(index0, index_path), what="save_index")
-    return _unwrap_ok(load(index_path), what="load_index")
+    unwrap_ok(save(index0, index_path), what="save_index")
+    return unwrap_ok(load(index_path), what="load_index")
 
 
 __all__ = [
     "rag_eval_suite",
     "rag_app",
     "rag_index",
-    "_get",
-    "_unwrap_ok",
 ]

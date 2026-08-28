@@ -18,6 +18,7 @@ from bijux_canon_runtime.ontology import (
     EvidenceDeterminism,
 )
 from bijux_canon_runtime.ontology.ids import (
+    ArtifactID,
     ContentHash,
     ContractID,
     EvidenceID,
@@ -43,7 +44,7 @@ class RetrievalExecutor:
         if request is None:
             context.record_evidence(step.step_index, [])
             return []
-        retrieve = load_retrieval_runner()
+        retrieve = load_retrieval_runner(context.require_runtime_configuration())
         enforce_contract = load_vector_contract_enforcer()
         raw_evidence = retrieve(
             query=request.query,
@@ -63,6 +64,20 @@ class RetrievalExecutor:
 
         if not enforce_contract(request.vector_contract_id, evidence):
             raise ValueError("retrieval evidence failed vector contract enforcement")
+
+        for entry, item in zip(raw_evidence, evidence, strict=True):
+            content = entry["content"]
+            context.persist_payload(
+                logical_artifact_id=ArtifactID(
+                    f"evidence-{step.step_index}-{item.evidence_id}"
+                ),
+                payload=content,
+                schema_id="bijux.runtime.retrieved-evidence.v1",
+                media_type=(
+                    "text/plain" if isinstance(content, str) else "application/json"
+                ),
+                producer="bijux-canon-index:retrieval",
+            )
 
         if any(
             item.determinism != EvidenceDeterminism.DETERMINISTIC for item in evidence

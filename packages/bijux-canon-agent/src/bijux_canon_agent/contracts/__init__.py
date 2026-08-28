@@ -8,7 +8,34 @@ from .agent_contract import (
     AgentInputSchema,
     AgentOutputSchema,
 )
-from .execution_plan import ExecutionPlan
+from .causal_trace import CausalDecisionEvent, ResearchCausalTrace
+from .execution_control import (
+    CancellationPort,
+    CancellationSignal,
+    ResearchFailureKind,
+    ResearchFailureRecord,
+)
+from .execution_plan import (
+    ExecutionPlan,
+    PlanningBudget,
+    ProviderProfile,
+    ResearchPlanningInput,
+)
+from .research_budget import (
+    BudgetAction,
+    BudgetDecision,
+    BudgetDimensions,
+    ResearchBudgetLedger,
+    ResearchBudgetPolicy,
+)
+from .research_ports import (
+    ReasonerPort,
+    ReasoningPortRequest,
+    ReasoningPortResult,
+    RetrievalPortResult,
+    RetrieverPort,
+    ServicePortDescriptor,
+)
 from .retrieval import (
     RetrievalConfidenceEnvelope,
     RetrievalRequest,
@@ -21,6 +48,23 @@ from .runtime_models import (
     AgentScore,
     RunMetadata,
 )
+from .tool_execution import (
+    ResearchToolDescriptor,
+    ToolExecutionRecord,
+    ToolExecutionStatus,
+    ToolReplayPolicy,
+)
+from .tool_policy import (
+    ResearchTool,
+    ResearchToolOperation,
+    ToolGrant,
+    ToolInvocation,
+    ToolPolicy,
+    ToolPolicyAction,
+    ToolPolicyDecision,
+    ToolPolicyReason,
+    plan_sha256,
+)
 
 __all__ = [
     "AgentCallRecord",
@@ -31,9 +75,42 @@ __all__ = [
     "AgentOutput",
     "AgentOutputSchema",
     "AgentScore",
+    "BudgetAction",
+    "BudgetDecision",
+    "BudgetDimensions",
+    "CausalDecisionEvent",
+    "CancellationPort",
+    "CancellationSignal",
     "ExecutionPlan",
+    "PlanningBudget",
+    "ProviderProfile",
     "RetrievalConfidenceEnvelope",
     "RetrievalRequest",
     "RetrievalResponse",
+    "ResearchPlanningInput",
+    "ResearchBudgetLedger",
+    "ResearchBudgetPolicy",
+    "ResearchCausalTrace",
+    "ResearchFailureKind",
+    "ResearchFailureRecord",
+    "ResearchTool",
+    "ResearchToolDescriptor",
+    "ResearchToolOperation",
+    "ReasonerPort",
+    "ReasoningPortRequest",
+    "ReasoningPortResult",
+    "RetrievalPortResult",
+    "RetrieverPort",
     "RunMetadata",
+    "ServicePortDescriptor",
+    "ToolGrant",
+    "ToolExecutionRecord",
+    "ToolExecutionStatus",
+    "ToolInvocation",
+    "ToolPolicy",
+    "ToolPolicyAction",
+    "ToolPolicyDecision",
+    "ToolPolicyReason",
+    "ToolReplayPolicy",
+    "plan_sha256",
 ]

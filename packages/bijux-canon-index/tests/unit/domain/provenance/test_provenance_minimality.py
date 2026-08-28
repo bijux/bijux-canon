@@ -15,7 +15,7 @@ from bijux_canon_index.domain.provenance.lineage import explain_result
 from bijux_canon_index.infra.adapters.memory.backend import memory_backend
 
 
-def test_provenance_contains_only_expected_fields():
+def test_provenance_contains_only_expected_fields() -> None:
     backend = memory_backend()
     doc = Document(document_id="d1", text="hello")
     chunk = Chunk(chunk_id="c1", document_id=doc.document_id, text=doc.text, ordinal=0)

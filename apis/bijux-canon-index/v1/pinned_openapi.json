@@ -882,6 +882,793 @@
         "title": "HTTPValidationError",
         "type": "object"
       },
+      "HnswParametersPayload": {
+        "additionalProperties": false,
+        "description": "Seeded HNSW construction and query parameters.",
+        "properties": {
+          "ef_construction": {
+            "default": 200,
+            "title": "Ef Construction",
+            "type": "integer"
+          },
+          "ef_search": {
+            "default": 64,
+            "title": "Ef Search",
+            "type": "integer"
+          },
+          "m": {
+            "default": 32,
+            "title": "M",
+            "type": "integer"
+          },
+          "seed": {
+            "default": 42,
+            "title": "Seed",
+            "type": "integer"
+          }
+        },
+        "title": "HnswParametersPayload",
+        "type": "object"
+      },
+      "IndexActivationInspectionPayload": {
+        "additionalProperties": false,
+        "properties": {
+          "active": {
+            "title": "Active",
+            "type": "boolean"
+          },
+          "active_generation_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Active Generation Id"
+          }
+        },
+        "required": [
+          "active",
+          "active_generation_id"
+        ],
+        "title": "IndexActivationInspectionPayload",
+        "type": "object"
+      },
+      "IndexActivationRequestPayload": {
+        "additionalProperties": false,
+        "description": "Select one already-admitted generation for atomic activation.",
+        "properties": {
+          "generation_id": {
+            "minLength": 1,
+            "title": "Generation Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "generation_id"
+        ],
+        "title": "IndexActivationRequestPayload",
+        "type": "object"
+      },
+      "IndexBuildInspectionPayload": {
+        "additionalProperties": false,
+        "properties": {
+          "build_code_id": {
+            "title": "Build Code Id",
+            "type": "string"
+          },
+          "configuration_id": {
+            "title": "Configuration Id",
+            "type": "string"
+          },
+          "dense_approximate_algorithm": {
+            "title": "Dense Approximate Algorithm",
+            "type": "string"
+          },
+          "dense_approximate_index_type": {
+            "title": "Dense Approximate Index Type",
+            "type": "string"
+          },
+          "dense_approximate_schema_version": {
+            "title": "Dense Approximate Schema Version",
+            "type": "integer"
+          },
+          "dense_exact_algorithm": {
+            "title": "Dense Exact Algorithm",
+            "type": "string"
+          },
+          "dense_exact_index_type": {
+            "title": "Dense Exact Index Type",
+            "type": "string"
+          },
+          "dense_exact_schema_version": {
+            "title": "Dense Exact Schema Version",
+            "type": "integer"
+          },
+          "lexical_algorithm": {
+            "title": "Lexical Algorithm",
+            "type": "string"
+          },
+          "lexical_schema_version": {
+            "title": "Lexical Schema Version",
+            "type": "integer"
+          },
+          "lexical_tokenizer": {
+            "title": "Lexical Tokenizer",
+            "type": "string"
+          },
+          "lexical_tokenizer_configuration_sha256": {
+            "title": "Lexical Tokenizer Configuration Sha256",
+            "type": "string"
+          },
+          "metric": {
+            "title": "Metric",
+            "type": "string"
+          },
+          "normalization": {
+            "title": "Normalization",
+            "type": "string"
+          },
+          "vector_dtype": {
+            "title": "Vector Dtype",
+            "type": "string"
+          }
+        },
+        "required": [
+          "configuration_id",
+          "build_code_id",
+          "lexical_algorithm",
+          "lexical_schema_version",
+          "lexical_tokenizer",
+          "lexical_tokenizer_configuration_sha256",
+          "dense_exact_algorithm",
+          "dense_exact_schema_version",
+          "dense_exact_index_type",
+          "dense_approximate_algorithm",
+          "dense_approximate_schema_version",
+          "dense_approximate_index_type",
+          "vector_dtype",
+          "metric",
+          "normalization"
+        ],
+        "title": "IndexBuildInspectionPayload",
+        "type": "object"
+      },
+      "IndexBuildLimitsPayload": {
+        "additionalProperties": false,
+        "description": "Hard build limits supplied through an installed interface.",
+        "properties": {
+          "max_chunks": {
+            "exclusiveMinimum": 0.0,
+            "title": "Max Chunks",
+            "type": "integer"
+          },
+          "max_metadata_bytes": {
+            "exclusiveMinimum": 0.0,
+            "title": "Max Metadata Bytes",
+            "type": "integer"
+          },
+          "max_text_bytes": {
+            "exclusiveMinimum": 0.0,
+            "title": "Max Text Bytes",
+            "type": "integer"
+          },
+          "max_vector_bytes": {
+            "exclusiveMinimum": 0.0,
+            "title": "Max Vector Bytes",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "max_chunks",
+          "max_text_bytes",
+          "max_vector_bytes",
+          "max_metadata_bytes"
+        ],
+        "title": "IndexBuildLimitsPayload",
+        "type": "object"
+      },
+      "IndexBuildRequestPayload": {
+        "additionalProperties": false,
+        "description": "Complete coherent-generation build request.",
+        "properties": {
+          "activate": {
+            "default": false,
+            "title": "Activate",
+            "type": "boolean"
+          },
+          "chunks": {
+            "items": {
+              "$ref": "#/components/schemas/IndexChunkPayload"
+            },
+            "minItems": 1,
+            "title": "Chunks",
+            "type": "array"
+          },
+          "hnsw_parameters": {
+            "$ref": "#/components/schemas/HnswParametersPayload"
+          },
+          "limits": {
+            "$ref": "#/components/schemas/IndexBuildLimitsPayload"
+          },
+          "model_lock_artifact_id": {
+            "minLength": 1,
+            "title": "Model Lock Artifact Id",
+            "type": "string"
+          },
+          "snapshot_artifact_id": {
+            "minLength": 1,
+            "title": "Snapshot Artifact Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "chunks",
+          "snapshot_artifact_id",
+          "model_lock_artifact_id",
+          "limits"
+        ],
+        "title": "IndexBuildRequestPayload",
+        "type": "object"
+      },
+      "IndexChunkPayload": {
+        "additionalProperties": false,
+        "description": "One exact source chunk and locked-model vector admitted for a build.",
+        "properties": {
+          "chunk_id": {
+            "minLength": 1,
+            "title": "Chunk Id",
+            "type": "string"
+          },
+          "document_id": {
+            "minLength": 1,
+            "title": "Document Id",
+            "type": "string"
+          },
+          "metadata": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "title": "Metadata",
+            "type": "object"
+          },
+          "ordinal": {
+            "minimum": 0.0,
+            "title": "Ordinal",
+            "type": "integer"
+          },
+          "text": {
+            "minLength": 1,
+            "title": "Text",
+            "type": "string"
+          },
+          "vector": {
+            "items": {
+              "type": "number"
+            },
+            "minItems": 1,
+            "title": "Vector",
+            "type": "array"
+          }
+        },
+        "required": [
+          "chunk_id",
+          "document_id",
+          "ordinal",
+          "text",
+          "vector"
+        ],
+        "title": "IndexChunkPayload",
+        "type": "object"
+      },
+      "IndexCompatibilityInspectionPayload": {
+        "additionalProperties": false,
+        "properties": {
+          "requested_configuration_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Requested Configuration Id"
+          },
+          "requested_dimension": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Requested Dimension"
+          },
+          "requested_model_lock_artifact_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Requested Model Lock Artifact Id"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "requested_model_lock_artifact_id",
+          "requested_dimension",
+          "requested_configuration_id"
+        ],
+        "title": "IndexCompatibilityInspectionPayload",
+        "type": "object"
+      },
+      "IndexFilterInspectionPayload": {
+        "additionalProperties": false,
+        "properties": {
+          "applied_at_query_time": {
+            "title": "Applied At Query Time",
+            "type": "boolean"
+          },
+          "governed_fields": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Governed Fields",
+            "type": "array"
+          },
+          "operators": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Operators",
+            "type": "array"
+          },
+          "user_predicates_supported": {
+            "title": "User Predicates Supported",
+            "type": "boolean"
+          },
+          "value_payloads_exposed": {
+            "title": "Value Payloads Exposed",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "governed_fields",
+          "user_predicates_supported",
+          "operators",
+          "applied_at_query_time",
+          "value_payloads_exposed"
+        ],
+        "title": "IndexFilterInspectionPayload",
+        "type": "object"
+      },
+      "IndexInspectionResponse": {
+        "additionalProperties": false,
+        "description": "Content-safe operational report returned by generation operations.",
+        "properties": {
+          "activation": {
+            "$ref": "#/components/schemas/IndexActivationInspectionPayload"
+          },
+          "build": {
+            "$ref": "#/components/schemas/IndexBuildInspectionPayload"
+          },
+          "chunk_count": {
+            "title": "Chunk Count",
+            "type": "integer"
+          },
+          "chunk_set_sha256": {
+            "title": "Chunk Set Sha256",
+            "type": "string"
+          },
+          "compatibility": {
+            "$ref": "#/components/schemas/IndexCompatibilityInspectionPayload"
+          },
+          "dimension": {
+            "title": "Dimension",
+            "type": "integer"
+          },
+          "filters": {
+            "$ref": "#/components/schemas/IndexFilterInspectionPayload"
+          },
+          "generation_id": {
+            "title": "Generation Id",
+            "type": "string"
+          },
+          "integrity": {
+            "$ref": "#/components/schemas/IndexIntegrityInspectionPayload"
+          },
+          "lineage": {
+            "$ref": "#/components/schemas/IndexLineageInspectionPayload"
+          },
+          "metadata_bytes": {
+            "title": "Metadata Bytes",
+            "type": "integer"
+          },
+          "model_lock_artifact_id": {
+            "title": "Model Lock Artifact Id",
+            "type": "string"
+          },
+          "schema_version": {
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "segments": {
+            "items": {
+              "$ref": "#/components/schemas/IndexSegmentInspectionPayload"
+            },
+            "title": "Segments",
+            "type": "array"
+          },
+          "snapshot_artifact_id": {
+            "title": "Snapshot Artifact Id",
+            "type": "string"
+          },
+          "text_bytes": {
+            "title": "Text Bytes",
+            "type": "integer"
+          },
+          "vector_bytes": {
+            "title": "Vector Bytes",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "schema_version",
+          "generation_id",
+          "snapshot_artifact_id",
+          "model_lock_artifact_id",
+          "chunk_set_sha256",
+          "chunk_count",
+          "dimension",
+          "text_bytes",
+          "vector_bytes",
+          "metadata_bytes",
+          "build",
+          "segments",
+          "filters",
+          "lineage",
+          "integrity",
+          "activation",
+          "compatibility"
+        ],
+        "title": "IndexInspectionResponse",
+        "type": "object"
+      },
+      "IndexIntegrityInspectionPayload": {
+        "additionalProperties": false,
+        "properties": {
+          "checks": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Checks",
+            "type": "array"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "checks"
+        ],
+        "title": "IndexIntegrityInspectionPayload",
+        "type": "object"
+      },
+      "IndexLineageInspectionPayload": {
+        "additionalProperties": false,
+        "properties": {
+          "added": {
+            "title": "Added",
+            "type": "integer"
+          },
+          "deleted": {
+            "title": "Deleted",
+            "type": "integer"
+          },
+          "delta_sha256": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Delta Sha256"
+          },
+          "modified": {
+            "title": "Modified",
+            "type": "integer"
+          },
+          "parent_generation_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Generation Id"
+          },
+          "tombstoned": {
+            "title": "Tombstoned",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "parent_generation_id",
+          "delta_sha256",
+          "added",
+          "modified",
+          "deleted",
+          "tombstoned"
+        ],
+        "title": "IndexLineageInspectionPayload",
+        "type": "object"
+      },
+      "IndexQueryChannel": {
+        "description": "Persistent retrieval channel selected for one query.",
+        "enum": [
+          "sqlite-fts5",
+          "faiss-flat-ip",
+          "faiss-hnsw"
+        ],
+        "title": "IndexQueryChannel",
+        "type": "string"
+      },
+      "IndexQueryHitPayload": {
+        "additionalProperties": false,
+        "properties": {
+          "chunk_id": {
+            "title": "Chunk Id",
+            "type": "string"
+          },
+          "document_id": {
+            "title": "Document Id",
+            "type": "string"
+          },
+          "ordinal": {
+            "title": "Ordinal",
+            "type": "integer"
+          },
+          "rank": {
+            "title": "Rank",
+            "type": "integer"
+          },
+          "score": {
+            "title": "Score",
+            "type": "number"
+          },
+          "source_text_sha256": {
+            "title": "Source Text Sha256",
+            "type": "string"
+          }
+        },
+        "required": [
+          "rank",
+          "score",
+          "chunk_id",
+          "document_id",
+          "ordinal",
+          "source_text_sha256"
+        ],
+        "title": "IndexQueryHitPayload",
+        "type": "object"
+      },
+      "IndexQueryRequestPayload": {
+        "additionalProperties": false,
+        "description": "Generation query request shared by CLI and HTTP boundaries.",
+        "properties": {
+          "channel": {
+            "$ref": "#/components/schemas/IndexQueryChannel"
+          },
+          "generation_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Generation Id"
+          },
+          "metadata_filter": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MetadataFilterPayload"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "query_text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Query Text"
+          },
+          "query_vector": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "number"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Query Vector"
+          },
+          "top_k": {
+            "default": 10,
+            "maximum": 1000.0,
+            "minimum": 1.0,
+            "title": "Top K",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "channel"
+        ],
+        "title": "IndexQueryRequestPayload",
+        "type": "object"
+      },
+      "IndexQueryResponse": {
+        "additionalProperties": false,
+        "description": "Normalized content-bound query results from every persistent channel.",
+        "properties": {
+          "authorization_scope_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Authorization Scope Id"
+          },
+          "channel": {
+            "$ref": "#/components/schemas/IndexQueryChannel"
+          },
+          "chunk_set_sha256": {
+            "title": "Chunk Set Sha256",
+            "type": "string"
+          },
+          "generation_id": {
+            "title": "Generation Id",
+            "type": "string"
+          },
+          "hits": {
+            "items": {
+              "$ref": "#/components/schemas/IndexQueryHitPayload"
+            },
+            "title": "Hits",
+            "type": "array"
+          },
+          "schema_version": {
+            "title": "Schema Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "schema_version",
+          "generation_id",
+          "channel",
+          "chunk_set_sha256",
+          "hits"
+        ],
+        "title": "IndexQueryResponse",
+        "type": "object"
+      },
+      "IndexSegmentInspectionPayload": {
+        "additionalProperties": false,
+        "properties": {
+          "backend": {
+            "title": "Backend",
+            "type": "string"
+          },
+          "chunk_set_sha256": {
+            "title": "Chunk Set Sha256",
+            "type": "string"
+          },
+          "file_sha256": {
+            "title": "File Sha256",
+            "type": "string"
+          },
+          "item_count": {
+            "title": "Item Count",
+            "type": "integer"
+          },
+          "segment_generation_id": {
+            "title": "Segment Generation Id",
+            "type": "string"
+          },
+          "size_bytes": {
+            "title": "Size Bytes",
+            "type": "integer"
+          },
+          "stage": {
+            "title": "Stage",
+            "type": "string"
+          }
+        },
+        "required": [
+          "stage",
+          "backend",
+          "item_count",
+          "size_bytes",
+          "file_sha256",
+          "segment_generation_id",
+          "chunk_set_sha256"
+        ],
+        "title": "IndexSegmentInspectionPayload",
+        "type": "object"
+      },
+      "IndexSelectionPayload": {
+        "additionalProperties": false,
+        "description": "Select an admitted generation, defaulting to the active generation.",
+        "properties": {
+          "generation_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Generation Id"
+          }
+        },
+        "title": "IndexSelectionPayload",
+        "type": "object"
+      },
       "IngestRequest": {
         "additionalProperties": false,
         "description": "Represents ingest request.",
@@ -1069,6 +1856,117 @@
         "title": "ListRunsResponse",
         "type": "object"
       },
+      "MetadataFilterPayload": {
+        "additionalProperties": false,
+        "description": "Full typed metadata filter accepted identically by every channel.",
+        "properties": {
+          "date_from": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Date From"
+          },
+          "date_to": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Date To"
+          },
+          "dois": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Dois",
+            "type": "array"
+          },
+          "formats": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Formats",
+            "type": "array"
+          },
+          "languages": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Languages",
+            "type": "array"
+          },
+          "paths": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Paths",
+            "type": "array"
+          },
+          "sections": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Sections",
+            "type": "array"
+          },
+          "source_ids": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Source Ids",
+            "type": "array"
+          },
+          "tags": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Tags",
+            "type": "array"
+          },
+          "user": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/UserMetadataPredicatePayload"
+            },
+            "title": "User",
+            "type": "array"
+          }
+        },
+        "title": "MetadataFilterPayload",
+        "type": "object"
+      },
+      "MetadataOperator": {
+        "description": "Supported comparisons for caller-owned metadata fields.",
+        "enum": [
+          "equal",
+          "not_equal",
+          "one_of",
+          "contains",
+          "greater_or_equal",
+          "less_or_equal",
+          "exists",
+          "absent"
+        ],
+        "title": "MetadataOperator",
+        "type": "string"
+      },
       "RandomnessProfilePayload": {
         "additionalProperties": false,
         "description": "Represents randomness profile payload.",
@@ -1220,6 +2118,65 @@
           "status"
         ],
         "title": "StorageBackendDescriptor",
+        "type": "object"
+      },
+      "UserMetadataPredicatePayload": {
+        "additionalProperties": false,
+        "description": "Transport representation of one typed caller-owned metadata predicate.",
+        "properties": {
+          "key": {
+            "minLength": 1,
+            "title": "Key",
+            "type": "string"
+          },
+          "operator": {
+            "$ref": "#/components/schemas/MetadataOperator"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "items": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "integer"
+                    },
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "boolean"
+                    }
+                  ]
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "key",
+          "operator"
+        ],
+        "title": "UserMetadataPredicatePayload",
         "type": "object"
       },
       "ValidationError": {
@@ -1912,6 +2869,211 @@
         "summary": "Explain a result",
         "tags": [
           "Execution"
+        ]
+      }
+    },
+    "/index/generations/activate": {
+      "post": {
+        "operationId": "activateIndexGeneration",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IndexActivationRequestPayload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IndexInspectionResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Activate Generation",
+        "tags": [
+          "Materialization"
+        ]
+      }
+    },
+    "/index/generations/build": {
+      "post": {
+        "operationId": "buildIndexGeneration",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IndexBuildRequestPayload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IndexInspectionResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Build Generation",
+        "tags": [
+          "Materialization"
+        ]
+      }
+    },
+    "/index/generations/inspect": {
+      "post": {
+        "operationId": "inspectIndexGeneration",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IndexSelectionPayload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IndexInspectionResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Inspect Generation",
+        "tags": [
+          "Discovery"
+        ]
+      }
+    },
+    "/index/generations/query": {
+      "post": {
+        "operationId": "queryIndexGeneration",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IndexQueryRequestPayload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IndexQueryResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Query Generation",
+        "tags": [
+          "Execution"
+        ]
+      }
+    },
+    "/index/generations/verify": {
+      "post": {
+        "operationId": "verifyIndexGeneration",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IndexSelectionPayload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IndexInspectionResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Verify Generation",
+        "tags": [
+          "Discovery"
         ]
       }
     },

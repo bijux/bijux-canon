@@ -3,6 +3,7 @@ from __future__ import annotations
 import gc
 from pathlib import Path
 
+from bijux_canon_agent_trace_support import default_model_metadata
 import pytest
 
 from bijux_canon_agent.application.workflow_graph.orchestrator import (
@@ -19,7 +20,6 @@ from bijux_canon_agent.enums import DecisionOutcome
 from bijux_canon_agent.interfaces.cli.helpers import load_trace
 from bijux_canon_agent.pipeline.epistemic import EpistemicVerdict
 from bijux_canon_agent.pipeline.results.outcome import PipelineResult, PipelineStatus
-from tests.utils.trace_helpers import default_model_metadata
 
 
 @pytest.mark.asyncio

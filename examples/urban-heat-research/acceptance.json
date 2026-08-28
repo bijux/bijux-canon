@@ -1,0 +1,51 @@
+{
+  "cases": [
+    {
+      "case_id": "heat-response-timing",
+      "kind": "supported",
+      "question": "Which heat-response measures can deploy quickly, and which require a long lead time?",
+      "requirements": {
+        "answer_disposition": "admitted",
+        "citation_resolution_ratio_min": 1.0,
+        "material_claims_min": 1,
+        "unsupported_material_claims_max": 0
+      }
+    },
+    {
+      "case_id": "reflective-roof-conflict",
+      "kind": "conflict",
+      "question": "What evidence supports and limits use of reflective roofs across districts?",
+      "requirements": {
+        "answer_disposition": "admitted",
+        "citation_resolution_ratio_min": 1.0,
+        "material_claims_min": 1,
+        "qualified_claims_min": 1,
+        "unsupported_material_claims_max": 0
+      }
+    },
+    {
+      "case_id": "unsupported-orbital-period",
+      "kind": "unsupported",
+      "question": "What is the orbital period of the exoplanet Eos-9?",
+      "requirements": {
+        "answer_disposition": "abstained",
+        "citation_count_max": 0,
+        "material_claims_max": 0,
+        "unsupported_material_claims_max": 0
+      }
+    }
+  ],
+  "research": {
+    "case_id": "heat-response-portfolio",
+    "question": "Which heat-response measures are immediate, which are long-lead, and what access or suitability limits apply?",
+    "requirements": {
+      "candidate_classifications_min": 1,
+      "citation_count_min": 1,
+      "distinct_evidence_needs_min": 2,
+      "stop_reason_count_min": 1,
+      "unsupported_material_claims_max": 0
+    }
+  },
+  "schema_version": "bijux.canon.generalization_acceptance.v1",
+  "system_output_may_define_truth": false
+}

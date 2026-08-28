@@ -44,10 +44,14 @@ def _junit_report_is_clean(report_path: Path) -> bool:
 
     root = ElementTree.parse(report_path).getroot()
     failure_count = sum(
-        int(node.attrib.get("failures", "0")) for node in root.iter() if "failures" in node.attrib
+        int(node.attrib.get("failures", "0"))
+        for node in root.iter()
+        if "failures" in node.attrib
     )
     error_count = sum(
-        int(node.attrib.get("errors", "0")) for node in root.iter() if "errors" in node.attrib
+        int(node.attrib.get("errors", "0"))
+        for node in root.iter()
+        if "errors" in node.attrib
     )
     return failure_count == 0 and error_count == 0
 

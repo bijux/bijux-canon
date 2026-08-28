@@ -15,7 +15,9 @@ from bijux_canon_reason.api.v1.app import create_app
     "seed,top_k",
     [(0, 1), (1, 1), (2, 2), (3, 2), (4, 3), (5, 3), (6, 4), (7, 4), (8, 5), (9, 5)],
 )
-def test_api_happy_path_matrix(tmp_path: Path, seed: int, top_k: int) -> None:
+def test_api_happy_path_matrix(
+    tmp_path: Path, corpus_fixture: Path, seed: int, top_k: int
+) -> None:
     artifacts = tmp_path / "artifacts"
     app = create_app(artifacts_dir=artifacts)
     client = TestClient(app)
@@ -23,7 +25,11 @@ def test_api_happy_path_matrix(tmp_path: Path, seed: int, top_k: int) -> None:
     payload = {
         "spec": {
             "description": f"api run seed={seed}",
-            "constraints": {"needs_retrieval": True, "top_k": top_k},
+            "constraints": {
+                "needs_retrieval": True,
+                "top_k": top_k,
+                "corpus_path": str(corpus_fixture),
+            },
             "expected": {},
             "version": 1,
         },

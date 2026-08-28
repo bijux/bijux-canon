@@ -4,7 +4,7 @@ audience: mixed
 type: reference
 status: canonical
 owner: bijux-canon-index-docs
-last_reviewed: 2026-07-22
+last_reviewed: 2026-08-24
 ---
 
 # Interpreting Retrieval Evidence
@@ -61,6 +61,71 @@ Score values are meaningful only within their metric and implementation.
 Cross-backend conformance does not require identical floating-point results or
 rank order. A faster approximate result with lower recall is a different
 tradeoff, not an unqualified improvement.
+
+## Evaluate The Installed Retriever
+
+`PublicRetrievalEvaluationRequest` contains an immutable index artifact,
+unique reviewed questions, and question-specific graded qrels. It deliberately
+has no ranked-hit field. `PublicRetrievalEvaluator` invokes its installed
+retrieval executor once per question and counts insufficient, refused, and
+failed executions in the same unique-query denominator as successful results.
+
+The report retains generation, model, configuration, Runtime run, VEX, raw
+rank, score, content hash, and exact locator-segment lineage for every observed
+hit. Installed Runtime retrieval also retains the generation-bound
+authorization-scope identity and the effective filter identity through fusion,
+reranking, and locator resolution. It reports per-query Recall@5, reciprocal
+rank at 10, and nDCG@10; macro
+samples and confidence intervals; pooled relevant-qrel arithmetic; refusal and
+failure counts; and the five worst query identities. Metadata coverage or a
+caller-authored ranking cannot satisfy this boundary.
+
+Development reports also retain the raw lexical, dense, and fusion ranks. Each
+reviewed qrel is classified as retained at five, below the final metric cutoff,
+absent from candidate depth, excluded by a channel bound, lost at fusion, lost
+at finalization, refused, or failed. Candidate conservation is enforced between
+stages, so fusion or final output cannot invent an unexplained chunk. Exact
+qrel numerators, denominators, and recall are reported at candidate depth,
+channel admission, fusion at ten, final at ten, and final at five. Use these
+traces to repair admission, chunk identity, or locator defects before tuning
+retrieval parameters.
+
+The versioned configuration search reuses those observed channel candidates
+and is development-only. It evaluates candidate depth, asymmetric versus
+symmetric lexical admission, RRF constants, and lexical/dense weights through
+general parameters whose identities are content-addressed. Refused and failed
+queries remain in every configuration's denominator. A search report stores
+all per-query tradeoffs and has no selected configuration unless all three
+fixed quality floors pass.
+
+For a configured Runtime workspace and persisted index artifact:
+
+```console
+bijux-canon-runtime v2 evaluate-retrieval \
+  --cases examples/ancient-dna-research/truth/evaluation-cases.jsonl \
+  --qrels examples/ancient-dna-research/truth/qrels.jsonl \
+  --index-id sha256:INDEX_ARTIFACT \
+  --split development \
+  --mode local-hybrid-ann
+```
+
+To compare the bounded general configuration space over the same installed
+executions:
+
+```console
+bijux-canon-runtime v2 search-retrieval-configurations \
+  --cases examples/ancient-dna-research/truth/evaluation-cases.jsonl \
+  --qrels examples/ancient-dna-research/truth/qrels.jsonl \
+  --index-id sha256:INDEX_ARTIFACT \
+  --split development \
+  --mode local-hybrid-ann \
+  --human
+```
+
+Use `--human` for the bounded operator summary. JSON is the stable evidence
+record. Held-out cases intentionally omit labels and are refused by this
+development interface; only the separately authorized release evaluator may
+join and aggregate the sealed held-out truth.
 
 ## Separate Provenance From Relevance
 

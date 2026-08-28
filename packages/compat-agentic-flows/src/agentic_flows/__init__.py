@@ -8,12 +8,15 @@ from __future__ import annotations
 from importlib import import_module
 from typing import Any
 
+from .compatibility import warn_compatibility
 from .runtime_alias import install_runtime_aliases
 
 _ALIAS_PACKAGE = "agentic_flows"
 _RUNTIME_PACKAGE = "bijux_canon_runtime"
-_LOCAL_SUBMODULES = frozenset({"__main__", "runtime_alias"})
+_LOCAL_SUBMODULES = frozenset({"__main__", "compatibility", "runtime_alias"})
 _runtime_module = import_module(_RUNTIME_PACKAGE)
+
+warn_compatibility()
 
 install_runtime_aliases(
     alias_package=_ALIAS_PACKAGE,

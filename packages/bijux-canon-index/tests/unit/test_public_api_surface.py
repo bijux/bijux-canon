@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import importlib
 import inspect
+from types import ModuleType
 
 EXPECTED = {
     "bijux_canon_index.core.types.base": {
@@ -74,12 +75,18 @@ EXPECTED = {
         "ExecutionLedger",
     },
     "bijux_canon_index.contracts.tx": {"Tx"},
-    "bijux_canon_index.contracts.authz": {"Authz", "AllowAllAuthz", "DenyAllAuthz"},
+    "bijux_canon_index.contracts.authz": {
+        "Authz",
+        "AllowAllAuthz",
+        "DenyAllAuthz",
+        "RetrievalAuthorizationScope",
+        "authorize_retrieval_filter",
+    },
     "bijux_canon_index.application.engine": {"VectorExecutionEngine"},
 }
 
 
-def _public_names(module):
+def _public_names(module: ModuleType) -> set[str]:
     names: set[str] = set()
     for name, obj in inspect.getmembers(module):
         if name.startswith("_"):
@@ -94,7 +101,7 @@ def _public_names(module):
     return names
 
 
-def test_public_surface_is_stable():
+def test_public_surface_is_stable() -> None:
     for module_path, expected in EXPECTED.items():
         module = importlib.import_module(module_path)
         assert _public_names(module) == expected

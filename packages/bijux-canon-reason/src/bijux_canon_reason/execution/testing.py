@@ -8,7 +8,7 @@ from dataclasses import dataclass
 
 
 @dataclass(frozen=True)
-class FakeRuntime:
-    """Deterministic runtime placeholder used for tests (no hidden time/randomness)."""
+class DeterministicTestRuntime:
+    """Minimal deterministic test value with no supported runtime behavior."""
 
     seed: int

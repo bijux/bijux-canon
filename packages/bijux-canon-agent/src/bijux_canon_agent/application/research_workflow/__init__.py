@@ -1,0 +1,83 @@
+"""Bounded research-role workflow owned by Bijux Canon Agent."""
+
+from bijux_canon_agent.application.research_workflow.behavior_evaluation import (
+    AgentBehaviorDimension,
+    AgentBehaviorEvaluator,
+    AgentBehaviorOutcome,
+    AgentBehaviorReport,
+)
+from bijux_canon_agent.application.research_workflow.observed_state import (
+    InstalledEvidenceRelation,
+    InstalledResearchRequirement,
+    ObservedEvidenceRelationKind,
+    ObservedResearchDecision,
+    ObservedResearchGap,
+    ObservedResearchGapKind,
+    ObservedResearchState,
+    ObservedResearchStateMachine,
+)
+from bijux_canon_agent.application.research_workflow.state_machine import (
+    ResearchCheckpoint,
+    ResearchCheckpointPort,
+    ResearchExecutionResult,
+    ResearchOperation,
+    ResearchOperationRecord,
+    ResearchRole,
+    ResearchRoleMachine,
+    ResearchTransition,
+)
+from bijux_canon_agent.application.research_workflow.targeted_search import (
+    TargetedSearchAttempt,
+    TargetedSearchDecision,
+    TargetedSearchDisposition,
+    TargetedSearchIntent,
+    TargetedSearchObservation,
+    TargetedSearchOutcome,
+    TargetedSearchPlan,
+    TargetedSearchPlanningService,
+    TargetedSearchPolicy,
+    TargetedSearchTrigger,
+    query_equivalence_key,
+)
+from bijux_canon_agent.application.research_workflow.terminal_outcome import (
+    InstalledResearchTerminalKind,
+    InstalledResearchTerminalOutcome,
+    RemainingResearchWork,
+)
+
+__all__ = [
+    "AgentBehaviorDimension",
+    "AgentBehaviorEvaluator",
+    "AgentBehaviorOutcome",
+    "AgentBehaviorReport",
+    "InstalledEvidenceRelation",
+    "InstalledResearchRequirement",
+    "InstalledResearchTerminalKind",
+    "InstalledResearchTerminalOutcome",
+    "ObservedEvidenceRelationKind",
+    "ObservedResearchDecision",
+    "ObservedResearchGap",
+    "ObservedResearchGapKind",
+    "ObservedResearchState",
+    "ObservedResearchStateMachine",
+    "ResearchExecutionResult",
+    "ResearchCheckpoint",
+    "ResearchCheckpointPort",
+    "ResearchOperation",
+    "ResearchOperationRecord",
+    "ResearchRole",
+    "ResearchRoleMachine",
+    "RemainingResearchWork",
+    "ResearchTransition",
+    "TargetedSearchAttempt",
+    "TargetedSearchDecision",
+    "TargetedSearchDisposition",
+    "TargetedSearchIntent",
+    "TargetedSearchObservation",
+    "TargetedSearchOutcome",
+    "TargetedSearchPlan",
+    "TargetedSearchPlanningService",
+    "TargetedSearchPolicy",
+    "TargetedSearchTrigger",
+    "query_equivalence_key",
+]

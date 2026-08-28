@@ -10,11 +10,6 @@ from pathlib import Path
 import time
 from typing import Any
 
-try:  # pragma: no cover - optional dependency
-    import hnswlib
-except Exception:  # pragma: no cover - optional dependency
-    hnswlib = None
-
 from bijux_canon_index.contracts.resources import VectorSource
 from bijux_canon_index.core.errors import (
     AnnIndexBuildError,
@@ -35,6 +30,14 @@ from bijux_canon_index.infra.adapters.ann_base import AnnExecutionRequestRunner
 from bijux_canon_index.infra.adapters.hnsw.metadata import as_dict, validate_index_meta
 from bijux_canon_index.infra.adapters.hnsw.params import as_int, resolve_space
 from bijux_canon_index.infra.logging import log_event
+
+hnswlib: Any
+try:  # pragma: no cover - optional dependency
+    import hnswlib as _hnswlib
+except Exception:  # pragma: no cover - optional dependency
+    hnswlib = None
+else:
+    hnswlib = _hnswlib
 
 
 class HnswAnnRunner(AnnExecutionRequestRunner):

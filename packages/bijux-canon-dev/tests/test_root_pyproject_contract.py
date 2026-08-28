@@ -41,7 +41,7 @@ def test_root_pyproject_uses_shared_workspace_build_contract() -> None:
     pyproject = _root_pyproject()
 
     assert pyproject["build-system"] == {
-        "requires": ["hatchling>=1.27.0,<1.32", "hatch-vcs>=0.4.0,<1.0"],
+        "requires": ["hatchling>=1.30.1,<1.33", "hatch-vcs>=0.5.0,<1.0"],
         "build-backend": "hatchling.build",
     }
 
@@ -58,7 +58,10 @@ def test_root_pyproject_uses_shared_workspace_build_contract() -> None:
     uv_tool = _as_dict(tool["uv"])
     assert _as_dict(uv_tool["workspace"])["members"] == ["packages/*"]
     build_targets = _as_dict(_as_dict(hatch["build"])["targets"])
-    assert _as_dict(build_targets["wheel"]) == {"bypass-selection": True}
+    assert _as_dict(build_targets["wheel"]) == {
+        "bypass-selection": True,
+        "skip-excluded-dirs": True,
+    }
 
 
 def test_root_pyproject_exposes_all_workspace_packages_to_root_dev_installs() -> None:

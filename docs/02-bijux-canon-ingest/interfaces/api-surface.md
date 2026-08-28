@@ -4,7 +4,7 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-ingest-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-08-23
 ---
 
 # HTTP API
@@ -18,6 +18,7 @@ published as `bijux_canon_ingest.interfaces.http.app:app`.
 | Method and path | Request | Success | Governed result |
 | --- | --- | --- | --- |
 | `GET /v1/healthz` | none | `200` | `{ "ok": true }` liveness response |
+| `POST /v1/corpora/ingest` | document root, names, optional lock/publication paths | `200` | canonical snapshot identity, `initial`/`unchanged`/`changed` disposition, exact optional delta, format/count summary, and optional atomic publication |
 | `POST /v1/chunks` | documents, chunk size, overlap, embedding flag | `200` | chunks with source identity, offsets, metadata, and optional embeddings |
 | `POST /v1/index/build` | documents, `bm25` or `numpy-cosine`, chunk geometry | `200` | process-local `index_id`, content/configuration fingerprint, schema version |
 | `POST /v1/retrieve` | `index_id`, query, `top_k`, metadata filters | `200` | ranked candidates with scores and chunk metadata |
@@ -41,6 +42,17 @@ sequenceDiagram
 ```
 
 ## Build And Query An Index
+
+`POST /v1/corpora/ingest` accepts `corpus_lock_path` to select a verified lock;
+without it, the same adjacent-lock discovery used by Python and CLI applies.
+Malformed or contradictory lock/acquisition evidence returns `400` with the
+stable `CorpusLockError` issue code in `detail`. A successful response includes
+the portable `corpus_lock` verification summary without exposing its host path.
+The request also accepts `max_depth`, `max_entries`, `max_files`,
+`max_file_bytes`, `max_total_bytes`, and `max_seconds`. Defaults match the
+Python and CLI discovery policy. Invalid limits fail request validation;
+exhausted limits return `400` with the same typed incomplete-discovery code as
+the installed CLI.
 
 ```bash
 curl --fail-with-body http://127.0.0.1:8000/v1/index/build \
@@ -71,11 +83,13 @@ fingerprint with any result that may be reviewed later.
 
 ## Persistence And Deployment Boundary
 
-The default HTTP application stores built indexes in memory. An `index_id` is
-valid only inside the process that created it and is lost on restart. The API
-does not provide index enumeration, deletion, replication, or durable recovery.
-Use the CLI/storage adapters for file-backed workflows, or supply a governed
-service boundary before treating this application as durable infrastructure.
+The default HTTP application stores query indexes in memory. An `index_id` is
+valid only inside the process that created it and is lost on restart. Canonical
+corpus ingest is a separate path and can publish atomically when
+`publication_root` is supplied. The API does not provide index enumeration,
+deletion, replication, or durable recovery. Use the canonical corpus path or
+CLI/storage adapters for file-backed workflows, or supply a governed service
+boundary before treating query indexes as durable infrastructure.
 
 The application does not implement authentication or tenant isolation. Deploy
 it behind an authenticated boundary, enforce request limits at the edge, and

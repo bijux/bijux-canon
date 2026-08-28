@@ -25,14 +25,14 @@ def _artifact() -> ExecutionArtifact:
     )
 
 
-def test_make_build_plan_deterministic():
+def test_make_build_plan_deterministic() -> None:
     art = _artifact()
     plan1 = build.make_build_plan(art)
     plan2 = build.make_build_plan(art)
     assert plan1.plan_fingerprint == plan2.plan_fingerprint
 
 
-def test_materialize_requires_tx():
+def test_materialize_requires_tx() -> None:
     art = _artifact()
     plan = build.make_build_plan(art)
     stores = memory_backend().stores
@@ -40,7 +40,7 @@ def test_materialize_requires_tx():
         build.materialize(plan, None, stores)
 
 
-def test_materialize_writes_artifact():
+def test_materialize_writes_artifact() -> None:
     backend = memory_backend()
     art = _artifact()
     plan = build.make_build_plan(art)
@@ -49,7 +49,7 @@ def test_materialize_writes_artifact():
     assert backend.stores.ledger.get_artifact(art.artifact_id) == art
 
 
-def test_materialize_rejects_contract_mismatch():
+def test_materialize_rejects_contract_mismatch() -> None:
     backend = memory_backend()
     existing = _artifact()
     with backend.tx_factory() as tx:

@@ -34,6 +34,7 @@ COMPATIBILITY_PACKAGES = {
     },
     "compat-bijux-rar": {
         "distribution": "bijux-rar",
+        "entrypoint": "bijux_canon_reason.interfaces.cli.compatibility:legacy_rar",
         "module": "bijux_rar",
         "runtime": "bijux_canon_reason",
         "script": "bijux-rar",
@@ -94,6 +95,7 @@ def test_compatibility_packages_keep_runtime_alias_layout() -> None:
             package_root / "hatch_build.py",
             module_root / "__init__.py",
             module_root / "__main__.py",
+            module_root / "compatibility.py",
             module_root / "runtime_alias.py",
             module_root / "py.typed",
             test_path,
@@ -122,6 +124,12 @@ def test_compatibility_packages_install_runtime_alias_helpers() -> None:
         main_text = (package_root / "src" / module_name / "__main__.py").read_text(
             encoding="utf-8"
         )
+        compatibility_text = (
+            package_root / "src" / module_name / "compatibility.py"
+        ).read_text(encoding="utf-8")
+        pyproject = tomllib.loads(
+            (package_root / "pyproject.toml").read_text(encoding="utf-8")
+        )
 
         expected_init_fragments = (
             "install_runtime_aliases",
@@ -129,6 +137,7 @@ def test_compatibility_packages_install_runtime_alias_helpers() -> None:
             f'_RUNTIME_PACKAGE = "{runtime_name}"',
             "__getattr__",
             "__dir__",
+            "warn_compatibility()",
         )
         for fragment in expected_init_fragments:
             if fragment not in init_text:
@@ -151,6 +160,29 @@ def test_compatibility_packages_install_runtime_alias_helpers() -> None:
         if 'if __name__ == "__main__":' not in main_text:
             failures.append(
                 f"{package_name}: __main__.py should dispatch the canonical CLI directly"
+            )
+        if "warn_compatibility()" not in main_text:
+            failures.append(
+                f"{package_name}: __main__.py should emit the compatibility notice"
+            )
+        for fragment in (
+            expectation["distribution"],
+            runtime_name.replace("_", "-"),
+            runtime_name,
+            "FutureWarning",
+        ):
+            if fragment not in compatibility_text:
+                failures.append(
+                    f"{package_name}: compatibility.py missing {fragment!r}"
+                )
+        expected_entrypoint = expectation.get(
+            "entrypoint", f"{module_name}.__main__:main"
+        )
+        if pyproject["project"]["scripts"].get(expectation["script"]) != (
+            expected_entrypoint
+        ):
+            failures.append(
+                f"{package_name}: console script should target {expected_entrypoint}"
             )
 
     assert not failures, "runtime alias helper contract failed:\n" + "\n".join(failures)

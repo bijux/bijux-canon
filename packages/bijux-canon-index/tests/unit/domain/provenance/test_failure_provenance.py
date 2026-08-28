@@ -9,7 +9,7 @@ from bijux_canon_index.core.types import ExecutionArtifact
 from bijux_canon_index.infra.adapters.memory.backend import memory_backend
 
 
-def test_abort_tx_does_not_emit_audit():
+def test_abort_tx_does_not_emit_audit() -> None:
     backend = memory_backend()
     with backend.tx_factory() as tx:
         tx.abort()
@@ -17,7 +17,7 @@ def test_abort_tx_does_not_emit_audit():
     assert len(backend.stores.vectors._state.audit_log) == 0  # type: ignore[attr-defined]
 
 
-def test_abort_artifact_build_not_visible():
+def test_abort_artifact_build_not_visible() -> None:
     backend = memory_backend()
     art = ExecutionArtifact(
         artifact_id="art-abort",

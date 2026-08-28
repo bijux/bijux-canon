@@ -46,6 +46,15 @@ mode, authorization mode, and ANN circuit thresholds. Canonical variables use
 the `BIJUX_CANON_INDEX_` prefix; legacy `BIJUX_VEX_` names remain compatibility
 inputs. Prefer canonical names for all new deployments.
 
+Immutable generation operations use `BIJUX_CANON_INDEX_GENERATION_ROOT` for
+the registry. Set `BIJUX_CANON_INDEX_MODEL_LOCK_ARTIFACT_ID` and
+`BIJUX_CANON_INDEX_MODEL_DIMENSION` together to refuse generations built with
+another embedding profile. An operator that requires one exact index build
+configuration can additionally set `BIJUX_CANON_INDEX_CONFIGURATION_ID` to the
+value returned by generation inspection. A configuration identity without the
+model lock and dimension is rejected because it is not a complete compatibility
+profile.
+
 ## Execution declaration
 
 | Declaration | Values or fields | Effect |

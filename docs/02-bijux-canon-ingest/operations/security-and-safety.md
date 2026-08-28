@@ -84,6 +84,7 @@ untrusted material:
 
 | Abuse case | Required control | Evidence to retain |
 | --- | --- | --- |
+| path traversal, symlink swap, cycle, special file, or deep tree | canonical-root containment, no-follow descriptor opens, stable file identity, explicit symlink policy, cycle and depth limits | portable path, typed discovery issue, selected policy, and exact limit |
 | oversized document or decompression/record expansion | byte, record, chunk, elapsed-time, and in-flight bounds before expensive stages | limit, observed size, rejected identity, and typed failure |
 | crafted rule expression | AST whitelist and refusal before evaluation | expression digest, rejected node/operator, and stable error class |
 | index file with invalid dimensions or forged metadata | schema, backend, embedding specification, fingerprint, and size validation before allocation/use | artifact identity and exact failed invariant |

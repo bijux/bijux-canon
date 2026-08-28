@@ -91,11 +91,12 @@ substitute for reasoning run artifacts or runtime-wide persistence.
 
 ## Use evaluation with its current boundary
 
-The `eval` command runs the package's implemented suite workflow and writes a
-summary artifact. Its `--suite` selector is still described by the interface as
-a placeholder for a future catalog, so do not claim that arbitrary named
-suites are supported. For release or research evidence, inspect the actual
-cases executed and retain the summary with the producer version and seed.
+The `eval` command runs a named suite directory from the installed or
+caller-provided evaluation roots and writes a summary artifact. The default is
+the bundled `small` suite. A requested name fails when its `problems.jsonl` is
+absent; suite discovery is filesystem-based rather than a remote catalog. For
+release or research evidence, inspect the actual cases executed and retain the
+summary with the producer version and seed.
 
 ## Preserve the reasoning evidence set
 

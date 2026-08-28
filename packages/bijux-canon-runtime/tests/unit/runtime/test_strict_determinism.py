@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import pytest
 
-import bijux_canon_agent
 from bijux_canon_runtime.application.execute_flow import (
     ExecutionConfig,
     RunMode,
@@ -47,6 +46,7 @@ from bijux_canon_runtime.ontology.public import (
     NonDeterminismIntentSource,
     ReplayAcceptability,
 )
+from bijux_canon_runtime.runtime.execution import integration_loaders as integrations
 
 
 @pytest.mark.unit
@@ -175,7 +175,7 @@ def test_strict_determinism_aborts_on_first_entropy_violation(
         "bijux_canon_runtime.runtime.execution.retrieval_executor.RetrievalExecutor.execute",
         _retrieval_execute,
     )
-    bijux_canon_agent.run = _agent_run
+    integrations.agent_runner_override = _agent_run
 
     with pytest.raises(NonDeterminismViolationError, match="explicit authorization"):
         execute_flow(

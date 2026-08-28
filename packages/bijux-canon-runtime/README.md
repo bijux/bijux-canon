@@ -19,17 +19,17 @@
 [![bijux-rar](https://img.shields.io/pypi/v/bijux-rar?label=bijux--rar&logo=pypi)](https://pypi.org/project/bijux-rar/)
 [![bijux-vex](https://img.shields.io/pypi/v/bijux-vex?label=bijux--vex&logo=pypi)](https://pypi.org/project/bijux-vex/)
 
-[![bijux-canon-runtime](https://img.shields.io/badge/runtime-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon-runtime)
-[![bijux-canon](https://img.shields.io/badge/bijux--canon-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon)
-[![bijux-canon-agent](https://img.shields.io/badge/agent-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon-agent)
-[![bijux-canon-ingest](https://img.shields.io/badge/ingest-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon-ingest)
-[![bijux-canon-reason](https://img.shields.io/badge/reason-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon-reason)
-[![bijux-canon-index](https://img.shields.io/badge/index-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon-index)
-[![agentic-flows](https://img.shields.io/badge/agentic--flows-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fagentic-flows)
-[![bijux-agent](https://img.shields.io/badge/bijux--agent-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-agent)
-[![bijux-rag](https://img.shields.io/badge/bijux--rag-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-rag)
-[![bijux-rar](https://img.shields.io/badge/bijux--rar-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-rar)
-[![bijux-vex](https://img.shields.io/badge/bijux--vex-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-vex)
+[![bijux-canon-runtime OCI release bundle](https://img.shields.io/badge/runtime-oci%20bundle-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon-runtime)
+[![bijux-canon OCI release bundle](https://img.shields.io/badge/bijux--canon-oci%20bundle-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon)
+[![bijux-canon-agent OCI release bundle](https://img.shields.io/badge/agent-oci%20bundle-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon-agent)
+[![bijux-canon-ingest OCI release bundle](https://img.shields.io/badge/ingest-oci%20bundle-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon-ingest)
+[![bijux-canon-reason OCI release bundle](https://img.shields.io/badge/reason-oci%20bundle-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon-reason)
+[![bijux-canon-index OCI release bundle](https://img.shields.io/badge/index-oci%20bundle-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon-index)
+[![agentic-flows OCI release bundle](https://img.shields.io/badge/agentic--flows-oci%20bundle-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fagentic-flows)
+[![bijux-agent OCI release bundle](https://img.shields.io/badge/bijux--agent-oci%20bundle-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-agent)
+[![bijux-rag OCI release bundle](https://img.shields.io/badge/bijux--rag-oci%20bundle-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-rag)
+[![bijux-rar OCI release bundle](https://img.shields.io/badge/bijux--rar-oci%20bundle-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-rar)
+[![bijux-vex OCI release bundle](https://img.shields.io/badge/bijux--vex-oci%20bundle-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-vex)
 
 [![bijux-canon-runtime docs](https://img.shields.io/badge/docs-runtime-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/06-bijux-canon-runtime/)
 [![bijux-canon-agent docs](https://img.shields.io/badge/docs-agent-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/05-bijux-canon-agent/)
@@ -46,6 +46,35 @@ non-determinism governance.
 If you need to understand plan versus run modes, replay acceptance, trace
 capture, execution-store behavior, or non-determinism policy enforcement, start
 here.
+
+## Installation profiles
+
+The base wheel is the complete `offline-lexical` installation. It does not
+install or load an embedding model:
+
+```bash
+python -m pip install bijux-canon-runtime
+```
+
+Install `bijux-canon-runtime[local-cpu]` for the FAISS exact/ANN, local dense,
+and local hybrid profiles. Install `bijux-canon-runtime[api]` for the HTTP
+server and start it with the installed `bijux-canon-runtime-server` command.
+On Linux, install the official CPU-only PyTorch wheel first so the
+resolver does not select CUDA runtime packages:
+
+```bash
+python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
+python -m pip install 'bijux-canon-runtime[local-cpu]'
+```
+
+The `local-cpu` extra provides code and native libraries; model acquisition
+remains an explicit `bijux-canon-index model acquire` operation. On macOS,
+`local-cpu` is supported on Python 3.11 only: newer FAISS wheels conflict with
+PyTorch's OpenMP runtime, and the safe FAISS 1.7.4 wheel has no newer Python
+ABI. The base lexical and API profiles remain supported on Python 3.11–3.14.
+The `bijux-cli` dependency publishes a Linux x86_64 wheel; Linux ARM64 hosts
+currently need a C build toolchain so pip can build that dependency from its
+source distribution.
 
 ## Authority Model
 
@@ -87,82 +116,76 @@ verification behavior without proving that live package adapters are
 callable. Live and unsafe execution cross the adapter boundary when their
 steps require agent, retrieval, vector-contract, or reasoning work.
 
-## Executable Integration Boundary
+## Executable Product Boundary
 
 ```mermaid
 flowchart LR
-    manifest["FlowManifest"] --> plan["resolved plan"]
-    plan --> runtime["runtime step executors"]
-    runtime --> adapters["explicit adapters"]
-    adapters --> agent["agent pipeline + trace"]
-    adapters --> ingest["ingest retrieval records"]
-    adapters --> index["index contract verdict"]
-    adapters --> reason["reason claims + support"]
-    adapters --> records["runtime artifacts + evidence + bundle"]
+    request["typed v2 request"] --> plan["deterministic operation plan"]
+    plan --> ingest["durable corpus"]
+    ingest --> index["profile-selected index"]
+    index --> retrieval["bounded evidence"]
+    retrieval --> reason["grounded claims + citations"]
+    reason --> agent["bounded research workflow"]
+    agent --> records["run, attempt, artifacts, events"]
 ```
 
-The step executors currently resolve four package-root callables. None is
-provided by the installed canonical package roots:
-
-| Runtime request | Current package truth | Consequence |
-| --- | --- | --- |
-| `bijux_canon_agent.run(...)` | the root exports only `API_VERSION` | no live agent handoff |
-| `bijux_canon_ingest.retrieve(query, top_k, scope, vector_contract_id)` | retrieval is a path-based application API with a different typed contract | no lossless retrieval handoff |
-| `bijux_canon_index.enforce_contract(contract_id, evidence)` | the root exports version metadata only | no live vector-contract verdict |
-| `bijux_canon_reason.reason(...) -> ReasoningBundle` | the root exports reason-owned models and validators, not this callable or runtime type | no live reasoning handoff |
-
-The `bijux-agent`, `bijux-rag`, `bijux-vex`, and `bijux-rar` compatibility roots
-delegate to their canonical packages; they do not supply extra adapter
-behavior. Consequently, aligned package versions and successful imports are
-dependency evidence, not end-to-end execution evidence.
-
-Each adapter must be explicit about model conversion and custody: agent traces
-to runtime artifacts, prepared retrieval records to runtime evidence, index
-decisions to contract verdicts, and reason claims and support to runtime
-bundles. The acceptance bar is an installed-package test that executes every
-applicable loader and verifies identity, failure, and provenance preservation
-through the resulting runtime records.
+The installed v2 application composes the canonical ingest, index, reason, and
+agent packages behind one durable job authority. `offline-lexical` executes the
+complete local path without an embedding model, hosted provider, or secret.
+Dense profiles are admitted only after readiness validates their locked model
+and backend requirements. Every accepted operation retains its request, plan,
+run, attempt, transition artifacts, and terminal result in the configured
+workspace.
 
 ## CLI Workflow
 
 ```bash
-bijux-canon-runtime run flow.json \
-  --policy policy.json \
-  --db-path artifacts/bijux-canon-runtime/runs.duckdb \
-  --strict-determinism --json
+bijux-canon-runtime init --workspace ./canon-workspace --json
+export BIJUX_CANON_RUNTIME_WORKING_ROOT=./canon-workspace
 
-bijux-canon-runtime replay flow.json \
-  --policy policy.json \
-  --run-id <run-id> \
-  --tenant-id <tenant-id> \
-  --db-path artifacts/bijux-canon-runtime/runs.duckdb \
-  --strict-determinism --json
-
-bijux-canon-runtime inspect run <run-id> \
-  --tenant-id <tenant-id> \
-  --db-path artifacts/bijux-canon-runtime/runs.duckdb --json
+bijux-canon-runtime v2 run \
+  "What evidence does this corpus support?" \
+  --source-directory ./documents \
+  --profile offline-lexical \
+  --wait --wait-timeout-seconds 30
 ```
 
-The CLI also implements `plan`, `dry-run`, `unsafe-run`, run diff, failure
-explanation, and database validation commands. Those commands are currently
-suppressed from the top-level help display; their presence must not be confused
-with the three prominently advertised commands.
+The command emits one JSON job-status document. Use its `job_id` with
+`v2 result JOB_ID` to resolve the run and attempt identities, then use
+`v2 inspect`, `v2 replay`, and `v2 compare` for bounded audit and comparison.
+The same product path is available as separate `v2 ingest`, `v2 index`,
+`v2 search`, `v2 ask`, and `v2 research` commands. Every submission also
+accepts `--request FILE` for strict request-file automation.
 
-The live `run` syntax above documents the CLI contract. With the canonical
-package family as shipped, a flow that reaches one of the four integrations
-stops at its missing or incompatible callable. Use `plan` to inspect resolution
-without step execution and `dry-run` for the package's intelligence-free
-synthetic trace path; neither is a substitute for a successful live adapter
-test.
+The legacy manifest commands remain parseable for compatibility but are hidden
+from top-level help. New integrations should use the v2 command group.
 
 ## HTTP Contract
 
-The experimental v1 application implements health and DuckDB readiness probes.
-Run and replay requests are schema-validated and require authority headers, but
-both endpoints currently return `501 Not Implemented`; no successful
-`FlowRunResponse` is produced over HTTP today. The tracked future-facing
-contract is pinned under
-[`apis/bijux-canon-runtime/v1/`](../../apis/bijux-canon-runtime/v1/).
+Initialize one workspace, then start the loopback-only default server:
+
+```bash
+bijux-canon-runtime init --workspace ./canon-workspace --json
+bijux-canon-runtime-server --workspace ./canon-workspace
+```
+
+The installed v2 HTTP application exposes the same typed corpus, index, retrieval,
+answer, research, run, inspection, replay, comparison, job, and evaluation
+operations as the shared application service. Submission responses are bounded
+job documents; result and inspection payloads require deliberate follow-up and
+inspection collections are paginated. The CLI-only backup and restore commands
+operate on local filesystem authority and are not HTTP endpoints. A governed
+backup requires a quiescent workspace and retains the DuckDB authority, every
+admitted CAS payload, workspace controls, local indexes, replay state, and
+workspace-owned model state. Restore verifies that inventory before activating
+an absent destination and preserves the logical workspace identity while
+rewriting governed machine-local paths.
+
+The server command exposes `/api/v2` only. The older v1 ASGI module remains a
+separate compatibility contract whose run and replay endpoints return `501 Not
+Implemented`; the installed server does not mount it. New integrations should
+use the v2 schema pinned under
+[`apis/bijux-canon-runtime/v2/`](../../apis/bijux-canon-runtime/v2/).
 
 ## Evaluate A Runtime Claim
 
@@ -241,6 +264,10 @@ boundary.
 ## Persistence And Replay Evidence
 
 - execution traces use stable event identity and causal ordering
+- semantic run and request-plan identities include the effective Runtime
+  configuration hash; changing retrieval policy, model, resource policy, or
+  workspace authority cannot reuse an older execution as if behavior were
+  unchanged
 - artifacts carry tenant, type, scope, producer, parent, and content-hash
   identity; the artifact model does not contain the content payload
 - the DuckDB execution store persists run and dataset identity, steps, events
@@ -255,11 +282,93 @@ boundary.
 - crash recovery and partial failure retain recorded state rather than
   presenting an incomplete run as complete
 
-The default artifact store is in memory and stores artifact metadata only.
-DuckDB also stores artifact and evidence hashes rather than their content
-payloads. A deployment that needs later content inspection or exact replay
-must retain those payloads in an external content store and bind that custody
-to the recorded hashes; database presence alone is not payload availability.
+The installed local composition stores immutable payloads in the workspace CAS
+and registers every verified descriptor and dependency in the same DuckDB that
+owns durable jobs and execution metadata. Job requests and results are CAS
+objects linked by foreign keys, not private JSON in a second live database. A
+legacy `jobs.sqlite` file is read only as migration input; new job transitions
+are authoritative in `runtime.duckdb`. Moving or restoring a workspace therefore
+requires the governed backup/restore path; a database file without its verified
+CAS is not a complete Runtime authority.
+
+Workspace format 5 hashes logical path roles separately from their resolved
+machine locations, so equivalent relative and absolute spelling reopens the
+same workspace identity after restart. Directly moving or copying a workspace
+directory to a new root is not supported in this release: initialization names
+`layout.root` as incompatible and leaves the moved copy unchanged. Use the
+governed backup/restore path when relocation is required. Backup refuses
+queued or running jobs and model state outside the workspace rather than
+claiming an incomplete offline restore.
+
+The v2 execution profile determines the index contract before work is queued.
+`offline-lexical` workspaces may be initialized with only `--workspace`; their
+index, retrieval, answer, and research plans never contain embedding or dense
+steps. Corpus preparation retains a deterministic source archive containing the
+verified original bytes, and each snapshot depends on both that archive and its
+parsed preparation. The standalone SQLite FTS5 artifact retains the resulting
+snapshot and citation lineage. `v2 ready --operation retrieve --profile offline-lexical`
+therefore does not require a model or an active dense generation. Local hybrid
+profiles instead preflight the locked model, installed archive backends, model
+identity, and vector dimension before durable submission.
+
+Installed research traces persist the complete candidate-adjudication reports,
+not merely retrieval hit identifiers. Verification recomputes each report and
+classification identity and requires coverage of every candidate across the
+search history. The trace therefore retains the exact citation locator and text
+hash behind supporting, opposing, limiting, irrelevant, ambiguous, or
+unclassified evidence; a completed state cannot conceal material unclassified
+content.
+
+Installed grounded answers persist numbered, human-readable citations as well
+as their machine authority. Each reference retains the retrieval, document,
+chunk, source descriptor, exact locator and quote hashes, bibliography,
+license, and provenance. Runtime inspection recomputes the citation set and
+presentation from the persisted retrieval dependency; it refuses an internally
+consistent claim graph that is detached from that dependency.
+
+The inspection `provenance` record also traverses every citation from the claim
+graph through retrieval, index, corpus snapshot, chunk mapping, and byte spans in
+the retained source archive. It reports the parent durable job, authoritative
+run, configuration, model lock (or explicit absence for lexical execution), and
+artifact identities.
+New-format runs fail inspection when any causal edge, identity, locator mapping,
+source range, or retained byte digest is inconsistent. Older retained runs remain
+inspectable with `legacy-unresolved` provenance because they predate source-byte
+retention.
+
+Runtime projects the request timeout, artifact ceiling, retrieval count, and
+per-search candidate bound into an explicit installed Agent budget. Agent
+reserves the complete call and result envelope before each planning, retrieval,
+or convergence port invocation, charges only admitted work, and persists the
+content-addressed policy, every reservation/charge decision, and measured usage
+in the research trace. Verification replays that ledger exactly and rejects
+altered usage, omitted decisions, or a terminal exhaustion that differs from
+the ledger.
+
+If cancellation arrives during an Agent-owned tool call, Agent records the
+attempted call, retains any result that completed before the signal, prevents
+later calls, and emits a typed `cancelled` research trace. Runtime accepts that
+partial-success artifact only through the Agent adapter's explicit cancellation
+validator; queued descendants remain cancelled. The exact signal and terminal
+identity are persisted and can be verified independently.
+
+The research artifact separates Agent disposition from Reason's convergence
+observation. Its `status` is the typed Agent outcome, while
+`convergence_status` and the bound convergence record retain the underlying
+Reason decision. Runtime verification reconstructs the content-addressed
+remaining-work record from observed requirements, material candidate
+classifications, blocking gaps, and important unsearched claims; a coherent
+but incomplete run cannot erase that work by relabeling itself completed.
+The bound v2 convergence evidence also retains exact satisfied and remaining
+requirement identities, candidate and classification denominators, unresolved
+classification and gap identities, revised-answer verification, material
+conflicts, and per-search marginal evidence values. Runtime recomputes these
+facts from the persisted trace and refuses tampered or semantically divergent
+termination records.
+If cancellation or an Agent ledger limit prevents a Reason evaluation, Runtime
+validates the separately versioned Agent terminal identity and the exact
+remaining-work and budget records without claiming that semantic convergence
+ran.
 
 ## Source Map
 

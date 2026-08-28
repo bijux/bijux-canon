@@ -1,5 +1,10 @@
 ROOT_MAKEFILE_DIR := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 
+# Build backends may change directories, so every inherited process/cache path
+# must derive from an absolute repository artifact root.
+PROJECT_ARTIFACTS_DIR := $(abspath artifacts)
+PROJECT_PROCESS_DIR := $(abspath artifacts/root/process)
+
 include $(ROOT_MAKEFILE_DIR)/bijux-py/root/env.mk
 include $(ROOT_MAKEFILE_DIR)/env.mk
 include $(ROOT_MAKEFILE_DIR)/packages.mk
@@ -10,24 +15,68 @@ ROOT_DOCS_DEV_ADDR ?= 127.0.0.1:8001
 UV_SYNC := UV_PROJECT_ENVIRONMENT="$(ROOT_CHECK_VENV)" $(UV) sync --frozen --group dev --python "$(PYTHON)"
 BIJUX_PY_SYSTEM_REL ?= .bijux/shared/bijux-makes-py
 BIJUX_GH_PY_SHARED_DIR ?= .bijux/shared/bijux-gh
-ROOT_PACKAGE_TARGETS += test-all test-all-plus-run-time
+ROOT_PACKAGE_TARGETS += test-all test-all-plus-run-time coverage-core
 ROOT_TARGET_GROUPS_test-all ?= check
 ROOT_TARGET_GROUPS_test-all-plus-run-time ?= check
+ROOT_TARGET_GROUPS_coverage-core ?= primary
 ROOT_TARGET_SHARED_ENV_test-all ?= 1
 ROOT_TARGET_SHARED_ENV_test-all-plus-run-time ?= 1
+ROOT_TARGET_SHARED_ENV_coverage-core ?= 1
+ROOT_VULTURE_ARTIFACTS_DIR := $(PROJECT_ARTIFACTS_DIR)/root/quality
+ROOT_VULTURE_LOG := $(ROOT_VULTURE_ARTIFACTS_DIR)/vulture.log
+ROOT_VULTURE_PATHS := $(wildcard packages/*/src)
+ROOT_VULTURE_WHITELIST := configs/vulture_whitelist.py
+FREEZE_REF ?= HEAD
+FREEZE_PYTHON ?= $(if $(wildcard $(ROOT_CHECK_PYTHON)),$(ROOT_CHECK_PYTHON),$(PYTHON))
+FROZEN_REF ?= HEAD
+GATE ?= test-all
+FROZEN_GATE_PYTHON ?= $(if $(wildcard $(ROOT_CHECK_PYTHON)),$(ROOT_CHECK_PYTHON),$(PYTHON))
+ROOT_VERTICAL_PYTEST = PYTHONPYCACHEPREFIX="$(PROJECT_ARTIFACTS_DIR)/cache/python" "$(ROOT_CHECK_PYTHON)" -m pytest -q -p no:cacheprovider
 # Guard against stale local stamp state so root docs and helper lanes can
 # recreate the shared check environment when the interpreter path was removed.
 ROOT_CHECK_ENV_COMMAND = @test -x "$(ROOT_CHECK_PYTHON)" || { \
 	echo "→ Rebuilding missing root check environment"; \
 	rm -f "$(ROOT_CHECK_STAMP)"; \
 	$(MAKE) "$(ROOT_CHECK_STAMP)"; \
-}
+	}; \
+	$(UV_SYNC) >/dev/null
 
 include $(ROOT_MAKEFILE_DIR)/bijux-py/repository/root.mk
 
+.PHONY: all-frozen candidate-frozen freeze frozen-status frozen-summary impact-tests quality-dead-code \
+	test-focused-agent test-focused-index test-focused-ingest \
+	test-focused-reason test-focused-runtime test-vertical-document-formats \
+	test-vertical-release-install test-vertical-research-content \
+	test-vertical-runtime-local
+
+quality: quality-dead-code
+
+quality-dead-code: root-check-env
+	@echo "→ Running fatal repository dead-code analysis"
+	@mkdir -p "$(ROOT_VULTURE_ARTIFACTS_DIR)"
+	@set -eu; \
+	  if ! "$(ROOT_CHECK_PYTHON)" -m vulture $(ROOT_VULTURE_PATHS) \
+	    "$(ROOT_VULTURE_WHITELIST)" --min-confidence 100 \
+	    >"$(ROOT_VULTURE_LOG)" 2>&1; then \
+	    cat "$(ROOT_VULTURE_LOG)"; \
+	    exit 1; \
+	  fi
+	@echo "✔ Fatal dead-code analysis passed"
+
 include $(ROOT_MAKEFILE_DIR)/bijux-py/root/package-dispatch.mk
+# The root environment is already synchronized from uv.lock. Package-local
+# bootstrap rules must not replace its locked check tools while a root gate runs.
+ROOT_SHARED_CHECK_OVERRIDES += \
+	PACKAGE_BOOTSTRAP_TARGETS= \
+	PACKAGE_INSTALL_TARGETS= \
+	LINT_PRE_TARGETS=
+# Root verification must inspect the submitted tree. Package profiles may keep
+# autofix defaults for their explicit formatting workflow, but never for lint.
+lint: export RUFF_CHECK_FIX := 0
+lint: export FMT_RUN_RUFF_CHECK_FIX := 0
 ROOT_TARGET_PACKAGES_test-all := $(CHECK_PACKAGES)
 ROOT_TARGET_PACKAGES_test-all-plus-run-time := $(CHECK_PACKAGES)
+ROOT_TARGET_PACKAGES_coverage-core := $(PRIMARY_PACKAGES)
 include $(ROOT_MAKEFILE_DIR)/bijux-py/root/docs.mk
 include $(ROOT_MAKEFILE_DIR)/bijux-docs.mk
 include $(ROOT_MAKEFILE_DIR)/bijux-std.mk
@@ -47,6 +96,61 @@ help: ## Show generated repository commands from included make modules
 check: lock-check lint test quality security docs api build sbom ## Run the full repository verification flow
 test-all: ## Run every repository test surface, including slow, evaluation, and real-local tests
 test-all-plus-run-time: ## Run every repository test surface and report per-test durations
+coverage-core: ## Enforce measured canonical-package coverage floors
+impact-tests: ## Select mandatory focused checks for changed paths (set IMPACT_ARGS to override inputs)
+	@$(CANON_DEV_PYTHON_ENV) "$(PYTHON)" -m bijux_canon_dev.verification.impact_selection \
+		--repo "$(MONOREPO_ROOT)" $(IMPACT_ARGS)
+test-focused-agent: ## Run the agent package test lane
+	@$(MAKE) test PACKAGE=bijux-canon-agent
+test-focused-index: ## Run the index package test lane
+	@$(MAKE) test PACKAGE=bijux-canon-index
+test-focused-ingest: ## Run the ingest package test lane
+	@$(MAKE) test PACKAGE=bijux-canon-ingest
+test-focused-reason: ## Run the reason package test lane
+	@$(MAKE) test PACKAGE=bijux-canon-reason
+test-focused-runtime: ## Run the runtime package test lane
+	@$(MAKE) test PACKAGE=bijux-canon-runtime
+test-vertical-document-formats: root-check-env ## Prove real-format admission and exact citation lineage
+	@$(ROOT_VERTICAL_PYTEST) \
+		packages/bijux-canon-dev/tests/test_parser_admission.py \
+		packages/bijux-canon-dev/tests/test_parser_locator_truth.py \
+		packages/bijux-canon-ingest/tests/unit/application/test_document_extraction.py \
+		packages/bijux-canon-ingest/tests/unit/application/test_document_inputs.py \
+		packages/bijux-canon-ingest/tests/unit/application/test_docx_extraction.py \
+		packages/bijux-canon-ingest/tests/unit/application/test_html_extraction.py \
+		packages/bijux-canon-ingest/tests/unit/application/test_ocr_requirement.py \
+		packages/bijux-canon-ingest/tests/unit/application/test_pdf_extraction.py \
+		packages/bijux-canon-ingest/tests/unit/application/test_text_extraction.py \
+		packages/bijux-canon-ingest/tests/unit/test_citation_lineage.py \
+		packages/bijux-canon-ingest/tests/unit/test_corpus_lock.py
+test-vertical-research-content: root-check-env ## Prove content-first research truth, retrieval, and citation metrics
+	@$(ROOT_VERTICAL_PYTEST) \
+		packages/bijux-canon-dev/tests/test_evaluation_anti_gaming.py \
+		packages/bijux-canon-dev/tests/test_research_claim_truth.py \
+		packages/bijux-canon-dev/tests/test_research_corpus_lock.py \
+		packages/bijux-canon-dev/tests/test_research_evaluation_split.py \
+		packages/bijux-canon-dev/tests/test_research_locator_truth.py \
+		packages/bijux-canon-dev/tests/test_research_qrels.py \
+		packages/bijux-canon-dev/tests/test_research_questions.py \
+		packages/bijux-canon-dev/tests/test_research_truth_audit.py \
+		packages/bijux-canon-index/tests/unit/evaluation/test_retrieval_metrics.py \
+		packages/bijux-canon-reason/tests/unit/evaluation/test_citation_integrity_metrics.py \
+		packages/bijux-canon-reason/tests/unit/evaluation/test_heldout_isolation.py
+test-vertical-runtime-local: root-check-env ## Prove local capability, persistence, backup, and restart behavior
+	@$(ROOT_VERTICAL_PYTEST) \
+		packages/bijux-canon-runtime/tests/unit/interfaces/test_capability_discovery.py \
+		packages/bijux-canon-runtime/tests/unit/interfaces/test_v2_readiness.py \
+		packages/bijux-canon-runtime/tests/unit/runtime/test_application_composition.py \
+		packages/bijux-canon-runtime/tests/unit/runtime/test_backup_restore.py \
+		packages/bijux-canon-runtime/tests/unit/runtime/test_installed_operation_adapters.py \
+		packages/bijux-canon-runtime/tests/regression/test_replay_across_process_boundary.py
+test-vertical-release-install: root-check-env ## Prove wheel inventory and source-independent installation contracts
+	@$(ROOT_VERTICAL_PYTEST) \
+		packages/bijux-canon-dev/tests/test_extras_matrix.py \
+		packages/bijux-canon-dev/tests/test_family_compatibility.py \
+		packages/bijux-canon-dev/tests/test_installation_matrix.py \
+		packages/bijux-canon-dev/tests/test_wheel_inventory.py \
+		packages/bijux-canon-dev/tests/test_workspace_install.py
 list: ## List primary package slugs
 list-all: ## List every canonical package slug
 install: ## Sync the shared root uv environment from pyproject.toml and uv.lock
@@ -58,6 +162,19 @@ clean-root-artifacts: ## Remove stray root-level caches outside artifacts
 check-shared-bijux-py: ## Verify shared bijux-py make modules match across sibling repositories
 check-config-layout: ## Validate the repository config tree shape and required tool configs
 check-make-layout: ## Validate the repository make tree shape and required entrypoints
+freeze: ## Archive a tracked repository revision and its reachable Git history
+	@$(CANON_DEV_PYTHON_ENV) "$(FREEZE_PYTHON)" -m bijux_canon_dev.release.repository_freeze \
+		--repo "$(MONOREPO_ROOT)" --ref "$(FREEZE_REF)"
+candidate-frozen: ## Launch the deduplicated release graph from an isolated tracked revision
+	@$(CANON_DEV_PYTHON_ENV) "$(FROZEN_GATE_PYTHON)" -m bijux_canon_dev.release.frozen_gate \
+		--repo "$(MONOREPO_ROOT)" --ref "$(FROZEN_REF)" --gate candidate
+frozen-status: ## Report the candidate gate without scanning logs (GATE=candidate)
+	@$(CANON_DEV_PYTHON_ENV) "$(FROZEN_GATE_PYTHON)" -m bijux_canon_dev.release.frozen_gate \
+		--repo "$(MONOREPO_ROOT)" --ref "$(FROZEN_REF)" --gate "$(GATE)" --action status
+frozen-summary: ## Summarize one frozen gate and include a bounded failure tail
+	@$(CANON_DEV_PYTHON_ENV) "$(FROZEN_GATE_PYTHON)" -m bijux_canon_dev.release.frozen_gate \
+		--repo "$(MONOREPO_ROOT)" --ref "$(FROZEN_REF)" --gate "$(GATE)" --action summary
+all-frozen: candidate-frozen ## Launch the complete deduplicated candidate graph once
 sync-badges: root-check-env ## Render shared badge blocks from docs/badges.md into README surfaces
 	@"$(ROOT_CHECK_PYTHON)" -m bijux_canon_dev.docs.badge_sync sync
 check-badges: root-check-env ## Verify README badge blocks match docs/badges.md

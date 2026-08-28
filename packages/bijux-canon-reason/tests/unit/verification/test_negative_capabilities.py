@@ -12,6 +12,7 @@ from bijux_canon_reason.core.types import (
     ClaimEmittedEvent,
     ClaimStatus,
     ClaimType,
+    DeriveOutput,
     EvidenceRef,
     EvidenceRegisteredEvent,
     Plan,
@@ -26,6 +27,7 @@ from bijux_canon_reason.core.types import (
     ToolResult,
     ToolReturnedEvent,
     Trace,
+    TraceEvent,
     TraceEventKind,
     VerificationPolicyMode,
 )
@@ -85,7 +87,7 @@ def _build_trace_with_evidence(run_dir: Path, plan_id: str) -> Trace:
         ],
         claim_type=ClaimType.derived,
     )
-    events = [
+    events: list[TraceEvent] = [
         StepStartedEvent(idx=0, kind=TraceEventKind.step_started, step_id="s1"),
         ToolCalledEvent(
             idx=1, kind=TraceEventKind.tool_called, step_id="s1", call=call
@@ -106,7 +108,7 @@ def _build_trace_with_evidence(run_dir: Path, plan_id: str) -> Trace:
             idx=5,
             kind=TraceEventKind.step_finished,
             step_id="s1",
-            output={"kind": "derive", "claim_ids": [claim.id]},
+            output=DeriveOutput(type="derive", claim_ids=[claim.id]),
         ),
     ]
     return Trace(

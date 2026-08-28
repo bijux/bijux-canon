@@ -168,8 +168,8 @@ def test_repository_handbook_layout_is_sectioned() -> None:
     assert root_markdown == ["index.md"]
     assert section_dirs == ["foundation", "operations"]
     assert section_counts == {
-        "foundation": 10,
-        "operations": 10,
+        "foundation": 11,
+        "operations": 13,
     }
 
 

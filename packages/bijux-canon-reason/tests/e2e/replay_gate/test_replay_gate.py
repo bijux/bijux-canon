@@ -17,9 +17,7 @@ def _run(cmd: list[str]) -> subprocess.CompletedProcess[str]:
     env["PYTHONPATH"] = str(repo_root / "src") + (
         os.pathsep + env["PYTHONPATH"] if "PYTHONPATH" in env else ""
     )
-    return subprocess.run(  # noqa: S603
-        cmd, text=True, capture_output=True, check=True, env=env
-    )
+    return subprocess.run(cmd, text=True, capture_output=True, check=True, env=env)
 
 
 def test_replay_gate_same_spec_seed_same_fingerprint(tmp_path: Path) -> None:

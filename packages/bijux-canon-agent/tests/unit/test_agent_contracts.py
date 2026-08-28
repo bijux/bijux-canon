@@ -15,6 +15,39 @@ def make_logger(tmp_path):
     return LoggerManager(LoggerConfig(log_dir=tmp_path / "logs"))
 
 
+def planning_input(query: str) -> dict[str, object]:
+    return {
+        "query": query,
+        "corpus_generation": "corpus:ancient-dna:2026-08-21",
+        "index_generation": "index:ancient-dna:lexical:2026-08-21",
+        "scope": ["source:d01_fastq", "source:d02_alignment"],
+        "top_k": 4,
+        "retrieval_mode": "lexical",
+        "constraints": {"require_exact_citations": True, "language": "en"},
+        "provider_profile": {
+            "provider": "bijux",
+            "model": "baseline-extractive",
+            "immutable_revision": "0.3.10",
+            "temperature": 0.0,
+            "seed": 17,
+        },
+        "budget": {
+            "iterations": 3,
+            "retrievals": 2,
+            "documents": 4,
+            "candidates": 8,
+            "evidence_items": 4,
+            "tool_calls": 3,
+            "provider_calls": 2,
+            "tokens": 512,
+            "elapsed_ms": 30000,
+            "retries": 1,
+            "memory_bytes": 65536,
+            "artifact_bytes": 65536,
+        },
+    }
+
+
 class StatefulAgent(BaseAgent):
     def __init__(self, config, logger):
         super().__init__(config, logger)
@@ -135,7 +168,7 @@ async def test_identical_input_produces_identical_plan(tmp_path):
     context = {
         "task_goal": "produce a plan",
         "context_id": "unit-plan",
-        "payload": {"sample": True},
+        "payload": {"planning_input": planning_input("produce a plan")},
     }
     first_plan = await planner.run(context)
     second_plan = await planner.run(context)
@@ -143,3 +176,70 @@ async def test_identical_input_produces_identical_plan(tmp_path):
     second_snapshot = second_plan.model_dump()
     assert first_snapshot["artifacts"]["plan"] == second_snapshot["artifacts"]["plan"]
     assert first_plan.artifacts == second_plan.artifacts
+
+
+@pytest.mark.asyncio
+async def test_planner_carries_every_planning_input(tmp_path):
+    logger = make_logger(tmp_path)
+    planner = PlannerAgent({}, logger)
+    expected = planning_input("Compare ancient-DNA alignment methods")
+
+    result = await planner.run(
+        {
+            "task_goal": expected["query"],
+            "context_id": "complete-plan",
+            "payload": {"planning_input": expected},
+        }
+    )
+
+    plan = result.artifacts["plan"]
+    assert plan["planning_input"] == expected
+    retrieval = plan["retrieval_steps"][0]
+    for field in (
+        "query",
+        "corpus_generation",
+        "index_generation",
+        "scope",
+        "top_k",
+        "retrieval_mode",
+        "constraints",
+    ):
+        assert retrieval[field] == expected[field]
+    assert result.metadata["plan_version"] == "2.0"
+    assert len(result.metadata["planning_input_sha256"]) == 64
+
+
+@pytest.mark.asyncio
+async def test_planner_rejects_missing_or_divergent_planning_input(tmp_path):
+    logger = make_logger(tmp_path)
+    planner = PlannerAgent({}, logger)
+    with pytest.raises(ValidationError, match="corpus_generation"):
+        await planner.run(
+            {"task_goal": "research", "context_id": "missing-plan", "payload": {}}
+        )
+
+    divergent = planning_input("different query")
+    with pytest.raises(ValueError, match="must equal"):
+        await planner.run(
+            {
+                "task_goal": "requested query",
+                "context_id": "divergent-plan",
+                "payload": {"planning_input": divergent},
+            }
+        )
+
+
+@pytest.mark.asyncio
+async def test_planner_rejects_retrieval_beyond_budget(tmp_path):
+    logger = make_logger(tmp_path)
+    planner = PlannerAgent({}, logger)
+    invalid = planning_input("bounded query")
+    invalid["top_k"] = 9
+    with pytest.raises(ValidationError, match="candidate budget"):
+        await planner.run(
+            {
+                "task_goal": "bounded query",
+                "context_id": "over-budget-plan",
+                "payload": {"planning_input": invalid},
+            }
+        )

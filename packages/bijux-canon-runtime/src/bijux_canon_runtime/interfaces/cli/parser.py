@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import argparse
 
+from bijux_canon_runtime.interfaces.cli.v2_parser import add_v2_commands
 from bijux_canon_runtime.model.execution.command_modes import (
     DRY_RUN_COMMAND,
     PLAN_COMMAND,
@@ -24,14 +25,26 @@ def build_parser(*, prog_name: str) -> argparse.ArgumentParser:
             "documented otherwise."
         ),
     )
-    subparsers = parser.add_subparsers(dest="command")
+    subparsers = parser.add_subparsers(dest="command", metavar="{v2,init}")
+    add_v2_commands(subparsers)
+
+    init_parser = subparsers.add_parser(
+        "init",
+        help="Atomically initialize or validate a local Runtime workspace.",
+    )
+    init_parser.add_argument("--workspace", required=True)
+    init_parser.add_argument(
+        "--model",
+        help=(
+            "Optional materialized model directory containing model.lock.json; "
+            "omit it for an offline lexical workspace. Relative paths resolve "
+            "from the calling directory."
+        ),
+    )
+    init_parser.add_argument("--json", action="store_true")
 
     run_parser = subparsers.add_parser(
         RUN_COMMAND,
-        help=(
-            "Deterministic when strict mode and declared contracts are satisfied; "
-            "output stability is guaranteed only within v1."
-        ),
     )
     run_parser.add_argument("manifest")
     run_parser.add_argument("--policy", required=True)
@@ -41,10 +54,6 @@ def build_parser(*, prog_name: str) -> argparse.ArgumentParser:
 
     replay_parser = subparsers.add_parser(
         "replay",
-        help=(
-            "Replays enforce declared determinism thresholds; "
-            "output stability is guaranteed only within v1."
-        ),
     )
     replay_parser.add_argument("manifest")
     replay_parser.add_argument("--policy", required=True)
@@ -56,15 +65,10 @@ def build_parser(*, prog_name: str) -> argparse.ArgumentParser:
 
     inspect_parser = subparsers.add_parser(
         "inspect",
-        help=(
-            "Inspection reflects persisted state deterministically; "
-            "output stability is guaranteed only within v1."
-        ),
     )
     inspect_subparsers = inspect_parser.add_subparsers(dest="inspect_command")
     inspect_run_parser = inspect_subparsers.add_parser(
         RUN_COMMAND,
-        help=argparse.SUPPRESS,
     )
     inspect_run_parser.add_argument("run_id")
     inspect_run_parser.add_argument("--tenant-id", required=True)
@@ -73,8 +77,6 @@ def build_parser(*, prog_name: str) -> argparse.ArgumentParser:
 
     plan_parser = subparsers.add_parser(
         PLAN_COMMAND,
-        help=argparse.SUPPRESS,
-        description=argparse.SUPPRESS,
     )
     plan_parser.add_argument("manifest")
     plan_parser.add_argument("--db-path")
@@ -82,8 +84,6 @@ def build_parser(*, prog_name: str) -> argparse.ArgumentParser:
 
     dry_run_parser = subparsers.add_parser(
         DRY_RUN_COMMAND,
-        help=argparse.SUPPRESS,
-        description=argparse.SUPPRESS,
     )
     dry_run_parser.add_argument("manifest")
     dry_run_parser.add_argument("--db-path", required=True)
@@ -92,8 +92,6 @@ def build_parser(*, prog_name: str) -> argparse.ArgumentParser:
 
     unsafe_parser = subparsers.add_parser(
         UNSAFE_RUN_COMMAND,
-        help=argparse.SUPPRESS,
-        description=argparse.SUPPRESS,
     )
     unsafe_parser.add_argument("manifest")
     unsafe_parser.add_argument("--db-path", required=True)
@@ -102,14 +100,10 @@ def build_parser(*, prog_name: str) -> argparse.ArgumentParser:
 
     diff_parser = subparsers.add_parser(
         "diff",
-        help=argparse.SUPPRESS,
-        description=argparse.SUPPRESS,
     )
     diff_subparsers = diff_parser.add_subparsers(dest="diff_command")
     diff_run_parser = diff_subparsers.add_parser(
         RUN_COMMAND,
-        help=argparse.SUPPRESS,
-        description=argparse.SUPPRESS,
     )
     diff_run_parser.add_argument("run_a")
     diff_run_parser.add_argument("run_b")
@@ -119,14 +113,10 @@ def build_parser(*, prog_name: str) -> argparse.ArgumentParser:
 
     explain_parser = subparsers.add_parser(
         "explain",
-        help=argparse.SUPPRESS,
-        description=argparse.SUPPRESS,
     )
     explain_subparsers = explain_parser.add_subparsers(dest="explain_command")
     explain_failure_parser = explain_subparsers.add_parser(
         "failure",
-        help=argparse.SUPPRESS,
-        description=argparse.SUPPRESS,
     )
     explain_failure_parser.add_argument("run_id")
     explain_failure_parser.add_argument("--tenant-id", required=True)
@@ -135,14 +125,10 @@ def build_parser(*, prog_name: str) -> argparse.ArgumentParser:
 
     validate_parser = subparsers.add_parser(
         "validate",
-        help=argparse.SUPPRESS,
-        description=argparse.SUPPRESS,
     )
     validate_subparsers = validate_parser.add_subparsers(dest="validate_command")
     validate_db_parser = validate_subparsers.add_parser(
         "db",
-        help=argparse.SUPPRESS,
-        description=argparse.SUPPRESS,
     )
     validate_db_parser.add_argument("--db-path", required=True)
     validate_db_parser.add_argument("--json", action="store_true")

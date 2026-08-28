@@ -6,18 +6,19 @@ from __future__ import annotations
 
 from typer.testing import CliRunner
 
+from bijux_canon_index import __version__
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.interfaces.cli import app as cli_app
 
 
-def test_cli_exit_code_for_misuse():
+def test_cli_exit_code_for_misuse() -> None:
     runner = CliRunner()
     # Missing required option should exit with typer code 2
     result = runner.invoke(cli_app.app, ["execute"], prog_name="bijux")
     assert result.exit_code == 2
 
 
-def test_cli_exit_code_for_invariant():
+def test_cli_exit_code_for_invariant() -> None:
     runner = CliRunner()
     result = runner.invoke(
         cli_app.app,
@@ -37,7 +38,7 @@ def test_cli_exit_code_for_invariant():
     assert result.exit_code in (3, 4)  # invariant or not found
 
 
-def test_cli_exit_code_for_backend_unavailable():
+def test_cli_exit_code_for_backend_unavailable() -> None:
     runner = CliRunner()
     result = runner.invoke(
         cli_app.app,
@@ -59,8 +60,17 @@ def test_cli_exit_code_for_backend_unavailable():
     assert result.exit_code != 0
 
 
-def test_cli_capabilities_command_runs():
+def test_cli_capabilities_command_runs() -> None:
     runner = CliRunner()
     result = runner.invoke(cli_app.app, ["capabilities"], prog_name="bijux")
     assert result.exit_code == 0
     assert "supports_ann" in result.stdout
+
+
+def test_cli_version_reports_the_installed_canonical_distribution() -> None:
+    runner = CliRunner()
+
+    result = runner.invoke(cli_app.app, ["--version"], prog_name="bijux-canon-index")
+
+    assert result.exit_code == 0
+    assert result.stdout == f"bijux-canon-index {__version__}\n"

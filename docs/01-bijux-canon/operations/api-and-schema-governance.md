@@ -9,13 +9,14 @@ last_reviewed: 2026-07-21
 
 # API and Schema Governance
 
-Bijux Canon governs five versioned HTTP contracts under `apis/`: ingest,
-index, reason, agent, and runtime. Each contract has three checked-in
+Bijux Canon governs six versioned HTTP contracts under `apis/` across ingest,
+index, reason, agent, and runtime. Runtime owns both a retained v1 contract and
+the primary whole-product v2 contract. Each contract has three checked-in
 representations and an owning implementation. Agreement among those surfaces
 is the basis for compatibility review.
 
 ```text
-apis/<distribution>/v1/
+apis/<distribution>/<version>/
 ├── schema.yaml
 ├── pinned_openapi.json
 └── schema.hash
@@ -30,6 +31,12 @@ apis/<distribution>/v1/
 The owning package supplies the application object, route behavior, and live
 contract tests. A schema can describe an intentionally unavailable operation;
 callers must still observe documented runtime behavior such as `501`.
+
+Runtime v2 is the supported integrated product boundary for library, CLI, and
+HTTP callers. The lower-package v1 contracts and retained Runtime v1 schema are
+governed, but they do not replace or narrow that primary interface. Runtime v2
+changes require transport-parity evidence in addition to freeze and drift
+validation.
 
 ## Contract Chain
 
@@ -102,6 +109,7 @@ or callers behind.
 | drift check | generated application schema matches checked-in source | endpoint correctness |
 | live contract test | requests and responses conform during execution | every deployment policy |
 | package tests | domain and interface behavior | cross-package release consistency |
+| Runtime v2 parity | equivalent library, CLI, and HTTP submissions produce matching durable outcomes | deployment-specific network policy |
 
 Repository freeze validation canonicalizes YAML and pinned JSON before
 comparison and independently checks the digest. Package profiles generate

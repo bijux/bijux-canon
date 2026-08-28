@@ -170,10 +170,10 @@ bijux-canon-reason eval \
 
 Retain the suite input alongside `eval/<suite>/cases.jsonl` and
 `eval/<suite>/summary.json`. A suite passes only when every case's verification
-report has no failures. Treat the emitted alignment, faithfulness, recall, and
-reciprocal-rank fields according to their implementation: they summarize
-support counts and evidence presence and do not replace externally labeled
-quality measurements.
+report has no failures. `exact_support_rate` and
+`support_links_per_supported_claim` are trace diagnostics. They do not measure
+retrieval relevance or semantic faithfulness and do not replace externally
+labeled quality measurements.
 
 ## Retention set
 

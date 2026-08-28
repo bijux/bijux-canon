@@ -45,17 +45,20 @@ def test_crash_recovery_resume(
     ).fetchone()
     assert row is not None
     run_id = RunID(row[0])
+    connection.close()
 
+    write_store = DuckDBExecutionWriteStore(db_path)
     execute_flow(
         resolved_flow=resolved_flow,
         config=ExecutionConfig(
             mode=RunMode.LIVE,
             determinism_level=resolved_flow.manifest.determinism_level,
-            execution_store=DuckDBExecutionWriteStore(db_path),
+            execution_store=write_store,
             verification_policy=baseline_policy,
             resume_run_id=run_id,
         ),
     )
+    write_store.close()
 
     read_store = DuckDBExecutionReadStore(db_path)
     trace = read_store.load_trace(run_id, tenant_id=TenantID("tenant-a"))
@@ -67,3 +70,4 @@ def test_crash_recovery_resume(
         earlier.event_index < later.event_index
         for earlier, later in zip(trace.events, trace.events[1:], strict=False)
     )
+    read_store.close()

@@ -46,9 +46,9 @@ index's capability and replay semantics.
 | persisted run evidence | artifacts, fingerprints, ledgers, and comparisons remain addressable |
 | package tests | algorithms, stores, isolation, provenance, and replay evolve under conformance gates |
 
-The canonical distribution publishes no console script. `bijux-vex` preserves
-an earlier command through a compatibility package, but that continuity is not
-the canonical architecture for new integrations.
+The canonical distribution publishes `bijux-canon-index`. `bijux-vex`
+preserves the earlier command through a compatibility package and delegates to
+the same application without owning index behavior.
 
 ## Dependency Direction
 

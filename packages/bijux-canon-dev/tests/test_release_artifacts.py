@@ -5,10 +5,9 @@ import tomllib
 from typing import Any, cast
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-PUBLIC_LICENSE_SOURCE = "LICENSE"
 ROOT_LEGAL_ARTIFACTS = {
-    "LICENSE": Path("..") / ".." / "LICENSE",
-    "NOTICE": Path("..") / ".." / "NOTICE",
+    "LICENSE": REPO_ROOT / "LICENSE",
+    "NOTICE": REPO_ROOT / "NOTICE",
 }
 GENERATED_VERSION_PACKAGES = {
     "bijux-canon-ingest": "src/bijux_canon_ingest/_build_version.py",
@@ -34,21 +33,25 @@ def _pyproject_data(package_name: str) -> dict[str, Any]:
         return tomllib.load(handle)
 
 
-def test_workspace_packages_link_legal_artifacts_from_repo_root() -> None:
+def test_workspace_packages_copy_root_legal_artifact_bytes() -> None:
     workspace = _workspace_metadata()
     failures: list[str] = []
 
     for package_name in sorted(workspace["package_dirs"]):
         package_root = _package_path(package_name)
-        for artifact_name, expected_target in ROOT_LEGAL_ARTIFACTS.items():
+        for artifact_name, source_path in ROOT_LEGAL_ARTIFACTS.items():
             artifact_path = package_root / artifact_name
-            if not artifact_path.is_symlink():
-                failures.append(f"{package_name}: {artifact_name} should be a symlink")
-                continue
-            target = artifact_path.readlink()
-            if target != expected_target:
+            if artifact_path.is_symlink():
                 failures.append(
-                    f"{package_name}: {artifact_name} -> {target!s}, expected {expected_target!s}"
+                    f"{package_name}: {artifact_name} must not be a symlink"
+                )
+                continue
+            if not artifact_path.is_file():
+                failures.append(f"{package_name}: {artifact_name} is missing")
+                continue
+            if artifact_path.read_bytes() != source_path.read_bytes():
+                failures.append(
+                    f"{package_name}: {artifact_name} differs from root {artifact_name}"
                 )
 
     assert not failures, "legal artifact linkage failed:\n" + "\n".join(failures)
@@ -107,21 +110,26 @@ def test_public_release_packages_ship_source_and_release_docs() -> None:
     )
 
 
-def test_public_release_packages_force_include_license_artifact() -> None:
+def test_runtime_sdist_ships_its_dependency_metadata_hook() -> None:
+    runtime = _pyproject_data("bijux-canon-runtime")
+    sdist = runtime["tool"]["hatch"]["build"]["targets"]["sdist"]
+
+    assert "dependencies" in runtime["project"]["dynamic"]
+    assert "hatch_build.py" in sdist["include"]
+
+
+def test_public_release_packages_let_metadata_own_legal_artifacts() -> None:
     workspace = _workspace_metadata()
     failures: list[str] = []
 
     for package_name in sorted(workspace["public_release_packages"]):
         build = _pyproject_data(package_name)["tool"]["hatch"]["build"]
-        force_include = build.get("force-include", {})
-        if force_include.get(PUBLIC_LICENSE_SOURCE) != "LICENSE":
+        if "force-include" in build:
             failures.append(
-                f"{package_name}: build.force-include should map {PUBLIC_LICENSE_SOURCE} -> LICENSE"
+                f"{package_name}: build.force-include duplicates metadata legal files"
             )
 
-    assert not failures, "license artifact configuration failed:\n" + "\n".join(
-        failures
-    )
+    assert not failures, "legal artifact configuration failed:\n" + "\n".join(failures)
 
 
 def test_compatibility_packages_publish_package_local_ignore_rules() -> None:
@@ -189,7 +197,7 @@ def test_generated_version_files_write_to_ignored_build_modules() -> None:
             "_build_version.py", "_version.py"
         )
         version_text = version_wrapper.read_text(encoding="utf-8")
-        if "from ._build_version import" not in version_text:
+        if 'import_module(f"{__package__}._build_version")' not in version_text:
             failures.append(
                 f"{package_name}: _version.py should load _build_version first"
             )

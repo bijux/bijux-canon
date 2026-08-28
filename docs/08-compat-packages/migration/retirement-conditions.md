@@ -93,9 +93,9 @@ record contains every required decision.
 
 - `bijux-canon` and `agentic-flows` share `bijux-canon-runtime` as owner.
   Retiring one bridge does not establish that consumers of the other have moved.
-- `bijux-vex` has no same-spelling canonical console replacement. Every command
-  consumer must move to the index Python or HTTP interface and validate its
-  request, refusal, result, and provenance handling.
+- Every `bijux-vex` command consumer must move to `bijux-canon-index` or a typed
+  Python/HTTP interface and validate request, refusal, result, and provenance
+  handling.
 - `bijux-rar` command availability can come from the canonical reason package.
   A successful `bijux-rar` invocation does not prove that the compatibility
   distribution or `bijux_rar` import has disappeared.

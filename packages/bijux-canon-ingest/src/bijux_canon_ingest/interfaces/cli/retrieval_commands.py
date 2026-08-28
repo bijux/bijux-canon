@@ -8,7 +8,6 @@ from __future__ import annotations
 import argparse
 import importlib
 import json
-from pathlib import Path
 from typing import Any, cast
 
 from bijux_canon_ingest.application.indexing import (
@@ -18,8 +17,8 @@ from bijux_canon_ingest.application.indexing import (
 from bijux_canon_ingest.application.querying import ask as rag_ask
 from bijux_canon_ingest.application.querying import parse_filters
 from bijux_canon_ingest.application.querying import retrieve as rag_retrieve
-from bijux_canon_ingest.core.types import RagEnv, RawDoc
-from bijux_canon_ingest.infra.adapters.file_storage import FileStorage
+from bijux_canon_ingest.application.surface_services import read_documents_or_raise
+from bijux_canon_ingest.core.types import RagEnv
 from bijux_canon_ingest.interfaces.cli.retrieval_output import (
     YamlModule,
     render_answer_output,
@@ -27,7 +26,6 @@ from bijux_canon_ingest.interfaces.cli.retrieval_output import (
     write_output,
 )
 from bijux_canon_ingest.interfaces.cli.retrieval_parser import build_retrieval_parser
-from bijux_canon_ingest.result import Err
 
 
 def run_retrieval_commands(argv: list[str]) -> int:
@@ -60,7 +58,7 @@ def _run_build(args: argparse.Namespace) -> int:
     )
     args.out.parent.mkdir(parents=True, exist_ok=True)
     fingerprint = build_index_from_docs(
-        docs=_read_docs(args.input),
+        docs=read_documents_or_raise(args.input),
         out_path=str(args.out),
         cfg=config,
     )
@@ -75,19 +73,6 @@ def _run_build(args: argparse.Namespace) -> int:
         )
     )
     return 0
-
-
-def _read_docs(path: Path) -> list[RawDoc]:
-    docs: list[RawDoc] = []
-    errors: list[str] = []
-    for result in FileStorage().read_docs(str(path)):
-        if isinstance(result, Err):
-            errors.append(f"{result.error.code}: {result.error.msg}")
-            continue
-        docs.append(result.value)
-    if errors:
-        raise ValueError("CSV parse failures: " + "; ".join(errors[:3]))
-    return docs
 
 
 def _run_retrieve(args: argparse.Namespace) -> int:

@@ -85,6 +85,8 @@ class EmbeddingProviderRegistry:
                 "Embedding provider contract must declare randomness sources"
             )
         key = name.lower()
+        if key in self._providers:
+            raise ValueError(f"Embedding provider plugin name conflicts with {key!r}")
         self._providers[key] = (factory, contract)
         if default:
             self._default = key

@@ -80,7 +80,7 @@ def test_backoff_cap_respected(base_ms: int) -> None:
             delays.append(d)
 
         env = ResilienceEnv(
-            rng=Random(42),  # noqa: S311 - deterministic test fixture
+            rng=Random(42),
             sleep=fake_sleep,
             clock=FakeClock(),
         )
@@ -109,7 +109,7 @@ def test_timeout_triggers_correctly_with_fake_clock() -> None:
             await asyncio.sleep(0)
 
         env = ResilienceEnv(
-            rng=Random(0),  # noqa: S311 - deterministic test fixture
+            rng=Random(0),
             sleep=advancing_sleep,
             clock=clock,
         )

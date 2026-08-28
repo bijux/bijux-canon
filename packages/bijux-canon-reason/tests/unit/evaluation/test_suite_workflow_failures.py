@@ -14,18 +14,14 @@ def test_suite_summary_handles_empty_and_taxonomy() -> None:
 
     results = [
         {
-            "recall_at_k": 1.0,
-            "mrr": 1.0,
-            "alignment_rate": 1.0,
-            "faithfulness": 1.0,
+            "exact_support_rate": 1.0,
+            "support_links_per_supported_claim": 1.0,
             "insufficient": False,
             "failure_taxonomy": {"core": 1},
         },
         {
-            "recall_at_k": 0.0,
-            "mrr": 0.0,
-            "alignment_rate": 0.0,
-            "faithfulness": 0.0,
+            "exact_support_rate": 0.0,
+            "support_links_per_supported_claim": 0.0,
             "insufficient": True,
             "failure_taxonomy": {"core": 2},
         },

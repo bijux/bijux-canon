@@ -86,44 +86,6 @@ class FrozenToolRegistry:
 
 
 @dataclass(frozen=True)
-class FakeTool:
-    """Represents fake tool."""
-
-    name: str
-    version: str = "0.0.0"
-
-    @property
-    def config_fingerprint(self) -> str:
-        """Handle config fingerprint."""
-        return stable_id("toolcfg", {"name": self.name})
-
-    def invoke(self, *, arguments: dict[str, JsonValue], seed: int) -> JsonValue:
-        """Invoke the requested operation."""
-        if self.name == "retrieve":
-            q = str(arguments.get("query", ""))
-            raw_top_k = arguments.get("top_k", 3)
-            top_k = int(raw_top_k) if isinstance(raw_top_k, (int, float, str)) else 3
-            evidences: list[dict[str, JsonValue]] = []
-            for i in range(top_k):
-                text = f"EVIDENCE[{i}] for '{q}' (seed={seed})"
-                chunk_bytes = text.encode("utf-8")
-                cid = hashlib.sha256(chunk_bytes).hexdigest()
-                evidences.append(
-                    {
-                        "uri": f"mem://{q}/{i}",
-                        "text": text,
-                        "span": [0, len(chunk_bytes)],
-                        "chunk_span": [0, len(chunk_bytes)],
-                        "chunk_id": cid,
-                        "chunk_sha256": hashlib.sha256(chunk_bytes).hexdigest(),
-                    }
-                )
-            return {"evidences": cast(JsonValue, evidences)}
-
-        return {"echo": arguments, "seed": seed}
-
-
-@dataclass(frozen=True)
 class _ProvenancePaths:
     """Represents provenance paths."""
 
@@ -249,7 +211,7 @@ class BM25Retriever:
             self._load_index()
         if self._index is None or self._docs is None:
             raise RuntimeError("BM25Retriever not initialized")
-        return cast(ChunkedBM25Index, self._index), self._docs
+        return self._index, self._docs
 
     def _build_retrieval_provenance(
         self, index: ChunkedBM25Index

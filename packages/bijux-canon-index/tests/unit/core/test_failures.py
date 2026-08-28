@@ -4,6 +4,8 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
+from typing import Never
+
 import pytest
 
 from bijux_canon_index.core.errors import InvariantError, mark_retryable
@@ -14,7 +16,7 @@ from bijux_canon_index.core.failures import (
 )
 
 
-def test_classify_and_retry():
+def test_classify_and_retry() -> None:
     err = InvariantError(message="boom")
     assert classify_failure(err) is FailureKind.TERMINAL
 
@@ -23,7 +25,7 @@ def test_classify_and_retry():
 
     calls = {"count": 0}
 
-    def sometimes():
+    def sometimes() -> str:
         calls["count"] += 1
         if calls["count"] < 2:
             raise retryable
@@ -32,7 +34,7 @@ def test_classify_and_retry():
     with pytest.raises(InvariantError):
         retry_with_policy(sometimes, attempts=3)
 
-    def always_fail():
+    def always_fail() -> Never:
         raise err
 
     with pytest.raises(InvariantError):

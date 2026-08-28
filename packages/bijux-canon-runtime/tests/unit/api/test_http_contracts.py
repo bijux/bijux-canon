@@ -3,7 +3,12 @@
 
 from __future__ import annotations
 
+import importlib
+from pathlib import Path
+from types import SimpleNamespace
+
 from fastapi.testclient import TestClient
+import pytest
 
 from bijux_canon_runtime.api.v1.app import app
 
@@ -64,3 +69,27 @@ def test_run_flow_rejects_unknown_determinism_header() -> None:
 
     assert response.status_code == 406
     assert response.json()["violated_contract"] == "determinism_level_invalid"
+
+
+def test_readiness_uses_canonical_configuration_precedence(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    checked: list[Path] = []
+    monkeypatch.setenv("AGENTIC_FLOWS_DB_PATH", "legacy.duckdb")
+    monkeypatch.setenv("BIJUX_CANON_RUNTIME_DB_PATH", "canonical.duckdb")
+    app_module = importlib.import_module("bijux_canon_runtime.api.v1.app")
+
+    class Readiness:
+        def __init__(self, configuration, *, environment):
+            del environment
+            checked.append(configuration.database_path)
+
+        def evaluate(self):
+            return SimpleNamespace(ready=True)
+
+    monkeypatch.setattr(app_module, "RuntimeReadinessService", Readiness)
+
+    response = client.get("/ready")
+
+    assert response.status_code == 200
+    assert checked == [Path("canonical.duckdb")]

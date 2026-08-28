@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+import hashlib
 
 from bijux_canon_reason.core.types import (
     Claim,
@@ -90,6 +91,8 @@ def _build_derive_output(
         evidence=ranked_evidence,
         max_citations=_resolve_max_citations(spec=spec, min_supports=min_supports),
     )
+    if derivation.result_sha256 is None:
+        raise RuntimeError("reasoning derivation did not produce a result identity")
     claim = _build_derived_claim(derivation)
     _record_derivation(
         state=state,
@@ -167,7 +170,7 @@ def _build_derived_claim(derivation: Derivation) -> Claim:
         id="",
         statement=derivation.statement,
         status=ClaimStatus.proposed,
-        confidence=0.7 if supports else 0.1,
+        confidence=0.0,
         supports=supports,
         claim_type=ClaimType.derived,
         structured={
@@ -209,7 +212,7 @@ def _record_derivation(
 def _apply_verification_outcomes(state: ExecutionState) -> None:
     """Handle apply verification outcomes."""
     for claim_id, claim in state.claims.items():
-        if claim.claim_type == ClaimType.assumed or claim.supports:
+        if claim.claim_type == ClaimType.assumed or _has_exact_grounding(state, claim):
             state.validated_claim_ids.append(claim_id)
             continue
         state.missing_support_claim_ids.append(claim_id)
@@ -218,7 +221,37 @@ def _apply_verification_outcomes(state: ExecutionState) -> None:
 
 def _final_claim_ids(state: ExecutionState) -> list[str]:
     """Handle final claim IDs."""
-    return sorted(set(state.validated_claim_ids)) or sorted(state.claims.keys())
+    return sorted(set(state.validated_claim_ids))
+
+
+def _has_exact_grounding(state: ExecutionState, claim: Claim) -> bool:
+    """Require every support to resolve to the exact quoted bytes and digest."""
+
+    if not claim.supports:
+        return False
+    for support in claim.supports:
+        if (
+            support.kind is not SupportKind.evidence
+            or support.span is None
+            or support.snippet_sha256 is None
+        ):
+            return False
+        evidence = state.evidence_bytes.get(support.ref_id)
+        if evidence is None:
+            return False
+        start, end = support.span
+        if start < 0 or end <= start or end > len(evidence):
+            return False
+        exact = evidence[start:end]
+        if hashlib.sha256(exact).hexdigest() != support.snippet_sha256:
+            return False
+        try:
+            statement_text = exact.decode("utf-8")
+        except UnicodeDecodeError:
+            return False
+        if statement_text not in claim.statement:
+            return False
+    return True
 
 
 __all__ = ["ExecutionState", "build_step_output"]

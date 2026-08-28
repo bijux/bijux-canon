@@ -4,7 +4,7 @@ audience: mixed
 type: reference
 status: canonical
 owner: bijux-canon-runtime-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-08-25
 ---
 
 # Known Limitations
@@ -39,28 +39,22 @@ execution also require the applicable verification policy. Defaults select
 behavior; they do not create hidden databases, credentials, or deployment
 resources.
 
-## Canonical Live Composition
+## Installed Composition Boundary
 
-The live step executors currently resolve four package-root callables that the
-canonical packages do not provide in the required form:
+Runtime v2 composes the canonical packages through domain application services
+and retains their results in one causal artifact graph. This does not make all
+profiles equivalent:
 
-| Boundary | Runtime expects | Current canonical surface |
-| --- | --- | --- |
-| agent | `bijux_canon_agent.run(...)` returning artifact dictionaries | root exports only `API_VERSION`; native execution returns `PipelineResult` and `RunTrace` |
-| retrieval | `bijux_canon_ingest.retrieve(query, top_k, scope, vector_contract_id)` | native retrieval is index-path based and returns typed candidates |
-| vector enforcement | `bijux_canon_index.enforce_contract(contract_id, evidence)` | no root callable; native decision carries plans, capability, budget, provenance and refusal |
-| reasoning | `bijux_canon_reason.reason(...)` returning runtime `ReasoningBundle` | no root callable; native models are reason-owned claims, support, traces and reports |
-
-The preserved `bijux-agent`, `bijux-rag`, `bijux-vex`, and `bijux-rar` roots
-delegate to those canonical surfaces and do not add missing adapters. Runtime
-tests that inject seam-specific callables establish executor, verification,
-replay, and failure behavior; they do not establish installed-package
-composition.
-
-Plan, dry-run, and observe remain useful because they do not invoke lower-
-package intelligence in the same way. A live composition claim requires an
-installed-package test that executes the applicable adapters and preserves
-source, contract, evidence, claim, trace, artifact, and failure identities.
+- `offline-lexical` is complete in the base wheel and schedules no model or
+  dense operation;
+- dense and hybrid work requires the `local-cpu` extra, a pinned materialized
+  model, compatible native backends, and a validated vector dimension;
+- model acquisition is explicitly networked, while validation and reuse can be
+  network-disabled;
+- the optional hosted-provider surface is not required for core acceptance and
+  must not be inferred from local provider abstractions;
+- the legacy manifest execution API remains a compatibility surface; new
+  whole-product integrations use Runtime v2.
 
 ## Replay Is Evidence-Bounded
 
@@ -91,10 +85,11 @@ use case and whether acting on a verified claim is allowed.
 
 ## Persistence And Recovery
 
-DuckDB is a durable local execution store with migrations and a filesystem
-single-writer guard. It is not a replicated service, consensus system, or
-multi-region event log. Copying or editing the database outside the protocol
-bypasses its lock and append-only expectations.
+DuckDB and the workspace CAS form a durable local authority with migrations,
+job transitions, causal artifacts, and governed backup/restore. They are not a
+replicated service, consensus system, or multi-region event log. Copying or
+editing either store outside the protocol bypasses its identity and integrity
+checks.
 
 Checkpoints are written after successful steps. An external side effect can
 occur before its corresponding checkpoint becomes durable. Runtime cannot
@@ -111,39 +106,34 @@ for locking.
 
 ## Artifact Availability
 
-The default artifact registry is in memory, and the `ArtifactStore` protocol
-stores metadata rather than payload bytes. DuckDB likewise persists artifact
-identity, hash, scope, producer, and parent edges but not content. A completed
-run can therefore remain structurally readable after the process exits while
-its artifact payloads are unavailable.
+The installed v2 composition publishes immutable payloads to the workspace CAS
+and metadata plus causal edges to DuckDB. New-format inspection fails closed
+when a required payload, edge, locator or digest is missing. Legacy runs created
+before source-archive retention may report `legacy-unresolved`; that status is
+not equivalent to verified provenance.
 
-For durable execution, the host must provide a content store with atomic
-publication, hash verification, tenant authorization, retention, and garbage
-collection tied to run retention. Replay can compare retained content hashes;
-it cannot reconstruct missing bytes from those hashes.
-
-Artifact payloads and the execution database require host-level backup,
-encryption, retention, access control, integrity monitoring, and capacity
-management. Tenant identifiers in records are not filesystem or database
-isolation.
+Runtime backup authenticates admitted payloads and the workspace database, but
+the host still owns encryption, retention, access control, integrity monitoring
+and capacity. Tenant identifiers in records are not filesystem or database
+isolation. Hashes cannot reconstruct deliberately deleted bytes.
 
 ## HTTP And CLI Posture
 
-The HTTP application publishes request and response schemas, health, readiness,
-header validation, and failure envelopes. `/api/v1/flows/run` and
-`/api/v1/flows/replay` currently return `501 Not Implemented` after header
-validation. Schema presence is not executable capability; clients must not use
-those endpoints for production execution or replay.
+The installed server exposes Runtime v2 only and defaults to loopback. It has
+no built-in authentication, tenant authorization, TLS termination, sandboxing,
+distributed quota, or multi-writer coordination. Durable submissions require
+idempotency identities, and result, inspection and artifact payloads use
+explicit bounded follow-up reads.
 
-The CLI supplies working execution and inspection paths, but several commands
-are suppressed from top-level argparse help, including operational commands
-documented in the command reference. Help output is therefore not a complete
-capability inventory.
+The CLI advertises `init` and the complete local-first `v2` group. The older
+manifest commands and v1 ASGI module remain compatibility surfaces but are not
+the primary product workflow. The explicitly hosted v1 run and replay routes
+remain unimplemented; the installed server does not mount them.
 
 ## Deployment Boundary
 
-Runtime is not a process sandbox, queue, cluster scheduler, identity provider,
-or secret manager. Execute untrusted tools behind operating-system or container
+Runtime is not a process sandbox, cluster scheduler, identity provider, TLS
+terminator, or secret manager. Execute untrusted tools behind operating-system or container
 isolation; enforce tenant access outside the in-process authority token; and
 keep credentials out of manifests, traces, replay envelopes, artifacts, and
 diagnostic events.

@@ -36,8 +36,12 @@ from bijux_canon_runtime.runtime.artifact_store import ArtifactStore
 from bijux_canon_runtime.runtime.budget import ExecutionBudget
 from bijux_canon_runtime.runtime.context import ExecutionContext
 from bijux_canon_runtime.runtime.execution.step_executor import ExecutionOutcome
+from bijux_canon_runtime.runtime.persistence import ArtifactPayloadStore
 
 if TYPE_CHECKING:
+    from bijux_canon_runtime.application.runtime_configuration import (
+        RuntimeConfiguration,
+    )
     from bijux_canon_runtime.model.flows.manifest import FlowManifest
 
 
@@ -64,6 +68,7 @@ class ExecutionConfig:
     verification_policy: VerificationPolicy | None = None
     non_determinism_policy: NonDeterminismPolicy | None = None
     artifact_store: ArtifactStore | None = None
+    payload_store: ArtifactPayloadStore | None = None
     execution_store: ExecutionWriteStoreProtocol | None = None
     execution_read_store: ExecutionReadStoreProtocol | None = None
     budget: ExecutionBudget | None = None
@@ -73,6 +78,7 @@ class ExecutionConfig:
     observers: tuple[RuntimeObserver, ...] | None = None
     resume_run_id: RunID | None = None
     strict_determinism: bool = False
+    runtime_configuration: RuntimeConfiguration | None = None
 
     @classmethod
     def from_command(cls, command: str) -> ExecutionConfig:
@@ -90,6 +96,7 @@ class ExecutionConfig:
             verification_policy=self.verification_policy,
             non_determinism_policy=self.non_determinism_policy,
             artifact_store=self.artifact_store,
+            payload_store=self.payload_store,
             execution_store=self.execution_store,
             execution_read_store=self.execution_read_store,
             budget=self.budget,
@@ -99,6 +106,7 @@ class ExecutionConfig:
             observers=self.observers,
             resume_run_id=self.resume_run_id,
             strict_determinism=self.strict_determinism,
+            runtime_configuration=self.runtime_configuration,
         )
 
 

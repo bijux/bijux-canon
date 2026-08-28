@@ -284,13 +284,13 @@
     },
     {
       "mode": "exact",
-      "notes": "TODO: generate baseline on a faster host (FAISS exact).",
-      "status": "todo",
+      "notes": "No v0.2.0 measurement was retained for FAISS exact.",
+      "status": "not_measured",
       "store_backend": "faiss"
     },
     {
       "mode": "ann",
-      "notes": "TODO: generate baseline on a faster host (FAISS ann).",
+      "notes": "No v0.2.0 measurement was retained for FAISS ann.",
       "quality_baseline": {
         "kendall_tau_estimate": null,
         "latency_p50_ms": null,
@@ -299,18 +299,18 @@
         "overlap_at_k": null,
         "rank_instability": null
       },
-      "status": "todo",
+      "status": "not_measured",
       "store_backend": "faiss"
     },
     {
       "mode": "exact",
-      "notes": "TODO: generate baseline on a faster host (Qdrant exact).",
-      "status": "todo",
+      "notes": "No v0.2.0 measurement was retained for Qdrant exact.",
+      "status": "not_measured",
       "store_backend": "qdrant"
     },
     {
       "mode": "ann",
-      "notes": "TODO: generate baseline on a faster host (Qdrant ann).",
+      "notes": "No v0.2.0 measurement was retained for Qdrant ann.",
       "quality_baseline": {
         "kendall_tau_estimate": null,
         "latency_p50_ms": null,
@@ -319,7 +319,7 @@
         "overlap_at_k": null,
         "rank_instability": null
       },
-      "status": "todo",
+      "status": "not_measured",
       "store_backend": "qdrant"
     }
   ],

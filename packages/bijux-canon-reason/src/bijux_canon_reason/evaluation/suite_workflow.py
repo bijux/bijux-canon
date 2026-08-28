@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+import hashlib
 import json
 from pathlib import Path
 
@@ -13,7 +14,15 @@ from bijux_canon_reason.application.run_artifacts import (
     RunBuilder,
     RunInputs,
 )
-from bijux_canon_reason.core.types import ProblemSpec
+from bijux_canon_reason.core.types import (
+    Claim,
+    ClaimEmittedEvent,
+    EvidenceRef,
+    EvidenceRegisteredEvent,
+    ProblemSpec,
+    StepFinishedEvent,
+    SupportKind,
+)
 from bijux_canon_reason.verification.types import Severity
 
 
@@ -46,11 +55,9 @@ class EvalCaseMetrics:
     spec_path: str
     evidence_count: int
     claims: int
-    claims_with_support: int
-    alignment_rate: float
-    faithfulness: float
-    recall_at_k: float
-    mrr: float
+    claims_with_exact_support: int
+    exact_support_rate: float
+    support_links_per_supported_claim: float
     insufficient: bool
     verification_failures: list[str]
     failure_taxonomy: dict[str, int]
@@ -65,11 +72,9 @@ class EvalCaseMetrics:
             "spec_path": self.spec_path,
             "evidence_count": self.evidence_count,
             "claims": self.claims,
-            "claims_with_support": self.claims_with_support,
-            "alignment_rate": self.alignment_rate,
-            "faithfulness": self.faithfulness,
-            "recall_at_k": self.recall_at_k,
-            "mrr": self.mrr,
+            "claims_with_exact_support": self.claims_with_exact_support,
+            "exact_support_rate": self.exact_support_rate,
+            "support_links_per_supported_claim": self.support_links_per_supported_claim,
             "insufficient": self.insufficient,
             "verification_failures": list(self.verification_failures),
             "failure_taxonomy": dict(self.failure_taxonomy),
@@ -83,20 +88,16 @@ class EvalCaseMetrics:
 class EvalSummaryMetrics:
     """Represents eval summary metrics."""
 
-    recall_at_k: float
-    mrr: float
-    alignment_rate: float
-    faithfulness: float
+    exact_support_rate: float
+    support_links_per_supported_claim: float
     insufficiency_rate: float
     failure_taxonomy: dict[str, int]
 
     def to_json(self) -> dict[str, object]:
         """Convert to JSON."""
         return {
-            "recall_at_k": self.recall_at_k,
-            "mrr": self.mrr,
-            "alignment_rate": self.alignment_rate,
-            "faithfulness": self.faithfulness,
+            "exact_support_rate": self.exact_support_rate,
+            "support_links_per_supported_claim": self.support_links_per_supported_claim,
             "insufficiency_rate": self.insufficiency_rate,
             "failure_taxonomy": dict(self.failure_taxonomy),
         }
@@ -135,35 +136,76 @@ def _read_jsonl(path: Path) -> list[dict[str, object]]:
     return rows
 
 
+def _exact_evidence_support_count(
+    *, run_dir: Path, evidence_by_id: dict[str, EvidenceRef], claim: Claim
+) -> int | None:
+    """Return the support count only when every support resolves exactly."""
+    if not claim.supports:
+        return None
+    for support in claim.supports:
+        if support.kind is not SupportKind.evidence:
+            return None
+        evidence = evidence_by_id.get(support.ref_id)
+        if evidence is None or not evidence.content_path:
+            return None
+        try:
+            content = (run_dir / evidence.content_path).read_bytes()
+        except OSError:
+            return None
+        if hashlib.sha256(content).hexdigest() != evidence.sha256:
+            return None
+        start, end = support.span
+        if start < 0 or end <= start or end > len(content):
+            return None
+        exact = content[start:end]
+        if hashlib.sha256(exact).hexdigest() != support.snippet_sha256:
+            return None
+        try:
+            exact_text = exact.decode("utf-8")
+        except UnicodeDecodeError:
+            return None
+        if exact_text not in claim.statement:
+            return None
+    return len(claim.supports)
+
+
 def _case_metrics(arts: RunArtifacts) -> EvalCaseMetrics:
     """Handle case metrics."""
     trace = arts.trace
     verify_report = arts.verify_report
 
-    evidence_count = sum(
-        1 for event in trace.events if event.kind == "evidence_registered"
-    )
-    claims = [event.claim for event in trace.events if event.kind == "claim_emitted"]
-    claims_with_support = [
-        claim
-        for claim in claims
-        if any(support.kind == "evidence" for support in claim.supports)
+    evidence_by_id = {
+        event.evidence.id: event.evidence
+        for event in trace.events
+        if isinstance(event, EvidenceRegisteredEvent)
+    }
+    evidence_count = len(evidence_by_id)
+    claims = [
+        event.claim for event in trace.events if isinstance(event, ClaimEmittedEvent)
     ]
-    alignment_rate = len(claims_with_support) / len(claims) if claims else 1.0
-    faithfulness = (
-        sum(len(claim.supports) for claim in claims_with_support)
-        / len(claims_with_support)
-        if claims_with_support
+    exact_support_counts = [
+        support_count
+        for claim in claims
+        if (
+            support_count := _exact_evidence_support_count(
+                run_dir=arts.run_dir,
+                evidence_by_id=evidence_by_id,
+                claim=claim,
+            )
+        )
+        is not None
+    ]
+    exact_support_rate = len(exact_support_counts) / len(claims) if claims else 0.0
+    support_links_per_supported_claim = (
+        sum(exact_support_counts) / len(exact_support_counts)
+        if exact_support_counts
         else 0.0
     )
     insufficient = any(
         event.output.type == "insufficient_evidence"
         for event in trace.events
-        if event.kind == "step_finished"
+        if isinstance(event, StepFinishedEvent)
     )
-    recall_at_k = 1.0 if evidence_count > 0 else 0.0
-    mrr = 1.0 if evidence_count > 0 else 0.0
-
     taxonomy: dict[str, int] = {}
     for check in verify_report.checks:
         if not check.passed:
@@ -179,11 +221,9 @@ def _case_metrics(arts: RunArtifacts) -> EvalCaseMetrics:
         spec_path=str(arts.spec_path),
         evidence_count=evidence_count,
         claims=len(claims),
-        claims_with_support=len(claims_with_support),
-        alignment_rate=alignment_rate,
-        faithfulness=faithfulness,
-        recall_at_k=recall_at_k,
-        mrr=mrr,
+        claims_with_exact_support=len(exact_support_counts),
+        exact_support_rate=exact_support_rate,
+        support_links_per_supported_claim=support_links_per_supported_claim,
         insufficient=insufficient,
         verification_failures=[failure.message for failure in verify_report.failures],
         failure_taxonomy=taxonomy,
@@ -286,7 +326,22 @@ def _average_metric(rows: list[dict[str, object]], key: str) -> float:
     """Handle average metric."""
     if not rows:
         return 0.0
-    return sum(float(row.get(key, 0.0)) for row in rows) / len(rows)
+    values = (_metric_value(row.get(key, 0.0)) for row in rows)
+    return sum(values, start=0.0) / len(rows)
+
+
+def _metric_value(value: object) -> float:
+    """Coerce an admitted JSON metric to a finite numeric value."""
+    if isinstance(value, bool):
+        return 0.0
+    if isinstance(value, int | float):
+        return float(value)
+    if isinstance(value, str):
+        try:
+            return float(value)
+        except ValueError:
+            return 0.0
+    return 0.0
 
 
 def _aggregate_taxonomy(rows: list[dict[str, object]]) -> dict[str, int]:
@@ -311,10 +366,10 @@ def _insufficiency_rate(rows: list[dict[str, object]]) -> float:
 def _summary_metrics(rows: list[dict[str, object]]) -> EvalSummaryMetrics:
     """Handle summary metrics."""
     return EvalSummaryMetrics(
-        recall_at_k=_average_metric(rows, "recall_at_k"),
-        mrr=_average_metric(rows, "mrr"),
-        alignment_rate=_average_metric(rows, "alignment_rate"),
-        faithfulness=_average_metric(rows, "faithfulness"),
+        exact_support_rate=_average_metric(rows, "exact_support_rate"),
+        support_links_per_supported_claim=_average_metric(
+            rows, "support_links_per_supported_claim"
+        ),
         insufficiency_rate=_insufficiency_rate(rows),
         failure_taxonomy=_aggregate_taxonomy(rows),
     )

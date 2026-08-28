@@ -147,10 +147,12 @@ def check_required_steps(
     """Handle check required steps."""
     required: set[StepKind] = {"understand", "gather", "derive", "verify", "finalize"}
     trace_structure = _index_trace_structure(ctx)
-    seen: set[StepKind] = {
-        "derive" if output == "insufficient_evidence" else output
-        for output in trace_structure.finished_step_outputs
-    }
+    seen: set[StepKind] = set()
+    for output in trace_structure.finished_step_outputs:
+        if output == "insufficient_evidence":
+            seen.add("derive")
+        elif output in required:
+            seen.add(output)
     missing = sorted(required - seen)
     if not missing:
         return VerificationCheck(name="required_steps", passed=True), []

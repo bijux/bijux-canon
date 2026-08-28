@@ -6,6 +6,12 @@ import hashlib
 import json
 from pathlib import Path
 
+from bijux_canon_agent_trace_support import (
+    build_replay_metadata,
+    build_run_fingerprint,
+    build_trace_header,
+    default_model_metadata,
+)
 import pytest
 
 from bijux_canon_agent.constants import AGENT_CONTRACT_VERSION, CONTRACT_VERSION
@@ -43,12 +49,6 @@ from bijux_canon_agent.traces import (
     RunTraceHeader,
     TraceEntry,
     TraceRecorder,
-)
-from tests.utils.trace_helpers import (
-    build_replay_metadata,
-    build_run_fingerprint,
-    build_trace_header,
-    default_model_metadata,
 )
 
 STANDARD_TRANSITIONS = [

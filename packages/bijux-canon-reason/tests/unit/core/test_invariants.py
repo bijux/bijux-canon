@@ -10,6 +10,7 @@ from bijux_canon_reason.core.invariants import (
 from bijux_canon_reason.core.types import (
     DeriveOutput,
     EvidenceRef,
+    EvidenceRegisteredEvent,
     Plan,
     PlanNode,
     ProblemSpec,
@@ -19,9 +20,12 @@ from bijux_canon_reason.core.types import (
     ToolCall,
     ToolCalledEvent,
     Trace,
+    TraceEvent,
     TraceEventKind,
     VerificationCheck,
+    VerificationFailure,
     VerificationReport,
+    VerificationSeverity,
 )
 
 
@@ -59,16 +63,16 @@ def test_trace_invariants_missing_tool_result_and_ordering() -> None:
     plan = Plan(spec_id=spec.id, nodes=[node])
 
     tcall = ToolCall(step_id=node.id, call_idx=0, tool_name="demo")
-    evs = [
+    evs: list[TraceEvent] = [
         StepStartedEvent(idx=1, kind=TraceEventKind.step_started, step_id=node.id),
         ToolCalledEvent(
-            idx=0, kind=TraceEventKind.tool_called, step_id=node.id, tool_call=tcall
+            idx=0, kind=TraceEventKind.tool_called, step_id=node.id, call=tcall
         ),
         StepFinishedEvent(
             idx=2,
             kind=TraceEventKind.step_finished,
             step_id=node.id,
-            output=DeriveOutput(kind="derive", emitted_claim_ids=[]),
+            output=DeriveOutput(type="derive", claim_ids=[]),
         ),
     ]
     assert plan.id is not None
@@ -89,9 +93,7 @@ def test_trace_invariants_evidence_must_be_referenced() -> None:
     evidence = EvidenceRef(
         uri="file://x", sha256="0" * 64, span=(0, 1), chunk_id="0" * 64
     )
-    from bijux_canon_reason.core.types import EvidenceRegisteredEvent
-
-    evs = [
+    evs: list[TraceEvent] = [
         StepStartedEvent(idx=0, kind=TraceEventKind.step_started, step_id=node.id),
         EvidenceRegisteredEvent(
             idx=1,
@@ -103,7 +105,7 @@ def test_trace_invariants_evidence_must_be_referenced() -> None:
             idx=2,
             kind=TraceEventKind.step_finished,
             step_id=node.id,
-            output=DeriveOutput(kind="derive", emitted_claim_ids=[]),
+            output=DeriveOutput(type="derive", claim_ids=[]),
         ),
     ]
     assert plan.id is not None
@@ -117,6 +119,12 @@ def test_verification_report_duplicates_and_failures() -> None:
         VerificationCheck(name="a", passed=True),
         VerificationCheck(name="a", passed=True),
     ]
-    report = VerificationReport(trace_id="t", checks=checks, failures=["x"])
+    report = VerificationReport(
+        trace_id="t",
+        checks=checks,
+        failures=[
+            VerificationFailure(severity=VerificationSeverity.error, message="x")
+        ],
+    )
     errs = validate_verification_report(report)
     assert any("duplicate" in e.lower() for e in errs)

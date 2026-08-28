@@ -11,11 +11,11 @@ import json
 from pathlib import Path
 from typing import cast
 
-from bijux_canon_runtime.observability.analysis.trace_diff import semantic_trace_diff
-from bijux_canon_runtime.observability.storage.execution_store import (
-    DuckDBExecutionReadStore,
+from bijux_canon_runtime.application.store_inspection import (
+    compare_run_traces,
+    load_run_trace,
+    validate_execution_store,
 )
-from bijux_canon_runtime.ontology.ids import RunID, TenantID
 
 
 def normalize_for_json(value: object, *, normalize_timestamps: bool = False) -> object:
@@ -50,8 +50,11 @@ def normalize_for_json(value: object, *, normalize_timestamps: bool = False) -> 
 
 def inspect_run(args: argparse.Namespace, *, json_output: bool) -> None:
     """Inspect a persisted runtime trace."""
-    store = DuckDBExecutionReadStore(Path(args.db_path))
-    trace = store.load_trace(RunID(args.run_id), tenant_id=TenantID(args.tenant_id))
+    trace = load_run_trace(
+        db_path=Path(args.db_path),
+        run_id=args.run_id,
+        tenant_id=args.tenant_id,
+    )
     if json_output:
         payload = normalize_for_json(asdict(trace))
         print(json.dumps(payload, sort_keys=True))
@@ -65,12 +68,11 @@ def inspect_run(args: argparse.Namespace, *, json_output: bool) -> None:
 
 def diff_runs(args: argparse.Namespace, *, json_output: bool) -> None:
     """Compare two persisted runtime traces."""
-    store = DuckDBExecutionReadStore(Path(args.db_path))
-    tenant_id = TenantID(args.tenant_id)
-    trace_a = store.load_trace(RunID(args.run_a), tenant_id=tenant_id)
-    trace_b = store.load_trace(RunID(args.run_b), tenant_id=tenant_id)
-    diff = semantic_trace_diff(
-        trace_a, trace_b, acceptability=trace_a.replay_acceptability
+    diff = compare_run_traces(
+        db_path=Path(args.db_path),
+        run_a=args.run_a,
+        run_b=args.run_b,
+        tenant_id=args.tenant_id,
     )
     if json_output:
         print(json.dumps(normalize_for_json(diff), sort_keys=True))
@@ -83,8 +85,11 @@ def diff_runs(args: argparse.Namespace, *, json_output: bool) -> None:
 
 def explain_failure(args: argparse.Namespace, *, json_output: bool) -> None:
     """Explain the last persisted failure for a runtime trace."""
-    store = DuckDBExecutionReadStore(Path(args.db_path))
-    trace = store.load_trace(RunID(args.run_id), tenant_id=TenantID(args.tenant_id))
+    trace = load_run_trace(
+        db_path=Path(args.db_path),
+        run_id=args.run_id,
+        tenant_id=args.tenant_id,
+    )
     failure_events = [
         event
         for event in trace.events
@@ -119,7 +124,7 @@ def explain_failure(args: argparse.Namespace, *, json_output: bool) -> None:
 
 def validate_db(args: argparse.Namespace, *, json_output: bool) -> None:
     """Validate that a runtime execution store is readable."""
-    DuckDBExecutionReadStore(Path(args.db_path))
+    validate_execution_store(Path(args.db_path))
     if json_output:
         print(json.dumps({"status": "ok"}, sort_keys=True))
         return

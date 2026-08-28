@@ -20,10 +20,10 @@ def test_trace_event_requires_fields() -> None:
         StepStartedEvent(step_id=cast(Any, None))
 
     with pytest.raises(ValidationError):
-        ToolCalledEvent(step_id="s", call={"tool_name": "t"})
+        ToolCalledEvent.model_validate({"step_id": "s", "call": {"tool_name": "t"}})
 
     with pytest.raises(ValidationError):
-        ToolReturnedEvent(step_id="s", result={"success": True})
+        ToolReturnedEvent.model_validate({"step_id": "s", "result": {"success": True}})
 
 
 def test_evidence_ref_sha_validation() -> None:

@@ -10,8 +10,6 @@ from pathlib import Path
 import signal
 from typing import Any
 
-import bijux_canon_index
-import bijux_canon_reason
 from bijux_canon_runtime.application.execute_flow import (
     ExecutionConfig,
     RunMode,
@@ -23,6 +21,7 @@ from bijux_canon_runtime.observability.storage.execution_store import (
     DuckDBExecutionWriteStore,
 )
 from bijux_canon_runtime.ontology.ids import AgentID, BundleID
+from bijux_canon_runtime.runtime.execution import integration_loaders as integrations
 
 
 def run_with_crash(
@@ -33,8 +32,8 @@ def run_with_crash(
     """Execute a live run, persist a checkpoint, and terminate abruptly."""
     os.environ["AF_CRASH_AT_STEP"] = "0"
     planned_flow = ExecutionPlanner().resolve(resolved_flow.manifest)
-    bijux_canon_index.enforce_contract = lambda *_args, **_kwargs: True
-    bijux_canon_reason.reason = lambda **_kwargs: ReasoningBundle(
+    integrations.vector_contract_enforcer_override = lambda *_args, **_kwargs: True
+    integrations.reasoning_runner_override = lambda **_kwargs: ReasoningBundle(
         spec_version="v1",
         bundle_id=BundleID("bundle-crash"),
         claims=(),

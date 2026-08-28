@@ -105,13 +105,13 @@ terminal projection and the evidence needed to challenge or replay it.
 | `verification` | immutable outputs, evidence and declared gate policy | mutation of the evidence being judged |
 | `observability` | stable events, identities, artifacts and replay envelopes | permission to rewrite execution policy while recording it |
 | `interfaces` | application entry points, loaders and result translation | a second planner, executor or verification policy |
-| `api.v1` | versioned HTTP contracts and readiness dependencies | claims of remote execution while run/replay remain unavailable |
+| `api.v1` | legacy HTTP contracts and readiness dependencies | mounting compatibility-only run/replay as the supported product server |
+| `interfaces.http` | installed Runtime v2 server and transport translation | duplicating application behavior or weakening request bounds |
 
-Cross-package executors use lazy integration loaders. A successfully imported
-package is not sufficient proof of a live composition: its root must export the
-required callable (`run`, `retrieve`, `reason`, or `enforce_contract`). Treat a
-missing callable as an explicit integration failure, not as an empty domain
-result or permission to synthesize success.
+The v2 composition calls typed domain application services and preserves their
+identities in Runtime-owned records. A successfully imported package is not
+sufficient proof of live composition; installed acceptance must execute the
+requested operation and validate its causal artifacts and failure mapping.
 
 ## Authority and replay
 

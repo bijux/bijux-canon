@@ -13,6 +13,38 @@ Index evidence is split between the execution artifact, the run directory, and
 the result payload. Keeping those layers separate prevents a result list from
 being mistaken for a reproducible execution record.
 
+## Immutable Generation Envelope
+
+A persistent lexical-and-dense generation is identified by the canonical
+`generation.json` content, not its directory name or the mutable active
+pointer. The generation identity covers the corpus snapshot and exact chunk
+set; the content-addressed embedding model lock and vector dimension; lexical,
+exact-dense, and approximate-dense algorithms and schemas; tokenizer, metric,
+normalization, and vector dtype; HNSW parameters; build resource limits; and a
+content-addressed identity of the generation and three backend implementation
+modules. Each segment also contributes its own content hash, backend generation
+identity, runtime-library identity, and item count.
+
+`inspect` reports the resulting configuration identity and its constituent
+algorithm facts without exposing source text, metadata values, or local paths.
+An operator can configure a registry with the required model lock, dimension,
+and configuration identity. Admission and activation then refuse an
+incomplete generation or any mismatch before replacing `active.json`.
+
+Generation schema 1 remains readable so retained local data can be recovered,
+but it lacks the explicit build/configuration envelope and cannot be newly
+admitted or activated. Rebuild it from the pinned corpus snapshot and model
+lock to obtain a schema 2 generation.
+
+Within one process, verified immutable generations may be retained behind a
+bounded lease cache. A lease is scoped to the registry root, generation ID,
+and current file identities. Queries share the already-audited backend handles
+under serialized read access. Activation, recovery, file mutation, eviction,
+or service shutdown invalidates and closes those handles; an active lease must
+finish before its replacement can load, so the configured memory bound is not
+temporarily exceeded. This cache is reconstructible process state, not a new
+durable authority and not evidence that an older generation is still active.
+
 ## Execution Artifact
 
 `ExecutionArtifact` binds a vector corpus to an execution contract:

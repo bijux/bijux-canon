@@ -94,7 +94,7 @@ class ResilienceEnv:
             await asyncio.sleep(seconds)
 
         return ResilienceEnv(
-            rng=Random(),  # noqa: S311 - retry jitter does not require crypto entropy
+            rng=Random(),
             sleep=_sleep,
             clock=SystemClock(),
         )
@@ -110,7 +110,7 @@ def make_test_resilience_env(
         await asyncio.sleep(0)
 
     return ResilienceEnv(
-        rng=Random(seed),  # noqa: S311 - deterministic test backoff generator
+        rng=Random(seed),
         sleep=sleep or _noop_sleep,
         clock=clock or FakeClock(),
     )

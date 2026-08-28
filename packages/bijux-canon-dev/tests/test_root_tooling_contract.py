@@ -32,7 +32,6 @@ def test_root_pyproject_declares_shared_quality_tooling() -> None:
 
     assert interrogate == {"fail-under": 32, "color": True}
     assert bandit == {
-        "skips": ["B404", "B311"],
         "exclude_dirs": [
             ".venv",
             "tests",
@@ -41,6 +40,106 @@ def test_root_pyproject_declares_shared_quality_tooling() -> None:
             ".ruff_cache",
         ],
     }
+
+
+def test_security_tooling_has_no_ungoverned_suppressions() -> None:
+    security_make = (REPO_ROOT / "makes" / "bijux-py" / "ci" / "security.mk").read_text(
+        encoding="utf-8"
+    )
+    sbom_make = (REPO_ROOT / "makes" / "bijux-py" / "ci" / "sbom.mk").read_text(
+        encoding="utf-8"
+    )
+
+    assert "SECURITY_IGNORE_IDS           ?=\n" in security_make
+    assert "SECURITY_BANDIT_SKIP_IDS      ?=\n" in security_make
+    assert "Ungoverned dependency vulnerability suppressions are forbidden" in (
+        security_make
+    )
+    assert "Ungoverned Bandit suppressions are forbidden" in security_make
+    assert "Bandit is mandatory; SKIP_BANDIT must remain 0" in security_make
+    assert "Dependency vulnerability auditing is mandatory and strict" in security_make
+    assert "SBOM_IGNORE_IDS          ?=\n" in sbom_make
+    assert "Ungoverned SBOM vulnerability suppressions are forbidden" in sbom_make
+    assert '--output "$(SBOM_PROD_FILE)" || true' not in sbom_make
+    assert '--output "$(SBOM_DEV_FILE)" || true' not in sbom_make
+
+    tolerant_package_audits = []
+    for profile in sorted((REPO_ROOT / "makes" / "packages").glob("*.mk")):
+        for line_number, line in enumerate(
+            profile.read_text(encoding="utf-8").splitlines(), start=1
+        ):
+            if "PIP_AUDIT" in line and "|| true" in line:
+                tolerant_package_audits.append(
+                    f"{profile.relative_to(REPO_ROOT)}:{line_number}:{line.strip()}"
+                )
+    assert tolerant_package_audits == []
+
+
+def test_root_security_runs_the_tracked_source_credential_scan() -> None:
+    package_catalog = (REPO_ROOT / "makes" / "packages.mk").read_text(encoding="utf-8")
+
+    assert "ROOT_TARGET_POST_security" in package_catalog
+    assert "bijux-canon-secret-scan" in package_catalog
+    assert "uv run --offline" not in package_catalog
+    assert (
+        '"$(MONOREPO_ROOT)/artifacts/bijux-canon-dev/venv/bin/'
+        'bijux-canon-secret-scan"' in package_catalog
+    )
+    assert "artifacts/root/security/secret-scan.json" not in package_catalog
+    assert "$(ROOT_ARTIFACTS_DIR)/security/secret-scan.json" in package_catalog
+
+
+def test_root_dead_code_gate_is_fatal_and_uses_an_owned_whitelist() -> None:
+    root_make = (REPO_ROOT / "makes" / "root.mk").read_text(encoding="utf-8")
+
+    assert "quality: quality-dead-code" in root_make
+    assert '"$(ROOT_CHECK_PYTHON)" -m vulture' in root_make
+    assert '"$(ROOT_VULTURE_WHITELIST)" --min-confidence 100' in root_make
+    assert "|| true" not in root_make.split("quality-dead-code:", 1)[1]
+    assert (REPO_ROOT / "configs" / "vulture_whitelist.py").is_file()
+
+
+def test_root_checks_preserve_the_locked_shared_environment() -> None:
+    root_make = (REPO_ROOT / "makes" / "root.mk").read_text(encoding="utf-8")
+
+    assert "$(UV_SYNC) >/dev/null" in root_make
+    assert "PACKAGE_BOOTSTRAP_TARGETS=" in root_make
+    assert "PACKAGE_INSTALL_TARGETS=" in root_make
+    assert "LINT_PRE_TARGETS=" in root_make
+
+
+def test_standard_commands_consume_the_recorded_upstream_pin() -> None:
+    standard_make = (REPO_ROOT / "makes" / "bijux-std.mk").read_text(encoding="utf-8")
+
+    assert (
+        "BIJUX_STD_PIN_FILE ?= $(PROJECT_DIR)/.github/standards/bijux-std.sha"
+        in standard_make
+    )
+    assert (
+        "BIJUX_STD_REF ?= $(shell tr -d '[:space:]' < \"$(BIJUX_STD_PIN_FILE)\")"
+        in standard_make
+    )
+
+
+def test_root_pytest_environment_keeps_generated_state_under_artifacts() -> None:
+    root_environment = (REPO_ROOT / "makes" / "bijux-py" / "root" / "env.mk").read_text(
+        encoding="utf-8"
+    )
+    package_dispatch = (
+        REPO_ROOT / "makes" / "bijux-py" / "root" / "package-dispatch.mk"
+    ).read_text(encoding="utf-8")
+    pytest_configuration = (REPO_ROOT / "configs" / "pytest.ini").read_text(
+        encoding="utf-8"
+    )
+
+    assert "ROOT_PYCACHE_DIR ?= $(ROOT_ARTIFACTS_DIR)/pycache" in root_environment
+    assert "export PYTHONDONTWRITEBYTECODE := 1" in root_environment
+    assert (
+        "export PYTHONPYCACHEPREFIX := $(abspath $(ROOT_PYCACHE_DIR))"
+        in root_environment
+    )
+    assert "artifacts/$(1)/pycache" in package_dispatch
+    assert "cache_dir = ../artifacts/root/pytest-cache" in pytest_configuration
 
 
 def test_root_pyproject_uses_only_the_shared_dev_group() -> None:

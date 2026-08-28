@@ -9,7 +9,8 @@ import json
 from pathlib import Path
 import sys
 
-from bijux_canon_agent.config.env import load_environment, validate_keys
+from bijux_canon_agent.application.execution_service import create_agent_pipeline
+from bijux_canon_agent.config.env import load_environment
 from bijux_canon_agent.interfaces.cli.helpers import (
     handle_replay,
     load_config,
@@ -22,7 +23,6 @@ from bijux_canon_agent.interfaces.cli.runtime_setup import (
     create_logger_manager,
     resolve_input_files,
 )
-from bijux_canon_agent.pipeline.canonical import AuditableDocPipeline
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -33,17 +33,13 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 async def main() -> None:
     """Main entry point for Bijux Canon Agent."""
-    load_environment()
-    try:
-        validate_keys()
-    except RuntimeError as exc:
-        print(f"API key validation failed: {exc}", file=sys.stderr)
-        sys.exit(1)
-
     args = parse_args()
     if args.command == "replay":
         handle_replay(Path(args.trace_path))
         return
+
+    load_environment()
+
     bootstrap_logger = create_bootstrap_logger()
     config = load_config(args.config, bootstrap_logger)
     task_goal = config.get("task_goal", DEFAULT_TASK_GOAL)
@@ -76,10 +72,10 @@ async def main() -> None:
 
     results_dir_path = Path(args.results_dir)
     results_dir_path.mkdir(parents=True, exist_ok=True)
-    pipeline = AuditableDocPipeline(
+    pipeline = create_agent_pipeline(
         config=config,
         logger_manager=logger_manager,
-        results_dir=str(results_dir_path),
+        results_dir=results_dir_path,
     )
 
     input_path = Path(args.input_path)
@@ -112,13 +108,9 @@ async def main() -> None:
             "Bijux Agent pipeline completed successfully",
             extra={"context": {"result": result}},
         )
-        if len(files) == 1 and result["successful"]:
-            print(
-                json.dumps(
-                    result["successful"][0]["result"], indent=2, ensure_ascii=False
-                )
-            )
         primary_success = result["successful"][0] if result["successful"] else None
+        if len(files) == 1 and primary_success and "result" in primary_success:
+            print(json.dumps(primary_success["result"], indent=2, ensure_ascii=False))
         final_artifact = write_final_artifacts(
             success_entry=primary_success,
             results=result,

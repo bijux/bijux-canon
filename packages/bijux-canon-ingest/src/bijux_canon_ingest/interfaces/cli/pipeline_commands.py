@@ -17,15 +17,15 @@ from bijux_canon_ingest.application.pipeline_definitions.configured import (
     StepConfig,
     build_rag_pipeline,
 )
+from bijux_canon_ingest.application.surface_services import read_documents
 from bijux_canon_ingest.core.types import RawDoc
-from bijux_canon_ingest.infra.adapters.file_storage import FileStorage
 from bijux_canon_ingest.interfaces.cli.pipeline_config import load_pipeline_config
 from bijux_canon_ingest.interfaces.cli.pipeline_output import (
     render_error,
     write_chunk_results,
 )
 from bijux_canon_ingest.interfaces.cli.pipeline_parser import build_pipeline_parser
-from bijux_canon_ingest.result.types import Err, ErrInfo, Ok, Result
+from bijux_canon_ingest.result.types import Err, ErrInfo, Result
 
 
 def run_pipeline_commands(argv: list[str]) -> int:
@@ -75,14 +75,7 @@ def _apply_overrides(*, config: PipelineConfig, overrides: list[str]) -> Pipelin
 
 
 def _read_ok_docs(path: Path) -> Result[list[RawDoc], ErrInfo]:
-    storage = FileStorage()
-    docs: list[RawDoc] = []
-    for doc_result in storage.read_docs(str(path)):
-        if isinstance(doc_result, Ok):
-            docs.append(doc_result.value)
-            continue
-        return Err(doc_result.error)
-    return Ok(docs)
+    return read_documents(path)
 
 
 __all__ = ["run_pipeline_commands"]

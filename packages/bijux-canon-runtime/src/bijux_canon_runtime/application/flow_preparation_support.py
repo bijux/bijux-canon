@@ -21,6 +21,9 @@ from bijux_canon_runtime.application.flow_execution_models import (
     PreparedFlow,
     _ExecutionStrategy,
 )
+from bijux_canon_runtime.application.runtime_configuration import (
+    resolve_runtime_configuration,
+)
 from bijux_canon_runtime.core.authority import authority_token
 from bijux_canon_runtime.core.errors import ConfigurationError
 from bijux_canon_runtime.model.execution.execution_plan import ExecutionPlan
@@ -48,18 +51,27 @@ from bijux_canon_runtime.runtime.execution.observer_executor import ObserverExec
 from bijux_canon_runtime.runtime.non_determinism_lifecycle import (
     NonDeterminismLifecycle,
 )
+from bijux_canon_runtime.runtime.persistence import InMemoryArtifactPayloadStore
 
 
 def effective_execution_config(execution_config: ExecutionConfig) -> ExecutionConfig:
-    """Apply strict-mode environment overrides to the execution config."""
-    strict_env = os.environ.get("BIJUX_CANON_RUNTIME_STRICT")
-    if strict_env is None:
-        strict_env = os.environ.get("AGENTIC_FLOWS_STRICT")
-    if strict_env != "1":
-        return execution_config
-    if execution_config.mode in {RunMode.DRY_RUN, RunMode.UNSAFE}:
+    """Apply settings owned by the validated runtime configuration."""
+    settings = execution_config.runtime_configuration
+    if settings is None:
+        settings = resolve_runtime_configuration(environment=os.environ)
+    if settings.strict_determinism and execution_config.mode in {
+        RunMode.DRY_RUN,
+        RunMode.UNSAFE,
+    }:
         raise ValueError("BIJUX_CANON_RUNTIME_STRICT forbids best-effort execution")
-    return replace(execution_config, strict_determinism=True)
+    return replace(
+        execution_config,
+        strict_determinism=(
+            execution_config.strict_determinism or settings.strict_determinism
+        ),
+        budget=execution_config.budget or settings.resource_budget,
+        runtime_configuration=settings,
+    )
 
 
 def prepare_plan_flow(
@@ -283,6 +295,7 @@ def build_execution_context(
         artifact_store=artifact_store
         or execution_config.artifact_store
         or InMemoryArtifactStore(),
+        payload_store=execution_config.payload_store or InMemoryArtifactPayloadStore(),
         trace_recorder=start_state.trace_recorder,
         mode=execution_config.mode,
         verification_policy=execution_config.verification_policy,
@@ -304,6 +317,7 @@ def build_execution_context(
         _step_artifacts={},
         observed_run=execution_config.observed_run,
         strict_determinism=execution_config.strict_determinism,
+        runtime_configuration=execution_config.runtime_configuration,
     )
 
 

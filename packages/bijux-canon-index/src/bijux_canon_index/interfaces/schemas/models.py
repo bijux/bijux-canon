@@ -5,6 +5,19 @@
 from __future__ import annotations
 
 from bijux_canon_index.interfaces.schemas.base import StrictModel
+from bijux_canon_index.interfaces.schemas.index_generations import (
+    HnswParametersPayload,
+    IndexActivationRequestPayload,
+    IndexBuildLimitsPayload,
+    IndexBuildRequestPayload,
+    IndexChunkPayload,
+    IndexInspectionResponse,
+    IndexQueryRequestPayload,
+    IndexQueryResponse,
+    IndexSelectionPayload,
+    MetadataFilterPayload,
+    UserMetadataPredicatePayload,
+)
 from bijux_canon_index.interfaces.schemas.reports import (
     BackendCapabilitiesReport,
     StorageBackendDescriptor,
@@ -23,13 +36,24 @@ from bijux_canon_index.interfaces.schemas.requests import (
 __all__ = [
     "BackendCapabilitiesReport",
     "CreateRequest",
+    "HnswParametersPayload",
+    "IndexActivationRequestPayload",
+    "IndexBuildLimitsPayload",
+    "IndexBuildRequestPayload",
+    "IndexChunkPayload",
+    "IndexInspectionResponse",
+    "IndexQueryRequestPayload",
+    "IndexQueryResponse",
+    "IndexSelectionPayload",
     "ExecutionArtifactRequest",
     "ExecutionBudgetPayload",
     "ExecutionRequestPayload",
     "ExplainRequest",
     "IngestRequest",
+    "MetadataFilterPayload",
     "RandomnessProfilePayload",
     "StorageBackendDescriptor",
     "StrictModel",
     "VectorStoreDescriptor",
+    "UserMetadataPredicatePayload",
 ]

@@ -2,10 +2,7 @@
 
 from __future__ import annotations
 
-import asyncio
-import hashlib
 from pathlib import Path
-from typing import Any
 
 from bijux_canon_agent.api.v1.errors import HTTP_STATUS_BY_CODE, APIErrorCode
 from bijux_canon_agent.api.v1.schemas import (
@@ -13,17 +10,7 @@ from bijux_canon_agent.api.v1.schemas import (
     RunRequestV1,
     RunResponseV1,
 )
-from bijux_canon_agent.observability.logging import LoggerConfig, LoggerManager
-from bijux_canon_agent.pipeline.canonical import AuditableDocPipeline
-from bijux_canon_agent.pipeline.termination import ExecutionTerminationReason
-
-_DEFAULT_AGENTS: list[str] = [
-    "file_reader",
-    "summarizer",
-    "validator",
-    "critique",
-    "stage_runner",
-]
+from bijux_canon_agent.application.execution_service import run_offline_agent
 
 
 def _error_response(code: APIErrorCode, message: str) -> ErrorResponseV1:
@@ -34,73 +21,27 @@ def _error_response(code: APIErrorCode, message: str) -> ErrorResponseV1:
     )
 
 
-def _build_context(request: RunRequestV1) -> dict[str, Any]:
-    inputs_dir = Path.cwd() / "artifacts" / "api" / "inputs"
-    inputs_dir.mkdir(parents=True, exist_ok=True)
-    digest = hashlib.sha256(
-        request.context_id.encode("utf-8", errors="replace")
-    ).hexdigest()
-    input_path = inputs_dir / f"context-{digest}.txt"
-    input_path.write_text(request.text, encoding="utf-8")
-    return {
-        "context_id": request.context_id,
-        "text": request.text,
-        "task_goal": request.task_goal,
-        "file_path": str(input_path),
-    }
-
-
 def run_pipeline_v1(request: RunRequestV1) -> RunResponseV1:
     """
     Run the canonical pipeline for API v1.
 
     This endpoint provides deterministic, offline-only execution using a fixed configuration.
     """
-    api_root = Path.cwd() / "artifacts" / "api"
-    logger_manager = LoggerManager(LoggerConfig(log_dir=api_root / "logs"))
-
-    # Fixed deterministic configuration (no client overrides)
-    resolved_config: dict[str, Any] = {
-        "backend": "simple",
-        "strategy": "extractive",
-        "agents": _DEFAULT_AGENTS,
-    }
-
-    try:
-        pipeline = AuditableDocPipeline(
-            resolved_config,
-            logger_manager,
-            results_dir=str(api_root / "results"),
+    outcome = run_offline_agent(
+        context_id=request.context_id,
+        text=request.text,
+        task_goal=request.task_goal,
+        working_root=Path.cwd(),
+    )
+    error = None
+    if outcome.error_kind is not None:
+        error = _error_response(
+            APIErrorCode(outcome.error_kind),
+            outcome.error_message or outcome.error_kind,
         )
-        result = asyncio.run(pipeline.run(_build_context(request)))
-    except Exception as exc:  # Defensive handling of unexpected errors
-        return RunResponseV1(
-            success=False,
-            context_id=request.context_id,
-            error=_error_response(APIErrorCode.INTERNAL_ERROR, str(exc)),
-        )
-
-    final_status = result.get("final_status", {})
-    termination = final_status.get("termination_reason")
-
-    if termination == ExecutionTerminationReason.FAILURE:
-        return RunResponseV1(
-            success=False,
-            context_id=request.context_id,
-            error=_error_response(APIErrorCode.EXECUTION_FAILED, "execution failed"),
-            result=result,
-        )
-
-    if termination == ExecutionTerminationReason.CONVERGENCE and not final_status.get(
-        "converged", False
-    ):
-        return RunResponseV1(
-            success=False,
-            context_id=request.context_id,
-            error=_error_response(
-                APIErrorCode.CONVERGENCE_FAILED, "convergence not reached"
-            ),
-            result=result,
-        )
-
-    return RunResponseV1(success=True, context_id=request.context_id, result=result)
+    return RunResponseV1(
+        success=outcome.success,
+        context_id=outcome.context_id,
+        error=error,
+        result=outcome.result,
+    )

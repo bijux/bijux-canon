@@ -4,7 +4,7 @@ audience: mixed
 type: reference
 status: canonical
 owner: bijux-canon-reason-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-08-24
 ---
 
 # Data Contracts
@@ -71,6 +71,71 @@ evidence spans, chunk-ID syntax, and path safety. `EvidenceRef.sha256` is carrie
 as a string at model construction; the run builder establishes its meaning by
 hashing the referenced file and requiring an exact match. Cross-record
 verification then confirms that cited bytes and registered evidence agree.
+
+## Grounded Answer Citations
+
+The credential-free grounded-answer path uses a closed chain of immutable
+records rather than accepting citation dictionaries from a caller:
+
+```text
+retrieval artifact -> evidence packet -> normalized claim -> citation link
+                   -> verification report -> evidence-aware admission
+                   -> numbered presentation
+```
+
+Each citation link retains the exact retrieval, document, chunk, source,
+locator, quote, and source-byte identities plus the source descriptor used for
+bibliographic display. The verifier compares the link with both the evidence
+packet and the source descriptor. An invented coordinate, changed quote, stale
+retrieval identity, substituted source, or changed bibliography is a typed
+failure.
+
+`CitationPresentation` deduplicates repeated use of one evidence item while
+retaining all claim identities that cite it. A numbered entry includes the
+exact quote and locator, hashes, title, authors, journal, date, DOI, URI,
+license, provenance, format, and language when the immutable source descriptor
+provides them. An admitted factual claim without a verified citation is
+invalid; an abstention exposes no claims or citations. Bibliographic metadata
+helps a reader identify the source but is never treated as evidence for the
+claim.
+
+`GroundingEvidenceState` binds admission to the installed retrieval outcome,
+VEX witness or bounded exact fallback, selected-evidence count, packet
+completeness, and any policy or budget refusal. The versioned admission policy
+also measures direct-support coverage and confidence and rejects unresolved
+opposition. Its typed evidence gaps distinguish out-of-scope requests, absent
+evidence, inadequate support, unresolved conflicts, unsafe or unverified
+evidence, retrieval failure or refusal, and policy or budget refusal. Every gap
+retains a concrete remediation. An upstream refusal therefore cannot be
+converted into an answer merely because a downstream synthesizer can form a
+sentence.
+
+The admitted answer is rendered from `NuancedGroundingRepresentation`, not
+from the synthesizer's prose. Claims are grouped only when their explicit
+population, method, and temporal scopes match. Findings, methods, reported
+limitations, and counterevidence appear in separate sections with the same
+numbered exact citations used by verification. A finding/counterevidence pair
+is material conflict: omitting its conflict declaration makes the record
+invalid, and the renderer states that ambiguity instead of selecting a
+majority view.
+
+Product limitations, assumptions, and interpretations are separate typed
+annotations labeled “not source-supported facts.” They carry provenance basis
+identities rather than exact-citation fields and never enter the
+source-supported findings section.
+Internal artifact and citation-link identifiers remain in the persisted graph
+but are not used as reader-facing prose.
+
+`ResearchAnswerRevisionService` closes the RAR feedback loop over this same
+grounding authority. It combines the prior immutable evidence packet with
+classified new evidence, preserves source metadata and locators, and re-runs
+synthesis, atomic normalization, citation linking, entailment verification,
+context rendering, and admission. Its content-addressed result records typed
+add, remove, qualify, split, merge, strengthen, abstain, or preserve actions.
+Each action links prior claims, revised claims, exact evidence, and the
+classification that caused it. Material ambiguity or unclassified evidence
+produces a verified abstention instead of silently retaining the earlier
+answer.
 
 ## Validation Layers
 

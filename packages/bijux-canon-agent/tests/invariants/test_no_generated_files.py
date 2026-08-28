@@ -14,7 +14,7 @@ def test_no_generated_files_tracked() -> None:
     repo_root = package_root.parents[1]
     env = os.environ.copy()
     env["PYTHONPATH"] = str(repo_root / "packages" / "bijux-canon-dev" / "src")
-    completed = subprocess.run(  # noqa: S603 - invokes a checked-in test helper
+    completed = subprocess.run(
         [
             sys.executable,
             "-m",

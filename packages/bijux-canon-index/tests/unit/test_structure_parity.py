@@ -7,7 +7,7 @@ from __future__ import annotations
 from pathlib import Path
 
 
-def test_src_tests_directory_parity():
+def test_src_tests_directory_parity() -> None:
     src_root = Path(__file__).parents[2] / "src" / "bijux_canon_index"
     tests_root = Path(__file__).parents[1] / "unit"
     src_dirs = {

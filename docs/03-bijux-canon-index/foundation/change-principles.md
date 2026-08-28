@@ -66,10 +66,9 @@ artifact and replay envelope, and later appear in reasoning provenance.
 | HTTP contract | DTO rejection, OpenAPI drift, endpoint behavior, and idempotency evidence |
 | performance or quality claim | named dataset, backend, parameters, dependency versions, hardware, recall, and latency |
 
-The canonical distribution intentionally publishes no console script. Do not
-add a command merely to mirror `bijux-vex`; first decide whether a canonical
-command contract is warranted and carry its packaging, behavior, and migration
-evidence together.
+The canonical distribution publishes `bijux-canon-index`. Any change to that
+command must carry packaging, behavior, installed-wheel, and compatibility
+delegation evidence together.
 
 ## Refusal Conditions
 

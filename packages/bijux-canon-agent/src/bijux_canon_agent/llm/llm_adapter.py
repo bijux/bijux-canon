@@ -32,6 +32,24 @@ except ImportError:  # pragma: no cover
     _openai_module = None
 openai: ModuleType | None = _openai_module
 
+_SECRET_FIELD_MARKERS = (
+    "api_key",
+    "authorization",
+    "credential",
+    "password",
+    "secret",
+    "token",
+)
+
+
+def _reject_secret_fields(values: Mapping[str, Any]) -> None:
+    if any(
+        marker in str(key).casefold()
+        for key in values
+        for marker in _SECRET_FIELD_MARKERS
+    ):
+        raise ValueError("provider credentials are not accepted in request metadata")
+
 
 class DeepSeekAdapterError(RuntimeError):
     """Structured failure for DeepSeek adapter requests."""
@@ -115,6 +133,8 @@ class BaseLLMAdapter(ABC):
         self, extra: Mapping[str, Any] | None = None
     ) -> Mapping[str, Any]:
         model_meta = self.metadata()
+        if extra:
+            _reject_secret_fields(extra)
         base: dict[str, Any] = {
             "provider": model_meta.provider,
             "model_name": model_meta.model_name,
@@ -140,8 +160,11 @@ class OpenAIAdapter(BaseLLMAdapter):
         self._client = actual_client
 
     def generate(self, prompt: str, **kwargs: Any) -> LLMResponse:
+        _reject_secret_fields(kwargs)
+        api_key = key_for_provider("OpenAI")
         metadata = self._prepare_metadata(kwargs.get("metadata"))
         completion_kwargs = {
+            "api_key": api_key,
             "model": self.config.model_name,
             "messages": [{"role": "user", "content": prompt}],
             "temperature": self.config.temperature,
@@ -177,21 +200,22 @@ class DeepSeekAdapter(BaseLLMAdapter):
     ) -> None:
         super().__init__(config, client=client)
         self.base_url = base_url
-        self._api_key = self._resolve_api_key()
         timeout_value = config.timeout if config.timeout is not None else 30.0
         self._timeout = self._validate_timeout(timeout_value)
         self.retry_attempts = max(0, int(config.retry_attempts))
         self._validate_base_url()
 
     def _resolve_api_key(self) -> str:
+        """Resolve the selected credential only when an execution needs it."""
         try:
             return key_for_provider("Deepseek")
         except RuntimeError as exc:
             raise DeepSeekAdapterError(str(exc), FailureClass.VALIDATION_ERROR) from exc
 
     def _headers(self) -> dict[str, str]:
+        api_key = self._resolve_api_key()
         return {
-            "Authorization": f"Bearer {self._api_key}",
+            "Authorization": f"Bearer {api_key}",
             "Content-Type": "application/json",
         }
 
@@ -212,6 +236,7 @@ class DeepSeekAdapter(BaseLLMAdapter):
             )
 
     def _build_payload(self, prompt: str, **kwargs: Any) -> dict[str, Any]:
+        _reject_secret_fields(kwargs)
         payload = {
             "model": self.config.model_name,
             "messages": [{"role": "user", "content": prompt}],
@@ -261,7 +286,9 @@ class DeepSeekAdapter(BaseLLMAdapter):
             if self._is_timeout_exception(exc)
             else FailureClass.EXECUTION_ERROR
         )
-        return DeepSeekAdapterError(f"DeepSeek request failed: {exc!s}", failure_class)
+        return DeepSeekAdapterError(
+            f"DeepSeek request failed ({type(exc).__name__})", failure_class
+        )
 
     @staticmethod
     def _is_timeout_exception(exc: Exception) -> bool:
@@ -276,6 +303,7 @@ class DeepSeekAdapter(BaseLLMAdapter):
         return False
 
     def generate(self, prompt: str, **kwargs: Any) -> LLMResponse:
+        _reject_secret_fields(kwargs)
         metadata = self._prepare_metadata(kwargs.get("metadata"))
         payload = self._build_payload(prompt, **kwargs)
         response = self._call_with_retries(payload)

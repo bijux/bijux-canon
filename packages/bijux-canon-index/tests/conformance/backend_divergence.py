@@ -13,10 +13,13 @@ from bijux_canon_index.core.types import (
     ExecutionRequest,
     Vector,
 )
-from tests.conformance.suite import default_backends
+
+from .suite import ConformanceFixture, default_backends
 
 
-def _seed(backend):
+def _seed(
+    backend: ConformanceFixture,
+) -> tuple[Document, Chunk, Vector, ExecutionArtifact]:
     doc = Document(document_id="doc", text="hello")
     chunk = Chunk(
         chunk_id="chunk", document_id=doc.document_id, text="hello", ordinal=0
@@ -39,7 +42,7 @@ def _seed(backend):
     return doc, chunk, vec, art
 
 
-def test_memory_sqlite_divergence_detection():
+def test_memory_sqlite_divergence_detection() -> None:
     backends = list(default_backends())
     mem = next(b.factory() for b in backends if b.name == "memory")
     sql = next(b.factory() for b in backends if b.name == "sqlite")

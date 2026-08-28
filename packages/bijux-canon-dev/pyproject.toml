@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling>=1.30.1,<1.32", "hatch-vcs>=0.5.0,<1.0"]
+requires = ["hatchling>=1.30.1,<1.33", "hatch-vcs>=0.5.0,<1.0"]
 build-backend = "hatchling.build"
 
 [project]
@@ -20,11 +20,14 @@ classifiers = [
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3.14",
+  "Operating System :: OS Independent",
   "Typing :: Typed",
 ]
 dependencies = [
+  "jsonschema[format-nongpl]>=4.23,<5.0",
   "packaging>=24.0,<27.0",
   "PyYAML>=6.0,<7.0",
+  "twine>=6.1.0,<8.0",
 ]
 
 [project.urls]
@@ -34,6 +37,22 @@ Documentation = "https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-cano
 Issues = "https://github.com/bijux/bijux-canon/issues"
 Changelog = "https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-dev/CHANGELOG.md"
 Security = "https://github.com/bijux/bijux-canon/blob/main/SECURITY.md"
+
+[project.scripts]
+bijux-canon-development-evaluation = "bijux_canon_dev.quality.development_evaluation:main"
+bijux-canon-truth-review = "bijux_canon_dev.corpus.research_truth_review:main"
+bijux-canon-impact-tests = "bijux_canon_dev.verification.impact_selection:main"
+bijux-canon-extras-matrix = "bijux_canon_dev.release.extras_matrix:main"
+bijux-canon-family-compatibility = "bijux_canon_dev.release.family_compatibility:main"
+bijux-canon-installation-matrix = "bijux_canon_dev.release.installation_matrix:main"
+bijux-canon-placeholder-audit = "bijux_canon_dev.release.placeholder_audit:main"
+bijux-canon-python-support = "bijux_canon_dev.release.python_support_matrix:main"
+bijux-canon-resource-envelope = "bijux_canon_dev.performance.resource_envelope:main"
+bijux-canon-release-candidate = "bijux_canon_dev.release.release_candidate_identity:main"
+bijux-canon-semver-compatibility = "bijux_canon_dev.release.semver_compatibility:main"
+bijux-canon-secret-scan = "bijux_canon_dev.security.secret_scan:main"
+bijux-canon-supply-chain = "bijux_canon_dev.sbom.supply_chain:main"
+bijux-canon-wheel-inventory = "bijux_canon_dev.release.wheel_inventory:main"
 
 [project.optional-dependencies]
 dev = [
@@ -46,6 +65,7 @@ dev = [
   "ruff>=0.6.8,<1.0",
   "mypy>=1.11.2,<3.0",
   "types-PyYAML>=6.0.12.20250822,<7.0",
+  "types-jsonschema>=4.23,<5.0",
   "vulture>=2.7,<3.0",
   "deptry>=0.10.0,<1.0",
   "interrogate>=1.7.0,<2.0",
@@ -59,19 +79,24 @@ dev = [
   "mkdocs-autorefs>=1.4.4,<2.0",
   "mkdocs-redirects>=1.2,<2.0",
   "mkdocs-git-revision-date-localized-plugin>=1.2.0,<2.0",
-  "pymdown-extensions>=10.8,<12.0",
+  "pymdown-extensions>=11.0.1,<12.0",
 ]
 
 [tool.hatch.version]
 source = "vcs"
 tag-pattern = "^v(?P<version>.*)$"
 raw-options = { git_describe_command = "git describe --dirty --tags --long --match 'v*'", local_scheme = "dirty-tag", version_scheme = "guess-next-dev", root = "../..", search_parent_directories = true }
-fallback-version = "0.3.9"
+fallback-version = "0.4.0"
 
 [tool.pytest.ini_options]
 markers = [
   "slow: long-running checks excluded from default ci and tox lanes",
 ]
+
+[tool.interrogate]
+# Keep documentation coverage fatal and ratcheted at the measured package baseline.
+fail-under = 62
+color = true
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/bijux_canon_dev"]
@@ -86,4 +111,3 @@ include = [
   "README.md",
   "src/bijux_canon_dev/**",
 ]
-force-include = { "LICENSE" = "LICENSE", "NOTICE" = "NOTICE" }

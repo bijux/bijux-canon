@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.bijux.org/canon/ingest/v2/rejection-record.schema.json",
+  "title": "Immutable ingestion rejection record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "artifact_type",
+    "artifact_id",
+    "target_type",
+    "target_identity",
+    "stage",
+    "code",
+    "safe_message",
+    "remediation",
+    "retryable",
+    "policy_sha256",
+    "rejected_at"
+  ],
+  "properties": {
+    "schema_version": {"$ref": "common.schema.json#/$defs/schema_version"},
+    "artifact_type": {"const": "bijux.canon.ingest.rejection"},
+    "artifact_id": {"$ref": "common.schema.json#/$defs/artifact_id"},
+    "target_type": {"enum": ["source", "document"]},
+    "target_identity": {"type": "string", "minLength": 1},
+    "observed_content_sha256": {"$ref": "common.schema.json#/$defs/sha256"},
+    "stage": {"enum": ["acquisition", "validation", "extraction", "admission"]},
+    "code": {
+      "enum": [
+        "source_unreadable",
+        "unsupported_media_type",
+        "content_hash_mismatch",
+        "malformed_document",
+        "policy_denied",
+        "duplicate_document"
+      ]
+    },
+    "safe_message": {"type": "string", "minLength": 1, "maxLength": 2048},
+    "remediation": {"type": "string", "minLength": 1, "maxLength": 2048},
+    "retryable": {"type": "boolean"},
+    "policy_sha256": {"$ref": "common.schema.json#/$defs/sha256"},
+    "rejected_at": {"$ref": "common.schema.json#/$defs/timestamp"}
+  },
+  "x-bijux-identity": {
+    "algorithm": "sha-256",
+    "canonicalization": "RFC 8785",
+    "excluded_json_pointers": ["/artifact_id"]
+  }
+}

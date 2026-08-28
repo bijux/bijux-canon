@@ -151,10 +151,9 @@ owner and contract outside the alias package.
 - `bijux-canon` and `agentic-flows` both delegate to
   `bijux-canon-runtime`; they can coexist only when both exact pins resolve to
   the same runtime version.
-- `bijux-vex` preserves the `bijux-vex` console script while
-  `bijux-canon-index` does not publish a renamed console script. Command
-  migration therefore moves to the canonical Python or HTTP interface rather
-  than performing a text-only rename.
+- `bijux-vex` preserves the legacy console script while `bijux-canon-index`
+  publishes the canonical replacement. Both delegate to the same application;
+  installed-distribution identity still distinguishes bridge from owner.
 - `bijux-rar` remains a console script in the canonical reason distribution as
   well as in the compatibility distribution. Command availability alone does
   not show which distribution, import root, or artifact reader a consumer uses.

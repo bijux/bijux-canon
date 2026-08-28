@@ -10,8 +10,11 @@ import sys
 import typer
 
 from bijux_canon_index.application.engine import VectorExecutionEngine
+from bijux_canon_index.application.surface_services import (
+    debug_bundle_payload,
+    metrics_payload,
+)
 from bijux_canon_index.core.errors import BijuxError
-from bijux_canon_index.infra.metrics import METRICS
 from bijux_canon_index.interfaces.cli.configuration import (
     build_config as _build_config,
 )
@@ -51,11 +54,7 @@ def config_show(ctx: typer.Context) -> None:
 def metrics_snapshot(ctx: typer.Context) -> None:
     """Handle metrics snapshot."""
     try:
-        snapshot = METRICS.snapshot()
-        _emit(
-            ctx,
-            {"counters": snapshot.counters, "timers_ms": snapshot.timers_ms},
-        )
+        _emit(ctx, metrics_payload())
     except Exception:  # pragma: no cover
         sys.exit(1)
 
@@ -75,35 +74,14 @@ def debug_bundle(
             base_config=base_config,
         )
         engine = VectorExecutionEngine(config=config)
-        status = {
-            "backend": engine.vector_store_resolution.descriptor.name,
-            "reachable": True,
-            "version": engine.vector_store_resolution.descriptor.version,
-            "uri_redacted": engine.vector_store_resolution.uri_redacted,
-        }
-        adapter = engine.vector_store_resolution.adapter
-        if hasattr(adapter, "status"):
-            status.update(adapter.status())
-        bundle: dict[str, object] = {
-            "config": _redact_config(config),
-            "capabilities": engine.capabilities(),
-            "vector_store_status": status,
-            "metrics": METRICS.snapshot().__dict__,
-        }
-        if include_provenance:
-            artifacts = tuple(engine.stores.ledger.list_artifacts())
-            latest_exec: dict[str, str] = {}
-            for artifact in artifacts:
-                stored = engine.stores.ledger.latest_execution_result(
-                    artifact.artifact_id
-                )
-                if stored is not None:
-                    latest_exec[artifact.artifact_id] = stored.execution_id
-            bundle["provenance"] = {
-                "artifacts": [artifact.artifact_id for artifact in artifacts],
-                "latest_execution_ids": latest_exec,
-            }
-        _emit(ctx, bundle)
+        _emit(
+            ctx,
+            debug_bundle_payload(
+                engine=engine,
+                redacted_config=_redact_config(config),
+                include_provenance=include_provenance,
+            ),
+        )
     except BijuxError as exc:
         record_failure(exc)
         if is_refusal(exc):

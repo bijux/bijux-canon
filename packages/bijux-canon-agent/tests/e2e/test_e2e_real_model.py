@@ -4,6 +4,11 @@ from datetime import UTC, datetime
 import os
 from typing import Any
 
+from bijux_canon_agent_trace_support import (
+    build_replay_metadata,
+    build_run_fingerprint,
+    build_trace_header,
+)
 import pytest
 
 from bijux_canon_agent.agents import JudgeAgent, PlannerAgent, VerifierAgent
@@ -23,11 +28,6 @@ from bijux_canon_agent.pipeline.convergence.monitor import (
 from bijux_canon_agent.pipeline.definition import standard_pipeline_definition
 from bijux_canon_agent.pipeline.trace_validation.trace_validator import TraceValidator
 from bijux_canon_agent.traces import RunTrace, TraceEntry
-from tests.utils.trace_helpers import (
-    build_replay_metadata,
-    build_run_fingerprint,
-    build_trace_header,
-)
 
 RUN_REAL_MODEL_TESTS = os.getenv("RUN_REAL_MODEL_TESTS") == "1"
 
@@ -124,7 +124,38 @@ async def test_e2e_real_model_flow(tmp_path) -> None:
     context = {
         "task_goal": "Summarize the policy document cleanly",
         "context_id": "real-e2e",
-        "payload": {},
+        "payload": {
+            "planning_input": {
+                "query": "Summarize the policy document cleanly",
+                "corpus_generation": "corpus:policy:live",
+                "index_generation": "index:policy:live",
+                "scope": ["policy:document"],
+                "top_k": 4,
+                "retrieval_mode": "lexical",
+                "constraints": {"require_exact_citations": True},
+                "provider_profile": {
+                    "provider": "OpenAI",
+                    "model": "gpt-3.5-turbo",
+                    "immutable_revision": "gpt-3.5-turbo",
+                    "temperature": 0.0,
+                    "seed": None,
+                },
+                "budget": {
+                    "iterations": 3,
+                    "retrievals": 2,
+                    "documents": 4,
+                    "candidates": 8,
+                    "evidence_items": 4,
+                    "tool_calls": 2,
+                    "provider_calls": 3,
+                    "tokens": 1024,
+                    "elapsed_ms": 120000,
+                    "retries": 1,
+                    "memory_bytes": 131072,
+                    "artifact_bytes": 131072,
+                },
+            }
+        },
     }
 
     controller.transition_to(PipelineLifecycle.PLAN)

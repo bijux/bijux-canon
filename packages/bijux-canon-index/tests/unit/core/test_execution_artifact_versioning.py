@@ -11,7 +11,7 @@ from bijux_canon_index.core.errors import InvariantError
 from bijux_canon_index.core.types import ExecutionArtifact
 
 
-def test_default_schema_version_is_v1():
+def test_default_schema_version_is_v1() -> None:
     art = ExecutionArtifact(
         artifact_id="art-1",
         corpus_fingerprint="corp",
@@ -23,7 +23,7 @@ def test_default_schema_version_is_v1():
     assert art.schema_version == "v1"
 
 
-def test_future_schema_version_rejected():
+def test_future_schema_version_rejected() -> None:
     with pytest.raises(InvariantError):
         ExecutionArtifact(
             artifact_id="art-1",
@@ -36,7 +36,7 @@ def test_future_schema_version_rejected():
         )
 
 
-def test_old_execution_artifact_version_rejected():
+def test_old_execution_artifact_version_rejected() -> None:
     with pytest.raises(InvariantError):
         ExecutionArtifact(
             artifact_id="art-legacy",

@@ -59,6 +59,13 @@ lifecycle.
 Pass stable identifiers, hashes, classifications, and complete artifacts. Display
 names and logs are not cross-package identity.
 
+The installed research executor constructs a Runtime-side implementation of
+Agent's typed research port. It adapts persistent Index retrieval and Reason
+counterevidence/convergence services, then delegates call selection and causal
+trace production to Agent's application service. Runtime retains and publishes
+the returned artifact graph; it does not hard-code a
+plan/skeptic/analyze/terminate script.
+
 ## Executor Admission
 
 ```mermaid
@@ -102,9 +109,12 @@ The CLI invokes the canonical application and renders machine-readable
 failures. `bijux-canon` and `agentic-flows` are compatibility commands to the
 same runtime authority.
 
-The HTTP application implements health, readiness, schemas, headers, and
-failure envelopes. Its run and replay endpoints return `501 Not Implemented`.
-OpenAPI presence must not be interpreted as remote execution capability.
+The installed HTTP v2 application composes the same canonical application
+service as the CLI, including durable workflow and replay jobs, bounded reads,
+and typed failures. The separate v1 compatibility application implements
+probes but returns `501 Not Implemented` for run and replay. OpenAPI presence
+without live installed workflow evidence must not be interpreted as execution
+capability.
 
 See [API surface](../interfaces/api-surface.md) for endpoint posture and
 [artifact contracts](../interfaces/artifact-contracts.md) for runtime custody.

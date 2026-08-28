@@ -38,7 +38,7 @@ class AgentExecutor:
         if self._state_tracker is None:
             self._state_tracker = ExecutionStateTracker(context.seed)
         seed = deterministic_seed(step.step_index, step.inputs_fingerprint)
-        run_agent = load_agent_runner()
+        run_agent = load_agent_runner(context.require_runtime_configuration())
         evidence = list(context.evidence_for_step(step.step_index))
         outputs = run_agent(
             agent_id=step.agent_invocation.agent_id,
@@ -80,20 +80,30 @@ class AgentExecutor:
                 raise ValueError("parent_artifacts must be a list")
 
             artifact_type = ArtifactType(str(entry["artifact_type"]))
-            artifacts.append(
-                context.artifact_store.create(
-                    spec_version="v1",
-                    artifact_id=ArtifactID(str(entry["artifact_id"])),
-                    tenant_id=context.tenant_id,
-                    artifact_type=artifact_type,
-                    producer="agent",
-                    parent_artifacts=tuple(
-                        ArtifactID(str(item)) for item in parent_artifacts
-                    ),
-                    content_hash=content_hash,
-                    scope=ArtifactScope.WORKING,
-                )
+            parents = tuple(ArtifactID(str(item)) for item in parent_artifacts)
+            artifact = context.artifact_store.create(
+                spec_version="v1",
+                artifact_id=ArtifactID(str(entry["artifact_id"])),
+                tenant_id=context.tenant_id,
+                artifact_type=artifact_type,
+                producer="agent",
+                parent_artifacts=parents,
+                content_hash=content_hash,
+                scope=ArtifactScope.WORKING,
             )
+            context.persist_payload(
+                logical_artifact_id=artifact.artifact_id,
+                payload=entry["content"],
+                schema_id=f"bijux.runtime.agent.{artifact_type.value}.v1",
+                media_type=(
+                    "text/plain"
+                    if isinstance(entry["content"], str)
+                    else "application/json"
+                ),
+                producer="bijux-canon-agent:execution",
+                parent_artifacts=parents,
+            )
+            artifacts.append(artifact)
         return artifacts
 
     def _state_artifact(
@@ -106,7 +116,7 @@ class AgentExecutor:
         if self._state_tracker is None:
             raise RuntimeError("state tracker is not configured")
         state_hash = self._state_tracker.advance(step)
-        return context.artifact_store.create(
+        artifact = context.artifact_store.create(
             spec_version="v1",
             artifact_id=ArtifactID(f"state-{step.step_index}-{step.agent_id}"),
             tenant_id=context.tenant_id,
@@ -116,6 +126,19 @@ class AgentExecutor:
             content_hash=state_hash,
             scope=ArtifactScope.AUDIT,
         )
+        context.persist_payload(
+            logical_artifact_id=artifact.artifact_id,
+            payload={
+                "agent_id": str(step.agent_id),
+                "inputs_fingerprint": str(step.inputs_fingerprint),
+                "state_hash": str(state_hash),
+                "step_index": step.step_index,
+            },
+            schema_id="bijux.runtime.executor-state.v1",
+            producer="bijux-canon-runtime:agent-executor",
+            parent_artifacts=artifact.parent_artifacts,
+        )
+        return artifact
 
     @staticmethod
     def _hash_content(content: Any) -> str:

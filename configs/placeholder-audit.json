@@ -1,0 +1,236 @@
+{
+  "excluded_exact_paths": [
+    "configs/placeholder-audit.json",
+    "packages/bijux-canon-dev/src/bijux_canon_dev/release/placeholder_audit.py"
+  ],
+  "excluded_prefixes": [
+    ".bijux/",
+    ".github/",
+    "docs/assets/",
+    "examples/ancient-dna-research/corpus/sources/",
+    "examples/document-formats/corpus/"
+  ],
+  "rules": [
+    {
+      "acceptance_tests": [],
+      "classification": "implemented_product_path",
+      "expected_occurrences": 1,
+      "marker_kinds": ["placeholder"],
+      "owner": "release-docs",
+      "path": "CHANGELOG.md",
+      "public_surface": false,
+      "reason": "Historical release text describes removal of a vague path; it is not executable behavior."
+    },
+    {
+      "acceptance_tests": [],
+      "classification": "implemented_product_path",
+      "expected_occurrences": 1,
+      "marker_kinds": ["placeholder"],
+      "owner": "release-docs",
+      "path": "README.md",
+      "public_surface": false,
+      "reason": "The package-family overview explicitly distinguishes real aliases from inert stubs."
+    },
+    {
+      "acceptance_tests": ["packages/bijux-canon-runtime/tests/unit/api/test_http_contracts.py"],
+      "classification": "explicit_experimental_or_deprecated_limitation",
+      "expected_occurrences": 4,
+      "marker_kinds": ["not_implemented"],
+      "owner": "runtime-api",
+      "path": "apis/bijux-canon-runtime/v1/*",
+      "public_surface": true,
+      "reason": "The frozen v1 compatibility schema truthfully declares schema-only run and replay routes."
+    },
+    {
+      "acceptance_tests": ["packages/bijux-canon-agent/tests/unit/test_public_api.py"],
+      "classification": "explicit_experimental_or_deprecated_limitation",
+      "expected_occurrences": 2,
+      "marker_kinds": ["not_implemented", "placeholder"],
+      "owner": "agent-runtime",
+      "path": "docs/05-bijux-canon-agent/operations/*.md",
+      "public_surface": true,
+      "reason": "Operator guidance names the absent package-root host and restricts fake provider values to isolated tests."
+    },
+    {
+      "acceptance_tests": ["packages/bijux-canon-runtime/tests/unit/api/test_http_contracts.py"],
+      "classification": "explicit_experimental_or_deprecated_limitation",
+      "expected_occurrences": 10,
+      "marker_kinds": ["not_implemented"],
+      "owner": "runtime-api",
+      "path": "docs/06-bijux-canon-runtime/**/*.md",
+      "public_surface": true,
+      "reason": "Runtime documentation consistently identifies the v1 HTTP compatibility routes as non-executable."
+    },
+    {
+      "acceptance_tests": ["packages/bijux-canon-runtime/tests/unit/api/test_http_contracts.py"],
+      "classification": "explicit_experimental_or_deprecated_limitation",
+      "expected_occurrences": 1,
+      "marker_kinds": ["not_implemented"],
+      "owner": "runtime-api",
+      "path": "docs/index.md",
+      "public_surface": true,
+      "reason": "The handbook landing page exposes the same bounded v1 HTTP limitation."
+    },
+    {
+      "acceptance_tests": [],
+      "classification": "valid_abstract_method_or_template",
+      "expected_occurrences": 1,
+      "marker_kinds": ["not_implemented"],
+      "owner": "agent-quality",
+      "path": "packages/bijux-canon-agent/pyproject.toml",
+      "public_surface": false,
+      "reason": "The dead-code allowlist names the intentional abstract-method exception expression."
+    },
+    {
+      "acceptance_tests": ["packages/bijux-canon-dev/tests/test_placeholder_audit.py"],
+      "classification": "implemented_product_path",
+      "expected_occurrences": 1,
+      "marker_kinds": ["placeholder"],
+      "owner": "release-audit",
+      "path": "packages/bijux-canon-dev/pyproject.toml",
+      "public_surface": true,
+      "reason": "The installed command name identifies this implemented audit and is proved by its repository acceptance tests."
+    },
+    {
+      "acceptance_tests": [],
+      "classification": "valid_abstract_method_or_template",
+      "expected_occurrences": 1,
+      "marker_kinds": ["not_implemented"],
+      "owner": "agent-domain",
+      "path": "packages/bijux-canon-agent/src/bijux_canon_agent/agents/base.py",
+      "public_surface": false,
+      "reason": "The base agent documents the explicit feedback-extension refusal."
+    },
+    {
+      "acceptance_tests": ["packages/bijux-canon-agent/tests/unit/test_critique_criteria_execution.py"],
+      "classification": "explicit_experimental_or_deprecated_limitation",
+      "expected_occurrences": 1,
+      "marker_kinds": ["not_implemented"],
+      "owner": "agent-critique",
+      "path": "packages/bijux-canon-agent/src/bijux_canon_agent/agents/critique/criteria_execution.py",
+      "public_surface": true,
+      "reason": "An unknown configured criterion produces an explicit warning and cannot fabricate a passed check."
+    },
+    {
+      "acceptance_tests": [],
+      "classification": "valid_abstract_method_or_template",
+      "expected_occurrences": 2,
+      "marker_kinds": ["not_implemented"],
+      "owner": "agent-provider",
+      "path": "packages/bijux-canon-agent/src/bijux_canon_agent/llm/llm_runtime.py",
+      "public_surface": false,
+      "reason": "The provider runtime is an abstract extension point whose subclasses must implement generation."
+    },
+    {
+      "acceptance_tests": [],
+      "classification": "valid_abstract_method_or_template",
+      "expected_occurrences": 3,
+      "marker_kinds": ["not_implemented"],
+      "owner": "index-plugins",
+      "path": "packages/bijux-canon-index/plugins/template_plugin/src/bijux_canon_index_plugin_example/__init__.py",
+      "public_surface": false,
+      "reason": "The example plugin deliberately refuses methods that plugin authors must supply."
+    },
+    {
+      "acceptance_tests": ["packages/bijux-canon-index/tests/test_v1_release_gate.py"],
+      "classification": "explicit_experimental_or_deprecated_limitation",
+      "expected_occurrences": 1,
+      "marker_kinds": ["not_implemented"],
+      "owner": "index-api",
+      "path": "packages/bijux-canon-index/src/bijux_canon_index/core/v1_exclusions.py",
+      "public_surface": true,
+      "reason": "Frozen v1 exclusions fail explicitly instead of advertising unsupported backends."
+    },
+    {
+      "acceptance_tests": [],
+      "classification": "valid_abstract_method_or_template",
+      "expected_occurrences": 2,
+      "marker_kinds": ["not_implemented"],
+      "owner": "index-backends",
+      "path": "packages/bijux-canon-index/src/bijux_canon_index/infra/adapters/ann_base.py",
+      "public_surface": false,
+      "reason": "Optional ANN hooks fail closed when a concrete runner does not implement them."
+    },
+    {
+      "acceptance_tests": [],
+      "classification": "implemented_product_path",
+      "expected_occurrences": 2,
+      "marker_kinds": ["placeholder"],
+      "owner": "index-sqlite",
+      "path": "packages/bijux-canon-index/src/bijux_canon_index/infra/adapters/sqlite/lexical.py",
+      "public_surface": false,
+      "reason": "These are bound SQL parameter placeholders, not unfinished behavior."
+    },
+    {
+      "acceptance_tests": [],
+      "classification": "valid_abstract_method_or_template",
+      "expected_occurrences": 1,
+      "marker_kinds": ["not_implemented"],
+      "owner": "index-embeddings",
+      "path": "packages/bijux-canon-index/src/bijux_canon_index/infra/embeddings/registry.py",
+      "public_surface": false,
+      "reason": "The registry base method is an intentional subclass extension point."
+    },
+    {
+      "acceptance_tests": [],
+      "classification": "implemented_product_path",
+      "expected_occurrences": 1,
+      "marker_kinds": ["not_implemented"],
+      "owner": "ingest-pipelines",
+      "path": "packages/bijux-canon-ingest/src/bijux_canon_ingest/application/pipeline_definitions/compiler_support.py",
+      "public_surface": false,
+      "reason": "The phrase is a boolean admission check over concrete compiler stages."
+    },
+    {
+      "acceptance_tests": ["packages/bijux-canon-runtime/tests/unit/api/test_http_contracts.py"],
+      "classification": "explicit_experimental_or_deprecated_limitation",
+      "expected_occurrences": 3,
+      "marker_kinds": ["not_implemented"],
+      "owner": "runtime-api",
+      "path": "packages/bijux-canon-runtime/src/bijux_canon_runtime/api/v1/app.py",
+      "public_surface": true,
+      "reason": "The separately importable v1 compatibility app returns an honest 501 for run and replay."
+    },
+    {
+      "acceptance_tests": [],
+      "classification": "valid_abstract_method_or_template",
+      "expected_occurrences": 3,
+      "marker_kinds": ["not_implemented"],
+      "owner": "runtime-artifacts",
+      "path": "packages/bijux-canon-runtime/src/bijux_canon_runtime/runtime/artifact_store.py",
+      "public_surface": false,
+      "reason": "The artifact store protocol requires concrete persistence implementations."
+    },
+    {
+      "acceptance_tests": [],
+      "classification": "implemented_product_path",
+      "expected_occurrences": 2,
+      "marker_kinds": ["placeholder"],
+      "owner": "runtime-persistence",
+      "path": "packages/bijux-canon-runtime/src/bijux_canon_runtime/runtime/persistence/metadata_authority.py",
+      "public_surface": false,
+      "reason": "These are generated bound SQL parameter placeholders."
+    },
+    {
+      "acceptance_tests": [],
+      "classification": "valid_abstract_method_or_template",
+      "expected_occurrences": 4,
+      "marker_kinds": ["not_implemented"],
+      "owner": "runtime-persistence",
+      "path": "packages/bijux-canon-runtime/src/bijux_canon_runtime/runtime/persistence/payload_store.py",
+      "public_surface": false,
+      "reason": "The payload store protocol requires concrete persistence implementations."
+    },
+    {
+      "acceptance_tests": [],
+      "classification": "implemented_product_path",
+      "expected_occurrences": 5,
+      "marker_kinds": ["placeholder"],
+      "owner": "compatibility-packages",
+      "path": "packages/compat-*/CHANGELOG.md",
+      "public_surface": false,
+      "reason": "Historical notes record replacement of migration stubs by real delegation packages."
+    }
+  ],
+  "schema_version": "bijux.canon.placeholder_audit_policy.v1"
+}

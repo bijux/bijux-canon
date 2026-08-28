@@ -68,4 +68,4 @@ def _resolve_runtime(
     """Resolve runtime."""
     if runtime is not None:
         return runtime
-    return Runtime.fake(seed=seed, artifacts_dir=artifacts_dir)
+    return Runtime.credential_free(seed=seed, artifacts_dir=artifacts_dir)

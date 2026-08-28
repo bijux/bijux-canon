@@ -5,7 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 
 
-def test_core_has_no_todo_fixme():
+def test_core_has_no_todo_fixme() -> None:
     root = Path(__file__).parents[2] / "src" / "bijux_canon_index" / "core"
     offenders = []
     for path in root.rglob("*.py"):
@@ -15,7 +15,7 @@ def test_core_has_no_todo_fixme():
     assert not offenders, f"TODO/FIXME found in core: {', '.join(offenders)}"
 
 
-def test_freeze_docs_exist():
+def test_freeze_docs_exist() -> None:
     root = Path(__file__).parents[2]
     for doc in [
         root / "docs/spec/mental_model.md",
@@ -26,7 +26,7 @@ def test_freeze_docs_exist():
         assert doc.exists(), f"Missing required freeze doc: {doc}"
 
 
-def test_structure_parity_submodules():
+def test_structure_parity_submodules() -> None:
     src_root = Path(__file__).parents[2] / "src" / "bijux_canon_index"
     tests_root = Path(__file__).parents[1] / "unit"
     src_dirs = {

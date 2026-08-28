@@ -9,12 +9,12 @@ import pytest
 from bijux_canon_index.core.v1_exclusions import V1_EXCLUSIONS, ensure_excluded
 
 
-def test_all_exclusions_raise():
+def test_all_exclusions_raise() -> None:
     for name in V1_EXCLUSIONS:
         with pytest.raises(NotImplementedError):
             ensure_excluded(name)
 
 
-def test_unknown_feature_rejected():
+def test_unknown_feature_rejected() -> None:
     with pytest.raises(KeyError):
         ensure_excluded("unknown-feature")

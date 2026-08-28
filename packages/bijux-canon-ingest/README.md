@@ -19,17 +19,17 @@
 [![bijux-rar](https://img.shields.io/pypi/v/bijux-rar?label=bijux--rar&logo=pypi)](https://pypi.org/project/bijux-rar/)
 [![bijux-vex](https://img.shields.io/pypi/v/bijux-vex?label=bijux--vex&logo=pypi)](https://pypi.org/project/bijux-vex/)
 
-[![bijux-canon-ingest](https://img.shields.io/badge/ingest-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon-ingest)
-[![bijux-canon-runtime](https://img.shields.io/badge/runtime-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon-runtime)
-[![bijux-canon](https://img.shields.io/badge/bijux--canon-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon)
-[![bijux-canon-agent](https://img.shields.io/badge/agent-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon-agent)
-[![bijux-canon-reason](https://img.shields.io/badge/reason-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon-reason)
-[![bijux-canon-index](https://img.shields.io/badge/index-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon-index)
-[![agentic-flows](https://img.shields.io/badge/agentic--flows-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fagentic-flows)
-[![bijux-agent](https://img.shields.io/badge/bijux--agent-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-agent)
-[![bijux-rag](https://img.shields.io/badge/bijux--rag-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-rag)
-[![bijux-rar](https://img.shields.io/badge/bijux--rar-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-rar)
-[![bijux-vex](https://img.shields.io/badge/bijux--vex-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-vex)
+[![bijux-canon-ingest OCI release bundle](https://img.shields.io/badge/ingest-oci%20bundle-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon-ingest)
+[![bijux-canon-runtime OCI release bundle](https://img.shields.io/badge/runtime-oci%20bundle-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon-runtime)
+[![bijux-canon OCI release bundle](https://img.shields.io/badge/bijux--canon-oci%20bundle-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon)
+[![bijux-canon-agent OCI release bundle](https://img.shields.io/badge/agent-oci%20bundle-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon-agent)
+[![bijux-canon-reason OCI release bundle](https://img.shields.io/badge/reason-oci%20bundle-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon-reason)
+[![bijux-canon-index OCI release bundle](https://img.shields.io/badge/index-oci%20bundle-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon-index)
+[![agentic-flows OCI release bundle](https://img.shields.io/badge/agentic--flows-oci%20bundle-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fagentic-flows)
+[![bijux-agent OCI release bundle](https://img.shields.io/badge/bijux--agent-oci%20bundle-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-agent)
+[![bijux-rag OCI release bundle](https://img.shields.io/badge/bijux--rag-oci%20bundle-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-rag)
+[![bijux-rar OCI release bundle](https://img.shields.io/badge/bijux--rar-oci%20bundle-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-rar)
+[![bijux-vex OCI release bundle](https://img.shields.io/badge/bijux--vex-oci%20bundle-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-vex)
 
 [![bijux-canon-ingest docs](https://img.shields.io/badge/docs-ingest-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/02-bijux-canon-ingest/)
 [![bijux-canon-runtime docs](https://img.shields.io/badge/docs-runtime-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/06-bijux-canon-runtime/)
@@ -84,15 +84,21 @@ identity make later retrieval evidence traceable to its source.
 
 ## Command Workflows
 
-The console script routes two command shapes. With a document path first, it
-runs the configured CSV preparation pipeline. With `index`, `retrieve`, `ask`,
-or `eval` first, it enters the ingest-local retrieval command family. This
-dispatch is intentional: `bijux-canon-ingest --help` describes the preparation
-form, while command-specific help describes the retrieval form.
+The primary product command is `corpus build`. It discovers, admits, parses,
+and chunks a bounded directory containing real text, Markdown, HTML, JATS,
+DOCX, digital PDF, and OCR-required inputs through the same service consumed by
+Runtime. The older configured CSV preparation pipeline remains supported as an
+explicit compatibility surface under `legacy-csv`; its historical path-first
+invocation remains equivalent for the 0.4 line.
 
 ```bash
-# Run a configured CSV-to-JSONL preparation pipeline.
-bijux-canon-ingest documents.csv --config pipeline.json --out chunks.jsonl
+# Build the canonical multi-format corpus.
+bijux-canon-ingest corpus build \
+  --root documents --root-name documents --corpus-name documents
+
+# Run the preserved CSV-to-JSONL compatibility pipeline.
+bijux-canon-ingest legacy-csv documents.csv \
+  --config pipeline.json --out chunks.jsonl
 
 # Build and query a deterministic local BM25 index.
 bijux-canon-ingest index build \

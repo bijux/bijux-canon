@@ -8,11 +8,12 @@ from __future__ import annotations
 import pytest
 
 from bijux_canon_index.core.types import Document
-from tests.conformance.suite import default_backends, parametrize_backends
+
+from .suite import BackendCase, default_backends, parametrize_backends
 
 
 @parametrize_backends(default_backends())
-def test_abort_rolls_back_changes(backend_case):
+def test_abort_rolls_back_changes(backend_case: BackendCase) -> None:
     fixture = backend_case.factory()
     doc = Document(document_id="doc-tx", text="temp")
 

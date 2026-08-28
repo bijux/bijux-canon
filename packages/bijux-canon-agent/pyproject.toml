@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling>=1.30.1,<1.32", "hatch-vcs>=0.5.0,<1.0"]
+requires = ["hatchling>=1.30.1,<1.33", "hatch-vcs>=0.5.0,<1.0"]
 build-backend = "hatchling.build"
 
 [project]
@@ -44,7 +44,7 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
-    "aiohttp>=3.14.1,<4.0",
+    "aiohttp>=3.14.3,<4.0",
     "typer>=0.12.5",
     "click>=8.1.7",
     "pydantic>=2.9.2,<3.0",
@@ -53,7 +53,7 @@ dependencies = [
     "injector>=0.20.1",
     "orjson>=3.9.0",
     "pyyaml>=6.0.2",
-    "cryptography>=48.0.1",
+    "cryptography>=50.0.0",
     "psutil>=6.0.0",
     "rapidfuzz>=3.0.0",
     "prompt_toolkit>=3.0.0",
@@ -63,6 +63,7 @@ dependencies = [
     "pluggy>=1.0.0",
     "openai>=1.0.0",
     "requests>=2.30.0",
+    "defusedxml>=0.7.1,<1.0",
 ]
 
 [project.urls]
@@ -87,7 +88,9 @@ env = [
 ]
 
 dev = [
+    "bijux-canon-reason>=0.4.0,<0.5.0",
     "types-PyYAML>=6.0.12,<7.0",
+    "types-defusedxml>=0.7.0,<1.0",
     "types-orjson>=3.6.0,<4.0",
     "types-colorama>=0.0.14,<1.0",
     "types-psutil>=6.0.0,<8.0",
@@ -138,7 +141,7 @@ dev = [
     "anyio>=4.4.0,<5.0",
     "uvicorn>=0.30.1,<1.0",
 
-    "twine>=6.1.0,<7.0",
+    "twine>=6.1.0,<8.0",
 
 ]
 
@@ -148,9 +151,13 @@ doc = [
     "myst-parser>=3.0.0,<6.0.0"
 ]
 extra = [
-    "python-docx>=1.1.0,<2.0.0",  # For DOCX support
-    "lxml>=5.3.0,<7.0.0",         # For XML support
-    "openpyxl>=3.1.0,<4.0.0"      # For Excel support (future)
+    "pandas>=2.0.3,<4.0",
+    "pypdf>=6.15.0,<7.0",
+    "pdfminer.six>=20221105,<20260108",
+    "pytesseract>=0.3.10,<0.4",
+    "python-docx>=1.1.0,<2.0.0",
+    "PyMuPDF>=1.23.0,<2.0",
+    "Pillow>=10.0,<13.0",
 ]
 profiling = [
     "memory-profiler>=0.61.0,<0.62.0",
@@ -159,11 +166,12 @@ profiling = [
 
 document_readers = [
     "pandas>=2.0.3,<4.0",
-    "pypdf>=6.0.0,<7.0",
+    "pypdf>=6.15.0,<7.0",
     "pdfminer.six>=20221105,<20260108",
     "pytesseract>=0.3.10,<0.4",
     "python-docx>=1.1.0,<2.0.0",
     "PyMuPDF>=1.23.0,<2.0",
+    "Pillow>=10.0,<13.0",
 ]
 
 [project.scripts]
@@ -176,7 +184,7 @@ allow-direct-references = true
 source = "vcs"
 tag-pattern = "^v(?P<version>.*)$"
 raw-options = { git_describe_command = "git describe --dirty --tags --long --match 'v*'", local_scheme = "dirty-tag", version_scheme = "guess-next-dev", root = "../..", search_parent_directories = true }
-fallback-version = "0.3.9"
+fallback-version = "0.4.0"
 
 [tool.pytest.ini_options]
 markers = [
@@ -203,7 +211,6 @@ include = [
     "CHANGELOG.md",
     "src/bijux_canon_agent/**",
 ]
-force-include = { "LICENSE" = "LICENSE", "NOTICE" = "NOTICE" }
 
 [tool.mypy-core]
 config-file = "../../configs/mypy.ini"

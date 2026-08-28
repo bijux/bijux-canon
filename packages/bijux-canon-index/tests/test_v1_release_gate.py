@@ -26,7 +26,7 @@ from tests.e2e.cli_workflows.test_cli_contract_freeze import (
 )
 
 
-def test_v1_release_gate():
+def test_v1_release_gate() -> None:
     assert CANON_VERSION == "v1"
     assert {"l2", "cosine", "dot"} == ALLOWED_METRICS
     art = ExecutionArtifact(

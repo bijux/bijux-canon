@@ -80,7 +80,7 @@ class SentenceTransformersEmbedder:
 
     @property
     def spec(self) -> EmbeddingSpec:
-        # Dim is resolved lazily from the model, but we still expose a placeholder.
+        # Dimension is resolved lazily; this provisional value is never persisted.
         # The index builder will overwrite with the true dim after first encode.
         return EmbeddingSpec(
             model=f"sbert:{self.model_name}",

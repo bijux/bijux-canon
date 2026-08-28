@@ -3,6 +3,11 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from pathlib import Path
 
+from bijux_canon_agent_trace_support import (
+    build_replay_metadata,
+    build_run_fingerprint,
+    default_model_metadata,
+)
 import pytest
 
 from bijux_canon_agent.agents import JudgeAgent, PlannerAgent, VerifierAgent
@@ -13,11 +18,6 @@ from bijux_canon_agent.llm.registry import Provider
 from bijux_canon_agent.observability.logging import LoggerConfig, LoggerManager
 from bijux_canon_agent.pipeline.control.lifecycle import PipelineLifecycle
 from bijux_canon_agent.traces import TraceEntry, TraceRecorder
-from tests.utils.trace_helpers import (
-    build_replay_metadata,
-    build_run_fingerprint,
-    default_model_metadata,
-)
 
 
 @pytest.mark.asyncio
@@ -34,7 +34,42 @@ async def test_end_to_end_minimal_run(tmp_path: Path) -> None:
         model_metadata=default_model_metadata(),
     )
 
-    context = {"task_goal": "summarize policy", "context_id": "run-1", "payload": {}}
+    context = {
+        "task_goal": "summarize policy",
+        "context_id": "run-1",
+        "payload": {
+            "planning_input": {
+                "query": "summarize policy",
+                "corpus_generation": "corpus:policy:1",
+                "index_generation": "index:policy:lexical:1",
+                "scope": ["policy:document"],
+                "top_k": 2,
+                "retrieval_mode": "lexical",
+                "constraints": {"require_exact_citations": True},
+                "provider_profile": {
+                    "provider": "mock",
+                    "model": "mock-model",
+                    "immutable_revision": "test",
+                    "temperature": 0.0,
+                    "seed": 17,
+                },
+                "budget": {
+                    "iterations": 2,
+                    "retrievals": 1,
+                    "documents": 2,
+                    "candidates": 4,
+                    "evidence_items": 2,
+                    "tool_calls": 1,
+                    "provider_calls": 2,
+                    "tokens": 512,
+                    "elapsed_ms": 30000,
+                    "retries": 0,
+                    "memory_bytes": 65536,
+                    "artifact_bytes": 65536,
+                },
+            }
+        },
+    }
     plan_result = await planner.run(context)
     # deterministic plan check
     second_result = await planner.run(context)

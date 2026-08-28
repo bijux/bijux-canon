@@ -19,17 +19,17 @@
 [![bijux-rar](https://img.shields.io/pypi/v/bijux-rar?label=bijux--rar&logo=pypi)](https://pypi.org/project/bijux-rar/)
 [![bijux-vex](https://img.shields.io/pypi/v/bijux-vex?label=bijux--vex&logo=pypi)](https://pypi.org/project/bijux-vex/)
 
-[![bijux-canon-agent](https://img.shields.io/badge/agent-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon-agent)
-[![bijux-canon-runtime](https://img.shields.io/badge/runtime-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon-runtime)
-[![bijux-canon](https://img.shields.io/badge/bijux--canon-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon)
-[![bijux-canon-ingest](https://img.shields.io/badge/ingest-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon-ingest)
-[![bijux-canon-reason](https://img.shields.io/badge/reason-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon-reason)
-[![bijux-canon-index](https://img.shields.io/badge/index-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon-index)
-[![agentic-flows](https://img.shields.io/badge/agentic--flows-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fagentic-flows)
-[![bijux-agent](https://img.shields.io/badge/bijux--agent-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-agent)
-[![bijux-rag](https://img.shields.io/badge/bijux--rag-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-rag)
-[![bijux-rar](https://img.shields.io/badge/bijux--rar-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-rar)
-[![bijux-vex](https://img.shields.io/badge/bijux--vex-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-vex)
+[![bijux-canon-agent OCI release bundle](https://img.shields.io/badge/agent-oci%20bundle-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon-agent)
+[![bijux-canon-runtime OCI release bundle](https://img.shields.io/badge/runtime-oci%20bundle-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon-runtime)
+[![bijux-canon OCI release bundle](https://img.shields.io/badge/bijux--canon-oci%20bundle-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon)
+[![bijux-canon-ingest OCI release bundle](https://img.shields.io/badge/ingest-oci%20bundle-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon-ingest)
+[![bijux-canon-reason OCI release bundle](https://img.shields.io/badge/reason-oci%20bundle-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon-reason)
+[![bijux-canon-index OCI release bundle](https://img.shields.io/badge/index-oci%20bundle-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon-index)
+[![agentic-flows OCI release bundle](https://img.shields.io/badge/agentic--flows-oci%20bundle-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fagentic-flows)
+[![bijux-agent OCI release bundle](https://img.shields.io/badge/bijux--agent-oci%20bundle-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-agent)
+[![bijux-rag OCI release bundle](https://img.shields.io/badge/bijux--rag-oci%20bundle-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-rag)
+[![bijux-rar OCI release bundle](https://img.shields.io/badge/bijux--rar-oci%20bundle-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-rar)
+[![bijux-vex OCI release bundle](https://img.shields.io/badge/bijux--vex-oci%20bundle-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-vex)
 
 [![bijux-canon-agent docs](https://img.shields.io/badge/docs-agent-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/05-bijux-canon-agent/)
 [![bijux-canon-runtime docs](https://img.shields.io/badge/docs-runtime-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/06-bijux-canon-runtime/)
@@ -89,11 +89,11 @@ bijux-canon-agent run report.txt \
 bijux-canon-agent replay <trace.json>
 ```
 
-The current entrypoint loads the environment and requires
-`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `HUGGINGFACE_API_KEY`, and
-`DEEPSEEK_API_KEY` **before** it parses the command. This means help, dry-run,
-and replay also require those four variables today. That behavior is a known
-operational constraint; it does not mean each run contacts all four providers.
+Help, replay, dry-run, and local execution do not require provider credentials.
+Remote adapters resolve only the selected provider's credential when a request
+is executed. Keep credentials in the provider's environment variable rather
+than serializable configuration; missing credentials fail the selected request
+without exposing the variable name or secret value.
 
 ## HTTP Contract
 
@@ -126,6 +126,13 @@ prove that convergence produced a correct artifact.
 Treat the base package as the canonical orchestration surface. CLI, HTTP,
 provider, and template integrations are package-owned extensions that must stay
 subordinate to the trace and workflow contract, not the other way around.
+
+Install `bijux-canon-agent[document_readers]` to enable the optional CSV, PDF,
+OCR, image, and DOCX readers. The extra installs pandas, pypdf, pdfminer.six,
+pytesseract, PyMuPDF, Pillow, and python-docx; the operating system must also
+provide the Tesseract executable for OCR. `bijux-canon-agent[extra]` is retained
+as a compatibility alias for that same dependency set. Neither extra advertises
+Excel support.
 
 The package root deliberately exports only `API_VERSION`. It is not a facade
 for pipeline classes, provider clients, or role implementations. Integrate
@@ -164,33 +171,76 @@ Provider adapters remain edge integrations. Their presence does not authorize
 a provider, broaden the v1 HTTP contract, or transfer provider nondeterminism
 into the deterministic orchestration core.
 
+Installed retrieval and reasoning run through Agent's typed, default-deny
+research-tool registry. A registered tool binds versioned schemas, capability,
+implementation, scope, cost, timeout/cancellation, and replay policy. Durable
+Agent state retains request/result identities and fixed safe summaries without
+serializing source content, provider output, credentials, or exception text.
+Every declared research plan bounds iterations, retrievals, distinct documents,
+candidates, evidence items, tool/provider calls, tokens, elapsed time, retries,
+peak memory, and persisted artifact bytes. Agent records a non-consuming maximum
+reservation before each external retrieval or reasoning call, admits only the
+measured result charge, and refuses the call when its envelope cannot fit. A
+cooperative cancellation observed during an in-flight call closes that call as
+cancelled, prevents later calls, and remains distinct from tool failure.
+
 ## Runtime Agent Adapter Status
 
-The live runtime integration currently asks the `bijux_canon_agent` package
-root for a `run` callable accepting an agent identifier, deterministic seed,
-input fingerprint, declared output types, and retrieved evidence. It expects a
-list of dictionaries containing `artifact_id`, `artifact_type`, and `content`,
-with optional parent-artifact identifiers.
+The installed runtime integration delegates research progression to
+`InstalledResearchService` from `bijux_canon_agent.application`. Agent decides
+whether observed evidence gaps and a counterevidence plan justify search,
+records the ordered causal events, and applies the supplied convergence
+decision. Its content-addressed state retains the question, answer
+requirements, claims, semantic evidence relations, blocking and non-blocking
+gaps, search budget, and every decision. Runtime provides a
+typed port that adapts persistent Index retrieval and Reason planning and
+convergence; it then projects the Agent result into the versioned runtime
+artifact without inventing role history.
 
-The package root deliberately exports only `API_VERSION`; it does not export
-`run`. The package-native execution surface accepts a validated pipeline
-definition, configuration, and workflow inputs, and preserves the outcome as a
-`PipelineResult` with a `RunTrace`. Installing agent beside runtime therefore
-does not make this live adapter callable.
+This installed service is credential-free and Runtime-neutral. It imports no
+Ingest, Index, Reason, or Runtime implementation. Its port records retain the
+exact plan, retrieval, candidate-evidence, policy, and convergence artifact
+identities needed by Runtime persistence. A material candidate remains
+explicitly unresolved until Reason classifies its exact text against the
+current requirement and claim. Agent retains supporting, opposing, limiting,
+irrelevant, ambiguous, or unclassified relations in observed state; retrieval
+query intent alone is never interpreted as opposition. Resolved search needs
+can close, while material opposition, limitations, ambiguity, or missing
+classification remain blocking inputs to answer revision.
+After classified evidence is available, Agent explicitly invokes the Reason
+revision port before convergence. The returned artifact names every resolved
+and unresolved classification, the prior and revised claim identities, and the
+before/after answer. Agent removes opposition or limitation gaps only when that
+artifact re-ran support, exact-citation, and abstention verification. Material
+opposition or limitation with unchanged answer text is rejected as an invalid
+revision; unresolved ambiguity withdraws the answer and remains blocking.
+Different observations produce different role paths: already-sufficient
+evidence can skip search, no-result searches remain bounded negative evidence,
+and opposition, ambiguity, refusal, tool failure, or unclassified material
+evidence keep the run incomplete. A convergence flag cannot override a
+blocking evidence gap.
 
-The durable adapter belongs at the runtime integration boundary. It must
-define how a runtime agent invocation selects a pipeline, how runtime evidence
-becomes traceable workflow input, and how pipeline results, failure artifacts,
-trace identity, content serialization, and parent relationships become
-runtime artifacts. A broad package-root shortcut that returns untyped content
-would bypass those decisions; runtime currently derives content hashes from
-`str(content)`, so canonical serialization must also be explicit.
+Convergence is a terminal semantic decision, not a fixed-loop success signal.
+Reason receives the accumulated search novelty, requirement coverage,
+classification completeness, revised-answer verification, conflict count, and
+remaining uncertainty. Agent then keeps `converged`, justified `abstained`,
+`incomplete_budget`, `cancelled`, and `failed` disjoint. If research changes an
+initially abstained answer into a verified answer, the revision disposition
+replaces that stale initial admission; if the revision abstains, completion is
+forbidden.
 
-Live composition requires an installed-package test that resolves the adapter,
-executes it with representative evidence, validates the runtime artifact
-projection, and binds every projected artifact to its agent trace. The agent
-CLI, HTTP, and Python pipeline remain package-local supported surfaces in the
-meantime.
+The installed terminal record uses disjoint `converged`, `abstained`,
+`incomplete_budget`, `cancelled`, and `failed` dispositions. An incomplete
+budget result names the exhausted dimensions plus every unsatisfied
+requirement, unresolved evidence item, blocking gap, and important unsearched
+claim. Agent-owned budget and cancellation convergence records are separately
+versioned and content-addressed when policy forbids another Reason call.
+Reaching a call limit is therefore not represented as completion.
+
+The existing CLI, HTTP, and Python pipeline remain package-local supported
+surfaces. The package root still exports only `API_VERSION`; installed
+composition uses the explicit application facade rather than an untyped root
+`run` shortcut.
 
 ## Trace And Failure Guarantees
 

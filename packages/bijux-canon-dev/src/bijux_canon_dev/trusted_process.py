@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 import os
 from pathlib import Path
-import subprocess  # nosec B404
+import subprocess
 
 CommandArg = str | os.PathLike[str]
 
@@ -46,7 +46,7 @@ def run_text(
     """Run a trusted command and return its completed process record."""
     normalized = _normalize_command(command)
     try:
-        return subprocess.run(  # nosec B603
+        return subprocess.run(
             normalized,
             cwd=cwd,
             check=check,

@@ -4,7 +4,7 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-runtime-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-08-25
 ---
 
 # Deployment Boundaries
@@ -28,7 +28,7 @@ flowchart TB
     end
 
     subgraph package["bijux-canon-runtime"]
-        interface["Python and CLI execution"]
+        interface["Python, CLI, and HTTP v2 execution"]
         authority["manifest, mode, budget, and policy gates"]
         execute["lower-layer executors"]
         verify["verification and arbitration"]
@@ -50,11 +50,13 @@ flowchart TB
 | --- | --- | --- |
 | Embedded Python | Full composition, including observe and explicit unsafe mode | The host supplies stores, policy, executors, observers, budgets, and lifecycle |
 | Canonical CLI | Run, replay, inspect, and supporting validation workflows | Commands use an explicit manifest, policy, tenant/run identity, and database path |
-| HTTP v1 | Health and readiness probes | Run and replay endpoints validate their envelope then return `501`; headers are contract declarations, not credentials |
+| HTTP v2 | Local application-service operations through one initialized workspace | Durable jobs and bounded reads; the deployment must supply authentication, authorization, TLS, isolation, and single-writer routing |
+| HTTP v1 compatibility module | Health and readiness probes | Run and replay endpoints validate their envelope then return `501`; headers are contract declarations, not credentials |
 
-The HTTP application is not a remote execution service. Its readiness check
-only opens the configured DuckDB path; it does not establish dataset,
-integration, policy, artifact-store, or lower-package readiness.
+The v2 server is an executable local service, not a deployment control plane.
+Its capability-aware readiness report establishes configured requirements for
+the selected operation and profile; it does not authenticate callers, sandbox
+tools, authorize tenants, or prove that a future workflow will succeed.
 
 ## Single-writer persistence
 

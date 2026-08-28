@@ -9,7 +9,7 @@ from typing import ClassVar
 from pydantic import BaseModel, ConfigDict
 
 
-class StrictModel(BaseModel):  # type: ignore[misc]
+class StrictModel(BaseModel):
     """Represents strict model."""
 
     model_config: ClassVar[ConfigDict] = ConfigDict(extra="forbid")

@@ -7,7 +7,7 @@ from __future__ import annotations
 from bijux_canon_index.infra.adapters.memory.backend import memory_backend
 
 
-def test_audit_compaction_retains_tail():
+def test_audit_compaction_retains_tail() -> None:
     backend = memory_backend()
     state = backend.stores.vectors._state  # type: ignore[attr-defined]
     # simulate audit records

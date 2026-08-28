@@ -14,6 +14,7 @@ from logging import (
 )
 from pathlib import Path
 from typing import Any
+from weakref import WeakSet
 
 from bijux_canon_agent.observability.log_handlers import (
     LoggerConfig,
@@ -32,6 +33,8 @@ __all__ = [
     "LoggerSettings",
     "MetricType",
 ]
+
+_configured_loggers: WeakSet[Logger] = WeakSet()
 
 
 class CustomLogger:
@@ -112,7 +115,7 @@ class LoggerManager:
     def _configure_logger(self) -> Logger:
         """Configure a standard logger with handlers and settings."""
         logger = logging.getLogger(self.name)
-        if getattr(logger, "_is_configured", False):
+        if logger in _configured_loggers:
             return logger
 
         logger.setLevel(getLevelName(self.config.log_level))
@@ -128,7 +131,7 @@ class LoggerManager:
             self._async_handlers.append(console_handler)
 
         logger.propagate = False
-        logger._is_configured = True
+        _configured_loggers.add(logger)
         return logger
 
     @contextmanager

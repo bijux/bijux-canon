@@ -10,7 +10,6 @@ from __future__ import annotations
 from contextlib import suppress
 from datetime import UTC, datetime
 import json
-import os
 from pathlib import Path
 from uuid import uuid4
 
@@ -35,7 +34,10 @@ from bijux_canon_runtime.model.identifiers.execution_event import ExecutionEvent
 from bijux_canon_runtime.model.identifiers.tool_invocation import ToolInvocation
 from bijux_canon_runtime.observability.storage import schema_contracts
 from bijux_canon_runtime.observability.storage.execution_store_lock import (
-    acquire_execution_store_lock,
+    ExecutionStoreLease,
+    ExecutionStoreLockTimeout,
+    ExecutionStoreLockUpgradeError,
+    acquire_execution_store_lease,
 )
 from bijux_canon_runtime.observability.storage.execution_store_protocol import (
     ExecutionReadStoreProtocol,
@@ -82,7 +84,7 @@ from bijux_canon_runtime.ontology.public import (
     ReplayMode,
 )
 
-SCHEMA_VERSION = 3
+SCHEMA_VERSION = 7
 DEFAULT_MIGRATIONS_DIR = default_migrations_dir()
 DEFAULT_SCHEMA_CONTRACT_PATH = default_schema_contract_path()
 DEFAULT_SCHEMA_HASH_PATH = default_schema_hash_path()
@@ -91,35 +93,87 @@ SCHEMA_CONTRACT_PATH = DEFAULT_SCHEMA_CONTRACT_PATH
 SCHEMA_HASH_PATH = DEFAULT_SCHEMA_HASH_PATH
 
 
-def _acquire_lock(path: Path) -> int:
+def _acquire_lock(
+    path: Path,
+    *,
+    read_only: bool,
+    timeout_seconds: float,
+) -> ExecutionStoreLease:
     """Internal helper; not part of the public API."""
-    return acquire_execution_store_lock(path)
+    return acquire_execution_store_lease(
+        path,
+        exclusive=not read_only,
+        timeout_seconds=timeout_seconds,
+    )
 
 
-# Single-writer assumption; no concurrent mutation guarantees are provided.
-# This store is for audit and replay only, not transactional execution.
 class DuckDBExecutionStore:
     """Persists runs, steps, events, artifact, evidence, entropy usage, tool invocations, claim ids, dataset metadata, and replay envelopes; intentionally excludes in-memory execution state, transient executor caches, and any non-persisted runtime objects."""
 
-    def __init__(self, path: Path) -> None:
+    def __init__(
+        self,
+        path: Path,
+        *,
+        read_only: bool = False,
+        lock_timeout_seconds: float = 5.0,
+    ) -> None:
         """Internal helper; not part of the public API."""
+        if read_only and not path.is_file():
+            raise FileNotFoundError(f"Runtime execution store is absent: {path}")
         self._lock_path = path.with_suffix(f"{path.suffix}.lock")
-        self._lock_fd: int | None = _acquire_lock(self._lock_path)
-        self._connection = duckdb.connect(str(path))
-        self._migrate()
+        if read_only and not self._lock_path.is_file():
+            raise FileNotFoundError(
+                f"Runtime execution store lock is absent: {self._lock_path}"
+            )
+        lease_read_only = read_only
+        self._lease: ExecutionStoreLease | None = _acquire_lock(
+            self._lock_path,
+            read_only=lease_read_only,
+            timeout_seconds=lock_timeout_seconds,
+        )
+        effective_read_only = lease_read_only and not self._lease.exclusive
+        try:
+            self._connection = duckdb.connect(
+                str(path),
+                read_only=effective_read_only,
+            )
+            if not effective_read_only:
+                self._migrate()
+        except Exception:
+            self._lease.release()
+            self._lease = None
+            raise
 
     def close(self) -> None:
         """Internal helper; not part of the public API."""
         with suppress(Exception):
             self._connection.close()
-        lock_fd = getattr(self, "_lock_fd", None)
-        if lock_fd is None:
+        lease = getattr(self, "_lease", None)
+        if lease is None:
             return
         with suppress(Exception):
-            os.close(lock_fd)
-        with suppress(Exception):
-            self._lock_path.unlink()
-        self._lock_fd = None
+            lease.release()
+        self._lease = None
+
+    def validate_schema(self) -> None:
+        """Validate the complete migration and schema contract without mutation."""
+        migrations = self._load_migrations()
+        expected = {
+            version: schema_contracts.hash_payload(statement)
+            for version, statement in migrations.items()
+        }
+        try:
+            applied = {
+                int(row[0]): str(row[1])
+                for row in self._connection.execute(
+                    "SELECT version, checksum FROM schema_migrations"
+                ).fetchall()
+            }
+        except Exception as exc:
+            raise RuntimeError("Schema migrations are unreadable.") from exc
+        if applied != expected:
+            raise RuntimeError("Schema migrations are out of sync with code.")
+        self._assert_schema_contract(max(migrations.keys(), default=0))
 
     def __del__(self) -> None:
         """Internal helper; not part of the public API."""
@@ -1247,7 +1301,7 @@ class DuckDBExecutionStore:
             )
         if not applied and self._can_bootstrap_latest_schema():
             self._bootstrap_latest_schema(migrations)
-            self._assert_schema_contract(latest_version)
+            self.validate_schema()
             return
         for version, statement in migrations.items():
             checksum = schema_contracts.hash_payload(statement)
@@ -1271,15 +1325,7 @@ class DuckDBExecutionStore:
             except Exception:
                 self._connection.execute("ROLLBACK")
                 raise
-        final_versions = {
-            int(row[0])
-            for row in self._connection.execute(
-                "SELECT version FROM schema_migrations"
-            ).fetchall()
-        }
-        if final_versions != set(migrations.keys()):
-            raise RuntimeError("Schema migrations are out of sync with code.")
-        self._assert_schema_contract(latest_version)
+        self.validate_schema()
 
     def _can_bootstrap_latest_schema(self) -> bool:
         """Return whether a fresh database can safely use the canonical schema."""
@@ -1351,6 +1397,22 @@ class DuckDBExecutionStore:
             self._connection.commit()
             return
         stored_version, stored_hash = int(row[0]), row[1]
+        if stored_version < latest_version:
+            self._connection.execute(
+                """
+                UPDATE schema_contract
+                SET schema_version = ?, schema_hash = ?, applied_at = ?
+                WHERE schema_version = ?
+                """,
+                (
+                    latest_version,
+                    contract_hash,
+                    datetime.now(tz=UTC).isoformat(),
+                    stored_version,
+                ),
+            )
+            self._connection.commit()
+            return
         if stored_version != latest_version:
             raise RuntimeError(
                 "Database schema version does not match code contract version."
@@ -1382,11 +1444,18 @@ class DuckDBExecutionStore:
 class DuckDBExecutionWriteStore(ExecutionWriteStoreProtocol):
     """DuckDB write store; misuse breaks append-only guarantees."""
 
-    def __init__(self, path: Path) -> None:
+    def __init__(self, path: Path, *, lock_timeout_seconds: float = 5.0) -> None:
         """Internal helper; not part of the public API."""
         self.path = path
-        self._store = DuckDBExecutionStore(path)
+        self._store = DuckDBExecutionStore(
+            path,
+            lock_timeout_seconds=lock_timeout_seconds,
+        )
         self._connection = self._store._connection
+
+    def close(self) -> None:
+        """Release the database connection and its writer lease."""
+        self._store.close()
 
     def begin_run(self, *, plan: ExecutionSteps, mode: RunMode) -> RunID:
         """Execute begin_run and enforce its contract."""
@@ -1503,10 +1572,18 @@ class DuckDBExecutionWriteStore(ExecutionWriteStoreProtocol):
 class DuckDBExecutionReadStore(ExecutionReadStoreProtocol):
     """DuckDB read store; misuse breaks replay analysis."""
 
-    def __init__(self, path: Path) -> None:
+    def __init__(self, path: Path, *, lock_timeout_seconds: float = 5.0) -> None:
         """Internal helper; not part of the public API."""
-        self._store = DuckDBExecutionStore(path)
+        self._store = DuckDBExecutionStore(
+            path,
+            read_only=True,
+            lock_timeout_seconds=lock_timeout_seconds,
+        )
         self._connection = self._store._connection
+
+    def close(self) -> None:
+        """Release the database connection and its reader lease."""
+        self._store.close()
 
     def load_trace(self, run_id: RunID, *, tenant_id: TenantID) -> ExecutionTrace:
         """Execute load_trace and enforce its contract."""
@@ -1571,6 +1648,8 @@ __all__ = [
     "DuckDBExecutionReadStore",
     "DuckDBExecutionStore",
     "DuckDBExecutionWriteStore",
+    "ExecutionStoreLockTimeout",
+    "ExecutionStoreLockUpgradeError",
     "SCHEMA_CONTRACT_PATH",
     "SCHEMA_VERSION",
 ]

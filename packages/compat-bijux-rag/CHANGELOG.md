@@ -8,6 +8,19 @@ name while the canonical package lives at `bijux-canon-ingest`.
 Historical release entries below preserve the wording that shipped with tagged
 releases when a tagged changelog existed.
 
+## [0.4.0] - Unreleased
+
+### Changed
+
+- Bound the installed `bijux-rag` bridge to the exact
+  `bijux-canon-ingest` release and retained its documented delegation contract
+  and legal distribution files.
+
+### Deprecated
+
+- The distribution, `bijux_rag` import, and `bijux-rag` command are deprecated
+  in favor of `bijux-canon-ingest`; removal will not occur before 1.0.0.
+
 ## 0.3.9 - 2026-07-04
 
 ### Changed
