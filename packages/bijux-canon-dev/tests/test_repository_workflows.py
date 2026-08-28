@@ -151,20 +151,29 @@ def test_verify_workflow_uses_repo_contract_job_and_package_matrix() -> None:
         "3.13",
         "3.14",
     ]
-    supported_command = next(
-        step["run"]
-        for step in supported_python["steps"]
-        if step.get("name") == "Test every canonical and compatibility distribution"
-    )
-    for package in (
+    assert supported_matrix["package_slug"] == [
+        "bijux-canon-dev",
+        "bijux-canon-runtime",
+        "bijux-canon-agent",
+        "bijux-canon-ingest",
+        "bijux-canon-reason",
+        "bijux-canon-index",
         "compat-bijux-canon",
         "compat-agentic-flows",
         "compat-bijux-agent",
         "compat-bijux-rag",
         "compat-bijux-rar",
         "compat-bijux-vex",
-    ):
-        assert package in supported_command
+    ]
+    assert _as_dict(supported_python["strategy"])["max-parallel"] == 12
+    assert supported_python["timeout-minutes"] == 30
+    supported_command = next(
+        step["run"]
+        for step in supported_python["steps"]
+        if step.get("name") == "Test one supported package distribution"
+    )
+    assert 'PACKAGE="${{ matrix.package_slug }}" test' in supported_command
+    assert "for package in" not in supported_command
 
     installed_family = _as_dict(jobs.get("installed_family"))
     installed_command = next(

@@ -1058,13 +1058,28 @@
               }
             },
             "supported_python": {
-              "name": "all-packages-py${{ matrix.python-version }}",
+              "name": "${{ matrix.package_slug }}-py${{ matrix.python-version }}",
               "needs": "repository",
               "runs-on": "ubuntu-latest",
-              "timeout-minutes": 45,
+              "timeout-minutes": 30,
               "strategy": {
                 "fail-fast": false,
+                "max-parallel": 12,
                 "matrix": {
+                  "package_slug": [
+                    "bijux-canon-dev",
+                    "bijux-canon-runtime",
+                    "bijux-canon-agent",
+                    "bijux-canon-ingest",
+                    "bijux-canon-reason",
+                    "bijux-canon-index",
+                    "compat-bijux-canon",
+                    "compat-agentic-flows",
+                    "compat-bijux-agent",
+                    "compat-bijux-rag",
+                    "compat-bijux-rar",
+                    "compat-bijux-vex"
+                  ],
                   "python-version": [
                     "3.11",
                     "3.12",
@@ -1091,17 +1106,17 @@
                   }
                 },
                 {
-                  "name": "Test every canonical and compatibility distribution",
+                  "name": "Test one supported package distribution",
                   "shell": "bash",
-                  "run": "set -euo pipefail\nexport PYTHONDONTWRITEBYTECODE=1\nexport UV_CACHE_DIR=\"${GITHUB_WORKSPACE}/artifacts/root/uv-cache\"\nselected_python=\"$(command -v python)\"\nmake PYTHON=\"${selected_python}\" test\nfor package in \\\n  compat-bijux-canon \\\n  compat-agentic-flows \\\n  compat-bijux-agent \\\n  compat-bijux-rag \\\n  compat-bijux-rar \\\n  compat-bijux-vex; do\n  make PYTHON=\"${selected_python}\" PACKAGE=\"${package}\" test\ndone\n"
+                  "run": "set -euo pipefail\nexport PYTHONDONTWRITEBYTECODE=1\nselected_python=\"$(command -v python)\"\nmake PYTHON=\"${selected_python}\" PACKAGE=\"${{ matrix.package_slug }}\" test\n"
                 },
                 {
                   "name": "Upload package test artifacts",
                   "if": "${{ always() }}",
                   "uses": "actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a",
                   "with": {
-                    "name": "all-packages-test-py${{ matrix.python-version }}",
-                    "path": "artifacts/*/test",
+                    "name": "${{ matrix.package_slug }}-test-py${{ matrix.python-version }}",
+                    "path": "artifacts/${{ matrix.package_slug }}/test",
                     "if-no-files-found": "ignore",
                     "retention-days": 14
                   }
