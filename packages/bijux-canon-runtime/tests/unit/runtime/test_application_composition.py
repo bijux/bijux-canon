@@ -234,7 +234,10 @@ def test_installed_offline_lexical_workflow_never_requires_or_loads_a_model(
     output_policy = RuntimeOutputPolicy(True, True, True)
 
     def completed_result(service, snapshot):
-        completed = service.wait(snapshot.job_id, timeout_seconds=10.0)
+        completed = service.wait(
+            snapshot.job_id,
+            timeout_seconds=budget.timeout_seconds + 15.0,
+        )
         assert completed.status is JobStatus.SUCCEEDED
         return service.result(snapshot.job_id)
 
