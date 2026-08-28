@@ -210,7 +210,7 @@ jobs:
             wheel_dir="${family_dir}/wheels"
             venv_dir="${family_dir}/venv"
             uv build --all-packages --wheel --out-dir "${wheel_dir}"
-            test "$(find "${wheel_dir}" -maxdepth 1 -name '*.whl' | wc -l | tr -d ' ')" = 12
+            test "$(find "${wheel_dir}" -maxdepth 1 -name '*.whl' | wc -l | tr -d ' ')" = 13
             uv venv "${venv_dir}" --python "${{ matrix.python-version }}" --clear
             uv pip install --python "${venv_dir}/bin/python" "${wheel_dir}"/*.whl
             uv pip check --python "${venv_dir}/bin/python"
@@ -227,6 +227,7 @@ jobs:
                 "bijux-canon-index",
                 "bijux-canon-ingest",
                 "bijux-canon-reason",
+                "bijux-canon-repository",
                 "bijux-canon-runtime",
                 "bijux-rag",
                 "bijux-rar",
@@ -241,6 +242,7 @@ jobs:
                 "bijux_canon_index",
                 "bijux_canon_ingest",
                 "bijux_canon_reason",
+                "bijux_canon_repository",
                 "bijux_canon_runtime",
                 "bijux_rag",
                 "bijux_rar",
