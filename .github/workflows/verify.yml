@@ -242,7 +242,6 @@ jobs:
                 "bijux_canon_index",
                 "bijux_canon_ingest",
                 "bijux_canon_reason",
-                "bijux_canon_repository",
                 "bijux_canon_runtime",
                 "bijux_rag",
                 "bijux_rar",

@@ -174,7 +174,7 @@ def test_verify_workflow_uses_repo_contract_job_and_package_matrix() -> None:
     )
     assert '" = 13' in installed_command
     assert '"bijux-canon-repository"' in installed_command
-    assert '"bijux_canon_repository"' in installed_command
+    assert '"bijux_canon_repository"' not in installed_command
     assert "uv pip check" in installed_command
 
     verification_ready = _as_dict(jobs.get("verification_ready"))
