@@ -13,7 +13,7 @@
     "shell-quote": "^1.10.0"
   },
   "devDependencies": {
-    "@openapitools/openapi-generator-cli": "2.40.1",
-    "@redocly/cli": "2.46.1"
+    "@openapitools/openapi-generator-cli": "2.41.0",
+    "@redocly/cli": "2.47.0"
   }
 }
