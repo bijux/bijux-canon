@@ -107,8 +107,11 @@ def test_workflow_tree_is_standardized() -> None:
 def test_verify_workflow_uses_repo_contract_job_and_package_matrix() -> None:
     workflow = _workflow(WORKFLOWS_DIR / "verify.yml")
     jobs = workflow.get("jobs", {})
+    assert "policy_gate" not in jobs
     repository_job = _as_dict(jobs.get("repository"))
     package_job = _as_dict(jobs.get("package"))
+    assert "needs" not in repository_job
+    assert package_job["needs"] == "repository"
 
     checks_steps = repository_job.get("steps", [])
     verify_step = next(
@@ -142,6 +145,7 @@ def test_verify_workflow_uses_repo_contract_job_and_package_matrix() -> None:
     assert dev["check_targets"] == '["quality", "security", "build", "sbom"]'
 
     supported_python = _as_dict(jobs.get("supported_python"))
+    assert supported_python["needs"] == "repository"
     supported_matrix = _as_dict(
         _as_dict(supported_python.get("strategy")).get("matrix")
     )
@@ -176,6 +180,7 @@ def test_verify_workflow_uses_repo_contract_job_and_package_matrix() -> None:
     assert "for package in" not in supported_command
 
     installed_family = _as_dict(jobs.get("installed_family"))
+    assert installed_family["needs"] == "repository"
     installed_command = next(
         step["run"]
         for step in installed_family["steps"]
@@ -192,12 +197,21 @@ def test_verify_workflow_uses_repo_contract_job_and_package_matrix() -> None:
 
     verification_ready = _as_dict(jobs.get("verification_ready"))
     assert verification_ready["needs"] == [
-        "policy_gate",
         "repository",
         "package",
         "supported_python",
         "installed_family",
     ]
+
+
+def test_automerge_relies_on_protected_branch_checks_without_preflight_race() -> None:
+    workflow = _workflow(WORKFLOWS_DIR / "automerge-pr.yml")
+    jobs = _as_dict(workflow.get("jobs"))
+    workflow_text = (WORKFLOWS_DIR / "automerge-pr.yml").read_text(encoding="utf-8")
+
+    assert set(jobs) == {"enable"}
+    assert "needs" not in _as_dict(jobs["enable"])
+    assert "check_workflow_prerequisites.py" not in workflow_text
 
 
 def test_release_matrices_and_branch_protection_require_product_readiness() -> None:

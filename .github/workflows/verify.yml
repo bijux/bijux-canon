@@ -44,25 +44,10 @@ on:
       - main
 permissions:
   contents: read
-  actions: read
-  pull-requests: read
 concurrency:
   group: "verify-${{ github.ref }}"
   cancel-in-progress: true
 jobs:
-  policy_gate:
-    name: policy-prerequisites
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - name: "Observe policy and standards prerequisites once"
-        shell: bash
-        env:
-          GITHUB_TOKEN: "${{ github.token }}"
-        run:
-          |
-            set -euo pipefail
-            python3 .github/scripts/check_workflow_prerequisites.py
   repository:
     name: repository-contracts
     runs-on: ubuntu-latest
@@ -79,12 +64,9 @@ jobs:
       - name: "Verify repository automation contracts"
         shell: bash
         run: "set -euo pipefail; make check-shared-bijux-py check-config-layout check-make-layout help "
-    needs: policy_gate
   package:
     name: "${{ matrix.package_slug }}"
-    needs:
-      - policy_gate
-      - repository
+    needs: repository
     strategy:
       fail-fast: false
       matrix:
@@ -122,9 +104,7 @@ jobs:
       post_test_command: "${{ matrix.post_test_command || '' }}"
   supported_python:
     name: "${{ matrix.package_slug }}-py${{ matrix.python-version }}"
-    needs:
-      - policy_gate
-      - repository
+    needs: repository
     runs-on: ubuntu-latest
     timeout-minutes: 30
     strategy:
@@ -177,9 +157,7 @@ jobs:
           retention-days: 14
   installed_family:
     name: "installed-family-${{ matrix.runner }}-py${{ matrix.python-version }}"
-    needs:
-      - policy_gate
-      - repository
+    needs: repository
     runs-on: "${{ matrix.runner }}"
     timeout-minutes: 30
     strategy:
@@ -270,7 +248,6 @@ jobs:
     name: verification-ready
     if: "${{ always() }}"
     needs:
-      - policy_gate
       - repository
       - package
       - supported_python
