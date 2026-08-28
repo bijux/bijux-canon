@@ -205,7 +205,7 @@ jobs:
           |
             set -euo pipefail
             export PYTHONDONTWRITEBYTECODE=1
-            export UV_CACHE_DIR="${GITHUB_WORKSPACE}/artifacts/root/uv-cache"
+            export UV_CACHE_DIR="${RUNNER_TEMP}/bijux-installed-family-uv-cache"
             family_dir="artifacts/installed-family/${RUNNER_OS}/py${{ matrix.python-version }}"
             wheel_dir="${family_dir}/wheels"
             venv_dir="${family_dir}/venv"

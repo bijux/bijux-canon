@@ -172,6 +172,10 @@ def test_verify_workflow_uses_repo_contract_job_and_package_matrix() -> None:
         for step in installed_family["steps"]
         if step.get("name") == "Build and install the distribution family"
     )
+    assert (
+        'UV_CACHE_DIR="${RUNNER_TEMP}/bijux-installed-family-uv-cache"'
+        in installed_command
+    )
     assert '" = 13' in installed_command
     assert '"bijux-canon-repository"' in installed_command
     assert '"bijux_canon_repository"' not in installed_command
