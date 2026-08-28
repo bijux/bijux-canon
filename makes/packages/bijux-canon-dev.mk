@@ -12,6 +12,16 @@ QUALITY_MYPY_CONFIG = $(MONOREPO_ROOT)/configs/mypy.ini
 TEST_MAIN_ARGS := -m "not slow"
 TEST_COVERAGE_TARGETS := $(abspath tests)
 TEST_COVERAGE_FAIL_UNDER := 40
+SEMVER_BASELINE_REF := v0.3.9
+TEST_PRE_TARGETS := bootstrap semver-baseline
+
+.PHONY: semver-baseline
+semver-baseline:
+	@if ! git -C "$(MONOREPO_ROOT)" rev-parse --verify "$(SEMVER_BASELINE_REF)^{commit}" >/dev/null 2>&1; then \
+	  echo "→ Fetching semver baseline $(SEMVER_BASELINE_REF)"; \
+	  git -C "$(MONOREPO_ROOT)" fetch --no-tags --depth=1 origin \
+	    "refs/tags/$(SEMVER_BASELINE_REF):refs/tags/$(SEMVER_BASELINE_REF)"; \
+	fi
 
 test-all: TEST_MAIN_ARGS =
 test-all: PYTEST_ADDOPTS_EXTRA = -o timeout=0

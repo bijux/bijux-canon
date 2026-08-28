@@ -5,6 +5,18 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[3]
 
 
+def test_dev_tests_materialize_the_declared_semver_baseline() -> None:
+    profile = (REPO_ROOT / "makes" / "packages" / "bijux-canon-dev.mk").read_text(
+        encoding="utf-8"
+    )
+
+    assert "SEMVER_BASELINE_REF := v0.3.9" in profile
+    assert "TEST_PRE_TARGETS := bootstrap semver-baseline" in profile
+    assert (
+        '"refs/tags/$(SEMVER_BASELINE_REF):refs/tags/$(SEMVER_BASELINE_REF)"' in profile
+    )
+
+
 def test_ingest_security_subtargets_bootstrap_package_environment() -> None:
     profile = (REPO_ROOT / "makes" / "packages" / "bijux-canon-ingest.mk").read_text(
         encoding="utf-8"
@@ -30,6 +42,7 @@ def test_runtime_category_lanes_do_not_apply_unit_coverage_floors() -> None:
     )
 
     assert "test-e2e test-regression: PYTEST_ADDOPTS_EXTRA = --no-cov" in profile
+    assert "WORKSPACE_EDITABLE_EXTRAS := $${EXTRAS:-dev,local-cpu}" in profile
 
 
 def test_runtime_api_workspace_is_initialized_before_application_imports() -> None:
