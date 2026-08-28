@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from pathlib import Path
 import tomllib
+from pathlib import Path
 from typing import cast
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -106,6 +106,21 @@ def test_root_checks_preserve_the_locked_shared_environment() -> None:
     assert "PACKAGE_BOOTSTRAP_TARGETS=" in root_make
     assert "PACKAGE_INSTALL_TARGETS=" in root_make
     assert "LINT_PRE_TARGETS=" in root_make
+
+
+def test_standard_commands_consume_the_recorded_upstream_pin() -> None:
+    standard_make = (REPO_ROOT / "makes" / "bijux-std.mk").read_text(
+        encoding="utf-8"
+    )
+
+    assert (
+        "BIJUX_STD_PIN_FILE ?= $(PROJECT_DIR)/.github/standards/bijux-std.sha"
+        in standard_make
+    )
+    assert (
+        "BIJUX_STD_REF ?= $(shell tr -d '[:space:]' < \"$(BIJUX_STD_PIN_FILE)\")"
+        in standard_make
+    )
 
 
 def test_root_pytest_environment_keeps_generated_state_under_artifacts() -> None:
