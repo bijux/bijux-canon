@@ -20,6 +20,10 @@ templates below through generated badge sections.
 If a README surface needs package links outside the managed badge section, use
 plain markdown links instead of inline badge markdown.
 
+The named blocks below are Markdown source examples, including template
+placeholders. The badge renderer reads their marker-delimited contents; the
+source fences keep placeholders from becoming links on this catalog page.
+
 Generated badge sections always render in this order:
 
 1. surface summary badges
@@ -36,6 +40,7 @@ Link policy for OCI release-bundle badges is fixed here as part of the contract:
 
 ## Repository Summary
 
+```markdown
 <!-- bijux-canon-badges:repository-summary:start -->
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-3776AB?logo=python&logoColor=white)](https://pypi.org/project/bijux-canon-runtime/)
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-0F766E)](https://github.com/bijux/bijux-canon/blob/main/LICENSE)
@@ -48,9 +53,11 @@ Link policy for OCI release-bundle badges is fixed here as part of the contract:
 [![GHCR release bundles](https://img.shields.io/badge/ghcr-{{ public_package_count }}%20release%20bundles-181717?logo=github)](https://github.com/bijux?tab=packages&repo_name=bijux-canon)
 [![Published packages](https://img.shields.io/badge/published%20packages-{{ public_package_count }}-2563EB)](https://github.com/bijux/bijux-canon/tree/main/packages)
 <!-- bijux-canon-badges:repository-summary:end -->
+```
 
 ## Package Summary
 
+```markdown
 <!-- bijux-canon-badges:package-summary:start -->
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-3776AB?logo=python&logoColor=white)]({{ package_pypi_url }})
 [![Typing: typed](https://img.shields.io/badge/typing-typed%20(PEP%20561)-0A7BBB)]({{ package_pypi_url }})
@@ -58,21 +65,28 @@ Link policy for OCI release-bundle badges is fixed here as part of the contract:
 [![CI Status](https://github.com/bijux/bijux-canon/actions/workflows/verify.yml/badge.svg?branch=main)](https://github.com/bijux/bijux-canon/actions/workflows/verify.yml?query=branch%3Amain)
 [![GitHub Repository](https://img.shields.io/badge/github-bijux%2Fbijux--canon-181717?logo=github)](https://github.com/bijux/bijux-canon)
 <!-- bijux-canon-badges:package-summary:end -->
+```
 
 ## Family PyPI Badge
 
+```markdown
 <!-- bijux-canon-badges:family-pypi-badge:start -->
 [![{{ distribution_name }}](https://img.shields.io/pypi/v/{{ distribution_name }}?label={{ pypi_badge_label }}&logo=pypi)]({{ package_pypi_url }})
 <!-- bijux-canon-badges:family-pypi-badge:end -->
+```
 
 ## Family OCI Release-Bundle Badge
 
+```markdown
 <!-- bijux-canon-badges:family-ghcr-badge:start -->
 [![{{ distribution_name }} OCI release bundle](https://img.shields.io/badge/{{ pypi_badge_label }}-oci%20bundle-181717?logo=github)]({{ package_ghcr_url }})
 <!-- bijux-canon-badges:family-ghcr-badge:end -->
+```
 
 ## Family Docs Badge
 
+```markdown
 <!-- bijux-canon-badges:family-docs-badge:start -->
 [![{{ docs_badge_alt }}](https://img.shields.io/badge/docs-{{ docs_badge_label }}-2563EB?logo=materialformkdocs&logoColor=white)]({{ docs_url }})
 <!-- bijux-canon-badges:family-docs-badge:end -->
+```
