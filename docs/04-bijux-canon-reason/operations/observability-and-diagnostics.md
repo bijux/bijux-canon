@@ -59,8 +59,8 @@ typed events. Read events in index order and maintain these links:
 
 ```mermaid
 flowchart LR
-    start[step_started] --> call[tool_called]
-    call --> returned[tool_returned]
+    start[step_started] --> role_call[tool_called]
+    role_call --> returned[tool_returned]
     returned --> evidence[evidence_registered]
     evidence --> claim[claim_emitted]
     claim --> finish[step_finished]

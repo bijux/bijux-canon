@@ -30,13 +30,13 @@ flowchart LR
     request["install bridge X"]
     wheel["bridge wheel metadata"]
     pin["canonical owner == X"]
-    graph{"dependency graph agrees?"}
+    dependency_graph{"dependency graph agrees?"}
     pair["install tested pair"]
     conflict["resolver conflict"]
 
-    request --> wheel --> pin --> graph
-    graph -->|"yes"| pair
-    graph -->|"no"| conflict
+    request --> wheel --> pin --> dependency_graph
+    dependency_graph -->|"yes"| pair
+    dependency_graph -->|"no"| conflict
 ```
 
 The source `pyproject.toml` does not contain this requirement as a literal
