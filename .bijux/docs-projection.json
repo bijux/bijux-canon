@@ -1,0 +1,14 @@
+{
+  "files": {
+    "docs/assets/javascripts/external-links.js": {
+      "sha256": "051fec9ad5e5488b47ec1ae18b108750d19a5faed105965fb3cb743cf94a008f",
+      "source": "bijux-docs/scripts/external-links.js"
+    }
+  },
+  "schema": 1,
+  "source": {
+    "mode": "accepted-github",
+    "origin": "https://github.com/bijux/bijux-std.git",
+    "sha": "a423997ee13f5cb46f7e3cf312d7cd1003f4d9df"
+  }
+}
