@@ -127,7 +127,7 @@
       "surface": "overflowing code and semantic tables (private integration)",
       "source": "shared/bijux-docs/scripts/content-reflow.js",
       "test": "tests/bijux-docs/ui/generated-specs/reader-reflow.spec.js",
-      "test_reference": "phone code preserves source and local reader access",
+      "test_reference": "${profile} ${kind} preserves source and local reader access",
       "applicability": "Generated code/table ordinary-input scope; diagrams, actual consumers, manual review and no-JavaScript named keyboard mechanism are not qualified."
     },
     {

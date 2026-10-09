@@ -33,6 +33,10 @@
 /* Keep the entire ring inside the four-pixel phone masthead gutter. */
 .md-header__button:focus-visible { outline-offset: 2px; }
 
+/* Keep focus paint inside controls that meet scroll or masthead boundaries. */
+.bijux-tree summary:focus-visible,
+.md-source:focus-visible { outline-offset: -2px; }
+
 @media (forced-colors: active) {
   .md-header__button:focus-visible,
   :focus-visible { outline-color: CanvasText; }

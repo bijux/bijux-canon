@@ -135,13 +135,15 @@ def validate(site: Path, site_url: str, docs: dict[Path, Document], network_urls
         if duplicate:
             errors.append(f'{label}: duplicate document IDs: {", ".join(sorted(duplicate))}')
         if path.name != '404.html':
+            # Redirect producers may identify their destination relative to this route.
+            canonical = urljoin(doc.url, doc.canonicals[0]) if len(doc.canonicals) == 1 else None
             if len(doc.canonicals) != 1 or (not doc.redirect and doc.canonicals[0] != doc.url):
                 errors.append(f'{label}: canonical must identify this production route ({doc.url})')
             elif not doc.noindex:
-                canonical_routes.add(doc.canonicals[0])
+                canonical_routes.add(canonical)
             if doc.redirect and doc.canonicals:
                 target, _ = resolve(site,site_url,doc.url,doc.canonicals[0])
-                if target not in docs or doc.canonicals[0] != docs[target].url:
+                if target not in docs or canonical != docs[target].url:
                     errors.append(f'{label}: redirect canonical does not reach a built route')
         for kind, value in doc.references:
             failure = validate_reference(value,doc.url,kind,label,exceptions,observations)

@@ -236,3 +236,24 @@ scroll restoration in every admitted browser. Automatic tracking must not be
 presented as qualified by the shared default history receipt. When reviewing an
 existing consumer override, distinguish an intentional opt-in from a feature
 copied from the previous standard before changing that authored list.
+
+When an inherited `mkdocs.shared.yml` still contains a previous standard's
+`navigation.tracking`, changing the accepted standard pin alone does not remove
+that feature: the projector preserves configured theme feature lists. Select the
+product's reader policy explicitly in its authored `mkdocs.yml`. A root
+`theme.features` list replaces the inherited list under MkDocs configuration
+inheritance; it does not append to it. To select stable native reader URLs, list
+all current `theme.required_features` from `mkdocs-baseline.json` without
+`navigation.tracking`, retaining any other deliberately authored optional
+features. Keep `theme.custom_dir` and other product theme settings intact. Review
+the resulting effective feature list after every accepted standard change, and
+run the shared contract validator to catch missing required features.
+
+This is an authored configuration choice, not a managed-file exception. Do not
+infer feature ownership from a matching old default or silently strip a
+product's deliberate tracking opt-in. Qualification must check the exact URL at
+the trusted link activation, then browser Back/Forward and its settling window;
+retained visible reading context alone cannot certify URL preservation. See
+[MkDocs configuration inheritance](https://www.mkdocs.org/user-guide/configuration/#configuration-inheritance)
+and [Material anchor tracking](https://squidfunk.github.io/mkdocs-material/setup/setting-up-navigation/#anchor-tracking)
+for the supported configuration semantics.
