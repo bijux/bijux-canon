@@ -10,6 +10,7 @@ governance.
 
 ### Changed
 
+- Add a production documentation adapter that admits source, renderer, CSP and route receipts before upload and rechecks the same qualified bundle.
 - Added a deterministic changed-path selector that reports mandatory owned and
   transitive checks, their reasons, affected contracts, and governed outputs.
 - Added maintained installed-distribution verifiers for wheel contents, clean
