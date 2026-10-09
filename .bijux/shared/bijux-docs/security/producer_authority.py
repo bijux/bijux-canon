@@ -194,6 +194,36 @@ def render(configuration, *, catalogue=False):
         configuration.plugins.on_shutdown()
 
 
+def report_source(root, config_name, shared, configuration, *, source_recipe=None,
+                  reader_owner=None, interactive_report_owner=None, inputs=None):
+    """Validate source-owned report selection without rendering or mutating outputs.
+
+    Make uses this same boundary before destructive preparation; reconstruction
+    repeats it against its captured source rather than trusting preflight output.
+    """
+    require(not (source_recipe and (reader_owner is not None or interactive_report_owner is not None)),
+            'Producer: passive readers require a tracked MkDocs config; interactive report readers also require tracked config, not a catalogue recipe')
+    require(not (reader_owner is not None and interactive_report_owner is not None),
+            'Producer: passive and interactive report selections cannot be mixed')
+    csp = module(shared/'security/csp.py')
+    embedded = csp.embedded_module()
+    interactive = importlib.import_module(embedded.__package__ + '.interactive_rendering')
+    configured = interactive.configured_owner(configuration, selected=interactive_report_owner, passive=reader_owner)
+    require(configured is None or interactive_report_owner is not None,
+            'Producer: committed interactive ownership requires explicit renderer selection')
+    if reader_owner is None and interactive_report_owner is None:
+        return None
+    identity = module(shared/'security/build_identity.py')
+    config_bytes = identity.regular(root, config_name).read_bytes()
+    if inputs is not None:
+        require(inputs.get(config_name) == config_bytes, 'Producer: config changed after source capture')
+    config_sha = identity.configuration_identity(configuration, root)
+    adapter = importlib.import_module(embedded.__package__ + '.rendering')
+    source_type = adapter.ReaderSource if reader_owner is not None else interactive.InteractiveReportSource
+    owner = reader_owner if reader_owner is not None else interactive_report_owner
+    return source_type(root, owner, config_name, digest(config_bytes), config_sha, configuration.site_url)
+
+
 def prepare(root: Path, config_name: str, shared: Path, templates: Path, output: Path, site_dir: Path,
             *, publication_scope=False, source_recipe=None, reader_owner=None, interactive_report_owner=None):
     """Run only under the trusted renderer, with owner-selected config and frozen source.
@@ -227,25 +257,17 @@ def prepare(root: Path, config_name: str, shared: Path, templates: Path, output:
     from mkdocs.commands.build import build
     configuration = (catalogue.configuration(site_dir) if catalogue else
                      load_config(config_file=str(root/config_name), site_dir=str(site_dir)))
-    csp = module(shared/'security/csp.py')
-    embedded = csp.embedded_module()
-    interactive = importlib.import_module(embedded.__package__ + '.interactive_rendering')
-    configured_report_owner = interactive.configured_owner(configuration, selected=interactive_report_owner, passive=reader_owner)
-    require(configured_report_owner is None or interactive_report_owner is not None,
-            'Producer: committed interactive ownership requires explicit renderer selection')
+    reader_source = report_source(root, config_name, shared, configuration, source_recipe=source_recipe,
+                                  reader_owner=reader_owner, interactive_report_owner=interactive_report_owner,
+                                  inputs=inputs)
     identity = module(shared/'security/build_identity.py')
     config_sha = identity.configuration_identity(configuration, root)
     require(Path(configuration.docs_dir).is_relative_to(root), 'Producer: docs source outside owner root')
     capabilities=module(shared/'security/producer_capabilities.py')
     capability_inputs=capabilities.preflight(configuration,root,publication=publication_scope,catalogue=catalogue)
     require_committed_hook_inputs(capability_inputs, inputs, publication=publication_scope or catalogue is not None)
-    reader_source = None
     reader_receipt = None
-    if reader_owner is not None or interactive_report_owner is not None:
-        adapter = importlib.import_module(embedded.__package__ + '.rendering')
-        source_type = adapter.ReaderSource if reader_owner is not None else interactive.InteractiveReportSource
-        owner = reader_owner if reader_owner is not None else interactive_report_owner
-        reader_source = source_type(root, owner, config_name, digest(inputs[config_name]), config_sha, configuration.site_url)
+    if reader_source is not None:
         reader_receipt = {'schema': 1, 'scope': 'source-projection-compatibility', 'state': 'prepared',
                           'verification_only': True, 'site_url': configuration.site_url,
                           'config': {'path': config_name, 'sha256': digest(inputs[config_name])},

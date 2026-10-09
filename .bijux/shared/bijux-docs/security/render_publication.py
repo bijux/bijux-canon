@@ -22,7 +22,7 @@ def load(name,path):
     return module
 
 
-def build_artifact(root: Path, config_name: str, site_name: str, *, site_url='', source_identity=None, strict=True, source_recipe=None, reader_owner=None, interactive_report_owner=None):
+def build_artifact(root: Path, config_name: str, site_name: str, *, site_url='', source_identity=None, strict=True, source_recipe=None, reader_owner=None, interactive_report_owner=None, preflight=False):
     shared=Path(__file__).resolve().parents[1]
     identity=load('bijux_renderer_identity',shared/'security/build_identity.py')
     publication=load('bijux_renderer_publication',shared/'security/publication.py')
@@ -64,6 +64,13 @@ def build_artifact(root: Path, config_name: str, site_name: str, *, site_url='',
     publication.validate_url(actual_url)
     if actual_url!=configuration.site_url:
         raise ValueError('Publication build: actual configuration selects another production URL')
+    # A source refusal must not erase retained public bytes or their receipts.
+    # This check is repeated inside actual independent reconstruction.
+    producer.report_source(root,config_name,shared,configuration,source_recipe=source_recipe,
+                           reader_owner=reader_owner,interactive_report_owner=interactive_report_owner)
+    if preflight:
+        return {'state':'report-source-validated','rendered':False,'verification_only':True,
+                'site_url':actual_url,'site_dir':site_name}
     evidence=root/'artifacts/website-security';evidence.mkdir(parents=True,exist_ok=True)
     # Clear prior success receipts before a build can fail. Reports belong outside site.
     for name in ('build-identity','csp','producer-reconstruction','site-verification'):
@@ -130,11 +137,12 @@ def main():
     parser.add_argument('--reader-owner', default=os.environ.get('BIJUX_DOCS_READER_OWNER'), help='Explicit committed finite static-reader ownership descriptor')
     parser.add_argument('--interactive-report-owner', help='Explicit committed config-selected interactive report ownership descriptor')
     parser.add_argument('--no-strict',action='store_true')
+    parser.add_argument('--preflight',action='store_true',help='Validate report source selection without rendering or changing retained artifacts')
     args=parser.parse_args()
     try:
         result=build_artifact(Path.cwd().resolve(),args.config,args.site_dir,site_url=args.site_url,
                               source_identity=args.source_identity,strict=not args.no_strict,source_recipe=args.source_recipe,reader_owner=args.reader_owner,
-                              interactive_report_owner=args.interactive_report_owner)
+                              interactive_report_owner=args.interactive_report_owner,preflight=args.preflight)
         print(json.dumps({key:value for key,value in result.items() if key!='producer'}))
         return 0
     except (OSError,ValueError,KeyError,subprocess.CalledProcessError) as error:

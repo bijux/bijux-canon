@@ -143,7 +143,21 @@ python .bijux/shared/bijux-docs/security/render_publication.py \
 The CLI has no automatic interactive environment selector. Existing passive
 `--reader-owner` selection remains zero-executable; mixed selectors reject.
 A configured interactive owner without its explicit renderer selector also
-rejects. Normal shared Make wrappers do not automatically enable this adapter.
+rejects. Shared Python Make wrappers select it only through an explicit owning
+invocation, using the same committed descriptor path:
+
+```sh
+make docs-check DOCS_PUBLICATION_FRAMEWORK=1 \
+  DOCS_INTERACTIVE_REPORT_OWNER=ops/website/report-owner.json
+```
+
+The optional Make value is exported as data and forwarded as one renderer
+argument; it cannot replace actual committed configuration or approve provider
+policy. Nonempty selection requires the canonical publication framework and is
+rejected for raw `docs-serve` paths before preparation or cleanup. Empty selection
+preserves native and passive behavior. Source, runtime admission, reviewed provider
+purpose/activation/terms and publication profile duties remain mandatory. The
+neutral/Rust Make wrapper retains its separately admitted native renderer path.
 
 The supported `owned-embedded-reports.v1` descriptor has exact configuration,
 producer, report, parent and reader-purpose source pointers. It requires at least

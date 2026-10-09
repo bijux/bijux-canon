@@ -11,23 +11,100 @@
   // departure position in the owning history entry, never in a URL-wide cache.
   const readerHistoryKey = "bijuxDiagramReaderPosition";
   const navigation = performance.getEntriesByType("navigation")[0];
-  const readerState = history.state;
-  const savedReader = Object.prototype.toString.call(readerState) === "[object Object]" &&
-    Object.prototype.hasOwnProperty.call(readerState, readerHistoryKey) ? readerState[readerHistoryKey] : null;
-  const ownsReaderPosition = Object.prototype.toString.call(savedReader) === "[object Object]" &&
-    ["owner", "version", "href", "x", "y"].every(key => Object.prototype.hasOwnProperty.call(savedReader, key));
-  let readerRestoration = navigation?.type === "back_forward" && ownsReaderPosition && savedReader.owner === "bijux-docs" && savedReader.version === 1 &&
-    savedReader.href === location.href && Number.isFinite(savedReader.x) && savedReader.x >= 0 &&
-    Number.isFinite(savedReader.y) && savedReader.y >= 0 ? savedReader : null;
+  function ownedReaderPosition() {
+    const state = history.state;
+    const saved = Object.prototype.toString.call(state) === "[object Object]" &&
+      Object.prototype.hasOwnProperty.call(state, readerHistoryKey) ? state[readerHistoryKey] : null;
+    if (Object.prototype.toString.call(saved) !== "[object Object]" ||
+        !["owner", "version", "href", "x", "y"].every(key => Object.prototype.hasOwnProperty.call(saved, key)) ||
+        saved.owner !== "bijux-docs" || saved.version !== 1 || saved.href !== location.href ||
+        !Number.isFinite(saved.x) || saved.x < 0 || !Number.isFinite(saved.y) || saved.y < 0) return null;
+    return saved;
+  }
+  let readerRestoration = navigation?.type === "back_forward" ? ownedReaderPosition() : null;
+  let readerPageShown = document.readyState === "complete";
+  let pendingReaderGeneration = null;
+  let cachedDeparture = null;
+  let cachedReader = null;
+
+  function nativeEntryKey() {
+    try {
+      const key = window.navigation?.currentEntry?.key;
+      return typeof key === "string" && key.length > 0 ? key : null;
+    } catch (_) { return null; }
+  }
+
+  function currentCachedEntry(snapshot) {
+    return snapshot && snapshot.href === location.href && snapshot.entryKey === nativeEntryKey();
+  }
+
+  function clearCachedReader() {
+    cachedDeparture = null;
+    cachedReader = null;
+  }
+
+  function diagramInventory(nodes) {
+    const inventory = nodes.map(node => {
+      const state = sources.get(node);
+      return state && node.isConnected ? { source: state.source, open: state.details.open } : null;
+    });
+    return inventory.length && inventory.every(Boolean) ? inventory : null;
+  }
+
+  function matchingCachedSources(nodes) {
+    const inventory = diagramInventory(nodes);
+    return currentCachedEntry(cachedReader) && inventory && inventory.length === cachedReader.diagrams.length &&
+      inventory.every((item, index) => item.source === cachedReader.diagrams[index].source);
+  }
+
+  function restoreCachedInspection(current, nodes) {
+    if (!cachedReader || current !== generation) return;
+    if (!matchingCachedSources(nodes)) {
+      clearCachedReader();
+      readerRestoration = null;
+      return;
+    }
+    for (const [index, node] of nodes.entries()) {
+      const state = sources.get(node);
+      // Renderer failure keeps its readable fallback open regardless of an older
+      // successful inspection. Only this generation's rendered preview may close it.
+      if (state.theme !== null && state.preview.children.length) state.details.open = cachedReader.diagrams[index].open;
+    }
+  }
 
   function cancelReaderRestoration(event) {
-    if (event.isTrusted) readerRestoration = null;
+    if (event.isTrusted) {
+      readerRestoration = null;
+      pendingReaderGeneration = null;
+      clearCachedReader();
+    }
   }
   for (const type of ["pointerdown", "touchstart", "wheel", "keydown"]) {
     window.addEventListener(type, cancelReaderRestoration, { capture: true, passive: true });
   }
 
-  function captureReaderPosition() {
+  function readerLinks(context) {
+    if (Object.prototype.toString.call(context) !== "[object Object]" ||
+        !["href", "text", "top"].every(key => Object.prototype.hasOwnProperty.call(context, key)) ||
+        typeof context.href !== "string" || typeof context.text !== "string" ||
+        !context.text || !Number.isFinite(context.top)) return [];
+    return [...document.querySelectorAll(".md-content article a[href]")].filter(link =>
+      link.href === context.href && link.textContent.trim().replace(/\s+/g, " ") === context.text);
+  }
+
+  function captureReaderContext(link) {
+    const context = {
+      href: link.href, text: link.textContent?.trim().replace(/\s+/g, " ") || "",
+      top: link.getBoundingClientRect?.().top,
+    };
+    const links = readerLinks(context);
+    return links.length === 1 && links[0] === link ? context : undefined;
+  }
+
+  function captureReaderPosition(link) {
+    clearCachedReader();
+    readerRestoration = null;
+    pendingReaderGeneration = null;
     if (!document.querySelector(".md-typeset .bijux-diagram")) return;
     const state = history.state;
     if (state !== null && (Object.prototype.toString.call(state) !== "[object Object]")) return;
@@ -36,7 +113,17 @@
     try {
       history.replaceState({ ...state, [readerHistoryKey]: {
         owner: "bijux-docs", version: 1, href: location.href, x: window.scrollX, y: window.scrollY,
+        context: captureReaderContext(link),
       } }, "");
+      const entryKey = nativeEntryKey();
+      const diagrams = diagramInventory([...document.querySelectorAll(".md-typeset .bijux-diagram")]);
+      // A realm-private snapshot supplements this exact native entry only. It is
+      // never recovered from storage, a retained receipt or a matching URL alone.
+      const position = ownedReaderPosition();
+      if (entryKey && diagrams && position) cachedDeparture = {
+        entryKey, href: location.href, diagrams,
+        position: { ...position, ...(position.context ? { context: { ...position.context } } : {}) }, departed: false,
+      };
     } catch (_) {
       // A history entry may become unavailable while its document is leaving.
     }
@@ -44,11 +131,27 @@
 
   function restoreReaderPosition(current) {
     const position = readerRestoration;
-    if (!position) return;
+    if (!position || current !== generation) return;
+    // Native traversal restores its coordinates after pageshow. A diagram may
+    // finish earlier, so retain only the owning generation until that boundary.
+    if (!readerPageShown) {
+      pendingReaderGeneration = current;
+      return;
+    }
+    const cached = cachedReader;
     requestAnimationFrame(() => requestAnimationFrame(() => {
-      if (current !== generation || readerRestoration !== position) return;
+      if (current !== generation || readerRestoration !== position ||
+          cached && (cached !== cachedReader || !matchingCachedSources([...document.querySelectorAll(".md-typeset .bijux-diagram")]))) return;
       readerRestoration = null;
-      window.scrollTo({ left: position.x, top: position.y, behavior: "instant" });
+      let top = position.y;
+      const links = Object.prototype.hasOwnProperty.call(position, "context") ? readerLinks(position.context) : [];
+      if (links.length === 1 && links[0].isConnected) {
+        // The reader's anchor survives responsive and asynchronous diagram layout.
+        // An ambiguous or removed anchor retains the native coordinate fallback.
+        const anchored = window.scrollY + links[0].getBoundingClientRect().top - position.context.top;
+        if (Number.isFinite(anchored)) top = Math.max(0, anchored);
+      }
+      window.scrollTo({ left: position.x, top, behavior: "instant" });
     }));
   }
 
@@ -184,10 +287,17 @@
   function request() {
     const current = ++generation;
     const nodes = [...document.querySelectorAll(".md-typeset .bijux-diagram")].map(prepare);
+    if (cachedReader && !matchingCachedSources(nodes)) {
+      clearCachedReader();
+      readerRestoration = null;
+    }
     if (!nodes.length) return;
     const theme = document.body.getAttribute("data-md-color-scheme") === "slate" ? "dark" : "default";
     // Mermaid owns shared parser/config state; serialize renders and reject stale completions.
-    rendering = rendering.catch(() => {}).then(() => render(current, nodes, theme)).catch(() => {}).then(() => restoreReaderPosition(current));
+    rendering = rendering.catch(() => {}).then(() => render(current, nodes, theme)).catch(() => {}).then(() => {
+      restoreCachedInspection(current, nodes);
+      restoreReaderPosition(current);
+    });
   }
 
   if (window.document$ && typeof window.document$.subscribe === "function") window.document$.subscribe(request);
@@ -204,8 +314,43 @@
     if (!["http:", "https:"].includes(destination.protocol) ||
         destination.origin === location.origin && destination.pathname === location.pathname &&
         destination.search === location.search) return;
-    captureReaderPosition();
+    captureReaderPosition(link);
   }, true);
-  window.addEventListener("pagehide", () => { readerRestoration = null; generation += 1; });
-  window.addEventListener("pageshow", event => { if (event.persisted) request(); });
+  window.addEventListener("pagehide", event => {
+    // A subsequent cached traversal may leave without another authored link.
+    // Re-arm only this already proven entry, with no intervening reader input.
+    const nodes = [...document.querySelectorAll(".md-typeset .bijux-diagram")];
+    if (event?.isTrusted && event.persisted && matchingCachedSources(nodes)) {
+      const links = cachedReader.position.context ? readerLinks(cachedReader.position.context) : [];
+      cachedDeparture = { ...cachedReader, diagrams: diagramInventory(nodes), departed: false,
+        position: { owner: "bijux-docs", version: 1, href: location.href,
+          x: window.scrollX, y: window.scrollY,
+          context: links.length === 1 ? captureReaderContext(links[0]) : undefined } };
+    }
+    cachedReader = null;
+    if (event?.isTrusted && event.persisted && currentCachedEntry(cachedDeparture)) cachedDeparture.departed = true;
+    else cachedDeparture = null;
+    readerRestoration = null;
+    readerPageShown = false;
+    pendingReaderGeneration = null;
+    generation += 1;
+  });
+  window.addEventListener("pageshow", event => {
+    readerPageShown = true;
+    if (event.persisted) {
+      // Browser-owned entry keys distinguish separate same-URL visits. Only an
+      // actual cached lifecycle can admit this realm's last native departure.
+      cachedReader = event.isTrusted && cachedDeparture?.departed && currentCachedEntry(cachedDeparture)
+        ? cachedDeparture : null;
+      cachedDeparture = null;
+      readerRestoration = ownedReaderPosition() || cachedReader?.position || null;
+      request();
+    } else {
+      clearCachedReader();
+      if (pendingReaderGeneration === null) return;
+      const current = pendingReaderGeneration;
+      pendingReaderGeneration = null;
+      restoreReaderPosition(current);
+    }
+  });
 })();

@@ -192,11 +192,41 @@
     };
   }
 
-  function restoreScrollPosition(position) {
-    if (!position) {
+  let scrollReservation;
+  let scrollGeneration = 0;
+
+  function releaseScrollReservation() {
+    scrollGeneration += 1;
+    scrollReservation = undefined;
+  }
+
+  for (const type of ["pointerdown", "touchstart", "wheel", "keydown"]) {
+    window.addEventListener(type, (event) => {
+      if (event.isTrusted) releaseScrollReservation();
+    }, { capture: true, passive: true });
+  }
+  window.addEventListener("pagehide", releaseScrollReservation);
+
+  function reserveScrollPosition(position) {
+    releaseScrollReservation();
+    if (!position) return undefined;
+    scrollReservation = {
+      position,
+      generation: scrollGeneration,
+      href: location.href,
+      owner: document.querySelector(".md-content__inner") || document.body,
+    };
+    return scrollReservation;
+  }
+
+  function restoreScrollPosition(reservation) {
+    if (!reservation || reservation !== scrollReservation ||
+        reservation.generation !== scrollGeneration ||
+        reservation.href !== location.href ||
+        reservation.owner !== (document.querySelector(".md-content__inner") || document.body)) {
       return;
     }
-    window.scrollTo(position.x, position.y);
+    window.scrollTo(reservation.position.x, reservation.position.y);
   }
 
   function applyOption(themeKey, option, persistGlobal, preserveScroll = true) {
@@ -206,6 +236,7 @@
     }
 
     const scrollBeforeThemeChange = preserveScroll ? captureScrollPosition() : null;
+    const reservation = reserveScrollPosition(scrollBeforeThemeChange);
 
     option.checked = true;
     const effective = modeFromOption(option) === "auto" ? optionByMode(window.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : "light") || option : option;
@@ -230,9 +261,10 @@
     // Startup preference application leaves native and diagram history restoration
     // in control instead of reclaiming an earlier position in a delayed callback.
     if (scrollBeforeThemeChange) {
-      restoreScrollPosition(scrollBeforeThemeChange);
-      requestAnimationFrame(() => restoreScrollPosition(scrollBeforeThemeChange));
-      setTimeout(() => restoreScrollPosition(scrollBeforeThemeChange), 80);
+      // Only this document and choice retain ownership; later reader input wins.
+      restoreScrollPosition(reservation);
+      requestAnimationFrame(() => restoreScrollPosition(reservation));
+      setTimeout(() => restoreScrollPosition(reservation), 80);
     }
 
     return true;
@@ -431,6 +463,7 @@
   }
 
   function init() {
+    releaseScrollReservation();
     const themeKey = resolveThemeKey();
     bindPaletteChanges(themeKey);
     upgradeNativePaletteControls();
