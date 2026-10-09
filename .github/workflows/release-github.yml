@@ -109,6 +109,7 @@ jobs:
   resolve:
     name: resolve-release-github-config
     runs-on: ubuntu-24.04
+    timeout-minutes: 10
     outputs:
       release_tag: ${{ steps.config.outputs.release_tag }}
       enabled: ${{ steps.config.outputs.enabled }}
@@ -342,6 +343,7 @@ jobs:
     uses: ./.github/workflows/release-artifacts.yml
     with:
       package_slug: ${{ matrix.package_slug }}
+      release_tag: ${{ needs.resolve.outputs.release_tag }}
       package_dir: ${{ matrix.package_dir }}
       artifacts_dir: ${{ matrix.artifacts_dir }}
       makefile_path: ${{ matrix.makefile_path || '' }}
@@ -355,7 +357,7 @@ jobs:
       - build
     if: ${{ needs.resolve.outputs.enabled == 'true' }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 10
 
     steps:
       - name: Checkout repository
@@ -487,7 +489,7 @@ jobs:
 
       - name: Publish GitHub release with files and body
         if: ${{ steps.release.outputs.publish == 'true' && steps.release.outputs.release_files_glob != '' && steps.release.outputs.release_notes_path != '' }}
-        uses: softprops/action-gh-release@3d0d9888cb7fd7b750713d6e236d1fcb99157228 # v3.0.2
+        uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
         with:
           tag_name: ${{ steps.release.outputs.release_tag }}
           name: ${{ steps.release.outputs.release_name }}
@@ -500,7 +502,7 @@ jobs:
 
       - name: Publish GitHub release with files
         if: ${{ steps.release.outputs.publish == 'true' && steps.release.outputs.release_files_glob != '' && steps.release.outputs.release_notes_path == '' }}
-        uses: softprops/action-gh-release@3d0d9888cb7fd7b750713d6e236d1fcb99157228 # v3.0.2
+        uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
         with:
           tag_name: ${{ steps.release.outputs.release_tag }}
           name: ${{ steps.release.outputs.release_name }}
@@ -512,7 +514,7 @@ jobs:
 
       - name: Publish GitHub release with body
         if: ${{ steps.release.outputs.publish == 'true' && steps.release.outputs.release_files_glob == '' && steps.release.outputs.release_notes_path != '' }}
-        uses: softprops/action-gh-release@3d0d9888cb7fd7b750713d6e236d1fcb99157228 # v3.0.2
+        uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
         with:
           tag_name: ${{ steps.release.outputs.release_tag }}
           name: ${{ steps.release.outputs.release_name }}
@@ -521,7 +523,7 @@ jobs:
 
       - name: Publish GitHub release without assets
         if: ${{ steps.release.outputs.publish == 'true' && steps.release.outputs.release_files_glob == '' && steps.release.outputs.release_notes_path == '' }}
-        uses: softprops/action-gh-release@3d0d9888cb7fd7b750713d6e236d1fcb99157228 # v3.0.2
+        uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
         with:
           tag_name: ${{ steps.release.outputs.release_tag }}
           name: ${{ steps.release.outputs.release_name }}
