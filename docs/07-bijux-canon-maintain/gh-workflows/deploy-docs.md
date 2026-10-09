@@ -90,3 +90,24 @@ changes to handbook content and repository-specific build behavior belong here.
 The published site is supported only when its source commit, build command,
 selected directory, uploaded Pages artifact, and deployment result refer to the
 same workflow run.
+
+## Publication documentation environment
+
+`make gh-docs-install` creates the command-owned environment at
+`artifacts/root/docs/venv` and synchronizes only the root `docs` dependency group.
+It validates `uv.lock` with `uv sync --locked --only-group docs
+--no-install-workspace`; application packages, editable workspace distributions
+and the root development environment are not installed or replaced. The
+standard-library environment is created without bundled pip or virtualenv
+startup hooks, so renderer inventories retain explicit installed source ownership.
+The repository's existing development groups and package release contexts remain
+unchanged. Dependency or plugin changes require an intentional lock review.
+
+`make gh-docs-build` and `make gh-docs-verify` use that same documentation
+interpreter. They retain accepted standard source checks, production URL/output
+selection, strict rendering, CSP/routes, publication admission and readonly
+verification. Installation alone does not qualify a renderer profile or authorize
+publication: a new runtime requires actual hosted Linux fingerprints and reviewed
+source-owned admission before the publication gate can pass. Unowned environments,
+symlinked artifact paths and a stale lock are rejected; command-owned interrupted
+creation can resume without deleting unrelated environments or earlier receipts.

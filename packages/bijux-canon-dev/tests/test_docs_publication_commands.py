@@ -49,7 +49,7 @@ class DocumentationPublicationCommandTests(unittest.TestCase):
         self.addCleanup(self.environment_patch.stop)
         self.makefile = self.root / "Makefile"
         self.makefile.write_text(
-            "DOCS_PYTHON := "
+            "DOCS_PUBLICATION_PYTHON := "
             + sys.executable
             + '\nCANON_DEV_PYTHON_ENV := PYTHONPATH="'
             + str(ROOT / "packages/bijux-canon-dev/src")
@@ -159,10 +159,14 @@ class DocumentationPublicationCommandTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("cannot use local candidate authority", result.stderr)
 
-    def test_install_command_reaches_existing_root_dependency_interface(self):
-        result = self.make("gh-docs-install")
+    def test_install_command_selects_documentation_environment_without_root_dev(self):
+        result = self.make(
+            "gh-docs-install", "PYTHON=" + sys.executable, "UV=uv", dry=True
+        )
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertTrue((self.root / "artifacts/install-interface-reached").is_file())
+        self.assertIn("bijux_canon_dev.docs.environment", result.stdout)
+        self.assertNotIn("install-interface-reached", result.stdout)
+        self.assertFalse((self.root / "artifacts/install-interface-reached").exists())
 
     def test_dirty_source_rejects_real_make_before_standard_fetch_or_public_mutation(
         self,
