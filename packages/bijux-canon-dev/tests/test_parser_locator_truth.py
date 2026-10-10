@@ -123,6 +123,7 @@ def test_pdf_qualification_retains_independent_reviewed_text() -> None:
     records = deepcopy(_records())
     record = next(item for item in records if item["format_id"] == "pdf-digital")
     qualification = record["extraction_qualification"]
+    assert isinstance(qualification, dict)
     qualification["reviewed_exact_text"] = "different scientific claim"
     _reidentify(record)
     with pytest.raises(RuntimeError, match="PDF reviewed text drift"):

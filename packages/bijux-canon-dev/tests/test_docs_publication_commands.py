@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from contextlib import AbstractContextManager
 import json
 import os
 from pathlib import Path
@@ -18,7 +19,7 @@ ROOT = Path(__file__).resolve().parents[3]
 
 
 class DocumentationPublicationCommandTests(unittest.TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.artifacts = ROOT / "artifacts/website-security/command-contracts"
         self.artifacts.mkdir(parents=True, exist_ok=True)
         self.sandbox = tempfile.TemporaryDirectory(
@@ -26,7 +27,7 @@ class DocumentationPublicationCommandTests(unittest.TestCase):
         )
         self.addCleanup(self.sandbox.cleanup)
         self.root = Path(self.sandbox.name)
-        self.observations = []
+        self.observations: list[dict[str, object]] = []
         self.proof = self.artifacts / "proofs" / self._testMethodName
         self.proof.mkdir(parents=True, exist_ok=True)
         self.addCleanup(self.retain)
@@ -63,17 +64,19 @@ class DocumentationPublicationCommandTests(unittest.TestCase):
         (self.public / "index.html").write_text("Preserve original public bytes\n")
         self.addCleanup(self.assert_public_preserved)
 
-    def assert_public_preserved(self):
+    def assert_public_preserved(self) -> None:
         self.assertEqual(
             (self.public / "index.html").read_text(), "Preserve original public bytes\n"
         )
 
-    def retain(self):
+    def retain(self) -> None:
         (self.proof / "observations.json").write_text(
             json.dumps(self.observations, indent=2) + "\n"
         )
 
-    def make(self, target, *assignments, dry=False):
+    def make(
+        self, target: str, *assignments: str, dry: bool = False
+    ) -> subprocess.CompletedProcess[str]:
         command = [
             "make",
             "--no-print-directory",
@@ -95,7 +98,7 @@ class DocumentationPublicationCommandTests(unittest.TestCase):
         )
         return result
 
-    def source(self):
+    def source(self) -> None:
         identity_source = ROOT / ".bijux/shared/bijux-docs/security/build_identity.py"
         identity = self.root / ".bijux/shared/bijux-docs/security/build_identity.py"
         identity.parent.mkdir(parents=True, exist_ok=True)
@@ -118,7 +121,9 @@ class DocumentationPublicationCommandTests(unittest.TestCase):
                 ["git", *arguments], cwd=self.root, check=True, capture_output=True
             )
 
-    def test_wrong_production_urls_fail_real_build_and_verify_before_mutation(self):
+    def test_wrong_production_urls_fail_real_build_and_verify_before_mutation(
+        self,
+    ) -> None:
         for target in ("gh-docs-build", "gh-docs-verify"):
             for value in (
                 "http://127.0.0.1:8000/",
@@ -132,7 +137,7 @@ class DocumentationPublicationCommandTests(unittest.TestCase):
                     self.assertIn("requires exact production URL", result.stderr)
                     self.assertFalse((self.root / publication.STANDARD_ROOT).exists())
 
-    def test_wrong_artifacts_fail_real_build_and_verify_before_mutation(self):
+    def test_wrong_artifacts_fail_real_build_and_verify_before_mutation(self) -> None:
         for target in ("gh-docs-build", "gh-docs-verify"):
             for value in (
                 "artifacts/docs/site",
@@ -146,20 +151,22 @@ class DocumentationPublicationCommandTests(unittest.TestCase):
                     self.assertIn("requires exact artifact", result.stderr)
                     self.assertFalse((self.root / publication.STANDARD_ROOT).exists())
 
-    def test_development_file_defaults_do_not_replace_production_identity(self):
+    def test_development_file_defaults_do_not_replace_production_identity(self) -> None:
         result = self.make("gh-docs-build", dry=True)
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn('--site-url "' + publication.SITE_URL + '"', result.stdout)
         self.assertIn('--site-dir "' + publication.SITE_DIR + '"', result.stdout)
         self.assertNotIn('--site-url "http://127.0.0.1', result.stdout)
 
-    def test_local_authority_bypass_is_rejected(self):
+    def test_local_authority_bypass_is_rejected(self) -> None:
         self.environment["BIJUX_STD_LOCAL_VERIFY"] = "1"
         result = self.make("gh-docs-build")
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("cannot use local candidate authority", result.stderr)
 
-    def test_install_command_selects_documentation_environment_without_root_dev(self):
+    def test_install_command_selects_documentation_environment_without_root_dev(
+        self,
+    ) -> None:
         result = self.make(
             "gh-docs-install", "PYTHON=" + sys.executable, "UV=uv", dry=True
         )
@@ -170,7 +177,7 @@ class DocumentationPublicationCommandTests(unittest.TestCase):
 
     def test_dirty_source_rejects_real_make_before_standard_fetch_or_public_mutation(
         self,
-    ):
+    ) -> None:
         self.source()
         (self.root / "mkdocs.yml").write_text("Changed unreviewed source\n")
         result = self.make("gh-docs-build")
@@ -178,18 +185,16 @@ class DocumentationPublicationCommandTests(unittest.TestCase):
         self.assertIn("source is dirty", result.stderr)
         self.assertFalse((self.root / publication.STANDARD_ROOT).exists())
 
-    def test_build_protocol_binds_receipts_and_does_not_invent_approval(self):
+    def test_build_protocol_binds_receipts_and_does_not_invent_approval(self) -> None:
         self.source()
-        calls = []
+        calls: list[tuple[str, tuple[str, ...]]] = []
+
+        def accepted(root: Path, pin: str) -> str:
+            calls.append(("standard", (pin,)))
+            return publication.STANDARD_ROOT + "/" + pin
+
         with (
-            patch.object(
-                publication,
-                "accepted_standard",
-                lambda root, pin: (
-                    calls.append(("standard", pin))
-                    or publication.STANDARD_ROOT + "/" + pin
-                ),
-            ),
+            patch.object(publication, "accepted_standard", accepted),
             patch.object(
                 publication,
                 "command",
@@ -238,11 +243,11 @@ class DocumentationPublicationCommandTests(unittest.TestCase):
         )
         self.assertFalse((self.root / publication.MANIFEST).exists())
 
-    def test_failed_renderer_stops_before_manifest_admission(self):
+    def test_failed_renderer_stops_before_manifest_admission(self) -> None:
         self.source()
-        calls = []
+        calls: list[tuple[str, ...]] = []
 
-        def child(root, *arguments, **kwargs):
+        def child(root: Path, *arguments: str, authority: str | None = None) -> None:
             calls.append(arguments)
             if arguments[1].endswith("render_publication.py"):
                 raise subprocess.CalledProcessError(1, arguments)
@@ -270,8 +275,8 @@ class DocumentationPublicationCommandTests(unittest.TestCase):
 
     def test_verify_only_rechecks_qualified_manifest_without_building_or_rewriting(
         self,
-    ):
-        calls = []
+    ) -> None:
+        calls: list[tuple[str, ...]] = []
         with patch.object(
             publication, "command", lambda root, *args, **kwargs: calls.append(args)
         ):
@@ -290,7 +295,7 @@ class DocumentationPublicationCommandTests(unittest.TestCase):
             }
         )
 
-    def test_real_verify_rejects_absent_manifest(self):
+    def test_real_verify_rejects_absent_manifest(self) -> None:
         script = self.root / ".bijux/shared/bijux-docs/security/publication.py"
         script.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(ROOT / ".bijux/shared/bijux-docs/security/publication.py", script)
@@ -299,12 +304,12 @@ class DocumentationPublicationCommandTests(unittest.TestCase):
         self.assertIn("publication rejected", result.stderr)
         self.assertFalse((self.root / publication.MANIFEST).exists())
 
-    def controlled_standard(self):
+    def controlled_standard(self) -> tuple[Path, str, str]:
         """Create local Git transport data, never a publication-approved authority."""
         source = self.root / "artifacts/controlled-standard"
         source.mkdir(parents=True)
 
-        def git(*arguments):
+        def git(*arguments: str) -> str:
             return subprocess.check_output(
                 ["git", "-C", str(source), *arguments], text=True
             ).strip()
@@ -321,11 +326,13 @@ class DocumentationPublicationCommandTests(unittest.TestCase):
         git("commit", "-qm", "test(docs): vary controlled source identity")
         return source, first, git("rev-parse", "HEAD")
 
-    def transport(self, source, interrupt=False):
+    def transport(
+        self, source: Path, interrupt: bool = False
+    ) -> AbstractContextManager[object]:
         actual = publication.command
         failed = False
 
-        def execute(root, *arguments, **keywords):
+        def execute(root: Path, *arguments: str, authority: str | None = None) -> None:
             nonlocal failed
             requested = arguments
             if "fetch" in arguments:
@@ -347,18 +354,18 @@ class DocumentationPublicationCommandTests(unittest.TestCase):
                     "kind": "actual-local-Git-cache-command",
                     "requested_command": list(requested),
                     "executed_command": list(arguments),
-                    "authority": keywords.get("authority"),
+                    "authority": authority,
                     "external_fetch_executed": False,
                     "publication_approval": False,
                 }
             )
-            return actual(root, *arguments, **keywords)
+            return actual(root, *arguments, authority=authority)
 
         return patch.object(publication, "command", execute)
 
     def test_existing_standard_cache_is_preserved_for_independent_identity_validation(
         self,
-    ):
+    ) -> None:
         source, pin, _ = self.controlled_standard()
         with self.transport(source):
             relative = publication.accepted_standard(self.root, pin)
@@ -372,7 +379,9 @@ class DocumentationPublicationCommandTests(unittest.TestCase):
             {"kind": "local-Git-cache-only", "pin": pin, "publication_approval": False}
         )
 
-    def test_distinct_pins_coexist_without_resetting_the_previous_checkout(self):
+    def test_distinct_pins_coexist_without_resetting_the_previous_checkout(
+        self,
+    ) -> None:
         source, first, second = self.controlled_standard()
         with self.transport(source):
             previous = publication.accepted_standard(self.root, first)
@@ -394,7 +403,7 @@ class DocumentationPublicationCommandTests(unittest.TestCase):
             }
         )
 
-    def test_interrupted_owned_fetch_resumes_without_deleting_prior_cache(self):
+    def test_interrupted_owned_fetch_resumes_without_deleting_prior_cache(self) -> None:
         source, pin, _ = self.controlled_standard()
         with self.transport(source, interrupt=True):
             with self.assertRaises(subprocess.CalledProcessError):
@@ -412,16 +421,18 @@ class DocumentationPublicationCommandTests(unittest.TestCase):
             }
         )
 
-    def test_interrupted_owned_initialization_resumes_inside_consumer_git(self):
+    def test_interrupted_owned_initialization_resumes_inside_consumer_git(self) -> None:
         self.source()
         source, pin, _ = self.controlled_standard()
         actual = publication.command
 
-        def interrupted(root, *arguments, **keywords):
+        def interrupted(
+            root: Path, *arguments: str, authority: str | None = None
+        ) -> None:
             if "init" in arguments:
                 Path(arguments[-1]).mkdir(parents=True)
                 raise subprocess.CalledProcessError(1, arguments)
-            return actual(root, *arguments, **keywords)
+            return actual(root, *arguments, authority=authority)
 
         with (
             patch.object(publication, "command", interrupted),
@@ -442,7 +453,7 @@ class DocumentationPublicationCommandTests(unittest.TestCase):
             }
         )
 
-    def test_dirty_existing_cache_rejects_before_fetch_or_checkout(self):
+    def test_dirty_existing_cache_rejects_before_fetch_or_checkout(self) -> None:
         source, pin, _ = self.controlled_standard()
         with self.transport(source):
             relative = publication.accepted_standard(self.root, pin)
@@ -456,7 +467,7 @@ class DocumentationPublicationCommandTests(unittest.TestCase):
         child.assert_not_called()
         self.assertEqual(content.read_text(), "Preserve unreviewed user bytes\n")
 
-    def test_unowned_incomplete_cache_is_preserved_and_rejected(self):
+    def test_unowned_incomplete_cache_is_preserved_and_rejected(self) -> None:
         cache = self.root / publication.STANDARD_ROOT / ("a" * 40)
         cache.mkdir(parents=True)
         marker = cache / "user-owned-input"
@@ -469,7 +480,7 @@ class DocumentationPublicationCommandTests(unittest.TestCase):
         child.assert_not_called()
         self.assertEqual(marker.read_text(), "Preserve\n")
 
-    def test_legacy_fixed_cache_is_preserved_beside_new_pin_checkouts(self):
+    def test_legacy_fixed_cache_is_preserved_beside_new_pin_checkouts(self) -> None:
         source, pin, _ = self.controlled_standard()
         legacy = self.root / "artifacts/website-security/accepted-standard"
         legacy.parent.mkdir(parents=True, exist_ok=True)
@@ -504,7 +515,7 @@ class DocumentationPublicationCommandTests(unittest.TestCase):
             }
         )
 
-    def test_command_environment_uses_the_same_pin_cache_as_checkpoint(self):
+    def test_command_environment_uses_the_same_pin_cache_as_checkpoint(self) -> None:
         relative = publication.STANDARD_ROOT + "/" + "a" * 40
         with patch.object(subprocess, "run") as child:
             publication.command(
@@ -521,7 +532,7 @@ class DocumentationPublicationCommandTests(unittest.TestCase):
             }
         )
 
-    def test_cache_git_metadata_symlink_rejects_before_mutation(self):
+    def test_cache_git_metadata_symlink_rejects_before_mutation(self) -> None:
         cache = self.root / publication.STANDARD_ROOT / ("a" * 40)
         cache.mkdir(parents=True)
         outside = self.root / "artifacts/user-owned-git"
@@ -535,7 +546,7 @@ class DocumentationPublicationCommandTests(unittest.TestCase):
         child.assert_not_called()
         self.assertTrue((cache / ".git").is_symlink())
 
-    def test_existing_wrong_origin_is_preserved_and_rejected(self):
+    def test_existing_wrong_origin_is_preserved_and_rejected(self) -> None:
         source, pin, _ = self.controlled_standard()
         with self.transport(source):
             relative = publication.accepted_standard(self.root, pin)
@@ -561,7 +572,7 @@ class DocumentationPublicationCommandTests(unittest.TestCase):
         child.assert_not_called()
         self.assertEqual((cache / ".git/config").read_bytes(), before)
 
-    def test_symlink_standard_cache_rejects_before_fetch(self):
+    def test_symlink_standard_cache_rejects_before_fetch(self) -> None:
         outside = self.root / "artifacts/other-source"
         outside.mkdir(parents=True)
         cache = self.root / publication.STANDARD_ROOT

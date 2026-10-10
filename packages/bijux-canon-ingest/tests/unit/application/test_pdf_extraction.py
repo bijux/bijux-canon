@@ -8,6 +8,8 @@ import json
 from pathlib import Path
 
 import pytest
+from pypdf import PdfWriter
+
 from bijux_canon_ingest import (
     DiscoveredSource,
     DocumentParseError,
@@ -16,7 +18,6 @@ from bijux_canon_ingest import (
     admit_source,
     parse_pdf,
 )
-from pypdf import PdfWriter
 
 _REPOSITORY_ROOT = Path(__file__).resolve().parents[5]
 _QUALIFICATION_SOURCE = (
