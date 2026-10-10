@@ -10,6 +10,12 @@ The goal of this changelog is to explain repository changes that affect more
 than one package or change the way contributors and maintainers work across the
 whole workspace.
 
+## Unreleased
+
+
+### Changed
+
+- Adopt trusted manual publication admission and accepted shared documentation policy ([#311](https://github.com/bijux/bijux-canon/pull/311)).
 ## [0.4.0] - Unreleased
 
 ### Changed
