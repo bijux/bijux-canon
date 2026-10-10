@@ -120,7 +120,7 @@ jobs:
             make PYTHON="${selected_python}" PACKAGE="${{ matrix.package_slug }}" test
       - name: "Upload package test artifacts"
         if: "${{ always() }}"
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: "${{ matrix.package_slug }}-test-py${{ matrix.python-version }}"
           path: "artifacts/${{ matrix.package_slug }}/test"
@@ -208,7 +208,7 @@ jobs:
             "${venv_dir}/bin/bijux" --version
       - name: "Upload installed-family artifacts"
         if: "${{ always() }}"
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: "installed-family-${{ matrix.runner }}-py${{ matrix.python-version }}"
           path: "artifacts/installed-family/**/wheels/*.whl"
