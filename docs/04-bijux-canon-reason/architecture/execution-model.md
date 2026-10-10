@@ -129,7 +129,7 @@ sequenceDiagram
     Verifier-->>RunStore: VerificationReport
     RunStore->>RunStore: fingerprint files and write manifest
     RunStore-->>Caller: immutable run directory
-    Note over Caller,RunStore: replay reads the artifact set; it does not reconstruct omitted inputs
+    Note over Caller,RunStore: replay reads the artifact set#59; it does not reconstruct omitted inputs
 ```
 
 The manifest establishes file integrity, the verification report establishes

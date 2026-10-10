@@ -20,6 +20,7 @@ whole workspace.
 
 ### Changed
 
+- Bind production documentation commands to the exact Canon URL and qualified artifact, with source-bound verification and resumable immutable standard caches.
 - Hardened the canonical runtime, agent, ingestion, retrieval, and reasoning
   boundaries with deterministic lifecycle, provenance, evaluation, and
   installed-distribution verification.

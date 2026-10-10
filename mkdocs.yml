@@ -21,6 +21,26 @@ watch:
 
 theme:
   custom_dir: docs/overrides
+  # Keep reader Back/Forward URLs stable; automatic anchor tracking is not enabled.
+  # MkDocs replaces inherited lists, so retain every required shared feature.
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.indexes
+    - navigation.path
+    - navigation.instant
+    - navigation.top
+    - navigation.footer
+    - toc.follow
+    - search.suggest
+    - search.highlight
+    - content.tabs.link
+    - content.code.annotate
+    - content.code.copy
+    - content.code.select
+    - content.action.edit
+    - content.action.view
 
 extra:
   bijux:

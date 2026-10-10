@@ -20,10 +20,10 @@ flowchart TD
     preserve --> pair{Result and trace readable?}
     pair -- no --> partial[Classify partial artifact write]
     pair -- yes --> terminal[Inspect termination and lifecycle]
-    terminal --> class{Failure class}
-    class -- transient --> retry[Retry full governed boundary]
-    class -- contract or policy --> correct[Correct input or configuration]
-    class -- deterministic defect --> repair[Repair implementation or provider contract]
+    terminal --> failure_class{Failure class}
+    failure_class -- transient --> retry[Retry full governed boundary]
+    failure_class -- contract or policy --> correct[Correct input or configuration]
+    failure_class -- deterministic defect --> repair[Repair implementation or provider contract]
     retry --> fresh[Write to a fresh output root]
     correct --> fresh
     repair --> fresh
