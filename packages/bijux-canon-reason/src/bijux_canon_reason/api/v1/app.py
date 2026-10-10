@@ -228,7 +228,7 @@ def _install_http_error_handler(app: FastAPI) -> None:
                 for route in app.routes
                 if isinstance(route, APIRoute)
                 and route.matches(request.scope)[0] != Match.NONE
-                for method in route.methods
+                for method in (route.methods or set())
             }
             if methods:
                 response.headers["Allow"] = ", ".join(sorted(methods))

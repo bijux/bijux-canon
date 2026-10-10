@@ -279,7 +279,7 @@ def create_app(
             code=RuntimeProblemCode.INVALID_REQUEST,
             correlation_id=_correlation_id(request),
             cause=str(exc.detail),
-            headers=exc.headers,
+            headers=dict(exc.headers) if exc.headers is not None else None,
         )
 
     @api.exception_handler(RequestValidationError)
