@@ -90,3 +90,20 @@ def test_create_endpoints_reject_missing_and_unparseable_body(
     )
     assert response.status_code == 400
     assert response.json() == {"detail": "invalid request"}
+
+
+@pytest.mark.parametrize(
+    ("endpoint", "allowed"),
+    [
+        ("/v1/items", {"GET", "POST"}),
+        ("/v1/items/1", {"GET", "PUT", "DELETE"}),
+        ("/openapi.json", {"GET", "HEAD"}),
+    ],
+)
+def test_unsupported_methods_advertise_every_resource_method(
+    tmp_path: Path, endpoint: str, allowed: set[str]
+) -> None:
+    response = _client(tmp_path).options(endpoint)
+    assert response.status_code == 405
+    assert set(response.headers["Allow"].split(", ")) == allowed
+    assert response.json() == {"detail": "Method Not Allowed"}
