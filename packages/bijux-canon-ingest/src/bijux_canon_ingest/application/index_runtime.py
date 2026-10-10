@@ -53,6 +53,8 @@ def build_stored_index(
         return Err(chunk_result.error)
 
     chunks = chunk_result.value
+    if not chunks:
+        return Err("cannot build index from empty chunk list")
     if backend not in (IndexBackend.BM25, IndexBackend.NUMPY_COSINE):
         return Err(f"unsupported backend: {backend}")
     if backend == IndexBackend.BM25:
