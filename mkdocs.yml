@@ -397,3 +397,17 @@ nav:
           - Validation Strategy: 08-compat-packages/migration/validation-strategy.md
           - Retirement Conditions: 08-compat-packages/migration/retirement-conditions.md
           - Retirement Playbook: 08-compat-packages/migration/retirement-playbook.md
+
+extra_javascript:
+  - assets/javascripts/mermaid-init.js
+  - assets/javascripts/shell/theme-persistence.js
+  - assets/javascripts/shell/viewport-profile.js
+  - assets/javascripts/shell/nav-state.js
+  - assets/javascripts/shell/detail-tabs.js
+  - assets/javascripts/shell/nav-reveal.js
+  - assets/javascripts/shell/search-recovery.js
+  - assets/javascripts/shell/content-reflow.js
+  - assets/javascripts/external-links.js
+  - assets/javascripts/shell/bootstrap.js
+  - assets/javascripts/navigation-sync.js
+  - assets/javascripts/navigation/offsite-targets.js
