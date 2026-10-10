@@ -161,11 +161,14 @@ class DocumentationEnvironmentTests(unittest.TestCase):
         self.assertEqual(executable.read_text(), "existing controlled interpreter")
 
     def test_interrupted_owned_creation_can_resume_without_reset(self):
-        with patch.object(
-            environment.subprocess,
-            "run",
-            side_effect=subprocess.CalledProcessError(1, ["python", "-m", "venv"]),
-        ), self.assertRaises(subprocess.CalledProcessError):
+        with (
+            patch.object(
+                environment.subprocess,
+                "run",
+                side_effect=subprocess.CalledProcessError(1, ["python", "-m", "venv"]),
+            ),
+            self.assertRaises(subprocess.CalledProcessError),
+        ):
             environment.install(self.root, sys.executable, "uv")
         selected = self.root / environment.ENVIRONMENT
         self.assertEqual(
