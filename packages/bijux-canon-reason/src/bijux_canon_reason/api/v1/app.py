@@ -196,8 +196,16 @@ def _install_validation_handler(app: FastAPI) -> None:
         request: Request, exc: RequestValidationError
     ) -> JSONResponse:
         """Handle validation handler."""
-        del request, exc
-        return JSONResponse(status_code=422, content={"detail": "invalid request"})
+        del request
+        invalid_body = any(
+            error["type"] == "json_invalid"
+            or (error["type"] == "missing" and error["loc"] == ("body",))
+            for error in exc.errors()
+        )
+        return JSONResponse(
+            status_code=400 if invalid_body else 422,
+            content={"detail": "invalid request"},
+        )
 
 
 def _attach_stateful_links(schema: dict[str, Any]) -> None:
