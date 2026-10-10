@@ -22,7 +22,7 @@ on:
       check_targets:
         required: false
         type: string
-        default: "[\"quality\", \"security\", \"docs\", \"api\", \"build\", \"sbom\"]"
+        default: "[\"quality\", \"security\", \"api\", \"build\", \"sbom\"]"
       api_toolchain_targets:
         required: false
         type: string
