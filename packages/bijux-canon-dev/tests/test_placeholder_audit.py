@@ -18,11 +18,11 @@ def test_repository_markers_have_exact_reviewed_classifications() -> None:
     report = audit_repository(REPO_ROOT, POLICY)
 
     assert report["result"] == "passed"
-    assert report["occurrence_count"] == 52
+    assert report["occurrence_count"] == 54
     assert report["classifications"] == {
         "explicit_experimental_or_deprecated_limitation": 22,
         "implemented_product_path": 13,
-        "valid_abstract_method_or_template": 17,
+        "valid_abstract_method_or_template": 19,
     }
 
 

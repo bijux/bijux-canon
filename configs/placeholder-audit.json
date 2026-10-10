@@ -230,6 +230,20 @@
       "path": "packages/compat-*/CHANGELOG.md",
       "public_surface": false,
       "reason": "Historical notes record replacement of migration stubs by real delegation packages."
+    },
+    {
+      "acceptance_tests": [
+        "packages/bijux-canon-dev/tests/test_docs_navigation_contract.py"
+      ],
+      "classification": "valid_abstract_method_or_template",
+      "expected_occurrences": 2,
+      "marker_kinds": [
+        "placeholder"
+      ],
+      "owner": "documentation-shell",
+      "path": "docs/overrides/partials/search.html",
+      "public_surface": true,
+      "reason": "The accepted shared search template localizes its HTML input prompt through search.placeholder; these markers identify rendered input attributes rather than unfinished behavior."
     }
   ],
   "schema_version": "bijux.canon.placeholder_audit_policy.v1"
