@@ -254,13 +254,19 @@ def test_release_workflows_replace_legacy_publish_workflow() -> None:
 
     for workflow in (release_artifacts, release_github, release_pypi, release_ghcr):
         on_block = _as_dict(workflow.get("on"))
-        push_block = _as_dict(on_block.get("push"))
-        if push_block:
-            tags = push_block.get("tags", [])
-            assert isinstance(tags, list)
-            assert "v*" in tags
-            assert "workflow_dispatch" in on_block
-        assert "workflow_call" in on_block
+        if workflow is release_artifacts:
+            assert "workflow_call" in on_block
+        else:
+            assert set(on_block) == {"workflow_dispatch"}
+            dispatch = _as_dict(on_block["workflow_dispatch"])
+            inputs = _as_dict(dispatch["inputs"])
+            assert inputs["accepted_commit"]["required"] is True
+            assert inputs["release_tag"]["required"] is True
+            jobs = _as_dict(workflow["jobs"])
+            assert jobs["publication_admission"]["name"] == "publication / admission"
+            for name, job in jobs.items():
+                if name != "publication_admission":
+                    assert "publication_admission" in job["needs"]
 
     assert release_artifacts.get("name") == "release-artifacts"
     assert release_artifacts["jobs"]["build"]["name"] == (
