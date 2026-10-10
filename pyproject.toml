@@ -38,7 +38,7 @@ dev = [
   "mkdocs-glightbox>=0.4.0,<1.0",
   "mkdocs-include-markdown-plugin>=7.0.0,<8.0",
   "mkdocs-literate-nav>=0.6.0,<1.0",
-  "mkdocs-material>=9.5.39,<10.0",
+  "mkdocs-material==9.7.7",
   "mkdocs-minify-plugin>=0.8.0,<1.0",
   "mkdocs-redirects>=1.2.1,<2.0",
   "mkdocs-section-index>=0.3.10,<1.0",
