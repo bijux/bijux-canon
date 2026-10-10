@@ -45,7 +45,7 @@ def test_real_truth_covers_every_required_source_and_role() -> None:
         "record_count": 34,
         "source_count": 7,
         "truth_set_sha256": (
-            "5e53de286b1cb29ff51685fafa406396f8996a8c604b9a3b7d5d98e1e0c1b8ed"
+            "68797f9411f316c0dc6512e1160218a2a85517cef982b332dae720cb5594e4c0"
         ),
     }
     assert len({record["truth_id"] for record in records}) == 34
@@ -102,7 +102,7 @@ def test_pdf_truth_is_page_and_extractor_bound() -> None:
     for record in pdf_records:
         locator = record["locator"]
         assert isinstance(locator, dict)
-        assert locator["extractor"] == "pypdf-6.15.0-page-extract-text"
+        assert locator["extractor"] == "pypdf-6.19.0-page-extract-text"
 
 
 def test_ocr_truth_is_typed_refusal_without_invented_text() -> None:
@@ -117,3 +117,22 @@ def test_ocr_truth_is_typed_refusal_without_invented_text() -> None:
         "x": 0,
         "y": 0,
     }
+
+
+def test_pdf_qualification_retains_independent_reviewed_text() -> None:
+    records = deepcopy(_records())
+    record = next(item for item in records if item["format_id"] == "pdf-digital")
+    qualification = record["extraction_qualification"]
+    qualification["reviewed_exact_text"] = "different scientific claim"
+    _reidentify(record)
+    with pytest.raises(RuntimeError, match="PDF reviewed text drift"):
+        _validate(records)
+
+
+def test_pdf_qualification_cannot_be_omitted() -> None:
+    records = deepcopy(_records())
+    record = next(item for item in records if item["format_id"] == "pdf-digital")
+    del record["extraction_qualification"]
+    _reidentify(record)
+    with pytest.raises(RuntimeError, match="PDF extraction qualification is missing"):
+        _validate(records)

@@ -74,7 +74,7 @@ local-cpu = [
   "faiss-cpu>=1.13,<2.0; sys_platform != 'darwin'",
   "numpy>=1.26,<2.0; sys_platform == 'darwin'",
   "numpy>=1.26,<3.0; sys_platform != 'darwin'",
-  "sentence-transformers>=5.1,<6.0",
+  "sentence-transformers>=5.1,<7.0",
   "torch>=2.7,<3.0",
 ]
 dev = [

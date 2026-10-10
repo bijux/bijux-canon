@@ -8,8 +8,6 @@ import json
 from pathlib import Path
 
 import pytest
-from pypdf import PdfWriter
-
 from bijux_canon_ingest import (
     DiscoveredSource,
     DocumentParseError,
@@ -18,6 +16,7 @@ from bijux_canon_ingest import (
     admit_source,
     parse_pdf,
 )
+from pypdf import PdfWriter
 
 _REPOSITORY_ROOT = Path(__file__).resolve().parents[5]
 _QUALIFICATION_SOURCE = (
@@ -67,7 +66,7 @@ def test_pdf_parser_preserves_ordered_pages_geometry_and_metadata(
     )
     assert qualification_document.metadata.author is not None
     assert qualification_document.metadata.author.startswith("Oliver Smith")
-    assert qualification_document.extractor == "pypdf-6.15.0-page-extract-text"
+    assert qualification_document.extractor == "pypdf-6.19.0-page-extract-text"
 
 
 def test_pdf_parser_resolves_independently_reviewed_page_spans(

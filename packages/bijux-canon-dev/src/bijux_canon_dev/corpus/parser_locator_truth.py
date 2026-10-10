@@ -251,13 +251,34 @@ def verify_docx_locator(record: Mapping[str, Any], media_path: Path) -> str:
 def verify_pdf_locator(record: Mapping[str, Any], page_count: int) -> None:
     """Validate a manually reviewed PDF page-text-span locator."""
 
+    qualification = record.get("extraction_qualification")
+    if not isinstance(qualification, dict):
+        raise RuntimeError(
+            f"PDF extraction qualification is missing: {record['truth_id']}"
+        )
+    reviewed = qualification.get("reviewed_exact_text")
+    if (
+        qualification.get("method")
+        != "whitespace-only normalization against preserved independent review"
+        or not isinstance(reviewed, str)
+        or sha256(reviewed.encode("utf-8"))
+        != qualification.get("reviewed_exact_text_sha256")
+        or "".join(reviewed.split()) != "".join(record["exact_text"].split())
+    ):
+        raise RuntimeError(f"PDF reviewed text drift: {record['truth_id']}")
+    try:
+        date.fromisoformat(qualification["qualified_on"])
+    except (KeyError, TypeError, ValueError) as error:
+        raise RuntimeError(
+            f"PDF extraction qualification date is invalid: {record['truth_id']}"
+        ) from error
     locator = record["locator"]
     page = locator.get("page_number")
     start = locator.get("text_start")
     end = locator.get("text_end")
     exact_text = record["exact_text"]
     if (
-        locator.get("extractor") != "pypdf-6.15.0-page-extract-text"
+        locator.get("extractor") != "pypdf-6.19.0-page-extract-text"
         or not isinstance(page, int)
         or not 1 <= page <= page_count
         or not isinstance(start, int)
@@ -305,7 +326,7 @@ def validate_truth(
         locked = locked_sources[source_id]
         normalization = {
             "jats": "collapse-unicode-whitespace-v1",
-            "pdf-digital": "pypdf-6.15.0-page-extract-text",
+            "pdf-digital": "pypdf-6.19.0-page-extract-text",
             "html": "collapse-unicode-whitespace-v1",
             "markdown": "source-lines-with-lf-join-v1",
             "text": "source-lines-with-lf-join-v1",
