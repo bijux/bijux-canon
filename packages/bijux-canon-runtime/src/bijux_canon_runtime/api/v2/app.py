@@ -12,8 +12,10 @@ import threading
 from typing import Annotated, Any
 
 from fastapi import Body, Depends, FastAPI, Header, Query, Request, status
+from fastapi.exception_handlers import http_exception_handler
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from starlette.exceptions import HTTPException
 from starlette.responses import Response
 
 from bijux_canon_reason.evaluation import SystemOutput
@@ -267,6 +269,17 @@ def create_app(
             code=RuntimeProblemCode.UNSUPPORTED_VERSION,
             correlation_id=_correlation_id(request),
             headers={"Bijux-API-Supported-Versions": SUPPORTED_VERSION},
+        )
+
+    @api.exception_handler(HTTPException)
+    async def invalid_body(request: Request, exc: HTTPException) -> Response:
+        if exc.status_code != 400:
+            return await http_exception_handler(request, exc)
+        return _problem(
+            code=RuntimeProblemCode.INVALID_REQUEST,
+            correlation_id=_correlation_id(request),
+            cause=str(exc.detail),
+            headers=exc.headers,
         )
 
     @api.exception_handler(RequestValidationError)
