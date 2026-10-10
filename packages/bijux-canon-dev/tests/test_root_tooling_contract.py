@@ -142,9 +142,15 @@ def test_root_pytest_environment_keeps_generated_state_under_artifacts() -> None
     assert "cache_dir = ../artifacts/root/pytest-cache" in pytest_configuration
 
 
-def test_root_pyproject_uses_only_the_shared_dev_group() -> None:
+def test_root_pyproject_isolates_documentation_from_workspace_dependencies() -> None:
     dependency_groups = _as_dict(_root_pyproject()["dependency-groups"])
-    assert set(dependency_groups) == {"dev"}
+    assert set(dependency_groups) == {"dev", "docs"}
+    docs = dependency_groups["docs"]
+    assert isinstance(docs, list)
+    assert "mkdocs==1.6.1" in docs
+    assert "mkdocs-material==9.7.7" in docs
+    assert all(isinstance(requirement, str) for requirement in docs)
+    assert not any(str(requirement).startswith("bijux-") for requirement in docs)
 
 
 def test_root_make_does_not_declare_proteomics_only_extensions() -> None:

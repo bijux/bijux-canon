@@ -5,10 +5,13 @@ from pathlib import Path
 import re
 import subprocess
 import sys
+from urllib.parse import urljoin, urlparse
 
 import pytest
+import yaml
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
+SITE_URL = "https://bijux.io/bijux-canon/"
 MERMAID_RESERVED_IDS = {
     "class",
     "classdef",
@@ -25,95 +28,62 @@ MERMAID_RESERVED_IDS = {
 class _RenderedNavigationParser(HTMLParser):
     def __init__(self) -> None:
         super().__init__()
-        self._stack: list[tuple[str, dict[str, str], set[str]]] = []
-        self._capture: str | None = None
-        self._capture_tag: str | None = None
-        self._buffer: list[str] = []
-        self._detail_depth: int | None = None
-        self._scoped_nav_depth: int | None = None
-        self.detail_tabs: list[str] = []
-        self.active_detail_tabs: list[str] = []
-        self.sidebar_links: list[str] = []
-        self.sidebar_title: str | None = None
+        self.depth = 0
+        self.navigation_depth: int | None = None
+        self.variant: str | None = None
+        self.links: list[tuple[str, bool]] = []
 
-    def handle_starttag(
-        self,
-        tag: str,
-        attrs: list[tuple[str, str | None]],
-    ) -> None:
-        attr_map = {name: value or "" for name, value in attrs}
-        classes = set(attr_map.get("class", "").split())
-        self._stack.append((tag, attr_map, classes))
-        depth = len(self._stack)
-
-        if "bijux-detail-tabs" in classes and "hidden" not in attr_map:
-            self._detail_depth = depth
-        if attr_map.get("data-bijux-nav-variant") == "scoped":
-            self._scoped_nav_depth = depth
-
-        if tag == "a":
-            if self._detail_depth is not None:
-                self._capture = (
-                    "active_detail_tabs"
-                    if self._inside("bijux-tabs__item--active")
-                    else "detail_tabs"
-                )
-                self._capture_tag = tag
-                self._buffer = []
-            elif (
-                self._scoped_nav_depth is not None
-                and self._inside("md-nav__list")
-                and not self._inside("md-nav__source")
-                and not self._inside("md-sidebar--secondary")
-            ):
-                self._capture = "sidebar_links"
-                self._capture_tag = tag
-                self._buffer = []
-        elif (
-            tag == "label"
-            and "md-nav__title" in classes
-            and self._scoped_nav_depth is not None
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        if tag not in {
+            "area",
+            "base",
+            "br",
+            "col",
+            "embed",
+            "hr",
+            "img",
+            "input",
+            "link",
+            "meta",
+            "param",
+            "source",
+            "track",
+            "wbr",
+        }:
+            self.depth += 1
+        values = dict(attrs)
+        if tag == "nav" and values.get("id") == "bijux-navigation":
+            self.navigation_depth = self.depth
+            self.variant = values.get("data-bijux-nav-variant")
+        if (
+            self.navigation_depth is not None
+            and tag == "a"
+            and "md-nav__link" in str(values.get("class", "")).split()
         ):
-            self._capture = "sidebar_title"
-            self._capture_tag = tag
-            self._buffer = []
+            self.links.append(
+                (str(values.get("href", "")), values.get("aria-current") == "page")
+            )
 
     def handle_endtag(self, tag: str) -> None:
-        if (
-            self._capture
-            and self._capture_tag == tag
-            and self._stack
-            and self._stack[-1][0] == tag
-        ):
-            text = " ".join(" ".join(self._buffer).split())
-            if text:
-                if self._capture == "detail_tabs":
-                    self.detail_tabs.append(text)
-                elif self._capture == "active_detail_tabs":
-                    self.detail_tabs.append(text)
-                    self.active_detail_tabs.append(text)
-                elif self._capture == "sidebar_links":
-                    self.sidebar_links.append(text)
-                elif self._capture == "sidebar_title":
-                    self.sidebar_title = text
-            self._capture = None
-            self._capture_tag = None
-            self._buffer = []
+        if tag == "nav" and self.navigation_depth == self.depth:
+            self.navigation_depth = None
+        self.depth = max(0, self.depth - 1)
 
-        if self._detail_depth == len(self._stack):
-            self._detail_depth = None
-        if self._scoped_nav_depth == len(self._stack):
-            self._scoped_nav_depth = None
 
-        if self._stack:
-            self._stack.pop()
-
-    def handle_data(self, data: str) -> None:
-        if self._capture:
-            self._buffer.append(data)
-
-    def _inside(self, class_name: str) -> bool:
-        return any(class_name in classes for _, _, classes in self._stack)
+def _authored_routes(value: object) -> list[str]:
+    if isinstance(value, str):
+        if not value.endswith(".md"):
+            return []
+        return [
+            value.removesuffix("index.md")
+            if value.endswith("index.md")
+            else value.removesuffix(".md") + "/"
+        ]
+    if isinstance(value, dict):
+        return [route for child in value.values() for route in _authored_routes(child)]
+    if isinstance(value, list):
+        return [route for child in value for route in _authored_routes(child)]
+    return []
 
 
 @pytest.fixture(scope="session")
@@ -137,447 +107,67 @@ def rendered_docs(tmp_path_factory: pytest.TempPathFactory) -> Path:
     return site_dir
 
 
-def _parse_navigation(site_dir: Path, relative_path: str) -> _RenderedNavigationParser:
-    text = (site_dir / relative_path).read_text(encoding="utf-8")
-    parser = _RenderedNavigationParser()
-    parser.feed(text)
-    if parser.sidebar_title is None:
-        match = re.search(
-            r'data-bijux-nav-variant="scoped".*?<label class="md-nav__title"[^>]*>'
-            r".*?</a>\s*([^<]+?)\s*</label>",
-            text,
-            re.DOTALL,
-        )
-        if match:
-            parser.sidebar_title = " ".join(match.group(1).split())
-    parser.sidebar_links = [
-        link for link in parser.sidebar_links if "bijux/bijux-canon" not in link
-    ]
-    if (
-        parser.sidebar_title
-        and parser.sidebar_links
-        and parser.sidebar_links[0] == parser.sidebar_title
-    ):
-        parser.sidebar_links = parser.sidebar_links[1:]
-    return parser
-
-
-def _page_text(site_dir: Path, relative_path: str) -> str:
-    return (site_dir / relative_path).read_text(encoding="utf-8")
-
-
-def _iter_mermaid_blocks() -> list[tuple[Path, str]]:
-    blocks: list[tuple[Path, str]] = []
-    for path in (REPO_ROOT / "docs").rglob("*.md"):
-        text = path.read_text(encoding="utf-8")
-        blocks.extend(
-            (path.relative_to(REPO_ROOT), match.group(1))
-            for match in re.finditer(r"```mermaid\n([\s\S]*?)\n```", text)
-        )
-    return blocks
-
-
-def _declared_mermaid_node_ids(block: str) -> set[str]:
-    ids: set[str] = set()
-    for line in block.splitlines():
-        match = re.match(r"\s*([A-Za-z_][A-Za-z0-9_-]*)\s*\[", line)
-        if match:
-            ids.add(match.group(1).lower())
-    return ids
-
-
-@pytest.mark.slow
-def test_product_package_detail_tabs_follow_authored_order(
-    rendered_docs: Path,
-) -> None:
-    page = _parse_navigation(rendered_docs, "03-bijux-canon-index/index.html")
-
-    assert page.detail_tabs == [
-        "Home",
-        "Foundation",
-        "Architecture",
-        "Interfaces",
-        "Operations",
-        "Quality",
-    ]
-    assert page.active_detail_tabs == ["Home"]
-
-
-def test_docs_mermaid_diagrams_avoid_reserved_node_ids() -> None:
-    failures = []
-
-    for path, block in _iter_mermaid_blocks():
-        reserved_ids = sorted(
-            MERMAID_RESERVED_IDS.intersection(_declared_mermaid_node_ids(block))
-        )
-        if reserved_ids:
-            failures.append(f"{path}: reserved Mermaid ids {', '.join(reserved_ids)}")
-
-    assert not failures, "Mermaid diagrams use reserved node ids:\n" + "\n".join(
-        failures
-    )
-
-
 @pytest.mark.parametrize(
     "relative_path",
     [
         "index.html",
         "01-bijux-canon/index.html",
+        "01-bijux-canon/foundation/package-map/index.html",
+        "01-bijux-canon/operations/review-expectations/index.html",
         "03-bijux-canon-index/index.html",
+        "03-bijux-canon-index/architecture/code-navigation/index.html",
+        "03-bijux-canon-index/interfaces/index.html",
+        "03-bijux-canon-index/interfaces/api-surface/index.html",
+        "02-bijux-canon-ingest/operations/index.html",
+        "04-bijux-canon-reason/operations/index.html",
         "05-bijux-canon-agent/index.html",
         "07-bijux-canon-maintain/index.html",
+        "07-bijux-canon-maintain/bijux-canon-dev/security-gates/index.html",
+        "07-bijux-canon-maintain/makes/package-dispatch/index.html",
+        "07-bijux-canon-maintain/gh-workflows/release-workflows/index.html",
         "08-compat-packages/index.html",
+        "08-compat-packages/catalog/bijux-agent/index.html",
+        "08-compat-packages/migration/retirement-playbook/index.html",
     ],
 )
-def test_overview_pages_hide_primary_sidebar(
+def test_native_navigation_retains_every_authored_route_and_current_page(
     rendered_docs: Path,
     relative_path: str,
 ) -> None:
-    text = _page_text(rendered_docs, relative_path)
-    page = _parse_navigation(rendered_docs, relative_path)
-
-    assert 'data-bijux-nav-empty="true"' in text
-    assert page.sidebar_links == []
-
-
-def test_repository_detail_tabs_keep_home_first(rendered_docs: Path) -> None:
-    page = _parse_navigation(rendered_docs, "01-bijux-canon/index.html")
-
-    assert page.detail_tabs == [
-        "Home",
-        "Foundation",
-        "Operations",
-    ]
-    assert page.active_detail_tabs == ["Home"]
-
-
-def test_repository_foundation_leaf_pages_keep_section_sidebar(
-    rendered_docs: Path,
-) -> None:
-    page = _parse_navigation(
-        rendered_docs,
-        "01-bijux-canon/foundation/package-map/index.html",
-    )
-
-    assert page.active_detail_tabs == ["Foundation"]
-    assert page.sidebar_title == "Foundation"
-    assert page.sidebar_links == [
-        "Platform Overview",
-        "Repository Scope",
-        "Workspace Layout",
-        "Package Map",
-        "Ownership Model",
-        "Domain Language",
-        "Evidence Map",
-        "Change Principles",
-        "Decision Rules",
-    ]
-
-
-def test_repository_operations_leaf_pages_keep_section_sidebar(
-    rendered_docs: Path,
-) -> None:
-    page = _parse_navigation(
-        rendered_docs,
-        "01-bijux-canon/operations/review-expectations/index.html",
-    )
-
-    assert page.active_detail_tabs == ["Operations"]
-    assert page.sidebar_title == "Operations"
-    assert page.sidebar_links == [
-        "Local Development",
-        "Testing and Validation",
-        "Release and Versioning",
-        "Version 0.4.0 Release Candidate",
-        "API and Schema Governance",
-        "Contributor Workflows",
-        "Automation Surfaces",
-        "Artifact Governance",
-        "Production Threat Model",
-        "Security Evidence and Incident Response",
-        "Review Expectations",
-        "Change Management",
-    ]
-
-
-def test_primary_sidebar_does_not_use_lifted_nav_mode(rendered_docs: Path) -> None:
-    text = _page_text(rendered_docs, "04-bijux-canon-reason/interfaces/index.html")
-
-    assert 'data-bijux-nav-variant="scoped"' in text
-    assert '<nav class="md-nav md-nav--primary md-nav--lifted"' not in text
-
-
-def test_header_navigation_uses_canonical_path_contract(rendered_docs: Path) -> None:
-    text = _page_text(rendered_docs, "03-bijux-canon-index/interfaces/index.html")
-
-    assert 'data-bijux-site-path="/"' in text
-    assert 'data-bijux-site-path="/03-bijux-canon-index/"' in text
-    assert 'data-bijux-site-path="/04-bijux-canon-reason/"' in text
-    assert 'data-bijux-detail-root-path="/03-bijux-canon-index/"' in text
-    assert 'data-bijux-detail-path="/03-bijux-canon-index/interfaces/"' in text
-    assert 'data-bijux-detail-path="/03-bijux-canon-index/architecture/"' in text
-    assert "data-bijux-site-target" not in text
-    assert "data-bijux-detail-target" not in text
-    assert "data-bijux-detail-root=" not in text
+    parser = _RenderedNavigationParser()
+    parser.feed((rendered_docs / relative_path).read_text(encoding="utf-8"))
+    assert parser.variant == "complete"
+    document = yaml.compose((REPO_ROOT / "mkdocs.yml").read_text(encoding="utf-8"))
+    assert isinstance(document, yaml.MappingNode)
+    navigation = next(value for key, value in document.value if key.value == "nav")
+    config = {"nav": yaml.safe_load(yaml.serialize(navigation))}
+    expected = [urljoin(SITE_URL, route) for route in _authored_routes(config["nav"])]
+    page_url = urljoin(SITE_URL, relative_path.removesuffix("index.html"))
+    actual = [urljoin(page_url, href) for href, _ in parser.links]
+    assert actual == expected
+    active = [urljoin(page_url, href) for href, current in parser.links if current]
+    assert active
+    assert set(active) == {page_url}
+    for target in actual:
+        relative = urlparse(target).path.removeprefix("/bijux-canon/")
+        assert (rendered_docs / relative / "index.html").is_file()
 
 
 def test_hub_navigation_excludes_private_sites(rendered_docs: Path) -> None:
-    text = _page_text(rendered_docs, "index.html")
-
+    text = (rendered_docs / "index.html").read_text(encoding="utf-8")
     assert 'href="https://bijux.io/bijux-core/"' in text
     assert "bijux-genomics" not in text
 
 
-def test_repository_site_tab_uses_repository_label(rendered_docs: Path) -> None:
-    text = _page_text(rendered_docs, "01-bijux-canon/index.html")
-
-    assert re.search(r">\s*Repository\s*<", text)
-    assert re.search(r">\s*Maintainer\s*<", text)
-
-
-def test_rendered_header_marks_active_navigation_links(rendered_docs: Path) -> None:
-    text = _page_text(rendered_docs, "04-bijux-canon-reason/operations/index.html")
-
-    assert 'data-bijux-site-path="/04-bijux-canon-reason/" aria-current="page"' in text
-    assert (
-        'data-bijux-detail-path="/04-bijux-canon-reason/operations/" '
-        'aria-current="page"' in text
-    )
-
-
-def test_compatibility_detail_tabs_keep_package_names(rendered_docs: Path) -> None:
-    page = _parse_navigation(rendered_docs, "08-compat-packages/index.html")
-
-    assert page.detail_tabs == [
-        "Home",
-        "Catalog",
-        "Migration",
-    ]
-
-
-def test_compatibility_catalog_leaf_pages_keep_section_sidebar(
-    rendered_docs: Path,
-) -> None:
-    page = _parse_navigation(
-        rendered_docs,
-        "08-compat-packages/catalog/bijux-agent/index.html",
-    )
-
-    assert page.active_detail_tabs == ["Catalog"]
-    assert page.sidebar_title == "Catalog"
-    assert page.sidebar_links == [
-        "bijux-canon",
-        "agentic-flows",
-        "bijux-agent",
-        "bijux-rag",
-        "bijux-rar",
-        "bijux-vex",
-        "Legacy Name Map",
-        "Package Behavior",
-        "Import Surfaces",
-        "Command Surfaces",
-    ]
-
-
-def test_compatibility_migration_leaf_pages_keep_section_sidebar(
-    rendered_docs: Path,
-) -> None:
-    page = _parse_navigation(
-        rendered_docs,
-        "08-compat-packages/migration/retirement-playbook/index.html",
-    )
-
-    assert page.active_detail_tabs == ["Migration"]
-    assert page.sidebar_title == "Migration"
-    assert page.sidebar_links == [
-        "Compatibility Overview",
-        "Migration Guidance",
-        "Repository Consolidation",
-        "Canonical Targets",
-        "Dependency Continuity",
-        "Release Policy",
-        "Validation Strategy",
-        "Retirement Conditions",
-        "Retirement Playbook",
-    ]
-
-
-def test_maintenance_detail_tabs_keep_home_first(rendered_docs: Path) -> None:
-    page = _parse_navigation(rendered_docs, "07-bijux-canon-maintain/index.html")
-
-    assert page.detail_tabs == [
-        "Home",
-        "bijux-canon-dev",
-        "makes",
-        "gh-workflows",
-    ]
-    assert page.active_detail_tabs == ["Home"]
-
-
-def test_maintenance_dev_leaf_pages_keep_section_sidebar(
-    rendered_docs: Path,
-) -> None:
-    page = _parse_navigation(
-        rendered_docs,
-        "07-bijux-canon-maintain/bijux-canon-dev/security-gates/index.html",
-    )
-
-    assert page.active_detail_tabs == ["bijux-canon-dev"]
-    assert page.sidebar_title == "bijux-canon-dev"
-    assert page.sidebar_links == [
-        "Package Overview",
-        "Scope and Non-Goals",
-        "Module Map",
-        "Quality Gates",
-        "Security Gates",
-        "Schema Governance",
-        "Release Support",
-        "SBOM and Supply Chain",
-        "Operating Guidelines",
-    ]
-
-
-def test_maintenance_make_leaf_pages_keep_section_sidebar(
-    rendered_docs: Path,
-) -> None:
-    page = _parse_navigation(
-        rendered_docs,
-        "07-bijux-canon-maintain/makes/package-dispatch/index.html",
-    )
-
-    assert page.active_detail_tabs == ["makes"]
-    assert page.sidebar_title == "makes"
-    assert page.sidebar_links == [
-        "Make System Overview",
-        "Root Entrypoints",
-        "Environment Model",
-        "Repository Layout",
-        "Package Dispatch",
-        "CI Targets",
-        "Package Contracts",
-        "Release Surfaces",
-        "Authoring Rules",
-    ]
-
-
-def test_maintenance_workflow_leaf_pages_keep_section_sidebar(
-    rendered_docs: Path,
-) -> None:
-    page = _parse_navigation(
-        rendered_docs,
-        "07-bijux-canon-maintain/gh-workflows/release-workflows/index.html",
-    )
-
-    assert page.active_detail_tabs == ["gh-workflows"]
-    assert page.sidebar_title == "gh-workflows"
-    assert page.sidebar_links == [
-        "verify",
-        "reusable-workflows",
-        "deploy-docs",
-        "release-workflows",
-    ]
-
-
-def test_leaf_pages_keep_sidebar_scoped_to_current_section(rendered_docs: Path) -> None:
-    page = _parse_navigation(
-        rendered_docs,
-        "03-bijux-canon-index/architecture/code-navigation/index.html",
-    )
-
-    assert page.active_detail_tabs == ["Architecture"]
-    assert page.sidebar_title == "Architecture"
-    assert page.sidebar_links == [
-        "Module Map",
-        "Dependency Direction",
-        "Execution Model",
-        "State and Persistence",
-        "Integration Seams",
-        "Error Model",
-        "Extensibility Model",
-        "Code Navigation",
-        "Architecture Risks",
-    ]
-
-
-@pytest.mark.parametrize(
-    (
-        "relative_path",
-        "expected_active_detail",
-        "expected_sidebar_title",
-        "expected_sidebar_links",
-    ),
-    [
-        (
-            "03-bijux-canon-index/interfaces/index.html",
-            ["Interfaces"],
-            "Interfaces",
-            [
-                "CLI Surface",
-                "API Surface",
-                "Configuration Surface",
-                "Data Contracts",
-                "Artifact Contracts",
-                "Entrypoints and Examples",
-                "Operator Workflows",
-                "Public Imports",
-                "Compatibility Commitments",
-            ],
-        ),
-        (
-            "03-bijux-canon-index/interfaces/api-surface/index.html",
-            ["Interfaces"],
-            "Interfaces",
-            [
-                "CLI Surface",
-                "API Surface",
-                "Configuration Surface",
-                "Data Contracts",
-                "Artifact Contracts",
-                "Entrypoints and Examples",
-                "Operator Workflows",
-                "Public Imports",
-                "Compatibility Commitments",
-            ],
-        ),
-        (
-            "02-bijux-canon-ingest/operations/index.html",
-            ["Operations"],
-            "Operations",
-            [
-                "Installation and Setup",
-                "Local Development",
-                "Common Workflows",
-                "Observability and Diagnostics",
-                "Performance and Scaling",
-                "Failure Recovery",
-                "Release and Versioning",
-                "Security and Safety",
-                "Deployment Boundaries",
-            ],
-        ),
-    ],
-)
-def test_section_pages_keep_sidebar_scoped_to_current_third_row(
-    rendered_docs: Path,
-    relative_path: str,
-    expected_active_detail: list[str],
-    expected_sidebar_title: str,
-    expected_sidebar_links: list[str],
-) -> None:
-    page = _parse_navigation(rendered_docs, relative_path)
-
-    assert page.active_detail_tabs == expected_active_detail
-    assert page.sidebar_title == expected_sidebar_title
-    assert page.sidebar_links == expected_sidebar_links
-
-
-def test_navigation_sync_prefers_authored_active_links() -> None:
-    site_script = (
-        REPO_ROOT / "docs" / "assets" / "javascripts" / "shell" / "nav-state.js"
-    ).read_text(encoding="utf-8")
-    detail_script = (
-        REPO_ROOT / "docs" / "assets" / "javascripts" / "shell" / "detail-tabs.js"
-    ).read_text(encoding="utf-8")
-
-    assert "[data-bijux-site-path][aria-current='page']" in site_script
-    assert "a[data-bijux-detail-path][aria-current='page']" in detail_script
+def test_authored_mermaid_diagrams_avoid_reserved_node_names() -> None:
+    violations = []
+    for path in (REPO_ROOT / "docs").rglob("*.md"):
+        for block in re.findall(
+            r"```mermaid\n([\s\S]*?)\n```", path.read_text(encoding="utf-8")
+        ):
+            for node in re.findall(
+                r"^\s*([A-Za-z_][A-Za-z0-9_-]*)\s*\[", block, re.MULTILINE
+            ):
+                if node.lower() in MERMAID_RESERVED_IDS:
+                    violations.append((str(path.relative_to(REPO_ROOT)), node))
+    assert not violations

@@ -244,6 +244,16 @@
       "path": "docs/overrides/partials/search.html",
       "public_surface": true,
       "reason": "The accepted shared search template localizes its HTML input prompt through search.placeholder; these markers identify rendered input attributes rather than unfinished behavior."
+    },
+    {
+      "acceptance_tests": ["packages/bijux-canon-dev/tests/test_badge_sync.py"],
+      "classification": "valid_abstract_method_or_template",
+      "expected_occurrences": 2,
+      "marker_kinds": ["placeholder"],
+      "owner": "documentation-badge-catalog",
+      "path": "docs/badges.md",
+      "public_surface": true,
+      "reason": "The fenced badge catalog documents renderer interpolation variables; acceptance tests verify that the catalog produces actual package links."
     }
   ],
   "schema_version": "bijux.canon.placeholder_audit_policy.v1"
