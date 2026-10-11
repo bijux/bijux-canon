@@ -137,7 +137,7 @@ def test_verify_workflow_uses_repo_contract_job_and_package_matrix() -> None:
         entry for entry in include if entry["package_slug"] == "bijux-canon-runtime"
     )
     assert runtime["check_targets"] == (
-        '["quality", "security", "docs", "build", "sbom", "api", "openapi-drift"]'
+        '["quality", "security", "build", "sbom", "api", "openapi-drift"]'
     )
     assert runtime["api_toolchain_targets"] == '["api", "openapi-drift"]'
 
@@ -327,10 +327,9 @@ def test_reusable_workflows_use_uv_cache_contract() -> None:
     build_workflow = _workflow(WORKFLOWS_DIR / "release-artifacts.yml")
     docs_workflow = _workflow(WORKFLOWS_DIR / "deploy-docs.yml")
 
-    ci_uses = str(ci_wrapper["jobs"]["package"]["uses"])
-    assert ci_uses.startswith(
-        "bijux/bijux-std/.github/workflows/reusable-ci-python-packages.yml@"
-    )
+    ci_jobs = _as_dict(ci_wrapper["jobs"])
+    assert set(ci_jobs) == {"tests", "checks", "lint"}
+    assert all("uses" not in _as_dict(job) for job in ci_jobs.values())
 
     assert verify_workflow["jobs"]["repository"]["name"] == "repository-contracts"
     assert build_workflow["jobs"]["build"]["name"] == (
@@ -338,6 +337,7 @@ def test_reusable_workflows_use_uv_cache_contract() -> None:
     )
 
     reusable_jobs = [
+        *ci_jobs.values(),
         verify_workflow["jobs"]["repository"],
         build_workflow["jobs"]["build"],
         docs_workflow["jobs"]["build"],
