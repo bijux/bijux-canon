@@ -7,6 +7,7 @@ import importlib.metadata
 from pathlib import Path
 import platform
 
+from packaging.requirements import Requirement
 import pytest
 
 from bijux_canon_index.application import model_lifecycle
@@ -63,6 +64,57 @@ def _compatible_versions(monkeypatch: pytest.MonkeyPatch) -> None:
         lambda name: versions[name],
     )
     monkeypatch.setattr(platform, "python_version", lambda: "3.11.9")
+
+
+def test_model_runtime_requirements_match_installed_embeddings_metadata() -> None:
+    runtime_requirements = {
+        name: requirement
+        for name, _minimum, _upper_major, requirement in model_lifecycle._LIBRARY_REQUIREMENTS
+    }
+    declared = {
+        requirement.name: requirement.specifier
+        for raw in importlib.metadata.requires("bijux-canon-index") or ()
+        if (requirement := Requirement(raw)).name in runtime_requirements
+        and requirement.marker is not None
+        and requirement.marker.evaluate({"extra": "embeddings"})
+    }
+
+    assert declared == {
+        name: Requirement(name + requirement).specifier
+        for name, requirement in runtime_requirements.items()
+    }
+
+
+@pytest.mark.parametrize("version", ["5.1.0", "5.5.1", "6.1.0"])
+def test_model_admission_accepts_declared_sentence_transformer_versions(
+    monkeypatch: pytest.MonkeyPatch, version: str
+) -> None:
+    _compatible_versions(monkeypatch)
+    versions = dict(_versions())
+    versions["sentence-transformers"] = version
+    monkeypatch.setattr(importlib.metadata, "version", lambda name: versions[name])
+
+    compatibility = model_lifecycle._compatibility()
+
+    assert compatibility.status == "compatible"
+    assert {
+        "name": "sentence-transformers",
+        "installed": version,
+        "requirement": ">=5.1,<7.0",
+    } in compatibility.libraries
+
+
+@pytest.mark.parametrize("version", ["5.0.9", "7.0.0", "uninterpretable"])
+def test_model_admission_refuses_unsupported_sentence_transformer_versions(
+    monkeypatch: pytest.MonkeyPatch, version: str
+) -> None:
+    _compatible_versions(monkeypatch)
+    versions = dict(_versions())
+    versions["sentence-transformers"] = version
+    monkeypatch.setattr(importlib.metadata, "version", lambda name: versions[name])
+
+    with pytest.raises(ModelLifecycleError, match="incompatible|not interpretable"):
+        model_lifecycle._compatibility()
 
 
 def test_registration_records_pinned_source_files_license_and_cpu_validation(
