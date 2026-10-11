@@ -106,6 +106,7 @@ class DocumentationPublicationCommandTests(unittest.TestCase):
         pin = self.root / ".github/standards/bijux-std.sha"
         pin.parent.mkdir(parents=True, exist_ok=True)
         pin.write_text("a" * 40 + "\n")
+        (pin.parent / "bijux-docs.sha").write_text("a" * 40 + "\n")
         (self.root / "mkdocs.yml").write_text(
             "site_name: Controlled command interface\n"
         )
@@ -171,7 +172,9 @@ class DocumentationPublicationCommandTests(unittest.TestCase):
             "gh-docs-install", "PYTHON=" + sys.executable, "UV=uv", dry=True
         )
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn("bijux_canon_dev.docs.environment", result.stdout)
+        self.assertIn("install_publication_renderer.py", result.stdout)
+        self.assertIn("--recipe history-legacy", result.stdout)
+        self.assertNotIn("uv sync", result.stdout)
         self.assertNotIn("install-interface-reached", result.stdout)
         self.assertFalse((self.root / "artifacts/install-interface-reached").exists())
 
