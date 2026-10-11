@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 import shlex
 import subprocess
@@ -198,7 +199,10 @@ def test_package_benchmark_storage_uses_repository_artifacts() -> None:
                 continue
             storage = option.removeprefix("--benchmark-storage=")
             assert storage.startswith("file://"), (package_name, storage)
-            destination = (package_root / storage.removeprefix("file://")).resolve()
+            # Package-only CI must not depend on another package's artifact alias.
+            destination = Path(
+                os.path.abspath(package_root / storage.removeprefix("file://"))
+            )
             assert destination.is_relative_to(REPO_ROOT / "artifacts"), (
                 package_name,
                 destination,
