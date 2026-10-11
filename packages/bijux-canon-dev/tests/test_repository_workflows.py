@@ -1,10 +1,16 @@
 from __future__ import annotations
 
+import ast
+import copy
+import importlib.util
 import json
-from pathlib import Path
 import re
+import sys
+from pathlib import Path
+from types import ModuleType
 from typing import Any
 
+import pytest
 import yaml
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -18,6 +24,7 @@ EXPECTED_WORKFLOWS = {
     "bijux-std.yml",
     "ci.yml",
     "deploy-docs.yml",
+    "dependency-notice.yml",
     "github-policy.yml",
     "pr-approval-policy.yml",
     "release-artifacts.yml",
@@ -204,14 +211,20 @@ def test_verify_workflow_uses_repo_contract_job_and_package_matrix() -> None:
     ]
 
 
-def test_automerge_relies_on_protected_branch_checks_without_preflight_race() -> None:
+def test_dependency_merge_requires_owner_consolidation_without_auto_merge() -> None:
     workflow = _workflow(WORKFLOWS_DIR / "automerge-pr.yml")
     jobs = _as_dict(workflow.get("jobs"))
     workflow_text = (WORKFLOWS_DIR / "automerge-pr.yml").read_text(encoding="utf-8")
 
-    assert set(jobs) == {"enable"}
-    assert "needs" not in _as_dict(jobs["enable"])
-    assert "check_workflow_prerequisites.py" not in workflow_text
+    assert set(_as_dict(workflow["on"])) == {"workflow_dispatch"}
+    assert workflow["permissions"] == {"contents": "read"}
+    assert set(jobs) == {"owner-consolidation"}
+    assert jobs["owner-consolidation"]["name"] == (
+        "dependency / owner consolidation policy"
+    )
+    assert "gh pr merge" not in workflow_text
+    assert "enablePullRequestAutoMerge" not in workflow_text
+    assert "pull-requests: write" not in workflow_text
 
 
 def test_release_matrices_and_branch_protection_require_product_readiness() -> None:
@@ -331,7 +344,9 @@ def test_reusable_workflows_use_uv_cache_contract() -> None:
     assert set(ci_jobs) == {"tests", "checks", "lint"}
     assert all("uses" not in _as_dict(job) for job in ci_jobs.values())
 
-    assert verify_workflow["jobs"]["repository"]["name"] == "repository-contracts"
+    assert (
+        _human_job_name(verify_workflow["jobs"]["repository"]) == "repository-contracts"
+    )
     assert build_workflow["jobs"]["build"]["name"] == (
         "release-artifacts-${{ inputs.package_slug }}"
     )
@@ -412,3 +427,233 @@ def test_markdown_workflow_links_track_checked_in_workflow_tree() -> None:
     }
     assert {"verify.yml", "release-github.yml", "deploy-docs.yml"} <= root_workflows
     assert not failures, "workflow doc links failed:\n" + "\n".join(failures)
+
+
+DEPENDENCY_PROPOSAL_MATCH = (
+    "github.event.pull_request.user.login == 'dependabot[bot]' || "
+    "(github.event.pull_request.user.login == 'github-actions[bot]' && "
+    "github.event.pull_request.head.ref == 'automation/dependency-lock-refresh')"
+)
+UNVERIFIED_JOB_PREFIX = (
+    "${{ (" + DEPENDENCY_PROPOSAL_MATCH + ") && 'unverified dependency / ' || '' }}"
+)
+
+
+def _human_job_name(job: dict[str, Any]) -> str:
+    name = str(job["name"])
+    assert name.startswith(UNVERIFIED_JOB_PREFIX)
+    return name.removeprefix(UNVERIFIED_JOB_PREFIX)
+
+
+def _workflow_execution() -> ModuleType:
+    package = REPO_ROOT / ".github" / "scripts" / "workflow_execution"
+    name = "bijux_canon_workflow_execution"
+    if name in sys.modules:
+        return sys.modules[name]
+    spec = importlib.util.spec_from_file_location(
+        name, package / "__init__.py", submodule_search_locations=[str(package)]
+    )
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+def _execution_policy() -> dict[str, Any]:
+    manifest = json.loads(
+        (REPO_ROOT / ".github/standards/repo-config.manifest.json").read_text()
+    )
+    repository = next(
+        entry for entry in manifest["repositories"] if entry["name"] == "bijux-canon"
+    )
+    policy = _as_dict(repository["workflow_execution_policy"])
+    assert policy["dependency_pull_requests"] == "notification-only"
+    assert policy["dependency_merge"] == "owner-consolidation"
+    assert policy["main_verification"] == "accepted-pull-request"
+    return policy
+
+
+def test_dependency_notice_cannot_replace_required_verification() -> None:
+    notice = _workflow(WORKFLOWS_DIR / "dependency-notice.yml")
+    assert set(notice["on"]) == {"pull_request_target"}
+    assert notice["permissions"] == {"contents": "read"}
+    assert set(notice["jobs"]) == {"notice"}
+    job = notice["jobs"]["notice"]
+    assert job["name"] == "dependency / owner review notice"
+    assert job["if"] == ("${{ " + DEPENDENCY_PROPOSAL_MATCH + " }}")
+    assert job["timeout-minutes"] == 1
+    assert all("uses" not in step for step in job["steps"])
+    ruleset = json.loads(
+        (REPO_ROOT / ".github/rulesets/main-branch-protection.json").read_text()
+    )
+    required = {
+        check["context"]
+        for rule in ruleset["rules"]
+        if rule["type"] == "required_status_checks"
+        for check in rule["parameters"]["required_status_checks"]
+    }
+    assert {
+        "verification-ready",
+        "policy / github",
+        "policy / pr approval",
+        "std / standard",
+        "std / report",
+    } <= required
+    assert job["name"] not in required
+    assert not any(
+        context.startswith("unverified dependency / ") for context in required
+    )
+
+
+def test_human_verification_retains_product_and_approval_gates() -> None:
+    documents = {
+        str(path.relative_to(REPO_ROOT)): _workflow(path)
+        for path in WORKFLOWS_DIR.glob("*.yml")
+    }
+    execution = _workflow_execution()
+    execution.validate_owned_execution(documents, _execution_policy())
+    for document in documents.values():
+        assert "push" not in document["on"]
+        if (
+            not {
+                "pull_request",
+                "pull_request_target",
+                "pull_request_review",
+            }.intersection(document["on"])
+            or document is documents[".github/workflows/dependency-notice.yml"]
+        ):
+            continue
+        for job in document["jobs"].values():
+            assert (
+                "github.event.pull_request.user.login != 'dependabot[bot]'" in job["if"]
+            )
+            assert "github.actor" not in job["if"]
+            human_name = _human_job_name(job)
+            assert human_name
+            assert "unverified dependency / " + human_name != human_name
+    verify = documents[".github/workflows/verify.yml"]
+    assert _human_job_name(verify["jobs"]["verification_ready"]) == "verification-ready"
+    assert set(verify["jobs"]) == {
+        "repository",
+        "package",
+        "supported_python",
+        "installed_family",
+        "verification_ready",
+    }
+    approval = documents[".github/workflows/pr-approval-policy.yml"]
+    assert approval["jobs"]
+    assert (
+        "owner-self-signoff" in (WORKFLOWS_DIR / "pr-approval-policy.yml").read_text()
+    )
+
+
+@pytest.mark.parametrize(
+    "mutation", ["guard", "triggering-actor", "required-name", "push", "notice-name"]
+)
+def test_unverified_or_duplicate_workflow_cannot_pass_execution_admission(
+    mutation: str,
+) -> None:
+    path = WORKFLOWS_DIR / (
+        "dependency-notice.yml" if mutation == "notice-name" else "verify.yml"
+    )
+    document = copy.deepcopy(_workflow(path))
+    if mutation == "guard":
+        del document["jobs"]["verification_ready"]["if"]
+    elif mutation == "triggering-actor":
+        job = document["jobs"]["verification_ready"]
+        job["if"] = job["if"].replace(
+            "github.event.pull_request.user.login", "github.actor"
+        )
+    elif mutation == "required-name":
+        document["jobs"]["verification_ready"]["name"] = "verification-ready"
+    elif mutation == "push":
+        document["on"]["push"] = {"branches": ["main"]}
+    else:
+        document["jobs"]["notice"]["name"] = "verification-ready"
+    with pytest.raises(ValueError):
+        _workflow_execution().validate_owned_execution(
+            {str(path.relative_to(REPO_ROOT)): document}, _execution_policy()
+        )
+
+
+def _evaluate_author_admission(
+    expression: str, *, event: str, author: str, head: str
+) -> bool:
+    replacements = {
+        "github.event_name": event,
+        "github.event.pull_request.user.login": author,
+        "github.event.pull_request.head.ref": head,
+    }
+    for key, value in replacements.items():
+        expression = expression.replace(key, repr(value))
+    tree = ast.parse(
+        expression.replace("&&", " and ").replace("||", " or "), mode="eval"
+    )
+
+    def evaluate(node: ast.AST) -> bool | str:
+        if isinstance(node, ast.Expression):
+            return evaluate(node.body)
+        if isinstance(node, ast.Constant) and isinstance(node.value, (str, bool)):
+            return node.value
+        if isinstance(node, ast.BoolOp):
+            values = [bool(evaluate(value)) for value in node.values]
+            if isinstance(node.op, ast.And):
+                return all(values)
+            if isinstance(node.op, ast.Or):
+                return any(values)
+        if (
+            isinstance(node, ast.Compare)
+            and len(node.ops) == len(node.comparators) == 1
+        ):
+            left, right = evaluate(node.left), evaluate(node.comparators[0])
+            if isinstance(node.ops[0], ast.Eq):
+                return left == right
+            if isinstance(node.ops[0], ast.NotEq):
+                return left != right
+        raise AssertionError(
+            f"Unsupported author-admission expression: {ast.dump(node)}"
+        )
+
+    return bool(evaluate(tree))
+
+
+@pytest.mark.parametrize(
+    ("author", "head", "notification"),
+    [
+        ("dependabot[bot]", "dependabot/pip/urllib3", True),
+        ("github-actions[bot]", "automation/dependency-lock-refresh", True),
+        ("github-actions[bot]", "automation/dependency-lock-refresh-extra", False),
+        ("github-actions[bot]", "feature/product-interface", False),
+        ("bijan", "automation/dependency-lock-refresh", False),
+    ],
+)
+def test_dependency_notice_is_bounded_by_original_author_and_exact_head(
+    author: str, head: str, notification: bool
+) -> None:
+    dependency = _workflow_execution().dependency_prs
+    assert dependency.DEPENDENCY_PROPOSAL_MATCH == DEPENDENCY_PROPOSAL_MATCH
+    notice = _workflow(WORKFLOWS_DIR / "dependency-notice.yml")
+    notice_expression = notice["jobs"]["notice"]["if"][3:-2].strip()
+    for event in ("pull_request", "pull_request_target", "pull_request_review"):
+        assert (
+            _evaluate_author_admission(
+                notice_expression, event=event, author=author, head=head
+            )
+            is notification
+        )
+        assert (
+            _evaluate_author_admission(
+                dependency.DEPENDENCY_PR_EXCLUSION,
+                event=event,
+                author=author,
+                head=head,
+            )
+            is not notification
+        )
+    assert _evaluate_author_admission(
+        dependency.DEPENDENCY_PR_EXCLUSION,
+        event="workflow_dispatch",
+        author=author,
+        head=head,
+    )

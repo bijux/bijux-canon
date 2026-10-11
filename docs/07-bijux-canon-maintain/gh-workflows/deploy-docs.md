@@ -4,7 +4,7 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-dev-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-10-11
 ---
 
 # Documentation Deployment
@@ -16,7 +16,7 @@ visible custody chain.
 
 ```mermaid
 flowchart LR
-    T[Manual dispatch or workflow call] --> C[Resolve configuration]
+    T[Admitted manual dispatch] --> C[Resolve configuration]
     C --> S[Provision required toolchains]
     S --> B[Run install and build commands]
     B --> R[Resolve site directory]
@@ -27,14 +27,16 @@ flowchart LR
 
 ## Trigger and permission boundary
 
-The workflow supports `workflow_dispatch` and `workflow_call`. It grants
-`contents: read`, `pages: write`, and `id-token: write`; the deploy job targets
-the protected `github-pages` environment and reports the deployed URL.
-Concurrency is scoped to the ref, with stale runs cancelled.
+The workflow supports only `workflow_dispatch` on `refs/heads/main`, with an
+explicit `accepted_commit` selected by the authorized publication controller.
+The admission job validates the authenticated actor and exact accepted commit
+before building. Its product evidence comes from the accepted human pull
+request; a dependency notice cannot supply publication readiness.
 
-A manual run must originate from `main`, `master`, or a `v*` tag. A reusable
-workflow call may deploy from its caller context. The deploy job otherwise
-requires an allowed branch or tag and a successfully resolved site artifact.
+Repository content is read-only for construction. Pages and identity-token
+write permissions belong to the deployment job, which targets the protected
+`github-pages` environment and reports the deployed URL. Concurrency is scoped
+to the ref, with stale runs canceled.
 
 ## Configuration precedence
 
