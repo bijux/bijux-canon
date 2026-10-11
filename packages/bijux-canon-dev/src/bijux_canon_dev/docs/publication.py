@@ -268,6 +268,12 @@ def build(root: Path) -> None:
     )
     command(
         root,
+        "bash",
+        str(shared / "tooling/scripts/verify_bijux_docs_site.sh"),
+        authority=authority,
+    )
+    command(
+        root,
         sys.executable,
         str(publisher),
         "--repo-root",
