@@ -450,8 +450,9 @@ def _cpu_profile_probe(*, runtime: bool) -> str:
         [
             "import importlib.metadata as metadata",
             "import json",
-            "import torch",
+            # Legacy macOS FAISS must initialize before Torch native libraries.
             "import faiss",
+            "import torch",
             "import numpy as np",
             "assert torch.version.cuda is None, torch.version.cuda",
             "installed = sorted({(item.metadata.get('Name') or '').lower() for item in metadata.distributions()})",

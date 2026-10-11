@@ -54,6 +54,12 @@ process with PyTorch safely; newer FAISS macOS wheels abort after duplicate
 OpenMP initialization, and FAISS 1.7.4 has no Python 3.12+ wheel. The base
 lexical and `api` installations continue to support Python 3.11 through 3.14.
 
+The native CPU admission probe loads FAISS before PyTorch: the legacy macOS
+combination is sensitive to native library initialization order. Available
+Python 3.12+ wheels do not extend the macOS native support promise; the
+newer-interpreter native test matrix runs on Linux. Do not suppress duplicate
+OpenMP errors with `KMP_DUPLICATE_LIB_OK`.
+
 The `bijux-cli` dependency publishes a Linux x86_64 wheel. On Linux ARM64,
 install a C build toolchain before installing Runtime so pip can build that
 dependency from its source distribution. For example, Debian and Ubuntu hosts

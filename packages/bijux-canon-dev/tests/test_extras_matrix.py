@@ -1,13 +1,15 @@
 from __future__ import annotations
 
-import json
-import tomllib
-import zipfile
 from collections.abc import Mapping, Sequence
 from email.message import Message
+import json
 from pathlib import Path
+import tomllib
+import zipfile
 
+from packaging.requirements import Requirement
 import pytest
+
 from bijux_canon_dev.release.extras_matrix import (
     ExtrasMatrixError,
     _cpu_profile_probe,
@@ -17,7 +19,6 @@ from bijux_canon_dev.release.extras_matrix import (
     run_extras_matrix,
 )
 from bijux_canon_dev.release.python_support_matrix import CommandResult
-from packaging.requirements import Requirement
 
 SOURCE_COMMIT = "4" * 40
 PYTHON_VERSIONS = ("3.11", "3.12", "3.13", "3.14")
@@ -274,7 +275,7 @@ def test_cpu_profile_probe_executes_faiss_and_refuses_gpu_distributions() -> Non
     assert "torch.version.cuda is None" in probe
     assert "name.startswith('nvidia-')" in probe
     assert "'/api/v2/live'" in probe
-    assert probe.index("import torch") < probe.index("import faiss")
+    assert probe.index("import faiss") < probe.index("import torch")
 
 
 def test_matrix_retains_a_failed_install_row(tmp_path: Path) -> None:
