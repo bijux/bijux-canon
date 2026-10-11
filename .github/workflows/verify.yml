@@ -2,239 +2,178 @@
 # Source of truth: bijux-std/.github/standards/repo-config.manifest.json and bijux-std/shared/bijux-gh/workflows/.
 # Do not edit this generated copy directly.
 
-name: "repo / verify"
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
-  workflow_dispatch:
-  merge_group:
-    branches:
-      - main
-permissions:
-  contents: read
-concurrency:
-  group: "verify-${{ github.ref }}"
-  cancel-in-progress: true
-jobs:
-  repository:
-    name: repository-contracts
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
-        with:
-          python-version: 3.11
-      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7
-        with:
-          enable-cache: true
-          cache-dependency-glob: uv.lock
-      - name: "Verify repository automation contracts"
-        shell: bash
-        run: "set -euo pipefail; make check-shared-bijux-py check-config-layout check-make-layout help "
-  package:
-    name: "${{ matrix.package_slug }}"
-    needs: repository
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - package_slug: bijux-canon-runtime
-            package_dir: packages/bijux-canon-runtime
-            artifacts_dir: artifacts/bijux-canon-runtime
-            check_targets: "[\"quality\", \"security\", \"build\", \"sbom\", \"api\", \"openapi-drift\"]"
-            api_toolchain_targets: "[\"api\", \"openapi-drift\"]"
-            post_test_command: "set -euo pipefail && venv_python=\"${ARTIFACTS_DIR}/venv/bin/python\" && if compgen -G \"packages/bijux-canon-runtime/src/bijux_canon_runtime/providers/*\" > /dev/null; then \"${venv_python}\" -m coverage report --rcfile configs/coveragerc.ini --data-file \"${ARTIFACTS_DIR}/test/.coverage\" --include \"packages/bijux-canon-runtime/src/bijux_canon_runtime/providers/*\" --fail-under=65; fi && if [ -f \"packages/bijux-canon-runtime/src/bijux_canon_runtime/interfaces/cli.py\" ]; then \"${venv_python}\" -m coverage report --rcfile configs/coveragerc.ini --data-file \"${ARTIFACTS_DIR}/test/.coverage\" --include \"packages/bijux-canon-runtime/src/bijux_canon_runtime/interfaces/cli.py\" --fail-under=60; fi && if compgen -G \"packages/bijux-canon-runtime/src/bijux_canon_runtime/api/*\" > /dev/null; then \"${venv_python}\" -m coverage report --rcfile configs/coveragerc.ini --data-file \"${ARTIFACTS_DIR}/test/.coverage\" --include \"packages/bijux-canon-runtime/src/bijux_canon_runtime/api/*\" --fail-under=75; fi"
-          - package_slug: bijux-canon-agent
-            package_dir: packages/bijux-canon-agent
-            artifacts_dir: artifacts/bijux-canon-agent
-          - package_slug: bijux-canon-ingest
-            package_dir: packages/bijux-canon-ingest
-            artifacts_dir: artifacts/bijux-canon-ingest
-          - package_slug: bijux-canon-reason
-            package_dir: packages/bijux-canon-reason
-            artifacts_dir: artifacts/bijux-canon-reason
-          - package_slug: bijux-canon-index
-            package_dir: packages/bijux-canon-index
-            artifacts_dir: artifacts/bijux-canon-index
-          - package_slug: bijux-canon-dev
-            package_dir: packages/bijux-canon-dev
-            artifacts_dir: artifacts/bijux-canon-dev
-            check_targets: "[\"quality\", \"security\", \"build\", \"sbom\"]"
-    uses: ./.github/workflows/ci.yml
-    with:
-      package_slug: "${{ matrix.package_slug }}"
-      package_dir: "${{ matrix.package_dir }}"
-      artifacts_dir: "${{ matrix.artifacts_dir }}"
-      test_python_versions: "${{ matrix.test_python_versions || '[\"3.11\"]' }}"
-      check_targets: "${{ matrix.check_targets || '[\"quality\", \"security\", \"api\", \"build\", \"sbom\"]' }}"
-      api_toolchain_targets: "${{ matrix.api_toolchain_targets || '[\"api\"]' }}"
-      post_test_command: "${{ matrix.post_test_command || '' }}"
-  supported_python:
-    name: "${{ matrix.package_slug }}-py${{ matrix.python-version }}"
-    needs: repository
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    strategy:
-      fail-fast: false
-      max-parallel: 12
-      matrix:
-        package_slug:
-          - bijux-canon-dev
-          - bijux-canon-runtime
-          - bijux-canon-agent
-          - bijux-canon-ingest
-          - bijux-canon-reason
-          - bijux-canon-index
-          - compat-bijux-canon
-          - compat-agentic-flows
-          - compat-bijux-agent
-          - compat-bijux-rag
-          - compat-bijux-rar
-          - compat-bijux-vex
-        python-version:
-          - 3.11
-          - 3.12
-          - 3.13
-          - 3.14
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
-        with:
-          python-version: "${{ matrix.python-version }}"
-      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7
-        with:
-          enable-cache: true
-          cache-dependency-glob: uv.lock
-      - name: "Test one supported package distribution"
-        shell: bash
-        run:
-          |
-            set -euo pipefail
-            export PYTHONDONTWRITEBYTECODE=1
-            selected_python="$(command -v python)"
-            make PYTHON="${selected_python}" PACKAGE="${{ matrix.package_slug }}" test
-      - name: "Upload package test artifacts"
-        if: "${{ always() }}"
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
-        with:
-          name: "${{ matrix.package_slug }}-test-py${{ matrix.python-version }}"
-          path: "artifacts/${{ matrix.package_slug }}/test"
-          if-no-files-found: ignore
-          retention-days: 14
-  installed_family:
-    name: "installed-family-${{ matrix.runner }}-py${{ matrix.python-version }}"
-    needs: repository
-    runs-on: "${{ matrix.runner }}"
-    timeout-minutes: 30
-    strategy:
-      fail-fast: false
-      max-parallel: 4
-      matrix:
-        runner:
-          - ubuntu-latest
-          - macos-latest
-        python-version:
-          - 3.11
-          - 3.12
-          - 3.13
-          - 3.14
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
-        with:
-          python-version: "${{ matrix.python-version }}"
-      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7
-        with:
-          enable-cache: true
-          cache-dependency-glob: uv.lock
-      - name: "Build and install the distribution family"
-        shell: bash
-        run:
-          |
-            set -euo pipefail
-            export PYTHONDONTWRITEBYTECODE=1
-            export UV_CACHE_DIR="${RUNNER_TEMP}/bijux-installed-family-uv-cache"
-            family_dir="artifacts/installed-family/${RUNNER_OS}/py${{ matrix.python-version }}"
-            wheel_dir="${family_dir}/wheels"
-            venv_dir="${family_dir}/venv"
-            uv build --all-packages --wheel --out-dir "${wheel_dir}"
-            test "$(find "${wheel_dir}" -maxdepth 1 -name '*.whl' | wc -l | tr -d ' ')" = 13
-            uv venv "${venv_dir}" --python "${{ matrix.python-version }}" --clear
-            uv pip install --python "${venv_dir}/bin/python" "${wheel_dir}"/*.whl
-            uv pip check --python "${venv_dir}/bin/python"
-            "${venv_dir}/bin/python" -I - <<'PY'
-            import importlib
-            import importlib.metadata as metadata
-
-            distributions = (
-                "agentic-flows",
-                "bijux-agent",
-                "bijux-canon",
-                "bijux-canon-agent",
-                "bijux-canon-dev",
-                "bijux-canon-index",
-                "bijux-canon-ingest",
-                "bijux-canon-reason",
-                "bijux-canon-repository",
-                "bijux-canon-runtime",
-                "bijux-rag",
-                "bijux-rar",
-                "bijux-vex",
-            )
-            modules = (
-                "agentic_flows",
-                "bijux_agent",
-                "bijux_canon",
-                "bijux_canon_agent",
-                "bijux_canon_dev",
-                "bijux_canon_index",
-                "bijux_canon_ingest",
-                "bijux_canon_reason",
-                "bijux_canon_runtime",
-                "bijux_rag",
-                "bijux_rar",
-                "bijux_vex",
-            )
-            loaded = [importlib.import_module(name) for name in modules]
-            assert all("site-packages" in str(module.__file__) for module in loaded)
-            versions = {name: metadata.version(name) for name in distributions}
-            assert len(set(versions.values())) == 1
-            PY
-            "${venv_dir}/bin/bijux" --version
-      - name: "Upload installed-family artifacts"
-        if: "${{ always() }}"
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
-        with:
-          name: "installed-family-${{ matrix.runner }}-py${{ matrix.python-version }}"
-          path: "artifacts/installed-family/**/wheels/*.whl"
-          if-no-files-found: error
-          retention-days: 14
-  verification_ready:
-    name: verification-ready
-    if: "${{ always() }}"
-    needs:
-      - repository
-      - package
-      - supported_python
-      - installed_family
-    runs-on: ubuntu-latest
-    steps:
-      - name: "Require repository and package verification success"
-        shell: bash
-        env:
-          REPOSITORY_RESULT: "${{ needs.repository.result }}"
-          PACKAGE_RESULT: "${{ needs.package.result }}"
-          SUPPORTED_PYTHON_RESULT: "${{ needs.supported_python.result }}"
-          INSTALLED_FAMILY_RESULT: "${{ needs.installed_family.result }}"
-        run:
-          |
-            set -euo pipefail
-            [[ "${REPOSITORY_RESULT}" == "success" ]] || exit 1
-            [[ "${PACKAGE_RESULT}" == "success" ]] || exit 1
-            [[ "${SUPPORTED_PYTHON_RESULT}" == "success" ]] || exit 1
-            [[ "${INSTALLED_FAMILY_RESULT}" == "success" ]] || exit 1
+"name": "repo / verify"
+"on":
+  "pull_request":
+    "branches":
+      - "main"
+  "workflow_dispatch": null
+  "merge_group":
+    "branches":
+      - "main"
+"permissions":
+  "contents": "read"
+"concurrency":
+  "group": "verify-${{ github.ref }}"
+  "cancel-in-progress": true
+"jobs":
+  "repository":
+    "name": "${{ (github.event.pull_request.user.login == 'dependabot[bot]' || (github.event.pull_request.user.login == 'github-actions[bot]' && github.event.pull_request.head.ref == 'automation/dependency-lock-refresh')) && 'unverified dependency / ' || '' }}repository-contracts"
+    "runs-on": "ubuntu-latest"
+    "timeout-minutes": 30
+    "steps":
+      - "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
+      - "uses": "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97"
+        "with":
+          "python-version": 3.11
+      - "uses": "astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7"
+        "with":
+          "enable-cache": true
+          "cache-dependency-glob": "uv.lock"
+      - "name": "Verify repository automation contracts"
+        "shell": "bash"
+        "run": "set -euo pipefail; make check-shared-bijux-py check-config-layout check-make-layout help "
+    "if": "${{ (github.event_name != 'pull_request' && github.event_name != 'pull_request_target' && github.event_name != 'pull_request_review') || (github.event.pull_request.user.login != 'dependabot[bot]' && (github.event.pull_request.user.login != 'github-actions[bot]' || github.event.pull_request.head.ref != 'automation/dependency-lock-refresh')) }}"
+  "package":
+    "name": "${{ (github.event.pull_request.user.login == 'dependabot[bot]' || (github.event.pull_request.user.login == 'github-actions[bot]' && github.event.pull_request.head.ref == 'automation/dependency-lock-refresh')) && 'unverified dependency / ' || '' }}${{ matrix.package_slug }}"
+    "needs": "repository"
+    "strategy":
+      "fail-fast": false
+      "matrix":
+        "include":
+          - "package_slug": "bijux-canon-runtime"
+            "package_dir": "packages/bijux-canon-runtime"
+            "artifacts_dir": "artifacts/bijux-canon-runtime"
+            "check_targets": "[\"quality\", \"security\", \"build\", \"sbom\", \"api\", \"openapi-drift\"]"
+            "api_toolchain_targets": "[\"api\", \"openapi-drift\"]"
+            "post_test_command": "set -euo pipefail && venv_python=\"${ARTIFACTS_DIR}/venv/bin/python\" && if compgen -G \"packages/bijux-canon-runtime/src/bijux_canon_runtime/providers/*\" > /dev/null; then \"${venv_python}\" -m coverage report --rcfile configs/coveragerc.ini --data-file \"${ARTIFACTS_DIR}/test/.coverage\" --include \"packages/bijux-canon-runtime/src/bijux_canon_runtime/providers/*\" --fail-under=65; fi && if [ -f \"packages/bijux-canon-runtime/src/bijux_canon_runtime/interfaces/cli.py\" ]; then \"${venv_python}\" -m coverage report --rcfile configs/coveragerc.ini --data-file \"${ARTIFACTS_DIR}/test/.coverage\" --include \"packages/bijux-canon-runtime/src/bijux_canon_runtime/interfaces/cli.py\" --fail-under=60; fi && if compgen -G \"packages/bijux-canon-runtime/src/bijux_canon_runtime/api/*\" > /dev/null; then \"${venv_python}\" -m coverage report --rcfile configs/coveragerc.ini --data-file \"${ARTIFACTS_DIR}/test/.coverage\" --include \"packages/bijux-canon-runtime/src/bijux_canon_runtime/api/*\" --fail-under=75; fi"
+          - "package_slug": "bijux-canon-agent"
+            "package_dir": "packages/bijux-canon-agent"
+            "artifacts_dir": "artifacts/bijux-canon-agent"
+          - "package_slug": "bijux-canon-ingest"
+            "package_dir": "packages/bijux-canon-ingest"
+            "artifacts_dir": "artifacts/bijux-canon-ingest"
+          - "package_slug": "bijux-canon-reason"
+            "package_dir": "packages/bijux-canon-reason"
+            "artifacts_dir": "artifacts/bijux-canon-reason"
+          - "package_slug": "bijux-canon-index"
+            "package_dir": "packages/bijux-canon-index"
+            "artifacts_dir": "artifacts/bijux-canon-index"
+          - "package_slug": "bijux-canon-dev"
+            "package_dir": "packages/bijux-canon-dev"
+            "artifacts_dir": "artifacts/bijux-canon-dev"
+            "check_targets": "[\"quality\", \"security\", \"build\", \"sbom\"]"
+    "uses": "./.github/workflows/ci.yml"
+    "with":
+      "package_slug": "${{ matrix.package_slug }}"
+      "package_dir": "${{ matrix.package_dir }}"
+      "artifacts_dir": "${{ matrix.artifacts_dir }}"
+      "test_python_versions": "${{ matrix.test_python_versions || '[\"3.11\"]' }}"
+      "check_targets": "${{ matrix.check_targets || '[\"quality\", \"security\", \"api\", \"build\", \"sbom\"]' }}"
+      "api_toolchain_targets": "${{ matrix.api_toolchain_targets || '[\"api\"]' }}"
+      "post_test_command": "${{ matrix.post_test_command || '' }}"
+    "if": "${{ (github.event_name != 'pull_request' && github.event_name != 'pull_request_target' && github.event_name != 'pull_request_review') || (github.event.pull_request.user.login != 'dependabot[bot]' && (github.event.pull_request.user.login != 'github-actions[bot]' || github.event.pull_request.head.ref != 'automation/dependency-lock-refresh')) }}"
+  "supported_python":
+    "name": "${{ (github.event.pull_request.user.login == 'dependabot[bot]' || (github.event.pull_request.user.login == 'github-actions[bot]' && github.event.pull_request.head.ref == 'automation/dependency-lock-refresh')) && 'unverified dependency / ' || '' }}${{ matrix.package_slug }}-py${{ matrix.python-version }}"
+    "needs": "repository"
+    "runs-on": "ubuntu-latest"
+    "timeout-minutes": 30
+    "strategy":
+      "fail-fast": false
+      "max-parallel": 12
+      "matrix":
+        "package_slug":
+          - "bijux-canon-dev"
+          - "bijux-canon-runtime"
+          - "bijux-canon-agent"
+          - "bijux-canon-ingest"
+          - "bijux-canon-reason"
+          - "bijux-canon-index"
+          - "compat-bijux-canon"
+          - "compat-agentic-flows"
+          - "compat-bijux-agent"
+          - "compat-bijux-rag"
+          - "compat-bijux-rar"
+          - "compat-bijux-vex"
+        "python-version":
+          - "3.11"
+          - "3.12"
+          - "3.13"
+          - "3.14"
+    "steps":
+      - "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
+      - "uses": "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97"
+        "with":
+          "python-version": "${{ matrix.python-version }}"
+      - "uses": "astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7"
+        "with":
+          "enable-cache": true
+          "cache-dependency-glob": "uv.lock"
+      - "name": "Test one supported package distribution"
+        "shell": "bash"
+        "run": "set -euo pipefail\nexport PYTHONDONTWRITEBYTECODE=1\nselected_python=\"$(command -v python)\"\nmake PYTHON=\"${selected_python}\" PACKAGE=\"${{ matrix.package_slug }}\" test\n"
+      - "name": "Upload package test artifacts"
+        "if": "${{ always() }}"
+        "uses": "actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9"
+        "with":
+          "name": "${{ matrix.package_slug }}-test-py${{ matrix.python-version }}"
+          "path": "artifacts/${{ matrix.package_slug }}/test"
+          "if-no-files-found": "ignore"
+          "retention-days": 14
+    "if": "${{ (github.event_name != 'pull_request' && github.event_name != 'pull_request_target' && github.event_name != 'pull_request_review') || (github.event.pull_request.user.login != 'dependabot[bot]' && (github.event.pull_request.user.login != 'github-actions[bot]' || github.event.pull_request.head.ref != 'automation/dependency-lock-refresh')) }}"
+  "installed_family":
+    "name": "${{ (github.event.pull_request.user.login == 'dependabot[bot]' || (github.event.pull_request.user.login == 'github-actions[bot]' && github.event.pull_request.head.ref == 'automation/dependency-lock-refresh')) && 'unverified dependency / ' || '' }}installed-family-${{ matrix.runner }}-py${{ matrix.python-version }}"
+    "needs": "repository"
+    "runs-on": "${{ matrix.runner }}"
+    "timeout-minutes": 30
+    "strategy":
+      "fail-fast": false
+      "max-parallel": 4
+      "matrix":
+        "runner":
+          - "ubuntu-latest"
+          - "macos-latest"
+        "python-version":
+          - "3.11"
+          - "3.12"
+          - "3.13"
+          - "3.14"
+    "steps":
+      - "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
+      - "uses": "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97"
+        "with":
+          "python-version": "${{ matrix.python-version }}"
+      - "uses": "astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7"
+        "with":
+          "enable-cache": true
+          "cache-dependency-glob": "uv.lock"
+      - "name": "Build and install the distribution family"
+        "shell": "bash"
+        "run": "set -euo pipefail\nexport PYTHONDONTWRITEBYTECODE=1\nexport UV_CACHE_DIR=\"${RUNNER_TEMP}/bijux-installed-family-uv-cache\"\nfamily_dir=\"artifacts/installed-family/${RUNNER_OS}/py${{ matrix.python-version }}\"\nwheel_dir=\"${family_dir}/wheels\"\nvenv_dir=\"${family_dir}/venv\"\nuv build --all-packages --wheel --out-dir \"${wheel_dir}\"\ntest \"$(find \"${wheel_dir}\" -maxdepth 1 -name '*.whl' | wc -l | tr -d ' ')\" = 13\nuv venv \"${venv_dir}\" --python \"${{ matrix.python-version }}\" --clear\nuv pip install --python \"${venv_dir}/bin/python\" \"${wheel_dir}\"/*.whl\nuv pip check --python \"${venv_dir}/bin/python\"\n\"${venv_dir}/bin/python\" -I - <<'PY'\nimport importlib\nimport importlib.metadata as metadata\n\ndistributions = (\n    \"agentic-flows\",\n    \"bijux-agent\",\n    \"bijux-canon\",\n    \"bijux-canon-agent\",\n    \"bijux-canon-dev\",\n    \"bijux-canon-index\",\n    \"bijux-canon-ingest\",\n    \"bijux-canon-reason\",\n    \"bijux-canon-repository\",\n    \"bijux-canon-runtime\",\n    \"bijux-rag\",\n    \"bijux-rar\",\n    \"bijux-vex\",\n)\nmodules = (\n    \"agentic_flows\",\n    \"bijux_agent\",\n    \"bijux_canon\",\n    \"bijux_canon_agent\",\n    \"bijux_canon_dev\",\n    \"bijux_canon_index\",\n    \"bijux_canon_ingest\",\n    \"bijux_canon_reason\",\n    \"bijux_canon_runtime\",\n    \"bijux_rag\",\n    \"bijux_rar\",\n    \"bijux_vex\",\n)\nloaded = [importlib.import_module(name) for name in modules]\nassert all(\"site-packages\" in str(module.__file__) for module in loaded)\nversions = {name: metadata.version(name) for name in distributions}\nassert len(set(versions.values())) == 1\nPY\n\"${venv_dir}/bin/bijux\" --version\n"
+      - "name": "Upload installed-family artifacts"
+        "if": "${{ always() }}"
+        "uses": "actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9"
+        "with":
+          "name": "installed-family-${{ matrix.runner }}-py${{ matrix.python-version }}"
+          "path": "artifacts/installed-family/**/wheels/*.whl"
+          "if-no-files-found": "error"
+          "retention-days": 14
+    "if": "${{ (github.event_name != 'pull_request' && github.event_name != 'pull_request_target' && github.event_name != 'pull_request_review') || (github.event.pull_request.user.login != 'dependabot[bot]' && (github.event.pull_request.user.login != 'github-actions[bot]' || github.event.pull_request.head.ref != 'automation/dependency-lock-refresh')) }}"
+  "verification_ready":
+    "name": "${{ (github.event.pull_request.user.login == 'dependabot[bot]' || (github.event.pull_request.user.login == 'github-actions[bot]' && github.event.pull_request.head.ref == 'automation/dependency-lock-refresh')) && 'unverified dependency / ' || '' }}verification-ready"
+    "if": "${{ ((github.event_name != 'pull_request' && github.event_name != 'pull_request_target' && github.event_name != 'pull_request_review') || (github.event.pull_request.user.login != 'dependabot[bot]' && (github.event.pull_request.user.login != 'github-actions[bot]' || github.event.pull_request.head.ref != 'automation/dependency-lock-refresh'))) && (always()) }}"
+    "needs":
+      - "repository"
+      - "package"
+      - "supported_python"
+      - "installed_family"
+    "runs-on": "ubuntu-latest"
+    "steps":
+      - "name": "Require repository and package verification success"
+        "shell": "bash"
+        "env":
+          "REPOSITORY_RESULT": "${{ needs.repository.result }}"
+          "PACKAGE_RESULT": "${{ needs.package.result }}"
+          "SUPPORTED_PYTHON_RESULT": "${{ needs.supported_python.result }}"
+          "INSTALLED_FAMILY_RESULT": "${{ needs.installed_family.result }}"
+        "run": "set -euo pipefail\n[[ \"${REPOSITORY_RESULT}\" == \"success\" ]] || exit 1\n[[ \"${PACKAGE_RESULT}\" == \"success\" ]] || exit 1\n[[ \"${SUPPORTED_PYTHON_RESULT}\" == \"success\" ]] || exit 1\n[[ \"${INSTALLED_FAMILY_RESULT}\" == \"success\" ]] || exit 1\n"
