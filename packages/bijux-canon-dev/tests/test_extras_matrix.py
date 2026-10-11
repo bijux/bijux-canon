@@ -1,14 +1,13 @@
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
-from email.message import Message
 import json
-from pathlib import Path
 import tomllib
 import zipfile
+from collections.abc import Mapping, Sequence
+from email.message import Message
+from pathlib import Path
 
 import pytest
-
 from bijux_canon_dev.release.extras_matrix import (
     ExtrasMatrixError,
     _cpu_profile_probe,
@@ -18,6 +17,7 @@ from bijux_canon_dev.release.extras_matrix import (
     run_extras_matrix,
 )
 from bijux_canon_dev.release.python_support_matrix import CommandResult
+from packaging.requirements import Requirement
 
 SOURCE_COMMIT = "4" * 40
 PYTHON_VERSIONS = ("3.11", "3.12", "3.13", "3.14")
@@ -315,3 +315,32 @@ def test_project_publishes_installed_extras_matrix_command() -> None:
     assert scripts["bijux-canon-extras-matrix"] == (
         "bijux_canon_dev.release.extras_matrix:main"
     )
+
+
+@pytest.mark.parametrize("package", ["bijux-canon-runtime", "bijux-canon-index"])
+@pytest.mark.parametrize("python_version", PYTHON_VERSIONS)
+@pytest.mark.parametrize("platform", ["darwin", "linux"])
+def test_local_cpu_markers_preserve_legacy_and_current_interpreters(
+    package: str, python_version: str, platform: str
+) -> None:
+    root = Path(__file__).resolve().parents[3]
+    metadata = tomllib.loads(
+        (root / "packages" / package / "pyproject.toml").read_text()
+    )
+    requirements = [
+        Requirement(value)
+        for value in metadata["project"]["optional-dependencies"]["local-cpu"]
+    ]
+    environment = {"sys_platform": platform, "python_version": python_version}
+    selected = [
+        requirement
+        for requirement in requirements
+        if requirement.marker is None or requirement.marker.evaluate(environment)
+    ]
+    faiss = [requirement for requirement in selected if requirement.name == "faiss-cpu"]
+    numpy = [requirement for requirement in selected if requirement.name == "numpy"]
+    assert len(faiss) == len(numpy) == 1
+    legacy = platform == "darwin" and python_version == "3.11"
+    assert ("1.7.4" in faiss[0].specifier) == legacy
+    assert ("1.13.2" in faiss[0].specifier) != legacy
+    assert ("2.4.4" in numpy[0].specifier) != legacy

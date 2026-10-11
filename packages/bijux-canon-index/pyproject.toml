@@ -73,10 +73,10 @@ embeddings = [
   "torch>=2.7,<3.0",
 ]
 local-cpu = [
-  "faiss-cpu==1.7.4; sys_platform == 'darwin'",
-  "faiss-cpu>=1.13,<2.0; sys_platform != 'darwin'",
-  "numpy>=1.26,<2.0; sys_platform == 'darwin'",
-  "numpy>=1.26,<3.0; sys_platform != 'darwin'",
+  "faiss-cpu==1.7.4; sys_platform == 'darwin' and python_version < '3.12'",
+  "faiss-cpu>=1.13,<2.0; sys_platform != 'darwin' or python_version >= '3.12'",
+  "numpy>=1.26,<2.0; sys_platform == 'darwin' and python_version < '3.12'",
+  "numpy>=1.26,<3.0; sys_platform != 'darwin' or python_version >= '3.12'",
   "sentence-transformers>=5.1,<7.0",
   "torch>=2.7,<3.0",
 ]
