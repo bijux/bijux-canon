@@ -344,3 +344,4 @@ def test_local_cpu_markers_preserve_legacy_and_current_interpreters(
     assert ("1.7.4" in faiss[0].specifier) == legacy
     assert ("1.13.2" in faiss[0].specifier) != legacy
     assert ("2.4.4" in numpy[0].specifier) != legacy
+    assert ("1.26.4" in numpy[0].specifier) == legacy
