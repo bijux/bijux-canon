@@ -43,6 +43,15 @@
         "with":
           "version": "0.11.17"
           "enable-cache": false
+      - "name": "Provision action reference parser"
+        "if": "${{ matrix.check == 'standard' }}"
+        "uses": "ruby/setup-ruby@e81a8fa391b11a595c1b7ed84177cc0fe02faf83"
+        "with":
+          "ruby-version": "3.3.12"
+      - "name": "Admit action reference parser runtime"
+        "if": "${{ matrix.check == 'standard' }}"
+        "shell": "bash"
+        "run": "set -euo pipefail\nruby -ryaml -rjson -e 'abort \"Ruby 3.3.12 required\" unless RUBY_VERSION == \"3.3.12\"; abort \"Psych structural parser required\" unless YAML.respond_to?(:parse_stream) && YAML.respond_to?(:safe_load); puts JSON.generate({ruby: RUBY_VERSION, psych: Psych::VERSION})'\n"
       - "name": "Run matrix check"
         "shell": "bash"
         "run": "set -euo pipefail\n\ncase \"${{ matrix.check }}\" in\n  standard)\n    sha256sum --check .github/bijux-std-shared.sha256\n    python3 .github/scripts/check_pinned_actions.py \\\n      --manifest-managed .github/standards/repo-config.manifest.json \\\n      .github/workflows\n    if [[ \"${GITHUB_REPOSITORY}\" == \"bijux/bijux-std\" ]]; then\n      make bijux-std-checks\n    else\n      consumer_ref=\"$(\n        tr -d '[:space:]' < .github/standards/bijux-std.sha\n      )\"\n      if [[ ! \"${consumer_ref}\" =~ ^[0-9a-f]{40}$ ]]; then\n        echo \"ERROR: .github/standards/bijux-std.sha must contain one full commit SHA\" >&2\n        exit 1\n      fi\n      BIJUX_STD_REF=\"${consumer_ref}\" make bijux-std-checks\n    fi\n    ;;\n  contracts)\n    if [[ -x \".bijux/shared/bijux-checks/scripts/validate-shared-contracts.sh\" ]]; then\n      bash .bijux/shared/bijux-checks/scripts/validate-shared-contracts.sh\n    elif [[ -x \"shared/bijux-checks/scripts/validate-shared-contracts.sh\" ]]; then\n      make contract-tests\n    else\n      echo \"ERROR: unable to locate shared contract validator\" >&2\n      exit 1\n    fi\n    if [[ \"$GITHUB_REPOSITORY\" == \"bijux/bijux.github.io\" ]]; then\n      UV_CACHE_DIR=artifacts/uv-cache make docs-reader-ci DOCS_READER_BROWSER_FLAGS=--with-deps\n    fi\n    ;;\n  *)\n    echo \"ERROR: unknown matrix check '${{ matrix.check }}'\" >&2\n    exit 2\n    ;;\nesac\n"
