@@ -4,100 +4,93 @@ audience: mixed
 type: reference
 status: canonical
 owner: bijux-canon-dev-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-10-11
 ---
 
 # Repository Verification Workflow
 
-`.github/workflows/verify.yml` is the required repository verification graph.
-It gates package work behind policy prerequisites and shared repository
-contracts, then delegates package checks through one reusable workflow.
+`.github/workflows/verify.yml` verifies human-authored pull requests, merge
+groups, and manual dispatches. Accepted pull-request checks carry the product
+verdict into `main`; a merge does not start the same verification graph again.
 
 ```mermaid
 flowchart LR
-    event["push, pull request, merge group, dispatch"]
-    policy["policy-prerequisites"]
-    repo["repository-contracts"]
-    matrix["package matrix"]
-    ready["verification-ready"]
-
-    event --> policy --> repo --> matrix --> ready
+    human["Human pull request, merge group, or dispatch"] --> repo["repository-contracts"]
+    repo --> primary["6 primary packages: ci.yml"]
+    repo --> supported["12 distributions × Python 3.11–3.14"]
+    repo --> installed["Installed distribution family"]
+    repo --> ready["verification-ready"]
+    primary --> ready
+    supported --> ready
+    installed --> ready
 ```
 
-## Trigger Contract
+## Repository contracts
 
-The workflow runs for `main` pushes and pull requests that change repository
-policy, workflows, APIs, configs, docs, make logic, packages, or root build
-configuration. It also supports manual dispatch and merge-queue validation.
-
-Concurrency is keyed by Git reference, and a newer run cancels an older run for
-the same reference. Repository permissions are read-only.
-
-## Gate Order
-
-### Policy prerequisites
-
-`policy-prerequisites` runs `.github/scripts/check_workflow_prerequisites.py`.
-It prevents repository verification from proceeding before required policy and
-standards checks have reached their expected state.
-
-### Repository contracts
-
-`repository-contracts` runs only after the policy gate. It verifies:
+The repository job runs independently of prerequisite workflow polling:
 
 ```text
 make check-shared-bijux-py check-config-layout check-make-layout help
 ```
 
-These checks cover synchronized make standards, required configuration layout,
-required make entrypoints, and the public help surface. They do not substitute
-for package tests.
+It checks synchronized Make standards, configuration layout, Make entrypoints,
+and the public help surface. Package checks begin after this job succeeds.
 
-### Package matrix
+## Product verification
 
-The matrix covers the five runtime packages plus `bijux-canon-dev`. Each entry
-passes package directory and artifact directory to `.github/workflows/ci.yml`,
-which delegates to the SHA-pinned reusable Python workflow in `bijux-std`.
+The primary matrix includes runtime, agent, ingest, reason, index, and the
+internal development package. Each calls local `ci.yml`, which executes inline
+Python tests, static and security checks, API contracts, and distribution
+construction with pinned runner actions. Node 24 and Java 17 provision the API
+toolchain. Package Make profiles retain ownership of the commands and thresholds.
 
-Default package checks are `quality`, `security`, `docs`, `api`, `build`, and
-`sbom`. Notable exceptions are explicit in the matrix:
+Runtime checks include `openapi-drift` and configured post-test coverage
+thresholds. The development package has no API targets. Package checks do not
+request a nonexistent leaf `docs` target; documentation has its own repository
+build and deployment contract.
 
-- runtime also runs `openapi-drift` and post-test coverage thresholds for
-  selected boundaries when those files exist;
-- ingest tests Python 3.11, 3.12, and 3.13; and
-- the development package omits docs and API checks from its package targets.
+A separate supported-interpreter matrix tests all twelve primary and
+compatibility distributions on Python 3.11, 3.12, 3.13, and 3.14. It runs one
+package per job with up to twelve concurrent jobs. The installed-family job
+builds and installs the distribution family, verifies its thirteen installed
+metadata records, and runs `uv pip check` in an isolated environment.
 
-Matrix jobs do not fail fast, so one package failure does not hide evidence from
-the others.
+The terminal `verification-ready` job requires successful repository, primary
+package, supported-interpreter, and installed-family results. Its required
+status does not replace the detailed checks or turn cancellations into success.
 
-### Completion gate
+## Dependency proposals
 
-`verification-ready` always evaluates after repository and package jobs. It
-succeeds only when both job groups report success. This gives branch protection
-one stable terminal check without discarding the package-level failure detail.
+A pull request whose original author is `dependabot[bot]`, or whose original
+author is `github-actions[bot]` with the exact head branch
+`automation/dependency-lock-refresh`, receives only the read-only `dependency / owner review notice`. Product and policy jobs are guarded
+before allocating runners. Their bot-visible names use the `unverified
+dependency / ` prefix, so a skipped job cannot masquerade as a required green
+verification context. The notice confirms receipt, not tests or security.
 
-## Reading a Failure
+An owner reviews all requested files, qualifies compatible changes locally, and
+includes them in a human-authored consolidation pull request. That pull request
+must pass the full product graph and approval policy. Re-running a bot proposal
+as a human does not change its original-author admission. Automatic merge is
+disabled; the notice never grants merge permission.
 
-Start with the earliest failed gate:
+## Reading a failure
 
 | Failed job | Investigate first |
 | --- | --- |
-| `policy-prerequisites` | prerequisite workflow state and GitHub policy visibility |
-| `repository-contracts` | synchronized standards, config tree, or make layout |
-| package matrix entry | that package's delegated check and artifact directory |
-| `verification-ready` only | dependency result propagation or cancellation state |
+| `repository-contracts` | standards, configuration tree, Make layout |
+| primary package job | package profile and retained check artifacts |
+| supported interpreter job | that distribution's installation and product tests |
+| installed family | build metadata, import surfaces, dependency consistency |
+| `verification-ready` | dependency results, failures, or cancellation |
 
-Package artifacts are written under the matrix entry's `artifacts/<package>`
-directory. Use those logs before rerunning a broad lane; they identify the
-specific check family that failed.
+Retain a real failure and repair its owning surface before submitting another
+revision. A fresh revision requires affected local qualification; rerunning an
+unchanged failed head does not supply new evidence.
 
-## Change Ownership
+## Change ownership
 
-Both workflow files are synchronized from `bijux-std` and carry a generated
-source-of-truth notice. Change reusable behavior upstream, then refresh the
-managed copy and checksum through the standards synchronization process. Local
-package behavior belongs in package make profiles or repository-owned check
-configuration, not in a hand-edited generated workflow.
-
-See [CI Targets](../makes/ci-targets.md) for the local command families used
-by delegated checks.
+Workflow execution policy is managed by `bijux-std`. Consume an accepted exact
+source and validate its generated projection and shared checksums. Package
+behavior belongs in repository-owned Make profiles and configuration. See
+[CI Targets](../makes/ci-targets.md) for the local command families.

@@ -11,9 +11,13 @@ from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI, HTTPException, Request
+from fastapi.exception_handlers import http_exception_handler
 from fastapi.exceptions import RequestValidationError
 from fastapi.openapi.utils import get_openapi
 from fastapi.responses import JSONResponse, Response
+from fastapi.routing import APIRoute
+from starlette.exceptions import HTTPException as StarletteHTTPException
+from starlette.routing import Match
 
 from bijux_canon_reason.api.v1.http_guards import (
     MAX_OFFSET,
@@ -108,6 +112,7 @@ def create_app(*, artifacts_dir: Path | None = None) -> FastAPI:
 
     _install_guard_middleware(app, request_guard)
     _install_validation_handler(app)
+    _install_http_error_handler(app)
 
     @app.get(
         "/health",
@@ -196,8 +201,38 @@ def _install_validation_handler(app: FastAPI) -> None:
         request: Request, exc: RequestValidationError
     ) -> JSONResponse:
         """Handle validation handler."""
-        del request, exc
-        return JSONResponse(status_code=422, content={"detail": "invalid request"})
+        del request
+        invalid_body = any(
+            error["type"] == "json_invalid"
+            or (error["type"] == "missing" and error["loc"] == ("body",))
+            for error in exc.errors()
+        )
+        return JSONResponse(
+            status_code=400 if invalid_body else 422,
+            content={"detail": "invalid request"},
+        )
+
+
+def _install_http_error_handler(app: FastAPI) -> None:
+    """Advertise every registered method when a resource rejects a request method."""
+
+    @app.exception_handler(StarletteHTTPException)
+    async def _http_error_handler(
+        request: Request, exc: StarletteHTTPException
+    ) -> Response:
+        """Preserve standard errors and aggregate the matching resource methods."""
+        response = await http_exception_handler(request, exc)
+        if exc.status_code == 405:
+            methods = {
+                method
+                for route in app.routes
+                if isinstance(route, APIRoute)
+                and route.matches(request.scope)[0] != Match.NONE
+                for method in (route.methods or set())
+            }
+            if methods:
+                response.headers["Allow"] = ", ".join(sorted(methods))
+        return response
 
 
 def _attach_stateful_links(schema: dict[str, Any]) -> None:

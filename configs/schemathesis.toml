@@ -5,7 +5,7 @@ mode = "positive"
 expected-statuses = [200, 422]
 
 [checks.negative_data_rejection]
-expected-statuses = [400]
+expected-statuses = [400, 422]
 
 [warnings]
 display = ["missing_auth"]

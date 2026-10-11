@@ -104,3 +104,15 @@ def test_index_build_request_rejects_overlap_at_or_above_chunk_size() -> None:
             chunk_size=16,
             overlap=16,
         )
+
+
+@pytest.mark.parametrize("backend", ["bm25", "numpy-cosine"])
+@pytest.mark.parametrize("text", [" ", "\t\n"])
+def test_index_build_rejects_documents_without_chunks(backend: str, text: str) -> None:
+    client = TestClient(create_app())
+    response = client.post(
+        "/v1/index/build",
+        json={"backend": backend, "docs": [{"doc_id": "blank", "text": text}]},
+    )
+    assert response.status_code == 400
+    assert response.json() == {"detail": "cannot build index from empty chunk list"}

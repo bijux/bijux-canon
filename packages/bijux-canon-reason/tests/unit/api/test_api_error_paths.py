@@ -5,6 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from fastapi.testclient import TestClient
+import pytest
 
 from bijux_canon_reason.api.v1.app import create_app
 
@@ -77,3 +78,32 @@ def test_create_item_conflict_and_410(tmp_path: Path) -> None:
     client.delete(f"/v1/items/{item_id}")
     gone = client.get(f"/v1/items/{item_id}")
     assert gone.status_code == 404
+
+
+@pytest.mark.parametrize("endpoint", ["/v1/items", "/v1/runs"])
+@pytest.mark.parametrize("body", [b"", b"{"])
+def test_create_endpoints_reject_missing_and_unparseable_body(
+    tmp_path: Path, endpoint: str, body: bytes
+) -> None:
+    response = _client(tmp_path).post(
+        endpoint, content=body, headers={"content-type": "application/json"}
+    )
+    assert response.status_code == 400
+    assert response.json() == {"detail": "invalid request"}
+
+
+@pytest.mark.parametrize(
+    ("endpoint", "allowed"),
+    [
+        ("/v1/items", {"GET", "POST"}),
+        ("/v1/items/1", {"GET", "PUT", "DELETE"}),
+        ("/openapi.json", {"GET", "HEAD"}),
+    ],
+)
+def test_unsupported_methods_advertise_every_resource_method(
+    tmp_path: Path, endpoint: str, allowed: set[str]
+) -> None:
+    response = _client(tmp_path).options(endpoint)
+    assert response.status_code == 405
+    assert set(response.headers["Allow"].split(", ")) == allowed
+    assert response.json() == {"detail": "Method Not Allowed"}

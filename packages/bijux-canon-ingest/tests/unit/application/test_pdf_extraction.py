@@ -67,7 +67,7 @@ def test_pdf_parser_preserves_ordered_pages_geometry_and_metadata(
     )
     assert qualification_document.metadata.author is not None
     assert qualification_document.metadata.author.startswith("Oliver Smith")
-    assert qualification_document.extractor == "pypdf-6.15.0-page-extract-text"
+    assert qualification_document.extractor == "pypdf-6.19.0-page-extract-text"
 
 
 def test_pdf_parser_resolves_independently_reviewed_page_spans(

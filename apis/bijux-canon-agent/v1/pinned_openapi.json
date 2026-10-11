@@ -52,18 +52,25 @@
         "additionalProperties": true,
         "properties": {
           "agents": {
-            "description": "Ordered subset of pipeline agents to enable for this run.",
-            "items": {
-              "enum": [
-                "file_reader",
-                "summarizer",
-                "validator",
-                "critique",
-                "stage_runner"
-              ],
-              "type": "string"
-            },
-            "type": "array"
+            "anyOf": [
+              {
+                "items": {
+                  "enum": [
+                    "file_reader",
+                    "summarizer",
+                    "validator",
+                    "critique",
+                    "stage_runner"
+                  ],
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Ordered subset of pipeline agents to enable for this run."
           },
           "backend": {
             "anyOf": [

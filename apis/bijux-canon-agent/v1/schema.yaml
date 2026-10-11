@@ -133,16 +133,18 @@ components:
       additionalProperties: true
       properties:
         agents:
-          type: array
           description: Ordered subset of pipeline agents to enable for this run.
-          items:
-            type: string
-            enum:
-              - file_reader
-              - summarizer
-              - validator
-              - critique
-              - stage_runner
+          anyOf:
+            - type: array
+              items:
+                type: string
+                enum:
+                  - file_reader
+                  - summarizer
+                  - validator
+                  - critique
+                  - stage_runner
+            - type: "null"
         strategy:
           anyOf:
             - type: string

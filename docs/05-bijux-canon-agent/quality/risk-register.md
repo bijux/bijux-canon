@@ -18,8 +18,8 @@ success. The final result and trace must describe the same attempt.
 
 ```mermaid
 flowchart TD
-    policy["typed control policy"] --> call["role call"]
-    call --> output["untrusted role output"]
+    policy["typed control policy"] --> role_call["role call"]
+    role_call --> output["untrusted role output"]
     output --> validation["schema and policy validation"]
     validation --> transition["controlled transition"]
     transition --> terminal["decision and termination"]

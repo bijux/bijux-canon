@@ -4,7 +4,7 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-dev-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-10-11
 ---
 
 # Documentation Deployment
@@ -16,7 +16,7 @@ visible custody chain.
 
 ```mermaid
 flowchart LR
-    T[Manual dispatch or workflow call] --> C[Resolve configuration]
+    T[Admitted manual dispatch] --> C[Resolve configuration]
     C --> S[Provision required toolchains]
     S --> B[Run install and build commands]
     B --> R[Resolve site directory]
@@ -27,14 +27,16 @@ flowchart LR
 
 ## Trigger and permission boundary
 
-The workflow supports `workflow_dispatch` and `workflow_call`. It grants
-`contents: read`, `pages: write`, and `id-token: write`; the deploy job targets
-the protected `github-pages` environment and reports the deployed URL.
-Concurrency is scoped to the ref, with stale runs cancelled.
+The workflow supports only `workflow_dispatch` on `refs/heads/main`, with an
+explicit `accepted_commit` selected by the authorized publication controller.
+The admission job validates the authenticated actor and exact accepted commit
+before building. Its product evidence comes from the accepted human pull
+request; a dependency notice cannot supply publication readiness.
 
-A manual run must originate from `main`, `master`, or a `v*` tag. A reusable
-workflow call may deploy from its caller context. The deploy job otherwise
-requires an allowed branch or tag and a successfully resolved site artifact.
+Repository content is read-only for construction. Pages and identity-token
+write permissions belong to the deployment job, which targets the protected
+`github-pages` environment and reports the deployed URL. Concurrency is scoped
+to the ref, with stale runs canceled.
 
 ## Configuration precedence
 
@@ -90,3 +92,24 @@ changes to handbook content and repository-specific build behavior belong here.
 The published site is supported only when its source commit, build command,
 selected directory, uploaded Pages artifact, and deployment result refer to the
 same workflow run.
+
+## Publication documentation environment
+
+`make gh-docs-install` creates the command-owned environment at
+`artifacts/root/docs/venv` and synchronizes only the root `docs` dependency group.
+It validates `uv.lock` with `uv sync --locked --only-group docs
+--no-install-workspace`; application packages, editable workspace distributions
+and the root development environment are not installed or replaced. The
+standard-library environment is created without bundled pip or virtualenv
+startup hooks, so renderer inventories retain explicit installed source ownership.
+The repository's existing development groups and package release contexts remain
+unchanged. Dependency or plugin changes require an intentional lock review.
+
+`make gh-docs-build` and `make gh-docs-verify` use that same documentation
+interpreter. They retain accepted standard source checks, production URL/output
+selection, strict rendering, CSP/routes, publication admission and readonly
+verification. Installation alone does not qualify a renderer profile or authorize
+publication: a new runtime requires actual hosted Linux fingerprints and reviewed
+source-owned admission before the publication gate can pass. Unowned environments,
+symlinked artifact paths and a stale lock are rejected; command-owned interrupted
+creation can resume without deleting unrelated environments or earlier receipts.

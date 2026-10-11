@@ -4,7 +4,7 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-dev-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-10-11
 ---
 
 # Release Workflows
@@ -37,10 +37,16 @@ package directory, artifact directory, profile when nonstandard, build targets,
 and any distribution-subdirectory override. Publisher matrices identify which
 of the staged packages go to each destination.
 
-All three destination workflows support manual dispatch and reusable calls.
-They normalize inputs, repository variables, and release environment values;
-validate matrix JSON; and refuse a manual dispatch that resolves to a no-op.
-Enabled release tags must begin with `v` where a tag is required.
+All three destination workflows require manual dispatch with an explicit
+`accepted_commit` and `release_tag`. The authorized controller and immutable
+accepted human pull-request evidence must pass publication admission first.
+The artifact builder remains reusable; the destination workflows do not accept
+a reusable caller as an alternative publication entrypoint.
+
+They normalize repository variables and release environment values, validate
+matrix JSON, and refuse a dispatch that resolves to a no-op. Release tags begin
+with `v`. A dependency notification is receipt only and grants no publication
+authority.
 
 ## Destination contracts
 

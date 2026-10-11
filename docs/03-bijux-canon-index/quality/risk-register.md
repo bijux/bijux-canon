@@ -57,10 +57,10 @@ flowchart TD
     lifecycle -->|no| reject["reject result"]
     lifecycle -->|yes| identity{"plan and backend identities match?"}
     identity -->|no| reject
-    identity -->|yes| class{"completion class explicit?"}
-    class -->|no| reject
-    class -->|refused or partial| constrained["handle as constrained evidence"]
-    class -->|complete| quality{"quality gate applicable?"}
+    identity -->|yes| failure_class{"completion class explicit?"}
+    failure_class -->|no| reject
+    failure_class -->|refused or partial| constrained["handle as constrained evidence"]
+    failure_class -->|complete| quality{"quality gate applicable?"}
     quality -->|failed| reject
     quality -->|passed or not required| accept["accept with artifact"]
 ```

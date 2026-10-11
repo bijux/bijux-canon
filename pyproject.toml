@@ -18,6 +18,17 @@ Changelog = "https://github.com/bijux/bijux-canon/blob/main/CHANGELOG.md"
 Security = "https://github.com/bijux/bijux-canon/blob/main/SECURITY.md"
 
 [dependency-groups]
+# Documentation production installs no application or editable workspace packages.
+docs = [
+  "mkdocs==1.6.1",
+  "mkdocs-material==9.7.7",
+  "mkdocs-autorefs==1.4.4",
+  "mkdocs-redirects==1.2.3",
+  "mkdocs-git-revision-date-localized-plugin==1.5.1",
+  "pymdown-extensions==11.0.1",
+  "gitpython>=3.2.0,<4.0",
+  "urllib3>=2.8.0,<3.0",
+]
 dev = [
   "bijux-canon",
   "bijux-canon-agent[dev]",
@@ -38,7 +49,7 @@ dev = [
   "mkdocs-glightbox>=0.4.0,<1.0",
   "mkdocs-include-markdown-plugin>=7.0.0,<8.0",
   "mkdocs-literate-nav>=0.6.0,<1.0",
-  "mkdocs-material>=9.5.39,<10.0",
+  "mkdocs-material==9.7.7",
   "mkdocs-minify-plugin>=0.8.0,<1.0",
   "mkdocs-redirects>=1.2.1,<2.0",
   "mkdocs-section-index>=0.3.10,<1.0",

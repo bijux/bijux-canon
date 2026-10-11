@@ -10,10 +10,17 @@ The goal of this changelog is to explain repository changes that affect more
 than one package or change the way contributors and maintainers work across the
 whole workspace.
 
+## Unreleased
+
+
+### Changed
+
+- Adopt trusted manual publication admission and accepted shared documentation policy ([#311](https://github.com/bijux/bijux-canon/pull/311)).
 ## [0.4.0] - Unreleased
 
 ### Changed
 
+- Bind production documentation commands to the exact Canon URL and qualified artifact, with source-bound verification and resumable immutable standard caches.
 - Hardened the canonical runtime, agent, ingestion, retrieval, and reasoning
   boundaries with deterministic lifecycle, provenance, evaluation, and
   installed-distribution verification.

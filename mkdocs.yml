@@ -21,6 +21,26 @@ watch:
 
 theme:
   custom_dir: docs/overrides
+  # Keep reader Back/Forward URLs stable; automatic anchor tracking is not enabled.
+  # MkDocs replaces inherited lists, so retain every required shared feature.
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.indexes
+    - navigation.path
+    - navigation.instant
+    - navigation.top
+    - navigation.footer
+    - toc.follow
+    - search.suggest
+    - search.highlight
+    - content.tabs.link
+    - content.code.annotate
+    - content.code.copy
+    - content.code.select
+    - content.action.edit
+    - content.action.view
 
 extra:
   bijux:
@@ -397,3 +417,22 @@ nav:
           - Validation Strategy: 08-compat-packages/migration/validation-strategy.md
           - Retirement Conditions: 08-compat-packages/migration/retirement-conditions.md
           - Retirement Playbook: 08-compat-packages/migration/retirement-playbook.md
+
+extra_javascript:
+  - assets/javascripts/mermaid-init.js
+  - assets/javascripts/shell/theme-persistence.js
+  - assets/javascripts/shell/viewport-profile.js
+  - assets/javascripts/shell/nav-state.js
+  - assets/javascripts/shell/detail-tabs.js
+  - assets/javascripts/shell/nav-reveal.js
+  - assets/javascripts/shell/search-recovery.js
+  - assets/javascripts/shell/content-reflow.js
+  - assets/javascripts/external-links.js
+  - assets/javascripts/shell/bootstrap.js
+  - assets/javascripts/navigation-sync.js
+  - assets/javascripts/navigation/offsite-targets.js
+exclude_docs: |
+  /overrides/
+  /hooks/
+  /assets/styles/README.md
+  /assets/javascripts/shell/README.md
