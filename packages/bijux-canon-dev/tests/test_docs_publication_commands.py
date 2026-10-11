@@ -106,6 +106,7 @@ class DocumentationPublicationCommandTests(unittest.TestCase):
         pin = self.root / ".github/standards/bijux-std.sha"
         pin.parent.mkdir(parents=True, exist_ok=True)
         pin.write_text("a" * 40 + "\n")
+        (pin.parent / "bijux-docs.sha").write_text("a" * 40 + "\n")
         (self.root / "mkdocs.yml").write_text(
             "site_name: Controlled command interface\n"
         )
@@ -171,7 +172,9 @@ class DocumentationPublicationCommandTests(unittest.TestCase):
             "gh-docs-install", "PYTHON=" + sys.executable, "UV=uv", dry=True
         )
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn("bijux_canon_dev.docs.environment", result.stdout)
+        self.assertIn("install_publication_renderer.py", result.stdout)
+        self.assertIn("--recipe history-legacy", result.stdout)
+        self.assertNotIn("uv sync", result.stdout)
         self.assertNotIn("install-interface-reached", result.stdout)
         self.assertFalse((self.root / "artifacts/install-interface-reached").exists())
 
@@ -210,7 +213,7 @@ class DocumentationPublicationCommandTests(unittest.TestCase):
             }
         )
         commands = [args for kind, args in calls if kind == "command"]
-        self.assertEqual(len(commands), 5)
+        self.assertEqual(len(commands), 6)
         self.assertEqual(commands[0][:2], ("bash", "-c"))
         self.assertIn("verify_docs_authority", commands[0][2])
         self.assertIn("project_bijux_docs.py", commands[0][2])
@@ -223,10 +226,12 @@ class DocumentationPublicationCommandTests(unittest.TestCase):
         )
         self.assertIn("--source-identity", commands[2])
         self.assertTrue(commands[2][1].endswith("render_publication.py"))
-        self.assertIn("admit", commands[3])
-        self.assertIn("--csp-report", commands[3])
-        self.assertIn("verify", commands[4])
-        self.assertIn("--require-qualified", commands[4])
+        self.assertEqual(commands[3][0], "bash")
+        self.assertTrue(commands[3][1].endswith("verify_bijux_docs_site.sh"))
+        self.assertIn("admit", commands[4])
+        self.assertIn("--csp-report", commands[4])
+        self.assertIn("verify", commands[5])
+        self.assertIn("--require-qualified", commands[5])
         for name, value in {
             "--site-dir": publication.SITE_DIR,
             "--site-url": publication.SITE_URL,
@@ -237,9 +242,9 @@ class DocumentationPublicationCommandTests(unittest.TestCase):
             "--csp-report": "artifacts/website-security/csp.json",
             "--output": publication.MANIFEST,
         }.items():
-            self.assertEqual(commands[3][commands[3].index(name) + 1], value)
+            self.assertEqual(commands[4][commands[4].index(name) + 1], value)
         self.assertEqual(
-            commands[4][commands[4].index("--manifest") + 1], publication.MANIFEST
+            commands[5][commands[5].index("--manifest") + 1], publication.MANIFEST
         )
         self.assertFalse((self.root / publication.MANIFEST).exists())
 
@@ -268,6 +273,36 @@ class DocumentationPublicationCommandTests(unittest.TestCase):
         self.observations.append(
             {
                 "kind": "controlled-renderer-rejection",
+                "calls": calls,
+                "publication_approval": False,
+            }
+        )
+
+    def test_failed_source_bound_verifier_stops_before_manifest_admission(self) -> None:
+        self.source()
+        calls: list[tuple[str, ...]] = []
+
+        def child(root: Path, *arguments: str, authority: str | None = None) -> None:
+            calls.append(arguments)
+            if arguments[1].endswith("verify_bijux_docs_site.sh"):
+                raise subprocess.CalledProcessError(1, arguments)
+
+        with (
+            patch.object(
+                publication,
+                "accepted_standard",
+                return_value=publication.STANDARD_ROOT + "/" + "a" * 40,
+            ),
+            patch.object(publication, "command", child),
+            self.assertRaises(subprocess.CalledProcessError),
+        ):
+            publication.build(self.root)
+        self.assertEqual(len(calls), 4)
+        self.assertFalse(any("admit" in args for args in calls))
+        self.assertFalse((self.root / publication.MANIFEST).exists())
+        self.observations.append(
+            {
+                "kind": "controlled-source-bound-verifier-rejection",
                 "calls": calls,
                 "publication_approval": False,
             }

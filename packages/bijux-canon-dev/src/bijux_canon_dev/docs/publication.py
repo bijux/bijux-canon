@@ -200,7 +200,7 @@ def build(root: Path) -> None:
     ).strip()
     source_sha = os.environ.get("GITHUB_SHA", head)
     identity.clean_source(root, source_sha)
-    pin = identity.regular(root, ".github/standards/bijux-std.sha").read_text().strip()
+    pin = identity.regular(root, ".github/standards/bijux-docs.sha").read_text().strip()
     if re.fullmatch(r"[0-9a-f]{40}", pin) is None:
         raise ValueError(
             "Canon publication requires a tracked full accepted standard SHA"
@@ -232,6 +232,8 @@ def build(root: Path) -> None:
         sys.executable,
         str(shared / "security/build_identity.py"),
         "capture-source",
+        "--standard-pin",
+        "publication",
         "--source-sha",
         source_sha,
         "--standard-root",
@@ -262,6 +264,12 @@ def build(root: Path) -> None:
         SITE_URL,
         "--source-identity",
         SOURCE_RECEIPT,
+        authority=authority,
+    )
+    command(
+        root,
+        "bash",
+        str(shared / "tooling/scripts/verify_bijux_docs_site.sh"),
         authority=authority,
     )
     command(
