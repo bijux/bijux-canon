@@ -299,7 +299,6 @@ def build(root: Path) -> None:
         MANIFEST,
         authority=authority,
     )
-    verify(root)
 
 
 def verify(root: Path) -> None:

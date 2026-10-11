@@ -213,7 +213,7 @@ class DocumentationPublicationCommandTests(unittest.TestCase):
             }
         )
         commands = [args for kind, args in calls if kind == "command"]
-        self.assertEqual(len(commands), 6)
+        self.assertEqual(len(commands), 5)
         self.assertEqual(commands[0][:2], ("bash", "-c"))
         self.assertIn("verify_docs_authority", commands[0][2])
         self.assertIn("project_bijux_docs.py", commands[0][2])
@@ -230,8 +230,7 @@ class DocumentationPublicationCommandTests(unittest.TestCase):
         self.assertTrue(commands[3][1].endswith("verify_bijux_docs_site.sh"))
         self.assertIn("admit", commands[4])
         self.assertIn("--csp-report", commands[4])
-        self.assertIn("verify", commands[5])
-        self.assertIn("--require-qualified", commands[5])
+        self.assertFalse(any("verify" in arguments for arguments in commands))
         for name, value in {
             "--site-dir": publication.SITE_DIR,
             "--site-url": publication.SITE_URL,
@@ -243,9 +242,6 @@ class DocumentationPublicationCommandTests(unittest.TestCase):
             "--output": publication.MANIFEST,
         }.items():
             self.assertEqual(commands[4][commands[4].index(name) + 1], value)
-        self.assertEqual(
-            commands[5][commands[5].index("--manifest") + 1], publication.MANIFEST
-        )
         self.assertFalse((self.root / publication.MANIFEST).exists())
 
     def test_failed_renderer_stops_before_manifest_admission(self) -> None:
