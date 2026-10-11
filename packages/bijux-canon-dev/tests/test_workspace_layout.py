@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import shlex
 import subprocess
 import sys
 import tomllib
@@ -183,3 +184,22 @@ def test_repository_root_keeps_non_artifact_caches_out_of_tree() -> None:
         if path.is_dir() and path.name in FORBIDDEN_CACHE_NAMES
     )
     assert tree_caches == []
+
+
+def test_package_benchmark_storage_uses_repository_artifacts() -> None:
+    workspace = _workspace_metadata()
+    for package_name in cast(list[str], workspace["packages"]):
+        package_root = _package_path(package_name)
+        with (package_root / "pyproject.toml").open("rb") as handle:
+            project = tomllib.load(handle)
+        options = project.get("tool", {}).get("pytest", {}).get("ini_options", {})
+        for option in shlex.split(options.get("addopts", "")):
+            if not option.startswith("--benchmark-storage="):
+                continue
+            storage = option.removeprefix("--benchmark-storage=")
+            assert storage.startswith("file://"), (package_name, storage)
+            destination = (package_root / storage.removeprefix("file://")).resolve()
+            assert destination.is_relative_to(REPO_ROOT / "artifacts"), (
+                package_name,
+                destination,
+            )

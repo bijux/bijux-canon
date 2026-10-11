@@ -159,7 +159,7 @@ bijux-canon-reason = "bijux_canon_reason.interfaces.cli:app"
 bijux-rar = "bijux_canon_reason.interfaces.cli.compatibility:legacy_rar"
 
 [tool.pytest.ini_options]
-addopts = "--benchmark-storage=file://./.pytest_cache/benchmarks"
+addopts = "--benchmark-storage=file://./artifacts/test/benchmarks"
 markers = [
   "e2e: end-to-end coverage for package boundaries and contracts",
 ]
