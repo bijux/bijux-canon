@@ -15,6 +15,7 @@ whole workspace.
 
 ### Changed
 
+- Bind documentation render dates to committed source, permit repository-owned workflow badge images, and batch publication custody checks ([#314](https://github.com/bijux/bijux-canon/pull/314)).
 - Adopt trusted manual publication admission and accepted shared documentation policy ([#311](https://github.com/bijux/bijux-canon/pull/311)).
 ## [0.4.0] - Unreleased
 
