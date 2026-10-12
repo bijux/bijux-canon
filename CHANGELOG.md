@@ -15,6 +15,8 @@ whole workspace.
 
 ### Changed
 
+- Bound manual documentation publication to the canonical 60-minute hosted budget and verify common governance independently from the retained documentation source ([#316](https://github.com/bijux/bijux-canon/pull/316)).
+
 - Keep repository new-tab warnings compact and accessible, and align catalogue input identities with independent publication admission ([#315](https://github.com/bijux/bijux-canon/pull/315)).
 - Bind documentation render dates to committed source, permit repository-owned workflow badge images, and batch publication custody checks ([#314](https://github.com/bijux/bijux-canon/pull/314)).
 - Adopt trusted manual publication admission and accepted shared documentation policy ([#311](https://github.com/bijux/bijux-canon/pull/311)).
