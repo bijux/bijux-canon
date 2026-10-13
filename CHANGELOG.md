@@ -15,6 +15,8 @@ whole workspace.
 
 ### Changed
 
+- Adopt accepted reader preference recovery, inert native search, truthful clipboard feedback, patched publication dependencies and authenticated workflow actions ([#317](https://github.com/bijux/bijux-canon/pull/317)).
+
 - Bound manual documentation publication to the canonical 60-minute hosted budget and verify common governance independently from the retained documentation source ([#316](https://github.com/bijux/bijux-canon/pull/316)).
 
 - Keep repository new-tab warnings compact and accessible, and align catalogue input identities with independent publication admission ([#315](https://github.com/bijux/bijux-canon/pull/315)).
