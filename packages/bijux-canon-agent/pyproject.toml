@@ -157,7 +157,7 @@ extra = [
     "pytesseract>=0.3.10,<0.4",
     "python-docx>=1.1.0,<2.0.0",
     "PyMuPDF>=1.23.0,<2.0",
-    "Pillow>=10.0,<13.0",
+    "Pillow>=10.0,<14.0",
 ]
 profiling = [
     "memory-profiler>=0.61.0,<0.62.0",
@@ -171,7 +171,7 @@ document_readers = [
     "pytesseract>=0.3.10,<0.4",
     "python-docx>=1.1.0,<2.0.0",
     "PyMuPDF>=1.23.0,<2.0",
-    "Pillow>=10.0,<13.0",
+    "Pillow>=10.0,<14.0",
 ]
 
 [project.scripts]
