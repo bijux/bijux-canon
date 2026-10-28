@@ -78,7 +78,6 @@ def create_app(*, artifacts_dir: Path | None = None) -> FastAPI:
             "the same contract boundary."
         ),
         version="v1",
-        openapi_version="3.1.0",
         contact={"name": "Bijux", "url": "https://github.com/bijux/bijux-canon"},
         license_info={
             "name": "Apache 2.0",
@@ -100,6 +99,7 @@ def create_app(*, artifacts_dir: Path | None = None) -> FastAPI:
             },
         ],
     )
+    app.openapi_version = "3.1.0"
     app.state.db_path = configure_item_store(artifacts_root)
 
     rate_limit = _read_rate_limit()
