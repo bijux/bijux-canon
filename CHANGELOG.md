@@ -12,6 +12,12 @@ whole workspace.
 
 ## Unreleased
 
+- Patch Python, PDF/image-reader and OpenAPI tooling dependencies. Keep patched
+  transitive dependencies above their security floors in the workspace lock.
+- Requalify PDF locators with PyPDF 6.21.4 while preserving the original source,
+  reviewed text, page hashes and character spans.
+- Consume accepted shared documentation security and governance projections.
+
 
 ### Changed
 
