@@ -278,7 +278,7 @@ def verify_pdf_locator(record: Mapping[str, Any], page_count: int) -> None:
     end = locator.get("text_end")
     exact_text = record["exact_text"]
     if (
-        locator.get("extractor") != "pypdf-6.19.0-page-extract-text"
+        locator.get("extractor") != "pypdf-6.21.4-page-extract-text"
         or not isinstance(page, int)
         or not 1 <= page <= page_count
         or not isinstance(start, int)
@@ -326,7 +326,7 @@ def validate_truth(
         locked = locked_sources[source_id]
         normalization = {
             "jats": "collapse-unicode-whitespace-v1",
-            "pdf-digital": "pypdf-6.19.0-page-extract-text",
+            "pdf-digital": "pypdf-6.21.4-page-extract-text",
             "html": "collapse-unicode-whitespace-v1",
             "markdown": "source-lines-with-lf-join-v1",
             "text": "source-lines-with-lf-join-v1",
