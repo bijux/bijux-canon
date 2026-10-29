@@ -35,7 +35,7 @@ python -m bijux_canon_dev.corpus.parser_lock \
 
 `locator-truth.jsonl` is an independently selected, identity-bound review set.
 PDF records preserve the original independently reviewed text and review date in
-their extraction qualification. The PyPDF 6.19 contract changes only extraction
+their extraction qualification. The PyPDF 6.21.4 contract changes only extraction
 whitespace; its page hashes and character offsets are qualified against the same
 immutable source and the unchanged reviewed character sequence. This qualification
 does not replace the independent scientific review.

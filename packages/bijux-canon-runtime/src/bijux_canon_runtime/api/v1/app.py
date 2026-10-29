@@ -61,7 +61,6 @@ app = RuntimeFastAPI(
         "implicit."
     ),
     version="v1",
-    openapi_version="3.1.0",
     contact={"name": "Bijux", "url": "https://github.com/bijux/bijux-canon"},
     license_info={
         "name": "Apache 2.0",
@@ -79,6 +78,7 @@ app = RuntimeFastAPI(
         },
     ],
 )
+app.openapi_version = "3.1.0"
 
 
 def _openapi(application: FastAPI) -> dict[str, Any]:

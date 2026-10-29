@@ -63,7 +63,6 @@ def create_app() -> FastAPI:
             "was chunked, indexed, retrieved, and answered."
         ),
         version="v1",
-        openapi_version="3.1.0",
         contact={"name": "Bijux", "url": "https://github.com/bijux/bijux-canon"},
         license_info={
             "name": "Apache 2.0",
@@ -89,6 +88,7 @@ def create_app() -> FastAPI:
             },
         ],
     )
+    app.openapi_version = "3.1.0"
     router = APIRouter(prefix="/v1")
 
     rag_app = IngestService()

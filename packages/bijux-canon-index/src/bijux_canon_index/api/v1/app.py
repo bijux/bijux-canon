@@ -41,7 +41,6 @@ def build_app() -> FastAPI:
             "they are invoking before they ship it."
         ),
         version="v1",
-        openapi_version="3.1.0",
         contact={"name": "Bijux", "url": "https://github.com/bijux/bijux-canon"},
         license_info={
             "name": "Apache 2.0",
@@ -50,6 +49,7 @@ def build_app() -> FastAPI:
         servers=[{"url": "/"}],
         openapi_tags=OPENAPI_TAGS,
     )
+    app.openapi_version = "3.1.0"
     register_read_routes(app)
     register_mutation_routes(app)
     register_query_routes(app)

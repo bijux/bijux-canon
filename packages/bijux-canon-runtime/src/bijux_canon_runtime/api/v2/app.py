@@ -170,7 +170,6 @@ def create_app(
         title="bijux-canon-runtime API",
         summary="Typed application operations for durable Bijux Canon workflows.",
         version=SUPPORTED_VERSION,
-        openapi_version="3.1.0",
         contact={"name": "Bijux", "url": "https://github.com/bijux/bijux-canon"},
         license_info={
             "name": "Apache 2.0",
@@ -179,6 +178,7 @@ def create_app(
         servers=[{"url": "/"}],
         lifespan=lifespan,
     )
+    api.openapi_version = "3.1.0"
     api.state.application_services = services
     api.state.application_services_lock = threading.Lock()
     api.state.readiness_service = readiness
