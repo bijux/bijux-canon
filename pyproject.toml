@@ -24,7 +24,7 @@ docs = [
   "mkdocs-material==9.7.7",
   "mkdocs-autorefs==1.4.4",
   "mkdocs-redirects==1.2.3",
-  "mkdocs-git-revision-date-localized-plugin==1.6.0",
+  "mkdocs-git-revision-date-localized-plugin==1.6.2",
   "pymdown-extensions==12.3",
   "gitpython>=3.2.1,<4.0",
   "urllib3>=2.8.0,<3.0",
