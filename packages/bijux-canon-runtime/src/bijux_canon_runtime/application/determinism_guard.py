@@ -65,11 +65,10 @@ def validate_determinism(
             raise ValueError(
                 "unordered collections must be normalized before execution"
             )
-    elif determinism_level == DeterminismLevel.PROBABILISTIC:
-        if not unordered_normalized:
-            raise ValueError(
-                "unordered collections must be normalized before execution"
-            )
+    elif (
+        determinism_level == DeterminismLevel.PROBABILISTIC and not unordered_normalized
+    ):
+        raise ValueError("unordered collections must be normalized before execution")
 
 
 def evaluate_structural_diffs(
