@@ -15,6 +15,8 @@ whole workspace.
 
 ### Changed
 
+- Qualify compatible build, test and documentation dependencies, adopt accepted workflow actions, and patch OpenAPI tooling transitives ([#368](https://github.com/bijux/bijux-canon/pull/368)).
+
 - Patch Python, PDF/image-reader and OpenAPI tooling dependencies. Keep patched
   transitive dependencies above their security floors in the workspace lock.
 - Requalify PDF locators with PyPDF 6.21.4 while preserving the original source,
