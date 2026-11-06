@@ -53,4 +53,4 @@ include $(abspath $(dir $(firstword $(MAKEFILE_LIST))))/../bijux-py/package.mk
 ci-fast: lint test mypy-core
 .PHONY: ci-fast
 
-PACKAGE_INSTALL_PYTHON_PACKAGES := uv==0.11.24
+PACKAGE_INSTALL_PYTHON_PACKAGES := uv==0.13.6
