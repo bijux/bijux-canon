@@ -5,6 +5,8 @@ from collections.abc import Mapping
 from dataclasses import asdict
 from pathlib import Path
 import re
+import time
+from types import SimpleNamespace
 from typing import Any, cast
 
 from bijux_canon_agent_reader_support import FileReaderStub
@@ -327,7 +329,16 @@ async def test_pipeline_telemetry_reset_between_runs(logger_manager) -> None:
 
 
 @pytest.mark.asyncio
-async def test_pipeline_has_no_hidden_state_between_runs(logger_manager) -> None:
+async def test_pipeline_has_no_hidden_state_between_runs(
+    logger_manager, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # Identical run inputs include the audit clock, even across second boundaries.
+    frozen_time = time.gmtime(1767225600)
+    audit_clock = SimpleNamespace(gmtime=lambda: frozen_time, strftime=time.strftime)
+    monkeypatch.setattr(
+        "bijux_canon_agent.pipeline.results.shard_merging.time", audit_clock
+    )
+    monkeypatch.setattr("bijux_canon_agent.pipeline.results.summary.time", audit_clock)
     handler = StatelessStageRunner()
     pipeline = make_pipeline(handler, logger_manager)
     context = {
@@ -339,6 +350,9 @@ async def test_pipeline_has_no_hidden_state_between_runs(logger_manager) -> None
     second_result = await pipeline.run(dict(context))
 
     assert first_result["result"] == second_result["result"]
+    assert {
+        stage["audit"]["timestamp"] for stage in first_result["stages"].values()
+    } == {"2026-01-01T00:00:00Z"}
     assert first_result["stages"] == second_result["stages"]
     assert first_result["final_status"] == second_result["final_status"]
     assert first_result["warnings"] == second_result["warnings"]

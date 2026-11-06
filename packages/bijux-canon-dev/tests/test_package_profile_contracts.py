@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import subprocess
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 
@@ -77,3 +78,28 @@ def test_compat_packages_install_security_tooling_without_stamp_shortcuts() -> N
     assert "security-bandit" in profile
     assert "security-audit" in profile
     assert "security-deps" in profile
+
+
+def test_agent_node_bootstrap_consumes_the_audited_repository_lock(
+    tmp_path: Path,
+) -> None:
+    result = subprocess.run(
+        [
+            "make",
+            "--no-print-directory",
+            "-n",
+            "-f",
+            str(REPO_ROOT / "makes/packages/bijux-canon-agent.mk"),
+            "-C",
+            str(REPO_ROOT / "packages/bijux-canon-agent"),
+            "node_deps",
+            "API_NODE_DIR=" + str(tmp_path / "node"),
+            "API_NODE_READY_MARKER=" + str(tmp_path / "node-ready"),
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    assert 'case "npm-ci-sandbox" in' in result.stdout
+    assert str(REPO_ROOT / "configs/package-lock.json") in result.stdout
+    assert "npm ci --engine-strict" in result.stdout

@@ -200,9 +200,8 @@ class CritiqueAgent(BaseAgent[dict[str, Any], dict[str, Any]]):
             self.min_length = 200
             self.penalties[self.Criteria.NO_UNSUPPORTED] = 0.4
             self.penalties[self.Criteria.NO_HALLUCINATION] = 0.4
-        elif text_type == "code":
-            if self.Criteria.CODE_SYNTAX not in self.criteria:
-                self.criteria.append(self.Criteria.CODE_SYNTAX)
+        elif text_type == "code" and self.Criteria.CODE_SYNTAX not in self.criteria:
+            self.criteria.append(self.Criteria.CODE_SYNTAX)
 
         self.logger.debug(
             f"Configured criteria for text_type: {text_type}",

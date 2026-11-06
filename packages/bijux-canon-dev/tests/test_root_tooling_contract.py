@@ -148,7 +148,7 @@ def test_root_pyproject_isolates_documentation_from_workspace_dependencies() -> 
     docs = dependency_groups["docs"]
     assert isinstance(docs, list)
     assert "mkdocs==1.6.1" in docs
-    assert "mkdocs-material==9.7.7" in docs
+    assert "mkdocs-material==9.8.0" in docs
     assert all(isinstance(requirement, str) for requirement in docs)
     assert not any(str(requirement).startswith("bijux-") for requirement in docs)
 
@@ -159,3 +159,17 @@ def test_root_make_does_not_declare_proteomics_only_extensions() -> None:
     assert not any(
         command in root_make for command in PROTEOMICS_ONLY_EXTENSION_COMMANDS
     )
+
+
+def test_package_installers_use_the_frozen_uv_security_version() -> None:
+    with (REPO_ROOT / "uv.lock").open("rb") as handle:
+        lock = tomllib.load(handle)
+    versions = [
+        package["version"] for package in lock["package"] if package["name"] == "uv"
+    ]
+    assert len(versions) == 1
+    installer = "PACKAGE_INSTALL_PYTHON_PACKAGES := uv==" + versions[0]
+    workspace = _as_dict(_as_dict(_root_pyproject()["tool"])["bijux_canon"])
+    for package in cast(list[str], workspace["primary_packages"]):
+        profile = (REPO_ROOT / "makes" / "packages" / (package + ".mk")).read_text()
+        assert installer in profile.splitlines(), package
