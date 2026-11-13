@@ -152,7 +152,7 @@ doc = [
 ]
 extra = [
     "pandas>=2.0.3,<4.0",
-    "pypdf>=6.21.2,<7.0",
+    "pypdf>=6.21.2,<8.0",
     "pdfminer.six>=20221105,<20260108",
     "pytesseract>=0.3.10,<0.4",
     "python-docx>=1.1.0,<2.0.0",
@@ -166,7 +166,7 @@ profiling = [
 
 document_readers = [
     "pandas>=2.0.3,<4.0",
-    "pypdf>=6.21.2,<7.0",
+    "pypdf>=6.21.2,<8.0",
     "pdfminer.six>=20221105,<20260108",
     "pytesseract>=0.3.10,<0.4",
     "python-docx>=1.1.0,<2.0.0",
