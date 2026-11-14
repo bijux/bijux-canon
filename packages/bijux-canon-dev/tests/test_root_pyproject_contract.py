@@ -37,31 +37,25 @@ def _workspace_distribution_names() -> set[str]:
     return distribution_names
 
 
-def test_root_pyproject_uses_shared_workspace_build_contract() -> None:
+def test_root_pyproject_keeps_distribution_builds_in_workspace_packages() -> None:
     pyproject = _root_pyproject()
-
-    assert pyproject["build-system"] == {
-        "requires": ["hatchling>=1.30.1,<1.34", "hatch-vcs>=0.5.0,<1.0"],
-        "build-backend": "hatchling.build",
-    }
-
-    project = _as_dict(pyproject["project"])
-    assert _as_str_list(project["dynamic"]) == ["version"]
-    assert "version" not in project
-
     tool = _as_dict(pyproject["tool"])
-    hatch = _as_dict(tool["hatch"])
-    hatch_version = _as_dict(hatch["version"])
-    assert hatch_version["source"] == "vcs"
-    assert hatch_version["tag-pattern"] == "^v(?P<version>.*)$"
-
-    uv_tool = _as_dict(tool["uv"])
-    assert _as_dict(uv_tool["workspace"])["members"] == ["packages/*"]
-    build_targets = _as_dict(_as_dict(hatch["build"])["targets"])
-    assert _as_dict(build_targets["wheel"]) == {
-        "bypass-selection": True,
-        "skip-excluded-dirs": True,
-    }
+    assert "project" not in pyproject
+    assert "build-system" not in pyproject
+    assert "hatch" not in tool
+    assert _as_dict(_as_dict(tool["uv"])["workspace"])["members"] == ["packages/*"]
+    package_paths = sorted((REPO_ROOT / "packages").glob("*/pyproject.toml"))
+    workspace = _as_dict(tool[WORKSPACE_TOOL])
+    assert {
+        path.parent.relative_to(REPO_ROOT).as_posix() for path in package_paths
+    } == set(_as_dict(workspace["package_dirs"]).values())
+    names = []
+    for path in package_paths:
+        package = tomllib.loads(path.read_text())
+        names.append(package["project"]["name"])
+        assert "build-system" in package
+    assert set(names) == _workspace_distribution_names()
+    assert len(names) == len(set(names))
 
 
 def test_root_pyproject_exposes_all_workspace_packages_to_root_dev_installs() -> None:

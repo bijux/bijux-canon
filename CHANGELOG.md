@@ -15,6 +15,11 @@ whole workspace.
 
 ### Changed
 
+- Use a virtual workspace root and build the twelve canonical and compatibility
+  distributions from their owning packages, without an artificial repository wheel.
+- Regenerate the installed-family check and managed governance from the owning
+  standards source while preserving the independent documentation source pin.
+
 - Qualify compatible build, test and documentation dependencies, adopt accepted workflow actions, and patch OpenAPI tooling transitives ([#368](https://github.com/bijux/bijux-canon/pull/368)).
 
 - Patch Python, PDF/image-reader and OpenAPI tooling dependencies. Keep patched
