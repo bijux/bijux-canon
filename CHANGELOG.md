@@ -12,6 +12,11 @@ whole workspace.
 
 ## Unreleased
 
+### Security
+
+- Require patched `basic-ftp` releases and lock OpenAPI tooling to 6.2.6 to
+  prevent crashes on crafted FTP directory listings (GHSA-5pm8-86m8-9m6r)
+  ([#384](https://github.com/bijux/bijux-canon/pull/384)).
 
 ### Changed
 
