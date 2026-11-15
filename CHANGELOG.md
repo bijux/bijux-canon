@@ -18,6 +18,7 @@ whole workspace.
 - Consolidate Python, PDF extraction, documentation and OpenAPI tooling dependency
   proposals. Qualify PyPDF 7 against the original reviewed characters and retain
   PyMdown 12.3 on Python 3.11.0–3.11.4 while newer interpreters use PyMdown 13
+  with aligned documentation contracts and compatible boolean CLI help snapshots
   ([#383](https://github.com/bijux/bijux-canon/pull/383)).
 
 - Use a virtual workspace root and build the twelve canonical and compatibility

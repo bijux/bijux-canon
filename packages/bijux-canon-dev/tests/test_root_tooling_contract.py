@@ -148,7 +148,7 @@ def test_root_pyproject_isolates_documentation_from_workspace_dependencies() -> 
     docs = dependency_groups["docs"]
     assert isinstance(docs, list)
     assert "mkdocs==1.6.1" in docs
-    assert "mkdocs-material==9.8.0" in docs
+    assert "mkdocs-material==9.8.1" in docs
     assert all(isinstance(requirement, str) for requirement in docs)
     assert not any(str(requirement).startswith("bijux-") for requirement in docs)
 
