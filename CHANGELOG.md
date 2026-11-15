@@ -15,10 +15,17 @@ whole workspace.
 
 ### Changed
 
+- Consolidate Python, PDF extraction, documentation and OpenAPI tooling dependency
+  proposals. Qualify PyPDF 7 against the original reviewed characters and retain
+  PyMdown 12.3 on Python 3.11.0–3.11.4 while newer interpreters use PyMdown 13
+  ([#383](https://github.com/bijux/bijux-canon/pull/383)).
+
 - Use a virtual workspace root and build the twelve canonical and compatibility
-  distributions from their owning packages, without an artificial repository wheel.
+  distributions from their owning packages, without an artificial repository wheel
+  ([#383](https://github.com/bijux/bijux-canon/pull/383)).
 - Regenerate the installed-family check and managed governance from the owning
-  standards source while preserving the independent documentation source pin.
+  standards source while preserving the independent documentation source pin
+  ([#383](https://github.com/bijux/bijux-canon/pull/383)).
 
 - Qualify compatible build, test and documentation dependencies, adopt accepted workflow actions, and patch OpenAPI tooling transitives ([#368](https://github.com/bijux/bijux-canon/pull/368)).
 
