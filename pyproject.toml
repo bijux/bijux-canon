@@ -1,31 +1,13 @@
-[build-system]
-requires = ["hatchling>=1.30.1,<1.34", "hatch-vcs>=0.5.0,<1.0"]
-build-backend = "hatchling.build"
-
-[project]
-name = "bijux-canon-repository"
-description = "Repository workspace for bijux-canon."
-readme = "README.md"
-requires-python = ">=3.11,<4"
-dependencies = []
-dynamic = ["version"]
-
-[project.urls]
-Documentation = "https://bijux.io/bijux-canon/"
-Repository = "https://github.com/bijux/bijux-canon"
-Issues = "https://github.com/bijux/bijux-canon/issues"
-Changelog = "https://github.com/bijux/bijux-canon/blob/main/CHANGELOG.md"
-Security = "https://github.com/bijux/bijux-canon/blob/main/SECURITY.md"
-
 [dependency-groups]
 # Documentation production installs no application or editable workspace packages.
 docs = [
   "mkdocs==1.6.1",
-  "mkdocs-material==9.8.0",
+  "mkdocs-material==9.8.1",
   "mkdocs-autorefs==1.4.5",
   "mkdocs-redirects==1.2.3",
-  "mkdocs-git-revision-date-localized-plugin==1.6.3",
-  "pymdown-extensions==12.3",
+  "mkdocs-git-revision-date-localized-plugin==1.7.0",
+  "pymdown-extensions==13.0; python_full_version >= '3.11.5'",
+  "pymdown-extensions==12.3; python_full_version < '3.11.5'",
   "gitpython>=3.2.1,<4.0",
   "urllib3>=2.8.0,<3.0",
 ]
@@ -49,7 +31,7 @@ dev = [
   "mkdocs-glightbox>=0.4.0,<1.0",
   "mkdocs-include-markdown-plugin>=7.0.0,<8.0",
   "mkdocs-literate-nav>=0.6.0,<1.0",
-  "mkdocs-material==9.8.0",
+  "mkdocs-material==9.8.1",
   "mkdocs-minify-plugin>=0.8.0,<1.0",
   "mkdocs-redirects>=1.2.1,<2.0",
   "mkdocs-section-index>=0.3.10,<1.0",
@@ -210,13 +192,3 @@ color = true
 
 [tool.bandit]
 exclude_dirs = [".venv", "tests", "artifacts", ".pytest_cache", ".ruff_cache"]
-
-[tool.hatch.version]
-source = "vcs"
-tag-pattern = "^v(?P<version>.*)$"
-fallback-version = "0.4.0"
-raw-options = { git_describe_command = "git describe --dirty --tags --long --match 'v*'", local_scheme = "dirty-tag", version_scheme = "guess-next-dev", root = ".", search_parent_directories = true }
-
-[tool.hatch.build.targets.wheel]
-bypass-selection = true
-skip-excluded-dirs = true

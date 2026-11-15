@@ -55,6 +55,7 @@ CLI_HELP = """
 def _normalize_cli_help(text: str) -> str:
     text = re.sub(r"\x1b\[[0-9;]*m", "", text)
     text = text.replace("<str>", "TEXT").replace("<path>", "PATH")
+    text = text.replace("<bool>", "")
     normalized_lines: list[str] = []
     for line in text.splitlines():
         stripped = line.strip()
@@ -74,6 +75,13 @@ def test_cli_help_normalization_ignores_terminal_wrapping() -> None:
     wrapped = "│ --version  Show the installed version and │\n│ exit. │"
 
     assert _normalize_cli_help(single_line) == _normalize_cli_help(wrapped)
+
+
+def test_cli_help_normalization_ignores_boolean_type_labels() -> None:
+    plain = "│ --trace Emit trace metadata │"
+    typed = "│ --trace <bool> Emit trace metadata │"
+
+    assert _normalize_cli_help(plain) == _normalize_cli_help(typed)
 
 
 def test_cli_help_is_frozen() -> None:
