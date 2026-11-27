@@ -20,7 +20,7 @@
     "minimatch": "^11.0.5"
   },
   "devDependencies": {
-    "@openapitools/openapi-generator-cli": "2.42.1",
+    "@openapitools/openapi-generator-cli": "2.43.0",
     "@redocly/cli": "2.77.0"
   }
 }
