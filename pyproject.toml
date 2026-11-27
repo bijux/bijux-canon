@@ -6,7 +6,7 @@ docs = [
   "mkdocs-autorefs==1.4.5",
   "mkdocs-redirects==1.2.3",
   "mkdocs-git-revision-date-localized-plugin==1.7.0",
-  "pymdown-extensions==13.0; python_full_version >= '3.11.5'",
+  "pymdown-extensions==13.1.2; python_full_version >= '3.11.5'",
   "pymdown-extensions==12.3; python_full_version < '3.11.5'",
   "gitpython>=3.2.1,<4.0",
   "urllib3>=2.8.0,<3.0",
